@@ -1,0 +1,108 @@
+{
+  "name": "keep-net-vue",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "format": "prettier-eslint —eslint-config-path ./eslintrc.json --write '**/*.js’"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "apexcharts": "^3.10.1",
+    "axios": "^0.19.0",
+    "babel-polyfill": "^6.26.0",
+    "core-js": "^2.6.5",
+    "echarts": "^4.3.0",
+    "echarts-gl": "^1.1.1",
+    "js-cookie": "^2.2.1",
+    "jszip": "^3.2.2",
+    "pdfmake": "^0.1.63",
+    "print-js": "^1.0.63",
+    "v-offline": "^1.1.0",
+    "vue": "^2.6.10",
+    "vue-analytics": "^5.22.1",
+    "vue-apexcharts": "^1.5.1",
+    "vue-clamp": "^0.2.2",
+    "vue-echarts": "^4.0.4",
+    "vue-moment": "^4.1.0",
+    "vue-recaptcha": "^1.2.0",
+    "vue-router": "^3.0.3",
+    "vue-tour": "^1.1.0",
+    "vuetify": "^2.0.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.6.3",
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-eslint": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.0.1",
+    "deepmerge": "^4.0.0",
+    "element-ui": "^2.13.0",
+    "es-check": "^5.0.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-vue": "^5.0.0",
+    "fibers": "^4.0.1",
+    "node-sass": "^4.12.0",
+    "prettier": "^1.19.1",
+    "prettier-eslint": "^9.0.1",
+    "prettier-eslint-cli": "^5.0.0",
+    "sass": "^1.22.12",
+    "sass-loader": "^7.3.1",
+    "vue-class-component": "^7.1.0",
+    "vue-cli-plugin-vuetify": "^0.6.3",
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2",
+    "webpack": "^4.41.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "plugins": [
+      "vue"
+    ],
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "warn",
+        {
+          "#": "prettier config in here :)",
+          "singleQuote": true,
+          "semi": false,
+          "trailingComma": "none",
+          "no-unused-vars": false,
+          "vue/no-use-v-if-with-v-for": [
+            "warn",
+            {
+              "allowUsingIterationVar": true
+            }
+          ],
+          "vue/require-v-for-key": false
+        }
+      ]
+    },
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ]
+}

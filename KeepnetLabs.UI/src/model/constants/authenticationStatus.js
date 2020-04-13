@@ -1,0 +1,8 @@
+const AuthenticationStatus = {
+  EXPIRED: 'EXPIRED',
+  UNAUTHENTICATED: 'UNAUTHENTICATED',
+  AUTHENTICATED: 'AUTHENTICATED',
+  REQUIRETWOSTEP: 'REQUIRETWOSTEP'
+}
+
+export default AuthenticationStatus
