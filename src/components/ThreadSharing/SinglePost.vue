@@ -25,8 +25,8 @@
               <v-btn
                 v-if="toggle[postIndex]"
                 @click.native="getPostDetails(post.CommunityPostId, postIndex, false)"
-                :id="'single-post-collapse' + post.CommunityPostId"
-                :key="'single-post-collapse' + post.CommunityPostId"
+                :id="'single-post-collapse' + post.Id"
+                :key="'single-post-collapse' + post.Id"
                 outlined
                 rounded
                 medium
@@ -36,8 +36,8 @@
               <v-btn
                 v-else
                 @click.native="getPostDetails(post.CommunityPostId, postIndex, true)"
-                :id="'single-post-details' + post.CommunityPostId"
-                :key="'single-post-details' + post.CommunityPostId"
+                :id="'single-post-details' + post.Id"
+                :key="'single-post-collapse' + post.Id"
                 outlined
                 rounded
                 medium
@@ -49,7 +49,7 @@
         </div>
         <v-menu v-if="post.IsPreview" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
-            <v-btn :id="'single-post-dots' + post.CommunityPostId" icon color="blue" v-on="on">
+            <v-btn :id="'single-post-dots' + post.Id" icon color="blue" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
@@ -117,7 +117,7 @@
                 <v-list-item
                   :id="'delete-btn' + post.CommunityPostId"
                   v-if="canDelete(post.CompanyId)"
-                  @click="deleteIncident(post.CommunityPostId, post.Title, post.CommunityId)"
+                  @click="deleteIncident(post.CommunityPostId)"
                 >
                   <v-list-item-icon>
                     <v-icon>mdi-delete</v-icon>
@@ -131,6 +131,7 @@
           </div>
         </v-menu>
       </div>
+
       <div class="ts-user-comp">
         <div :id="'post-details' + post.CommunityPostId" class="ts-user-comp-detail">
           by
@@ -138,14 +139,10 @@
             post.CreateUserName
           }}</a>
           <a v-else href="#" class="pl-1 pr-1">Okan Yıldız</a> from
-          <a :id="post.CompanyName" v-if="post.CompanyName" href="#" class="pl-1 pr-1">{{
+          <a :id="post.CompanyName" v-if="post.CompanyName" href="#" class="pl-1">{{
             post.CompanyName
           }}</a>
-          <a v-else class="pl-1 pr-1">Company Name</a> on
-          <a :id="post.CommunityName" v-if="post.CommunityName" href="#" class="pl-1">{{
-            post.CommunityName
-          }}</a>
-          <a v-else class="pl-1 pr-1">Community Name</a>
+          <a v-else class="pl-1">Company Name</a>
         </div>
         <div class="ts-user-date">
           <span :id="'date' + post.CreateDate" v-if="post.CreateDate">{{
@@ -720,7 +717,7 @@
               :disabled="!isJoined(postDetail.Data.CommunityId)"
               @click="userLikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
               :class="{ 'active-act': userLiked }"
-              :id="'like-btn' + postDetail.Data.CommunityPostId"
+              :id="'like-btn' + postDetail.Data.CommunityId"
             >
               <v-icon>mdi-thumb-up</v-icon>
               Useful {{ postDetail.Data.LikeCount }}
@@ -730,13 +727,13 @@
               :disabled="!isJoined(postDetail.Data.CommunityId)"
               @click="userUnlikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
               color="#2196f3"
-              :id="'unlike-btn' + postDetail.Data.CommunityPostId"
+              :id="'unlike-btn' + postDetail.Data.CommunityId"
             >
               <v-icon class="active-act">mdi-thumb-up</v-icon>
               Useful {{ postDetail.Data.LikeCount }}
             </v-btn>
             <v-btn
-              :id="'comments-btn' + postDetail.Data.CommunityPostId"
+              :id="'comments-btn' + postDetail.Data.CommentCount"
               :class="{ 'active-act': commentOpened }"
               @click="commentOpened = !commentOpened"
             >
@@ -756,7 +753,7 @@
                 :rules="[rules.regex, rules.required]"
               ></v-text-field>
               <v-btn
-                :id="'single-post-send-comment' + postDetail.Data.CommunityPostId"
+                id="single-post-send-comment"
                 :disabled="!isJoined(postDetail.Data.CommunityId) || !regexChar(addCommentValue)"
                 @click="
                   addPostComment(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)
@@ -916,13 +913,8 @@ export default {
               var els = document.querySelectorAll('[href="' + a.Value + '"]')
               for (var i = 0, l = els.length; i < l; i++) {
                 var el = els[i]
-                el.setAttribute('target', '_blank')
                 if (!a.IsShow) {
-                  if (!el.hasChildNodes()) {
-                    el.innerHTML = 'hidden by owner'
-                  } else {
-                    el.lastChild.innerHTML = 'hidden by owner'
-                  }
+                  el.innerHTML = 'hidden by owner'
                   el.setAttribute('href', '#')
                 }
                 if (a.IsMalicious) {
@@ -969,7 +961,7 @@ export default {
     },
     getPostDetails(postId, ind, bool) {
       const postDetailObj = {
-        companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
+        companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
         communPostId: postId
       }
       this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
@@ -989,28 +981,25 @@ export default {
         newToggle[ind] = bool
         this.$store.commit('threadSharing/SET_COLLAPSES', newToggle)
       }
-      if (this.bool === true) {
-      }
     },
     userLikePost(postId, communId) {
       if (this.isJoined(communId)) {
         const likeObj = {
           communPostId: postId,
           createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
+          companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
           communId: communId
         }
         this.$store.dispatch('threadSharing/likePost', likeObj)
         this.post.LikeCount = this.post.LikeCount + 1
         this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount + 1
-        const refThis = this
         setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+          this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
           const yourPostsObj = {
             compId: localStorage.getItem('companyId'),
             userId: localStorage.getItem('userId')
           }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+          this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
         }, 500)
       }
     },
@@ -1019,20 +1008,19 @@ export default {
         const unlikeObj = {
           communPostId: postId,
           createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
+          companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
           communId: communId
         }
         this.$store.dispatch('threadSharing/unlikePost', unlikeObj)
         this.post.LikeCount = this.post.LikeCount - 1
         this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount - 1
-        const refThis = this
         setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+          this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
           const yourPostsObj = {
             compId: localStorage.getItem('companyId'),
             userId: localStorage.getItem('userId')
           }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+          this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
         }, 500)
       }
     },
@@ -1041,7 +1029,7 @@ export default {
         communPostId: postId,
         comment: this.addCommentValue,
         createUserId: this.userGetter.id || localStorage.getItem('userId'),
-        companyId: this.getSelectedCompany.companyId,
+        companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
         communId: communId
       }
       if (
@@ -1052,27 +1040,14 @@ export default {
       ) {
         this.$store.dispatch('threadSharing/addComment', commentObj)
         this.addCommentValue = ''
-        const refThis = this
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
       }
     },
     editIncident(postId) {
       this.$store.commit('threadSharing/SET_INCIDENT_EDIT_STATUS', true)
       this.$emit('edit-incident', postId)
     },
-    deleteIncident(postId, name, postCommunityId) {
-      this.$emit('delete-incident', {
-        postId: postId,
-        name: name,
-        postCommunityId: postCommunityId
-      })
+    deleteIncident(postId) {
+      this.$emit('delete-incident', postId)
     },
     isJoined(communId) {
       if (this.myCommunities && this.myCommunities.length) {
@@ -1139,7 +1114,6 @@ export default {
   }
 }
 .ts-header {
-  align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -1359,20 +1333,8 @@ export default {
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.87);
 
-  a:not(:last-child) {
+  a {
     text-decoration: none;
-    display: block;
-    width: max-content;
-    min-width: max-content;
-  }
-  a:last-child {
-    width: unset !important;
-    max-width: 100%;
-    display: block;
-    overflow: hidden;
-    text-decoration: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .ts-user-date {
@@ -1465,7 +1427,6 @@ export default {
 }
 ::v-deep .v-expansion-panel-content {
   border-radius: 20px !important;
-  display: block !important;
   font-family: 'Open Sans', sans-serif !important;
 }
 ::v-deep .v-expansion-panel-content__wrap {
@@ -2036,8 +1997,6 @@ export default {
 }
 .malicious-icon {
   font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
 }
 ::v-deep .red-malicious-alert {
   border: unset !important;
@@ -2045,8 +2004,8 @@ export default {
   border-bottom-color: transparent !important;
   border-image: none !important;
   border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
+  color: rgb(245, 108, 108) !important;
+  caret-color: rgb(245, 108, 108) !important;
   text-decoration: unset !important;
   text-decoration-color: transparent !important;
   font-size: 18px !important;

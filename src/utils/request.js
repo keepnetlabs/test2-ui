@@ -27,7 +27,7 @@ service.interceptors.response.use(
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()
-      if (router.currentRoute.name != 'login') router.push('/login')
+      router.push('/login')
     }
     return Promise.reject(error)
   }

@@ -421,19 +421,9 @@
       <div class="footer-actions">
         <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
         <v-btn v-if="step === 1" class="create-btn" text color="#2196f3" @click="onContinue"
-          >NEXT</v-btn
+          >Continue</v-btn
         >
-        <div v-if="step === 2">
-          <v-btn
-            style="border: 1px solid #2196f3 !important; border-radius: 20px"
-            class="mr-4"
-            text
-            color="#2196f3"
-            @click="step = 1"
-            >BACK</v-btn
-          >
-          <v-btn class="create-btn" text color="#2196f3" @click="onStart">START</v-btn>
-        </div>
+        <v-btn v-else class="create-btn" text color="#2196f3" @click="onStart">Start</v-btn>
       </div>
     </div>
   </div>

@@ -56,7 +56,7 @@
     </v-overlay>
 
     <v-card class="card">
-      <v-list-item v-if="title.icon" class="pl-2 pr-0 pb-8">
+      <v-list-item v-if="title && title.icon" class="pl-2 pr-0 pb-8">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">{{ title.icon }}</v-icon>
         </div>
@@ -97,11 +97,11 @@
           >
             <div class="settings-header">
               <span v-if="multipleSelection.length === 1" class="settings-span">
-                {{ multipleSelection[0][columns[0].property] }}
+                {{
+                multipleSelection[0][columns[0].property]
+                }}
               </span>
-              <span v-else class="settings-span">
-                {{ multipleSelection.length }} Items Selected
-              </span>
+              <span v-else class="settings-span">{{ multipleSelection.length }} Items Selected</span>
               <div class="edit-actions">
                 <v-btn icon v-if="!editMode" @click="editMode = true">
                   <v-icon class="close-icon">mdi-pencil</v-icon>
@@ -116,8 +116,7 @@
                   dense
                   @click="editMode = false"
                   color="#f56c6c"
-                  >CANCEL</v-btn
-                >
+                >CANCEL</v-btn>
                 <v-btn
                   class="pl-1 pr-1"
                   v-if="editMode"
@@ -125,8 +124,7 @@
                   dense
                   @click="saveEditedOnes()"
                   color="#2196f3"
-                  >SAVE</v-btn
-                >
+                >SAVE</v-btn>
               </div>
             </div>
             <div
@@ -146,9 +144,7 @@
                   :key="i"
                 >
                   <label v-if="i !== 'progress' || !editMode">{{ i }}</label>
-                  <span v-if="!editMode && !Array.isArray(item[i]) && i !== 'progress'">{{
-                    obj
-                  }}</span>
+                  <span v-if="!editMode && !Array.isArray(item[i]) && i !== 'progress'">{{ obj }}</span>
                   <v-text-field
                     :label="JSON.stringify(item[i])"
                     dense
@@ -277,7 +273,7 @@
               </v-menu>
             </v-btn>
             <v-menu
-              v-if="addUsers && addUsers.show && !addUsers.popUp"
+              v-if="addUsers && addUsers.show && !addUsers.popUp && !addUsers.action"
               offset-y
               transition="scale-transition"
             >
@@ -304,6 +300,13 @@
               class="btn-hover mr-1"
             >
               <v-icon @click="isWantToAddUsers = true">mdi-plus-circle</v-icon>
+            </v-btn>
+            <v-btn
+              icon
+              class="btn-hover mr-1"
+              v-else-if="addUsers && addUsers.show && addUsers.action"
+            >
+              <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus-circle</v-icon>
             </v-btn>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
@@ -418,17 +421,18 @@
             v-if="!allHidden"
             default-expand-all
           >
-            <el-table-column
-              v-if="selectable"
-              type="selection"
-              width="60"
-              align="center"
-            ></el-table-column>
+            <el-table-column v-if="selectable" type="selection" width="60" align="center"></el-table-column>
             <el-table-column
               v-for="(col, ind) of columns"
               :key="'company' + ind"
               v-if="col.type === 'text' && col.show"
-              :class-name="col.property === 'company' ? 'company-cell' : ''"
+              :class-name="[
+                col.property === 'startDate' ||
+                col.property === 'endDate' ||
+                col.property === 'expireDate'
+                  ? 'date-format'
+                  : ''
+              ]"
               :sortable="col.sortable"
               :prop="col.property"
               :fixed="col.fixed"
@@ -436,13 +440,88 @@
               :align="col.align"
               :width="col.width || ''"
               :minWidth="col.minWidth || ''"
-              show-overflow-tooltip
+              :maxWidth="col.maxWidth || ''"
             >
               <template slot-scope="scope">
-                <span v-if="scope.row && scope.row[col.property]">{{
+                <span v-if="scope.row && scope.row[col.property]">
+                  {{
                   scope.row[col.property]
-                }}</span>
+                  }}
+                </span>
                 <span v-else>Empty</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="(col, ind) of columns"
+              :key="'company' + ind"
+              v-if="col.type === 'array' && col.show"
+              :class-name="[
+                col.property === 'startDate' ||
+                col.property === 'endDate' ||
+                col.property === 'expireDate'
+                  ? 'date-format'
+                  : ''
+              ]"
+              :sortable="col.sortable"
+              :prop="col.property"
+              :fixed="col.fixed"
+              :label="col.label"
+              :align="col.align"
+              :width="col.width || ''"
+              :minWidth="col.minWidth || ''"
+              :maxWidth="col.maxWidth || ''"
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row && scope.row[col.property]">
+                  {{
+                  scope.row[col.property][0]
+                  }}
+                  <v-tooltip
+                    v-if="scope.row[col.property].length > 1"
+                    bottom
+                    opacity="1"
+                    max-width="230"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <div v-on="on" class="external-data">+{{scope.row[col.property].length-1}}</div>
+                    </template>
+                    <p
+                      class="tooltip-line"
+                      v-for="(item,index) in scope.row[col.property]"
+                      :key="index"
+                    >
+                      <span>{{item}}</span>
+                    </p>
+                  </v-tooltip>
+                </span>
+                <span v-else>Empty</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="(col, ind) of columns"
+              :key="'company' + ind"
+              v-if="col.type === 'attachment' && col.show"
+              :class-name="[
+                col.property === 'startDate' ||
+                col.property === 'endDate' ||
+                col.property === 'expireDate'
+                  ? 'date-format'
+                  : ''
+              ]"
+              :sortable="col.sortable"
+              :prop="col.property"
+              :fixed="col.fixed"
+              :label="col.label"
+              :align="col.align"
+              :width="col.width || ''"
+              :minWidth="col.minWidth || ''"
+              :maxWidth="col.maxWidth || ''"
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row && scope.row[col.property]>0">
+                  <v-icon color="#757575">mdi-paperclip</v-icon>
+                </span>
+                <span v-else></span>
               </template>
             </el-table-column>
             <el-table-column
@@ -481,6 +560,49 @@
             <el-table-column
               v-for="(col, ind) of columns"
               :key="col.property + ind"
+              v-if="col.type === 'detected' && col.show"
+              :sortable="col.sortable"
+              :prop="col.property"
+              :fixed="col.fixed"
+              :label="col.label"
+              :align="col.align"
+              :width="col.width || ''"
+              :minWidth="col.minWidth || ''"
+            >
+              <template slot-scope="scope">
+                <v-btn
+                  :class="[
+                    'btn-status',
+                    scope.row.detected === 'Pending' ? 'btn-pending' : '',
+                    scope.row.detected === 'Clean' ? 'btn-pending' : '',
+                    scope.row.detected === 'Active' ? 'btn-active' : '',
+                    scope.row.detected === 'Inactive' ? 'btn-inactive' : '',
+                    scope.row.detected === 'Warning' ? 'btn-warning' : '',
+                    scope.row.detected === 'Malicious' ? 'btn-warning' : '',
+                    scope.row.detected === 'Cancelled' ? 'btn-cancelled' : '',
+                    scope.row.detected === 'Phishing' ? 'btn-cancelled' : '',
+                    scope.row.detected === 'Idle' ? 'btn-cancelled' : '',
+                    scope.row.detected === 'None' ? 'btn-none' : '',
+                    scope.row.detected === 'Quedued' ? 'btn-none' : '',
+                    scope.row.detected === 'Running' ? 'btn-primary' : '',
+                    scope.row.detected === 'Expired' ? 'btn-warning' : '',
+                    scope.row.detected === 'Completed' ? 'btn-success' : '',
+                    scope.row.detected === 'Cancelled' ? 'btn-cancelled' : '',
+                    scope.row.detected === 'No Match' ? 'btn-no_match' : '',
+                    scope.row.detected === 'Finished' ? 'btn-success' : '',
+                    scope.row.detected === 'N/A' ? 'btn-none' : '',
+                  ]"
+                  @click.native.prevent="deleteRow(scope.$index, tableData)"
+                  block
+                  rounded
+                  v-if="scope.row && scope.row[col.property]"
+                >{{ scope.row.detected }}</v-btn>
+                <span v-else>Empty</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="(col, ind) of columns"
+              :key="col.property + ind"
               v-if="col.type === 'progress' && col.show"
               :sortable="col.sortable"
               :prop="col.property"
@@ -491,11 +613,10 @@
               :minWidth="col.minWidth || ''"
             >
               <template slot-scope="scope">
-                <div
-                  v-if="scope.row && scope.row[col.property]"
-                  style="max-width: 80px; margin: 0 auto;"
-                >
-                  <span class="progress-per">{{ scope.row.progress }}%</span>
+                <div v-if="scope.row" style="max-width: 80px; margin: 0 auto;">
+                  <span
+                    class="progress-per"
+                  >{{ scope.row.progress == '100' ? 'Completed' : scope.row.progress+"%"}}</span>
                   <v-progress-linear
                     background-color="#b3d4fc"
                     color="#2196f3"
@@ -505,9 +626,47 @@
                     :value="scope.row.progress"
                   ></v-progress-linear>
                 </div>
-                <span v-else>Empty</span>
               </template>
             </el-table-column>
+            <el-table-column
+              v-for="(col, ind) of columns"
+              :key="col.property + ind"
+              v-if="col.type === 'service' && col.show"
+              :sortable="col.sortable"
+              :prop="col.property"
+              :fixed="col.fixed"
+              :label="col.label"
+              :align="col.align"
+              :width="col.width || ''"
+              :minWidth="col.minWidth || ''"
+            >
+              <template slot-scope="scope">
+                <span v-if="scope.row && scope.row[col.property]" class="service-icon-content">
+                  <img
+                    src="../assets/img/Office.png"
+                    alt="outlook"
+                    v-if="scope.row[col.property] == 'Outlook'"
+                  />
+                  <img
+                    src="../assets/img/Word.png"
+                    alt="outlook"
+                    v-if="scope.row[col.property] == 'O365'"
+                  />
+                  <img
+                    src="../assets/img/Google.png"
+                    alt="outlook"
+                    v-if="scope.row[col.property] == 'GSuite'"
+                  />
+                  <img
+                    src="../assets/img/Exchange.png"
+                    alt="outlook"
+                    v-if="scope.row[col.property] == 'Exchange'"
+                  />
+                </span>
+                <span v-else></span>
+              </template>
+            </el-table-column>
+
             <el-table-column
               v-for="(col, ind) of columns"
               :key="col.property + ind"
@@ -531,14 +690,22 @@
                     scope.row.status === 'Warning' ? 'btn-warning' : '',
                     scope.row.status === 'Malicious' ? 'btn-warning' : '',
                     scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
-                    scope.row.status === 'Phishing' ? 'btn-cancelled' : ''
+                    scope.row.status === 'Phishing' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Idle' ? 'btn-cancelled' : '',
+                    scope.row.status === 'None' ? 'btn-none' : '',
+                    scope.row.status === 'Quedued' ? 'btn-none' : '',
+                    scope.row.status === 'Running' ? 'btn-primary' : '',
+                    scope.row.status === 'Expired' ? 'btn-warning' : '',
+                    scope.row.status === 'Completed' ? 'btn-success' : '',
+                    scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
+                    scope.row.status === 'No Match' ? 'btn-no_match' : '',
+                    scope.row.status === 'Finished' ? 'btn-success' : '',
                   ]"
                   @click.native.prevent="deleteRow(scope.$index, tableData)"
                   block
                   rounded
                   v-if="scope.row && scope.row[col.property]"
-                  >{{ scope.row.status }}</v-btn
-                >
+                >{{ scope.row.status }}</v-btn>
                 <span v-else>Empty</span>
               </template>
             </el-table-column>
@@ -558,7 +725,12 @@
                 >
                   <v-icon>{{ rowActions[0].icon }}</v-icon>
                 </v-btn>
-                <v-btn icon class="btn-hover" @click="rowAct(rowActions[0].action)" v-else>
+                <v-btn
+                  icon
+                  class="btn-hover"
+                  @click="rowAct(rowActions[0].action, scope.row)"
+                  v-else
+                >
                   <v-icon>{{ rowActions[0].icon }}</v-icon>
                 </v-btn>
                 <v-menu offset-y transition="scale-transition">
@@ -574,7 +746,7 @@
                       v-if="!act.subElements"
                       class="sub-menu-el"
                     >
-                      <v-list-item-title @click="rowAct(act.action)">
+                      <v-list-item-title @click="rowAct(act.action, scope.row)">
                         <v-icon class="pr-3">{{ act.icon }}</v-icon>
                         <span>{{ act.name }}</span>
                       </v-list-item-title>
@@ -593,9 +765,11 @@
                           </v-list-item-title>
                         </template>
                         <v-list>
-                          <v-list-item v-for="(item, ind) of act.subElements" :key="ind">{{
+                          <v-list-item v-for="(item, ind) of act.subElements" :key="ind">
+                            {{
                             item
-                          }}</v-list-item>
+                            }}
+                          </v-list-item>
                         </v-list>
                       </v-menu>
                     </v-list-item>
@@ -611,7 +785,11 @@
               minWidth="120"
             >
               <template slot-scope="scope">
-                <v-btn @click.native="rowAct(rowActions[0].action)" icon class="btn-hover">
+                <v-btn
+                  @click.native="rowAct(rowActions[0].action, scope.row)"
+                  icon
+                  class="btn-hover"
+                >
                   <v-icon>{{ rowActions[0].icon }}</v-icon>
                 </v-btn>
               </template>
@@ -624,12 +802,16 @@
               minWidth="120"
             >
               <template slot-scope="scope">
-                <v-btn @click.native="rowAct(rowActions[0].action)" icon class="btn-hover">
+                <v-btn
+                  @click.native="rowAct(rowActions[0].action, scope.row)"
+                  icon
+                  class="btn-hover"
+                >
                   <v-icon>{{ rowActions[0].icon }}</v-icon>
                 </v-btn>
                 <v-btn
-                  :disabled="scope.row.progress === '100'"
-                  @click.native="rowAct(rowActions[1].action)"
+                  :disabled="scope.row.status == 'Cancelled' || scope.row.status == 'Expired' || scope.row.status == 'Finished' || scope.row.status == 'NoMatch'"
+                  @click.native="rowAct(rowActions[1].action, scope.row)"
                   icon
                   class="btn-hover"
                 >
@@ -650,7 +832,8 @@
           <div class="empty-inline">
             <h2>{{ empty.message }}</h2>
             <p>{{ empty.subMes }}</p>
-            <v-btn class="empty-btn">
+            <v-btn class="empty-btn" v-if="empty.btn">
+              <!-- empty action -->
               <v-icon class="mr-2">{{ empty.icon }}</v-icon>
               {{ empty.btn }}
             </v-btn>
@@ -673,14 +856,14 @@
   </div>
 </template>
 <script>
-import Vue from 'vue'
-window.Vue = Vue
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en'
-import VueApexCharts from 'vue-apexcharts'
-Vue.use(ElementUI, { locale })
-import printJS from 'print-js'
+import Vue from "vue";
+window.Vue = Vue;
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+import locale from "element-ui/lib/locale/lang/en";
+import VueApexCharts from "vue-apexcharts";
+Vue.use(ElementUI, { locale });
+import printJS from "print-js";
 
 export default {
   components: {
@@ -767,7 +950,7 @@ export default {
       selectionCheckbox: false,
       selectionAll: false,
       series: [44, 55, 13, 43],
-      search: '',
+      search: "",
       isSettingsOpened: false,
       isWantToDownload: false,
       isWantToAddUsers: false,
@@ -780,141 +963,190 @@ export default {
         csv: false,
         pdf: false
       },
-      actionFixed: 'right',
+      actionFixed: "right",
       allHidden: false,
       printObj: {
-        id: 'table-container',
-        popTitle: 'Datatable Print',
-        extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
+        id: "table-container",
+        popTitle: "Datatable Print",
+        extraCss:
+          "https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css",
         extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>'
       },
       clusterChevron: false
-    }
+    };
   },
   watch: {
     tableData(data) {
-      if (!this.tableData || this.tableData.length === 0) return []
-      else return data
+      if (!this.tableData || this.tableData.length === 0) return [];
+      else return data;
     },
     firstColFixed(val) {
       if (!val) {
-        const fixedCol = this.columns.filter(c => c.fixed === 'left')
+        const fixedCol = this.columns.filter(c => c.fixed === "left");
         if (fixedCol && fixedCol.length) {
-          fixedCol[0].fixed = false
-          this.firstColFixed = false
+          fixedCol[0].fixed = false;
+          this.firstColFixed = false;
         }
       } else {
-        const disabledCol = this.columns.filter(c => c.fixed === false)
-        disabledCol[0].fixed = 'left'
-        this.firstColFixed = true
+        const disabledCol = this.columns.filter(c => c.fixed === false);
+        disabledCol[0].fixed = "left";
+        this.firstColFixed = true;
       }
     },
     lastColFixed(val) {
       if (!val) {
-        this.actionFixed = false
+        this.actionFixed = false;
       } else {
-        this.actionFixed = 'right'
+        this.actionFixed = "right";
       }
     },
     multipleSelection(selecteds) {
       if (this.countRow && this.countRow == selecteds.length) {
-        this.selectionCheckbox = true
+        this.selectionCheckbox = true;
       } else if (this.rowCount && this.rowCount == selecteds.length) {
-        this.selectionCheckbox = true
+        this.selectionCheckbox = true;
       } else {
-        this.selectionCheckbox = false
+        this.selectionCheckbox = false;
       }
     },
     columns: {
       deep: true,
       handler(val) {
-        if (!val.some(col => col.show)) this.allHidden = true
-        else this.allHidden = false
+        if (!val.some(col => col.show)) this.allHidden = true;
+        else this.allHidden = false;
       }
     }
   },
   created() {
     if (this.table.length) {
-      this.initialData = this.table
-      this.tableData = this.table
+      this.initialData = this.table;
+      this.tableData = this.table;
     }
-    this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
-    if (this.countRow) this.rowCount = this.countRow
+    this.tableData = this.tableData.slice(0, this.countRow || this.rowCount);
+    if (this.countRow) this.rowCount = this.countRow;
   },
   mounted() {
     if (window.outerWidth < 1023) {
-      this.actionFixed = false
-      const leftFixed = this.columns.filter(col => col.fixed === 'left')
+      this.actionFixed = false;
+      const leftFixed = this.columns.filter(col => col.fixed === "left");
       if (leftFixed && leftFixed.length) {
-        leftFixed[0].fixed = false
-        this.firstColFixed = false
+        leftFixed[0].fixed = false;
+        this.firstColFixed = false;
       }
-      const rightFixed = this.columns.filter(col => col.fixed === 'right')
+      const rightFixed = this.columns.filter(col => col.fixed === "right");
       if (rightFixed && rightFixed.length) {
-        rightFixed[0].fixed = false
+        rightFixed[0].fixed = false;
       }
-      this.lastColFixed = false
-      this.actionFixed = false
+      this.lastColFixed = false;
+      this.actionFixed = false;
     }
   },
   methods: {
+    addUsersAction(actionName, row) {
+      switch (actionName) {
+        case "createCommunityFromMobileInfo":
+          this.$emit("createCommunityFromMobileInfo", true);
+          break;
+        case "stopInvestigationFunc":
+          this.$emit("stopInvestigationFunc", row);
+          break;
+        case "investigationDetails":
+          this.$emit("investigationDetails", row);
+          break;
+        case "deleteInvestigationDetails":
+          this.$emit("deleteInvestigationDetailsFunction", row);
+          break;
+        case "deleteAndNotifyInvestigationDetails":
+          this.$emit("deleteAndNotifyInvestigationDetailsFunction", row);
+          break;
+        case "sendWarningMessage":
+          this.$emit("sendInvestigationdetailsWarningMessage", row);
+          break;
+        default:
+          break;
+      }
+    },
     tableRowClassName(row) {
       if (this.multipleSelection.some(r => r.id === row.row.id)) {
-        return 'selected-row'
+        return "selected-row";
       }
     },
     handleSelectionChange(val) {
       if (this.currentPage === 1) {
-        this.multipleSelection = val
+        this.multipleSelection = val;
       } else {
-        this.multipleSelection.push(val)
+        this.multipleSelection.push(val);
       }
     },
     deleteRow(index, rows) {
-      rows.splice(index, 1)
+      rows.splice(index, 1);
     },
     handleSizeChange(rows) {
-      this.rowCount = rows
+      this.rowCount = rows;
       if (this.currentPage === 1) {
-        this.tableData = this.initialData.slice(0, rows)
+        this.tableData = this.initialData.slice(0, rows);
       } else {
         this.tableData = this.initialData.slice(
           (this.currentPage - 1) * rows,
           this.currentPage * rows
-        )
+        );
       }
     },
     handleCurrentChange(pageNum) {
-      this.currentPage = pageNum
+      this.currentPage = pageNum;
       if (pageNum === 1) {
-        this.tableData = this.initialData.slice(0, this.rowCount)
+        this.tableData = this.initialData.slice(0, this.rowCount);
       } else {
         this.tableData = this.initialData.slice(
           (pageNum - 1) * this.rowCount,
           pageNum * this.rowCount
-        )
+        );
       }
     },
     toggleAll() {
-      this.$refs.elTableRef.toggleAllSelection()
+      this.$refs.elTableRef.toggleAllSelection();
     },
-    rowAct(action) {
+    rowAct(action, row, multiSelection, tableData) {
       switch (action) {
-        case 'details':
-          this.$router.push('/analysis-details')
-          break
+        case "details":
+          this.$router.push("/analysis-details");
+          break;
+        case "stopInvestigationFunc":
+          this.$emit("stopInvestigationFunc", { row });
+          break;
+        case "investigationDetails":
+          this.$emit("investigationDetails", { row });
+          break;
+        case "deleteInvestigationDetails":
+          this.$emit(
+            "deleteInvestigationDetailsFunction",
+            this.multipleSelection.length > 0 ? this.multipleSelection : row
+          );
+          break;
+        case "deleteAndNotifyInvestigationDetails":
+          this.$emit(
+            "deleteAndNotifyInvestigationDetailsFunction",
+            this.multipleSelection.length > 0 ? this.multipleSelection : row
+          );
+          break;
+        case "sendWarningMessage":
+          this.$emit(
+            "sendInvestigationdetailsWarningMessage",
+            this.multipleSelection.length > 0 ? this.multipleSelection : row
+          );
+          break;
         default:
-          return false
+          return false;
       }
     },
     printMethod() {
-      printJS('table-container', 'html')
+      printJS("table-container", "html");
     },
     addRow() {
       // Do something
     },
     clusterSelected(name, ind) {
-      this.clusterItems[ind].selected = !this.clusterItems[ind].selected
+      this.clusterItems[ind].selected = !this.clusterItems[ind].selected;
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },
@@ -922,13 +1154,13 @@ export default {
       // You should handle the Copy action in here
     },
     handleEdit(selections) {
-      if (typeof selections === 'object' && !this.multipleSelection.length) {
-        this.multipleSelection.push(selections)
+      if (typeof selections === "object" && !this.multipleSelection.length) {
+        this.multipleSelection.push(selections);
       }
       // Edit actions should handle here.
       // selections property is an array and has the selected row object data
       if (selections) {
-        this.isWantToEditRow = true
+        this.isWantToEditRow = true;
       } else {
         // Nothing selected
       }
@@ -942,32 +1174,52 @@ export default {
     multipleValues(key, val) {
       // This method controls whether selected items has same value or not
       if (this.multipleSelection && this.multipleSelection.length > 1) {
-        const refThis = this
+        const refThis = this;
         for (let a = 0; a < this.multipleSelection.length - 1; a++) {
-          let el = this.multipleSelection[a]
+          let el = this.multipleSelection[a];
           if (el[key] === refThis.multipleSelection[a + 1][key]) {
-            return false
+            return false;
           } else {
-            return true
+            return true;
           }
         }
       }
     },
     closeEditPopup() {
-      this.editMode = false
-      this.isWantToEditRow = false
-      this.multipleSelection = []
+      this.editMode = false;
+      this.isWantToEditRow = false;
+      this.multipleSelection = [];
     },
     saveEditedOnes() {
       // After user edited the row and pressed SAVE button
-      this.editMode = false
-      this.isWantToEditRow = false
-      this.multipleSelection = []
+      this.editMode = false;
+      this.isWantToEditRow = false;
+      this.multipleSelection = [];
     }
   }
-}
+};
 </script>
 <style lang="scss" scoped>
+.external-data {
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  border-radius: 4px;
+  background-color: #2196f3;
+  color: #ffffff;
+  width: 26px;
+  height: 25px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: default;
+}
+.service-icon-content {
+  img {
+    max-width: 16px;
+    max-height: 16px;
+  }
+}
 .wrapper {
   border-radius: 20px;
   padding-bottom: 24px;
@@ -996,9 +1248,10 @@ export default {
       height: auto;
       position: relative;
       display: block;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       border-radius: 12px;
-      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
+        0 1px 1px 0 rgba(243, 243, 243, 0.14),
         0 1px 1px -1px rgba(204, 204, 204, 0.12);
       padding: 16px 0;
 
@@ -1015,7 +1268,8 @@ export default {
         top: 40px;
         border: 1px solid #2196f3;
         border-radius: 12px;
-        box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+        box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
+          0 1px 1px 0 rgba(243, 243, 243, 0.14),
           0 1px 1px -1px rgba(204, 204, 204, 0.12);
         padding: 24px;
         position: absolute;
@@ -1046,7 +1300,7 @@ export default {
           }
 
           span {
-            font-family: 'Open Sans', sans-serif !important;
+            font-family: "Open Sans", sans-serif !important;
             font-size: 24px;
             font-weight: normal;
             font-stretch: normal;
@@ -1078,7 +1332,9 @@ export default {
                 border: 1px solid rgba(205, 205, 205, 0.5);
                 border-radius: 8px !important;
               }
-              ::v-deep .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
+              ::v-deep
+                .v-text-field.v-text-field--solo.v-input--dense
+                > .v-input__control {
                 min-height: 32px !important;
               }
               ::v-deep .v-text-field__details {
@@ -1097,7 +1353,7 @@ export default {
               white-space: nowrap;
               display: block;
               overflow: hidden;
-              font-family: 'Open Sans', sans-serif !important;
+              font-family: "Open Sans", sans-serif !important;
               font-size: 12px;
               font-weight: 600;
             }
@@ -1107,7 +1363,7 @@ export default {
               white-space: nowrap;
               display: block;
               overflow: hidden;
-              font-family: 'Open Sans', sans-serif !important;
+              font-family: "Open Sans", sans-serif !important;
               font-size: 12px;
             }
           }
@@ -1135,7 +1391,7 @@ export default {
               margin-right: 54px;
 
               label {
-                font-family: 'Open Sans', sans-serif !important;
+                font-family: "Open Sans", sans-serif !important;
                 font-size: 12px;
                 font-weight: 600;
                 font-stretch: normal;
@@ -1145,7 +1401,7 @@ export default {
                 color: rgba(0, 0, 0, 0.87);
               }
               span {
-                font-family: 'Open Sans', sans-serif !important;
+                font-family: "Open Sans", sans-serif !important;
                 font-size: 14px;
                 color: rgba(0, 0, 0, 0.87);
               }
@@ -1155,7 +1411,7 @@ export default {
 
         .sub-header {
           display: block;
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 16px;
           font-weight: normal;
           font-stretch: normal;
@@ -1205,6 +1461,10 @@ export default {
         border-top: 1px solid transparent;
         padding: 2px 0 !important;
         height: 45px !important;
+        z-index: 9px;
+        /* &.date-format {
+          text-align: left !important;
+        }*/
       }
       ::v-deep .el-table th {
         border-bottom: 1px solid #9e9e9e;
@@ -1226,13 +1486,13 @@ export default {
       }
       ::v-deep .el-table td > .cell {
         color: #212121;
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         white-space: nowrap !important;
         width: 100%;
       }
       ::v-deep .el-table th > .cell {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 12px;
         font-weight: 600;
         line-height: 1.3rem;
@@ -1248,7 +1508,7 @@ export default {
           border-color: #2196f3 !important;
         }
         .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
-          content: '';
+          content: "";
           position: absolute;
           display: block;
           background-color: #fff;
@@ -1285,7 +1545,7 @@ export default {
         margin-top: 5px !important;
       }
       .progress-per {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 10px;
         font-weight: normal;
         font-stretch: normal;
@@ -1299,7 +1559,7 @@ export default {
         border-radius: 18px !important;
         box-shadow: unset !important;
         color: #fff;
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px !important;
         font-weight: 600;
         font-stretch: normal;
@@ -1328,6 +1588,19 @@ export default {
       .btn-cancelled {
         background-color: #f56c6c;
       }
+      .btn-primary {
+        background-color: #2196f3;
+      }
+      .btn-none,
+      .btn-quedued {
+        background-color: #00bcd4;
+      }
+      .btn-success {
+        background-color: #43a047;
+      }
+      .btn-no_match {
+        background-color: #757575;
+      }
       ::v-deep .selected-row {
         background-color: #bde0ff !important;
       }
@@ -1343,7 +1616,7 @@ export default {
         z-index: 9;
 
         .selection-span {
-          font-family: 'Open Sans', sans-serif;
+          font-family: "Open Sans", sans-serif;
           font-size: 12px;
           font-weight: 600;
           font-stretch: normal;
@@ -1401,7 +1674,7 @@ export default {
         }
 
         ::v-deep label {
-          font-family: 'Open Sans', sans-serif;
+          font-family: "Open Sans", sans-serif;
           font-size: 13px !important;
           font-weight: 600;
           font-stretch: normal;
@@ -1443,7 +1716,7 @@ export default {
       padding-left: 0 !important;
     }
     ::v-deep .el-pager > li {
-      font-family: 'Open Sans', sans-serif;
+      font-family: "Open Sans", sans-serif;
       font-size: 12px;
       min-width: 13px;
     }
@@ -1455,7 +1728,7 @@ export default {
 }
 ::v-deep .tooltip-line {
   font-size: 12px !important;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   margin-bottom: 3px !important;
 }
 
@@ -1465,7 +1738,7 @@ export default {
 }
 
 .v-list-item__subtitle {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 14px;
   font-weight: normal;
   font-style: normal;
@@ -1481,7 +1754,7 @@ export default {
 }
 
 .v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 24px;
   font-weight: normal;
   font-style: normal;
@@ -1551,7 +1824,7 @@ export default {
   color: rgba(0, 0, 0, 0.87) !important;
 }
 .tooltip-span {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 12px;
   font-weight: normal;
   font-stretch: normal;
@@ -1583,7 +1856,7 @@ export default {
     justify-content: center;
 
     h2 {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 24px;
       line-height: 1.29;
       font-weight: 400 !important;
@@ -1592,7 +1865,7 @@ export default {
       margin-bottom: 0 !important;
     }
     p {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 16px;
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 8px !important;
@@ -1618,7 +1891,7 @@ export default {
   left: unset !important;
   right: 220px !important;
 }
-::v-deep .el-table [class*='el-table__row--level'] .el-table__expand-icon {
+::v-deep .el-table [class*="el-table__row--level"] .el-table__expand-icon {
   float: right !important;
   margin-top: 2px;
 
@@ -1651,13 +1924,20 @@ export default {
   height: 34px;
 }
 ::v-deep .cluster-label {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 12px;
   font-weight: 600;
 }
 .cluster-span {
   padding-right: 8px;
 }
+/*.date-format {
+  text-align: left !important;
+  span {
+    text-overflow: ellipsis;
+    white-space: normal;
+  }
+}*/
 </style>
 <!--
   DataTable COMPONENT

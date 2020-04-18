@@ -114,7 +114,7 @@
                 style="padding: 0 13px !important;"
                 block
                 rounded
-                @click="$router.push('/investigations')"
+                @click.native="$router.push('/investigations')"
               >
                 All Investigations
                 <v-icon class="pl-2">mdi-arrow-right</v-icon>

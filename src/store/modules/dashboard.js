@@ -312,7 +312,6 @@ const dashboard = {
         root: true
       })
       commit('common/SET_ERROR_STATE', false, { root: true })
-
       router.push('/login')
       logoutUser()
     },

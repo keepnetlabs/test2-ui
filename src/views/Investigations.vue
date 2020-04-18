@@ -1,5 +1,6 @@
 <template>
   <div class="investigations">
+    <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
     <v-overlay
       id="add-new-community-overlay"
       :value="isWantToAddNewCommunity"
@@ -8,34 +9,37 @@
       :z-index="999"
       color="white"
     >
-      <new-investigation @closeAdd="onAddClose" />
+      <new-investigation @closeAdd="onAddClose" @refreshDatatable="refreshDatatable" />
     </v-overlay>
-    <div :key="tableData.length">
-      <datatable
-        :refName="'investigationTable'"
-        :columns="columns"
-        :table="tableData"
-        :title="title"
-        :countRow="5"
-        :pageSizes="pageSizes"
-        :defaultSort="'date'"
-        :selectable="true"
-        :filterable="true"
-        :options="true"
-        :rowActions="rowActions"
-        :addUsers="addUsers"
-        :empty="iEmpty"
-        :selectEvent="selectEvent"
-        :chartOptions="chartOptions"
-        @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
-      />
-    </div>
+    <datatable
+      id="investigationList"
+      :refName="'investigationTable'"
+      :columns="columns"
+      :table="tableData"
+      :title="title"
+      :countRow="5"
+      :pageSizes="pageSizes"
+      :defaultSort="'date'"
+      :selectable="false"
+      :filterable="true"
+      :options="true"
+      :rowActions="rowActions"
+      :addUsers="addUsers"
+      :empty="iEmpty"
+      :selectEvent="selectEvent"
+      :chartOptions="chartOptions"
+      :sizeable="true"
+      @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
+      @stopInvestigationFunc="stopInvestigationFunc($event)"
+      @investigationDetails="investigationDetails($event)"
+      v-if="showDatatable"
+    />
   </div>
 </template>
 <script>
-import Datatable from '../components/DataTable'
-import newInvestigation from '../components/Investigation/NewInvestigation'
-import { mapActions, mapGetters } from 'vuex'
+import Datatable from "../components/DataTable";
+import newInvestigation from "../components/Investigation/NewInvestigation";
+import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     Datatable,
@@ -43,115 +47,134 @@ export default {
   },
   data: () => ({
     isWantToAddNewCommunity: false,
-    data: [],
+    showDatatable: false,
     columns: [
       // Should be defined to show the table
       {
-        property: 'incident',
-        align: 'left',
+        property: "incident",
+        align: "left",
         editable: false,
-        label: 'Incident',
-        fixed: 'left',
+        label: "Incident",
+        fixed: "left",
         sortable: true,
         show: true,
-        type: 'text',
-        width: 200
+        type: "text",
+        width: 200,
+        minWidth: 200
       },
       {
-        property: 'detected',
-        align: 'left',
+        property: "detected",
+        align: "center",
         editable: false,
-        label: 'Detected',
+        label: "Detected",
         fixed: false,
         sortable: true,
         show: true,
-        type: 'status',
-        width: 200
+        type: "detected",
+        width: 120,
+        minWidth: 120
       },
       {
-        property: 'source',
-        align: 'left',
+        property: "source",
+        align: "left",
         editable: false,
-        label: 'Source',
+        label: "Source",
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text',
-        width: 120
+        type: "text",
+        width: 200,
+        minWidth: 200
       },
       {
-        property: 'status',
-        align: 'left',
+        property: "status",
+        align: "center",
         editable: false,
-        label: 'Status',
+        label: "Status",
         fixed: false,
         sortable: true,
         show: true,
-        type: 'status',
-        width: 100
+        type: "status",
+        width: 120,
+        minWidth: 120
       },
       {
-        property: 'expiryDate',
-        align: 'center',
+        property: "startDate",
+        align: "left",
         editable: false,
-        label: 'Expiry Date',
+        label: "Start Date",
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: "text",
+        width: 160,
+        minWidth: 160
+      },
+      {
+        property: "expireDate",
+        align: "left",
+        editable: false,
+        label: "Expiry Date",
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: "text",
+        width: 160,
+        minWidth: 160
+      },
+      {
+        property: "userStatus",
+        align: "center",
+        editable: false,
+        label: "User Status",
         fixed: false,
         sortable: false,
         show: true,
-        type: 'date',
-        width: 120
+        type: "chart",
+        width: 90,
+        minWidth: 90
       },
       {
-        property: 'userStatus',
-        align: 'center',
+        property: "progress",
+        align: "center",
         editable: false,
-        label: 'User Status',
+        label: "Progress",
         fixed: false,
         sortable: false,
         show: true,
-        type: 'chart',
-        width: 130
-      },
-      {
-        property: 'progress',
-        align: 'center',
-        editable: false,
-        label: 'Progress',
-        fixed: false,
-        sortable: false,
-        show: true,
-        type: 'progress',
-        width: 85
+        type: "progress",
+        width: 90,
+        minWidth: 90
       }
     ],
     title: {
-      icon: 'mdi-tab-unselected',
-      title: 'Investigations',
-      subTitle: ''
+      icon: "mdi-tab-unselected",
+      title: "Investigations",
+      subTitle: ""
     },
     pageSizes: [5, 10, 25, 50, 100],
     rowActions: [
       {
-        name: 'details',
-        icon: 'mdi-text-box-multiple',
-        action: 'investigationDetails'
+        name: "details",
+        icon: "mdi-text-box-multiple",
+        action: "investigationDetails"
       },
       {
-        name: 'Stop Action',
-        icon: 'mdi-stop',
-        action: 'stopInvestigation'
+        name: "Stop Action",
+        icon: "mdi-stop",
+        action: "stopInvestigationFunc"
       }
     ],
     addUsers: {
       show: true,
       popUp: false,
-      action: 'createCommunityFromMobileInfo'
+      action: "createCommunityFromMobileInfo"
     },
     iEmpty: {
-      message: 'You do not have any users added, yet',
-      subMes: 'Start now',
-      btn: 'Add Users',
-      icon: 'mdi-account-plus'
+      message: "No investigation has been started, yet",
+      subMes: "Start new Investigation",
+      btn: "Add Users",
+      icon: "mdi-account-plus"
     },
     selectEvent: {
       clipboard: true,
@@ -163,12 +186,12 @@ export default {
       chart: {
         width: 60,
         height: 60,
-        type: 'pie',
+        type: "pie",
         offsetX: -1,
         offsetY: 1
       },
-      labels: ['Team A', 'Team B'],
-      colors: ['#3f51b5', '#00bcd4'],
+      labels: ["Team A", "Team B"],
+      colors: ["#3f51b5", "#00bcd4"],
       legend: {
         show: false
       },
@@ -180,20 +203,21 @@ export default {
       }
     },
     bodyData: {
+      // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
-      pageSize: 3,
-      orderBy: 'ExpireDate',
-      ascending: true,
+      pageSize: 500,
+      orderBy: "StartDate",
+      ascending: false,
       filter: {
-        Condition: 'AND',
+        Condition: "AND",
         FilterGroups: [
           {
-            Condition: 'AND',
+            Condition: "AND",
             FilterItems: [
               {
-                FieldName: 'Status',
-                Operator: 'Include',
-                Value: 'Cancelled,Running,Idle'
+                FieldName: "Status",
+                Operator: "Include",
+                Value: "Cancelled,Running,Idle"
               }
             ],
             FilterGroups: []
@@ -203,27 +227,51 @@ export default {
     }
   }),
   methods: {
+    refreshDatatable() {
+      this.$store.dispatch(
+        "investigations/getInvestigationList",
+        this.bodyData
+      ); //module name than method name
+    },
     onAddClose() {
+      // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true
+        this.isMobileInfo = true;
       }
-      this.isWantToAddNewCommunity = false
+      this.isWantToAddNewCommunity = false;
     },
     createCommunityFromMobileInfo() {
-      this.isWantToAddNewCommunity = true
+      // open new investigation overlay
+      this.isWantToAddNewCommunity = true;
+    },
+    investigationDetails(value) {
+      this.$router.push({
+        name: "Investigation Details",
+        params: { id: value.row.resourceId }
+      });
+    },
+    stopInvestigationFunc(value) {
+      let store = this.$store;
+      this.$store
+        .dispatch("investigations/cancelInvestigation", value.row.resourceId)
+        .catch(() => {})
+        .then(() => {
+          store.dispatch("investigations/SET_INVESTIGATIONLISTEMPY", []);
+          this.refreshDatatable();
+        });
     }
   },
   computed: {
     ...mapGetters({
-      tableData: 'investigations/investigationListGetter' // for using getters
+      // get table data via vuex.
+      tableData: "investigations/investigationListGetter" // for using getters
     })
   },
   mounted() {
-    // let editBodyData = this.bodyData;
-    // editBodyData.orderBy =
-    this.$store.dispatch('investigations/getInvestigationList', this.bodyData) //module name than method name
+    // triggered to relevant action at investigations.js
+    this.$store.dispatch("investigations/getInvestigationList", this.bodyData).finally(() => this.showDatatable = true); //module name than method name
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 .investigations {

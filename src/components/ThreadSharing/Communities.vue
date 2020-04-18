@@ -38,20 +38,14 @@
             </v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Leave Community?</v-list-item-title>
+            <v-list-item-title class="v-card-headline">Leave from the Community?</v-list-item-title>
             <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
               >{{ selectedCommunName }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <div class="delete-dialog-body">
-          <span v-if="selectedCommunPrivacy" class="delete-info">
-            You are leaving "{{ selectedCommunName }}". You won’t be able to access this community
-          </span>
-          <span v-else class="delete-info">
-            You are leaving "{{ selectedCommunName }}". You won’t be able to post incidents to this
-            community
-          </span>
+          You are leaving {{ selectedCommunName }}. You won’t be able access this community
         </div>
         <v-card-actions class="pa-0 pt-4">
           <v-spacer></v-spacer>
@@ -159,7 +153,7 @@
                     rounded
                     medium
                     class="join-button"
-                    @click="requestJoin(comp.CommunityId, comp.IsPrivate, comp.Name)"
+                    @click="requestJoin(comp.CommunityId, comp.IsPrivate)"
                   >
                     <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus </v-icon>
                     REQUEST TO JOIN
@@ -170,7 +164,7 @@
                     rounded
                     medium
                     class="join-button"
-                    @click="requestJoin(comp.CommunityId, comp.IsPrivate, comp.Name)"
+                    @click="requestJoin(comp.CommunityId, comp.IsPrivate)"
                   >
                     <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus </v-icon>
                     JOIN
@@ -178,8 +172,7 @@
                 </div>
                 <v-menu
                   v-if="
-                    isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId) ||
-                      isJoined(comp.CommunityId)
+                    companyId == comp.CommunityCompany[0].CompanyId || isJoined(comp.CommunityId)
                   "
                   offset-y
                   transition="scale-transition"
@@ -225,14 +218,7 @@
                             isJoined(comp.CommunityId) &&
                               !isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
                           "
-                          @click="
-                            openLeaveDialog(
-                              comp.CommunityId,
-                              comp.CreateUserId,
-                              comp.Name,
-                              comp.IsPrivate
-                            )
-                          "
+                          @click="openLeaveDialog(comp.CommunityId, comp.CreateUserId, comp.Name)"
                         >
                           <v-list-item-icon>
                             <v-icon>mdi-exit-to-app</v-icon>
@@ -261,18 +247,10 @@
               <div class="ts-user-comp">
                 <div class="ts-user-comp-detail">
                   <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
-                  <span class="pr-2">{{ comp.MemberCount }}</span>
-                  &bull;
-                  <span class="ts-community-industry pl-2 pr-2">
+                  {{ comp.MemberCount }}
+                  <span class="ts-community-industry pl-2">
                     {{ comp.BusinessCategoryText || 'Industry' }}
                   </span>
-                  &bull;
-                  <span class="ts-community-industry pl-2" v-if="comp.IsPrivate === true"
-                    >Private</span
-                  >
-                  <span class="ts-community-industry pl-2" v-else-if="comp.IsPrivate === false"
-                    >Public</span
-                  >
                 </div>
                 <div v-if="comp && comp.ModifyDate" class="ts-community-date pt-1">
                   Last update: {{ comp.ModifyDate.substring(0, 10).replace(/-/g, '.') }}
@@ -401,8 +379,7 @@ export default {
     selectedSubTab: null,
     debounce: null,
     mountedCommunities: [],
-    invitedCommunities: [],
-    selectedCommunPrivacy: null
+    invitedCommunities: []
   }),
   computed: {
     ...mapGetters({
@@ -593,12 +570,11 @@ export default {
         return
       }
     },
-    openLeaveDialog(communityId, creatorOfCommun, name, privacy) {
+    openLeaveDialog(communityId, creatorOfCommun, name) {
       this.leaveDialog = true
       this.communityId = communityId
       this.creatorId = creatorOfCommun
       this.selectedCommunName = name
-      this.selectedCommunPrivacy = privacy
     },
     leaveCommunity() {
       this.$store.dispatch('threadSharing/leaveCommunity', {
@@ -620,14 +596,13 @@ export default {
       })
       this.confirmDialog = false
     },
-    requestJoin(communId, privacy, name) {
+    requestJoin(communId, privacy) {
       this.$store
         .dispatch('threadSharing/joinCommunity', {
           CommunityId: communId,
           CompanyId: localStorage.getItem('companyId'),
           CreateUserId: localStorage.getItem('userId'),
-          IsPrivate: privacy,
-          CommunityName: name
+          IsPrivate: privacy
         })
         .then(() => {
           this.refreshRequests()

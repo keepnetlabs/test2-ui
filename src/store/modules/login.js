@@ -20,9 +20,6 @@ const login = {
     },
     WRONG_LOGIN_ATTEMPT(state, payload) {
       state.wrongLoginAttempt += payload
-    },
-    EMPTY_LOGIN_ATTEMPT(state, empty) {
-      state.wrongLoginAttempt = empty
     }
   },
   actions: {
@@ -49,19 +46,13 @@ const login = {
     },
     resetPassword({ commit, dispatch }, payload) {
       resetPassword(payload).then(response => {
-        const result = response.data.Result
+        const result = response.data
         dispatch('common/setSnackStatus', true, { root: true })
-        if (result) {
-          dispatch(
-            'common/setErrorMessage',
-            'An email to with a link to reset your password is sent if a matched user account is found',
-            { root: true }
-          )
-        } else {
-          dispatch('common/setErrorMessage', 'No user found with that email address', {
-            root: true
-          })
-        }
+        dispatch(
+          'common/setErrorMessage',
+          'An email to with a link to reset your password is sent if a matched user account is found',
+          { root: true }
+        )
         commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
       })
     },
@@ -83,7 +74,6 @@ const login = {
             commit('common/SET_IS_LOADING', false, { root: true })
           } else {
             commit('common/SET_IS_LOADING', false, { root: true })
-            commit('EMPTY_LOGIN_ATTEMPT', 0)
             payload.router.push('/')
           }
         })

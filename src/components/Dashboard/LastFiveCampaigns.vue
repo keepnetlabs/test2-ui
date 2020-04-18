@@ -166,6 +166,11 @@ export default {
     }
   },
 
+  created() {
+    window.addEventListener('resize', this.onResize)
+    this.initialize()
+  },
+
   mounted() {
     if (window.innerWidth < 800 && window.innerWidth > 600) {
       this.doubleTable = true
@@ -249,6 +254,14 @@ export default {
         this.desserts.push(this.editedItem)
       }
       this.close()
+    },
+
+    onResize() {
+      if (window.innerWidth < 800 && window.innerWidth > 600) {
+        this.doubleTable = true
+      } else {
+        this.doubleTable = false
+      }
     }
   }
 }

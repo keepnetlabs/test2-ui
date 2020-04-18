@@ -10,97 +10,149 @@
             <v-list-item-title class="v-card-headline">New Investigation</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item class="pl-0 pr-0 pb-10">
-          <v-list-item-content class="pt-10 pb-0">
+        <v-list-item class="pl-0 pr-0 pt-4 pb-4">
+          <v-list-item-content class="pt-4 pb-0">
             <v-list-item-title class="v-card-headline">Start New Investigation</v-list-item-title>
-            <v-list-item-title class="v-card-sub-header"
-              >Select filters and date options to start an investigation</v-list-item-title
-            >
+            <v-list-item-title
+              class="v-card-sub-header"
+            >Select filters and date options to start an investigation</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-list-item class="edit-name-area pt-1 0 pa-0">
-            <v-list-item-content class="pt-0 pb-6">
+          <v-list-item class="edit-name-area pt-1 0 pa-0 investigation-name">
+            <v-list-item-content class>
               <label class="pb-3 edit-labels">Investigation Name</label>
               <v-text-field
                 placeholder="Manual Investigation - 09.09.2019  16:25"
                 outlined
-                class="edit-name-textfield edit-select"
+                class="edit-name-textfield edit-select standard-height"
                 v-model="investgationName"
-                :rules="[nameRules.regex, nameRules.required, nameRules.empty]"
+                :rules="[investigationNameRules.required, investigationNameRules.empty]"
                 required
+                height="40"
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="pt-4 pb-0">
+          <v-list-item class="edit-industry-area pb-4 pa-0 target-users">
+            <v-list-item-content class>
               <label class="edit-labels">Target Users</label>
-              <label class="edit-sub-labels"
-                >Select departments, groups or users to investigate</label
-              >
-              <v-combobox
-                :items="categories"
-                label="Select the target users"
-                outlined
-                class="edit-select"
-                v-model="targetUsers"
-                :rules="[categoryRule]"
-                required
-              ></v-combobox>
+              <label class="edit-sub-labels">Select departments, groups or users to investigate</label>
+              <div class="target-users__radio-group">
+                <v-radio-group
+                  v-model="targetUserType"
+                  :mandatory="false"
+                  @change=" targetUsersValue = []"
+                  row
+                >
+                  <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
+                  <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
+                  <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
+                </v-radio-group>
+              </div>
+              <div class="target-users__input-area">
+                <v-combobox
+                  :items="[]"
+                  :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                  outlined
+                  class="edit-select standard-height"
+                  item-text="name"
+                  multiple
+                  dense
+                  persistent-hint
+                  small-chips
+                  :return-object="false"
+                  @change="targetUsersListChange"
+                  v-if="targetUserType == 'AllUsers'"
+                  :disabled="targetUserType == 'AllUsers'"
+                  required
+                ></v-combobox>
+                <v-combobox
+                  :items="targetUsersList"
+                  :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                  outlined
+                  class="edit-select target-users-multi"
+                  v-model="targetUsersValue"
+                  :rules="[targetUsers.required]"
+                  item-text="name"
+                  :input-value="groupId"
+                  multiple
+                  dense
+                  persistent-hint
+                  small-chips
+                  :return-object="true"
+                  @change="targetUsersListChange"
+                  v-if="targetUserType == 'Groups'"
+                  required
+                ></v-combobox>
+                <v-combobox
+                  :items="[]"
+                  v-if="targetUserType == 'SpecificUsers'"
+                  label="Enter Email Adresses"
+                  item-text="name"
+                  multiple
+                  dense
+                  persistent-hint
+                  small-chips
+                  :return-object="false"
+                  :rules="[targetUsers.required]"
+                  required
+                  outlined
+                  class="edit-name-textfield edit-select target-users__specific-user-input target-users-multi"
+                  v-model="targetUsersValue"
+                ></v-combobox>
+              </div>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="pt-10 pb-0 filter-container">
+            <v-list-item-content class="filter-container">
               <label class="edit-labels">Filters</label>
               <label class="edit-sub-labels">Define filters for the investigation</label>
-              <div class="filter-item">
+              <div class="filter-item" v-for="(list, index) in filterList" :key="index">
                 <div class="filter-item__selectbox">
-                  <v-combobox
-                    :items="categories"
+                  <v-select
+                    :items="filterListOption"
+                    v-model="list.option"
                     label="Select the target users"
                     outlined
-                    class="edit-select"
-                    :rules="[categoryRule]"
+                    class="edit-select standard-height"
                     required
-                  ></v-combobox>
+                    :rules="[filterSelectRules.required]"
+                  ></v-select>
                 </div>
                 <div class="filter-item__input">
-                  <v-textarea
-                    name="description"
+                  <v-text-field
+                    :placeholder="
+                      placeholders[list.option]
+                        ? placeholders[list.option]
+                        : 'Select filter for investigation'
+                    "
                     outlined
+                    class="edit-name-textfield edit-select standard-height"
                     :rules="[
-                      descriptionRules.regex,
-                      descriptionRules.required,
-                      descriptionRules.empty
+                      list.option && generalRules[list.option].required,
+                      list.option && generalRules[list.option].format
                     ]"
+                    v-model="list.text"
                     required
-                    class="edit-description"
-                    placeholder="e.g. 192.1.0.0"
-                    no-resize
-                  ></v-textarea>
+                  ></v-text-field>
+                </div>
+                <div class="filter-item__delete-button">
+                  <v-icon
+                    medium
+                    left
+                    class="ml-2"
+                    v-if="filterList.length > 1"
+                    @click="filterList.splice(index, 1)"
+                  >mdi-close</v-icon>
                 </div>
               </div>
-              <button>
-                <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>Add Filter
+              <button class="filter-item__button" type="button" @click="addNewFilterListOption()">
+                <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD FILTER
               </button>
-            </v-list-item-content> </v-list-item
-          ><v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="pt-0 pb-0">
-              <label class="edit-labels">Industry</label>
-              <label class="edit-sub-labels">Select an industry category</label>
-              <v-combobox
-                :items="categories"
-                label="Select the industry category"
-                outlined
-                class="edit-select"
-                v-model="selectedCategory"
-                :rules="[categoryRule]"
-                required
-              ></v-combobox>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="pt-10 pb-0">
+            <v-list-item-content class>
               <label class="edit-labels">Email Date Range</label>
               <label class="edit-sub-labels">Select range of emails’ sending date</label>
               <div class="date-row">
@@ -118,21 +170,22 @@
                     <template v-slot:activator="{ on }">
                       <v-text-field
                         v-model="startDate"
-                        class="date-picker first-date"
+                        class="date-picker first-date standard-height"
                         label="Start Date"
                         solo
                         v-on="on"
                         required
                         readonly
+                        :rules="[datePickerRule]"
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       v-model="startDate"
-                      :allowed-dates="allowedDates"
                       no-title
                       @input="menu1 = false"
                       :min="minDate()"
                       :max="maxDate()"
+                      :rules="[datePickerRule]"
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
@@ -149,12 +202,12 @@
                     <template v-slot:activator="{ on }">
                       <v-text-field
                         v-model="endDate"
-                        class="date-picker sec-date"
+                        class="date-picker sec-date standard-height"
                         label="End Date"
                         solo
                         v-on="on"
-                        required
                         readonly
+                        :rules="[datePickerRule]"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -163,39 +216,65 @@
                       @input="menu2 = false"
                       :min="minDate()"
                       :max="maxDate()"
+                      :rules="[datePickerRule]"
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
               </div>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item class="edit-industry-area pb-0 pa-0">
+            <v-list-item-content class>
+              <label class="edit-labels">Select Sources</label>
+              <label class="edit-sub-labels">Select sources to investigate with conditions above</label>
+              <div class="select-sources flex">
+                <v-checkbox
+                  class="v-input--checkbox"
+                  v-model="item.value"
+                  :label="item.label"
+                  v-for="(item, index) in sources"
+                  @change="checkCheckboxValidation()"
+                ></v-checkbox>
+                <div class="v-text-field__details checkbox-error" v-if="checkboxError">
+                  <div class="v-messages theme--light error--text" role="alert">
+                    <div class="v-messages__wrapper">
+                      <div class="v-messages__message">Source Select required</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="pt-4 pb-0">
+            <v-list-item-content class>
               <label class="edit-labels">Duration</label>
               <label class="edit-sub-labels">Select how many days the investigation will run</label>
               <v-select
                 :items="durations"
-                label="3 days"
                 outlined
-                class="input-select"
+                class="input-select standard-height"
                 v-model="selectedDuration"
                 :rules="[v => !!v || 'Duration is required']"
-                required
+                item-text="durationLabel"
+                item-value="durationValue"
+                label="3 Days"
               ></v-select>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="pt-4 pb-0">
+          <v-list-item class="edit-industry-area pa-0">
+            <v-list-item-content class>
               <label class="edit-labels">Action</label>
               <label class="edit-sub-labels">Select action to be executed if email is found</label>
               <v-select
                 :items="actions"
-                label="Delete email"
                 outlined
-                class="input-select"
+                class="input-select standard-height"
                 v-model="selectedAction"
                 :rules="[v => !!v || 'Action is required']"
-                required
+                item-text="actionLabel"
+                item-value="actionValue"
+                label="Delete Email"
               ></v-select>
             </v-list-item-content>
           </v-list-item>
@@ -204,345 +283,1116 @@
     </div>
     <div class="footer-actions">
       <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
-      <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">CREATE</v-btn>
+      <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">Save</v-btn>
     </div>
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
-      investgationName: '',
-      targetUsers: '',
-      startDate: '',
-      endDate: '',
-      selectedDuration: '',
-      selectedAction: '',
-      name: '',
-      description: '',
+      placeholders: {
+        ip: "1.1.1.1",
+        from: "Email address",
+        to: "Email address",
+        cc: "Email address  ",
+        bcc: "Email address",
+        subject: "Email address",
+        from_name: "Full name (case sensitive)",
+        url: "https://www.yourdomain.com",
+        keyword: "Enter a keyword",
+        size: "1024 bytes",
+        name: "file.jpg (case sensitive)",
+        sha512: "3c1cc475fc16e68f41943421301c61c4f7f655…",
+        md5: "3c1cc475fc16e68f41943421301c61c4f7f655…",
+        extentions: "JPG"
+      },
+      checkboxError: false,
+      investgationName: "",
+      targetUserType: "AllUsers",
+      targetUsersValue: "",
+      startDate: "",
+      endDate: "",
+      selectedDuration: "",
+      selectedAction: "",
+      name: "",
+      description: "",
       privacy: false,
       categories: [],
-      selectedCategory: '',
-      durations: ['1 Day', '3 Days', '7 Days', '14 Days', '30 Days'],
-      actions: ['Delete email', 'Notify users', 'No action'],
+      selectedCategory: "",
+      isAllSelected: false,
+      durations: [
+        { durationLabel: "1 Day", durationValue: 1 },
+        { durationLabel: "3 Day", durationValue: 31 },
+        { durationLabel: "7 Day", durationValue: 7 },
+        { durationLabel: "14 Day", durationValue: 17 },
+        { durationLabel: "30 Day", durationValue: 30 }
+      ],
+      actions: [
+        { actionLabel: "No action", actionValue: "noAction" },
+        { actionLabel: "Delete Email", actionValue: "deleteEmail" },
+        {
+          actionLabel: "Delete Email and Notify User",
+          actionValue: "deleteAndNotifyUser"
+        },
+        { actionLabel: "Notify user only", actionValue: "notifyUserOnly" }
+      ],
+      filterList: [{ option: "", text: "" }],
+      sources: [
+        { name: "Outlook", value: false, label: "Outlook Desktop" },
+        { name: "O365", value: false, label: "Office 365" },
+        { name: "GSuite", value: false, label: "GSuite" },
+        { name: "Exchange", value: false, label: "Exchange" }
+      ],
+      filterListOption: [
+        "ip",
+        "from",
+        "to",
+        "cc",
+        "bcc",
+        "subject",
+        "from_name",
+        "url",
+        "keyword",
+        "size",
+        "name",
+        "sha512",
+        "md5",
+        "extentions"
+      ],
       valid: false,
-      menu1: '',
-      menu2: '',
-      nameRules: {
+      menu1: "",
+      menu2: "",
+      investigationNameRules: {
         required: v =>
-          (v && v.length >= 5 && v.length <= 80) ||
-          'Investigation Name must between 5-80 characters',
-        regex: v =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+          (v && v.length <= 150) ||
+          "Investigation Name must between 1-150 characters",
+        empty: v =>
+          (v && !v.startsWith(" ")) ||
+          "Investigation Name cannot start with space"
+      },
+      generalRules: {
+        ip: {
+          required: v => {
+            return (
+              (v && v.length <= 255) || "IP must between 1 - 255 characters"
+            );
+          },
+          format: v => {
+            return (
+              /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
+                v
+              ) || "Invalid ip"
+            );
+          }
+        },
+        from: {
+          required: v =>
+            (v && v.length <= 255) || "From must between 1 - 255 characters",
+          format: v => /\S+@\S+\.\S+/gi.test(v) || "Invalid from address"
+        },
+        to: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => /\S+@\S+\.\S+/gi.test(v) || "Invalid to address"
+        },
+        cc: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => /\S+@\S+\.\S+/gi.test(v) || "Invalid cc address"
+        },
+        bcc: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => /\S+@\S+\.\S+/gi.test(v) || "Invalid bcc address"
+        },
+        subject: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // string kontrolü
+        },
+        from_name: {
+          required: v =>
+            (v && v.length <= 1000) || "It must between 1 - 1000 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // string kontrolü
+        },
+        url: {
+          required: v =>
+            (v && v.length <= 1000) || "It must between 1 - 1000 characters",
+          format: v =>
+            /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
+              v
+            ) || "invalid url"
+        },
+        keyword: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+        },
+        size: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+        },
+        name: {
+          required: v =>
+            (v && v.length <= 255) || "It must between 1 - 255 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+        },
+        sha512: {
+          required: v =>
+            (v && v.length <= 512) || "It must between 1 - 512 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+        },
+        md5: {
+          required: v =>
+            (v && v.length <= 128) || "It must between 1 - 128 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+        },
+        extentions: {
+          required: v =>
+            (v && v.length <= 10) || "It must between 1 - 10 characters",
+          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+        }
+      },
+      filterSelectRules: {
+        required: v => !!v || "Filter Select required",
+        format: v => (v && !v.startsWith(" ")) || "Cannot start with space"
       },
       descriptionRules: {
         required: v =>
-          (!!v && v.length >= 5 && v.length <= 300) ||
-          'Description required and must between 5-300 characters.',
+          (!!v && v.length <= 150) ||
+          "Description required and must between 5-150 characters.",
         regex: v =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+          "Only use letters, digits, period, comma, underline and hyphen",
+        empty: v =>
+          (v && !v.startsWith(" ")) || "Description cannot start with space"
       },
-      categoryRules: {
-        required: v => (!!v && v.length < 1) || 'Category required for creating a investigation'
+      targetUsers: {
+        required: v =>
+          (!!v && v.length > 0) ||
+          "Target users required for creating a investigation"
+      },
+      checkboxRule: {
+        required: v => this.sources.find(item => item.value)
       }
-    }
+    };
   },
   computed: {
-    ...mapGetters({}),
-    categoryRule() {
+    ...mapGetters({
+      targetUsersList: "investigations/getTargetUsersListGetter" // for using getters
+    })
+    /*categoryRule() {
       if (this.selectedCategory && this.selectedCategory.length) {
-        return true
+        return true;
       } else {
-        return 'Category required for creating a investigation'
+        return "Category required for creating a investigation";
       }
-    }
+    }*/
   },
   methods: {
+    checkCheckboxValidation() {
+      let isCheckboxEmpty = this.sources.reduce((acc, i) => {
+        if (i.value) acc.push(i.name);
+        return acc;
+      }, []);
+      if (isCheckboxEmpty.length == 0) {
+        this.checkboxError = true;
+      } else {
+        this.checkboxError = false;
+      }
+    },
+    targetUsersListChange(value, e, c) {
+      /*if (this.targetUsersValue.find(item => item === "All")) {
+        this.targetUsersValue = ["All"];
+      }*/
+      /*if (
+        value[value.length - 1] === "All" &&
+        this.targetUsersValue.find(item => item === "All") && !this.isAllSelected
+      ) {
+        this.targetUsersValue = [];
+        this.isAllSelected = true;
+        this.targetUsersValue = this.targetUsersList.reduce((acc, item) => {
+          acc.push(item);
+          return acc;
+        }, []);
+      } else if (!this.targetUsersValue.find(item => item === "All") && this.isAllSelected) {
+        this.isAllSelected = false;
+        this.targetUsersValue = [];
+      }*/
+    },
+
+    datePickerRule() {
+      if (!this.startDate || !this.endDate) return true;
+      return this.startDate <= this.endDate || "Invalid Date";
+    },
+    addNewFilterListOption() {
+      this.filterList.push({ option: "", text: "" });
+    },
     onCancelClicked() {
-      this.$emit('closeAdd')
+      this.$emit("closeAdd");
     },
     onCreateClicked() {
-      if (this.$refs.form.validate() && !this.investigationNameAvailable) {
-        let selectedBusinessObj = this.businessCategories.filter(
-          item => item.IDESC == this.selectedCategory
-        )
-        localStorage.setItem('investigationName', this.name)
-        const newInvestigationObj = {
-          Name: this.name,
-          Description: this.description,
-          IsPrivate: this.privacy,
-          CreateUserId: localStorage.getItem('userId'),
-          BusinessCategory: [
-            {
-              IKEY: selectedBusinessObj[0].IKEY
-            }
-          ],
-          InvestigationCompany: [
-            {
-              CompanyId: localStorage.getItem('companyId'),
-              CompanyName: localStorage.getItem('companyName')
-            }
-          ]
+      // creating new form data if validation is success
+      // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
+      if (this.$refs.form.validate()) {
+        let isCheckboxEmpty = this.sources.reduce((acc, i) => {
+          if (i.value) acc.push(i.name);
+          return acc;
+        }, []);
+        if (isCheckboxEmpty.length == 0) {
+          this.checkboxError = true;
+          return false;
+        } else {
+          this.checkboxError = false;
         }
-        const refThis = this
-        this.$store.dispatch('threadSharing/createCommunity', newCommunityObj).then(() => {
-          refThis.$emit('closeAdd')
-        })
+        let headersData = [
+          {
+            ip: null,
+            from: null,
+            to: null,
+            cc: null,
+            bcc: null,
+            subject: null,
+            senderName: null
+          }
+        ];
+        let bodyData = [
+          {
+            url: null,
+            keyword: null,
+            isRegex: false
+          }
+        ];
+        let attachmentsData = [
+          {
+            size: null,
+            name: null,
+            md5: null,
+            sha512: null,
+            extension: null
+          }
+        ];
+        // checking filter status. If there are only 1 filter, it goes to the first element of array
+        // If It's already exist, then new element pushs to the array.
+        // for more info look at the ip case ( 4 line below)
+        for (let index = 0; index < this.filterList.length; index++) {
+          switch (this.filterList[index].option) {
+            case "ip":
+              if (
+                !headersData[headersData.length - 1].ip &&
+                headersData[headersData.length - 1].ip !=
+                  this.filterList[index].text
+              ) {
+                // in the first array, there is no value at ip value name pair
+                // that's why, we can set the our ip value to the first array element
+                headersData.filter(s => s.ip == null)[0].ip = this.filterList[
+                  index
+                ].text;
+              } else {
+                // ip value name pair is already exist. Thus, we push new array tp the headersData with all values null except ip.
+                headersData.push({
+                  ip: this.filterList[index].text,
+                  from: null,
+                  to: null,
+                  cc: null,
+                  bcc: null,
+                  subject: null,
+                  senderName: null
+                });
+              }
+              break;
+            case "from":
+              if (
+                !headersData[headersData.length - 1].from &&
+                headersData[headersData.length - 1].from !=
+                  this.filterList[index].text
+              ) {
+                headersData.filter(
+                  s => s.from == null
+                )[0].from = this.filterList[index].text;
+              } else {
+                headersData.push({
+                  ip: null,
+                  from: this.filterList[index].text,
+                  to: null,
+                  cc: null,
+                  bcc: null,
+                  subject: null,
+                  senderName: null
+                });
+              }
+              break;
+            case "to":
+              if (
+                !headersData[headersData.length - 1].to &&
+                headersData[headersData.length - 1].to !=
+                  this.filterList[index].text
+              ) {
+                headersData.filter(s => s.to == null)[0].to = this.filterList[
+                  index
+                ].text;
+              } else {
+                headersData.push({
+                  ip: null,
+                  from: null,
+                  to: this.filterList[index].text,
+                  cc: null,
+                  bcc: null,
+                  subject: null,
+                  senderName: null
+                });
+              }
+              break;
+            case "cc":
+              if (
+                !headersData[headersData.length - 1].cc &&
+                headersData[headersData.length - 1].cc !=
+                  this.filterList[index].text
+              ) {
+                headersData.filter(s => s.cc == null)[0].cc = this.filterList[
+                  index
+                ].text;
+              } else {
+                headersData.push({
+                  ip: null,
+                  from: null,
+                  to: null,
+                  cc: this.filterList[index].text,
+                  bcc: null,
+                  subject: null,
+                  senderName: null
+                });
+              }
+              break;
+            case "bcc":
+              if (
+                !headersData[headersData.length - 1].bcc &&
+                headersData[headersData.length - 1].bcc !=
+                  this.filterList[index].text
+              ) {
+                headersData.filter(s => s.bcc == null)[0].bcc = this.filterList[
+                  index
+                ].text;
+              } else {
+                headersData.push({
+                  ip: null,
+                  from: null,
+                  to: null,
+                  cc: null,
+                  bcc: this.filterList[index].text,
+                  subject: null,
+                  senderName: null
+                });
+              }
+              break;
+            case "subject":
+              if (
+                !headersData[headersData.length - 1].subject &&
+                headersData[headersData.length - 1].subject !=
+                  this.filterList[index].text
+              ) {
+                headersData.filter(
+                  s => s.subject == null
+                )[0].subject = this.filterList[index].text;
+              } else {
+                headersData.push({
+                  ip: null,
+                  from: null,
+                  to: null,
+                  cc: null,
+                  bcc: null,
+                  subject: this.filterList[index].text,
+                  senderName: null
+                });
+              }
+              break;
+            case "from_name":
+              if (
+                !headersData[headersData.length - 1].senderName &&
+                headersData[headersData.length - 1].senderName !=
+                  this.filterList[index].text
+              ) {
+                headersData.filter(
+                  s => s.senderName == null
+                )[0].senderName = this.filterList[index].text;
+              } else {
+                headersData.push({
+                  ip: null,
+                  from: null,
+                  to: null,
+                  cc: null,
+                  bcc: null,
+                  subject: null,
+                  senderName: this.filterList[index].text
+                });
+              }
+              break;
+            case "url":
+              if (
+                !bodyData[bodyData.length - 1].url &&
+                bodyData[bodyData.length - 1].url != this.filterList[index].text
+              ) {
+                bodyData.filter(s => s.url == null)[0].url = this.filterList[
+                  index
+                ].text;
+              } else {
+                bodyData.push({
+                  url: this.filterList[index].text,
+                  keyword: null,
+                  isRegex: false
+                });
+              }
+              break;
+            case "keyword":
+              if (
+                !bodyData[bodyData.length - 1].keyword &&
+                bodyData[bodyData.length - 1].keyword !=
+                  this.filterList[index].text
+              ) {
+                bodyData.filter(
+                  s => s.keyword == null
+                )[0].keyword = this.filterList[index].text;
+              } else {
+                bodyData.push({
+                  url: null,
+                  keyword: this.filterList[index].text,
+                  isRegex: false
+                });
+              }
+              break;
+            case "size":
+              if (
+                !attachmentsData[attachmentsData.length - 1].size &&
+                attachmentsData[attachmentsData.length - 1].size !=
+                  this.filterList[index].text
+              ) {
+                attachmentsData.filter(
+                  s => s.size == null
+                )[0].size = this.filterList[index].text;
+              } else {
+                attachmentsData.push({
+                  size: this.filterList[index].text,
+                  name: null,
+                  md5: null,
+                  sha512: null,
+                  extension: null
+                });
+              }
+              break;
+            case "name":
+              if (
+                !attachmentsData[attachmentsData.length - 1].name &&
+                attachmentsData[attachmentsData.length - 1].name !=
+                  this.filterList[index].text
+              ) {
+                attachmentsData.filter(
+                  s => s.name == null
+                )[0].name = this.filterList[index].text;
+              } else {
+                attachmentsData.push({
+                  size: null,
+                  name: this.filterList[index].text,
+                  md5: null,
+                  sha512: null,
+                  extension: null
+                });
+              }
+              break;
+            case "sha512":
+              if (
+                !attachmentsData[attachmentsData.length - 1].sha512 &&
+                attachmentsData[attachmentsData.length - 1].sha512 !=
+                  this.filterList[index].text
+              ) {
+                attachmentsData.filter(
+                  s => s.sha512 == null
+                )[0].sha512 = this.filterList[index].text;
+              } else {
+                attachmentsData.push({
+                  size: null,
+                  name: null,
+                  md5: null,
+                  sha512: this.filterList[index].text,
+                  extension: null
+                });
+              }
+              break;
+            case "md5":
+              if (
+                !attachmentsData[attachmentsData.length - 1].md5 &&
+                attachmentsData[attachmentsData.length - 1].md5 !=
+                  this.filterList[index].text
+              ) {
+                attachmentsData.filter(
+                  s => s.md5 == null
+                )[0].md5 = this.filterList[index].text;
+              } else {
+                attachmentsData.push({
+                  size: null,
+                  name: null,
+                  md5: this.filterList[index].text,
+                  sha512: null,
+                  extension: null
+                });
+              }
+              break;
+            case "extentions":
+              if (
+                !attachmentsData[attachmentsData.length - 1].extentions &&
+                attachmentsData[attachmentsData.length - 1].extentions !=
+                  this.filterList[index].text
+              ) {
+                attachmentsData.filter(
+                  s => s.extentions == null
+                )[0].extentions = this.filterList[index].text;
+              } else {
+                attachmentsData.push({
+                  size: null,
+                  name: null,
+                  md5: null,
+                  sha512: null,
+                  extensions: this.filterList[index].text
+                });
+              }
+              break;
+
+            default:
+              break;
+          }
+        }
+        // cerate new body data for api call
+        const newInvestigationObj = {
+          headers: headersData,
+          bodies: bodyData,
+          attachments: attachmentsData,
+          isScanEnterpriseVault: false,
+          investigationType: "Manuel",
+          name: this.investgationName,
+          startDate: this.startDate,
+          endDate: this.endDate,
+          expireDate: this.newExpireDate(this.endDate, this.selectedDuration),
+          targetUserType: this.targetUserType,
+          targetUsers:
+            this.targetUserType == "Groups"
+              ? this.targetUsersValue.map(item => item.groupId)
+              : this.targetUsersValue,
+          //targetUsersValue: this.targetUsersValue,
+          action: this.selectedAction,
+          scanTypes: this.sources.reduce((acc, i) => {
+            if (i.value) acc.push(i.name);
+            return acc;
+          }, [])
+        };
+        // post request with body data
+        this.$store
+          .dispatch("investigations/createInvestigation", newInvestigationObj)
+          .catch(() => {})
+          .then(() => {
+            this.$emit("closeAdd");
+            this.$emit("refreshDatatable");
+          });
       }
     },
     checkInvestigationName() {
-      if (this.name.length && !this.name.startsWith(' '))
-        this.$store.dispatch('threadSharing/checkName', this.name)
-    },
-    stepChange(num) {
-      this.step = num
-    },
-    onContinue() {
-      if (this.step === 1) this.step = 2
-      else return
-    },
-    onStart() {
-      if (this.$refs.form.validate()) {
-        this.$emit('closeInvestigate')
-        this.$store.dispatch('threadSharing/investigationStarted')
-      }
+      // investigaiton rule checking
+      if (this.name.length && !this.name.startsWith(" "))
+        this.$store.dispatch("threadSharing/checkName", this.name);
     },
     minDate() {
+      // set min date
       var d = new Date(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear()
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
 
-      if (month.length < 2) month = '0' + month
-      if (day.length < 2) day = '0' + day
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
 
-      return [year - 1, month, day].join('-')
+      return [year - 1, month, day].join("-");
     },
     maxDate() {
+      // set max date
       var d = new Date(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear()
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
 
-      if (month.length < 2) month = '0' + month
-      if (day.length < 2) day = '0' + day
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
 
-      return [year + 1, month, day].join('-')
+      return [year + 1, month, day].join("-");
+    },
+    newExpireDate(endDate, duration) {
+      // set expire date with duration value
+      // backend allows to iso string
+      const date = endDate.split("-");
+      let newDate = new Date(date[0], date[1], date[2]);
+      newDate.setDate(newDate.getDate() + duration);
+      return new Date(newDate).toISOString();
     },
     allowedDates(val) {
-      return val < this.endDate
+      // return val < this.endDate;
     }
   },
-  mounted() {}
-}
+  created() {
+    // when the page is created ( vue life cylce) get target users list via vuex
+    this.$store.dispatch("investigations/getTargetUsersList"); //module name than method name
+  }
+};
 </script>
 <style lang="scss" scoped>
+.v-text-field__details.checkbox-error {
+  bottom: 8px !important;
+}
+.target-users-multi {
+  ::v-deep .v-input__control .v-select__slot {
+    margin-bottom: 0px !important;
+  }
+  ::v-deep {
+    padding: 0px !important;
+  }
+}
+.target-users {
+  &__radio-group {
+    padding: 0px !important;
+    margin: 0 !important;
+    ::v-deep .v-input--selection-controls {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+    ::v-deep .v-input__slot {
+      margin-bottom: 0 !important;
+    }
+    .v-messages.theme--light {
+      display: none !important;
+    }
+    ::v-deep .v-input--selection-controls.v-input .v-label {
+      font-family: "Open Sans", sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  &__specific-user-input {
+    ::v-deep .v-input__append-inner {
+      display: none !important;
+    }
+  }
+}
+
+.investigation-name {
+  ::v-deep .v-list-item__content {
+    padding-bottom: 0 !important;
+  }
+  ::v-deep .v-text-field__details {
+    margin-bottom: 0px !important;
+  }
+}
+
+::v-deep .v-input__control {
+  input {
+    &::placeholder {
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+  .v-select__slot {
+    margin-bottom: 3px !important;
+    .v-label {
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+    input {
+      &::placeholder {
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        line-height: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
+    }
+  }
+}
+
+::v-deep .v-input__control {
+  border-radius: 8px !important;
+}
+
+::v-deep .v-text-field__slot {
+  label {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+}
+
+::v-deep {
+  .v-select__selection {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+.select-sources {
+  display: flex;
+  flex-wrap: wrap;
+  .v-input--checkbox {
+    border: none;
+    font-size: 11px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    padding-top: 0px;
+    margin-top: 0px;
+    &:not(:last-child) {
+      margin-right: 15px;
+    }
+
+    label.v-label.theme--light {
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.72) !important;
+    }
+
+    i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
+      font-size: 20px !important;
+    }
+
+    i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
+      font-size: 20px !important;
+    }
+  }
+  ::v-deep .v-application {
+    color: #2196f3 !important;
+  }
+  ::v-deep .accent--text {
+    color: #2196f3 !important;
+  }
+}
+::v-deep .v-input--checkbox {
+  .v-input__slot {
+    input {
+      z-index: 9;
+    }
+  }
+  .v-label {
+    font-family: "Open Sans", sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+  }
+}
+
+.standard-height {
+  ::v-deep .v-input__slot {
+    max-height: 40px !important;
+    min-height: 40px !important;
+  }
+}
+
+::v-deep .v-select__slot {
+  .v-label {
+    top: 10px !important;
+  }
+  .v-label--active {
+    top: 16px !important;
+  }
+  .v-input__append-inner {
+    margin-top: 9px !important;
+  }
+}
+
+::v-deep .v-autocomplete {
+  .v-label {
+    top: 10px !important;
+  }
+  .v-label--active {
+    top: 8px !important;
+  }
+}
+::v-deep .v-text-field--outlined {
+  .v-input__slot {
+    margin-bottom: 2px !important;
+  }
+}
 .new-investigation-container {
   min-height: 100vh;
   height: 820px;
   overflow: visible;
   width: 100%;
-
-  .new-investigation-inner {
-    width: 100%;
-    height: 100%;
-    padding: 0 8vw;
+}
+.filter-container {
+  ::v-deep .v-input__slot {
+    margin-bottom: 0 !important;
+  }
+  ::v-deep .v-text-field__details {
+    bottom: -25px !important;
+  }
+  .filter-item {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
     position: relative;
-    display: flex;
-    overflow: visible;
-  }
-
-  .v-card-headline {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.4;
-    letter-spacing: normal;
-    color: #000;
-  }
-  .v-card-sub-header {
-    font-family: Helvetica;
-    font-size: 15px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: #000 !important;
-  }
-  .edit-name-textfield,
-  .edit-description,
-  .edit-select {
-    font-size: 13px !important;
-  }
-
-  .v-cart-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    margin-right: 24px;
-    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-    border: solid 1px rgba(100, 181, 246, 0.5);
-    background-color: #e3f2fd;
-  }
-
-  .edit-labels {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-    padding-bottom: 3px;
-  }
-  .edit-sub-labels {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-    padding-bottom: 14px;
-  }
-  ::v-deep .edit-select > .v-input__control {
-    align-items: center;
-    display: flex;
-    height: 40px !important;
-  }
-  ::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
-    margin-top: 8px !important;
-  }
-  ::v-deep .edit-select > .v-input__control {
-    align-items: center;
-    display: flex;
-    height: 40px !important;
-  }
-  ::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
-    margin-top: 8px !important;
-  }
-  .edit-privacy-buttons {
-    align-items: center;
-    display: flex;
-    width: 168px;
-
-    button {
-      border-radius: 18px !important;
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px !important;
-      font-weight: 400 !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: 1.71 !important;
-      letter-spacing: normal !important;
-      text-transform: none !important;
-      padding: 0 16px !important;
+    &:not(:first-of-type) {
+      margin-top: 30px;
     }
-    .public-btn {
-      border: 1px solid #757575;
-      border-top-right-radius: 0 !important;
-      border-bottom-right-radius: 0 !important;
-      height: 36px;
-      margin-left: 4px;
+    &:hover {
+      .filter-item__delete-button {
+        display: flex;
+      }
     }
-    .private-btn {
-      border: 1px solid #757575;
-      border-top-left-radius: 0 !important;
-      border-bottom-left-radius: 0 !important;
-      height: 36px;
-      margin-left: 9px;
+    &__selectbox {
+      width: 80%;
+      margin-right: 5%;
+      max-height: 40px;
+    }
+    &__input {
+      width: 100%;
+      max-height: 40px;
+    }
+    &__button {
+      margin-top: 25px;
+      font-family: "Open Sans", sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: #2196f3 !important;
+      align-items: center;
+      display: flex;
+      &:focus,
+      &:focus-within {
+        outline: 0 !important;
+      }
+    }
+    &__delete-button {
+      width: 44px;
+      height: 40px;
+      color: #757575;
+      position: absolute;
+      right: -40px;
+      top: 0px;
+      justify-content: center;
+      display: none;
     }
   }
-  .edit-privacy-bottom-label {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1;
-    letter-spacing: normal;
-    color: #909399;
-    padding-top: 8px;
-    margin: 0 !important;
+}
+.new-investigation-inner {
+  width: 100%;
+  height: 100%;
+  padding: 0 8vw;
+  position: relative;
+  display: flex;
+  overflow: visible;
+}
+.v-card-headline {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 20px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.4;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+}
+.v-card-sub-header {
+  font-family: Helvetica;
+  font-size: 15px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: #000 !important;
+}
+.edit-name-textfield,
+.edit-description,
+.edit-select {
+  font-size: 13px !important;
+}
+
+.v-cart-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  margin-right: 24px;
+  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+  border: solid 1px rgba(100, 181, 246, 0.5);
+  background-color: #e3f2fd;
+}
+
+.edit-labels {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 20px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  margin-bottom: 0 !important;
+  padding-bottom: 3px;
+}
+.edit-sub-labels {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  margin-bottom: 0 !important;
+  padding-bottom: 14px;
+}
+.edit-privacy-buttons {
+  align-items: center;
+  display: flex;
+  width: 168px;
+
+  button {
+    border-radius: 18px !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    line-height: 1.71 !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    padding: 0 16px !important;
   }
-  .theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-    background-color: unset;
-  }
-  .v-btn:not(.v-btn--text):not(.v-btn--outlined).v-btn--active:before {
-    opacity: 1;
-  }
-  .v-btn-toggle > .v-btn.v-btn--active,
-  .v-btn-toggle > .v-btn.v-btn--active::before {
-    color: #fff;
-  }
-  .btnActive {
+  .public-btn {
+    border: 1px solid #757575;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
     height: 36px;
-    border-radius: 18px;
-    border: solid 1px #757575;
+    margin-left: 4px;
   }
-  .btnActive,
-  .btnActive:active,
-  .btnActive:hover,
-  .btnActive:focus {
-    border: unset !important;
-    outline: 0 !important;
+  .private-btn {
+    border: 1px solid #757575;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    height: 36px;
+    margin-left: 9px;
   }
-  .btnActive,
-  .btnActive::before {
-    border: unset !important;
-    border-color: unset !important;
-    color: #fff;
-    background-color: #2196f3 !important;
-    box-shadow: 0 2px 5px 0 #2196f3 !important;
-  }
-  .private-btn.v-btn.v-btn--active {
-    border-left: transparent !important;
-  }
-  .v-btn-toggle--group > .v-btn.v-btn {
-    border-color: #757575;
-    border-left: 1px solid #757575 !important;
-  }
-  .v-btn:before {
-    top: -1px !important;
-    left: -1px !important;
-  }
-  .footer-actions {
-    align-items: center;
-    bottom: 0;
-    background-color: #f5f7fa;
-    display: flex;
-    left: 0;
-    position: fixed;
-    justify-content: space-between;
-    padding: 0 10vw;
-    height: 68px;
-    width: 100%;
-    z-index: 9999;
+}
+.edit-privacy-bottom-label {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  color: #909399;
+  padding-top: 8px;
+  margin: 0 !important;
+}
+.theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+  background-color: unset;
+}
+.v-btn:not(.v-btn--text):not(.v-btn--outlined).v-btn--active:before {
+  opacity: 1;
+}
+.v-btn-toggle > .v-btn.v-btn--active,
+.v-btn-toggle > .v-btn.v-btn--active::before {
+  color: #fff;
+}
+.btnActive {
+  height: 36px;
+  border-radius: 18px;
+  border: solid 1px #757575;
+}
+.btnActive,
+.btnActive:active,
+.btnActive:hover,
+.btnActive:focus {
+  border: unset !important;
+  outline: 0 !important;
+}
+.btnActive,
+.btnActive::before {
+  border: unset !important;
+  border-color: unset !important;
+  color: #fff;
+  background-color: #2196f3 !important;
+  box-shadow: 0 2px 5px 0 #2196f3 !important;
+}
+.private-btn.v-btn.v-btn--active {
+  border-left: transparent !important;
+}
+.v-btn-toggle--group > .v-btn.v-btn {
+  border-color: #757575;
+  border-left: 1px solid #757575 !important;
+}
+.v-btn:before {
+  top: -1px !important;
+  left: -1px !important;
+}
+.footer-actions {
+  align-items: center;
+  bottom: 0;
+  background-color: #f5f7fa;
+  display: flex;
+  left: 0;
+  position: fixed;
+  justify-content: space-between;
+  padding: 0 10vw;
+  height: 68px;
+  width: 100%;
+  z-index: 9999;
 
-    .cancel-btn {
-      background-color: transparent !important;
-      border-radius: 18px !important;
-      border: solid 1px #f56c6c !important;
-      color: #f56c6c !important;
-    }
-    .create-btn {
-      border-radius: 18px !important;
-      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-    }
+  .cancel-btn {
+    background-color: transparent !important;
+    border-radius: 18px !important;
+    border: solid 1px #f56c6c !important;
+    color: #f56c6c !important;
+  }
+  .create-btn {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+    background-color: #2196f3 !important;
+    color: #fff !important;
   }
 }
 .error-border {
@@ -553,23 +1403,40 @@ export default {
 .edit-industry-area {
   ::v-deep .v-list-item__content {
     overflow: visible;
+    &:first-of-type {
+      padding-bottom: 0 !important;
+    }
   }
   ::v-deep .v-text-field__details {
     position: absolute;
     left: 0;
-    bottom: -28px;
+    bottom: -22px;
+  }
+  &:last-child {
+    .v-list-item__content {
+      margin-bottom: 100px;
+    }
+  }
+}
+.date-row {
+  max-width: 390px !important;
+  display: flex;
+  flex-direction: row;
+
+  @media only screen and (max-width: 1025px) {
+    width: 100%;
+    max-width: 100% !important;
   }
 }
 .date-picker {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   ::v-deep .v-input__slot {
     box-shadow: unset !important;
     border: 1px solid rgba(0, 0, 0, 0.24);
     border-radius: 4px;
     text-align: center;
-
     input {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 13px;
       font-weight: normal;
       font-stretch: normal;
@@ -608,8 +1475,8 @@ export default {
 .date-to {
   position: absolute;
   left: 0;
-  top: 11px;
-  font-family: 'Open Sans', sans-serif !important;
+  top: 10px;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 13px;
   font-weight: normal;
   font-stretch: normal;
@@ -619,175 +1486,7 @@ export default {
   color: rgba(0, 0, 0, 0.72);
   z-index: 13;
 }
-.max-char {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  display: block;
-  max-width: 100%;
-}
-.text-selected {
-  border-radius: 1px !important;
-  background-color: #d1e9fc !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  width: max-content;
-}
-.clean-link {
-  padding: 0 2px !important;
-  border-radius: 1px !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: #2196f3 !important;
-}
-.selected-link {
-  background-color: #d1e9fc !important;
-}
-.phishing-link {
-  background-color: #f3e1e5 !important;
-  border-bottom: 1px solid #bb2a45 !important;
-  color: #bb2a45 !important;
-  width: max-content;
-}
-.clean-attach {
-  background-color: #f1f8fe;
-  border: 1px solid transparent !important;
-}
-.malicious-attach {
-  background-color: #f3e1e5;
-  border: 1px solid transparent !important;
-}
-::v-deep .v-input > .v-input__control > .v-text-field__details {
-  bottom: -24px !important;
-  position: absolute;
-  left: 0;
-}
-::v-deep .v-application input {
-  border-radius: 8px !important;
-  border: solid 1px rgba(0, 0, 0, 0.16) !important;
-}
-.required {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #474747;
-  margin-left: 6px;
-  margin-top: -2px;
-}
-.close-incident {
-  position: absolute;
-  right: 26px;
-  top: 26px;
-}
-::v-deep
-  .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-  > .v-input__control
-  > .v-input__slot {
-  border: none !important;
-}
-.row-with-icon {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
-.icon-btn {
-  margin-top: unset;
-  margin-left: -5px;
-  height: 25px !important;
-  width: 25px !important;
-}
-.step-name {
-  width: max-content;
-}
-.filter-header {
-  align-items: center;
-  display: none;
-  justify-content: space-between;
-  padding-top: 24px;
-  width: 240px;
-  transition: all 0.3s ease-in-out;
 
-  .select-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    transition: all 0.3s ease-in-out;
-  }
-
-  i {
-    margin-top: 3px;
-    font-size: 27px;
-  }
-}
-.minify-filter {
-  width: 120px !important;
-}
-.minify-part,
-.minify-switch {
-  padding-left: 10px;
-  width: 100% !important;
-}
-.footer-actions {
-  align-items: center;
-  bottom: 0;
-  background-color: #f5f7fa;
-  display: flex;
-  left: 0;
-  position: fixed;
-  justify-content: space-between;
-  padding: 0 96px;
-  height: 68px;
-  width: 100%;
-  z-index: 9999;
-
-  .cancel-btn {
-    background-color: transparent !important;
-    border-radius: 18px !important;
-    border: solid 1px #f56c6c !important;
-    color: #f56c6c !important;
-  }
-  .previous-btn {
-    border-radius: 18px !important;
-    border: solid 1px #2196f3 !important;
-    color: #2196f3 !important;
-  }
-  .create-btn {
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    background-color: #2196f3 !important;
-    color: #fff !important;
-  }
-}
-@media only screen and (max-width: 1025px) {
-  .hide-step {
-    display: none !important;
-  }
-  .filter-header {
-    display: flex;
-  }
-}
-.display-none {
-  display: none !important;
-}
-
-.date-row {
-  max-width: 390px !important;
-  display: flex;
-  flex-direction: row;
-
-  @media only screen and (max-width: 1025px) {
-    width: 100%;
-    max-width: 100% !important;
-  }
-}
 .underlined-warn {
   border-bottom: 1px solid #f56c6c;
   color: inherit;
@@ -804,7 +1503,7 @@ export default {
   max-width: 696px;
 }
 .select-error {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 9px;
   font-weight: normal;
   font-stretch: normal;
@@ -834,7 +1533,7 @@ export default {
   }
 }
 .email-name {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 14px;
   font-weight: normal;
   font-stretch: normal;
@@ -851,7 +1550,7 @@ export default {
   height: 25px;
   border-radius: 4px;
   background-color: #f56c6c;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 12px;
   font-weight: 600;
   font-stretch: normal;
@@ -866,7 +1565,7 @@ export default {
   padding: 0 6px;
 }
 .email-time {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 14px;
   font-weight: normal;
   font-stretch: normal;
@@ -877,14 +1576,14 @@ export default {
 }
 
 .v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 20px;
   font-weight: 600;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.4;
   letter-spacing: normal;
-  color: #000;
+  color: rgba(0, 0, 0, 0.87);
 }
 .v-card-sub-header {
   font-family: Helvetica;
@@ -916,7 +1615,7 @@ export default {
   margin-top: 32px;
 
   h2 {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -929,7 +1628,7 @@ export default {
   }
 
   .header-info {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -943,7 +1642,7 @@ export default {
 }
 .preview-body {
   margin-top: 24px;
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 14px;
   font-weight: normal;
   font-stretch: normal;
@@ -958,7 +1657,7 @@ export default {
   overflow: auto;
 
   h2 {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -983,93 +1682,6 @@ export default {
     }
   }
 }
-.bodyExpanded {
-  height: 100% !important;
-  max-height: 100% !important;
-  padding-bottom: 56px;
-}
-.preview-footer {
-  display: flex;
-  flex-direction: column;
-  margin-top: 24px;
-  padding-bottom: 24px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
-  }
-  .attachment-wrapper {
-    display: flex;
-    flex-direction: row;
-
-    .attachment {
-      width: 182px;
-      height: 32px;
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      margin-right: 16px;
-      border: 1px solid transparent;
-
-      .attach-icon {
-        min-width: 40px;
-        height: 32px;
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
-      .red-icon {
-        background-color: #bb2a45 !important;
-      }
-      .blue-icon {
-        background-color: #2196f3 !important;
-      }
-      .file-name {
-        width: 142px;
-        text-align: left;
-        display: block;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.58;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-        padding-left: 7px;
-      }
-    }
-    .red-attach {
-      border: 1px solid #bb2a45;
-    }
-    .blue-attach {
-      border: 1px solid #2196f3;
-    }
-  }
-}
-.unselected-warn {
-  border-bottom: 1px solid #bb2a45;
-  color: #bb2a45;
-  padding: 0 2px !important;
-}
-::v-deep .v-autocomplete {
-  .v-input__slot {
-    box-shadow: unset !important;
-    border: 1px solid rgba(0, 0, 0, 0.24) !important;
-  }
-}
-::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
-  margin-top: 0 !important;
-  display: flex;
-  align-items: center;
-}
 .first-date {
   ::v-deep .v-input__slot {
     border-top-right-radius: 0 !important;
@@ -1093,7 +1705,7 @@ export default {
   }
 }
 .date-picker {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   ::v-deep .v-input__slot {
     box-shadow: unset !important;
     border: 1px solid rgba(0, 0, 0, 0.24);
@@ -1101,7 +1713,7 @@ export default {
     text-align: center;
 
     input {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 13px;
       font-weight: normal;
       font-stretch: normal;
@@ -1123,12 +1735,6 @@ export default {
 }
 .date-col {
   position: relative;
-
-  @media only screen and (max-width: 1025px) {
-    width: 35% !important;
-    max-width: 35% !important;
-    padding: 0 !important;
-  }
 }
 .date-icon {
   top: 12px;
@@ -1140,8 +1746,8 @@ export default {
 .date-to {
   position: absolute;
   left: 0;
-  top: 11px;
-  font-family: 'Open Sans', sans-serif !important;
+  top: 10px;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 13px;
   font-weight: normal;
   font-stretch: normal;
@@ -1189,16 +1795,14 @@ export default {
   border: 1px solid transparent !important;
 }
 ::v-deep .v-input > .v-input__control > .v-text-field__details {
-  bottom: -24px !important;
-  position: absolute;
-  left: 0;
+  // error messages.
 }
 ::v-deep .v-application input {
   border-radius: 8px !important;
   border: solid 1px rgba(0, 0, 0, 0.16) !important;
 }
 .required {
-  font-family: 'Open Sans', sans-serif !important;
+  font-family: "Open Sans", sans-serif !important;
   font-size: 9px;
   font-weight: normal;
   font-stretch: normal;
@@ -1211,8 +1815,8 @@ export default {
 }
 .close-incident {
   position: absolute;
-  right: 26px;
-  top: 26px;
+  right: -13px;
+  top: 13px;
 }
 ::v-deep
   .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
@@ -1243,7 +1847,7 @@ export default {
   transition: all 0.3s ease-in-out;
 
   .select-header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -1267,36 +1871,818 @@ export default {
   padding-left: 10px;
   width: 100% !important;
 }
-.footer-actions {
-  align-items: center;
-  bottom: 0;
-  background-color: #f5f7fa;
-  display: flex;
-  left: 0;
-  position: fixed;
-  justify-content: space-between;
-  padding: 0 96px;
-  height: 68px;
-  width: 100%;
-  z-index: 9999;
 
-  .cancel-btn {
-    background-color: transparent !important;
-    border-radius: 18px !important;
-    border: solid 1px #f56c6c !important;
-    color: #f56c6c !important;
+// Email Preview css
+.preview-header {
+  margin-top: 24px;
+
+  h2 {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 16px;
+    width: 100%;
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-height: 80px;
   }
-  .previous-btn {
+
+  .header-info {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+.preview-body {
+  margin-top: 24px;
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  border-bottom: 1px solid #b3d4fc;
+  position: relative;
+  padding-bottom: 24px;
+  min-height: auto;
+  max-height: 500px;
+  overflow: auto;
+
+  .company-img {
+    display: flex;
+    position: absolute;
+    right: 0;
+    top: 20px;
+    width: 84px;
+    height: 84px;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+.bodyExpanded {
+  height: 100% !important;
+  max-height: 100% !important;
+  padding-bottom: 56px;
+}
+.preview-footer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+
+  h2 {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    padding-bottom: 16px;
+  }
+  .attachment-wrapper {
+    display: flex;
+    flex-direction: row;
+
+    .attachment {
+      width: 182px;
+      height: 32px;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      margin-right: 16px;
+
+      .attach-icon {
+        min-width: 40px;
+        height: 32px;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+      }
+      .red-icon {
+        background-color: #bb2a45 !important;
+      }
+      .blue-icon {
+        background-color: #2196f3 !important;
+      }
+      span {
+        width: 100%;
+        text-align: center;
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 12px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.58;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+      }
+    }
+    .red-attach {
+      background-color: #f3e1e5;
+    }
+    .blue-attach {
+      background-color: #f1f8fe;
+    }
+  }
+}
+.preview-buttons {
+  margin-top: 24px;
+  padding-bottom: 13px;
+  display: flex;
+  flex-direction: row;
+  border-top: 1px solid #b3d4fc;
+  padding-top: 24px;
+
+  ::v-deep .v-btn {
     border-radius: 18px !important;
+    border: solid 1px #909399;
+    box-shadow: unset !important;
+    background-color: #fff !important;
+    margin-right: 16px;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.87);
+    padding-left: 16px !important;
+
+    .v-icon {
+      color: #909399;
+      font-size: 19px !important;
+      margin-right: 8px;
+      margin-top: 1px;
+      border: unset !important;
+    }
+  }
+  .active-act {
+    color: #2196f3 !important;
     border: solid 1px #2196f3 !important;
+  }
+}
+.preview-border {
+  border-top: 1px solid #b3d4fc;
+  padding-top: 24px;
+}
+
+// Details css
+.detail-parts:first-child {
+  margin-top: 24px !important;
+}
+.detail-parts {
+  margin-top: 16px;
+
+  .detail-black {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px !important;
+  }
+  .detail-red {
+    color: rgba(219, 37, 37, 0.87) !important;
+  }
+}
+.detail-discovery {
+  margin-top: 24px;
+
+  .disc-header {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    padding-bottom: 8px;
+  }
+  .discovery-p {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+.impact-row {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 8px;
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+
+  .impact-left {
+    min-width: 100px;
+    font-weight: 600 !important;
+  }
+  .impact-right {
+    margin-top: 2px;
+    max-width: 80%;
+  }
+}
+.border-padding {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #b3d4fc;
+}
+.member-company-body {
+  ::v-deep .v-slide-group__content {
+    border-bottom: unset !important;
+  }
+}
+.expand-contaniner {
+  width: 100%;
+  height: 50px;
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  bottom: 0;
+  background-image: linear-gradient(to bottom, transparent, #fff 50%);
+
+  button,
+  .v-btn:not(.v-btn--round).v-size--default {
+    width: auto !important;
+    height: 24px !important;
+    border-radius: 12px !important;
+    background-color: #409eff !important;
+    box-shadow: unset !important;
+    color: #fff;
+    text-transform: capitalize !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding-left: 13px !important;
+
+    i {
+      width: 18px !important;
+    }
+  }
+}
+.opacityExpanded {
+  background-image: none !important;
+}
+.preview-comments {
+  height: 0;
+  opacity: 0;
+  transition: max-height 0.25s ease-in;
+  overflow: hidden;
+
+  .comment-row {
+    display: flex;
+    flex-direction: row;
+    padding-top: 6px;
+
+    .comment-input {
+      margin-top: 3px;
+      margin-right: 16px;
+
+      ::v-deep .v-input__slot {
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 13px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.54);
+        padding-left: 24px !important;
+        max-height: 70px;
+        min-height: 40px;
+
+        textarea {
+          max-height: 70px;
+          overflow: auto;
+          margin-bottom: 5px;
+          margin-top: 2px;
+          margin-right: 2px;
+        }
+        label {
+          top: 10px;
+        }
+        fieldset {
+          padding-left: 18px !important;
+        }
+      }
+    }
+    .send-btn {
+      border-radius: 18px !important;
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1),
+        0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+      background-color: #2196f3 !important;
+      color: #fff !important;
+      height: 36px !important;
+      margin-top: 5px;
+
+      i {
+        font-size: 18px !important;
+        padding-right: 8px;
+      }
+    }
+  }
+  .comment-row {
+    border-radius: 4px;
+    background-color: #f5f7fa;
+    display: flex;
+    padding: 16px;
+    margin-bottom: 8px;
+
+    .user-wrapper {
+      .username,
+      .company-name {
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #2196f3;
+        padding-right: 4px;
+        cursor: pointer;
+      }
+      .company-name {
+        padding-left: 4px;
+      }
+    }
+    .the-comment {
+      margin-bottom: 0 !important;
+      padding-top: 8px !important;
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .see-all-comments {
+    padding-top: 16px;
+    padding-bottom: 24px;
+
+    span {
+      text-decoration: none;
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: #2196f3;
+      cursor: pointer;
+    }
+  }
+}
+.open-comments {
+  min-height: 226px;
+  height: auto !important;
+  transition: max-height 0.25s ease-in;
+  padding-bottom: 24px;
+  opacity: 1;
+  z-index: -5;
+}
+.add-comment {
+  background-color: #fff !important;
+  height: 60px;
+  padding: 0 !important;
+}
+.unselected-warn {
+  border-bottom: 1px solid #bb2a45;
+  color: #bb2a45;
+  padding: 0 2px !important;
+}
+.hide-buttons {
+  opacity: 0;
+  padding: 0 !important;
+  height: 20px !important;
+}
+.display-none {
+  display: none !important;
+}
+.tooltip-wrapper {
+  max-width: 250px;
+  width: 130px;
+  height: 50px;
+  border-radius: 4px;
+  background-color: #6d6d6d;
+  position: absolute;
+  top: -55px;
+  left: -35px;
+  border-radius: 4px;
+  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+  padding: 8px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 34px;
+  }
+  span {
+    color: rgba(255, 255, 255, 0.87) !important;
+    font-size: 12px !important;
+    line-height: 1.33 !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-weight: 400;
+  }
+  span:nth-child(2) {
+    padding-top: 4px;
+  }
+}
+
+// Threat sharing Content
+.threat-sharing-content {
+  min-height: 200px;
+  width: 100%;
+  padding: 24px !important;
+  background-color: #ffffff;
+  border-radius: 20px !important;
+
+  @media only screen and (max-width: 500px) {
+    padding: 16px !important;
+  }
+}
+.ts-header {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.ts-header-btn-1 {
+  display: flex;
+}
+.ts-title {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 24px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  max-width: 79%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+}
+// Threat sharing Content End
+
+.notification-wrapper {
+  background-color: #fff;
+  padding: 0;
+}
+.v-menu__content {
+  border-radius: 8px !important;
+  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+  .v-list-item {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .v-list-item__title {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: var(--black-87);
+  }
+}
+
+.v-application--is-ltr .v-list-item__icon:first-child {
+  margin-right: 10px !important;
+}
+.ts-user-comp-detail {
+  align-items: center;
+  display: flex;
+  margin-top: 8px;
+}
+::v-deep .v-btn--contained {
+  border-radius: 18px !important;
+  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+}
+::v-deep .v-data-footer {
+  margin-top: 24px !important;
+}
+::v-deep .v-data-footer__select {
+  .v-select {
+    margin: 0 !important;
+    margin-top: 3px !important;
+    margin-left: 32px !important;
+    height: 30px !important;
+  }
+  .v-text-field > .v-input__control > .v-input__slot:after {
+    border: none !important;
+    display: none !important;
+  }
+  .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+    border: none !important;
+  }
+  .v-input__append-inner {
+    margin-left: 0 !important;
+    margin-top: 3px !important;
+    margin-right: 5px !important;
+    padding-left: 0 !important;
+  }
+  .v-select__slot {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 27px !important;
+    background-color: #f2f2f2 !important;
+
+    .v-select__selections {
+      margin-left: 10px;
+    }
+  }
+  .v-input__icon {
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+  }
+}
+::v-deep .v-btn:not(.v-btn--round).v-size--default,
+::v-deep .v-btn--icon.v-size--default {
+  height: 36px !important;
+}
+::v-deep .v-btn--icon.v-size--default {
+  margin-left: 4px;
+  width: 36px !important;
+}
+
+.ts-tags {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  max-width: max-content;
+
+  > .tag-btn,
+  > div > .tag-btn {
+    border-radius: 18px;
+    border: solid 1.5px #c0c4cc;
+    background-color: #fff;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #000000;
+    height: 32px !important;
+  }
+}
+.ts-footer {
+  align-items: center;
+  display: flex;
+  margin-top: 22px;
+  margin-left: 0;
+  margin-right: 0;
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 12px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.58;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.ts-like {
+  margin-right: 10px;
+  align-items: center;
+  display: flex;
+
+  span {
+    align-items: center;
+    font-size: inherit;
+    line-height: unset;
+    line-height: 2;
+    margin-left: 4px;
+  }
+}
+.ts-message {
+  margin-right: 40px;
+  align-items: center;
+  display: flex;
+
+  span {
+    align-items: center;
+    font-size: inherit;
+    line-height: unset;
+    line-height: 2;
+    margin-left: 4px;
+  }
+}
+.ts-harmful {
+  margin-right: 15px;
+  align-items: center;
+  display: flex;
+
+  span {
+    align-items: center;
+    font-size: inherit;
+    line-height: unset;
+    line-height: 2;
+  }
+}
+.ts-success {
+  display: flex;
+  align-items: center;
+
+  span {
+    align-items: center;
+    font-size: inherit;
+    line-height: unset;
+    line-height: 2;
+  }
+}
+.ts-body {
+  margin-top: 10px;
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+}
+.ts-user-comp {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.58;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+
+  a {
+    text-decoration: none;
+  }
+
+  .ts-user-date {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+.ts-action-counter {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: #4a4a4a;
+}
+.ts-actions {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.58;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  margin-left: 3px;
+}
+::v-deep .v-expansion-panel {
+  border-radius: 20px !important;
+  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
+    0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+  background-color: #fff;
+  border: unset !important;
+}
+::v-deep .v-expansion-panel::before {
+  box-shadow: unset !important;
+}
+::v-deep .v-expansion-panel-header {
+  box-shadow: unset !important;
+  border: unset !important;
+}
+
+.tab-bar {
+  width: 100%;
+  height: 48px;
+  padding: 0;
+  background-color: #f5f7fa;
+  border-radius: 0 !important;
+
+  ::v-deep .v-slide-group__wrapper {
+    padding-left: 0 !important;
+  }
+  ::v-deep .v-slide-group__content {
+    margin-right: 0 !important;
+  }
+  ::v-deep .v-tab--active {
     color: #2196f3 !important;
   }
-  .create-btn {
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    background-color: #2196f3 !important;
-    color: #fff !important;
+  ::v-deep .v-tab {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center !important;
+    margin-right: 32px !important;
+    padding: 0 !important;
+    padding-right: 3px !important;
+    min-width: auto !important;
   }
+  ::v-deep .v-tabs-bar {
+    padding: 0 24px;
+    height: 48px !important;
+    border-radius: 0 !important;
+  }
+}
+::v-deep .v-window {
+  border-radius: 20px !important;
+  margin: 0 24px !important;
+}
+::v-deep .v-expansion-panel-content {
+  border-radius: 20px !important;
+  font-family: "Open Sans", sans-serif !important;
+}
+::v-deep .v-expansion-panel-content__wrap {
+  padding: 0 !important;
+}
+::v-deep .title-field {
+  .v-text-field__details {
+    margin-bottom: 0 !important;
+  }
+}
+::v-deep .v-text-field.v-text-field--enclosed .v-text-field__details {
+  margin-bottom: 8px;
+}
+.disabled-cursor,
+button:disabled {
+  cursor: no-drop !important;
+  pointer-events: all !important;
+}
+.file-name {
+  padding-left: 7px;
+}
+#upload-file-input {
+  opacity: 0;
+  position: absolute;
+}
+
+input[type=file], /* FF, IE7+, chrome (except button) */
+input[type=file]::-webkit-file-upload-button {
+  /* chromes and blink button */
+  cursor: pointer !important;
 }
 @media only screen and (max-width: 1025px) {
   .hide-step {
@@ -1308,5 +2694,61 @@ export default {
 }
 .display-none {
   display: none !important;
+}
+
+#share-settings-links {
+  display: block;
+}
+.chevron-down {
+  transition: 0.3s all ease-in-out;
+  transform: rotate(180deg);
+
+  i {
+    text-decoration: none !important;
+  }
+}
+.mal-list-wrapper {
+  .mal-list-row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+
+    .mal-icon-wrapper {
+      height: 35px;
+      width: 35px;
+      padding-top: 5px;
+    }
+  }
+}
+.mal-list-wrapper:hover,
+.mal-list-wrapper:active,
+.mal-list-wrapper:focus {
+  background-color: #f2f2f2;
+  transition: all 0.2s ease-in-out;
+}
+::v-deep .malicious-style {
+  border-color: #bb2a45 !important;
+  background-color: #f3e1e5 !important;
+  color: #bb2a45 !important;
+
+  .share-setting-text {
+    text-decoration: none !important;
+    text-decoration-color: transparent !important;
+    text-decoration-style: unset !important;
+    border: none !important;
+    border-bottom: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+  }
+}
+::v-deep .v-btn--icon.v-size--default.chevron-btn-menu {
+  height: 20px !important;
+  width: 20px !important;
+
+  i {
+    height: 20px !important;
+    width: 20px !important;
+  }
 }
 </style>

@@ -743,6 +743,7 @@
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/header-all.svg" />
                   </div>
+
                   <v-switch
                     :id="'attachment-switch-' + s.Id"
                     v-if="shareSettings.allHeader && shareSettings.allHeader.length < 1"
@@ -757,7 +758,7 @@
                   :key="ind + s.Id"
                   :class="{ 'minify-switch': !filterOpened }"
                   class="switch-row"
-                  v-if="s && s.Id && s.Value"
+                  v-if="shareSettings && shareSettings.subject.length < 1"
                 >
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/short-text.svg" />
@@ -789,7 +790,7 @@
                           <div class="mal-icon-wrapper">
                             <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
                           </div>
-                          Flagged Subject
+                          Flagged Sender
                         </v-list-item-title>
                       </v-list-item>
                     </v-list>
@@ -800,8 +801,8 @@
                   :key="ind + s.Id"
                   :class="{ 'minify-switch': !filterOpened }"
                   class="switch-row"
-                  v-if="s && s.Id && s.Value"
                 >
+                  {{ s }}
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/user-out.svg" />
                   </div>
@@ -843,8 +844,9 @@
                   :key="ind + s.Id"
                   :class="{ 'minify-switch': !filterOpened }"
                   class="switch-row"
-                  v-if="s && s.Id && s.Value"
+                  v-if="s && s"
                 >
+                  {{ s }}
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/user-in.svg" />
                   </div>
@@ -920,36 +922,6 @@
                     v-model="s.IsShow"
                   ></v-switch>
                   <label v-if="filterOpened">“{{ s.Name }}”</label>
-                  <v-menu v-model="linkChevron[ind]" right offset-x transition="scale-transition">
-                    <template v-slot:activator="{ on }">
-                      <v-btn class="chevron-btn-menu" icon>
-                        <v-icon
-                          :class="{ 'chevron-down': linkChevron[ind] }"
-                          v-on="on"
-                          @click="linkChevron[ind] = !linkChevron[ind]"
-                          >mdi-chevron-down</v-icon
-                        >
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
-                        <v-list-item-title class="mal-list-row">
-                          <div class="mal-icon-wrapper">
-                            <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
-                          </div>
-                          None
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
-                        <v-list-item-title class="mal-list-row">
-                          <div class="mal-icon-wrapper">
-                            <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
-                          </div>
-                          Phishing Link
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
                 </div>
               </div>
 
@@ -990,41 +962,8 @@
                   </div>
                   <v-switch :id="'attach-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">{{ s.Name }}</label>
-                  <v-menu v-model="attcChevron[ind]" right offset-x transition="scale-transition">
-                    <template v-slot:activator="{ on }">
-                      <v-btn class="chevron-btn-menu" icon>
-                        <v-icon
-                          :class="{ 'chevron-down': attcChevron[ind] }"
-                          v-on="on"
-                          @click="attcChevron[ind] = !attcChevron[ind]"
-                          >mdi-chevron-down</v-icon
-                        >
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
-                        <v-list-item-title class="mal-list-row">
-                          <div class="mal-icon-wrapper">
-                            <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
-                          </div>
-                          None
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
-                        <v-list-item-title class="mal-list-row">
-                          <div class="mal-icon-wrapper">
-                            <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
-                          </div>
-                          Malicious File
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
                 </div>
               </div>
-              <span v-if="allFiltersClosed()" class="filter-no-selected" id="select-one-attr"
-                >Please select at least 1 attribute</span
-              >
             </div>
           </div>
         </div>
@@ -1033,14 +972,9 @@
             <p>Preview</p>
             <span>See how your post will look like</span>
           </div>
-          <v-checkbox
-            class="is-anonym-check"
-            v-model="isAnonym"
-            label="Post as anonymous"
-            id="anonym-check"
-          ></v-checkbox>
+          <v-checkbox v-if="!isEditMode" v-model="isAnonym" label="Post as anonymous"></v-checkbox>
           <div id="last-preview-post" class="post-wrapper">
-            <v-expansion-panels :multiple="false" v-model="panel" :disabled="disabled" class="mb-4">
+            <v-expansion-panels v-model="panel" multiple class="mb-4">
               <v-expansion-panel>
                 <div class="threat-sharing-content">
                   <div class="ts-header">
@@ -1085,30 +1019,18 @@
                   <div class="ts-user-comp">
                     <div id="last-prev-user-comp" class="ts-user-comp-detail">
                       by
-                      <a v-if="userGetter.fullName" href="#" class="pl-1 pr-1">
-                        <span v-if="!isAnonym">{{ userGetter.fullName }}</span>
-                        <span v-else>Anonymous</span>
-                      </a>
+                      <a v-if="userGetter.fullName" href="#" class="pl-1 pr-1">{{
+                        userGetter.fullName
+                      }}</a>
                       <a v-else href="#" class="pl-1 pr-1">{{ userGetter.fullName }}</a> from
                       <a
                         v-if="userGetter.currentCompany && userGetter.currentCompany.name"
                         :id="userGetter.currentCompany.name"
                         href="#"
-                        class="pl-1 pr-1"
+                        class="pl-1"
+                        >{{ userGetter.currentCompany.name }}</a
                       >
-                        <span v-if="!isAnonym">{{ userGetter.currentCompany.name }}</span>
-                        <span v-else>Anonymous</span>
-                      </a>
-                      <a v-else class="pl-1 pr-1">Company Name</a> on
-                      <a
-                        v-if="postDetail && postDetail.Data && postDetail.Data.CommunityName"
-                        class="pl-1 pr-1"
-                      >
-                        {{ postDetail.Data.CommunityName }}
-                      </a>
-                      <a v-else class="pl-1 pr-1">
-                        Community Name
-                      </a>
+                      <a v-else class="pl-1">Company Name</a>
                     </div>
                     <div class="ts-user-date">
                       <span>{{ date }}</span>
@@ -1436,7 +1358,6 @@
                           "
                           :id="'subject-post-last-' + el.Id"
                           style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                          :class="[el.IsMalicious ? 'malicious-style' : '']"
                         >
                           Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}
                         </h2>
@@ -1448,7 +1369,6 @@
                           "
                           :id="'hidden-subj-' + el.Id"
                           style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                          :class="[el.IsMalicious ? 'malicious-style' : '']"
                         >
                           Subject: hidden by owner
                         </h2>
@@ -1462,7 +1382,6 @@
                                 uploadRespond.CommunityPostEmails[0].From.length &&
                                 el.IsShow
                             "
-                            :class="[el.IsMalicious ? 'malicious-style' : '']"
                           >
                             From: {{ uploadRespond.CommunityPostEmails[0].From }}
                             <br />
@@ -1487,17 +1406,7 @@
                             :id="'receiver-info' + uploadRespond.CommunityPostEmails[0].To"
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
-                            >
-                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                              <template v-slot:activator="{ on }">
-                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert</v-icon
-                                >
-                              </template>
-                              <span>This email address has been reported as a threat source</span>
-                            </v-tooltip>
+                            To: {{ uploadRespond.CommunityPostEmails[0].To }}
                           </div>
                           <div
                             v-else-if="
@@ -1508,17 +1417,7 @@
                             :id="'hidden-to' + uploadRespond.CommunityPostEmails[0].To"
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >To: hidden by owner</span
-                            >
-                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                              <template v-slot:activator="{ on }">
-                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert</v-icon
-                                >
-                              </template>
-                              <span>This email address has been reported as a threat source</span>
-                            </v-tooltip>
+                            To: hidden by owner
                           </div>
                           <div
                             v-for="(el, ind) of shareSettings.receiverInfo"
@@ -1531,17 +1430,7 @@
                             "
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
-                            >
-                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                              <template v-slot:activator="{ on }">
-                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert</v-icon
-                                >
-                              </template>
-                              <span>This email address has been reported as a threat source</span>
-                            </v-tooltip>
+                            CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}
                           </div>
                           <div
                             v-else-if="
@@ -1552,17 +1441,7 @@
                             :id="'hidden-cc' + uploadRespond.CommunityPostEmails[0].Cc"
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >CC: hidden by owner</span
-                            >
-                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                              <template v-slot:activator="{ on }">
-                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert</v-icon
-                                >
-                              </template>
-                              <span>This email address has been reported as a threat source</span>
-                            </v-tooltip>
+                            CC: hidden by owner
                           </div>
                           <div id="last-step-dates" v-if="uploadRespond.CommunityPostEmails[0]">
                             Date:
@@ -1750,7 +1629,6 @@
           <v-btn
             id="post-step-four-next-btn"
             v-if="step === 4"
-            :class="{ 'disabled-cursor': allFiltersClosed() }"
             class="create-btn"
             text
             color="#2196f3"
@@ -1936,11 +1814,9 @@ export default {
     subChevron: false,
     fromChevron: false,
     toChevron: false,
-    linkChevron: [],
-    attcChevron: [],
     msgEmlFile: null,
     toggle: false,
-    panel: 0,
+    panel: [],
     expanded: false,
     tab: 1,
     commentOpened: false,
@@ -1975,100 +1851,23 @@ export default {
         this.shareSettings.receiverInfo[0].IsShow = false
       }
     },
+    'header.sender': function(newVal, oldVal) {
+      if (newVal === false && newVal != oldVal) {
+        this.header.allHeader = false
+      }
+    },
+    'header.receiver': function(newVal, oldVal) {
+      if (newVal === false && newVal != oldVal) {
+        this.header.allHeader = false
+      }
+    },
     'shareSettings.allAttachments': function(newVal, oldVal) {
       if (newVal && newVal.length) {
         this.allAttachments = newVal[0].IsShow
       }
     },
-    'shareSettings.subject': {
-      handler: function(newVal, oldWal) {
-        if (
-          newVal &&
-          newVal.length &&
-          this.shareSettings.subject[0].IsShow &&
-          this.shareSettings.senderInfo[0].IsShow
-        ) {
-          this.allHeader = true
-        }
-        if (
-          newVal &&
-          newVal.length &&
-          this.shareSettings.subject[0].IsShow === false &&
-          this.shareSettings.senderInfo[0].IsShow === false
-        ) {
-          this.allHeader = false
-        }
-      },
-      deep: true
-    },
-    'shareSettings.senderInfo': {
-      handler: function(newVal, oldWal) {
-        if (
-          newVal &&
-          newVal.length &&
-          this.shareSettings.subject[0].IsShow &&
-          this.shareSettings.senderInfo[0].IsShow
-        ) {
-          this.allHeader = true
-        }
-        if (
-          newVal &&
-          newVal.length &&
-          this.shareSettings.subject[0].IsShow === false &&
-          this.shareSettings.senderInfo[0].IsShow === false
-        ) {
-          this.allHeader = false
-        }
-      },
-      deep: true
-    },
-    'shareSettings.receiverInfo': {
-      handler: function(newVal, oldWal) {
-        if (
-          newVal &&
-          newVal.length &&
-          this.shareSettings.subject[0].IsShow &&
-          this.shareSettings.senderInfo[0].IsShow &&
-          this.shareSettings.receiverInfo.every(item => item.IsShow === true)
-        ) {
-          this.allHeader = true
-        }
-        if (
-          newVal &&
-          newVal.length &&
-          this.shareSettings.subject[0].IsShow === false &&
-          this.shareSettings.senderInfo[0].IsShow === false &&
-          this.shareSettings.receiverInfo.every(item => item.IsShow === false)
-        ) {
-          this.allHeader = false
-        }
-      },
-      deep: true
-    },
-    'shareSettings.attachments': {
-      handler: function(newVal, oldWal) {
-        if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
-          this.allAttachments = true
-        }
-        if (newVal && newVal.length && newVal.every(item => item.IsShow === false)) {
-          this.allAttachments = false
-        }
-      },
-      deep: true
-    },
-    'shareSettings.links': {
-      handler: function(newVal, oldWal) {
-        if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
-          this.allLinks = true
-        }
-        if (newVal && newVal.length && newVal.every(item => item.IsShow === false)) {
-          this.allLinks = false
-        }
-      },
-      deep: true
-    },
     allAttachments(val) {
-      if (this.shareSettings && this.shareSettings.attachments) {
+      if (val && this.shareSettings && this.shareSettings.attachments) {
         for (let a = 0; a < this.shareSettings.attachments.length; a++) {
           if (val === true) {
             this.shareSettings.attachments[a].IsShow = true
@@ -2144,7 +1943,6 @@ export default {
             if (els && els.length) {
               for (var i = 0, l = els.length; i < l; i++) {
                 var el = els[i]
-                el.setAttribute('target', '_blank')
                 if (!a.IsShow) {
                   el.innerHTML = 'hidden by owner'
                   el.setAttribute('href', '#')
@@ -2156,10 +1954,6 @@ export default {
                 }
                 if (a.IsMalicious) {
                   el.classList.add('malicious-link')
-                  var iEl = document.createElement('span')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
                 }
               }
             }
@@ -2167,7 +1961,6 @@ export default {
             if (hiddenEls && hiddenEls.length) {
               for (var i = 0, l = hiddenEls.length; i < l; i++) {
                 var hiddenEl = hiddenEls[i]
-                hiddenEl.setAttribute('target', '_blank')
                 if (!a.IsShow) {
                   hiddenEl.innerHTML = 'hidden by owner'
                   hiddenEl.setAttribute('href', '#')
@@ -2179,10 +1972,6 @@ export default {
                 }
                 if (a.IsMalicious) {
                   hiddenEl.classList.add('malicious-link')
-                  var iEl = document.createElement('span')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  hiddenEl.appendChild(iEl)
                 }
               }
             }
@@ -2287,16 +2076,14 @@ export default {
       }
     },
     onBeforeLastStep() {
-      if (!this.allFiltersClosed()) {
-        this.createInc.createUser = this.$store.state.auth.user.fullName
-        this.createInc.createCompany = this.$store.state.auth.user.currentCompany.name
-        this.createInc.onPreview = true
-        this.step++
-        const refThis = this
-        setTimeout(function() {
-          refThis.previewHideShow()
-        }, 0)
-      }
+      this.createInc.createUser = this.$store.state.auth.user.fullName
+      this.createInc.createCompany = this.$store.state.auth.user.currentCompany.name
+      this.createInc.onPreview = true
+      this.step++
+      const refThis = this
+      setTimeout(function() {
+        refThis.previewHideShow()
+      }, 0)
     },
     onFinish() {
       const newSettings = []
@@ -2324,7 +2111,7 @@ export default {
         this.uploadRespond.AffectArea = this.uploadRespond.AffectArea.join(',')
       }
       this.uploadRespond.CommunityPostEmails[0].ShareSettings = newSettings
-      this.uploadRespond.IsAnonymous = this.isAnonym
+      this.uploadRespond.IsAnonymous = this.IsAnonym
 
       this.$store.dispatch('threadSharing/publishPostIncident', this.uploadRespond).then(() => {
         this.updateRightCol()
@@ -2352,7 +2139,6 @@ export default {
       if (this.$router.currentRoute.name !== 'Community') {
         this.$router.push('/community/' + localStorage.getItem('communityName'))
       } else {
-        this.$store.dispatch('threadSharing/getCommunityInfo')
         this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
         const yourPostsObj = {
           compId: localStorage.getItem('companyId'),
@@ -2399,17 +2185,12 @@ export default {
               // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
               for (var i = 0, l = els.length; i < l; i++) {
                 var el = els[i]
-                el.setAttribute('target', '_blank')
                 if (!a.IsShow) {
                   el.innerHTML = 'hidden by owner'
                   el.setAttribute('href', '#')
                 }
                 if (a.IsMalicious) {
                   el.classList.add('malicious-link')
-                  var iEl = document.createElement('span')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
                 }
               }
             }
@@ -2432,17 +2213,12 @@ export default {
           var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
           for (var i = 0, l = els.length; i < l; i++) {
             var el = els[i]
-            el.setAttribute('target', '_blank')
             if (!a.IsShow) {
               el.innerHTML = 'hidden by owner'
               el.setAttribute('href', '#')
             }
             if (a.IsMalicious) {
               el.classList.add('malicious-link')
-              var iEl = document.createElement('span')
-              iEl.className +=
-                'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-              el.appendChild(iEl)
             }
           }
         }
@@ -2509,23 +2285,6 @@ export default {
           }
         }
       }, 300)
-    },
-    allFiltersClosed() {
-      if (
-        this.shareSettings.subject[0].IsShow === false &&
-        this.shareSettings.senderInfo[0].IsShow === false &&
-        this.shareSettings.receiverInfo.every(item => item.IsShow === false) &&
-        ((this.shareSettings.attachments.length &&
-          this.shareSettings.attachments.every(item => item.IsShow === false)) ||
-          !this.shareSettings.attachments.length) &&
-        ((this.shareSettings.links.length &&
-          this.shareSettings.links.every(item => item.IsShow === false)) ||
-          !this.shareSettings.links.length)
-      ) {
-        return true
-      } else {
-        return false
-      }
     }
   },
   mounted() {
@@ -2535,9 +2294,6 @@ export default {
     }
     this.items = businessCats
     this.$store.dispatch('threadSharing/fetchListedIncidents')
-    if (this.postDetail && this.postDetail.Data) {
-      this.isAnonym = this.postDetail.Data.IsAnonymous
-    }
 
     // If user wants to edit the post
     if (this.updatePost && this.updatePost.length) {
@@ -3388,11 +3144,6 @@ export default {
       height: auto;
     }
   }
-
-  ::v-deep a {
-    display: block !important;
-    min-width: max-content !important;
-  }
 }
 .bodyExpanded {
   height: 100% !important;
@@ -3572,7 +3323,6 @@ export default {
   border-bottom: 1px solid #2196f3 !important;
   color: rgba(0, 0, 0, 0.87) !important;
   width: max-content;
-  max-width: 100%;
 }
 .clean-link {
   padding: 0 2px !important;
@@ -3748,7 +3498,6 @@ export default {
   display: flex;
   flex-direction: column;
   margin-top: 24px;
-  position: relative;
 
   h2 {
     font-family: 'Open Sans', sans-serif !important;
@@ -3764,8 +3513,6 @@ export default {
   .attachment-wrapper {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    max-width: 100%;
 
     .attachment {
       width: 182px;
@@ -3774,7 +3521,6 @@ export default {
       display: flex;
       flex-direction: row;
       margin-right: 16px;
-      margin-bottom: 8px;
 
       .attach-icon {
         min-width: 40px;
@@ -4532,9 +4278,7 @@ input[type=file]::-webkit-file-upload-button {
   background-color: #f2f2f2;
   transition: all 0.2s ease-in-out;
 }
-::v-deep .malicious-style,
-::v-deep .malicious-link {
-  border-bottom: 1px solid #bb2a45 !important;
+::v-deep .malicious-style {
   border-color: #bb2a45 !important;
   background-color: #f3e1e5 !important;
   color: #bb2a45 !important;
@@ -4551,59 +4295,12 @@ input[type=file]::-webkit-file-upload-button {
   }
 }
 ::v-deep .v-btn--icon.v-size--default.chevron-btn-menu {
-  height: 30px !important;
-  width: 30px !important;
-  margin-top: 10px;
+  height: 20px !important;
+  width: 20px !important;
 
   i {
-    height: 30px !important;
-    width: 30px !important;
+    height: 20px !important;
+    width: 20px !important;
   }
-}
-::v-deep .is-anonym-check {
-  height: 28px !important;
-  margin-bottom: 24px;
-  margin-top: 0 !important;
-  label {
-    height: 26px !important;
-  }
-}
-
-.malicious-icon {
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-}
-::v-deep .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
-}
-::v-deep .red-malicious-alert::before {
-  border: unset !important;
-}
-::v-deep .malicious-style {
-  .red-malicious-alert:not(:first-child) {
-    display: none !important;
-  }
-}
-.filter-no-selected {
-  position: absolute;
-  bottom: -20px;
-  right: 20px;
-  color: #d0021b;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 9px;
 }
 </style>

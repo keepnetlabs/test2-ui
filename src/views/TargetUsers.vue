@@ -428,12 +428,27 @@ export default {
         name: 'Create a group with user',
         icon: 'mdi-account-multiple',
         action: 'createGroupWithUser'
+      },
+      {
+        name: 'Sync User',
+        icon: 'mdi-sync',
+        action: 'syncUser'
+      },
+      {
+        name: 'Download',
+        icon: 'mdi-download',
+        action: 'downloadRow',
+        subElements: ['PDF', 'CSV', 'XLS']
+      },
+      {
+        name: 'Delete',
+        icon: 'mdi-delete',
+        action: 'deleteRow'
       }
     ],
     addUsers: {
       show: true,
-      popUp: true,
-      action: 'addUser'
+      popUp: true
     },
     iEmpty: {
       message: 'You do not have any users added, yet',

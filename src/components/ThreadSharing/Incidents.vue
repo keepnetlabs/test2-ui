@@ -90,37 +90,6 @@
         :isEditMode="editIncident"
       />
     </v-overlay>
-    <v-dialog v-model="deleteIncidentModal" max-width="444" :opacity="0.23">
-      <v-card light class="confirm-dialog pb-4 pa-6" style="width: 444px;">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">
-              mdi-delete
-            </v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Delete Incident?</v-list-item-title>
-            <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-              >{{ postName }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <div class="delete-dialog-body">
-          <span class="delete-info">
-            This post will be deleted
-          </span>
-        </div>
-        <v-card-actions class="pa-0 pt-4">
-          <v-spacer></v-spacer>
-          <v-btn text color="#2196f3" class="pa-0" @click="deleteIncidentModal = false">
-            CANCEL
-          </v-btn>
-          <v-btn text color="#f56c6c" class="pa-0" @click="deleteTheIncident()">
-            DELETE
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <v-card-text id="incidents-component-card" class="pt-0">
       <v-data-iterator
         :items="postList"
@@ -152,14 +121,13 @@
               style="border-image: none !important;"
               class="mb-4 mt-0"
               id="edit-incident-post"
-              popout
             >
               <singlePost
                 :post="post"
                 :postIndex="ind"
                 :totalPostCount="items.items.length"
                 @edit-incident="editTheIncident"
-                @delete-incident="deleteIncidentAct"
+                @delete-incident="deleteTheIncident"
               />
             </v-expansion-panel>
           </v-expansion-panels>
@@ -240,7 +208,6 @@ export default {
     editIncident: false,
     postList: [],
     postId: null,
-    postName: null,
     emailData: {
       regex: v =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/@\/,\/.\/\-\/_\s]*$/gi.test(v) ||
@@ -281,8 +248,7 @@ export default {
     maxCharForEmail: false,
     emailSearch: null,
     validEmail: false,
-    sharedPost: null,
-    deleteIncidentModal: false
+    sharedPost: null
   }),
   computed: {
     ...mapGetters({
@@ -408,36 +374,34 @@ export default {
       this.editIncident = true
       this.postId = postId
     },
-    deleteIncidentAct(post) {
-      this.postId = post.postId
-      this.postName = post.name
-      this.postCommunityId = post.postCommunityId
-      this.deleteIncidentModal = true
-    },
-    deleteTheIncident() {
+    deleteTheIncident(postId) {
       const compId =
         (this.userGetter.currentCompany && this.userGetter.currentCompany.id) ||
         localStorage.getItem('companyId')
       const communId = this.selectedCommunity.id || localStorage.getItem('communityId')
       const userId = localStorage.getItem('userId')
-      const refThis = this
       this.$store
         .dispatch('threadSharing/deleteTheIncident', {
           CompanyId: compId,
-          CommunityId: this.postCommunityId,
-          CommunityPostId: this.postId,
-          ModifyUserId: userId,
-          PostName: this.postName
+          CommunityId: communId,
+          CommunityPostId: postId,
+          ModifyUserId: userId
         })
         .then(() => {
-          refThis.deleteIncidentModal = false
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+          this.updateRightCol()
         })
+    },
+    updateRightCol() {
+      if (this.$router.currentRoute.name !== 'Community') {
+        this.$router.push('/community/' + localStorage.getItem('communityName'))
+      } else {
+        this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+        const yourPostsObj = {
+          compId: localStorage.getItem('companyId'),
+          userId: localStorage.getItem('userId')
+        }
+        this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+      }
     },
     closePost() {
       this.isWantToPostIncident = false
@@ -826,17 +790,5 @@ export default {
 }
 ::v-deep .v-form {
   width: 100%;
-}
-.delete-dialog-body {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-  margin-top: 38px;
-  margin-bottom: 4px;
 }
 </style>

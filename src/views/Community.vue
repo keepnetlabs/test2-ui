@@ -146,13 +146,9 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="pl-0 pr-0 pt-7 pb-6">
-          <span v-if="fetchedCommunity.IsPrivate" class="delete-info">
-            You are leaving "{{ fetchedCommunity.Name }}". You won’t be able to access this
+          <span class="delete-info">
+            You are leaving {{ fetchedCommunity.Name }}. You won’t be able to post incidents to this
             community
-          </span>
-          <span v-else class="delete-info">
-            You are leaving "{{ fetchedCommunity.Name }}". You won’t be able to post incidents to
-            this community
           </span>
         </v-list-item>
         <div class="d-flex flex-row flex-wrap justify-end">
@@ -448,15 +444,9 @@ export default {
     },
     selectedCompany(val, prev) {
       if (val && val != prev) {
-        this.dispatchPage()
-        const refThis = this
         this.$store.dispatch('threadSharing/getCommunities').then(() => {
-          if (
-            !refThis.isOwnerOfTheCommunity() &&
-            !refThis.isJoined() &&
-            localStorage.getItem('communityPrivacy') === 'true'
-          ) {
-            refThis.$router.push('/threat-sharing')
+          if (!this.isJoined() && localStorage.getItem('communityPrivacy') === 'true') {
+            this.$router.push('/threat-sharing')
           }
         })
       }
@@ -527,11 +517,7 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         this.getCurrentUser()
       }
-      if (
-        !this.isOwnerOfTheCommunity() &&
-        !this.isJoined() &&
-        localStorage.getItem('communityPrivacy') === 'true'
-      ) {
+      if (!this.isJoined && localStorage.getItem('communityPrivacy') === 'true') {
         this.$router.push('/threat-sharing')
       }
       window.addEventListener('resize', this.onResize)
@@ -748,18 +734,6 @@ export default {
     mobileInfoClicked() {
       this.isMobileInfo = true
       this.$store.commit('threadSharing/SET_MOBILE_INFO', true)
-    },
-    dispatchPage() {
-      this.$store.dispatch('threadSharing/getCommunities')
-      this.$store.dispatch('threadSharing/getBusinessCategories')
-      this.$store.dispatch('threadSharing/getSuggestedCommunities')
-      this.$store.dispatch('threadSharing/getRequestsCompany', localStorage.getItem('companyId'))
-      this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-      const yourPostsObj = {
-        compId: localStorage.getItem('companyId'),
-        userId: localStorage.getItem('userId')
-      }
-      this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
     }
   }
 }
@@ -1312,11 +1286,6 @@ export default {
   line-height: normal;
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.72);
-  max-width: 100%;
-  display: block;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .invite-sub-header {
   font-family: 'Open Sans', sans-serif !important;

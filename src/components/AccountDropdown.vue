@@ -1,9 +1,6 @@
 <template>
   <div class="d-flex flex-row flex-wrap align-content-start flex-lg-grow-0 account-dd">
-    <div
-      v-if="userGetter && userGetter.role && (userGetter.role.id === 1 || userGetter.role.id === 2)"
-      class="account-wrapper flex-grow-1"
-    >
+    <div v-if="companyDD && companyDD.length > 0" class="account-wrapper flex-grow-1">
       <v-select
         v-model="selectedCompany"
         :items="getDropdown"
@@ -53,8 +50,7 @@ export default {
     ...mapGetters({
       getDropdown: 'dashboard/getSwitchAccountDropdown',
       selectedCompanyFromStore: 'dashboard/getSelectedCompany',
-      companyDD: 'dashboard/getCompanyDropdowns',
-      userGetter: 'auth/userGetter'
+      companyDD: 'dashboard/getCompanyDropdowns'
     }),
     selectedCompany: {
       get() {

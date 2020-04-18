@@ -13,6 +13,7 @@ const AuthenticationService = {
     } else {
       return AuthenticationStatus.AUTHENTICATED
     }
+    //return AuthenticationStatus.AUTHENTICATED @todo delete
   },
   getTokenModel() {
     let tokenString = localStorage.getItem(CookieKeys.AUTH_KEY)

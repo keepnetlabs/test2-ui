@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dbc6ef8b-75ad-4ce7-903a-7f95996e45c9" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="keep-net-vue" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="Vue Single File Component" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1RMkFjjBVOsPFPodGkb3fffERNj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="C:\Users\yigit\Desktop\keep-net-vue\node_modules\prettier" />
+    <property name="settings.editor.selected.configurable" value="watcher.settings" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\WebStorm 2019.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\yigit\source\Workspaces\Keepnet\PathComTrUI\src\assets\img" />
+      <recent name="C:\Users\yigit\Desktop\keep-net-vue\src\router" />
+      <recent name="C:\Users\yigit\Desktop\keep-net-vue\src\store\modules" />
+      <recent name="C:\Users\yigit\Desktop\keep-net-vue\src\assets\img" />
+      <recent name="C:\Users\yigit\Desktop\keep-net-vue\src\layout" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\yigit\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dbc6ef8b-75ad-4ce7-903a-7f95996e45c9" name="Default Changelist" comment="" />
+      <created>1569484250562</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1569484250562</updated>
+      <workItem from="1569484253547" duration="664000" />
+      <workItem from="1569485003405" duration="18577000" />
+      <workItem from="1569569190177" duration="19046000" />
+      <workItem from="1569690022243" duration="2769000" />
+      <workItem from="1569825427645" duration="20721000" />
+      <workItem from="1569913056744" duration="18190000" />
+      <workItem from="1569936075835" duration="6304000" />
+      <workItem from="1569999652079" duration="20633000" />
+      <workItem from="1570085985137" duration="27227000" />
+      <workItem from="1570174678566" duration="20507000" />
+      <workItem from="1570433267399" duration="17652000" />
+      <workItem from="1570521985296" duration="15034000" />
+      <workItem from="1570604150027" duration="1198000" />
+      <workItem from="1570628481591" duration="3874000" />
+      <workItem from="1570690324594" duration="17209000" />
+      <workItem from="1570774461653" duration="10304000" />
+      <workItem from="1571036101445" duration="1092000" />
+      <workItem from="1571041402849" duration="3192000" />
+      <workItem from="1571125381123" duration="1230000" />
+      <workItem from="1571211187779" duration="610000" />
+      <workItem from="1571213810084" duration="1112000" />
+      <workItem from="1571215130224" duration="870000" />
+      <workItem from="1571216011891" duration="5944000" />
+      <workItem from="1571295160015" duration="3516000" />
+      <workItem from="1571383137519" duration="15021000" />
+      <workItem from="1571640570865" duration="20801000" />
+      <workItem from="1571730286755" duration="20934000" />
+      <workItem from="1571767434229" duration="9029000" />
+      <workItem from="1571813374096" duration="18064000" />
+      <workItem from="1571901697681" duration="27884000" />
+      <workItem from="1571986455863" duration="20068000" />
+      <workItem from="1572247886722" duration="37392000" />
+      <workItem from="1572420197423" duration="3147000" />
+      <workItem from="1572502015393" duration="24968000" />
+      <workItem from="1572591590668" duration="41141000" />
+      <workItem from="1572852664022" duration="601000" />
+      <workItem from="1573044494849" duration="1730000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/components/TourWidget.vue</url>
+          <line>204</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/components/SessionExpired.vue</url>
+          <line>109</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

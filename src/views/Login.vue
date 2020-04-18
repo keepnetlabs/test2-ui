@@ -29,16 +29,6 @@
                   </div>
                 </div>
                 <div class="flex-grow-1"></div>
-                <a
-                  style="text-decoration: none !important"
-                  href="https://www.keepnetlabs.com/free-trial/"
-                  target="_blank"
-                >
-                  <v-btn color="blue" class="pl-4 white--text login-btn" rounded>
-                    TRY FOR FREE!
-                    <v-icon right dark>mdi-arrow-right</v-icon>
-                  </v-btn>
-                </a>
               </v-card-title>
               <div v-if="pageNumber == 1">
                 <v-card-text class="pa-0">
@@ -48,7 +38,7 @@
                   <div class="login-desc">
                     Please Login
                   </div>
-                  <div v-if="isErrorActive" class="login-error-container">
+                  <div class="login-error-container">
                     <div v-if="isErrorActive" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="red">mdi-close-circle</v-icon>
@@ -60,20 +50,12 @@
                   </div>
                   <div class="login-user-pass-wrapper">
                     <v-row align="center" justify="center">
-                      <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
+                      <v-col class="pt-0 pl-0 pr-0" md="6" sm="12">
                         <v-form v-model="validEmail" ref="email">
-                          <label class="login-label" for="email">Username</label>
                           <v-text-field
-                            id="email"
-                            :type="'email'"
-                            name="email"
-                            v-model="email"
+                            v-model="userName"
+                            label="Username"
                             :rules="[rules.required, rules.email, rules.max]"
-                            class="username-field"
-                            required
-                            placeholder="Username"
-                            aria-autocomplete="on"
-                            autocomplete="on"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -81,19 +63,17 @@
                     <v-row align="center" justify="center">
                       <v-col class="pt-0 pl-0 pr-0" md="6" sm="12">
                         <v-form v-model="validPassword" ref="password">
-                          <label class="login-label" for="password">Password</label>
                           <v-text-field
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
-                            :type="show1 ? '' : 'password'"
-                            name="password"
+                            :type="show1 ? 'text' : 'password'"
+                            name="input-10-2"
+                            label="Password"
                             hint="At least 8 characters"
-                            id="password"
                             v-model="password"
-                            class="username-field input-group--focused"
+                            class="input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked"
-                            placeholder="Password"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -118,13 +98,7 @@
                   </div>
                 </v-card-text>
                 <div v-if="wrongLoginAttempt > 2" class="captcha-wrapper">
-                  <vue-recaptcha
-                    :sitekey="recaptcha"
-                    :loadRecaptchaScript="true"
-                    ref="recaptcha"
-                    @verify="onCaptchaVerified"
-                    @expired="onCaptchaExpired"
-                  ></vue-recaptcha>
+                  <vue-recaptcha :sitekey="recaptcha" :loadRecaptchaScript="true"></vue-recaptcha>
                 </div>
                 <v-card-actions class="justify-center pt-4">
                   <v-btn
@@ -234,7 +208,7 @@ export default {
   components: { VueRecaptcha },
   data() {
     return {
-      email: '',
+      userName: '',
       password: '',
       verificationCode: '',
       resePasswordModel: '',
@@ -256,16 +230,9 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.query) {
-      // TO-DO
-      // You should do redirect after login in here for users which come from email links
-      // And also you have to dispatch a accept Community invitaion or which parameter came on here.
-      console.log(this.$route.query)
-    }
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       this.$router.push('/')
     }
-    /*
     setTimeout(() => {
       let labels = document.getElementsByClassName('v-label')
       if (labels && labels.length) {
@@ -273,7 +240,6 @@ export default {
         labels[1].classList.add('v-label--active')
       }
     }, 0)
-    */
   },
   computed: {
     ...mapGetters({
@@ -326,52 +292,14 @@ export default {
       })
     },
     onLoginClicked() {
-      if (
-        this.$refs.email.validate() &&
-        this.$refs.password.validate() &&
-        this.wrongLoginAttempt < 3
-      ) {
+      if (this.$refs.email.validate() && this.$refs.password.validate) {
         this.isLoading = true
         this.$store.dispatch('login/loginAction', {
-          email: this.email,
+          email: this.userName,
           password: this.password,
           router: this.$router
         })
-      } else if (
-        this.$refs.email.validate() &&
-        this.$refs.password.validate &&
-        this.wrongLoginAttempt >= 3
-      ) {
-        this.isLoading = true
-        if (window.grecaptcha.getResponse() == '') {
-          // Business decided no need for Robot error
-          /*
-            this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-            this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-            this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-            this.$store.commit('common/SET_ERROR_MESSAGE', 'Prove you are not a robot', {
-              root: true
-            })
-          */
-        } else {
-          this.$store.dispatch('login/loginAction', {
-            email: this.email,
-            password: this.password,
-            router: this.$router
-          })
-          this.$refs.recaptcha.reset()
-        }
       }
-    },
-    onCaptchaVerified() {
-      this.$store.dispatch('login/loginAction', {
-        email: this.email,
-        password: this.password,
-        router: this.$router
-      })
-    },
-    onCaptchaExpired() {
-      this.$refs.recaptcha.reset()
     },
     onResetClick() {
       if (this.$refs.resetEmail.validate()) {
@@ -536,7 +464,7 @@ body {
 }
 
 ::v-deep .v-input__append-inner {
-  margin-top: 0 !important;
+  margin-top: -4px !important;
 }
 
 ::v-deep .v-text-field .v-label {
@@ -595,15 +523,15 @@ body {
   letter-spacing: normal;
   text-align: center;
   color: rgba(0, 0, 0, 0.54);
-  margin-bottom: 32px;
+  margin-bottom: 61px;
 }
 
 .login-title {
-  margin-top: 88px;
+  margin-top: 128px;
   margin-bottom: 8px;
   font-family: 'Open Sans', sans-serif !important;
   font-size: 36px;
-  font-weight: 600;
+  font-weight: 100;
   font-style: normal;
   font-stretch: normal;
   line-height: normal;
@@ -683,24 +611,7 @@ body {
   -webkit-box-shadow: 0 0 0px 1000px #fff inset;
   transition: background-color 5000s ease-in-out 0s;
 }
-.login-label {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-.username-field {
-  padding-left: 8px !important;
-  padding-top: 7px !important;
 
-  .v-input__append-inner {
-    margin-top: 0 !important;
-  }
-
-  ::v-deep .v-text-field__details {
-    margin-top: 4px;
-  }
-}
 @media only screen and (max-width: 769px) {
   .login-card-wrapper {
     padding: 10px !important;

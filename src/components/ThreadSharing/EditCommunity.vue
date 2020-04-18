@@ -190,32 +190,28 @@ export default {
       this.name = ''
       this.description = ''
       this.selectedCategory = ''
-      this.$store.commit('threadSharing/SET_COMMUN_NAME', false)
     },
     onSaveClicked() {
-      this.checkCommunName()
-      setTimeout(() => {
-        if (this.$refs.form.validate() && !this.communNameAvailable) {
-          const updateObj = {
-            communityId: this.selectedCommunity.id || localStorage.getItem('communityId'),
-            name: this.name,
-            description: this.description,
-            privacy: this.privacy,
-            userId: localStorage.getItem('userId'),
-            ikey: this.getIKEY(),
-            companyId: localStorage.getItem('companyId'),
-            industry: this.selectedCategory
-          }
-          const refThis = this
-          this.$store.dispatch('threadSharing/updateCommunity', updateObj).then(() => {
-            refThis.$emit('closeEdit')
-            localStorage.setItem('communityName', refThis.name)
-            localStorage.setItem('communityDesc', refThis.description)
-            localStorage.setItem('communityPrivacy', refThis.privacy)
-            this.$store.dispatch('threadSharing/getCommunities')
-          })
+      if (this.$refs.form.validate() && !this.communNameAvailable) {
+        const updateObj = {
+          communityId: this.selectedCommunity.id || localStorage.getItem('communityId'),
+          name: this.name,
+          description: this.description,
+          privacy: this.privacy,
+          userId: localStorage.getItem('userId'),
+          ikey: this.getIKEY(),
+          companyId: localStorage.getItem('companyId'),
+          industry: this.selectedCategory
         }
-      }, 500)
+        const refThis = this
+        this.$store.dispatch('threadSharing/updateCommunity', updateObj).then(() => {
+          refThis.$emit('closeEdit')
+          localStorage.setItem('communityName', refThis.name)
+          localStorage.setItem('communityDesc', refThis.description)
+          localStorage.setItem('communityPrivacy', refThis.privacy)
+          this.$store.dispatch('threadSharing/getCommunities')
+        })
+      }
     },
     getIKEY() {
       let theIKEY = this.businessCategories.filter(c => c.IDESC == this.selectedCategory)

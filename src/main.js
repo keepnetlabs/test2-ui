@@ -1,5 +1,5 @@
 import 'babel-polyfill'
-import './plugins/classlist'
+//import './plugins/classlist'
 import Vue from 'vue'
 import VueTour from 'vue-tour'
 import App from './App.vue'

@@ -357,7 +357,7 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-    dispatchPage() {
+    dispatchPage(account) {
       this.$store.dispatch('threadSharing/getCommunities')
       this.$store.dispatch('threadSharing/getBusinessCategories')
       this.$store.dispatch('threadSharing/getSuggestedCommunities')

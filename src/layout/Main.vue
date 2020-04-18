@@ -47,10 +47,11 @@
         height="48"
         width="48"
         x-large
-      >
-      </v-app-bar-nav-icon>
-      <v-overlay :z-index="12" :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive">
-      </v-overlay>
+      ></v-app-bar-nav-icon>
+      <v-overlay
+        :z-index="12"
+        :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
+      ></v-overlay>
       <div>
         <div class="logo-wrapper">
           <div
@@ -95,13 +96,10 @@
             >
               <template v-slot:activator="{ on }">
                 <div
-                  class="v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light
-                    v-size--default black--text pr-0 pl-2"
+                  class="v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text pr-0 pl-2"
                   v-on="on"
                 >
-                  <div class="user-name-dropdown-font">
-                    {{ getFullName }}
-                  </div>
+                  <div class="user-name-dropdown-font">{{ getFullName }}</div>
                   <v-icon>mdi-chevron-down</v-icon>
                 </div>
               </template>
@@ -194,9 +192,42 @@
                   <span class="menu-item-span">Incident Responder</span>
                 </v-list-item-title>
               </router-link>
+              <!--<router-link to="/investigations" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Investigations</span>
+                </v-list-item-title>
+              </router-link>-->
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
+        <!--
+        <div v-for="(item, index) in menuList" :key="index">
+          <v-list-group
+            v-if="item.childs && item.childs.length"
+            v-model="item.active"
+            :prepend-icon="item.icon"
+            no-action
+            class="menu-list-item"
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title"></v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item v-for="(subItem, ind) in item.childs" :key="ind">
+              <v-list-item-content>
+                <v-list-item-title v-text="subItem.title"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-item v-else v-model="item.active" class="menu-list-item">
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </div>
+        -->
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
@@ -233,18 +264,17 @@
                 <v-btn style="margin-top: -3px" icon color="white" v-on="on">
                   <div class="notification-bell">
                     <v-icon style="font-size: 22px;" color="white">mdi-bell</v-icon>
-                    <span v-if="getUnreadMessages > 0" class="manuel-badge">{{
-                      getUnreadMessages
-                    }}</span>
+                    <span v-if="getUnreadMessages > 0" class="manuel-badge">
+                      {{ getUnreadMessages }}
+                    </span>
                   </div>
                 </v-btn>
               </template>
               <div class="notification-wrapper">
-                <div v-for="notification in notificationList"> <!-- eslint-disable-line -->
+                <div v-for="notification in notificationList">
+                  <!-- eslint-disable-line -->
                   <div class="notification-content">
-                    <div class="notification-title">
-                      {{ notification.content }}
-                    </div>
+                    <div class="notification-title">{{ notification.content }}</div>
                     <div
                       v-on:click="onNotificationSeen(notification)"
                       v-if="notification.isSeen == false"
@@ -285,33 +315,28 @@
 
         <div class="v-flex flex-column align-center">
           <v-toolbar-title>
-            <span v-if="routerName === 'Community'">
-              {{ communityName || $route.params.name }}
-            </span>
+            <span v-if="routerName === 'Community'">{{ communityName || $route.params.name }}</span>
             <span v-else>{{ routerName }}</span>
           </v-toolbar-title>
 
           <div class="breadcrumb-wrapper ml-2 pt-1">
             <div class="pr-2">
-              <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'">
-                {{ breadcrumbs[0].text }}
-              </router-link>
+              <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'">{{
+                breadcrumbs[0].text
+              }}</router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/threat-sharing"
                 v-if="routerName === 'Threat Sharing'"
+                >{{ breadcrumbs[1].text }}</router-link
               >
-                {{ breadcrumbs[1].text }}
-              </router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/threat-sharing"
                 v-if="routerName === 'Community'"
               >
                 {{ breadcrumbs[1].text }}
-                <v-icon style="color: #fff; font-size: 16px;">
-                  mdi-chevron-right
-                </v-icon>
+                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
                 {{ breadcrumbs[2].text }}
               </router-link>
               <router-link
@@ -320,26 +345,41 @@
                 v-if="routerName === 'Incident Responder'"
               >
                 {{ breadcrumbs[3].text }}
-                <v-icon style="color: #fff; font-size: 16px;">
-                  mdi-chevron-right
-                </v-icon>
-                Dashboard
+                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>Dashboard
               </router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/analysis-details"
                 v-if="routerName === 'Analysis Details'"
+                >{{ breadcrumbs[3].text }}</router-link
               >
-                {{ breadcrumbs[3].text }}
-              </router-link>
-              <v-icon
-                v-if="routerName !== 'Incident Responder'"
-                style="color: #fff; font-size: 16px;"
-              >
-                mdi-chevron-right
-              </v-icon>
               <router-link
-                v-if="routerName !== 'Incident Responder'"
+                class="breadcrumb-links"
+                to="/investigations"
+                v-if="routerName === 'Investigation Details'"
+              >
+                Investigations
+              </router-link>
+              <router-link
+                class="breadcrumb-links"
+                to="/analysis-details"
+                v-if="routerName === 'Analysis Details'"
+                >{{ breadcrumbs[3].text }}</router-link
+              >
+
+              <router-link
+                v-if="routerName === 'Investigations'"
+                :to="$route.path"
+                class="bread-last-step breadcrumb-links"
+                >Incident Responder > {{ routerName }}</router-link
+              >
+              <v-icon
+                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations'"
+                style="color: #fff; font-size: 16px;"
+                >mdi-chevron-right</v-icon
+              >
+              <router-link
+                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations'"
                 :to="$route.path"
                 class="bread-last-step breadcrumb-links"
                 >{{ routerName }}</router-link
@@ -706,7 +746,8 @@ export default {
       }
       return 'left : 262px !important;'
     },
-      getDrawerPadding() { // eslint-disable-line
+    getDrawerPadding() {
+      // eslint-disable-line
       switch (this.$vuetify.breakpoint.name) {
         case 'xs':
           return 'left : 278px;'

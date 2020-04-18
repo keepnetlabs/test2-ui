@@ -38,15 +38,15 @@
       block
       rounded
       id="join-community-btn"
-      >JOIN</v-btn
+      >Join</v-btn
     >
     <div class="right-side-content wrapper pt-8 pb-4">
       <div v-if="$route.name == 'Community'">
         <div class="about-community right-side-title">
           About Community
           <v-menu
-            content-class="right-col-commun-settings"
-            v-if="isJoined(fetchedCommunity.CommunityId) || isOwnerOfTheCommunity()"
+            id="right-col-commun-settings"
+            v-show="isJoined(fetchedCommunity.CommunityId) || isOwnerOfTheCommunity()"
             offset-y
             transition="scale-transition"
           >
@@ -160,16 +160,8 @@
           </div>
         </div>
       </div>
-      <div v-if="$route.name !== 'Community'" class="right-side-title pt-1">Your Posts</div>
-      <div
-        class="pb-4"
-        v-if="
-          $route.name !== 'Community' &&
-            yourPosts.IsSuccess &&
-            yourPosts.Data &&
-            yourPosts.Data.length > 0
-        "
-      >
+      <div class="right-side-title pt-1">Your Posts</div>
+      <div class="pb-4" v-if="yourPosts.IsSuccess && yourPosts.Data && yourPosts.Data.length > 0">
         <div v-for="(post, ind) of yourPosts.Data" :key="ind + Math.floor(Math.random() * 10000)">
           <div class="pt-2">
             <div class="right-side-sub-title pb-1">
@@ -196,7 +188,7 @@
           </div>
         </div>
       </div>
-      <div v-else-if="$route.name !== 'Community'" class="empty-posts pt-1 pb-4">
+      <div v-else class="empty-posts pt-1 pb-4">
         You haven’t post any incidents,yet
       </div>
 

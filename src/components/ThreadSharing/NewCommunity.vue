@@ -147,7 +147,6 @@ export default {
       this.$emit('closeAdd')
     },
     onCreateClicked() {
-      this.$store.commit('common/SET_IS_LOADING', true, { root: true })
       if (this.$refs.form.validate() && !this.communNameAvailable) {
         let selectedBusinessObj = this.businessCategories.filter(
           item => item.IDESC == this.selectedCategory
@@ -173,7 +172,6 @@ export default {
         const refThis = this
         this.$store.dispatch('threadSharing/createCommunity', newCommunityObj).then(() => {
           refThis.$emit('closeAdd')
-          refThis.$store.commit('common/SET_IS_LOADING', false, { root: true })
         })
       }
     },
