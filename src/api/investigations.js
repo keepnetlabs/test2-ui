@@ -42,3 +42,7 @@ export function investigationDetailsListFunction(obj, id) {
 export function investigationDetailsTargetUsersListFunction(obj, id) {
     return testRequest.post(`investigations/${id}/search-user`, obj)
 }
+
+export function irSummary() {
+    return testRequest.get(`ir/dashboard/summary`)
+}

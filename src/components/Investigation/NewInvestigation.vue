@@ -7,7 +7,7 @@
             <v-icon medium left color="blue" class="ml-2">mdi-magnify</v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">New Investigation</v-list-item-title>
+            <v-list-item-title class="v-card-headline">New Investigation {{data}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="pl-0 pr-0 pt-4 pb-4">
@@ -41,7 +41,7 @@
                 <v-radio-group
                   v-model="targetUserType"
                   :mandatory="false"
-                  @change=" targetUsersValue = []"
+                  @change="targetUsersValue = []"
                   row
                 >
                   <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
@@ -87,7 +87,7 @@
                 <v-combobox
                   :items="[]"
                   v-if="targetUserType == 'SpecificUsers'"
-                  label="Enter Email Adresses"
+                  label="Enter Email Addresses"
                   item-text="name"
                   multiple
                   dense
@@ -234,6 +234,7 @@
                   :label="item.label"
                   v-for="(item, index) in sources"
                   @change="checkCheckboxValidation()"
+                  :key="index"
                 ></v-checkbox>
                 <div class="v-text-field__details checkbox-error" v-if="checkboxError">
                   <div class="v-messages theme--light error--text" role="alert">
@@ -298,7 +299,7 @@ export default {
         to: "Email address",
         cc: "Email address  ",
         bcc: "Email address",
-        subject: "Email address",
+        subject: "Enter a keyword",
         from_name: "Full name (case sensitive)",
         url: "https://www.yourdomain.com",
         keyword: "Enter a keyword",
@@ -324,10 +325,8 @@ export default {
       isAllSelected: false,
       durations: [
         { durationLabel: "1 Day", durationValue: 1 },
-        { durationLabel: "3 Day", durationValue: 31 },
-        { durationLabel: "7 Day", durationValue: 7 },
-        { durationLabel: "14 Day", durationValue: 17 },
-        { durationLabel: "30 Day", durationValue: 30 }
+        { durationLabel: "3 Days", durationValue: 3 },
+        { durationLabel: "7 Days", durationValue: 7 }
       ],
       actions: [
         { actionLabel: "No action", actionValue: "noAction" },
@@ -428,12 +427,12 @@ export default {
         keyword: {
           required: v =>
             (v && v.length <= 255) || "It must between 1 - 255 characters",
-          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+          format: v => {
+            return (v && !v.startsWith(" ")) || "Cannot start with space"} // format ekle
         },
         size: {
-          required: v =>
-            (v && v.length <= 255) || "It must between 1 - 255 characters",
-          format: v => (v && !v.startsWith(" ")) || "Cannot start with space" // format ekle
+          required: v => false,
+          format: v => false,
         },
         name: {
           required: v =>
@@ -492,6 +491,12 @@ export default {
       }
     }*/
   },
+  props: [
+    "isEdit",
+    "statsAndMenuData",
+    "investigationDetailsTargetUsersListData",
+    "investigationDetailsData"
+  ],
   methods: {
     checkCheckboxValidation() {
       let isCheckboxEmpty = this.sources.reduce((acc, i) => {
@@ -873,7 +878,7 @@ export default {
           name: this.investgationName,
           startDate: this.startDate,
           endDate: this.endDate,
-          expireDate: this.newExpireDate(this.endDate, this.selectedDuration),
+          expireDate: this.newExpireDate(this.startDate, this.selectedDuration),
           targetUserType: this.targetUserType,
           targetUsers:
             this.targetUserType == "Groups"
@@ -890,9 +895,11 @@ export default {
         this.$store
           .dispatch("investigations/createInvestigation", newInvestigationObj)
           .catch(() => {})
-          .then(() => {
+          .then(resp => {
             this.$emit("closeAdd");
-            this.$emit("refreshDatatable");
+            this.isEdit
+              ? this.$router.push("/investigations")
+              : this.$emit("refreshDatatable");
           });
       }
     },
@@ -928,18 +935,98 @@ export default {
     newExpireDate(endDate, duration) {
       // set expire date with duration value
       // backend allows to iso string
-      const date = endDate.split("-");
-      let newDate = new Date(date[0], date[1], date[2]);
-      newDate.setDate(newDate.getDate() + duration);
+      function addDays(date, days) {
+        var result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+      }
+      let now = new Date();
+      let newDate = addDays(now, duration);
       return new Date(newDate).toISOString();
     },
     allowedDates(val) {
       // return val < this.endDate;
+    },
+    checkIsEdit() {
+      if (this.isEdit) {
+        let _this = this;
+        this.investgationName = this.investigationDetailsData.name;
+        this.startDate = this.investigationDetailsData.startDate;
+        this.endDate = this.investigationDetailsData.endDate;
+        this.selectedDuration =
+          new Date(this.investigationDetailsData.expireDate).getDate() -
+          new Date(this.investigationDetailsData.createTime).getDate();
+        this.targetUserType = this.investigationDetailsData.targetUserType;
+        if (this.investigationDetailsData.targetUserType == "Groups") {
+          this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
+            item => {
+              let obj = {
+                name: item.targetGroup,
+                groupId: item.targetGroupId
+              };
+              return obj;
+            }
+          );
+        } else if (
+          this.investigationDetailsData.targetUserType == "SpecificUsers"
+        ) {
+          this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
+            item => item.targetUser
+          );
+        }
+        this.sources = this.sources.map(item => {
+          let data = {
+            name: item.name,
+            value: _this.investigationDetailsData.scanTypes.find(source =>
+              source.scanType == item.name ? true : false
+            ),
+            label: item.label
+          };
+          return data;
+        });
+        const headers = this.investigationDetailsData.headers.reduce(
+          (acc, item) => {
+            for (let [key, value] of Object.entries(item)) {
+              if (value && key != "resourceId") {
+                acc.push({ option: key, text: value });
+              }
+            }
+            return acc;
+          },
+          []
+        );
+        const body = this.investigationDetailsData.bodies.reduce(
+          (acc, item) => {
+            for (let [key, value] of Object.entries(item)) {
+              if (value && key != "resourceId") {
+                acc.push({ option: key, text: value });
+              }
+            }
+            return acc;
+          },
+          []
+        );
+        const attachments = this.investigationDetailsData.attachments.reduce(
+          (acc, item) => {
+            for (let [key, value] of Object.entries(item)) {
+              if (value && key != "resourceId") {
+                acc.push({ option: key, text: value });
+              }
+            }
+            return acc;
+          },
+          []
+        );
+        this.filterList = [...headers, ...body, ...attachments];
+        this.selectedAction = "noAction";
+      }
     }
   },
   created() {
     // when the page is created ( vue life cylce) get target users list via vuex
-    this.$store.dispatch("investigations/getTargetUsersList"); //module name than method name
+    this.$store
+      .dispatch("investigations/getTargetUsersList")
+      .then(() => this.checkIsEdit()); //module name than method name
   }
 };
 </script>
@@ -1419,7 +1506,7 @@ export default {
   }
 }
 .date-row {
-  max-width: 390px !important;
+  max-width: 430px !important;
   display: flex;
   flex-direction: row;
 

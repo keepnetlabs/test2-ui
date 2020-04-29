@@ -4,6 +4,23 @@
     v-if="investigationDetailsListData && statsAndMenuData && investigationDetailsData"
   >
     <div class="investigation-details__container">
+      <v-overlay
+        id="add-new-community-overlay"
+        :value="isWantToAddNewCommunity"
+        :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
+        :opacity="1"
+        :z-index="999"
+        color="white"
+      >
+        <new-investigation
+          :isEdit="true"
+          :statsAndMenuData="statsAndMenuData"
+          :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
+          :investigationDetailsData="investigationDetailsData"
+          @closeAdd="onAddClose"
+          @refreshDatatable="refreshDatatable"
+        />
+      </v-overlay>
       <v-overlay fixed :opacity="0.46" :value="isWantToDelete" :z-index="999">
         <v-card
           light
@@ -20,15 +37,30 @@
               >Delete Ongoing Investigation</v-list-item-title>
               <v-list-item-subtitle
                 class="v-card-sub-header investigation-details__alerts-sub-title"
-              >Do you want to delete this investigation?</v-list-item-subtitle>
+              >{{deleteMessage()}}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
-            <p>Emails will be deleted</p>
+            <p>Do you want to delete emails or move to trash?</p>
           </v-list-item>
-          <div class="d-flex download-buttons flex-row flex-wrap justify-space-between">
-            <v-btn class="pa-0" text color="#f56c6c" @click="isWantToDelete = false">CANCEL</v-btn>
-            <v-btn class="pa-0" text color="#2196f3" @click="isWantToDeleteConfirm()">Delete</v-btn>
+          <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
+            <div>
+              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToDelete = false">CANCEL</v-btn>
+            </div>
+            <div class="d-flex flex-row flex-end">
+              <v-btn
+                class="pa-0 mr-3"
+                text
+                color="#00bcd4"
+                @click="isWantToDeleteConfirm(false)"
+              >Move to trash</v-btn>
+              <v-btn
+                class="pa-0"
+                text
+                color="#2196f3"
+                @click="isWantToDeleteConfirm(true)"
+              >Delete Permenantly</v-btn>
+            </div>
           </div>
         </v-card>
       </v-overlay>
@@ -45,10 +77,10 @@
             <v-list-item-content class="pt-0 pb-0">
               <v-list-item-title
                 class="v-card-headline investigation-details__alerts-title"
-              >Notify user about this email </v-list-item-title>
+              >Notify user about this email</v-list-item-title>
               <v-list-item-subtitle
                 class="v-card-sub-header investigation-details__alerts-sub-title"
-              >Type a message to reporting user </v-list-item-subtitle>
+              >Type a message to reporting user</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
@@ -63,7 +95,7 @@
           </v-list-item>
           <div class="d-flex download-buttons flex-row flex-wrap justify-end">
             <v-btn class="pa-0" text color="#f56c6c" @click="isWantToWarn = false">CANCEL</v-btn>
-            <v-btn class="pa-0" text color="#2196f3" @click="isWantToWarnConfirm()">Delete And Notify</v-btn>
+            <v-btn class="pa-0" text color="#2196f3" @click="isWantToWarnConfirm">Send</v-btn>
           </div>
         </v-card>
       </v-overlay>
@@ -89,9 +121,62 @@
           <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
             <p>Once stopped, you cannot resume this investigation</p>
           </v-list-item>
-          <div class="d-flex download-buttons flex-row flex-wrap  justify-end">
+          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
             <v-btn text color="#f56c6c" @click="isWantToStop = false">CANCEL</v-btn>
-            <v-btn text color="#2196f3" @click="isWantToStopConfirm()">Stop</v-btn>
+            <v-btn text color="#2196f3" @click="isWantToStopConfirm">Stop</v-btn>
+          </div>
+        </v-card>
+      </v-overlay>
+      <v-overlay fixed :opacity="0.46" :value="isWantToWarnAndDelete" :z-index="999">
+        <v-card
+          light
+          class="download-card investigation-details__alerts pb-4 pa-6"
+          style="max-width: 580px;"
+        >
+          <v-list-item class="pl-0 pr-0">
+            <div class="v-btn v-cart-icon-wrapper investigation-details__alerts-icon-wrapper">
+              <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
+            </div>
+            <v-list-item-content class="pt-0 pb-0">
+              <v-list-item-title
+                class="v-card-headline investigation-details__alerts-title"
+              >Delete Emails and Notify Users?</v-list-item-title>
+              <v-list-item-subtitle
+                class="v-card-sub-header investigation-details__alerts-sub-title"
+              >{{deleteMessage()}}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
+          >
+            <p class="mb-0">Type a message to users</p>
+            <v-text-field
+              placeholder="Dangerous Email"
+              outlined
+              class="edit-name-textfield edit-select standard-height"
+              v-model="notifyMessageWithDelete"
+              required
+              height="40"
+            ></v-text-field>
+          </v-list-item>
+          <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
+            <div>
+              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToWarnAndDelete = false">CANCEL</v-btn>
+            </div>
+            <div class="d-flex flex-row flex-end">
+              <v-btn
+                class="pa-0 mr-3"
+                text
+                color="#00bcd4"
+                @click="isWantToDeleteConfirm(false, notifyMessageWithDelete )"
+              >Move to trash</v-btn>
+              <v-btn
+                class="pa-0"
+                text
+                color="#2196f3"
+                @click="isWantToDeleteConfirm(true, notifyMessageWithDelete )"
+              >Delete Permenantly</v-btn>
+            </div>
           </div>
         </v-card>
       </v-overlay>
@@ -118,7 +203,7 @@
                   max-width="230"
                 >
                   <template v-slot:activator="{ on }">
-                    <div v-on="on">{{statsAndMenuData.estimatedTime}}</div>
+                    <div v-on="on">{{statsAndMenuData.estimatedTime}} remaining</div>
                   </template>
                   <p
                     class="tooltip-wrapper"
@@ -195,15 +280,11 @@
               <span>{{investigationDetailsData.expireDate}}</span>
             </div>
             <div class="investigation-details__container__content--left-menu--time--progress--bar">
-              <v-progress-linear
-                :value="calculateProgressData()"
-                background-color="#b3d4fc"
-                color="#2196f3"
-              ></v-progress-linear>
+              <v-progress-linear :value="progressValue" background-color="#b3d4fc" color="#2196f3"></v-progress-linear>
             </div>
             <div
               class="investigation-details__container__content--left-menu--time--left-date"
-            >{{diffDays}}days</div>
+            >{{diffDays === 0 ? 0 : diffDays}} {{diffDays > 1 ? 'days' : 'day'}}</div>
           </div>
           <div class="investigation-details__container__content--left-menu--mail-menu">
             <v-card>
@@ -223,7 +304,7 @@
                         Target Users
                         <span
                           class="v-list-item-title__value"
-                          v-if="investigationDetailsTargetUsersListData && investigationDetailsTargetUsersListData.results && activeMenu == 'targetUsers'"
+                          v-if="investigationDetailsTargetUsersListData && investigationDetailsTargetUsersListData.results"
                         >{{investigationDetailsTargetUsersListData && investigationDetailsTargetUsersListData.results.length}}</span>
                       </v-list-item-title>
                     </v-list-item-content>
@@ -249,8 +330,8 @@
                   </v-list-item>
                   <v-list-item
                     link
-                    @click="menuClick('Junk')"
-                    :class="{'v-list-item--active': activeMenu =='Junk'}"
+                    @click="menuClick('JunkEmail')"
+                    :class="{'v-list-item--active': activeMenu =='JunkEmail'}"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-alert</v-icon>
@@ -261,15 +342,15 @@
                         Junk
                         <span
                           class="v-list-item-title__value"
-                          v-if="statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Junk') && statsAndMenuData.folders.find(item => item.folderName == 'Junk').mailCount"
-                        >{{statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Junk') && statsAndMenuData.folders.find(item => item.folderName == 'Junk').mailCount}}</span>
+                          v-if="statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail') && statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail').mailCount"
+                        >{{statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail') && statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail').mailCount}}</span>
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
                     link
-                    @click="menuClick('Draft')"
-                    :class="{'v-list-item--active': activeMenu =='Draft'}"
+                    @click="menuClick('Drafts')"
+                    :class="{'v-list-item--active': activeMenu =='Drafts'}"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-file</v-icon>
@@ -280,15 +361,15 @@
                         Draft
                         <span
                           class="v-list-item-title__value"
-                          v-if="statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Draft') && statsAndMenuData.folders.find(item => item.folderName == 'Draft').mailCount"
-                        >{{statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Draft') && statsAndMenuData.folders.find(item => item.folderName == 'Draft').mailCount}}</span>
+                          v-if="statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Drafts') && statsAndMenuData.folders.find(item => item.folderName == 'Drafts').mailCount"
+                        >{{statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Drafts') && statsAndMenuData.folders.find(item => item.folderName == 'Drafts').mailCount}}</span>
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
                     link
-                    @click="menuClick('Sent')"
-                    :class="{'v-list-item--active': activeMenu =='Sent'}"
+                    @click="menuClick('SentItems')"
+                    :class="{'v-list-item--active': activeMenu =='SentItems'}"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-send</v-icon>
@@ -299,8 +380,8 @@
                         Sent
                         <span
                           class="v-list-item-title__value"
-                          v-if="statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Sent') && statsAndMenuData.folders.find(item => item.folderName == 'Sent').mailCount"
-                        >{{statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'Sent') && statsAndMenuData.folders.find(item => item.folderName == 'Sent').mailCount}}</span>
+                          v-if="statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'SentItems') && statsAndMenuData.folders.find(item => item.folderName == 'SentItems').mailCount"
+                        >{{statsAndMenuData.folders && statsAndMenuData.folders.find(item => item.folderName == 'SentItems') && statsAndMenuData.folders.find(item => item.folderName == 'SentItems').mailCount}}</span>
                       </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
@@ -389,18 +470,16 @@
                 class="investigation-details__container__content--right-menu__summary__item--action-button"
                 v-if="statsAndMenuData.status == 'Running'"
               >
-                <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc()">
-                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>
-                  Stop {{investigationDetailsData.status}}
+                <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
+                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>Stop
                 </v-btn>
               </div>
               <div
                 class="investigation-details__container__content--right-menu__summary__item--action-button"
                 v-if="statsAndMenuData.status != 'Running'"
               >
-                <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc()">
-                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
-                  Duplicate {{investigationDetailsData.status}}
+                <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
+                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>Duplicate
                 </v-btn>
               </div>
             </div>
@@ -438,8 +517,10 @@
             <p
               class="investigation-details__container__content--right-menu__filters--header"
             >Filters:</p>
-            <div class="investigation-details__container__content--right-menu__filters--list">
-              <div v-for="(item) in investigationDetailsData.headers">
+            <div
+              class="investigation-details__container__content--right-menu__filters--list d-flex"
+            >
+              <div v-for="(item) in investigationDetailsData.headers" class="mr-2">
                 <v-chip
                   class="ma-2"
                   v-for="(value,key) in item"
@@ -474,7 +555,7 @@
               :clusterItems="clusterItems"
               :groupable="true"
               @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
-              @sendInvestigationdetailsWarningMessage="sendInvestigationdetailsWarningMessage($event, multiSelection)"
+              @sendInvestigationdetailsWarningMessage="sendInvestigationdetailsWarningMessage($event)"
               @deleteAndNotifyInvestigationDetailsFunction="deleteAndNotifyInvestigationDetailsFunction($event)"
               v-if="showEmails"
             />
@@ -514,10 +595,14 @@ import newInvestigation from "../components/Investigation/NewInvestigation";
 import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
-    Datatable
+    Datatable,
+    newInvestigation
   },
   data: () => ({
+    isWantToAddNewCommunity: false,
+    progressValue: null,
     notifyMessage: null,
+    notifyMessageWithDelete: null,
     diffDays: null,
     activeMenu: "Inbox",
     isWantToAddNewCommunity: false,
@@ -527,6 +612,8 @@ export default {
     isWantToDelete: false,
     isWantToWarn: false,
     isWantToStop: false,
+    isWantToWarnAndDelete: false,
+    totalSelectedItemsCount: [],
     investigationListBodyData: {
       pageNumber: 1,
       pageSize: 5000,
@@ -570,8 +657,7 @@ export default {
         sortable: true,
         show: true,
         type: "text",
-        width: 200,
-        minWidth: 200
+        minWidth: 208
       },
       {
         property: "to",
@@ -582,8 +668,7 @@ export default {
         sortable: true,
         show: true,
         type: "array",
-        width: 200,
-        minWidth: 200
+        minWidth: 208
       },
       {
         property: "subject",
@@ -594,8 +679,7 @@ export default {
         sortable: true,
         show: true,
         type: "text",
-        width: 200,
-        minWidth: 200
+        minWidth: 208
       },
       {
         property: "attachmentCount",
@@ -606,20 +690,18 @@ export default {
         sortable: true,
         show: true,
         type: "attachment",
-        width: 120,
-        minWidth: 120
+        width: 80
       },
       {
         property: "scanType",
-        align: "left",
+        align: "center",
         editable: false,
         label: "Service",
         fixed: false,
         sortable: true,
         show: true,
         type: "service",
-        width: 160,
-        minWidth: 160
+        width: 110
       }
     ],
     columnsTargetUsers: [
@@ -627,13 +709,11 @@ export default {
         property: "email",
         align: "left",
         editable: false,
-        label: "Email Adress",
+        label: "Email Address",
         fixed: "left",
         sortable: true,
         show: true,
-        type: "text",
-        width: 200,
-        minWidth: 200
+        type: "text"
       },
       {
         property: "userStatus",
@@ -643,9 +723,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: "status",
-        width: 200,
-        minWidth: 200
+        type: "userStatus"
       },
       {
         property: "duration",
@@ -655,9 +733,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: "text",
-        width: 200,
-        minWidth: 200
+        type: "text"
       },
       {
         property: "status",
@@ -667,9 +743,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: "status",
-        width: 120,
-        minWidth: 120
+        type: "status"
       },
       {
         property: "scanType",
@@ -679,9 +753,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: "text",
-        width: 160,
-        minWidth: 160
+        type: "text"
       }
     ],
     /*title: {
@@ -740,9 +812,9 @@ export default {
     },
     selectEvent: {
       clipboard: true,
-      edit: true,
+      edit: false,
       delete: true,
-      download: true
+      download: false
     },
     chartOptions: {
       chart: {
@@ -789,24 +861,40 @@ export default {
     }
   }),
   methods: {
+    deleteMessage() {
+      return `${this.totalSelectedItemsCount} ${
+        this.totalSelectedItemsCount > 1 ? "emails" : "email"
+      } will be deleted from mailbox`;
+    },
     calculateProgressData() {
-      var today = new Date();
-      var date = new Date(this.investigationDetailsData.endDate);
-      var diffDays = parseInt((date - today) / (1000 * 60 * 60 * 24), 10);
+      let today = new Date();
+      let createTime = new Date(this.investigationDetailsData.createTime);
+      let expireDate = new Date(this.investigationDetailsData.expireDate);
+      let startDate = new Date(this.investigationDetailsData.startDate);
+      let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10);
+      let totalDays = parseInt((expireDate - createTime) / (1000 * 60 * 60 * 24), 10);
       this.diffDays = diffDays;
-      if (diffDays < 0) return 100;
-      return diffDays;
+      let progressValue = (diffDays * 100) / totalDays;
+      if (diffDays < 0) {
+        this.diffDays = 0;
+        this.progressValue = 100;
+      } else {
+        this.progressValue = progressValue;
+      }
     },
     showRemainingDays() {},
-    stopInvestigationFunc(value) {
-      this.isWantToStop = true;
-      /*this.$store
+    isWantToStopConfirm() {
+      this.$store
         .dispatch("investigations/cancelInvestigation", this.$route.params.id)
         .catch(() => {})
         .then(() => {
-          this.restartAllData();
+          this.isWantToStop = false;
+          this.refreshDatatable();
           this.restartStopInvestigationData();
-        });*/
+        });
+    },
+    stopInvestigationFunc(value) {
+      this.isWantToStop = true;
     },
     iconType() {
       this.statsAndMenuData.status == "Running"
@@ -819,7 +907,7 @@ export default {
     },
     getStatusText(section, val) {
       if (val == null) val = 0;
-      if (section == "statusTime") this.iconType();
+      this.iconType();
       //this.statsAndMenuData.estimatedTime = 'asd'
 
       switch (section) {
@@ -988,11 +1076,14 @@ export default {
       this.showTargetUsersDetails = false;
       if (this.activeMenu == "targetUsers") {
         this.$store
-          .dispatch("investigations/getInvestigationDetailsListData", {
-            data: this.investigationListBodyData,
-            id: this.$route.params.id
-          })
-          .then(() => {
+          .dispatch(
+            "investigations/getInvestigationDetailsTargetUsersListData",
+            {
+              data: this.investigationTargetUsersListBodyData,
+              id: this.$route.params.id
+            }
+          )
+          .finally(() => {
             this.showTargetUsersDetails = true;
             vm.$forceUpdate();
           });
@@ -1012,10 +1103,39 @@ export default {
       }
     },
     refreshDatatable() {
-      this.$store.dispatch(
-        "investigations/getInvestigationList",
-        this.bodyData
-      );
+      this.$store
+        .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
+        .then(() => {
+          this.$store
+            .dispatch(
+              "investigations/getInvestigationDetailsData",
+              this.$route.params.id
+            )
+            .then(() => {
+              this.$store
+                .dispatch("investigations/getInvestigationDetailsListData", {
+                  data: this.investigationListBodyData,
+                  id: this.$route.params.id
+                })
+                .then(() => {
+                  this.calculateProgressData();
+                  this.showEmails = false;
+                  this.showTargetUsersDetails = false;
+                  this.showTargetUsersDetails =
+                    this.activeMenu == "targetUsers";
+                  this.showEmails = this.activeMenu != "targetUsers";
+                });
+            });
+        });
+      this.$store
+        .dispatch("investigations/getInvestigationDetailsTargetUsersListData", {
+          data: this.investigationTargetUsersListBodyData,
+          id: this.$route.params.id
+        })
+        .finally(() => {
+          //this.showTargetUsersDetails = true;
+          //vm.$forceUpdate();
+        });
     },
     onAddClose() {
       // set mobile vision
@@ -1028,66 +1148,66 @@ export default {
       // open new investigation overlay
       this.isWantToAddNewCommunity = true;
     },
-    sendInvestigationdetailsWarningMessage(value) {
-      let isArray = Array.isArray(value);
-      let data = [];
+    sendInvestigationdetailsWarningMessage(value, multi) {
       this.isWantToWarn = true;
-      /*isArray
-        ? (data = value.map(item => item.resourceId))
-        : data.push(value.resourceId);
+      this.soloWarningMessageValue = value;
+    },
+    isWantToWarnConfirm() {
+      let isArray = Array.isArray(this.soloWarningMessageValue);
+      let data = [];
+      isArray
+        ? (data = this.soloWarningMessageValue.map(item => item.resourceId))
+        : data.push(this.soloWarningMessageValue.resourceId);
       this.$store
         .dispatch("investigations/sendInvestigationWarningMessage", {
           data: {
             items: data,
-            warningMessage: "Test AddIn Warning Message"
+            warningMessage: this.notifyMessage
           },
           id: this.$route.params.id
         })
         .then(() => {
-          this.restartAllData();
-        });*/
+          this.refreshDatatable();
+          this.isWantToWarn = false;
+        });
     },
-    deleteInvestigationDetailsFunction(value) {
+    deleteInvestigationDetailsFunction(value, multi) {
       let isArray = Array.isArray(value);
-      let data = [];
+      this.totalSelectedItemsCount = isArray ? value.length : 1;
       this.isWantToDelete = true;
-      /*isArray
-        ? (data = value.map(item => item.resourceId))
-        : data.push(value.resourceId);
+      this.deleteValue = value;
+    },
+    isWantToDeleteConfirm(val, message) {
+      let isArray = Array.isArray(this.deleteValue);
+      let data = [];
+      isArray
+        ? (data = this.deleteValue.map(item => item.resourceId))
+        : data.push(this.deleteValue.resourceId);
       this.$store
         .dispatch("investigations/deleteInvestigationDetailsItem", {
           data: {
             items: data,
-            isNotify: "true"
+            isNotify: !!message,
+            IsPermanentDelete: val,
+            warningMessage: message
           },
           id: this.$route.params.id
         })
         .then(() => {
-          this.restartAllData();
-        });*/
+          this.refreshDatatable();
+          this.isWantToDelete = false;
+          this.isWantToWarnAndDelete = false;
+        });
     },
     deleteAndNotifyInvestigationDetailsFunction(value) {
       let isArray = Array.isArray(value);
-      let data = [];
-      this.isWantToDelete = true;
-      /*isArray
-        ? (data = value.map(item => item.resourceId))
-        : data.push(value.resourceId);
-      this.$store
-        .dispatch("investigations/deleteInvestigationDetailsItem", {
-          data: {
-            items: data,
-            isNotify: "true"
-          },
-          id: this.$route.params.id
-        })
-        .then(() => {
-          this.restartAllData();
-        });*/
+      this.totalSelectedItemsCount = isArray ? value.length : 1;
+      this.isWantToWarnAndDelete = true;
+      this.deleteValue = value;
     },
 
     startInvestigationFunc() {
-      alert("Work in Progress");
+      this.isWantToAddNewCommunity = true;
     }
   },
   computed: {
@@ -1102,35 +1222,159 @@ export default {
         "investigations/getInvestigationDetailsTargetUsersListGetter"
     })
   },
+  created() {},
   mounted() {
     // triggered to relevant action at investigations.js
     //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
-    this.$store
-      .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
-      .then(() => {
-        this.$store
-          .dispatch(
-            "investigations/getInvestigationDetailsData",
-            this.$route.params.id
-          )
-          .then(() => {
-            this.$store
-              .dispatch("investigations/getInvestigationDetailsListData", {
-                data: this.investigationListBodyData,
-                id: this.$route.params.id
-              })
-              .then(() => {
-                this.showEmails = false;
-                this.showTargetUsersDetails = false;
-                this.showEmails = true;
-                vm.$forceUpdate();
-              });
-          });
-      });
+    const _this = this;
+    this.refreshDatatable();
+    this.autoRequest = setInterval(function() {
+      if (_this.statsAndMenuData && _this.statsAndMenuData.status == "Running")
+        _this.refreshDatatable();
+    }, 5000);
+  },
+  beforeDestroy() {
+    clearInterval(this.autoRequest);
   }
 };
 </script>
 <style lang="scss" scoped>
+.standard-height {
+  ::v-deep .v-input__slot {
+    //max-height: 40px !important;
+    min-height: 40px !important;
+  }
+}
+::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
+  border-color: currentColor;
+  border-style: none;
+  border-width: unset;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+}
+::v-deep .v-input__control {
+  input {
+    &::placeholder {
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+  .v-select__slot {
+    margin-bottom: 3px !important;
+    .v-label {
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+    input {
+      &::placeholder {
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        line-height: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
+    }
+  }
+}
+
+.text-selected {
+  border-radius: 1px !important;
+  background-color: #d1e9fc !important;
+  border-bottom: 1px solid #2196f3 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  width: max-content;
+}
+.clean-link {
+  padding: 0 2px !important;
+  border-radius: 1px !important;
+  border-bottom: 1px solid #2196f3 !important;
+  color: #2196f3 !important;
+}
+.selected-link {
+  background-color: #d1e9fc !important;
+}
+.phishing-link {
+  background-color: #f3e1e5 !important;
+  border-bottom: 1px solid #bb2a45 !important;
+  color: #bb2a45 !important;
+  width: max-content;
+}
+
+::v-deep .v-application input {
+  border-radius: 8px !important;
+  border: solid 1px rgba(0, 0, 0, 0.16) !important;
+}
+
+::v-deep .v-text-field > .v-input__control > .v-input__slot {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 13px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.54) !important;
+}
+
+::v-deep .v-select__slot {
+  .v-label {
+    top: 10px !important;
+  }
+  .v-label--active {
+    top: 16px !important;
+  }
+  .v-input__append-inner {
+    margin-top: 9px !important;
+  }
+}
+
+::v-deep .v-autocomplete {
+  .v-label {
+    top: 10px !important;
+  }
+  .v-label--active {
+    top: 8px !important;
+  }
+}
+::v-deep .v-text-field--outlined {
+  .v-input__slot {
+    margin-bottom: 2px !important;
+  }
+}
+::v-deep .v-text-field__slot {
+  label {
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+}
+::v-deep .v-input__slot {
+  //max-height: 40px !important;
+  min-height: 40px !important;
+}
+::v-deep .v-text-field--outlined {
+  .v-input__slot {
+    margin-bottom: 2px !important;
+  }
+}
 ::v-deep .investigation-details__alerts {
   &-sub-title {
     font-size: 16px;
@@ -1139,7 +1383,7 @@ export default {
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87) !important;
     font-family: "Open Sans", sans-serif;
   }
   &-content {
@@ -1384,11 +1628,12 @@ export default {
                       border-radius: 4px;
                       background-color: #2196f3;
                       color: #ffffff;
-                      width: 26px;
-                      height: 25px;
+                      min-width: 24px;
+                      min-height: 23px;
                       justify-content: center;
                       align-items: center;
                       display: flex;
+                      padding: 2px;
                     }
                   }
                   &__icon {

@@ -228,10 +228,10 @@ export default {
   }),
   methods: {
     refreshDatatable() {
-      this.$store.dispatch(
-        "investigations/getInvestigationList",
-        this.bodyData
-      ); //module name than method name
+      this.showDatatable = false;
+      this.$store
+        .dispatch("investigations/getInvestigationList", this.bodyData)
+        .finally(() => (this.showDatatable = true)); //module name than method name
     },
     onAddClose() {
       // set mobile vision
@@ -269,7 +269,9 @@ export default {
   },
   mounted() {
     // triggered to relevant action at investigations.js
-    this.$store.dispatch("investigations/getInvestigationList", this.bodyData).finally(() => this.showDatatable = true); //module name than method name
+    this.$store
+      .dispatch("investigations/getInvestigationList", this.bodyData)
+      .finally(() => (this.showDatatable = true)); //module name than method name
   }
 };
 </script>

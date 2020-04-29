@@ -16,6 +16,7 @@ import {
     investigationDetailsTargetUsersListFunction,
     sendInvestigationWarningMessage,
     deleteInvestigationDetailsItem,
+    irSummary
 } from '../../api/investigations'
 
 const investigations = {
@@ -26,7 +27,8 @@ const investigations = {
         getStatsAndMenuData: {},
         getInvestigationDetailsData: {},
         getInvestigationDetailsListData: [],
-        getInvestigationDetailsTargetUsersListData: []
+        getInvestigationDetailsTargetUsersListData: [],
+        irSummary: {}
     },
     getters: {
         // create global getters for the target users list and investigaiton list
@@ -35,7 +37,8 @@ const investigations = {
         statsAndMenuGetter: state => state.getStatsAndMenuData,
         investigationDetailsDataGetter: state => state.getInvestigationDetailsData,
         getInvestigationDetailsListGetter: state => state.getInvestigationDetailsListData,
-        getInvestigationDetailsTargetUsersListGetter: state => state.getInvestigationDetailsTargetUsersListData
+        getInvestigationDetailsTargetUsersListGetter: state => state.getInvestigationDetailsTargetUsersListData,
+        irSummaryGetter: state => state.irSummary
     },
     mutations: {
         SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
@@ -44,8 +47,6 @@ const investigations = {
         },
         SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
             let data = payload.data
-            data.results[0].to.push('asdasdsa') // @arda delete
-            data.results[0].attachmentCount = 2 // @arda delete
             state.getInvestigationDetailsListData = data
         },
         SET_INVESTIGATIONLISTEMPY(state, payload) {
@@ -54,42 +55,26 @@ const investigations = {
         SET_INVESTIGATIONDETAILSDATA(state, payload) {
             //set target list data to vuex store
             let data = payload.data
+                //data.asd = new Date()
             state.getInvestigationDetailsData = data
         },
         SET_STATSANDMENUDATA(state, payload) {
             //set target list data to vuex store
-            let data = payload.data
+            let data = payload.data;
             state.getStatsAndMenuData = data
         },
         SET_INVESTIGATIONLIST(state, payload) {
             // added dummy data
             // set response to vuex store
+            // investigation list
             let data = payload.data.results
-                /*data.unshift(
-                  {
-                    id: 1,
-                    incident: 'File Format Exploits',
-                    detected: 'Malicious',
-                    source: 'Attachment',
-                    status: 'Cancelled',
-                    startDate: '07.09.2019 13:06',
-                    expireDate: '08.09.2019 13:06',
-                    userStatus: [13, 75, 5, 7],
-                    progress: 87
-                  },
-                  {
-                    id: 3,
-                    incident: 'Facebook Change Password',
-                    detected: 'None',
-                    source: 'Rule Name',
-                    status: 'Running',
-                    startDate: '07.09.2019 13:06',
-                    expireDate: '08.09.2019 13:06',
-                    userStatus: [13, 75, 5, 7],
-                    progress: 100
-                  }
-                )*/
+            debugger
+            data.userStats = payload.data.results;
             state.investigationList = data
+        },
+        SET_IRSUMMARY(state, payload) {
+            let data = payload.data
+            state.irSummary = data
         },
         SET_TARGETUSERSLIST(state, payload) {
             //set target list data to vuex store
@@ -102,7 +87,6 @@ const investigations = {
         SET_INVESTIGATIONLISTEMPY(state, payload) {
             state.state.investigationList = []
         },
-
         async deleteInvestigationDetailsItem({ commit }, obj) {
             // get investigaiton list via axious
             commit('common/SET_IS_LOADING', true, { root: true })
@@ -245,6 +229,24 @@ const investigations = {
                     commit('common/SET_ERROR_MESSAGE', 'Error when getting the investigation List', { root: true })
                 })
         },
+        async getIrSummary({ commit }, obj) {
+            // get investigaiton list via axious
+            commit('common/SET_IS_LOADING', true, { root: true })
+            await irSummary(obj)
+                .then(response => {
+                    const result = response.data
+                    commit('SET_IRSUMMARY', result)
+                    commit('common/SET_IS_LOADING', false, { root: true })
+                })
+                .catch(() => {
+                    commit('common/SET_IS_LOADING', false, { root: true })
+                    commit('common/SET_SNACK_STATUS', true, { root: true })
+                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+                    commit('common/SET_ERROR_STATE', true, { root: true })
+                    commit('common/SET_ERROR_MESSAGE', 'Error when getting the investigation List', { root: true })
+                })
+        },
+
         async getTargetUsersList({ commit }) {
             // get target list via axious
             commit('common/SET_IS_LOADING', true, { root: true })

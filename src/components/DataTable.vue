@@ -420,6 +420,7 @@
             id="data-table-container"
             v-if="!allHidden"
             default-expand-all
+            border
           >
             <el-table-column v-if="selectable" type="selection" width="60" align="center"></el-table-column>
             <el-table-column
@@ -473,9 +474,11 @@
             >
               <template slot-scope="scope">
                 <span v-if="scope.row && scope.row[col.property]">
-                  {{
-                  scope.row[col.property][0]
-                  }}
+                  <span class="mr-2">
+                    {{
+                    scope.row[col.property][0]
+                    }}
+                  </span>
                   <v-tooltip
                     v-if="scope.row[col.property].length > 1"
                     bottom
@@ -603,6 +606,33 @@
             <el-table-column
               v-for="(col, ind) of columns"
               :key="col.property + ind"
+              v-if="col.type === 'userStatus' && col.show"
+              :sortable="col.sortable"
+              :prop="col.property"
+              :fixed="col.fixed"
+              :label="col.label"
+              :align="col.align"
+              :width="col.width || ''"
+              :minWidth="col.minWidth || ''"
+            >
+              <template slot-scope="scope">
+                <v-btn
+                  :class="[
+                    'btn-status',
+                    scope.row.userStatus === 'Online' ? 'btn-online' : '',
+                    scope.row.userStatus === 'Offline' ? 'btn-offline' : '',
+                  ]"
+                  @click.native.prevent="deleteRow(scope.$index, tableData)"
+                  block
+                  rounded
+                  v-if="scope.row && scope.row[col.property]"
+                >{{ scope.row.userStatus }}</v-btn>
+                <span v-else>Empty</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="(col, ind) of columns"
+              :key="col.property + ind"
               v-if="col.type === 'progress' && col.show"
               :sortable="col.sortable"
               :prop="col.property"
@@ -662,6 +692,7 @@
                     alt="outlook"
                     v-if="scope.row[col.property] == 'Exchange'"
                   />
+                  <span class="ml-2">{{scope.row[col.property]}}</span>
                 </span>
                 <span v-else></span>
               </template>
@@ -1166,6 +1197,17 @@ export default {
       }
     },
     handleDelete(selections) {
+      switch (this.refName) {
+        case "investigationDetailsListTable":
+          this.$emit(
+            "deleteInvestigationDetailsFunction",
+            selections
+          );
+          break;
+
+        default:
+          break;
+      }
       // You should handle the Delete row action in here
     },
     handleDownload(selections) {
@@ -1202,7 +1244,7 @@ export default {
 <style lang="scss" scoped>
 .external-data {
   position: absolute;
-  right: 8px;
+  right: 0px;
   top: 10px;
   border-radius: 4px;
   background-color: #2196f3;
@@ -1213,6 +1255,7 @@ export default {
   align-items: center;
   display: flex;
   cursor: default;
+  z-index: 10;
 }
 .service-icon-content {
   img {
@@ -1462,6 +1505,7 @@ export default {
         padding: 2px 0 !important;
         height: 45px !important;
         z-index: 9px;
+        border: none !important;
         /* &.date-format {
           text-align: left !important;
         }*/
@@ -1585,14 +1629,16 @@ export default {
       .btn-warning {
         background-color: #e6a23c;
       }
-      .btn-cancelled {
+      .btn-cancelled,
+      .btn-offline {
         background-color: #f56c6c;
       }
       .btn-primary {
         background-color: #2196f3;
       }
       .btn-none,
-      .btn-quedued {
+      .btn-quedued,
+      .btn-online {
         background-color: #00bcd4;
       }
       .btn-success {
