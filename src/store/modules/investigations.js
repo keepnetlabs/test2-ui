@@ -68,9 +68,11 @@ const investigations = {
             // set response to vuex store
             // investigation list
             let data = payload.data.results
-            debugger
+
             data.userStats = payload.data.results;
-            state.investigationList = data
+            state.investigationList = data.map(item=>{
+              return {...item,userStatus:[item.completedUsersCount,item.scannedUsersCount]}
+            })
         },
         SET_IRSUMMARY(state, payload) {
             let data = payload.data

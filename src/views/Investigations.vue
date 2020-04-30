@@ -184,13 +184,13 @@ export default {
     },
     chartOptions: {
       chart: {
-        width: 60,
-        height: 60,
-        type: "pie",
-        offsetX: -1,
-        offsetY: 1
+        type: 'pie',
       },
-      labels: ["Team A", "Team B"],
+      summary:{
+        show:true,
+        seperator:"/"
+      },
+      labels: ["completedUsersCount", "scannedUsersCount"],
       colors: ["#3f51b5", "#00bcd4"],
       legend: {
         show: false
@@ -199,8 +199,8 @@ export default {
         enabled: false
       },
       dataLabels: {
-        enabled: false
-      }
+        enabled: false,
+      },
     },
     bodyData: {
       // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
