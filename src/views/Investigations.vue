@@ -95,8 +95,8 @@ export default {
         sortable: true,
         show: true,
         type: "status",
-        width: 120,
-        minWidth: 120
+        width: 220,
+        minWidth: 220
       },
       {
         property: "startDate",
@@ -190,7 +190,7 @@ export default {
         show:true,
         seperator:"/"
       },
-      labels: ["completedUsersCount", "scannedUsersCount"],
+      labels: ["Completed Users Count", "Scanned Users Count"],
       colors: ["#3f51b5", "#00bcd4"],
       legend: {
         show: false
@@ -201,6 +201,7 @@ export default {
       dataLabels: {
         enabled: false,
       },
+      showTooltipLine:true,
     },
     bodyData: {
       // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
@@ -251,6 +252,7 @@ export default {
       });
     },
     stopInvestigationFunc(value) {
+      console.log("value",value)
       let store = this.$store;
       this.$store
         .dispatch("investigations/cancelInvestigation", value.row.resourceId)

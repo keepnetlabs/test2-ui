@@ -464,11 +464,7 @@ export default {
     },
     chartOptions: {
       chart: {
-        width: 60,
-        height: 60,
         type: 'pie',
-        offsetX: -1,
-        offsetY: 1
       },
       labels: ['Team A', 'Team B', 'Team C', 'Team D'],
       colors: ['#67c23a', '#409eff', '#f56c6c', '#ffcc33'],

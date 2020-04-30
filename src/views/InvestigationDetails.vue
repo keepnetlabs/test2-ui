@@ -34,10 +34,12 @@
             <v-list-item-content class="pt-0 pb-0">
               <v-list-item-title
                 class="v-card-headline investigation-details__alerts-title"
-              >Delete Ongoing Investigation</v-list-item-title>
+              >Delete Ongoing Investigation
+              </v-list-item-title>
               <v-list-item-subtitle
                 class="v-card-sub-header investigation-details__alerts-sub-title"
-              >{{deleteMessage()}}</v-list-item-subtitle>
+              >{{deleteMessage()}}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
@@ -45,7 +47,8 @@
           </v-list-item>
           <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
             <div>
-              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToDelete = false">CANCEL</v-btn>
+              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToDelete = false">CANCEL
+              </v-btn>
             </div>
             <div class="d-flex flex-row flex-end">
               <v-btn
@@ -53,13 +56,15 @@
                 text
                 color="#00bcd4"
                 @click="isWantToDeleteConfirm(false)"
-              >Move to trash</v-btn>
+              >Move to trash
+              </v-btn>
               <v-btn
                 class="pa-0"
                 text
                 color="#2196f3"
                 @click="isWantToDeleteConfirm(true)"
-              >Delete Permenantly</v-btn>
+              >Delete Permenantly
+              </v-btn>
             </div>
           </div>
         </v-card>
@@ -77,10 +82,12 @@
             <v-list-item-content class="pt-0 pb-0">
               <v-list-item-title
                 class="v-card-headline investigation-details__alerts-title"
-              >Notify user about this email</v-list-item-title>
+              >{{warningMessage}}
+              </v-list-item-title>
               <v-list-item-subtitle
                 class="v-card-sub-header investigation-details__alerts-sub-title"
-              >Type a message to reporting user</v-list-item-subtitle>
+              >Type a message to reporting user
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
@@ -112,10 +119,12 @@
             <v-list-item-content class="pt-0 pb-0">
               <v-list-item-title
                 class="v-card-headline investigation-details__alerts-title"
-              >Stop Ongoing Investigation</v-list-item-title>
+              >Stop Ongoing Investigation
+              </v-list-item-title>
               <v-list-item-subtitle
                 class="v-card-sub-header investigation-details__alerts-sub-title"
-              >Do you want to stop this investigation?</v-list-item-subtitle>
+              >Do you want to stop this investigation?
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
@@ -140,10 +149,12 @@
             <v-list-item-content class="pt-0 pb-0">
               <v-list-item-title
                 class="v-card-headline investigation-details__alerts-title"
-              >Delete Emails and Notify Users?</v-list-item-title>
+              >Delete Emails and Notify Users?
+              </v-list-item-title>
               <v-list-item-subtitle
                 class="v-card-sub-header investigation-details__alerts-sub-title"
-              >{{deleteMessage()}}</v-list-item-subtitle>
+              >{{deleteMessage()}}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item
@@ -161,7 +172,9 @@
           </v-list-item>
           <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
             <div>
-              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToWarnAndDelete = false">CANCEL</v-btn>
+              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToWarnAndDelete = false">
+                CANCEL
+              </v-btn>
             </div>
             <div class="d-flex flex-row flex-end">
               <v-btn
@@ -169,13 +182,15 @@
                 text
                 color="#00bcd4"
                 @click="isWantToDeleteConfirm(false, notifyMessageWithDelete )"
-              >Move to trash</v-btn>
+              >Move to trash
+              </v-btn>
               <v-btn
                 class="pa-0"
                 text
                 color="#2196f3"
                 @click="isWantToDeleteConfirm(true, notifyMessageWithDelete )"
-              >Delete Permenantly</v-btn>
+              >Delete Permenantly
+              </v-btn>
             </div>
           </div>
         </v-card>
@@ -205,11 +220,12 @@
                   <template v-slot:activator="{ on }">
                     <div v-on="on">{{statsAndMenuData.estimatedTime}} remaining</div>
                   </template>
-                  <p
-                    class="tooltip-wrapper"
-                  >Actual remaining time may be different from estimated time and is depended on conditions such as online user count, mailbox size, etc.</p>
-                </v-tooltip>
-                <span v-else>{{getStatusText('statusTime', null)}}</span>
+              <p
+                class="tooltip-wrapper"
+              >Actual remaining time may be different from estimated time and is depended on
+                conditions such as online user count, mailbox size, etc.</p>
+              </v-tooltip>
+              <span v-else>{{getStatusText('statusTime', null)}}</span>
               </p>
             </div>
           </div>
@@ -274,17 +290,20 @@
           <div class="investigation-details__container__content--left-menu--time">
             <div
               class="investigation-details__container__content--left-menu--time--labels"
-            >Expiry Time</div>
+            >Expiry Time
+            </div>
             <div class="investigation-details__container__content--left-menu--time--progress">
               <span>{{investigationDetailsData.createTime}}</span>
               <span>{{investigationDetailsData.expireDate}}</span>
             </div>
             <div class="investigation-details__container__content--left-menu--time--progress--bar">
-              <v-progress-linear :value="progressValue" background-color="#b3d4fc" color="#2196f3"></v-progress-linear>
+              <v-progress-linear :value="progressValue" background-color="#b3d4fc"
+                                 color="#2196f3"></v-progress-linear>
             </div>
             <div
               class="investigation-details__container__content--left-menu--time--left-date"
-            >{{diffDays === 0 ? 0 : diffDays}} {{diffDays > 1 ? 'days' : 'day'}}</div>
+            >{{diffDays === 0 ? 0 : diffDays}} {{diffDays > 1 ? 'days' : 'day'}}
+            </div>
           </div>
           <div class="investigation-details__container__content--left-menu--mail-menu">
             <v-card>
@@ -462,16 +481,19 @@
             <div class="investigation-details__container__content--right-menu__summary__item">
               <div
                 class="investigation-details__container__content--right-menu__summary__item--text-header"
-              >Investigation Name:</div>
+              >Investigation Name:
+              </div>
               <div
                 class="investigation-details__container__content--right-menu__summary__item--text-content"
-              >{{investigationDetailsData.name}} - {{investigationDetailsData.startDate}}</div>
+              >{{investigationDetailsData.name}} - {{investigationDetailsData.startDate}}
+              </div>
               <div
                 class="investigation-details__container__content--right-menu__summary__item--action-button"
                 v-if="statsAndMenuData.status == 'Running'"
               >
                 <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
-                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>Stop
+                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>
+                  Stop
                 </v-btn>
               </div>
               <div
@@ -479,17 +501,20 @@
                 v-if="statsAndMenuData.status != 'Running'"
               >
                 <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
-                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>Duplicate
+                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
+                  Duplicate
                 </v-btn>
               </div>
             </div>
             <div class="investigation-details__container__content--right-menu__summary__item">
               <div
                 class="investigation-details__container__content--right-menu__summary__item--text-header"
-              >Email Date Range:</div>
+              >Email Date Range:
+              </div>
               <div
                 class="investigation-details__container__content--right-menu__summary__item--text-content"
-              >{{investigationDetailsData.startDate}} - {{investigationDetailsData.endDate}}</div>
+              >{{investigationDetailsData.startDate}} - {{investigationDetailsData.endDate}}
+              </div>
             </div>
           </div>
           <div class="investigation-details__container__content--right-menu__target-users">
@@ -504,7 +529,9 @@
                 class="ma-2"
                 v-for="(item,index) in investigationDetailsData.targetUsers"
                 :key="index"
-              >{{item.targetUser && `User: ${item.targetUser}`}}{{item.targetGroup && `Group: ${item.targetGroup}`}}</v-chip>
+              >{{item.targetUser && `User: ${item.targetUser}`}}{{item.targetGroup && `Group:
+                ${item.targetGroup}`}}
+              </v-chip>
             </div>
             <div
               class="investigation-details__container__content--right-menu__target-users--list"
@@ -525,13 +552,18 @@
                   class="ma-2"
                   v-for="(value,key) in item"
                   v-if="value && key != 'resourceId'"
-                >{{ key }}: {{ value }}</v-chip>
+                >{{ key }}: {{ value }}
+                </v-chip>
               </div>
               <div v-for="(item) in investigationDetailsData.bodies">
-                <v-chip class="ma-2" v-for="(value,key) in item" v-if="value">{{ key }}: {{ value }}</v-chip>
+                <v-chip class="ma-2" v-for="(value,key) in item" v-if="value">{{ key }}: {{ value
+                  }}
+                </v-chip>
               </div>
               <div v-for="(item) in investigationDetailsData.attachments">
-                <v-chip class="ma-2" v-for="(value,key) in item" v-if="value">{{ key }}: {{ value }}</v-chip>
+                <v-chip class="ma-2" v-for="(value,key) in item" v-if="value">{{ key }}: {{ value
+                  }}
+                </v-chip>
               </div>
             </div>
           </div>
@@ -590,692 +622,678 @@
   </div>
 </template>
 <script>
-import Datatable from "../components/DataTable";
-import newInvestigation from "../components/Investigation/NewInvestigation";
-import { mapActions, mapGetters } from "vuex";
-export default {
-  components: {
-    Datatable,
-    newInvestigation
-  },
-  data: () => ({
-    isWantToAddNewCommunity: false,
-    progressValue: null,
-    notifyMessage: null,
-    notifyMessageWithDelete: null,
-    diffDays: null,
-    activeMenu: "Inbox",
-    isWantToAddNewCommunity: false,
-    statusIcon: "mdi-check",
-    showEmails: false,
-    showTargetUsersDetails: false,
-    isWantToDelete: false,
-    isWantToWarn: false,
-    isWantToStop: false,
-    isWantToWarnAndDelete: false,
-    totalSelectedItemsCount: [],
-    investigationListBodyData: {
-      pageNumber: 1,
-      pageSize: 5000,
-      orderBy: "ReceivedTime",
-      ascending: true,
-      filter: {
-        Condition: "AND",
-        FilterGroups: [
-          {
-            Condition: "AND",
-            FilterItems: [
-              {
-                FieldName: "Folder",
-                Operator: "Include",
-                Value: "Inbox"
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    investigationTargetUsersListBodyData: {
-      pageNumber: 1,
-      pageSize: 3,
-      orderBy: "Email",
-      ascending: true,
-      filter: {
-        Condition: "AND",
-        FilterGroups: []
-      }
-    },
-    columns: [
-      // Should be defined to show the table
-      {
-        property: "from",
-        align: "left",
-        editable: false,
-        label: "From",
-        fixed: "left",
-        sortable: true,
-        show: true,
-        type: "text",
-        minWidth: 208
-      },
-      {
-        property: "to",
-        align: "left",
-        editable: false,
-        label: "To",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "array",
-        minWidth: 208
-      },
-      {
-        property: "subject",
-        align: "left",
-        editable: false,
-        label: "Subject",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "text",
-        minWidth: 208
-      },
-      {
-        property: "attachmentCount",
-        align: "center",
-        editable: false,
-        label: "File",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "attachment",
-        width: 80
-      },
-      {
-        property: "scanType",
-        align: "center",
-        editable: false,
-        label: "Service",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "service",
-        width: 110
-      }
-    ],
-    columnsTargetUsers: [
-      {
-        property: "email",
-        align: "left",
-        editable: false,
-        label: "Email Address",
-        fixed: "left",
-        sortable: true,
-        show: true,
-        type: "text"
-      },
-      {
-        property: "userStatus",
-        align: "left",
-        editable: false,
-        label: "User Status",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "userStatus"
-      },
-      {
-        property: "duration",
-        align: "left",
-        editable: false,
-        label: "Duration",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "text"
-      },
-      {
-        property: "status",
-        align: "center",
-        editable: false,
-        label: "Status",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "status"
-      },
-      {
-        property: "scanType",
-        align: "left",
-        editable: false,
-        label: "Service",
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: "text"
-      }
-    ],
-    /*title: {
-      icon: "mdi-tab-unselected",
-      title: "Investigations",
-      subTitle: ""
-    },*/
-    pageSizes: [5, 10, 25, 50, 100],
-    rowActions: [
-      {
-        name: "Delete",
-        icon: "mdi-delete",
-        action: "deleteInvestigationDetails"
-      },
-      {
-        name: "Send user a warning message",
-        icon: "mdi-alert",
-        action: "sendWarningMessage"
-      },
-      {
-        name: "Delete and notify user",
-        icon: "mdi-delete",
-        action: "deleteAndNotifyInvestigationDetails"
-      },
-      {
-        name: "Analyze suspicious email",
-        icon: "mdi-sync",
-        action: "analyzeAuspiciousEmail"
-      }
-    ],
+  import Datatable from "../components/DataTable";
+  import newInvestigation from "../components/Investigation/NewInvestigation";
+  import {mapActions, mapGetters} from "vuex";
 
-    clusterItems: [
-      {
-        name: "Name",
-        action: "nameCluster",
-        seledted: false
+  export default {
+    components: {
+      Datatable,
+      newInvestigation
+    },
+    data: () => ({
+      isWantToAddNewCommunity: false,
+      progressValue: null,
+      notifyMessage: null,
+      notifyMessageWithDelete: null,
+      diffDays: null,
+      activeMenu: "Inbox",
+      warningMessage: "Notify user about this email",
+      isWantToAddNewCommunity: false,
+      statusIcon: "mdi-check",
+      showEmails: false,
+      showTargetUsersDetails: false,
+      isWantToDelete: false,
+      isWantToWarn: false,
+      isWantToStop: false,
+      isWantToWarnAndDelete: false,
+      totalSelectedItemsCount: [],
+      investigationListBodyData: {
+        pageNumber: 1,
+        pageSize: 5000,
+        orderBy: "ReceivedTime",
+        ascending: true,
+        filter: {
+          Condition: "AND",
+          FilterGroups: [
+            {
+              Condition: "AND",
+              FilterItems: [
+                {
+                  FieldName: "Folder",
+                  Operator: "Include",
+                  Value: "Inbox"
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       },
-      {
-        name: "City",
-        action: "cityCluster",
-        seledted: false
+      investigationTargetUsersListBodyData: {
+        pageNumber: 1,
+        pageSize: 3,
+        orderBy: "Email",
+        ascending: true,
+        filter: {
+          Condition: "AND",
+          FilterGroups: []
+        }
       },
-      {
-        name: "Address",
-        action: "addressCluster",
-        seledted: false
-      }
-    ],
-    addUsers: {
-      show: true,
-      popUp: false,
-      action: "createCommunityFromMobileInfo"
-    },
-    iEmpty: {
-      message: "No email has been found, yet"
-    },
-    selectEvent: {
-      clipboard: true,
-      edit: false,
-      delete: true,
-      download: false
-    },
-    chartOptions: {
-      chart: {
-        width: 60,
-        height: 60,
-        type: "pie",
-        offsetX: -1,
-        offsetY: 1
-      },
-      labels: ["Team A", "Team B"],
-      colors: ["#3f51b5", "#00bcd4"],
-      legend: {
-        show: false
-      },
-      tooltip: {
-        enabled: false
-      },
-      dataLabels: {
-        enabled: false
-      }
-    },
-    bodyData: {
-      // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
-      pageNumber: 1,
-      pageSize: 5000,
-      orderBy: "ExpireDate",
-      ascending: false,
-      filter: {
-        Condition: "AND",
-        FilterGroups: [
-          {
-            Condition: "AND",
-            FilterItems: [
-              {
-                FieldName: "Status",
-                Operator: "Include",
-                Value: "Cancelled,Running,Idle"
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
-    }
-  }),
-  methods: {
-    deleteMessage() {
-      return `${this.totalSelectedItemsCount} ${
-        this.totalSelectedItemsCount > 1 ? "emails" : "email"
-      } will be deleted from mailbox`;
-    },
-    calculateProgressData() {
-      let today = new Date();
-      let createTime = new Date(this.investigationDetailsData.createTime);
-      let expireDate = new Date(this.investigationDetailsData.expireDate);
-      let startDate = new Date(this.investigationDetailsData.startDate);
-      let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10);
-      let totalDays = parseInt((expireDate - createTime) / (1000 * 60 * 60 * 24), 10);
-      this.diffDays = diffDays;
-      let progressValue = (diffDays * 100) / totalDays;
-      if (diffDays < 0) {
-        this.diffDays = 0;
-        this.progressValue = 100;
-      } else {
-        this.progressValue = progressValue;
-      }
-    },
-    showRemainingDays() {},
-    isWantToStopConfirm() {
-      this.$store
-        .dispatch("investigations/cancelInvestigation", this.$route.params.id)
-        .catch(() => {})
-        .then(() => {
-          this.isWantToStop = false;
-          this.refreshDatatable();
-          this.restartStopInvestigationData();
-        });
-    },
-    stopInvestigationFunc(value) {
-      this.isWantToStop = true;
-    },
-    iconType() {
-      this.statsAndMenuData.status == "Running"
-        ? (this.statusIcon = "mdi-play")
-        : this.statsAndMenuData.status == "Finished"
-        ? (this.statusIcon = "mdi-check")
-        : this.statsAndMenuData.status == "Expired"
-        ? (this.statusIcon = "mdi-clock")
-        : (this.statusIcon = "mdi-close");
-    },
-    getStatusText(section, val) {
-      if (val == null) val = 0;
-      this.iconType();
-      //this.statsAndMenuData.estimatedTime = 'asd'
+      columns: [
+        // Should be defined to show the table
+        {
+          property: "from",
+          align: "left",
+          editable: false,
+          label: "From",
+          fixed: "left",
+          sortable: true,
+          show: true,
+          type: "text",
+          minWidth: 208
+        },
+        {
+          property: "to",
+          align: "left",
+          editable: false,
+          label: "To",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "array",
+          minWidth: 208
+        },
+        {
+          property: "subject",
+          align: "left",
+          editable: false,
+          label: "Subject",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "text",
+          minWidth: 208
+        },
+        {
+          property: "attachmentCount",
+          align: "center",
+          editable: false,
+          label: "File",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "attachment",
+          width: 80
+        },
+        {
+          property: "scanType",
+          align: "center",
+          editable: false,
+          label: "Service",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "service",
+          width: 110
+        }
+      ],
+      columnsTargetUsers: [
+        {
+          property: "email",
+          align: "left",
+          editable: false,
+          label: "Email Address",
+          fixed: "left",
+          sortable: true,
+          show: true,
+          type: "text"
+        },
+        {
+          property: "userStatus",
+          align: "left",
+          editable: false,
+          label: "User Status",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "userStatus"
+        },
+        {
+          property: "duration",
+          align: "left",
+          editable: false,
+          label: "Duration",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "text"
+        },
+        {
+          property: "status",
+          align: "center",
+          editable: false,
+          label: "Status",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "status"
+        },
+        {
+          property: "scanType",
+          align: "left",
+          editable: false,
+          label: "Service",
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "text"
+        }
+      ],
+      /*title: {
+        icon: "mdi-tab-unselected",
+        title: "Investigations",
+        subTitle: ""
+      },*/
+      pageSizes: [5, 10, 25, 50, 100],
+      rowActions: [
+        {
+          name: "Delete",
+          icon: "mdi-delete",
+          action: "deleteInvestigationDetails"
+        },
+        {
+          name: "Send user a warning message",
+          icon: "mdi-alert",
+          action: "sendWarningMessage"
+        },
+        {
+          name: "Delete and notify user",
+          icon: "mdi-delete",
+          action: "deleteAndNotifyInvestigationDetails"
+        },
+        {
+          name: "Analyze suspicious email",
+          icon: "mdi-sync",
+          action: "analyzeAuspiciousEmail"
+        }
+      ],
 
-      switch (section) {
-        case "statusTime":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return this.statsAndMenuData.estimatedTime
-                ? this.statsAndMenuData.estimatedTime
-                : "Estimated time can not be calculated at the moment";
-            case "Cancelled":
-              return this.investigationDetailsData.endDate;
-            case "Expired":
-              return this.investigationDetailsData.expireDate;
-            case "Finished":
-              return this.investigationDetailsData.endDate;
-            default:
-              break;
-          }
-          break;
-        case "notScannedUserCount":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return `${val} Online Users`;
-            case "Cancelled":
-              return `${val} Users`;
-            case "Expired":
-              return `${val} Users`;
-            case "Finished":
-              return "All users scanned";
-            default:
-              break;
-          }
-          break;
-        case "totalUserCount":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return `of remaining ${val} users`;
-            case "Cancelled":
-              return `Could not be scanned`;
-            case "Expired":
-              return `Could not be scanned`;
-            case "Finished":
-              return "No remaining users";
-            default:
-              break;
-          }
-          break;
-        case "scannedUserCount":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return `${val} Scanned Users`;
-            case "Cancelled":
-              return `${val} Scanned Users`;
-            case "Expired":
-              return `${val} Scanned Users`;
-            case "Finished":
-              return `${val} Scanned Users`;
-            default:
-              break;
-          }
-          break;
-        case "totalUserCountScannedUser":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return `of total ${val} users`;
-            case "Cancelled":
-              return `of total ${val} users`;
-            case "Expired":
-              return `of total ${val} users`;
-            case "Finished":
-              return `of total ${val} users`;
-            default:
-              break;
-          }
-          break;
-        case "scannedEmailCount":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return `${val} Emails Scanned`;
-            case "Cancelled":
-              return `${val} Emails Scanned`;
-            case "Expired":
-              return `${val} Emails Scanned`;
-            case "Finished":
-              return `${val} Emails Scanned`;
-            default:
-              break;
-          }
-          break;
-        case "totalEmailCount":
-          switch (this.statsAndMenuData.status) {
-            case "Running":
-              return `of total ${val} emails`;
-            case "Cancelled":
-              return `of total ${val} emails`;
-            case "Expired":
-              return `of total ${val} emails`;
-            case "Finished":
-              return `of total ${val} emails`;
-            default:
-              break;
-          }
-          break;
-
-        default:
-          break;
+      clusterItems: [
+        {
+          name: "Name",
+          action: "nameCluster",
+          seledted: false
+        },
+        {
+          name: "City",
+          action: "cityCluster",
+          seledted: false
+        },
+        {
+          name: "Address",
+          action: "addressCluster",
+          seledted: false
+        }
+      ],
+      addUsers: {
+        show: true,
+        popUp: false,
+        action: "createCommunityFromMobileInfo"
+      },
+      iEmpty: {
+        message: "No email has been found, yet"
+      },
+      selectEvent: {
+        clipboard: true,
+        edit: false,
+        delete: true,
+        download: false,
+        warning: true
+      },
+      chartOptions: {
+        chart: {
+          width: 60,
+          height: 60,
+          type: "pie",
+          offsetX: -1,
+          offsetY: 1
+        },
+        labels: ["Team A", "Team B"],
+        colors: ["#3f51b5", "#00bcd4"],
+        legend: {
+          show: false
+        },
+        tooltip: {
+          enabled: false
+        },
+        dataLabels: {
+          enabled: false
+        }
+      },
+      bodyData: {
+        // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
+        pageNumber: 1,
+        pageSize: 5000,
+        orderBy: "ExpireDate",
+        ascending: false,
+        filter: {
+          Condition: "AND",
+          FilterGroups: [
+            {
+              Condition: "AND",
+              FilterItems: [
+                {
+                  FieldName: "Status",
+                  Operator: "Include",
+                  Value: "Cancelled,Running,Idle"
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       }
-    },
-    menuClick(menu) {
-      this.activeMenu = menu;
-      this.showTargetUsersDetails = false;
-      this.showEmails = false;
-      if (menu != "targetUsers") {
-        let dataBody = this.investigationListBodyData;
-        dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu;
+    }),
+    methods: {
+      deleteMessage() {
+        return `${this.totalSelectedItemsCount} ${
+          this.totalSelectedItemsCount > 1 ? "emails" : "email"
+        } will be deleted from mailbox`;
+      },
+      calculateProgressData() {
+        let today = new Date();
+        let createTime = new Date(this.investigationDetailsData.createTime);
+        let expireDate = new Date(this.investigationDetailsData.expireDate);
+        let startDate = new Date(this.investigationDetailsData.startDate);
+        let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10);
+        let totalDays = parseInt((expireDate - createTime) / (1000 * 60 * 60 * 24), 10);
+        this.diffDays = diffDays;
+        let progressValue = (diffDays * 100) / totalDays;
+        if (diffDays < 0) {
+          this.diffDays = 0;
+          this.progressValue = 100;
+        } else {
+          this.progressValue = progressValue;
+        }
+      },
+      showRemainingDays() {
+      },
+      isWantToStopConfirm() {
         this.$store
-          .dispatch("investigations/getInvestigationDetailsListData", {
-            data: dataBody,
+          .dispatch("investigations/cancelInvestigation", this.$route.params.id)
+          .catch(() => {
+          })
+          .then(() => {
+            this.isWantToStop = false;
+            this.refreshDatatable();
+            this.restartStopInvestigationData();
+          });
+      },
+      stopInvestigationFunc(value) {
+        this.isWantToStop = true;
+      },
+      iconType() {
+        this.statsAndMenuData.status == "Running"
+          ? (this.statusIcon = "mdi-play")
+          : this.statsAndMenuData.status == "Finished"
+          ? (this.statusIcon = "mdi-check")
+          : this.statsAndMenuData.status == "Expired"
+            ? (this.statusIcon = "mdi-clock")
+            : (this.statusIcon = "mdi-close");
+      },
+      getStatusText(section, val) {
+        if (val == null) val = 0;
+        this.iconType();
+        //this.statsAndMenuData.estimatedTime = 'asd'
+
+        switch (section) {
+          case "statusTime":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return this.statsAndMenuData.estimatedTime
+                  ? this.statsAndMenuData.estimatedTime
+                  : "Estimated time can not be calculated at the moment";
+              case "Cancelled":
+                return this.investigationDetailsData.endDate;
+              case "Expired":
+                return this.investigationDetailsData.expireDate;
+              case "Finished":
+                return this.investigationDetailsData.endDate;
+              default:
+                break;
+            }
+            break;
+          case "notScannedUserCount":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return `${val} Online Users`;
+              case "Cancelled":
+                return `${val} Users`;
+              case "Expired":
+                return `${val} Users`;
+              case "Finished":
+                return "All users scanned";
+              default:
+                break;
+            }
+            break;
+          case "totalUserCount":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return `of remaining ${val} users`;
+              case "Cancelled":
+                return `Could not be scanned`;
+              case "Expired":
+                return `Could not be scanned`;
+              case "Finished":
+                return "No remaining users";
+              default:
+                break;
+            }
+            break;
+          case "scannedUserCount":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return `${val} Scanned Users`;
+              case "Cancelled":
+                return `${val} Scanned Users`;
+              case "Expired":
+                return `${val} Scanned Users`;
+              case "Finished":
+                return `${val} Scanned Users`;
+              default:
+                break;
+            }
+            break;
+          case "totalUserCountScannedUser":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return `of total ${val} users`;
+              case "Cancelled":
+                return `of total ${val} users`;
+              case "Expired":
+                return `of total ${val} users`;
+              case "Finished":
+                return `of total ${val} users`;
+              default:
+                break;
+            }
+            break;
+          case "scannedEmailCount":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return `${val} Emails Scanned`;
+              case "Cancelled":
+                return `${val} Emails Scanned`;
+              case "Expired":
+                return `${val} Emails Scanned`;
+              case "Finished":
+                return `${val} Emails Scanned`;
+              default:
+                break;
+            }
+            break;
+          case "totalEmailCount":
+            switch (this.statsAndMenuData.status) {
+              case "Running":
+                return `of total ${val} emails`;
+              case "Cancelled":
+                return `of total ${val} emails`;
+              case "Expired":
+                return `of total ${val} emails`;
+              case "Finished":
+                return `of total ${val} emails`;
+              default:
+                break;
+            }
+            break;
+
+          default:
+            break;
+        }
+      },
+      menuClick(menu) {
+        this.activeMenu = menu;
+        this.showTargetUsersDetails = false;
+        this.showEmails = false;
+        if (menu != "targetUsers") {
+          let dataBody = this.investigationListBodyData;
+          dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu;
+          this.$store
+            .dispatch("investigations/getInvestigationDetailsListData", {
+              data: dataBody,
+              id: this.$route.params.id
+            })
+            .finally(() => {
+              this.showEmails = true;
+              vm.$forceUpdate();
+            });
+        } else {
+          this.$store
+            .dispatch(
+              "investigations/getInvestigationDetailsTargetUsersListData",
+              {
+                data: this.investigationTargetUsersListBodyData,
+                id: this.$route.params.id
+              }
+            )
+            .finally(() => {
+              this.showTargetUsersDetails = true;
+              vm.$forceUpdate();
+            });
+        }
+      },
+      restartStopInvestigationData() {
+        this.$store
+          .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
+          .then(() => {
+            this.$store
+              .dispatch(
+                "investigations/getInvestigationDetailsData",
+                this.$route.params.id
+              )
+              .then(() => {
+                this.$store
+                  .dispatch("investigations/getInvestigationDetailsListData", {
+                    data: this.investigationListBodyData,
+                    id: this.$route.params.id
+                  })
+                  .then(() => {
+                    this.showEmails = false;
+                    this.showTargetUsersDetails = false;
+                    this.showEmails = true;
+                    vm.$forceUpdate();
+                  });
+              });
+          });
+      },
+      restartAllData() {
+        this.showEmails = false;
+        this.showTargetUsersDetails = false;
+        if (this.activeMenu == "targetUsers") {
+          this.$store
+            .dispatch(
+              "investigations/getInvestigationDetailsTargetUsersListData",
+              {
+                data: this.investigationTargetUsersListBodyData,
+                id: this.$route.params.id
+              }
+            )
+            .finally(() => {
+              this.showTargetUsersDetails = true;
+              vm.$forceUpdate();
+            });
+        } else {
+          this.$store
+            .dispatch(
+              "investigations/getInvestigationDetailsTargetUsersListData",
+              {
+                data: this.investigationTargetUsersListBodyData,
+                id: this.$route.params.id
+              }
+            )
+            .then(() => {
+              vm.$forceUpdate();
+              this.showEmails = true;
+            });
+        }
+      },
+      refreshDatatable() {
+        this.$store
+          .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
+          .then(() => {
+            this.$store
+              .dispatch(
+                "investigations/getInvestigationDetailsData",
+                this.$route.params.id
+              )
+              .then(() => {
+                this.$store
+                  .dispatch("investigations/getInvestigationDetailsListData", {
+                    data: this.investigationListBodyData,
+                    id: this.$route.params.id
+                  })
+                  .then(() => {
+                    this.calculateProgressData();
+                    this.showEmails = false;
+                    this.showTargetUsersDetails = false;
+                    this.showTargetUsersDetails =
+                      this.activeMenu == "targetUsers";
+                    this.showEmails = this.activeMenu != "targetUsers";
+                  });
+              });
+          });
+        this.$store
+          .dispatch("investigations/getInvestigationDetailsTargetUsersListData", {
+            data: this.investigationTargetUsersListBodyData,
             id: this.$route.params.id
           })
           .finally(() => {
-            this.showEmails = true;
-            vm.$forceUpdate();
+            //this.showTargetUsersDetails = true;
+            //vm.$forceUpdate();
           });
-      } else {
+      },
+      onAddClose() {
+        // set mobile vision
+        if (this.isMobileVisible && this.windowWidth < 769) {
+          this.isMobileInfo = true;
+        }
+        this.isWantToAddNewCommunity = false;
+      },
+      createCommunityFromMobileInfo() {
+        // open new investigation overlay
+        this.isWantToAddNewCommunity = true;
+      },
+      sendInvestigationdetailsWarningMessage(value, multi) {
+        this.isWantToWarn = true
+        this.warningMessage = Array.isArray(value) && value.length && value.length > 1 ? "Notify users about this email" : "Notify user about this email"
+        this.soloWarningMessageValue = value
+      },
+      isWantToWarnConfirm() {
+        let isArray = Array.isArray(this.soloWarningMessageValue);
+        let data = [];
+        isArray
+          ? (data = this.soloWarningMessageValue.map(item => item.resourceId))
+          : data.push(this.soloWarningMessageValue.resourceId);
         this.$store
-          .dispatch(
-            "investigations/getInvestigationDetailsTargetUsersListData",
-            {
-              data: this.investigationTargetUsersListBodyData,
-              id: this.$route.params.id
-            }
-          )
-          .finally(() => {
-            this.showTargetUsersDetails = true;
-            vm.$forceUpdate();
-          });
-      }
-    },
-    restartStopInvestigationData() {
-      this.$store
-        .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
-        .then(() => {
-          this.$store
-            .dispatch(
-              "investigations/getInvestigationDetailsData",
-              this.$route.params.id
-            )
-            .then(() => {
-              this.$store
-                .dispatch("investigations/getInvestigationDetailsListData", {
-                  data: this.investigationListBodyData,
-                  id: this.$route.params.id
-                })
-                .then(() => {
-                  this.showEmails = false;
-                  this.showTargetUsersDetails = false;
-                  this.showEmails = true;
-                  vm.$forceUpdate();
-                });
-            });
-        });
-    },
-    restartAllData() {
-      this.showEmails = false;
-      this.showTargetUsersDetails = false;
-      if (this.activeMenu == "targetUsers") {
-        this.$store
-          .dispatch(
-            "investigations/getInvestigationDetailsTargetUsersListData",
-            {
-              data: this.investigationTargetUsersListBodyData,
-              id: this.$route.params.id
-            }
-          )
-          .finally(() => {
-            this.showTargetUsersDetails = true;
-            vm.$forceUpdate();
-          });
-      } else {
-        this.$store
-          .dispatch(
-            "investigations/getInvestigationDetailsTargetUsersListData",
-            {
-              data: this.investigationTargetUsersListBodyData,
-              id: this.$route.params.id
-            }
-          )
+          .dispatch("investigations/sendInvestigationWarningMessage", {
+            data: {
+              items: data,
+              warningMessage: this.notifyMessage
+            },
+            id: this.$route.params.id
+          })
           .then(() => {
-            vm.$forceUpdate();
-            this.showEmails = true;
+            this.refreshDatatable();
+            this.isWantToWarn = false;
           });
-      }
-    },
-    refreshDatatable() {
-      this.$store
-        .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
-        .then(() => {
-          this.$store
-            .dispatch(
-              "investigations/getInvestigationDetailsData",
-              this.$route.params.id
-            )
-            .then(() => {
-              this.$store
-                .dispatch("investigations/getInvestigationDetailsListData", {
-                  data: this.investigationListBodyData,
-                  id: this.$route.params.id
-                })
-                .then(() => {
-                  this.calculateProgressData();
-                  this.showEmails = false;
-                  this.showTargetUsersDetails = false;
-                  this.showTargetUsersDetails =
-                    this.activeMenu == "targetUsers";
-                  this.showEmails = this.activeMenu != "targetUsers";
-                });
-            });
-        });
-      this.$store
-        .dispatch("investigations/getInvestigationDetailsTargetUsersListData", {
-          data: this.investigationTargetUsersListBodyData,
-          id: this.$route.params.id
-        })
-        .finally(() => {
-          //this.showTargetUsersDetails = true;
-          //vm.$forceUpdate();
-        });
-    },
-    onAddClose() {
-      // set mobile vision
-      if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true;
-      }
-      this.isWantToAddNewCommunity = false;
-    },
-    createCommunityFromMobileInfo() {
-      // open new investigation overlay
-      this.isWantToAddNewCommunity = true;
-    },
-    sendInvestigationdetailsWarningMessage(value, multi) {
-      this.isWantToWarn = true;
-      this.soloWarningMessageValue = value;
-    },
-    isWantToWarnConfirm() {
-      let isArray = Array.isArray(this.soloWarningMessageValue);
-      let data = [];
-      isArray
-        ? (data = this.soloWarningMessageValue.map(item => item.resourceId))
-        : data.push(this.soloWarningMessageValue.resourceId);
-      this.$store
-        .dispatch("investigations/sendInvestigationWarningMessage", {
-          data: {
-            items: data,
-            warningMessage: this.notifyMessage
-          },
-          id: this.$route.params.id
-        })
-        .then(() => {
-          this.refreshDatatable();
-          this.isWantToWarn = false;
-        });
-    },
-    deleteInvestigationDetailsFunction(value, multi) {
-      let isArray = Array.isArray(value);
-      this.totalSelectedItemsCount = isArray ? value.length : 1;
-      this.isWantToDelete = true;
-      this.deleteValue = value;
-    },
-    isWantToDeleteConfirm(val, message) {
-      let isArray = Array.isArray(this.deleteValue);
-      let data = [];
-      isArray
-        ? (data = this.deleteValue.map(item => item.resourceId))
-        : data.push(this.deleteValue.resourceId);
-      this.$store
-        .dispatch("investigations/deleteInvestigationDetailsItem", {
-          data: {
-            items: data,
-            isNotify: !!message,
-            IsPermanentDelete: val,
-            warningMessage: message
-          },
-          id: this.$route.params.id
-        })
-        .then(() => {
-          this.refreshDatatable();
-          this.isWantToDelete = false;
-          this.isWantToWarnAndDelete = false;
-        });
-    },
-    deleteAndNotifyInvestigationDetailsFunction(value) {
-      let isArray = Array.isArray(value);
-      this.totalSelectedItemsCount = isArray ? value.length : 1;
-      this.isWantToWarnAndDelete = true;
-      this.deleteValue = value;
-    },
+      },
+      deleteInvestigationDetailsFunction(value, multi) {
+        let isArray = Array.isArray(value);
+        this.totalSelectedItemsCount = isArray ? value.length : 1;
+        this.isWantToDelete = true;
+        this.deleteValue = value;
+      },
+      isWantToDeleteConfirm(val, message) {
+        let isArray = Array.isArray(this.deleteValue);
+        let data = [];
+        isArray
+          ? (data = this.deleteValue.map(item => item.resourceId))
+          : data.push(this.deleteValue.resourceId);
+        this.$store
+          .dispatch("investigations/deleteInvestigationDetailsItem", {
+            data: {
+              items: data,
+              isNotify: !!message,
+              IsPermanentDelete: val,
+              warningMessage: message
+            },
+            id: this.$route.params.id
+          })
+          .then(() => {
+            this.refreshDatatable();
+            this.isWantToDelete = false;
+            this.isWantToWarnAndDelete = false;
+          });
+      },
+      deleteAndNotifyInvestigationDetailsFunction(value) {
+        let isArray = Array.isArray(value);
+        this.totalSelectedItemsCount = isArray ? value.length : 1;
+        this.isWantToWarnAndDelete = true;
+        this.deleteValue = value;
+      },
 
-    startInvestigationFunc() {
-      this.isWantToAddNewCommunity = true;
+      startInvestigationFunc() {
+        this.isWantToAddNewCommunity = true;
+      }
+    },
+    computed: {
+      ...mapGetters({
+        // get table data via vuex.
+        tableData: "investigations/getInvestigationDetailsListGetter", // for using getters,
+        statsAndMenuData: "investigations/statsAndMenuGetter", // for stats getters,
+        investigationDetailsData: "investigations/investigationDetailsDataGetter", // for stats getters,
+        investigationDetailsListData:
+          "investigations/getInvestigationDetailsListGetter", // for stats getters,
+        investigationDetailsTargetUsersListData:
+          "investigations/getInvestigationDetailsTargetUsersListGetter"
+      })
+    },
+    created() {
+    },
+    mounted() {
+      // triggered to relevant action at investigations.js
+      //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
+      const _this = this;
+      this.refreshDatatable();
+      this.autoRequest = setInterval(function () {
+        if (_this.statsAndMenuData && _this.statsAndMenuData.status == "Running")
+          _this.refreshDatatable();
+      }, 5000);
+    },
+    beforeDestroy() {
+      clearInterval(this.autoRequest);
     }
-  },
-  computed: {
-    ...mapGetters({
-      // get table data via vuex.
-      tableData: "investigations/getInvestigationDetailsListGetter", // for using getters,
-      statsAndMenuData: "investigations/statsAndMenuGetter", // for stats getters,
-      investigationDetailsData: "investigations/investigationDetailsDataGetter", // for stats getters,
-      investigationDetailsListData:
-        "investigations/getInvestigationDetailsListGetter", // for stats getters,
-      investigationDetailsTargetUsersListData:
-        "investigations/getInvestigationDetailsTargetUsersListGetter"
-    })
-  },
-  created() {},
-  mounted() {
-    // triggered to relevant action at investigations.js
-    //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
-    const _this = this;
-    this.refreshDatatable();
-    this.autoRequest = setInterval(function() {
-      if (_this.statsAndMenuData && _this.statsAndMenuData.status == "Running")
-        _this.refreshDatatable();
-    }, 5000);
-  },
-  beforeDestroy() {
-    clearInterval(this.autoRequest);
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
-.standard-height {
-  ::v-deep .v-input__slot {
-    //max-height: 40px !important;
-    min-height: 40px !important;
-  }
-}
-::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
-  border-color: currentColor;
-  border-style: none;
-  border-width: unset;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
-}
-::v-deep .v-input__control {
-  input {
-    &::placeholder {
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
+  .standard-height {
+    ::v-deep .v-input__slot {
+      //max-height: 40px !important;
+      min-height: 40px !important;
     }
   }
-  .v-select__slot {
-    margin-bottom: 3px !important;
-    .v-label {
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
+
+  ::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
+    border-color: currentColor;
+    border-style: none;
+    border-width: unset;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+  }
+
+  ::v-deep .v-input__control {
     input {
       &::placeholder {
         font-family: "Open Sans", sans-serif !important;
@@ -1288,477 +1306,572 @@ export default {
         color: rgba(0, 0, 0, 0.54) !important;
       }
     }
-  }
-}
 
-.text-selected {
-  border-radius: 1px !important;
-  background-color: #d1e9fc !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  width: max-content;
-}
-.clean-link {
-  padding: 0 2px !important;
-  border-radius: 1px !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: #2196f3 !important;
-}
-.selected-link {
-  background-color: #d1e9fc !important;
-}
-.phishing-link {
-  background-color: #f3e1e5 !important;
-  border-bottom: 1px solid #bb2a45 !important;
-  color: #bb2a45 !important;
-  width: max-content;
-}
+    .v-select__slot {
+      margin-bottom: 3px !important;
 
-::v-deep .v-application input {
-  border-radius: 8px !important;
-  border: solid 1px rgba(0, 0, 0, 0.16) !important;
-}
+      .v-label {
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
 
-::v-deep .v-text-field > .v-input__control > .v-input__slot {
-  font-family: "Open Sans", sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.54) !important;
-}
+      input {
+        &::placeholder {
+          font-family: "Open Sans", sans-serif !important;
+          font-size: 13px !important;
+          font-weight: normal !important;
+          font-stretch: normal !important;
+          font-style: normal !important;
+          line-height: normal !important;
+          letter-spacing: normal !important;
+          color: rgba(0, 0, 0, 0.54) !important;
+        }
+      }
+    }
+  }
 
-::v-deep .v-select__slot {
-  .v-label {
-    top: 10px !important;
+  .text-selected {
+    border-radius: 1px !important;
+    background-color: #d1e9fc !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    width: max-content;
   }
-  .v-label--active {
-    top: 16px !important;
-  }
-  .v-input__append-inner {
-    margin-top: 9px !important;
-  }
-}
 
-::v-deep .v-autocomplete {
-  .v-label {
-    top: 10px !important;
+  .clean-link {
+    padding: 0 2px !important;
+    border-radius: 1px !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: #2196f3 !important;
   }
-  .v-label--active {
-    top: 8px !important;
+
+  .selected-link {
+    background-color: #d1e9fc !important;
   }
-}
-::v-deep .v-text-field--outlined {
-  .v-input__slot {
-    margin-bottom: 2px !important;
+
+  .phishing-link {
+    background-color: #f3e1e5 !important;
+    border-bottom: 1px solid #bb2a45 !important;
+    color: #bb2a45 !important;
+    width: max-content;
   }
-}
-::v-deep .v-text-field__slot {
-  label {
+
+  ::v-deep .v-application input {
+    border-radius: 8px !important;
+    border: solid 1px rgba(0, 0, 0, 0.16) !important;
+  }
+
+  ::v-deep .v-text-field > .v-input__control > .v-input__slot {
     font-family: "Open Sans", sans-serif !important;
-    font-size: 13px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.54) !important;
-  }
-}
-::v-deep .v-input__slot {
-  //max-height: 40px !important;
-  min-height: 40px !important;
-}
-::v-deep .v-text-field--outlined {
-  .v-input__slot {
-    margin-bottom: 2px !important;
-  }
-}
-::v-deep .investigation-details__alerts {
-  &-sub-title {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    font-family: "Open Sans", sans-serif;
+    color: rgba(0, 0, 0, 0.54) !important;
   }
-  &-content {
-    p {
-      font-size: 13px;
+
+  ::v-deep .v-select__slot {
+    .v-label {
+      top: 10px !important;
+    }
+
+    .v-label--active {
+      top: 16px !important;
+    }
+
+    .v-input__append-inner {
+      margin-top: 9px !important;
+    }
+  }
+
+  ::v-deep .v-autocomplete {
+    .v-label {
+      top: 10px !important;
+    }
+
+    .v-label--active {
+      top: 8px !important;
+    }
+  }
+
+  ::v-deep .v-text-field--outlined {
+    .v-input__slot {
+      margin-bottom: 2px !important;
+    }
+  }
+
+  ::v-deep .v-text-field__slot {
+    label {
+      font-family: "Open Sans", sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+
+  ::v-deep .v-input__slot {
+    //max-height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  ::v-deep .v-text-field--outlined {
+    .v-input__slot {
+      margin-bottom: 2px !important;
+    }
+  }
+
+  ::v-deep .investigation-details__alerts {
+    &-sub-title {
+      font-size: 16px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.72);
+      color: rgba(0, 0, 0, 0.87) !important;
       font-family: "Open Sans", sans-serif;
     }
-    margin-top: 24px;
+
+    &-content {
+      p {
+        font-size: 13px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.72);
+        font-family: "Open Sans", sans-serif;
+      }
+
+      margin-top: 24px;
+    }
+
+    &-title {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: #2196f3;
+      font-family: "Open Sans", sans-serif;
+    }
+
+    &-icon-wrapper {
+      box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+      border: solid 1px rgba(100, 181, 246, 0.5);
+      background-color: #e3f2fd;
+      height: 48px;
+      width: 48px;
+      margin-right: 24px;
+      font-family: "Open Sans", sans-serif;
+    }
   }
-  &-title {
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: #2196f3;
-    font-family: "Open Sans", sans-serif;
-  }
-  &-icon-wrapper {
-    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-    border: solid 1px rgba(100, 181, 246, 0.5);
-    background-color: #e3f2fd;
-    height: 48px;
-    width: 48px;
-    margin-right: 24px;
-    font-family: "Open Sans", sans-serif;
-  }
-}
-.investigation-details {
-  padding: 16px;
-  padding-top: 10px;
-  &__container {
-    &__stats {
-      border-radius: 20px;
-      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-      background-color: #ffffff;
-      padding: 24px;
-      margin-bottom: 34px;
-      display: flex;
-      flex-wrap: wrap;
-      flex-flow: row;
-      &__cards {
+
+  .investigation-details {
+    padding: 16px;
+    padding-top: 10px;
+
+    &__container {
+      &__stats {
+        border-radius: 20px;
+        box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+        background-color: #ffffff;
+        padding: 24px;
+        margin-bottom: 34px;
         display: flex;
-        flex-basis: 25%;
-        flex-grow: 0;
-        &__card {
+        flex-wrap: wrap;
+        flex-flow: row;
+
+        &__cards {
           display: flex;
-          flex-flow: row;
-          align-items: center;
-          justify-content: center;
-          &-left {
-            &__icon {
-              width: 50px;
-              height: 50px;
-              align-items: center;
-              justify-content: center;
-              display: flex;
-              box-shadow: 0 2px 5px 0 rgba(112, 177, 115, 0.5);
-              border-radius: 30px;
-              margin-right: 8px;
-              &.bg-green {
-                background: #43a047;
+          flex-basis: 25%;
+          flex-grow: 0;
+
+          &__card {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            justify-content: center;
+
+            &-left {
+              &__icon {
+                width: 50px;
+                height: 50px;
+                align-items: center;
+                justify-content: center;
+                display: flex;
+                box-shadow: 0 2px 5px 0 rgba(112, 177, 115, 0.5);
+                border-radius: 30px;
+                margin-right: 8px;
+
+                &.bg-green {
+                  background: #43a047;
+                }
+
+                &.bg-turquoise {
+                  background-color: #00bcd4;
+                }
+
+                &.bg-blue {
+                  background-color: #2196f3;
+                }
+
+                &.bg-salmon {
+                  background-color: #f56c6c;
+                }
+
+                &.bg-macaroni {
+                  background-color: #e6a23c;
+                }
+
+                i {
+                  margin-right: 0 !important;
+                }
               }
-              &.bg-turquoise {
-                background-color: #00bcd4;
+            }
+
+            &-right {
+              &__title {
+                font-family: "Open Sans", sans-serif;
+                font-size: 20px;
+                font-weight: 600;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: 1.15;
+                letter-spacing: normal;
+                color: #2196f3;
+                margin-bottom: 5px;
               }
-              &.bg-blue {
-                background-color: #2196f3;
-              }
-              &.bg-salmon {
-                background-color: #f56c6c;
-              }
-              &.bg-macaroni {
-                background-color: #e6a23c;
-              }
-              i {
-                margin-right: 0 !important;
+
+              &__stats {
+                margin-bottom: 0 !important;
+                font-family: "Open Sans", sans-serif;
+                font-size: 16px;
+                font-weight: normal;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: normal;
+                letter-spacing: normal;
+                color: rgba(0, 0, 0, 0.87);
+                max-width: 250px;
               }
             }
           }
-          &-right {
-            &__title {
+        }
+      }
+
+      &__content {
+        display: flex;
+        flex-flow: row;
+        padding: 24px;
+
+        &--left-menu {
+          display: flex;
+          flex-flow: column;
+          min-width: 220px;
+          margin-right: 16px;
+
+          &--time {
+            display: flex;
+            flex-flow: column;
+
+            &--labels {
               font-family: "Open Sans", sans-serif;
-              font-size: 20px;
+              font-size: 12px;
               font-weight: 600;
-              font-stretch: normal;
-              font-style: normal;
-              line-height: 1.15;
-              letter-spacing: normal;
-              color: #2196f3;
-              margin-bottom: 5px;
-            }
-            &__stats {
-              margin-bottom: 0 !important;
-              font-family: "Open Sans", sans-serif;
-              font-size: 16px;
-              font-weight: normal;
               font-stretch: normal;
               font-style: normal;
               line-height: normal;
               letter-spacing: normal;
               color: rgba(0, 0, 0, 0.87);
-              max-width: 250px;
+              margin-bottom: 4px;
             }
-          }
-        }
-      }
-    }
-    &__content {
-      display: flex;
-      flex-flow: row;
-      padding: 24px;
-      &--left-menu {
-        display: flex;
-        flex-flow: column;
-        min-width: 220px;
-        margin-right: 16px;
-        &--time {
-          display: flex;
-          flex-flow: column;
-          &--labels {
-            font-family: "Open Sans", sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-            margin-bottom: 4px;
-          }
-          &--progress {
-            font-family: "Open Sans", sans-serif;
-            font-size: 10px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.9;
-            letter-spacing: normal;
-            text-align: center;
-            color: rgba(0, 0, 0, 0.87);
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2px;
-            &--bar {
-              margin-bottom: 2px;
-              .v-progress-linear {
-                border-radius: 20px;
-              }
-            }
-          }
-          &--left-date {
-            opacity: 0.64;
-            font-family: "Open Sans", sans-serif;
-            font-size: 10px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.9;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-          }
-        }
-        &--mail-menu {
-          .v-card {
-            box-shadow: none !important;
-            margin-top: 24px;
-            .v-navigation-drawer {
-              width: 100% !important;
-              align-items: center;
-              ::v-deep &__content {
-                width: 100% !important;
-                .v-list {
-                  padding: 0 !important;
-                }
-              }
-              .v-list {
-                .v-divider {
-                  padding: 0;
-                }
-                &-item {
-                  &:first-child {
-                    margin-top: 10px;
-                    margin-bottom: 24px;
-                  }
-                  &__archived {
-                    display: flex;
-                    width: 100%;
-                    &--main {
-                      flex-flow: column;
-                      .v-list-item-title__value {
-                        top: 22px;
-                      }
-                    }
-                    &--title {
-                      font-family: "Open Sans", sans-serif;
-                      font-size: 12px;
-                      font-weight: 600;
-                      font-stretch: normal;
-                      font-style: normal;
-                      line-height: normal;
-                      letter-spacing: normal;
-                      color: rgba(0, 0, 0, 0.87);
-                      margin-bottom: 0;
-                    }
-                    &--link {
-                      display: flex;
-                      width: 100%;
-                    }
-                  }
-                  position: relative;
-                  font-family: "Open Sans", sans-serif;
-                  font-size: 14px;
-                  font-weight: normal;
-                  font-stretch: normal;
-                  font-style: normal;
-                  line-height: normal;
-                  letter-spacing: normal;
-                  color: #212121;
-                  background: #fafafa;
-                  margin-bottom: 0;
-                  &--active {
-                    i {
-                      color: #2196f3 !important;
-                    }
-                  }
-                  &__title {
-                    line-height: 18px;
-                  }
-                  &-title {
-                    &__value {
-                      position: absolute;
-                      right: 8px;
-                      top: 8px;
-                      border-radius: 4px;
-                      background-color: #2196f3;
-                      color: #ffffff;
-                      min-width: 24px;
-                      min-height: 23px;
-                      justify-content: center;
-                      align-items: center;
-                      display: flex;
-                      padding: 2px;
-                    }
-                  }
-                  &__icon {
-                    margin-right: 18px;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      &--right-menu {
-        width: calc(100% - 220px);
-        ::v-deep .card.v-card.v-sheet.theme--light {
-          padding: 0 !important;
-          border-radius: 0 !important;
-          -webkit-box-shadow: none !important;
-          box-shadow: none !important;
-        }
-        &__summary {
-          display: flex;
-          flex-flow: column;
-          width: 85%;
-          &__item {
-            display: flex;
-            flex-flow: row;
-            &:first-child {
-              margin-bottom: 8px;
-            }
-            &--text-header {
+
+            &--progress {
               font-family: "Open Sans", sans-serif;
-              font-size: 14px;
-              font-weight: 600;
-              font-stretch: normal;
-              font-style: normal;
-              line-height: 1.5;
-              letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.87);
-              margin-right: 8px;
-            }
-            &--text-content {
-              font-family: "Open Sans", sans-serif;
-              font-size: 14px;
+              font-size: 10px;
               font-weight: normal;
               font-stretch: normal;
               font-style: normal;
-              line-height: 1.5;
+              line-height: 1.9;
+              letter-spacing: normal;
+              text-align: center;
+              color: rgba(0, 0, 0, 0.87);
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 2px;
+
+              &--bar {
+                margin-bottom: 2px;
+
+                .v-progress-linear {
+                  border-radius: 20px;
+                }
+              }
+            }
+
+            &--left-date {
+              opacity: 0.64;
+              font-family: "Open Sans", sans-serif;
+              font-size: 10px;
+              font-weight: normal;
+              font-stretch: normal;
+              font-style: normal;
+              line-height: 1.9;
               letter-spacing: normal;
               color: rgba(0, 0, 0, 0.87);
             }
-            &--action-button {
-              position: absolute;
-              right: 20px;
-              top: 20px;
-              button {
-                border-radius: 18px;
+          }
+
+          &--mail-menu {
+            .v-card {
+              box-shadow: none !important;
+              margin-top: 24px;
+
+              .v-navigation-drawer {
+                width: 100% !important;
+                align-items: center;
+
+                ::v-deep &__content {
+                  width: 100% !important;
+
+                  .v-list {
+                    padding: 0 !important;
+                  }
+                }
+
+                .v-list {
+                  .v-divider {
+                    padding: 0;
+                  }
+
+                  &-item {
+                    &:first-child {
+                      margin-top: 10px;
+                      margin-bottom: 24px;
+                    }
+
+                    &__archived {
+                      display: flex;
+                      width: 100%;
+
+                      &--main {
+                        flex-flow: column;
+
+                        .v-list-item-title__value {
+                          top: 22px;
+                        }
+                      }
+
+                      &--title {
+                        font-family: "Open Sans", sans-serif;
+                        font-size: 12px;
+                        font-weight: 600;
+                        font-stretch: normal;
+                        font-style: normal;
+                        line-height: normal;
+                        letter-spacing: normal;
+                        color: rgba(0, 0, 0, 0.87);
+                        margin-bottom: 0;
+                      }
+
+                      &--link {
+                        display: flex;
+                        width: 100%;
+                      }
+                    }
+
+                    position: relative;
+                    font-family: "Open Sans", sans-serif;
+                    font-size: 14px;
+                    font-weight: normal;
+                    font-stretch: normal;
+                    font-style: normal;
+                    line-height: normal;
+                    letter-spacing: normal;
+                    color: #212121;
+                    background: #fafafa;
+                    margin-bottom: 0;
+
+                    &--active {
+                      i {
+                        color: #2196f3 !important;
+                      }
+                    }
+
+                    &__title {
+                      line-height: 18px;
+                    }
+
+                    &-title {
+                      &__value {
+                        position: absolute;
+                        right: 8px;
+                        top: 8px;
+                        border-radius: 4px;
+                        background-color: #2196f3;
+                        color: #ffffff;
+                        min-width: 24px;
+                        min-height: 23px;
+                        justify-content: center;
+                        align-items: center;
+                        display: flex;
+                        padding: 2px;
+                      }
+                    }
+
+                    &__icon {
+                      margin-right: 18px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        &--right-menu {
+          width: calc(100% - 220px);
+
+          ::v-deep .card.v-card.v-sheet.theme--light {
+            padding: 0 !important;
+            border-radius: 0 !important;
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+          }
+
+          &__summary {
+            display: flex;
+            flex-flow: column;
+            width: 85%;
+
+            &__item {
+              display: flex;
+              flex-flow: row;
+
+              &:first-child {
+                margin-bottom: 8px;
+              }
+
+              &--text-header {
                 font-family: "Open Sans", sans-serif;
                 font-size: 14px;
                 font-weight: 600;
                 font-stretch: normal;
                 font-style: normal;
+                line-height: 1.5;
+                letter-spacing: normal;
+                color: rgba(0, 0, 0, 0.87);
+                margin-right: 8px;
+              }
+
+              &--text-content {
+                font-family: "Open Sans", sans-serif;
+                font-size: 14px;
+                font-weight: normal;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: 1.5;
+                letter-spacing: normal;
+                color: rgba(0, 0, 0, 0.87);
+              }
+
+              &--action-button {
+                position: absolute;
+                right: 20px;
+                top: 20px;
+
+                button {
+                  border-radius: 18px;
+                  font-family: "Open Sans", sans-serif;
+                  font-size: 14px;
+                  font-weight: 600;
+                  font-stretch: normal;
+                  font-style: normal;
+                  line-height: 1.71;
+                  letter-spacing: normal;
+                  color: #2196f3;
+                }
+              }
+            }
+          }
+
+          &__target-users {
+            &--header {
+              margin-top: 25px;
+              margin-bottom: 0;
+              font-family: "Open Sans", sans-serif;
+              font-size: 12px;
+              font-weight: 600;
+              font-stretch: normal;
+              font-style: normal;
+              line-height: normal;
+              letter-spacing: normal;
+              color: rgba(0, 0, 0, 0.87);
+            }
+
+            &--list {
+              .v-chip {
+                font-family: "Open Sans", sans-serif;
+                font-size: 14px;
+                font-weight: normal;
+                font-stretch: normal;
+                font-style: normal;
                 line-height: 1.71;
                 letter-spacing: normal;
-                color: #2196f3;
+                text-align: center;
+                color: #000000;
+
+                &:first-child {
+                  margin-left: 0 !important;
+                }
               }
             }
           }
-        }
-        &__target-users {
-          &--header {
-            margin-top: 25px;
-            margin-bottom: 0;
-            font-family: "Open Sans", sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-          }
-          &--list {
-            .v-chip {
+
+          &__filters {
+            margin-bottom: 24px;
+
+            &--header {
+              margin-top: 25px;
+              margin-bottom: 0;
               font-family: "Open Sans", sans-serif;
-              font-size: 14px;
-              font-weight: normal;
+              font-size: 12px;
+              font-weight: 600;
               font-stretch: normal;
               font-style: normal;
-              line-height: 1.71;
+              line-height: normal;
               letter-spacing: normal;
-              text-align: center;
-              color: #000000;
-              &:first-child {
-                margin-left: 0 !important;
-              }
+              color: rgba(0, 0, 0, 0.87);
             }
-          }
-        }
-        &__filters {
-          margin-bottom: 24px;
-          &--header {
-            margin-top: 25px;
-            margin-bottom: 0;
-            font-family: "Open Sans", sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-          }
-          &--list {
-            .v-chip {
-              font-family: "Open Sans", sans-serif;
-              font-size: 14px;
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
-              line-height: 1.71;
-              letter-spacing: normal;
-              text-align: center;
-              color: #000000;
-              &:first-child {
-                margin-left: 0 !important;
+
+            &--list {
+              .v-chip {
+                font-family: "Open Sans", sans-serif;
+                font-size: 14px;
+                font-weight: normal;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: 1.71;
+                letter-spacing: normal;
+                text-align: center;
+                color: #000000;
+
+                &:first-child {
+                  margin-left: 0 !important;
+                }
               }
             }
           }
@@ -1766,20 +1879,20 @@ export default {
       }
     }
   }
-}
-.newInvestigationOverlay {
-  background-color: #fff !important;
-  overflow: auto !important;
-  height: 100% !important;
-  max-width: 100vw !important;
-  width: 100% !important;
-  display: block !important;
-  justify-content: center !important;
-  align-items: center !important;
 
-  > ::v-deep .v-overlay__content {
-    height: auto;
-    width: 100%;
+  .newInvestigationOverlay {
+    background-color: #fff !important;
+    overflow: auto !important;
+    height: 100% !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    display: block !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    > ::v-deep .v-overlay__content {
+      height: auto;
+      width: 100%;
+    }
   }
-}
 </style>

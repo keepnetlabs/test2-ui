@@ -402,6 +402,15 @@
               </template>
               <span class="tooltip-span">Download selected rows</span>
             </v-tooltip>
+            <v-tooltip v-if="selectEvent && selectEvent.warning" bottom opacity="1">
+              <template v-slot:activator="{on}">
+                <v-btn @click="handleWarning(multipleSelection)" icon
+                       class="btn-selected-hover mr-1" v-on="on">
+                  <v-icon color="white" class="selection-icons">mdi-alert</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Send users a warning message</span>
+            </v-tooltip>
           </div>
         </div>
         <div
@@ -553,14 +562,16 @@
                         :series="scope.row[col.property]"
                       ></apexchart>
                     </div>
-                    <div class="chart__summary-text" v-if="chartOptions.summary.show">{{
+                    <div class="chart__summary-text"
+                         v-if="chartOptions.summary && chartOptions.summary.show">{{
                       getChartSummary(scope.row[col.property],chartOptions.summary.seperator) }}
                     </div>
                   </template>
-                  <p class="tooltip-line">{{ scope.row[col.property][0] }} No used</p>
-                  <p class="tooltip-line">{{ scope.row[col.property][1] }} Read</p>
-                  <p class="tooltip-line">{{ scope.row[col.property][2] }} Response</p>
-                  <p class="tooltip-line">{{ scope.row[col.property][3] }} Unread</p>
+                  <template v-if="chartOptions.showTooltipLine"
+                            v-for="(item,index) in scope.row[col.property]">
+                    <p class="tooltip-line"> {{chartOptions.labels[index]}} : {{ item }}</p>
+                  </template>
+
                 </v-tooltip>
                 <span v-else>Empty</span>
               </template>
@@ -1198,7 +1209,47 @@
         // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
       },
       handleCopy(selections) {
-        // You should handle the Copy action in here
+
+        let headerKeys = this.columns.reduce((acc, item) => {
+          acc.push(item.property)
+          return acc
+        }, [])
+        let headerText = this.columns.reduce((acc, item) => {
+          acc.push(item.label)
+          return acc
+        }, [])
+
+        const columnsLength = []
+        let text = ""
+        selections.forEach((item, index) => {
+          headerKeys.forEach((a, i) => {
+            let lengthOfItem = item[a].toString().length || 0
+            lengthOfItem -= a.length -1
+            if (lengthOfItem < 0) {
+              lengthOfItem = 0
+            }
+
+            if (columnsLength[i]) {
+              if (columnsLength[i] < lengthOfItem) {
+                columnsLength[i] = lengthOfItem
+              }
+            } else {
+              columnsLength.push(lengthOfItem)
+            }
+            text += `${item[a]} `
+          })
+          text += "\n"
+        })
+
+        const getHeader = headerText.reduce((acc, item, index) => {
+          acc += item
+          for (let i = 0; i < columnsLength[index]; i++) {
+            acc += "\xa0"
+          }
+          return acc
+        }, "")
+
+        navigator.clipboard.writeText(text)
       },
       handleEdit(selections) {
         if (typeof selections === "object" && !this.multipleSelection.length) {
@@ -1225,6 +1276,9 @@
             break;
         }
         // You should handle the Delete row action in here
+      },
+      handleWarning(selections) {
+        this.rowAct("sendWarningMessage", selections)
       },
       handleDownload(selections) {
         // You should handle the Download row action in here
@@ -1965,9 +2019,9 @@
     border-radius: unset !important;
   }
 
-  .chart__summary-text{
-    margin-top:-9px;
-    margin-left:2px;
+  .chart__summary-text {
+    margin-top: -9px;
+    margin-left: 2px;
     font-family: OpenSans;
     font-size: 12px;
     font-weight: normal;

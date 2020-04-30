@@ -233,12 +233,12 @@ const investigations = {
         },
         async getIrSummary({ commit }, obj) {
             // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
+            //commit('common/SET_IS_LOADING', true, { root: true })
             await irSummary(obj)
                 .then(response => {
                     const result = response.data
                     commit('SET_IRSUMMARY', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
+                    //commit('common/SET_IS_LOADING', false, { root: true })
                 })
                 .catch(() => {
                     commit('common/SET_IS_LOADING', false, { root: true })
