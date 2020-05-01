@@ -253,15 +253,15 @@ const threadSharing = {
   },
   actions: {
     async getCommunities({ commit }, compId) {
-      commit('common/SET_IS_LOADING', true, { root: true })
+
       await listCommunities()
         .then(response => {
           const result = response.data
           commit('SET_COMMUNITIES', result)
-          commit('common/SET_IS_LOADING', false, { root: true })
+
         })
         .catch(() => {
-          commit('common/SET_IS_LOADING', false, { root: true })
+
           commit('common/SET_SNACK_STATUS', true, { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
           commit('common/SET_ERROR_STATE', true, { root: true })
@@ -695,7 +695,6 @@ const threadSharing = {
       if (!postObj) {
         commit('SET_INCIDENT_OBJECT', {})
       } else {
-        commit('common/SET_IS_LOADING', true, { root: true })
         var formData = new FormData()
         formData.append('Attachment', postObj.Attachment)
         formData.append('CommunityId', postObj.CommunityId)
@@ -714,13 +713,12 @@ const threadSharing = {
           })
           .then(resp => {
             commit('SET_INCIDENT_OBJECT', resp.data.Data)
-            commit('common/SET_IS_LOADING', false, { root: true })
+
           })
           .catch(error => {
             commit('SET_INCIDENT_OBJECT', error.response.data)
             commit('common/SET_SNACK_STATUS', true, { root: true })
             commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-            commit('common/SET_IS_LOADING', false, { root: true })
             if (error.response.status === 400) {
               commit('common/SET_ERROR_MESSAGE', 'Unsupported file type!', {
                 root: true
@@ -747,7 +745,7 @@ const threadSharing = {
         })
     },
     async getIncident({ commit }, mailId) {
-      commit('common/SET_IS_LOADING', true, { root: true })
+
       await fetchIncident(
         localStorage.getItem('companyId'),
         localStorage.getItem('communityId'),
@@ -757,18 +755,17 @@ const threadSharing = {
         .then(resp => {
           commit('SET_SELECTED_INCIDENT', resp.data.Data)
           commit('SET_INCIDENT_OBJECT', resp.data.Data)
-          commit('common/SET_IS_LOADING', false, { root: true })
           if (!resp.data || resp.data == null) {
             commit('common/SET_SNACK_STATUS', true, { root: true })
             commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
             commit('common/SET_ERROR_MESSAGE', "The incident's mail can not found", {
               root: true
             })
-            commit('common/SET_IS_LOADING', false, { root: true })
+
           }
         })
         .catch(error => {
-          commit('common/SET_IS_LOADING', false, { root: true })
+
           commit('common/SET_SNACK_STATUS', true, { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
           commit('common/SET_ERROR_MESSAGE', "The incident's mail can not found", {
@@ -777,10 +774,10 @@ const threadSharing = {
         })
     },
     async publishPostIncident({ commit, dispatch, state }, obj) {
-      commit('common/SET_IS_LOADING', true, { root: true })
+
       await publishIncident(obj)
         .then(() => {
-          commit('common/SET_IS_LOADING', false, { root: true })
+
           commit('common/SET_SNACK_STATUS', true, { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           if (state.incidentEditMode) {
@@ -801,15 +798,15 @@ const threadSharing = {
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
-          commit('common/SET_IS_LOADING', false, { root: true })
+
         })
     },
     async fetchCommunityPosts({ commit }, obj) {
-      commit('common/SET_IS_LOADING', true, { root: true })
+
       await listCommunityPosts(obj)
         .then(resp => {
           commit('SET_COMMUNITY_POSTS', resp.data)
-          commit('common/SET_IS_LOADING', false, { root: true })
+
         })
         .catch(error => {
           commit('common/SET_SNACK_STATUS', true, { root: true })
@@ -817,15 +814,15 @@ const threadSharing = {
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
-          commit('common/SET_IS_LOADING', false, { root: true })
+
         })
     },
     async getPostDetail({ commit }, obj) {
-      commit('common/SET_IS_LOADING', true, { root: true })
+
       await fetchPostDetail(obj)
         .then(resp => {
           commit('SET_POST_DETAIL', resp.data)
-          commit('common/SET_IS_LOADING', false, { root: true })
+
         })
         .catch(error => {
           commit('common/SET_SNACK_STATUS', true, { root: true })
@@ -833,7 +830,7 @@ const threadSharing = {
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
-          commit('common/SET_IS_LOADING', false, { root: true })
+
         })
     },
     async likePost({ commit, dispatch }, obj) {

@@ -32,7 +32,7 @@ const login = {
         .then(response => {
           const result = response.data
           AuthenticationService.setToken(result.token, result.expiredIn, result.status)
-          commit('common/SET_IS_LOADING', false, { root: true })
+          commit('common/SET_IS_LOADING', -1, { root: true })
           commit('common/SET_ERROR_STATE', false, { root: true })
           dispatch('setPageNumber', 1)
           payload.router.push('/')
@@ -60,7 +60,7 @@ const login = {
       commit('SET_PAGE_NUMBER', payload)
     },
     loginAction({ commit }, payload) {
-      commit('common/SET_IS_LOADING', true, { root: true })
+      commit('common/SET_IS_LOADING', 1, { root: true })
       loginAction(payload)
         .then(response => {
           commit('common/SET_ERROR_STATE', false, { root: true })
@@ -71,14 +71,14 @@ const login = {
           )
           if (response.data.status === 3) {
             commit('SET_PAGE_NUMBER', 4)
-            commit('common/SET_IS_LOADING', false, { root: true })
+            commit('common/SET_IS_LOADING', -1, { root: true })
           } else {
-            commit('common/SET_IS_LOADING', false, { root: true })
+            commit('common/SET_IS_LOADING', -1, { root: true })
             payload.router.push('/')
           }
         })
         .catch(error => {
-          commit('common/SET_IS_LOADING', false, { root: true })
+          commit('common/SET_IS_LOADING', -1, { root: true })
           commit('WRONG_LOGIN_ATTEMPT', 1)
           if (error.response && error.response.status === 401) {
             commit('common/SET_ERROR_STATE', true, { root: true })

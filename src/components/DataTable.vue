@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <v-overlay fixed :opacity="0.46" :value="isWantToDownload" :z-index="999">
-      <v-card light class="download-card pb-4 pa-6" style="max-width: 580px;">
+      <v-card light class="pb-4 pa-6" style="max-width: 580px;">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">mdi-download</v-icon>
@@ -12,19 +12,15 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="check-wrapper pl-0 pr-0">
-          <div class="check-row">
-            <v-checkbox color="#2196f3" v-model="download.xls" label="XLS" value="XLS"/>
-          </div>
-          <div class="check-row">
-            <v-checkbox color="#2196f3" v-model="download.csv" label="CSV" value="CSV"/>
-          </div>
-          <div class="check-row">
-            <v-checkbox color="#2196f3" v-model="download.pdf" label="PDF" value="PDF"/>
-          </div>
+          <v-radio-group row class="ml-3" v-model="downloadType">
+            <v-radio color="#2196f3" label="XLS" value="XLS"/>
+            <v-radio color="#2196f3" label="CSV" value="CSV"/>
+            <v-radio color="#2196f3" label="PDF" value="PDF"/>
+          </v-radio-group>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap">
           <v-btn text color="#f56c6c" @click="isWantToDownload = false">CANCEL</v-btn>
-          <v-btn text color="#2196f3">DOWNLOAD</v-btn>
+          <v-btn text color="#2196f3" @click="downloadEvent">DOWNLOAD</v-btn>
         </div>
       </v-card>
     </v-overlay>
@@ -411,6 +407,15 @@
               </template>
               <span class="tooltip-span">Send users a warning message</span>
             </v-tooltip>
+            <v-tooltip v-if="selectEvent && selectEvent.deleteAndNotify" bottom opacity="1">
+              <template v-slot:activator="{on}">
+                <v-btn @click="handleDeleteAndNotify(multipleSelection)" icon
+                       class="btn-selected-hover mr-1" v-on="on">
+                  <v-icon color="white" class="selection-icons">mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Delete And Notify Users</span>
+            </v-tooltip>
           </div>
         </div>
         <div
@@ -764,7 +769,7 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              minWidth="120"
+              :minWidth="rowActionsMinWidth"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -832,7 +837,7 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              minWidth="120"
+              :minWidth="rowActionsMinWidth"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -849,7 +854,7 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              minWidth="120"
+              :minWidth="rowActionsMinWidth"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -926,6 +931,10 @@
         type: Array,
         required: true
       },
+      rowActionsMinWidth: {
+        type: Number,
+        default: 60,
+      },
       table: {
         type: Array,
         required: false
@@ -936,7 +945,7 @@
       },
       title: {
         type: Object,
-        required: true
+        required: false,
       },
       pageSizes: {
         type: Array,
@@ -1020,6 +1029,7 @@
           csv: false,
           pdf: false
         },
+        downloadType: "PDF",
         actionFixed: "right",
         allHidden: false,
         printObj: {
@@ -1075,7 +1085,7 @@
       }
     },
     created() {
-      if (this.table.length) {
+      if (this.table && this.table.length) {
         this.initialData = this.table;
         this.tableData = this.table;
       }
@@ -1128,6 +1138,7 @@
         if (this.multipleSelection.some(r => r.id === row.row.id)) {
           return "selected-row";
         }
+        return ""
       },
       handleSelectionChange(val) {
         if (this.currentPage === 1) {
@@ -1160,6 +1171,9 @@
             pageNum * this.rowCount
           );
         }
+      },
+      downloadEvent(e) {
+        this.$emit("downloadEvent", this.downloadType)
       },
       toggleAll() {
         this.$refs.elTableRef.toggleAllSelection();
@@ -1224,7 +1238,7 @@
         selections.forEach((item, index) => {
           headerKeys.forEach((a, i) => {
             let lengthOfItem = item[a].toString().length || 0
-            lengthOfItem -= a.length -1
+            lengthOfItem -= a.length - 1
             if (lengthOfItem < 0) {
               lengthOfItem = 0
             }
@@ -1280,6 +1294,9 @@
       handleWarning(selections) {
         this.rowAct("sendWarningMessage", selections)
       },
+      handleDeleteAndNotify(selections) {
+        this.rowAct("deleteAndNotifyInvestigationDetails", selections)
+      },
       handleDownload(selections) {
         // You should handle the Download row action in here
       },
@@ -1309,6 +1326,7 @@
         this.multipleSelection = [];
       },
       loadWithDataArray(data) {
+        this.initialData = data
         this.tableData = data.slice(0, this.countRow || this.rowCount)
       },
       getChartSummary(property, seperator = "/") {

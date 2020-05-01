@@ -91,17 +91,15 @@ const investigations = {
         },
         async deleteInvestigationDetailsItem({ commit }, obj) {
             // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
+
             await deleteInvestigationDetailsItem(obj.data, obj.id)
                 .then(response => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
                     commit('common/SET_ERROR_MESSAGE', 'Investigations Details Item Has Been Deleted Succesfully', { root: true })
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -110,17 +108,16 @@ const investigations = {
         },
         async sendInvestigationWarningMessage({ commit }, obj) {
             // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
+
             await sendInvestigationWarningMessage(obj.data, obj.id)
                 .then(response => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
                     commit('common/SET_ERROR_MESSAGE', 'User Warning Message Has Been Sent Succesfully', { root: true })
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -129,17 +126,17 @@ const investigations = {
         },
         async cancelInvestigation({ commit }, id) {
             // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
+
             await cancelInvestigation(id)
                 .then(response => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
                     commit('common/SET_ERROR_MESSAGE', 'Investigation Stopped Succesfully', { root: true })
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -147,16 +144,16 @@ const investigations = {
                 })
         },
         async getInvestigationDetailsTargetUsersListData({ commit }, obj) {
+
             // get investigaiton details
-            commit('common/SET_IS_LOADING', true, { root: true })
             await investigationDetailsTargetUsersListFunction(obj.data, obj.id)
                 .then(response => {
                     const result = response.data
                     commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -165,15 +162,12 @@ const investigations = {
         },
         async getInvestigationDetailsListData({ commit }, obj) {
             // get investigaiton details
-            commit('common/SET_IS_LOADING', true, { root: true })
             await investigationDetailsListFunction(obj.data, obj.id)
                 .then(response => {
                     const result = response.data
                     commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -182,15 +176,12 @@ const investigations = {
         },
         async getInvestigationDetailsData({ commit }, id) {
             // get investigaiton details
-            commit('common/SET_IS_LOADING', true, { root: true })
             await getInvestigationDetailsDataFunction(id)
                 .then(response => {
                     const result = response.data
                     commit('SET_INVESTIGATIONDETAILSDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -199,15 +190,15 @@ const investigations = {
         },
         async getStatsAndMenuData({ commit }, id) {
             // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
+
             await getStatsAndMenuDataFunction(id)
                 .then(response => {
                     const result = response.data
+                  console.log("getStatsAndMenuDataFunction",response.data)
                     commit('SET_STATSANDMENUDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -216,15 +207,13 @@ const investigations = {
         },
         async getInvestigationList({ commit }, obj) {
             // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
             await investigationList(obj)
                 .then(response => {
                     const result = response.data
                     commit('SET_INVESTIGATIONLIST', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -233,33 +222,33 @@ const investigations = {
         },
         async getIrSummary({ commit }, obj) {
             // get investigaiton list via axious
-            //commit('common/SET_IS_LOADING', true, { root: true })
+
             await irSummary(obj)
                 .then(response => {
                     const result = response.data
                     commit('SET_IRSUMMARY', result)
-                    //commit('common/SET_IS_LOADING', false, { root: true })
+
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting the investigation List', { root: true })
+                    commit('common/SET_ERROR_MESSAGE', 'Error when getting the summary', { root: true })
                 })
         },
 
         async getTargetUsersList({ commit }) {
             // get target list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
+
             await getTargetUsers()
                 .then(response => {
                     const result = response.data
                     commit('SET_TARGETUSERSLIST', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                 })
                 .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })
@@ -271,7 +260,7 @@ const investigations = {
             // if you want to manipulate the obj, do it before.
             await saveNewInvestigation(obj)
                 .then(resp => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
+
                     commit('common/SET_SNACK_STATUS', true, { root: true })
                     commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
                     commit('common/SET_ERROR_STATE', true, { root: true })

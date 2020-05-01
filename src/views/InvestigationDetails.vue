@@ -573,7 +573,6 @@
               :refName="'investigationDetailsListTable'"
               :columns="columns"
               :table="investigationDetailsListData && investigationDetailsListData.results"
-              :title="title"
               :countRow="5"
               :pageSizes="pageSizes"
               :defaultSort="'date'"
@@ -589,7 +588,10 @@
               @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
               @sendInvestigationdetailsWarningMessage="sendInvestigationdetailsWarningMessage($event)"
               @deleteAndNotifyInvestigationDetailsFunction="deleteAndNotifyInvestigationDetailsFunction($event)"
+              @downloadEvent="this.exportInvestigationList"
+              :rowActionsMinWidth="80"
               v-if="showEmails"
+
             />
           </div>
           <div v-if="activeMenu == 'targetUsers' && showTargetUsersDetails">
@@ -625,6 +627,7 @@
   import Datatable from "../components/DataTable";
   import newInvestigation from "../components/Investigation/NewInvestigation";
   import {mapActions, mapGetters} from "vuex";
+  import {exportInvestigationList} from '../api/incidentResponder'
 
   export default {
     components: {
@@ -639,7 +642,6 @@
       diffDays: null,
       activeMenu: "Inbox",
       warningMessage: "Notify user about this email",
-      isWantToAddNewCommunity: false,
       statusIcon: "mdi-check",
       showEmails: false,
       showTargetUsersDetails: false,
@@ -790,11 +792,6 @@
           type: "text"
         }
       ],
-      /*title: {
-        icon: "mdi-tab-unselected",
-        title: "Investigations",
-        subTitle: ""
-      },*/
       pageSizes: [5, 10, 25, 50, 100],
       rowActions: [
         {
@@ -849,7 +846,8 @@
         edit: false,
         delete: true,
         download: false,
-        warning: true
+        warning: true,
+        deleteAndNotify: true
       },
       chartOptions: {
         chart: {
@@ -900,6 +898,24 @@
         return `${this.totalSelectedItemsCount} ${
           this.totalSelectedItemsCount > 1 ? "emails" : "email"
         } will be deleted from mailbox`;
+      },
+      exportInvestigationList(exportType) {
+        const payload = {
+          pageNumber: 0,
+          pageSize: 0,
+          orderBy: "ExpireDate",
+          ascending: true,
+          reportAllPages: true,
+          exportType: exportType === "XLS" ? "Excel" : exportType
+        }
+
+        exportInvestigationList(payload).then(response => {
+          const {data} = response
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(data);
+          link.download = `investigation-details.${exportType.toLocaleLowerCase()}`;
+          link.click();
+        })
       },
       calculateProgressData() {
         let today = new Date();
@@ -1140,6 +1156,7 @@
         }
       },
       refreshDatatable() {
+
         this.$store
           .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
           .then(() => {
@@ -1158,9 +1175,8 @@
                     this.calculateProgressData();
                     this.showEmails = false;
                     this.showTargetUsersDetails = false;
-                    this.showTargetUsersDetails =
-                      this.activeMenu == "targetUsers";
-                    this.showEmails = this.activeMenu != "targetUsers";
+                    this.showTargetUsersDetails = this.activeMenu === "targetUsers";
+                    this.showEmails = this.activeMenu !== "targetUsers";
                   });
               });
           });

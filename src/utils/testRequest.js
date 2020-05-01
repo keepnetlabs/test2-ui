@@ -9,7 +9,7 @@ const testService = axios.create({
 })
 
 testService.interceptors.request.use(config => {
-    store.commit('common/SET_IS_LOADING', true, { root: true })
+    store.commit('common/SET_IS_LOADING', 1, { root: true })
   if (config.url !== 'account/token') {
     config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
     config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
@@ -17,16 +17,17 @@ testService.interceptors.request.use(config => {
   }
   return config
 }, error => (error) => {
-  store.commit('common/SET_IS_LOADING', false, { root: true })
+  store.commit('common/SET_IS_LOADING', -1, { root: true })
 })
 
 testService.interceptors.response.use(
   response => {
-    store.commit('common/SET_IS_LOADING', false, { root: true })
+    store.commit('common/SET_IS_LOADING', -1, { root: true })
    return  response
   },
   error => {
-    store.commit('common/SET_IS_LOADING', false, { root: true })
+    console.log("error",error)
+    store.commit('common/SET_IS_LOADING', -1, { root: true })
     if (!error.response) {
       return Promise.reject(error)
     }

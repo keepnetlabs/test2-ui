@@ -67,7 +67,8 @@
             {{(irSummary.roiSummary && irSummary.roiSummary.time)||0}}h
             <span>and</span>
           </div>
-          <div class="body-row">${{(irSummary.roiSummary && irSummary.roiSummary.revenue)||0}}k</div>
+          <div class="body-row">${{(irSummary.roiSummary && irSummary.roiSummary.revenue)||0}}k
+          </div>
         </div>
         <div class="card-status">Saved</div>
         <div class="bg-image">
@@ -96,7 +97,6 @@
               ref="refTopRules"
               :columns="topRules.columns"
               :table="topRules.table"
-              :title="{}"
               :countRow="5"
               :pageSizes="[]"
               :defaultSort="'status'"
@@ -107,6 +107,8 @@
               :empty="topRules.iEmpty"
               :selectEvent="topRules.selectEvent"
               :chartOptions="topRules.chartOptions"
+              :border="false"
+              :rowActionsMinWidth="40"
             />
           </div>
         </v-card>
@@ -136,7 +138,6 @@
               :refName="'recentInv'"
               ref="refRecentInv"
               :columns="recentInv.columns"
-              :title="{}"
               :countRow="5"
               :pageSizes="[]"
               :defaultSort="'priority'"
@@ -163,10 +164,9 @@
           </div>
         </div>
         <datatable
-          :refName="'topRules'"
+          :refName="'reportedEmails'"
+          ref="refReportedEmails"
           :columns="emails.columns"
-          :table="emails.table"
-          :title="{}"
           :countRow="5"
           :pageSizes="emails.pageSizes"
           :defaultSort="'subject'"
@@ -185,7 +185,7 @@
 </template>
 <script>
   import Datatable from "../components/DataTable";
-  import {getTopRules, getRunningInvestigations} from '../api/incidentResponder'
+  import {getTopRules, getRunningInvestigations, searchNotifiedMail} from '../api/incidentResponder'
   import {mapGetters} from "vuex";
 
   export default {
@@ -217,7 +217,7 @@
             sortable: false,
             show: true,
             type: "text",
-            minWidth: "31"
+            minWidth: "30"
           },
           {
             property: "status",
@@ -301,53 +301,7 @@
         chartOptions: {}
       },
       emails: {
-        table: [
-          {
-            id: 1,
-            subject: "File Format Exploit",
-            reported: "Pratima Muzopadhyay",
-            source: "Auto",
-            priority: "High",
-            status: "Phishing",
-            created: "08.17.2019"
-          },
-          {
-            id: 2,
-            subject: "Suspicious Email Analysis Report",
-            reported: "Kobe Byrant",
-            source: "Manual",
-            priority: "High",
-            status: "Malicious",
-            created: "05.13.2019"
-          },
-          {
-            id: 3,
-            subject: "File Format Exploit",
-            reported: "Chinmay Sarasvati",
-            source: "Auto",
-            priority: "Medium",
-            status: "Clean",
-            created: "12.19.2019"
-          },
-          {
-            id: 4,
-            subject: "Email subject",
-            reported: "Benedita Tavares",
-            source: "Attachment",
-            priority: "Low",
-            status: "Phishing",
-            created: "11.04.2018"
-          },
-          {
-            id: 5,
-            subject: "File Format Exploit",
-            reported: "Abbie Wilson",
-            source: "Rule Name",
-            priority: "Medium",
-            status: "Clean",
-            created: "04.13.2017"
-          }
-        ],
+        table: [],
         columns: [
           {
             property: "subject",
@@ -358,10 +312,11 @@
             sortable: true,
             show: true,
             type: "text",
-            width: "300"
+            //width: "400"
+            minWidth:80
           },
           {
-            property: "reported",
+            property: "reportedBy",
             align: "left",
             editable: false,
             label: "Reported by",
@@ -369,7 +324,8 @@
             sortable: true,
             show: true,
             type: "text",
-            width: "200"
+            //width: "300"
+            minWidth:100
           },
           {
             property: "source",
@@ -380,7 +336,8 @@
             sortable: true,
             show: true,
             type: "text",
-            width: "120"
+            //width: "150"
+            minWidth:80
           },
           {
             property: "priority",
@@ -388,10 +345,11 @@
             editable: false,
             label: "Priority",
             fixed: false,
-            sortable: true,
+            sortable: false,
             show: true,
             type: "text",
-            width: "90"
+            //width: "150"
+            minWidth:80
           },
           {
             property: "status",
@@ -399,13 +357,14 @@
             editable: false,
             label: "Status",
             fixed: "right",
-            sortable: true,
+            sortable: false,
             show: true,
             type: "status",
-            width: "120"
+            //width: "150"
+            minWidth:80
           },
           {
-            property: "created",
+            property: "createDate",
             align: "right",
             editable: false,
             label: "Created",
@@ -413,16 +372,32 @@
             sortable: true,
             show: true,
             type: "text",
-            width: "120"
+            minWidth:80
+            //width: "230"
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
         rowActions: [
           {
-            name: "Go to the report",
+            name: "Edit",
+            icon: "mdi-pencil",
+            action: "edit"
+          },
+          {
+            name: "Preview",
+            icon: "mdi-eye",
+            action: ""
+          },
+          {
+            name: "Details",
             icon: "mdi-text-box-multiple",
-            action: "goToReport"
-          }
+            action: ""
+          },
+          {
+            name: "Investigate",
+            icon: "mdi-magnify",
+            action: ""
+          },
         ],
         addUsers: {
           show: true,
@@ -433,9 +408,9 @@
           popUp: false
         },
         iEmpty: {
-          message: "No emails analyzed, yet",
-          subMes: "Start now",
-          btn: "REPORT",
+          message: "There isn't any reported mail, yet",
+          subMes: "Emails that are reported by your users via Keepnet Phishing Reporter add-in analysed and listed here",
+          btn: "Phishing Reporter Settings",
           icon: "mdi-arrow-right"
         },
         selectEvent: {
@@ -479,14 +454,41 @@
         .finally(() => (this.showDatatable = true)); //module name than method name
     },
     created() {
-      getTopRules().then(response => {
-        const {data: {data, status}} = response
-        this.$refs.refTopRules.loadWithDataArray(data)
-      })
       getRunningInvestigations().then(response => {
         const {data: {data, status}} = response
         this.$refs.refRecentInv.loadWithDataArray(data)
+      }).catch(error => {
+        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
+        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+        this.$store.dispatch('common/setErrorMessage', "Error when getting the recent investigations! ")
       })
+      getTopRules().then(response => {
+        const {data: {data, status}} = response
+        this.$refs.refTopRules.loadWithDataArray(data)
+      }).catch(error => {
+        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
+        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+        this.$store.dispatch('common/setErrorMessage', "Error when getting the top rules! ")
+      })
+      const payload = {
+        pageNumber: 1,
+        pageSize: 5,
+        orderBy: "CreateDate",
+        ascending: true
+      }
+      searchNotifiedMail(payload).then(response => {
+        const {data: {data: {results}, status}} = response
+
+        this.$refs.refReportedEmails.loadWithDataArray(results)
+      }).catch(error=>{
+        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
+        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+        this.$store.dispatch('common/setErrorMessage', "Error when getting the notified emails! ")
+      })
+
     }
   };
 </script>

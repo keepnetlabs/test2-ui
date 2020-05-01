@@ -2117,7 +2117,7 @@ export default {
         this.updateRightCol()
       })
       this.createInc.onPreview = false
-      this.$store.commit('common/SET_IS_LOADING', false, { root: true })
+      this.$store.commit('common/SET_IS_LOADING', -1, { root: true })
       this.$emit('closePostIncident')
     },
     updateTags() {

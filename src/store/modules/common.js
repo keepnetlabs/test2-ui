@@ -2,7 +2,7 @@ const common = {
   namespaced: true,
   state: {
     menuStatus: true,
-    isLoading: false,
+    isLoading: 0,
     snackStatus: false,
     snackbarColor: 'red',
     errors: '',
@@ -21,7 +21,7 @@ const common = {
       state.menuStatus = payload
     },
     SET_IS_LOADING(state, payload) {
-      state.isLoading = payload
+      state.isLoading += payload
     },
     SET_SNACK_STATUS(state, payload) {
       state.snackStatus = payload
