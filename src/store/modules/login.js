@@ -25,6 +25,7 @@ const login = {
   actions: {
     twoStepLogin({ commit, dispatch }, payload) {
       const jtwToken = AuthenticationService.getToken().token
+      commit('common/SET_IS_LOADING', 1, { root: true })
       twoStepLogin({
         code: payload.code,
         token: jtwToken
@@ -40,6 +41,7 @@ const login = {
         .catch(response => {
           const result = response.response.data
           const errorMessage = result.errors[0].message
+          commit('common/SET_IS_LOADING', -1, { root: true })
           commit('common/SET_ERROR_STATE', true, { root: true })
           commit('common/SET_ERROR_MESSAGE', errorMessage, { root: true })
         })
