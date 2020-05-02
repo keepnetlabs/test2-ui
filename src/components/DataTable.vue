@@ -616,7 +616,6 @@
                     scope.row.detected === 'Finished' ? 'btn-success' : '',
                     scope.row.detected === 'N/A' ? 'btn-none' : '',
                   ]"
-                  @click.native.prevent="deleteRow(scope.$index, tableData)"
                   block
                   rounded
                   v-if="scope.row && scope.row[col.property]"
@@ -644,7 +643,6 @@
                     scope.row.userStatus === 'Online' ? 'btn-online' : '',
                     scope.row.userStatus === 'Offline' ? 'btn-offline' : '',
                   ]"
-                  @click.native.prevent="deleteRow(scope.$index, tableData)"
                   block
                   rounded
                   v-if="scope.row && scope.row[col.property]"
@@ -755,7 +753,6 @@
                     scope.row.status === 'No Match' ? 'btn-no_match' : '',
                     scope.row.status === 'Finished' ? 'btn-success' : '',
                   ]"
-                  @click.native.prevent="deleteRow(scope.$index, tableData)"
                   block
                   rounded
                   v-if="scope.row && scope.row[col.property]"
