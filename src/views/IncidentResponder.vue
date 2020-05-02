@@ -106,7 +106,6 @@
               :addUsers="topRules.addMenu"
               :empty="topRules.iEmpty"
               :selectEvent="topRules.selectEvent"
-              :chartOptions="topRules.chartOptions"
               :border="false"
               :rowActionsMinWidth="40"
             />
@@ -147,7 +146,6 @@
               :addUsers="recentInv.addMenu"
               :empty="recentInv.iEmpty"
               :selectEvent="recentInv.selectEvent"
-              :chartOptions="recentInv.chartOptions"
               :border="false"
             />
           </div>
@@ -177,7 +175,7 @@
           :addUsers="emails.addUsers"
           :empty="emails.iEmpty"
           :selectEvent="emails.selectEvent"
-          :chartOptions="emails.chartOptions"
+
         />
       </v-card>
     </div>
@@ -187,6 +185,7 @@
   import Datatable from "../components/DataTable";
   import {getTopRules, getRunningInvestigations, searchNotifiedMail} from '../api/incidentResponder'
   import {mapGetters} from "vuex";
+  import {COMMON_CONSTANTS} from "../model/constants/commonConstants";
 
   export default {
     components: {
@@ -313,7 +312,7 @@
             show: true,
             type: "text",
             //width: "400"
-            minWidth:80
+            minWidth: 80
           },
           {
             property: "reportedBy",
@@ -325,7 +324,7 @@
             show: true,
             type: "text",
             //width: "300"
-            minWidth:100
+            minWidth: 100
           },
           {
             property: "source",
@@ -337,7 +336,7 @@
             show: true,
             type: "text",
             //width: "150"
-            minWidth:80
+            minWidth: 80
           },
           {
             property: "priority",
@@ -349,7 +348,7 @@
             show: true,
             type: "text",
             //width: "150"
-            minWidth:80
+            minWidth: 80
           },
           {
             property: "status",
@@ -361,7 +360,7 @@
             show: true,
             type: "status",
             //width: "150"
-            minWidth:80
+            minWidth: 80
           },
           {
             property: "createDate",
@@ -372,7 +371,7 @@
             sortable: true,
             show: true,
             type: "text",
-            minWidth:80
+            minWidth: 80
             //width: "230"
           }
         ],
@@ -458,19 +457,22 @@
         const {data: {data, status}} = response
         this.$refs.refRecentInv.loadWithDataArray(data)
       }).catch(error => {
-        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-        this.$store.dispatch('common/setErrorMessage', "Error when getting the recent investigations! ")
+        this.$store.dispatch('common/createSnackBar', {
+          errorState: true,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: "Error when getting the recent investigations! "
+        })
       })
       getTopRules().then(response => {
         const {data: {data, status}} = response
         this.$refs.refTopRules.loadWithDataArray(data)
       }).catch(error => {
-        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-        this.$store.dispatch('common/setErrorMessage', "Error when getting the top rules! ")
+        this.$store.dispatch('common/createSnackBar', {
+          errorState: true,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: "Error when getting the top rules!"
+        })
+
       })
       const payload = {
         pageNumber: 1,
@@ -480,13 +482,13 @@
       }
       searchNotifiedMail(payload).then(response => {
         const {data: {data: {results}, status}} = response
-
         this.$refs.refReportedEmails.loadWithDataArray(results)
-      }).catch(error=>{
-        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-        this.$store.dispatch('common/setErrorMessage', "Error when getting the notified emails! ")
+      }).catch(error => {
+        this.$store.dispatch('common/createSnackBar', {
+          errorState: true,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: "Error when getting the notified emails!"
+        })
       })
 
     }

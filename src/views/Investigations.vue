@@ -120,7 +120,7 @@
           sortable: true,
           show: true,
           type: "status",
-           width: 220,
+          width: 220,
           //minWidth: 80
         },
         {
@@ -168,8 +168,8 @@
           sortable: false,
           show: true,
           type: "progress",
-           width: 90,
-         // minWidth: 60
+          width: 90,
+          // minWidth: 60
         }
       ],
       title: {
@@ -210,10 +210,7 @@
       chartOptions: {
         chart: {
           type: 'pie',
-          width:" 75%",
-          offsetX:9
         },
-
         summary: {
           show: true,
           seperator: "/"
@@ -227,7 +224,12 @@
           enabled: false
         },
         dataLabels: {
-          enabled: false,
+          enabled: false
+        },
+        plotOptions:{
+          pie:{
+            customScale:0.65
+          }
         },
         showTooltipLine: true,
       },

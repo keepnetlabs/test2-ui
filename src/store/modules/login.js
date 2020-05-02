@@ -1,5 +1,6 @@
 import { loginAction, resetPassword, twoStepLogin } from '../../api/auth'
 import AuthenticationService from '../../services/authentication'
+import {COMMON_CONSTANTS} from "../../model/constants/commonConstants";
 
 const login = {
   namespaced: true,
@@ -25,7 +26,7 @@ const login = {
   actions: {
     twoStepLogin({ commit, dispatch }, payload) {
       const jtwToken = AuthenticationService.getToken().token
-      commit('common/SET_IS_LOADING', 1, { root: true })
+      dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {root: true})
       twoStepLogin({
         code: payload.code,
         token: jtwToken
@@ -33,7 +34,7 @@ const login = {
         .then(response => {
           const result = response.data
           AuthenticationService.setToken(result.token, result.expiredIn, result.status)
-          commit('common/SET_IS_LOADING', -1, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
           commit('common/SET_ERROR_STATE', false, { root: true })
           dispatch('setPageNumber', 1)
           payload.router.push('/')
@@ -41,7 +42,7 @@ const login = {
         .catch(response => {
           const result = response.response.data
           const errorMessage = result.errors[0].message
-          commit('common/SET_IS_LOADING', -1, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
           commit('common/SET_ERROR_STATE', true, { root: true })
           commit('common/SET_ERROR_MESSAGE', errorMessage, { root: true })
         })
@@ -61,8 +62,8 @@ const login = {
     setPageNumber({ commit }, payload) {
       commit('SET_PAGE_NUMBER', payload)
     },
-    loginAction({ commit }, payload) {
-      commit('common/SET_IS_LOADING', 1, { root: true })
+    loginAction({ commit,dispatch }, payload) {
+      dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {root: true})
       loginAction(payload)
         .then(response => {
           commit('common/SET_ERROR_STATE', false, { root: true })
@@ -73,14 +74,14 @@ const login = {
           )
           if (response.data.status === 3) {
             commit('SET_PAGE_NUMBER', 4)
-            commit('common/SET_IS_LOADING', -1, { root: true })
+            dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
           } else {
-            commit('common/SET_IS_LOADING', -1, { root: true })
+            dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
             payload.router.push('/')
           }
         })
         .catch(error => {
-          commit('common/SET_IS_LOADING', -1, { root: true })
+          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
           commit('WRONG_LOGIN_ATTEMPT', 1)
           if (error.response && error.response.status === 401) {
             commit('common/SET_ERROR_STATE', true, { root: true })

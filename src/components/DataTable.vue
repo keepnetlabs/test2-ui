@@ -2038,7 +2038,7 @@
   }
 
   .chart__summary-text {
-    margin-top: -9px;
+    margin-top: -18px;
     margin-left: 2px;
     font-family: OpenSans;
     font-size: 12px;
