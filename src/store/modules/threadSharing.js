@@ -249,7 +249,10 @@ const threadSharing = {
     },
     SET_SHARE_RESULTS(state, share) {
       share === 'delete' ? (state.shareMails = []) : state.shareMails.push(share)
-    }
+    },
+    SET_ALL_COLLAPSED(state, collapse) {
+      state.postCollapses = []
+    },
   },
   actions: {
     async getCommunities({ commit }, compId) {
@@ -352,7 +355,9 @@ const threadSharing = {
             communityCompanyId
           })
           dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Community Created Succesfully', { root: true })
+          dispatch('common/setErrorMessage', `You created a new community “${name}“`, {
+            root: true
+          })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           setTimeout(function() {
             router.push('/community/' + name)
@@ -599,9 +604,13 @@ const threadSharing = {
         .then(() => {
           dispatch('common/setSnackStatus', true, { root: true })
           if (privacy) {
-            dispatch('common/setErrorMessage', 'Join Request successfully sent', { root: true })
+            dispatch(
+              'common/setErrorMessage',
+              `Join Request successfully sent to  ${obj.CommunityName}`,
+              { root: true }
+            )
           } else {
-            dispatch('common/setErrorMessage', 'Successfully joined the community.', { root: true })
+            dispatch('common/setErrorMessage', `You joined ${obj.CommunityName}`, { root: true })
           }
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           dispatch('getCommunities')
@@ -781,11 +790,11 @@ const threadSharing = {
           commit('common/SET_SNACK_STATUS', true, { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           if (state.incidentEditMode) {
-            commit('common/SET_ERROR_MESSAGE', 'Post edited successfully', {
+            commit('common/SET_ERROR_MESSAGE', `Post “${obj.Title}” edited successfully`, {
               root: true
             })
           } else {
-            commit('common/SET_ERROR_MESSAGE', 'Post published successfully', {
+            commit('common/SET_ERROR_MESSAGE', `You posted “${obj.Title}” incident`, {
               root: true
             })
           }
@@ -910,7 +919,7 @@ const threadSharing = {
           dispatch('fetchCommunityPosts', fetchObj)
           commit('common/SET_SNACK_STATUS', true, { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'The incident successfully deleted', {
+          commit('common/SET_ERROR_MESSAGE', `You have deleted a post ”${obj.PostName}”`, {
             root: true
           })
         })

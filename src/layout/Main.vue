@@ -785,6 +785,7 @@ export default {
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         this.getMenus()
+        this.getCurrentUser()
         this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
@@ -799,6 +800,9 @@ export default {
     clearInterval(this.interval)
   },
   methods: {
+    ...mapActions({
+      getCurrentUser: 'auth/getCurrentUser'
+    }),
     onNotificationSeen(notification) {
       notification.isSeen = true
       this.notificationSeen(notification)

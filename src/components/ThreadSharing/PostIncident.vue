@@ -25,7 +25,7 @@
                 'hide-step': step === 3 || step === 4 || step === 5
               }"
               class="step-name"
-              >Select Incident</span
+            >Select Incident</span
             >
           </div>
           <div class="steps">
@@ -40,7 +40,7 @@
                 'hide-step': step === 1 || step === 4 || step === 5
               }"
               class="step-name"
-              >General Info</span
+            >General Info</span
             >
           </div>
           <div class="steps">
@@ -55,7 +55,7 @@
                 'hide-step': step === 1 || step === 2 || step === 5
               }"
               class="step-name"
-              >Incident Details</span
+            >Incident Details</span
             >
           </div>
           <div class="steps">
@@ -70,7 +70,7 @@
                 'hide-step': step === 1 || step === 2 || step === 3
               }"
               class="step-name"
-              >Attributes</span
+            >Attributes</span
             >
           </div>
           <div class="steps">
@@ -85,7 +85,7 @@
                 'hide-step': step === 1 || step === 2 || step === 3 || step === 4
               }"
               class="step-name"
-              >Preview</span
+            >Preview</span
             >
           </div>
         </div>
@@ -132,7 +132,7 @@
                   <div class="select-row-inline">
                     <div class="file-type-wrap">
                       <v-icon v-if="item.AttachmentCount != 0" class="email-icon"
-                        >mdi-paperclip</v-icon
+                      >mdi-paperclip</v-icon
                       >
                       <div
                         v-for="(st, ind) of item.Status"
@@ -169,7 +169,7 @@
                       role="button"
                       tabindex="0"
                       class="v-icon notranslate v-icon--link material-icons theme--light"
-                      >false</i
+                    >false</i
                     >
                   </div>
                 </div>
@@ -199,7 +199,7 @@
               id="post-first-error"
               v-if="selectedEmail || msgEmlFile == null"
               class="select-error"
-              >Please select an incident or upload an email</span
+            >Please select an incident or upload an email</span
             >
           </div>
           <div
@@ -222,7 +222,7 @@
                   :disabled="isEditMode"
                   class="close-incident"
                   @click="closePreview()"
-                  >mdi-close-circle</v-icon
+                >mdi-close-circle</v-icon
                 >
                 <div class="preview-header pt-0">
                   <h2
@@ -270,7 +270,7 @@
                           !el.IsShow
                       "
                       :id="uploadRespond.CommunityPostEmails[0].From"
-                      >From: hidden by owner</span
+                    >From: hidden by owner</span
                     >
                     <div
                       v-for="(el, ind) of shareSettings.receiverInfo"
@@ -553,7 +553,7 @@
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                 >
                   <span class="share-setting-text"
-                    >Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}</span
+                  >Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}</span
                   >
                 </h2>
                 <h2
@@ -587,7 +587,7 @@
                     ]"
                   >
                     <span class="share-setting-text"
-                      >From: {{ uploadRespond.CommunityPostEmails[0].From }}</span
+                    >From: {{ uploadRespond.CommunityPostEmails[0].From }}</span
                     >
                     <br />
                   </div>
@@ -621,7 +621,7 @@
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   >
                     <span class="share-setting-text"
-                      >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
+                    >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
                     >
                   </div>
                   <div
@@ -655,7 +655,7 @@
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   >
                     <span class="share-setting-text"
-                      >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
+                    >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
                     >
                   </div>
                   <div
@@ -727,10 +727,10 @@
               <div :class="{ 'minify-part': !filterOpened }" class="filter-header">
                 <div class="select-header" v-if="filterOpened">Select Attributes</div>
                 <v-icon @click="filterOpened = true" :class="{ 'display-none': filterOpened }"
-                  >mdi-arrow-left</v-icon
+                >mdi-arrow-left</v-icon
                 >
                 <v-icon @click="filterOpened = false" :class="{ 'display-none': !filterOpened }"
-                  >mdi-arrow-right</v-icon
+                >mdi-arrow-right</v-icon
                 >
               </div>
               <div :class="{ 'minify-part': !filterOpened }" class="filter-part">
@@ -743,7 +743,6 @@
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/header-all.svg" />
                   </div>
-
                   <v-switch
                     :id="'attachment-switch-' + s.Id"
                     v-if="shareSettings.allHeader && shareSettings.allHeader.length < 1"
@@ -758,7 +757,7 @@
                   :key="ind + s.Id"
                   :class="{ 'minify-switch': !filterOpened }"
                   class="switch-row"
-                  v-if="shareSettings && shareSettings.subject.length < 1"
+                  v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/short-text.svg" />
@@ -772,7 +771,7 @@
                           :class="{ 'chevron-down': subChevron }"
                           v-on="on"
                           @click="subChevron = !subChevron"
-                          >mdi-chevron-down</v-icon
+                        >mdi-chevron-down</v-icon
                         >
                       </v-btn>
                     </template>
@@ -790,7 +789,7 @@
                           <div class="mal-icon-wrapper">
                             <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
                           </div>
-                          Flagged Sender
+                          Flagged Subject
                         </v-list-item-title>
                       </v-list-item>
                     </v-list>
@@ -801,8 +800,8 @@
                   :key="ind + s.Id"
                   :class="{ 'minify-switch': !filterOpened }"
                   class="switch-row"
+                  v-if="s && s.Id && s.Value"
                 >
-                  {{ s }}
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/user-out.svg" />
                   </div>
@@ -815,7 +814,7 @@
                           :class="{ 'chevron-down': fromChevron }"
                           v-on="on"
                           @click="fromChevron = !fromChevron"
-                          >mdi-chevron-down</v-icon
+                        >mdi-chevron-down</v-icon
                         >
                       </v-btn>
                     </template>
@@ -844,9 +843,8 @@
                   :key="ind + s.Id"
                   :class="{ 'minify-switch': !filterOpened }"
                   class="switch-row"
-                  v-if="s && s"
+                  v-if="s && s.Id && s.Value"
                 >
-                  {{ s }}
                   <div class="img-wrapper">
                     <img src="../../assets/img/filter-icons/user-in.svg" />
                   </div>
@@ -859,7 +857,7 @@
                           :class="{ 'chevron-down': toChevron }"
                           v-on="on"
                           @click="toChevron = !toChevron"
-                          >mdi-chevron-down</v-icon
+                        >mdi-chevron-down</v-icon
                         >
                       </v-btn>
                     </template>
@@ -922,6 +920,36 @@
                     v-model="s.IsShow"
                   ></v-switch>
                   <label v-if="filterOpened">“{{ s.Name }}”</label>
+                  <v-menu v-model="linkChevron[ind]" right offset-x transition="scale-transition">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="chevron-btn-menu" icon>
+                        <v-icon
+                          :class="{ 'chevron-down': linkChevron[ind] }"
+                          v-on="on"
+                          @click="linkChevron[ind] = !linkChevron[ind]"
+                        >mdi-chevron-down</v-icon
+                        >
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
+                        <v-list-item-title class="mal-list-row">
+                          <div class="mal-icon-wrapper">
+                            <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
+                          </div>
+                          None
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
+                        <v-list-item-title class="mal-list-row">
+                          <div class="mal-icon-wrapper">
+                            <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
+                          </div>
+                          Phishing Link
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </div>
               </div>
 
@@ -962,8 +990,41 @@
                   </div>
                   <v-switch :id="'attach-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">{{ s.Name }}</label>
+                  <v-menu v-model="attcChevron[ind]" right offset-x transition="scale-transition">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="chevron-btn-menu" icon>
+                        <v-icon
+                          :class="{ 'chevron-down': attcChevron[ind] }"
+                          v-on="on"
+                          @click="attcChevron[ind] = !attcChevron[ind]"
+                        >mdi-chevron-down</v-icon
+                        >
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
+                        <v-list-item-title class="mal-list-row">
+                          <div class="mal-icon-wrapper">
+                            <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
+                          </div>
+                          None
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
+                        <v-list-item-title class="mal-list-row">
+                          <div class="mal-icon-wrapper">
+                            <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
+                          </div>
+                          Malicious File
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </div>
               </div>
+              <span v-if="allFiltersClosed()" class="filter-no-selected" id="select-one-attr"
+              >Please select at least 1 attribute</span
+              >
             </div>
           </div>
         </div>
@@ -972,9 +1033,14 @@
             <p>Preview</p>
             <span>See how your post will look like</span>
           </div>
-          <v-checkbox v-if="!isEditMode" v-model="isAnonym" label="Post as anonymous"></v-checkbox>
+          <v-checkbox
+            class="is-anonym-check"
+            v-model="isAnonym"
+            label="Post as anonymous"
+            id="anonym-check"
+          ></v-checkbox>
           <div id="last-preview-post" class="post-wrapper">
-            <v-expansion-panels v-model="panel" multiple class="mb-4">
+            <v-expansion-panels :multiple="false" v-model="panel" :disabled="disabled" class="mb-4">
               <v-expansion-panel>
                 <div class="threat-sharing-content">
                   <div class="ts-header">
@@ -1000,7 +1066,7 @@
                             rounded
                             medium
                             color="blue"
-                            >COLLAPSE</v-btn
+                          >COLLAPSE</v-btn
                           >
                           <v-btn
                             id="last-preview-details"
@@ -1009,7 +1075,7 @@
                             rounded
                             medium
                             color="blue"
-                            >DETAILS</v-btn
+                          >DETAILS</v-btn
                           >
                         </template>
                       </v-expansion-panel-header>
@@ -1019,18 +1085,30 @@
                   <div class="ts-user-comp">
                     <div id="last-prev-user-comp" class="ts-user-comp-detail">
                       by
-                      <a v-if="userGetter.fullName" href="#" class="pl-1 pr-1">{{
-                        userGetter.fullName
-                      }}</a>
+                      <a v-if="userGetter.fullName" href="#" class="pl-1 pr-1">
+                        <span v-if="!isAnonym">{{ userGetter.fullName }}</span>
+                        <span v-else>Anonymous</span>
+                      </a>
                       <a v-else href="#" class="pl-1 pr-1">{{ userGetter.fullName }}</a> from
                       <a
                         v-if="userGetter.currentCompany && userGetter.currentCompany.name"
                         :id="userGetter.currentCompany.name"
                         href="#"
-                        class="pl-1"
-                        >{{ userGetter.currentCompany.name }}</a
+                        class="pl-1 pr-1"
                       >
-                      <a v-else class="pl-1">Company Name</a>
+                        <span v-if="!isAnonym">{{ userGetter.currentCompany.name }}</span>
+                        <span v-else>Anonymous</span>
+                      </a>
+                      <a v-else class="pl-1 pr-1">Company Name</a> on
+                      <a
+                        v-if="postDetail && postDetail.Data && postDetail.Data.CommunityName"
+                        class="pl-1 pr-1"
+                      >
+                        {{ postDetail.Data.CommunityName }}
+                      </a>
+                      <a v-else class="pl-1 pr-1">
+                        Community Name
+                      </a>
                     </div>
                     <div class="ts-user-date">
                       <span>{{ date }}</span>
@@ -1042,7 +1120,7 @@
                       :id="uploadRespond.Description"
                       autoresize
                       :max-lines="3"
-                      >{{ uploadRespond.Description }}</v-clamp
+                    >{{ uploadRespond.Description }}</v-clamp
                     >
                     <v-clamp v-else autoresize :max-lines="3">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -1103,7 +1181,7 @@
                         outlined
                         class="tag-btn ml-1 text-none"
                         id="incident-badge"
-                        >{{ uploadRespond.CommunityPostCategory[0] }}</v-btn
+                      >{{ uploadRespond.CommunityPostCategory[0] }}</v-btn
                       >
                       <v-btn
                         v-if="
@@ -1118,7 +1196,7 @@
                         outlined
                         class="tag-btn ml-1 text-none"
                         id="incident-badge"
-                        >{{ uploadRespond.CommunityPostCategory[1] }}</v-btn
+                      >{{ uploadRespond.CommunityPostCategory[1] }}</v-btn
                       >
                       <div style="position: relative;">
                         <v-btn
@@ -1140,7 +1218,7 @@
                           id="post-inc-last-prev-with-tooltip"
                         >
                           <span v-if="shareSettings.attachments && shareSettings.attachments.length"
-                            >+{{ uploadRespond.CommunityPostCategory.length - 1 }}</span
+                          >+{{ uploadRespond.CommunityPostCategory.length - 1 }}</span
                           >
                           <span v-else>+{{ uploadRespond.CommunityPostCategory.length - 2 }}</span>
                         </v-btn>
@@ -1255,7 +1333,7 @@
                           Link: {{ el.Value }}
                           <br />
                           <span style="color: #000 !important;"
-                            >This link has been reported as a phising link</span
+                          >This link has been reported as a phising link</span
                           >
                         </p>
                       </div>
@@ -1358,6 +1436,7 @@
                           "
                           :id="'subject-post-last-' + el.Id"
                           style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                          :class="[el.IsMalicious ? 'malicious-style' : '']"
                         >
                           Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}
                         </h2>
@@ -1369,6 +1448,7 @@
                           "
                           :id="'hidden-subj-' + el.Id"
                           style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                          :class="[el.IsMalicious ? 'malicious-style' : '']"
                         >
                           Subject: hidden by owner
                         </h2>
@@ -1382,6 +1462,7 @@
                                 uploadRespond.CommunityPostEmails[0].From.length &&
                                 el.IsShow
                             "
+                            :class="[el.IsMalicious ? 'malicious-style' : '']"
                           >
                             From: {{ uploadRespond.CommunityPostEmails[0].From }}
                             <br />
@@ -1393,7 +1474,7 @@
                                 !el.IsShow
                             "
                             :id="'hidden-sender' + uploadRespond.CommunityPostEmails[0].From"
-                            >From: hidden by owner</span
+                          >From: hidden by owner</span
                           >
                           <div
                             v-for="(el, ind) of shareSettings.receiverInfo"
@@ -1406,7 +1487,17 @@
                             :id="'receiver-info' + uploadRespond.CommunityPostEmails[0].To"
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            To: {{ uploadRespond.CommunityPostEmails[0].To }}
+                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
+                            >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
+                            >
+                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                                >
+                              </template>
+                              <span>This email address has been reported as a threat source</span>
+                            </v-tooltip>
                           </div>
                           <div
                             v-else-if="
@@ -1417,7 +1508,17 @@
                             :id="'hidden-to' + uploadRespond.CommunityPostEmails[0].To"
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            To: hidden by owner
+                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
+                            >To: hidden by owner</span
+                            >
+                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                                >
+                              </template>
+                              <span>This email address has been reported as a threat source</span>
+                            </v-tooltip>
                           </div>
                           <div
                             v-for="(el, ind) of shareSettings.receiverInfo"
@@ -1430,7 +1531,17 @@
                             "
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}
+                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
+                            >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
+                            >
+                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                                >
+                              </template>
+                              <span>This email address has been reported as a threat source</span>
+                            </v-tooltip>
                           </div>
                           <div
                             v-else-if="
@@ -1441,7 +1552,17 @@
                             :id="'hidden-cc' + uploadRespond.CommunityPostEmails[0].Cc"
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
-                            CC: hidden by owner
+                            <span :class="[el.IsMalicious ? 'malicious-style' : '']"
+                            >CC: hidden by owner</span
+                            >
+                            <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
+                              <template v-slot:activator="{ on }">
+                                <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                                >
+                              </template>
+                              <span>This email address has been reported as a threat source</span>
+                            </v-tooltip>
                           </div>
                           <div id="last-step-dates" v-if="uploadRespond.CommunityPostEmails[0]">
                             Date:
@@ -1583,7 +1704,7 @@
       </v-card>
       <div id="post-footer-actions" class="footer-actions">
         <v-btn id="post-cancel-btn" class="cancel-btn" text color="#f56c6c" @click="onCancelClicked"
-          >Cancel</v-btn
+        >Cancel</v-btn
         >
         <div>
           <v-btn
@@ -1593,7 +1714,7 @@
             text
             color="#2196f3"
             @click="step = step - 1"
-            >Previous</v-btn
+          >Previous</v-btn
           >
           <v-btn
             v-if="step === 1"
@@ -1604,7 +1725,7 @@
             text
             color="#2196f3"
             @click="onContinue"
-            >Next</v-btn
+          >Next</v-btn
           >
           <v-btn
             v-if="step === 2"
@@ -1614,7 +1735,7 @@
             text
             color="#2196f3"
             @click="onSecondStep"
-            >Next</v-btn
+          >Next</v-btn
           >
           <v-btn
             v-if="step === 3"
@@ -1624,16 +1745,17 @@
             text
             color="#2196f3"
             @click="onThirdStep"
-            >Next</v-btn
+          >Next</v-btn
           >
           <v-btn
             id="post-step-four-next-btn"
             v-if="step === 4"
+            :class="{ 'disabled-cursor': allFiltersClosed() }"
             class="create-btn"
             text
             color="#2196f3"
             @click="onBeforeLastStep"
-            >Next</v-btn
+          >Next</v-btn
           >
           <v-btn
             id="post-step-five-next-btn"
@@ -1642,7 +1764,7 @@
             text
             color="#2196f3"
             @click="onFinish"
-            >Post</v-btn
+          >Post</v-btn
           >
         </div>
       </div>
@@ -1650,1182 +1772,875 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import VClamp from 'vue-clamp'
-export default {
-  components: {
-    VClamp
-  },
-  props: {
-    updatePost: {
-      type: String,
-      required: false
+  import { mapGetters } from 'vuex'
+  import VClamp from 'vue-clamp'
+  export default {
+    components: {
+      VClamp
     },
-    isEditMode: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
-  computed: {
-    ...mapGetters({
-      businessCategories: 'threadSharing/businessCategoryGetter',
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      userGetter: 'auth/userGetter',
-      uploadResponseGetter: 'threadSharing/uploadResponseGetter',
-      listedIncidents: 'threadSharing/listedIncidentGetter',
-      selectedIncident: 'threadSharing/selectedIncidentGetter',
-      postDetail: 'threadSharing/postDetailGetter'
-    })
-  },
-  data: () => ({
-    step: 1,
-    search: '',
-    searchIncident: '',
-    items: [],
-    categories: ['Malicious', 'Non-malicious', 'Phishing'],
-    model: [],
-    activator: null,
-    attach: null,
-    colors: ['#e0e0e0'],
-    editing: null,
-    index: -1,
-    nonce: 1,
-    menu: false,
-    x: 0,
-    warnItem: true,
-    selectedEmail: '',
-    affectSearch: null,
-    emails: [
-      {
-        name: 'File Format Exploit',
-        icon: 'mdi-paperclip',
-        type: 'Malicious',
-        time: '1w'
+    props: {
+      updatePost: {
+        type: String,
+        required: false
       },
-      {
-        name: 'File Format Exploit',
-        icon: 'mdi-paperclip',
-        type: 'Malicious',
-        time: '1w'
-      },
-      {
-        name: 'File Format Exploit',
-        icon: 'mdi-paperclip',
-        type: 'Malicious',
-        time: '1w'
+      isEditMode: {
+        type: Boolean,
+        required: false,
+        default: false
       }
-    ],
-    header: {
-      allHeader: true,
-      subject: true,
-      sender: true,
-      receiver: true
     },
-    body: {
-      allLinks: true,
-      phishingLinks: true,
-      phishing1: true,
-      phishing2: false
+    computed: {
+      ...mapGetters({
+        businessCategories: 'threadSharing/businessCategoryGetter',
+        selectedCommunity: 'threadSharing/selectedCommunityGetter',
+        userGetter: 'auth/userGetter',
+        uploadResponseGetter: 'threadSharing/uploadResponseGetter',
+        listedIncidents: 'threadSharing/listedIncidentGetter',
+        selectedIncident: 'threadSharing/selectedIncidentGetter',
+        postDetail: 'threadSharing/postDetailGetter'
+      })
     },
-    footer: {
-      allAttachments: true,
-      attachment1: true,
-      attachment2: true
-    },
-    valid: false,
-    categoryValid: false,
-    validDisc: false,
-    validAffect: false,
-    validScope: false,
-    autocomplete: [v => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
-    title: [v => !!v || 'Title is required'],
-    category: [v => (!!v && v.length >= 1) || 'Category is required'],
-    titleRule: {
-      default: v => !!v || 'Title is required',
-      required: v =>
-        (!!v && v.length >= 4 && v.length <= 80) ||
-        'Title must be between 4 and 80 characters long',
-      regex: v =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
-    },
-    descRule: {
-      default: v => !!v || 'Description is required',
-      required: v =>
-        (!!v && v.length >= 5 && v.length <= 300) ||
-        'Description should be between 5 - 300 characters long',
-      regex: v =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
-    },
-    explanationRules: {
-      default: v => !!v || 'Explanation is required',
-      required: v =>
-        (!!v && v.length >= 5 && v.length <= 300) ||
-        'Explanation should be between 5 - 300 characters long',
-      regex: v =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
-    },
-    scopeRules: {
-      default: v => !!v || 'Explanation is required',
-      required: v =>
-        (!!v && v.length >= 5 && v.length <= 200) ||
-        'Explanation should be between 5 - 200 characters long',
-      regex: v =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
-      empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
-    },
-    affectRules: {
-      regex: v =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
-    },
-    createInc: {
-      postId: '',
-      title: 'Subject: Subject comes here',
-      description: '',
-      category: '',
-      discovery: '',
-      affect: [],
-      affectSearch: null,
-      scope: '',
-      select: ['add-tags-with', 'enter', 'tab', 'paste'],
-      items: [],
+    data: () => ({
+      step: 1,
       search: '',
-      createUser: '',
-      createCompany: '',
-      onPreview: true
-    },
-    filterOpened: true,
-    flagData: {
-      subject: false,
-      sender: false,
-      receiver: false,
-      phishing: false,
-      link: false,
-      attachment: false
-    },
-    subChevron: false,
-    fromChevron: false,
-    toChevron: false,
-    msgEmlFile: null,
-    toggle: false,
-    panel: [],
-    expanded: false,
-    tab: 1,
-    commentOpened: false,
-    userComment: '',
-    comments: [],
-    hoverTool: false,
-    seeComments: false,
-    date: new Date().toISOString().slice(0, 10),
-    uploadRespond: {
-      DiscoveryAndDetection: ' '
-    },
-    shareSettings: {},
-    allHeader: false,
-    allLinks: false,
-    allAttachments: false,
-    isAnonym: false
-  }),
-  watch: {
-    'shareSettings.allHeader': function(newVal, oldVal) {
-      if (newVal && newVal.length) {
-        this.allHeader = newVal[0].IsShow
-      }
-    },
-    allHeader(val) {
-      if (val === true) {
-        this.shareSettings.subject[0].IsShow = true
-        this.shareSettings.senderInfo[0].IsShow = true
-        this.shareSettings.receiverInfo[0].IsShow = true
-      } else {
-        this.shareSettings.subject[0].IsShow = false
-        this.shareSettings.senderInfo[0].IsShow = false
-        this.shareSettings.receiverInfo[0].IsShow = false
-      }
-    },
-    'header.sender': function(newVal, oldVal) {
-      if (newVal === false && newVal != oldVal) {
-        this.header.allHeader = false
-      }
-    },
-    'header.receiver': function(newVal, oldVal) {
-      if (newVal === false && newVal != oldVal) {
-        this.header.allHeader = false
-      }
-    },
-    'shareSettings.allAttachments': function(newVal, oldVal) {
-      if (newVal && newVal.length) {
-        this.allAttachments = newVal[0].IsShow
-      }
-    },
-    allAttachments(val) {
-      if (val && this.shareSettings && this.shareSettings.attachments) {
-        for (let a = 0; a < this.shareSettings.attachments.length; a++) {
-          if (val === true) {
-            this.shareSettings.attachments[a].IsShow = true
-          } else {
-            this.shareSettings.attachments[a].IsShow = false
-          }
+      searchIncident: '',
+      items: [],
+      categories: ['Malicious', 'Non-malicious', 'Phishing'],
+      model: [],
+      activator: null,
+      attach: null,
+      colors: ['#e0e0e0'],
+      editing: null,
+      index: -1,
+      nonce: 1,
+      menu: false,
+      x: 0,
+      warnItem: true,
+      selectedEmail: '',
+      affectSearch: null,
+      emails: [
+        {
+          name: 'File Format Exploit',
+          icon: 'mdi-paperclip',
+          type: 'Malicious',
+          time: '1w'
+        },
+        {
+          name: 'File Format Exploit',
+          icon: 'mdi-paperclip',
+          type: 'Malicious',
+          time: '1w'
+        },
+        {
+          name: 'File Format Exploit',
+          icon: 'mdi-paperclip',
+          type: 'Malicious',
+          time: '1w'
         }
-      }
-    },
-    'shareSettings.allLinks': function(newVal, oldVal) {
-      if (newVal && newVal.length) {
-        this.allLinks = newVal[0].IsShow
-      }
-    },
-    allLinks(val) {
-      if (this.shareSettings && this.shareSettings.allLinks) {
-        for (let a = 0; a < this.shareSettings.links.length; a++) {
-          if (val === true) {
-            this.shareSettings.links[a].IsShow = true
-          } else {
-            this.shareSettings.links[a].IsShow = false
-          }
+      ],
+      header: {
+        allHeader: true,
+        subject: true,
+        sender: true,
+        receiver: true
+      },
+      body: {
+        allLinks: true,
+        phishingLinks: true,
+        phishing1: true,
+        phishing2: false
+      },
+      footer: {
+        allAttachments: true,
+        attachment1: true,
+        attachment2: true
+      },
+      valid: false,
+      categoryValid: false,
+      validDisc: false,
+      validAffect: false,
+      validScope: false,
+      autocomplete: [v => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
+      title: [v => !!v || 'Title is required'],
+      category: [v => (!!v && v.length >= 1) || 'Category is required'],
+      titleRule: {
+        default: v => !!v || 'Title is required',
+        required: v =>
+          (!!v && v.length >= 4 && v.length <= 80) ||
+          'Title must be between 4 and 80 characters long',
+        regex: v =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen',
+        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      },
+      descRule: {
+        default: v => !!v || 'Description is required',
+        required: v =>
+          (!!v && v.length >= 5 && v.length <= 300) ||
+          'Description should be between 5 - 300 characters long',
+        regex: v =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen',
+        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      },
+      explanationRules: {
+        default: v => !!v || 'Explanation is required',
+        required: v =>
+          (!!v && v.length >= 5 && v.length <= 300) ||
+          'Explanation should be between 5 - 300 characters long',
+        regex: v =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen',
+        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      },
+      scopeRules: {
+        default: v => !!v || 'Explanation is required',
+        required: v =>
+          (!!v && v.length >= 5 && v.length <= 200) ||
+          'Explanation should be between 5 - 200 characters long',
+        regex: v =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen',
+        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      },
+      affectRules: {
+        regex: v =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen'
+      },
+      createInc: {
+        postId: '',
+        title: 'Subject: Subject comes here',
+        description: '',
+        category: '',
+        discovery: '',
+        affect: [],
+        affectSearch: null,
+        scope: '',
+        select: ['add-tags-with', 'enter', 'tab', 'paste'],
+        items: [],
+        search: '',
+        createUser: '',
+        createCompany: '',
+        onPreview: true
+      },
+      filterOpened: true,
+      flagData: {
+        subject: false,
+        sender: false,
+        receiver: false,
+        phishing: false,
+        link: false,
+        attachment: false
+      },
+      subChevron: false,
+      fromChevron: false,
+      toChevron: false,
+      linkChevron: [],
+      attcChevron: [],
+      msgEmlFile: null,
+      toggle: false,
+      panel: 0,
+      expanded: false,
+      tab: 1,
+      commentOpened: false,
+      userComment: '',
+      comments: [],
+      hoverTool: false,
+      seeComments: false,
+      date: new Date().toISOString().slice(0, 10),
+      uploadRespond: {
+        DiscoveryAndDetection: ' '
+      },
+      shareSettings: {},
+      allHeader: false,
+      allLinks: false,
+      allAttachments: false,
+      isAnonym: false
+    }),
+    watch: {
+      'shareSettings.allHeader': function(newVal, oldVal) {
+        if (newVal && newVal.length) {
+          this.allHeader = newVal[0].IsShow
         }
-      }
-    },
-    'uploadRespond.AffectArea': function(newVal, oldVal) {
-      if (newVal && newVal.length > 5) {
-        this.uploadRespond.AffectArea.pop()
-      }
-      if (newVal && newVal.length) {
-        for (let a of newVal) {
-          if ((a && a.startsWith(' ')) || a == ' ') {
-            a.replace(/\s\s+/g, ' ')
-            this.uploadRespond.AffectArea.pop()
-          }
-        }
-      }
-    },
-    affectSearch(val) {
-      if (val && val.length > 20) {
-        this.affectSearch = ''
-      }
-      if ((val && val.startsWith(' ')) || val == ' ') {
-        val.replace(/\s\s+/g, ' ')
-        this.affectSearch = ''
-      }
-      if (!this.regexChar(val)) {
-        this.affectSearch = ''
-      }
-    },
-    uploadResponseGetter(val) {
-      if (val) {
-        this.handleIncident(val)
-      }
-    },
-    postDetail(val) {
-      if (val) {
-        this.handleIncident(val.Data)
-      }
-    },
-    selectedEmail(val) {
-      if (val) {
-        this.$store.dispatch('threadSharing/getIncident', val)
-      }
-    },
-    shareSettings: {
-      deep: true,
-      handler(val) {
-        if (val && val.links) {
-          for (let a of val.links) {
-            var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
-            // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
-            if (els && els.length) {
-              for (var i = 0, l = els.length; i < l; i++) {
-                var el = els[i]
-                if (!a.IsShow) {
-                  el.innerHTML = 'hidden by owner'
-                  el.setAttribute('href', '#')
-                  el.setAttribute('class', a.Id)
-                } else {
-                  el.innerHTML = a.Name
-                  el.setAttribute('href', a.Value)
-                  el.setAttribute('class', a.Id)
-                }
-                if (a.IsMalicious) {
-                  el.classList.add('malicious-link')
-                }
-              }
-            }
-            let hiddenEls = document.getElementsByClassName(a.Id)
-            if (hiddenEls && hiddenEls.length) {
-              for (var i = 0, l = hiddenEls.length; i < l; i++) {
-                var hiddenEl = hiddenEls[i]
-                if (!a.IsShow) {
-                  hiddenEl.innerHTML = 'hidden by owner'
-                  hiddenEl.setAttribute('href', '#')
-                  hiddenEl.setAttribute('class', a.Id)
-                } else {
-                  hiddenEl.innerHTML = a.Name
-                  hiddenEl.setAttribute('href', a.Value)
-                  hiddenEl.setAttribute('class', a.Id)
-                }
-                if (a.IsMalicious) {
-                  hiddenEl.classList.add('malicious-link')
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    searchIncident(val) {
-      this.$store.dispatch('threadSharing/fetchListedIncidents', val)
-    },
-    model(val, prev) {
-      if (val.length === prev.length) return
-
-      this.model = val.map(v => {
-        if (typeof v === 'string') {
-          v = {
-            text: v,
-            color: this.colors[this.nonce - 1]
-          }
-          this.items.push(v)
-          this.nonce++
-        }
-        return v
-      })
-    }
-  },
-  methods: {
-    onCancelClicked() {
-      this.$emit('closePostIncident')
-    },
-    stepChange(num) {
-      this.step = num
-    },
-    onContinue() {
-      return this.step++
-    },
-    onSecondStep() {
-      if (
-        !this.$refs.titleInput.validate() ||
-        !this.$refs.descriptionInput.validate() ||
-        !this.$refs.categoryInput.validate() ||
-        !this.stepTwoDisabled()
-      ) {
-        this.$refs.titleInput.validate()
-        this.$refs.descriptionInput.validate()
-        this.$refs.categoryInput.validate()
-        return false
-      } else {
-        this.step++
-      }
-    },
-    onThirdStep() {
-      if (
-        !this.$refs.affectInput.validate() ||
-        !this.$refs.discoveryInput.validate() ||
-        !this.stepThreeDisabled()
-      ) {
-        this.$refs.scopeInput.validate()
-        this.$refs.discoveryInput.validate()
-        return false
-      } else {
-        this.step++
-        const refThis = this
-        setTimeout(function() {
-          refThis.previewHideShow()
-        }, 0)
-      }
-    },
-    uploadFile(e) {
-      this.msgEmlFile = e.target.files || e.dataTransfer.files
-      const extensionName = this.msgEmlFile[0].name.slice(-3)
-      if (extensionName != 'msg' && extensionName != 'eml') {
-        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-        this.$store.commit('common/SET_ERROR_MESSAGE', 'Allowed .eml or .msg files only', {
-          root: true
-        })
-        this.msgEmlFile = null
-      } else {
-        if (this.selectedCommunity && this.selectedCommunity.id != null) {
-          var uploadObj = {
-            Attachment: this.msgEmlFile[0],
-            CommunityId: this.selectedCommunity.id,
-            CompanyId: localStorage.getItem('companyId'),
-            CreateUserId: this.userGetter.id
-          }
+      },
+      allHeader(val) {
+        if (val === true) {
+          this.shareSettings.subject[0].IsShow = true
+          this.shareSettings.senderInfo[0].IsShow = true
+          this.shareSettings.receiverInfo[0].IsShow = true
         } else {
-          var uploadObj = {
-            Attachment: this.msgEmlFile[0],
-            CommunityId: localStorage.getItem('communityId'),
-            CompanyId: localStorage.getItem('companyId'),
-            CreateUserId: localStorage.getItem('userId')
+          this.shareSettings.subject[0].IsShow = false
+          this.shareSettings.senderInfo[0].IsShow = false
+          this.shareSettings.receiverInfo[0].IsShow = false
+        }
+      },
+      'shareSettings.allAttachments': function(newVal, oldVal) {
+        if (newVal && newVal.length) {
+          this.allAttachments = newVal[0].IsShow
+        }
+      },
+      'shareSettings.subject': {
+        handler: function(newVal, oldWal) {
+          if (
+            newVal &&
+            newVal.length &&
+            this.shareSettings.subject[0].IsShow &&
+            this.shareSettings.senderInfo[0].IsShow
+          ) {
+            this.allHeader = true
+          }
+          if (
+            newVal &&
+            newVal.length &&
+            this.shareSettings.subject[0].IsShow === false &&
+            this.shareSettings.senderInfo[0].IsShow === false
+          ) {
+            this.allHeader = false
+          }
+        },
+        deep: true
+      },
+      'shareSettings.senderInfo': {
+        handler: function(newVal, oldWal) {
+          if (
+            newVal &&
+            newVal.length &&
+            this.shareSettings.subject[0].IsShow &&
+            this.shareSettings.senderInfo[0].IsShow
+          ) {
+            this.allHeader = true
+          }
+          if (
+            newVal &&
+            newVal.length &&
+            this.shareSettings.subject[0].IsShow === false &&
+            this.shareSettings.senderInfo[0].IsShow === false
+          ) {
+            this.allHeader = false
+          }
+        },
+        deep: true
+      },
+      'shareSettings.receiverInfo': {
+        handler: function(newVal, oldWal) {
+          if (
+            newVal &&
+            newVal.length &&
+            this.shareSettings.subject[0].IsShow &&
+            this.shareSettings.senderInfo[0].IsShow &&
+            this.shareSettings.receiverInfo.every(item => item.IsShow === true)
+          ) {
+            this.allHeader = true
+          }
+          if (
+            newVal &&
+            newVal.length &&
+            this.shareSettings.subject[0].IsShow === false &&
+            this.shareSettings.senderInfo[0].IsShow === false &&
+            this.shareSettings.receiverInfo.every(item => item.IsShow === false)
+          ) {
+            this.allHeader = false
+          }
+        },
+        deep: true
+      },
+      'shareSettings.attachments': {
+        handler: function(newVal, oldWal) {
+          if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
+            this.allAttachments = true
+          }
+          if (newVal && newVal.length && newVal.every(item => item.IsShow === false)) {
+            this.allAttachments = false
+          }
+        },
+        deep: true
+      },
+      'shareSettings.links': {
+        handler: function(newVal, oldWal) {
+          if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
+            this.allLinks = true
+          }
+          if (newVal && newVal.length && newVal.every(item => item.IsShow === false)) {
+            this.allLinks = false
+          }
+        },
+        deep: true
+      },
+      allAttachments(val) {
+        if (this.shareSettings && this.shareSettings.attachments) {
+          for (let a = 0; a < this.shareSettings.attachments.length; a++) {
+            if (val === true) {
+              this.shareSettings.attachments[a].IsShow = true
+            } else {
+              this.shareSettings.attachments[a].IsShow = false
+            }
           }
         }
-        if (this.uploadRespond && this.uploadRespond != null) {
-          uploadObj.CommunityPostId = this.uploadRespond.CommunityPostId || ''
+      },
+      'shareSettings.allLinks': function(newVal, oldVal) {
+        if (newVal && newVal.length) {
+          this.allLinks = newVal[0].IsShow
         }
-        this.$store.dispatch('threadSharing/postAnIncident', uploadObj).then(() => {
-          this.msgEmlFile = null
-        })
-      }
-    },
-    onBeforeLastStep() {
-      this.createInc.createUser = this.$store.state.auth.user.fullName
-      this.createInc.createCompany = this.$store.state.auth.user.currentCompany.name
-      this.createInc.onPreview = true
-      this.step++
-      const refThis = this
-      setTimeout(function() {
-        refThis.previewHideShow()
-      }, 0)
-    },
-    onFinish() {
-      const newSettings = []
-      newSettings.push(this.shareSettings.senderInfo[0])
-      newSettings.push(this.shareSettings.subject[0])
-      newSettings.push(this.shareSettings.receiverInfo[0])
-      this.shareSettings.allHeader[0].IsShow = this.allHeader
-      newSettings.push(this.shareSettings.allHeader[0])
-      this.shareSettings.allLinks[0].IsShow = this.allLinks
-      newSettings.push(this.shareSettings.allLinks[0])
-      this.shareSettings.allAttachments[0].IsShow = this.allAttachments
-      newSettings.push(this.shareSettings.allAttachments[0])
-      for (let a of this.shareSettings.attachments) {
-        newSettings.push(a)
-      }
-      for (let b of this.shareSettings.links) {
-        newSettings.push(b)
-      }
-      this.uploadRespond.IsPreview = true
-      this.uploadRespond.CommunityPostEmails[0].body = null
-      if (
-        this.uploadRespond.AffectArea != null &&
-        typeof this.uploadRespond.AffectArea !== 'string'
-      ) {
-        this.uploadRespond.AffectArea = this.uploadRespond.AffectArea.join(',')
-      }
-      this.uploadRespond.CommunityPostEmails[0].ShareSettings = newSettings
-      this.uploadRespond.IsAnonymous = this.IsAnonym
-
-      this.$store.dispatch('threadSharing/publishPostIncident', this.uploadRespond).then(() => {
-        this.updateRightCol()
-      })
-      this.createInc.onPreview = false
-      this.$store.commit('common/SET_IS_LOADING', -1, { root: true })
-      this.$emit('closePostIncident')
-    },
-    updateTags() {
-      /*
-      if (this.uploadRespond && this.uploadRespond.AffectArea && this.uploadRespond.AffectArea.length) {
-        for (let [ind, tag] of [this.uploadRespond.AffectArea].entries()) {
-          if (!this.regexChar(tag[ind])) this.uploadRespond.AffectArea.splice(ind, 1)
+      },
+      allLinks(val) {
+        if (this.shareSettings && this.shareSettings.allLinks) {
+          for (let a = 0; a < this.shareSettings.links.length; a++) {
+            if (val === true) {
+              this.shareSettings.links[a].IsShow = true
+            } else {
+              this.shareSettings.links[a].IsShow = false
+            }
+          }
         }
-      }
-      */
-      this.$nextTick(() => {
-        this.createInc.select.push(...this.createInc.search.split(','))
-        this.$nextTick(() => {
-          this.search = ''
-        })
-      })
-    },
-    updateRightCol() {
-      if (this.$router.currentRoute.name !== 'Community') {
-        this.$router.push('/community/' + localStorage.getItem('communityName'))
-      } else {
-        this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-        const yourPostsObj = {
-          compId: localStorage.getItem('companyId'),
-          userId: localStorage.getItem('userId')
+      },
+      'uploadRespond.AffectArea': function(newVal, oldVal) {
+        if (newVal && newVal.length > 5) {
+          this.uploadRespond.AffectArea.pop()
         }
-        this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-      }
-    },
-    closePreview() {
-      this.selectedEmail = ''
-      this.uploadRespond = {}
-      this.msgEmlFile = null
-      this.shareSettings = {}
-      this.$store.dispatch('threadSharing/postAnIncident', false)
-    },
-    handleIncident(val) {
-      if (
-        val &&
-        val.CommunityPostEmails &&
-        val.CommunityPostEmails[0] &&
-        val.CommunityPostEmails[0].ShareSettings.length
-      ) {
-        this.uploadRespond = val
-        const ShareSettings = {
-          senderInfo: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'SenderInfo'),
-          subject: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
-          receiverInfo: val.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'ReceiverInfo'
-          ),
-          attachments: val.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'Attachment'
-          ),
-          links: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link'),
-          allHeader: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'AllHeader'),
-          allLinks: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'AllLinks'),
-          allAttachments: val.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'AllAttachments'
-          )
+        if (newVal && newVal.length) {
+          for (let a of newVal) {
+            if ((a && a.startsWith(' ')) || a == ' ') {
+              a.replace(/\s\s+/g, ' ')
+              this.uploadRespond.AffectArea.pop()
+            }
+          }
         }
-        if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function() {
-            for (let a of ShareSettings.links) {
+      },
+      affectSearch(val) {
+        if (val && val.length > 20) {
+          this.affectSearch = ''
+        }
+        if ((val && val.startsWith(' ')) || val == ' ') {
+          val.replace(/\s\s+/g, ' ')
+          this.affectSearch = ''
+        }
+        if (!this.regexChar(val)) {
+          this.affectSearch = ''
+        }
+      },
+      uploadResponseGetter(val) {
+        if (val) {
+          this.handleIncident(val)
+        }
+      },
+      postDetail(val) {
+        if (val) {
+          this.handleIncident(val.Data)
+        }
+      },
+      selectedEmail(val) {
+        if (val) {
+          this.$store.dispatch('threadSharing/getIncident', val)
+        }
+      },
+      shareSettings: {
+        deep: true,
+        handler(val) {
+          if (val && val.links) {
+            for (let a of val.links) {
               var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
               // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
-              for (var i = 0, l = els.length; i < l; i++) {
-                var el = els[i]
-                if (!a.IsShow) {
-                  el.innerHTML = 'hidden by owner'
-                  el.setAttribute('href', '#')
+              if (els && els.length) {
+                for (var i = 0, l = els.length; i < l; i++) {
+                  var el = els[i]
+                  el.setAttribute('target', '_blank')
+                  if (!a.IsShow) {
+                    el.innerHTML = 'hidden by owner'
+                    el.setAttribute('href', '#')
+                    el.setAttribute('class', a.Id)
+                  } else {
+                    el.innerHTML = a.Name
+                    el.setAttribute('href', a.Value)
+                    el.setAttribute('class', a.Id)
+                  }
+                  if (a.IsMalicious) {
+                    el.classList.add('malicious-link')
+                    var iEl = document.createElement('span')
+                    iEl.className +=
+                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                    el.appendChild(iEl)
+                  }
                 }
-                if (a.IsMalicious) {
-                  el.classList.add('malicious-link')
+              }
+              let hiddenEls = document.getElementsByClassName(a.Id)
+              if (hiddenEls && hiddenEls.length) {
+                for (var i = 0, l = hiddenEls.length; i < l; i++) {
+                  var hiddenEl = hiddenEls[i]
+                  hiddenEl.setAttribute('target', '_blank')
+                  if (!a.IsShow) {
+                    hiddenEl.innerHTML = 'hidden by owner'
+                    hiddenEl.setAttribute('href', '#')
+                    hiddenEl.setAttribute('class', a.Id)
+                  } else {
+                    hiddenEl.innerHTML = a.Name
+                    hiddenEl.setAttribute('href', a.Value)
+                    hiddenEl.setAttribute('class', a.Id)
+                  }
+                  if (a.IsMalicious) {
+                    hiddenEl.classList.add('malicious-link')
+                    var iEl = document.createElement('span')
+                    iEl.className +=
+                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                    hiddenEl.appendChild(iEl)
+                  }
                 }
               }
             }
+          }
+        }
+      },
+      searchIncident(val) {
+        this.$store.dispatch('threadSharing/fetchListedIncidents', val)
+      },
+      model(val, prev) {
+        if (val.length === prev.length) return
+
+        this.model = val.map(v => {
+          if (typeof v === 'string') {
+            v = {
+              text: v,
+              color: this.colors[this.nonce - 1]
+            }
+            this.items.push(v)
+            this.nonce++
+          }
+          return v
+        })
+      }
+    },
+    methods: {
+      onCancelClicked() {
+        this.$emit('closePostIncident')
+      },
+      stepChange(num) {
+        this.step = num
+      },
+      onContinue() {
+        return this.step++
+      },
+      onSecondStep() {
+        if (
+          !this.$refs.titleInput.validate() ||
+          !this.$refs.descriptionInput.validate() ||
+          !this.$refs.categoryInput.validate() ||
+          !this.stepTwoDisabled()
+        ) {
+          this.$refs.titleInput.validate()
+          this.$refs.descriptionInput.validate()
+          this.$refs.categoryInput.validate()
+          return false
+        } else {
+          this.step++
+        }
+      },
+      onThirdStep() {
+        if (
+          !this.$refs.affectInput.validate() ||
+          !this.$refs.discoveryInput.validate() ||
+          !this.stepThreeDisabled()
+        ) {
+          this.$refs.scopeInput.validate()
+          this.$refs.discoveryInput.validate()
+          return false
+        } else {
+          this.step++
+          const refThis = this
+          setTimeout(function() {
+            refThis.previewHideShow()
           }, 0)
         }
-        if (val.AffectArea != null && val.AffectArea.length > 1) {
-          this.uploadRespond.AffectArea = val.AffectArea.split(',')
-        }
-        this.shareSettings = ShareSettings
-      }
-    },
-    previewHideShow() {
-      if (this.uploadRespond && this.uploadRespond.CommunityPostEmails[0]) {
-        this.uploadRespond.CommunityPostEmails[0].Body = unescape(
-          this.uploadRespond.CommunityPostEmails[0].Body
-        )
-      }
-      if (this.shareSettings.links && this.shareSettings.links.length) {
-        for (let a of this.shareSettings.links) {
-          var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
-          for (var i = 0, l = els.length; i < l; i++) {
-            var el = els[i]
-            if (!a.IsShow) {
-              el.innerHTML = 'hidden by owner'
-              el.setAttribute('href', '#')
+      },
+      uploadFile(e) {
+        this.msgEmlFile = e.target.files || e.dataTransfer.files
+        const extensionName = this.msgEmlFile[0].name.slice(-3)
+        if (extensionName != 'msg' && extensionName != 'eml') {
+          this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
+          this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          this.$store.commit('common/SET_ERROR_MESSAGE', 'Allowed .eml or .msg files only', {
+            root: true
+          })
+          this.msgEmlFile = null
+        } else {
+          if (this.selectedCommunity && this.selectedCommunity.id != null) {
+            var uploadObj = {
+              Attachment: this.msgEmlFile[0],
+              CommunityId: this.selectedCommunity.id,
+              CompanyId: localStorage.getItem('companyId'),
+              CreateUserId: this.userGetter.id
             }
-            if (a.IsMalicious) {
-              el.classList.add('malicious-link')
-            }
-          }
-        }
-      }
-    },
-    stepTwoDisabled() {
-      if (
-        this.uploadRespond &&
-        this.uploadRespond.Description &&
-        this.uploadRespond.Description.length >= 5 &&
-        this.uploadRespond.Description.length <= 300 &&
-        this.regexChar(this.uploadRespond.Description) &&
-        this.uploadRespond.Title &&
-        this.uploadRespond.Title.length >= 4 &&
-        this.uploadRespond.Title.length <= 80 &&
-        this.regexChar(this.uploadRespond.Title) &&
-        this.uploadRespond.CommunityPostCategory &&
-        this.uploadRespond.CommunityPostCategory.length > 0
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    stepThreeDisabled() {
-      if (
-        this.uploadRespond &&
-        this.uploadRespond.DiscoveryAndDetection &&
-        this.uploadRespond.DiscoveryAndDetection.length >= 5 &&
-        this.uploadRespond.DiscoveryAndDetection.length <= 300 &&
-        this.regexChar(this.uploadRespond.DiscoveryAndDetection) &&
-        this.uploadRespond.Scope &&
-        this.uploadRespond.Scope.length >= 5 &&
-        this.uploadRespond.Scope.length <= 200 &&
-        this.regexChar(this.uploadRespond.Scope) &&
-        this.regexChar(this.uploadRespond.AffectArea)
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
-    },
-    edit(index, item) {
-      if (!this.editing) {
-        this.editing = item
-        this.index = index
-      } else {
-        this.editing = null
-        this.index = -1
-      }
-    },
-    validateAffectArea() {
-      const refThis = this
-      setTimeout(function() {
-        if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
-          let i = refThis.uploadRespond.AffectArea.length
-          while (i--) {
-            if (!refThis.regexChar(refThis.uploadRespond.AffectArea[i])) {
-              refThis.uploadRespond.AffectArea.splice(i, 1)
+          } else {
+            var uploadObj = {
+              Attachment: this.msgEmlFile[0],
+              CommunityId: localStorage.getItem('communityId'),
+              CompanyId: localStorage.getItem('companyId'),
+              CreateUserId: localStorage.getItem('userId')
             }
           }
+          if (this.uploadRespond && this.uploadRespond != null) {
+            uploadObj.CommunityPostId = this.uploadRespond.CommunityPostId || ''
+          }
+          this.$store.dispatch('threadSharing/postAnIncident', uploadObj).then(() => {
+            this.msgEmlFile = null
+          })
         }
-      }, 300)
-    }
-  },
-  mounted() {
-    let businessCats = []
-    for (let cat of this.businessCategories) {
-      businessCats.push(cat.IDESC)
-    }
-    this.items = businessCats
-    this.$store.dispatch('threadSharing/fetchListedIncidents')
+      },
+      onBeforeLastStep() {
+        if (!this.allFiltersClosed()) {
+          this.createInc.createUser = this.$store.state.auth.user.fullName
+          this.createInc.createCompany = this.$store.state.auth.user.currentCompany.name
+          this.createInc.onPreview = true
+          this.step++
+          const refThis = this
+          setTimeout(function() {
+            refThis.previewHideShow()
+          }, 0)
+        }
+      },
+      onFinish() {
+        const newSettings = []
+        newSettings.push(this.shareSettings.senderInfo[0])
+        newSettings.push(this.shareSettings.subject[0])
+        newSettings.push(this.shareSettings.receiverInfo[0])
+        this.shareSettings.allHeader[0].IsShow = this.allHeader
+        newSettings.push(this.shareSettings.allHeader[0])
+        this.shareSettings.allLinks[0].IsShow = this.allLinks
+        newSettings.push(this.shareSettings.allLinks[0])
+        this.shareSettings.allAttachments[0].IsShow = this.allAttachments
+        newSettings.push(this.shareSettings.allAttachments[0])
+        for (let a of this.shareSettings.attachments) {
+          newSettings.push(a)
+        }
+        for (let b of this.shareSettings.links) {
+          newSettings.push(b)
+        }
+        this.uploadRespond.IsPreview = true
+        this.uploadRespond.CommunityPostEmails[0].body = null
+        if (
+          this.uploadRespond.AffectArea != null &&
+          typeof this.uploadRespond.AffectArea !== 'string'
+        ) {
+          this.uploadRespond.AffectArea = this.uploadRespond.AffectArea.join(',')
+        }
+        this.uploadRespond.CommunityPostEmails[0].ShareSettings = newSettings
+        this.uploadRespond.IsAnonymous = this.isAnonym
 
-    // If user wants to edit the post
-    if (this.updatePost && this.updatePost.length) {
-      const postDetailObj = {
-        communId: this.selectedCommunity.id || localStorage.getItem('communityId'),
-        companyId: this.userGetter.userCompany.id || localStorage.getItem('companyId'),
-        communPostId: this.updatePost
+        this.$store.dispatch('threadSharing/publishPostIncident', this.uploadRespond).then(() => {
+          this.updateRightCol()
+        })
+        this.createInc.onPreview = false
+        this.$store.commit('common/SET_IS_LOADING', false, { root: true })
+        this.$emit('closePostIncident')
+      },
+      updateTags() {
+        /*
+        if (this.uploadRespond && this.uploadRespond.AffectArea && this.uploadRespond.AffectArea.length) {
+          for (let [ind, tag] of [this.uploadRespond.AffectArea].entries()) {
+            if (!this.regexChar(tag[ind])) this.uploadRespond.AffectArea.splice(ind, 1)
+          }
+        }
+        */
+        this.$nextTick(() => {
+          this.createInc.select.push(...this.createInc.search.split(','))
+          this.$nextTick(() => {
+            this.search = ''
+          })
+        })
+      },
+      updateRightCol() {
+        if (this.$router.currentRoute.name !== 'Community') {
+          this.$router.push('/community/' + localStorage.getItem('communityName'))
+        } else {
+          this.$store.dispatch('threadSharing/getCommunityInfo')
+          this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+          const yourPostsObj = {
+            compId: localStorage.getItem('companyId'),
+            userId: localStorage.getItem('userId')
+          }
+          this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+        }
+      },
+      closePreview() {
+        this.selectedEmail = ''
+        this.uploadRespond = {}
+        this.msgEmlFile = null
+        this.shareSettings = {}
+        this.$store.dispatch('threadSharing/postAnIncident', false)
+      },
+      handleIncident(val) {
+        if (
+          val &&
+          val.CommunityPostEmails &&
+          val.CommunityPostEmails[0] &&
+          val.CommunityPostEmails[0].ShareSettings.length
+        ) {
+          this.uploadRespond = val
+          const ShareSettings = {
+            senderInfo: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'SenderInfo'),
+            subject: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
+            receiverInfo: val.CommunityPostEmails[0].ShareSettings.filter(
+              f => f.Type === 'ReceiverInfo'
+            ),
+            attachments: val.CommunityPostEmails[0].ShareSettings.filter(
+              f => f.Type === 'Attachment'
+            ),
+            links: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link'),
+            allHeader: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'AllHeader'),
+            allLinks: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'AllLinks'),
+            allAttachments: val.CommunityPostEmails[0].ShareSettings.filter(
+              f => f.Type === 'AllAttachments'
+            )
+          }
+          if (ShareSettings.links && ShareSettings.links.length) {
+            setTimeout(function() {
+              for (let a of ShareSettings.links) {
+                var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
+                // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
+                for (var i = 0, l = els.length; i < l; i++) {
+                  var el = els[i]
+                  el.setAttribute('target', '_blank')
+                  if (!a.IsShow) {
+                    el.innerHTML = 'hidden by owner'
+                    el.setAttribute('href', '#')
+                  }
+                  if (a.IsMalicious) {
+                    el.classList.add('malicious-link')
+                    var iEl = document.createElement('span')
+                    iEl.className +=
+                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                    el.appendChild(iEl)
+                  }
+                }
+              }
+            }, 0)
+          }
+          if (val.AffectArea != null && val.AffectArea.length > 1) {
+            this.uploadRespond.AffectArea = val.AffectArea.split(',')
+          }
+          this.shareSettings = ShareSettings
+        }
+      },
+      previewHideShow() {
+        if (this.uploadRespond && this.uploadRespond.CommunityPostEmails[0]) {
+          this.uploadRespond.CommunityPostEmails[0].Body = unescape(
+            this.uploadRespond.CommunityPostEmails[0].Body
+          )
+        }
+        if (this.shareSettings.links && this.shareSettings.links.length) {
+          for (let a of this.shareSettings.links) {
+            var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
+            for (var i = 0, l = els.length; i < l; i++) {
+              var el = els[i]
+              el.setAttribute('target', '_blank')
+              if (!a.IsShow) {
+                el.innerHTML = 'hidden by owner'
+                el.setAttribute('href', '#')
+              }
+              if (a.IsMalicious) {
+                el.classList.add('malicious-link')
+                var iEl = document.createElement('span')
+                iEl.className +=
+                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                el.appendChild(iEl)
+              }
+            }
+          }
+        }
+      },
+      stepTwoDisabled() {
+        if (
+          this.uploadRespond &&
+          this.uploadRespond.Description &&
+          this.uploadRespond.Description.length >= 5 &&
+          this.uploadRespond.Description.length <= 300 &&
+          this.regexChar(this.uploadRespond.Description) &&
+          this.uploadRespond.Title &&
+          this.uploadRespond.Title.length >= 4 &&
+          this.uploadRespond.Title.length <= 80 &&
+          this.regexChar(this.uploadRespond.Title) &&
+          this.uploadRespond.CommunityPostCategory &&
+          this.uploadRespond.CommunityPostCategory.length > 0
+        ) {
+          return true
+        } else {
+          return false
+        }
+      },
+      stepThreeDisabled() {
+        if (
+          this.uploadRespond &&
+          this.uploadRespond.DiscoveryAndDetection &&
+          this.uploadRespond.DiscoveryAndDetection.length >= 5 &&
+          this.uploadRespond.DiscoveryAndDetection.length <= 300 &&
+          this.regexChar(this.uploadRespond.DiscoveryAndDetection) &&
+          this.uploadRespond.Scope &&
+          this.uploadRespond.Scope.length >= 5 &&
+          this.uploadRespond.Scope.length <= 200 &&
+          this.regexChar(this.uploadRespond.Scope) &&
+          this.regexChar(this.uploadRespond.AffectArea)
+        ) {
+          return true
+        } else {
+          return false
+        }
+      },
+      regexChar(val) {
+        return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
+      },
+      edit(index, item) {
+        if (!this.editing) {
+          this.editing = item
+          this.index = index
+        } else {
+          this.editing = null
+          this.index = -1
+        }
+      },
+      validateAffectArea() {
+        const refThis = this
+        setTimeout(function() {
+          if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
+            let i = refThis.uploadRespond.AffectArea.length
+            while (i--) {
+              if (!refThis.regexChar(refThis.uploadRespond.AffectArea[i])) {
+                refThis.uploadRespond.AffectArea.splice(i, 1)
+              }
+            }
+          }
+        }, 300)
+      },
+      allFiltersClosed() {
+        if (
+          this.shareSettings.subject[0].IsShow === false &&
+          this.shareSettings.senderInfo[0].IsShow === false &&
+          this.shareSettings.receiverInfo.every(item => item.IsShow === false) &&
+          ((this.shareSettings.attachments.length &&
+            this.shareSettings.attachments.every(item => item.IsShow === false)) ||
+            !this.shareSettings.attachments.length) &&
+          ((this.shareSettings.links.length &&
+            this.shareSettings.links.every(item => item.IsShow === false)) ||
+            !this.shareSettings.links.length)
+        ) {
+          return true
+        } else {
+          return false
+        }
       }
-      this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
+    },
+    mounted() {
+      let businessCats = []
+      for (let cat of this.businessCategories) {
+        businessCats.push(cat.IDESC)
+      }
+      this.items = businessCats
+      this.$store.dispatch('threadSharing/fetchListedIncidents')
+      if (this.postDetail && this.postDetail.Data) {
+        this.isAnonym = this.postDetail.Data.IsAnonymous
+      }
+
+      // If user wants to edit the post
+      if (this.updatePost && this.updatePost.length) {
+        const postDetailObj = {
+          communId: this.selectedCommunity.id || localStorage.getItem('communityId'),
+          companyId: this.userGetter.userCompany.id || localStorage.getItem('companyId'),
+          communPostId: this.updatePost
+        }
+        this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
+      }
     }
   }
-}
 </script>
 <style lang="scss" scoped>
-.incident-container {
-  min-height: 100vh;
-  width: 100%;
-
-  .incident-inner {
+  .incident-container {
+    min-height: 100vh;
     width: 100%;
-    height: 100%;
-    position: relative;
-    display: flex;
 
-    .incident-card {
+    .incident-inner {
       width: 100%;
-      min-height: 100vh;
-      padding: 0 !important;
-      padding: 32px 96px !important;
-      padding-bottom: 100px !important;
-    }
-    .incident-steps {
+      height: 100%;
+      position: relative;
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      background-color: #f5f7fa;
-      margin: 25px -96px;
-      padding-left: 96px;
-      height: 57px;
 
-      .active-step {
-        border: solid 1px #409eff !important;
-        color: #409eff !important;
+      .incident-card {
+        width: 100%;
+        min-height: 100vh;
+        padding: 0 !important;
+        padding: 32px 96px !important;
+        padding-bottom: 100px !important;
       }
-
-      .steps {
-        align-items: center;
+      .incident-steps {
         display: flex;
         flex-direction: row;
-        margin-right: 10px;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 16px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        background-color: #f5f7fa;
+        margin: 25px -96px;
+        padding-left: 96px;
+        height: 57px;
 
-        .step-number {
+        .active-step {
+          border: solid 1px #409eff !important;
+          color: #409eff !important;
+        }
+
+        .steps {
           align-items: center;
           display: flex;
-          justify-content: center;
-          border-radius: 50%;
-          border: solid 1px #909399;
-          width: 24px;
-          height: 24px;
-          margin-right: 8px;
-          font-size: 14px;
+          flex-direction: row;
+          margin-right: 10px;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 16px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.5);
+
+          .step-number {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            border-radius: 50%;
+            border: solid 1px #909399;
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.87);
+          }
+          .active-step-num {
+            border: solid 1px rgba(0, 0, 0, 0.87) !important;
+          }
+          .active-step-span {
+            color: rgba(0, 0, 0, 0.87) !important;
+          }
+
+          hr {
+            width: 69px;
+            height: 1px;
+            border: 1px solid #757575;
+            margin: 0 10px;
+            @media only screen and (max-width: 1025px) {
+              width: 32px !important;
+              margin: 0 4px;
+            }
+          }
+        }
+      }
+      .incident-header {
+        p {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 24px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.29;
+          letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87);
+          margin-bottom: 0 !important;
         }
-        .active-step-num {
-          border: solid 1px rgba(0, 0, 0, 0.87) !important;
-        }
-        .active-step-span {
-          color: rgba(0, 0, 0, 0.87) !important;
-        }
-
-        hr {
-          width: 69px;
-          height: 1px;
-          border: 1px solid #757575;
-          margin: 0 10px;
-          @media only screen and (max-width: 1025px) {
-            width: 32px !important;
-            margin: 0 4px;
-          }
-        }
-      }
-    }
-    .incident-header {
-      p {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 24px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.29;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-        margin-bottom: 0 !important;
-      }
-      span {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.5;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-      }
-    }
-  }
-}
-.footer-actions {
-  align-items: center;
-  bottom: 0;
-  background-color: #f5f7fa;
-  display: flex;
-  left: 0;
-  position: fixed;
-  justify-content: space-between;
-  padding: 0 96px;
-  height: 68px;
-  width: 100%;
-  z-index: 9999;
-
-  .cancel-btn {
-    background-color: transparent !important;
-    border-radius: 18px !important;
-    border: solid 1px #f56c6c !important;
-    color: #f56c6c !important;
-    z-index: 9999;
-  }
-  .previous-btn {
-    border-radius: 18px !important;
-    border: solid 1px #2196f3 !important;
-    color: #2196f3 !important;
-    z-index: 9999;
-  }
-  .create-btn {
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    background-color: #2196f3 !important;
-    color: #fff !important;
-    z-index: 9999;
-  }
-}
-::v-deep .v-text-field--outlined.error--text fieldset {
-  border: 1px solid #ff5252 !important;
-}
-::v-deep .v-text-field--outlined.errored-selectbox fieldset {
-  border: 1px solid #ff5252 !important;
-}
-::v-deep .v-autocomplete.affect-combobox .v-input__slot {
-  height: auto !important;
-}
-::v-deep .v-autocomplete.affect-combobox {
-  .v-messages__message {
-    color: #f56c6c !important;
-  }
-}
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #000;
-}
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.incident-header {
-  p {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 24px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.29;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-  }
-  span {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.incident-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 24px;
-
-  .input-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-  .input-sec-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 16px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-  .input-sub {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 10px;
-  }
-  .input-select {
-    max-width: 205px;
-    color: rgba(0, 0, 0, 0.72);
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px !important;
-    margin-bottom: 32px;
-  }
-  .first-select {
-    max-width: 554px;
-  }
-  ::v-deep .input-select > .v-input__control {
-    max-width: 554px !important;
-    align-items: center;
-    display: flex;
-    height: 40px !important;
-  }
-  .date-row {
-    max-width: 390px !important;
-  }
-}
-::v-deep .v-input {
-  .v-input__slot {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-    border-radius: 8px !important;
-  }
-}
-::v-deep .v-text-field {
-  .v-input__slot {
-    box-shadow: unset !important;
-  }
-}
-::v-deep .v-select {
-  .v-input__slot {
-    box-shadow: unset !important;
-    height: 40px !important;
-  }
-}
-::v-deep .v-autocomplete {
-  .v-input__slot {
-    border: 1px solid rgba(0, 0, 0, 0.16) !important;
-    box-shadow: unset !important;
-    height: 40px !important;
-  }
-}
-.upload-wrapper {
-  max-width: 109px;
-  margin-top: -2px;
-  border: unset !important;
-  position: relative;
-
-  ::v-deep .up-btn {
-    align-items: center;
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    background-color: #2196f3 !important;
-    text-transform: none !important;
-    padding: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    max-height: 36px !important;
-    width: 100%;
-
-    .v-input__prepend-outer {
-      display: none !important;
-    }
-    .v-input__control {
-      cursor: pointer !important;
-
-      .v-input__prepend-inner {
-        margin-left: 8px !important;
-        margin-right: 0 !important;
-        margin-top: 7px;
-        i {
-          color: #fff !important;
-        }
-      }
-      .v-btn__content {
-        margin-left: -5px !important;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.71;
-        letter-spacing: normal;
-      }
-      .v-input__slot {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 0 !important;
-        cursor: pointer !important;
-
-        .v-text-field__slot {
-          flex: unset !important;
-          position: absolute;
-          width: 100%;
-          text-align: left;
-          z-index: 13;
-        }
-
-        .v-file-input__text {
-          color: #fff !important;
-          display: block !important;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          padding-left: 42px;
-          padding-top: 8px;
-          height: 35px;
-          width: 100%;
-          border-radius: 20px;
-        }
-        .v-input__icon {
-          min-width: 15px !important;
-          width: 16px !important;
-          position: absolute;
-          left: 23px;
-          z-index: 12;
-        }
-      }
-      .v-input__slot::before,
-      .v-input__slot::after {
-        display: none !important;
-      }
-
-      i {
-        font-size: 18px !important;
-        margin-top: 2px;
-        padding-right: 10px !important;
-      }
-
-      .v-text-field__details {
-        position: absolute;
-        bottom: -17px;
-      }
-    }
-  }
-  ::v-deep .v-input__append-inner {
-    display: none !important;
-  }
-}
-.step-container {
-  max-width: 554px;
-}
-
-.investigate-header {
-  p {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 24px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.29;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-  }
-  span {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.investigation-content {
-  border-radius: 12px !important;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-
-  .mail-preview {
-    width: 100%;
-    max-width: 600px;
-    position: relative;
-  }
-
-  .investigation-filters {
-    width: 300px;
-    background-color: white;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12);
-    align-items: center;
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-    margin-left: 32px;
-    transition: all 0.3s ease-in-out;
-    position: relative;
-
-    @media only screen and (max-width: 1025px) {
-      position: absolute;
-      top: 170px;
-      right: 0;
-      z-index: 99999;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12);
-      border: solid 1px #2196f3;
-    }
-
-    .filter-part {
-      border-bottom: 1px solid #b3d4fc;
-      display: flex;
-      flex-direction: column;
-      padding-top: 24px;
-      padding-bottom: 30px;
-      width: 240px;
-      max-height: 300px;
-      overflow-y: auto;
-      transition: all 0.3s ease-in-out;
-
-      @supports (overflow: -webkit-marquee) and (justify-content: inherit) {
-        overflow: scroll;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      ::v-deep .v-input--selection-controls.v-input {
-        margin-top: 10px !important;
-      }
-
-      .select-header {
-        transition: all 0.3s ease-in-out;
-      }
-
-      .switch-row {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-
-        .img-wrapper {
-          align-items: center;
-          display: flex;
-          min-width: 40px;
-          max-width: 40px;
-
-          img {
-            padding-top: 25%;
-            padding-right: 8px;
-          }
-        }
-        label {
-          margin-top: 10px;
-          margin-left: 5px;
-          max-width: 170px;
-          display: block;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
-
-      ::v-deep .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
-        height: 25px !important;
-        min-height: 25px !important;
-        margin-bottom: 0 !important;
-        max-width: 210px;
-
-        label {
-          height: 24px !important;
-          margin-left: 8px !important;
+        span {
           font-family: 'Open Sans', sans-serif !important;
           font-size: 14px;
           font-weight: normal;
@@ -2834,967 +2649,107 @@ export default {
           line-height: 1.5;
           letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87);
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          display: block;
-          max-width: 100%;
         }
       }
-      ::v-deep .accent--text {
-        color: #2196f3 !important;
-      }
-      ::v-deep .theme--light.v-messages {
-        display: none !important;
-      }
-    }
-    .filter-part:last-child {
-      border-bottom: unset !important;
-    }
-    .filter-part:nth-child(2) {
-      height: auto;
-      max-height: 300px;
-      overflow: auto;
-    }
-    .filter-part:first-child {
-      padding-top: 14.2px !important;
-    }
-    .attr-error {
-      position: absolute;
-      bottom: -20px;
-      right: 0;
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 9px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: #d0021b;
     }
   }
-}
-.filters-content {
-  display: flex;
-  flex-direction: column;
-  margin-top: 24px;
-
-  .input-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-  .input-sub {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 16px;
-  }
-  .input-select {
-    max-width: 205px;
-    color: rgba(0, 0, 0, 0.72);
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px !important;
-    margin-bottom: 32px;
-  }
-  .first-select {
-    max-width: 554px;
-  }
-
-  ::v-deep .input-select > .v-input__control {
-    max-width: 554px !important;
+  .footer-actions {
     align-items: center;
+    bottom: 0;
+    background-color: #f5f7fa;
     display: flex;
-    height: 40px !important;
-  }
-
-  .date-row {
-    max-width: 390px !important;
-  }
-}
-
-.underlined-warn {
-  border-bottom: 1px solid #f56c6c;
-  color: inherit;
-
-  .icon {
-    color: #f56c6c !important;
-    font-size: 24px !important;
-    text-decoration: none !important;
-    margin-left: 20px;
-    margin-bottom: 7px;
-  }
-}
-.post-wrapper {
-  max-width: 696px;
-}
-.select-error {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #d0021b;
-  margin-left: 8px;
-  margin-top: 17px;
-}
-.select-row-wrap {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 2px;
-
-  .select-row-inline {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
+    left: 0;
+    position: fixed;
     justify-content: space-between;
-    padding-left: 10px;
-    width: 230px;
-
-    .file-type-wrap {
-      display: flex;
-      justify-content: space-between;
-    }
-  }
-}
-.email-name {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  display: block;
-  width: 270px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.email-icon {
-  font-size: 19px !important;
-  padding-right: 24px;
-}
-.email-type {
-  height: 25px;
-  border-radius: 4px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: center;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 6px;
-}
-.btn-pending {
-  background-color: #00bcd4;
-}
-.btn-active {
-  background-color: #2196f3;
-}
-.btn-inactive {
-  background-color: #757575;
-}
-.btn-warning {
-  background-color: #e6a23c;
-}
-.btn-cancelled {
-  background-color: #f56c6c;
-}
-.email-time {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #000;
-}
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.preview-header {
-  margin-top: 24px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 16px;
+    padding: 0 96px;
+    height: 68px;
     width: 100%;
-    display: block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-height: 80px;
-  }
+    z-index: 9999;
 
-  .header-info {
+    .cancel-btn {
+      background-color: transparent !important;
+      border-radius: 18px !important;
+      border: solid 1px #f56c6c !important;
+      color: #f56c6c !important;
+      z-index: 9999;
+    }
+    .previous-btn {
+      border-radius: 18px !important;
+      border: solid 1px #2196f3 !important;
+      color: #2196f3 !important;
+      z-index: 9999;
+    }
+    .create-btn {
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+      background-color: #2196f3 !important;
+      color: #fff !important;
+      z-index: 9999;
+    }
+  }
+  ::v-deep .v-text-field--outlined.error--text fieldset {
+    border: 1px solid #ff5252 !important;
+  }
+  ::v-deep .v-text-field--outlined.errored-selectbox fieldset {
+    border: 1px solid #ff5252 !important;
+  }
+  ::v-deep .v-autocomplete.affect-combobox .v-input__slot {
+    height: auto !important;
+  }
+  ::v-deep .v-autocomplete.affect-combobox {
+    .v-messages__message {
+      color: #f56c6c !important;
+    }
+  }
+  .v-card-headline {
     font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #000;
+  }
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 43px;
-    border-bottom: 1px solid #b3d4fc;
-  }
-}
-.preview-body {
-  margin-top: 24px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #b3d4fc;
-  position: relative;
-  padding-bottom: 24px;
-  min-height: auto;
-  max-height: 500px;
-  overflow: auto;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
-  }
-
-  .company-img {
-    display: flex;
-    position: absolute;
-    right: 0;
-    top: 20px;
-    width: 84px;
-    height: 84px;
-
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
-}
-.bodyExpanded {
-  height: 100% !important;
-  max-height: 100% !important;
-  padding-bottom: 56px;
-}
-.preview-footer {
-  display: flex;
-  flex-direction: column;
-  margin-top: 24px;
-  padding-bottom: 24px;
-  overflow: auto;
-  max-width: 100%;
-  height: auto;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
-  }
-  .attachment-wrapper {
-    display: flex;
-    flex-direction: row;
-
-    .attachment {
-      width: 182px;
-      height: 32px;
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      margin-right: 16px;
-      border: 1px solid transparent;
-
-      .attach-icon {
-        min-width: 40px;
-        height: 32px;
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
-      .red-icon {
-        background-color: #bb2a45 !important;
-      }
-      .blue-icon {
-        background-color: #2196f3 !important;
-      }
-      .file-name {
-        width: 142px;
-        text-align: left;
-        display: block;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.58;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-        padding-left: 7px;
-      }
-    }
-    .red-attach {
-      border: 1px solid #bb2a45;
-    }
-    .blue-attach {
-      border: 1px solid #2196f3;
-    }
-  }
-}
-.unselected-warn {
-  border-bottom: 1px solid #bb2a45;
-  color: #bb2a45;
-  padding: 0 2px !important;
-}
-::v-deep .v-autocomplete {
-  .v-input__slot {
-    box-shadow: unset !important;
-    border: 1px solid rgba(0, 0, 0, 0.24) !important;
-  }
-}
-::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
-  margin-top: 0 !important;
-  display: flex;
-  align-items: center;
-}
-.first-date {
-  ::v-deep .v-input__slot {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    border-right: none !important;
-
-    label {
-      padding-left: 65px !important;
-    }
-  }
-}
-.sec-date {
-  ::v-deep .v-input__slot {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-    border-left: none !important;
-
-    label {
-      padding-left: 60px !important;
-    }
-  }
-}
-.date-picker {
-  font-family: 'Open Sans', sans-serif !important;
-  ::v-deep .v-input__slot {
-    box-shadow: unset !important;
-    border: 1px solid rgba(0, 0, 0, 0.24);
-    border-radius: 4px;
-    text-align: center;
-
-    input {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.54);
-      padding-left: 50px !important;
-      padding-top: 8px !important;
-    }
-    label {
-      padding-top: 0 !important;
-    }
-  }
-  ::v-deep .v-input__slot::after,
-  ::v-deep .v-input__slot::before {
-    display: none;
-  }
-}
-.date-col {
-  position: relative;
-}
-.date-icon {
-  top: 12px;
-  left: 25px;
-  position: absolute;
-  font-size: 18px !important;
-  z-index: 99;
-}
-.date-to {
-  position: absolute;
-  left: 0;
-  top: 11px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-  z-index: 13;
-}
-.max-char {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  display: block;
-  max-width: 100%;
-}
-.text-selected {
-  border-radius: 1px !important;
-  background-color: #d1e9fc !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  width: max-content;
-}
-.clean-link {
-  padding: 0 2px !important;
-  border-radius: 1px !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: #2196f3 !important;
-}
-.selected-link {
-  background-color: #d1e9fc !important;
-}
-.phishing-link {
-  background-color: #f3e1e5 !important;
-  border-bottom: 1px solid #bb2a45 !important;
-  color: #bb2a45 !important;
-  width: max-content;
-}
-.clean-attach {
-  background-color: #f1f8fe;
-  border: 1px solid transparent !important;
-}
-.malicious-attach {
-  background-color: #f3e1e5;
-  border: 1px solid transparent !important;
-}
-::v-deep .v-input > .v-input__control > .v-text-field__details {
-  // error messages.
-}
-::v-deep .v-application input {
-  border-radius: 8px !important;
-  border: solid 1px rgba(0, 0, 0, 0.16) !important;
-}
-.required {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #474747;
-  margin-left: 6px;
-  margin-top: -2px;
-}
-.close-incident {
-  position: absolute;
-  right: -13px;
-  top: 13px;
-}
-::v-deep
-  .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-  > .v-input__control
-  > .v-input__slot {
-  border: none !important;
-}
-.row-with-icon {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
-.icon-btn {
-  margin-top: unset;
-  margin-left: -5px;
-  height: 25px !important;
-  width: 25px !important;
-}
-.step-name {
-  width: max-content;
-}
-.filter-header {
-  align-items: center;
-  display: none;
-  justify-content: space-between;
-  padding-top: 24px;
-  width: 240px;
-  transition: all 0.3s ease-in-out;
-
-  .select-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
     font-stretch: normal;
     font-style: normal;
     line-height: 1.2;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    transition: all 0.3s ease-in-out;
+    color: #000 !important;
+  }
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
   }
 
-  i {
-    margin-top: 3px;
-    font-size: 27px;
-  }
-}
-.minify-filter {
-  width: 120px !important;
-}
-.minify-part,
-.minify-switch {
-  padding-left: 10px;
-  width: 100% !important;
-}
-
-// Email Preview css
-.preview-header {
-  margin-top: 24px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 16px;
-    width: 100%;
-    display: block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-height: 80px;
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
   }
 
-  .header-info {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.preview-body {
-  margin-top: 24px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #b3d4fc;
-  position: relative;
-  padding-bottom: 24px;
-  min-height: auto;
-  max-height: 500px;
-  overflow: auto;
-
-  .company-img {
-    display: flex;
-    position: absolute;
-    right: 0;
-    top: 20px;
-    width: 84px;
-    height: 84px;
-
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
-}
-.bodyExpanded {
-  height: 100% !important;
-  max-height: 100% !important;
-  padding-bottom: 56px;
-}
-.preview-footer {
-  display: flex;
-  flex-direction: column;
-  margin-top: 24px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
-  }
-  .attachment-wrapper {
-    display: flex;
-    flex-direction: row;
-
-    .attachment {
-      width: 182px;
-      height: 32px;
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      margin-right: 16px;
-
-      .attach-icon {
-        min-width: 40px;
-        height: 32px;
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
-      .red-icon {
-        background-color: #bb2a45 !important;
-      }
-      .blue-icon {
-        background-color: #2196f3 !important;
-      }
-      span {
-        width: 100%;
-        text-align: center;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.58;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-      }
-    }
-    .red-attach {
-      background-color: #f3e1e5;
-    }
-    .blue-attach {
-      background-color: #f1f8fe;
-    }
-  }
-}
-.preview-buttons {
-  margin-top: 24px;
-  padding-bottom: 13px;
-  display: flex;
-  flex-direction: row;
-  border-top: 1px solid #b3d4fc;
-  padding-top: 24px;
-
-  ::v-deep .v-btn {
-    border-radius: 18px !important;
-    border: solid 1px #909399;
-    box-shadow: unset !important;
-    background-color: #fff !important;
-    margin-right: 16px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(0, 0, 0, 0.87);
-    padding-left: 16px !important;
-
-    .v-icon {
-      color: #909399;
-      font-size: 19px !important;
-      margin-right: 8px;
-      margin-top: 1px;
-      border: unset !important;
-    }
-  }
-  .active-act {
-    color: #2196f3 !important;
-    border: solid 1px #2196f3 !important;
-  }
-}
-.preview-border {
-  border-top: 1px solid #b3d4fc;
-  padding-top: 24px;
-}
-
-// Details css
-.detail-parts:first-child {
-  margin-top: 24px !important;
-}
-.detail-parts {
-  margin-top: 16px;
-
-  .detail-black {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 4px !important;
-  }
-  .detail-red {
-    color: rgba(219, 37, 37, 0.87) !important;
-  }
-}
-.detail-discovery {
-  margin-top: 24px;
-
-  .disc-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 8px;
-  }
-  .discovery-p {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.impact-row {
-  display: flex;
-  flex-direction: row;
-  padding-bottom: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  .impact-left {
-    min-width: 100px;
-    font-weight: 600 !important;
-  }
-  .impact-right {
-    margin-top: 2px;
-    max-width: 80%;
-  }
-}
-.border-padding {
-  padding-bottom: 8px;
-  border-bottom: 1px solid #b3d4fc;
-}
-.member-company-body {
-  ::v-deep .v-slide-group__content {
-    border-bottom: unset !important;
-  }
-}
-.expand-contaniner {
-  width: 100%;
-  height: 50px;
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  bottom: 0;
-  background-image: linear-gradient(to bottom, transparent, #fff 50%);
-
-  button,
-  .v-btn:not(.v-btn--round).v-size--default {
-    width: auto !important;
-    height: 24px !important;
-    border-radius: 12px !important;
-    background-color: #409eff !important;
-    box-shadow: unset !important;
-    color: #fff;
-    text-transform: capitalize !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    padding-left: 13px !important;
-
-    i {
-      width: 18px !important;
-    }
-  }
-}
-.opacityExpanded {
-  background-image: none !important;
-}
-.preview-comments {
-  height: 0;
-  opacity: 0;
-  transition: max-height 0.25s ease-in;
-  overflow: hidden;
-
-  .comment-row {
-    display: flex;
-    flex-direction: row;
-    padding-top: 6px;
-
-    .comment-input {
-      margin-top: 3px;
-      margin-right: 16px;
-
-      ::v-deep .v-input__slot {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 13px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.54);
-        padding-left: 24px !important;
-        max-height: 70px;
-        min-height: 40px;
-
-        textarea {
-          max-height: 70px;
-          overflow: auto;
-          margin-bottom: 5px;
-          margin-top: 2px;
-          margin-right: 2px;
-        }
-        label {
-          top: 10px;
-        }
-        fieldset {
-          padding-left: 18px !important;
-        }
-      }
-    }
-    .send-btn {
-      border-radius: 18px !important;
-      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-      height: 36px !important;
-      margin-top: 5px;
-
-      i {
-        font-size: 18px !important;
-        padding-right: 8px;
-      }
-    }
-  }
-  .comment-row {
-    border-radius: 4px;
-    background-color: #f5f7fa;
-    display: flex;
-    padding: 16px;
-    margin-bottom: 8px;
-
-    .user-wrapper {
-      .username,
-      .company-name {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: #2196f3;
-        padding-right: 4px;
-        cursor: pointer;
-      }
-      .company-name {
-        padding-left: 4px;
-      }
-    }
-    .the-comment {
+  .incident-header {
+    p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 24px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
       margin-bottom: 0 !important;
-      padding-top: 8px !important;
+    }
+    span {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
@@ -3805,317 +2760,1637 @@ export default {
       color: rgba(0, 0, 0, 0.87);
     }
   }
-  .see-all-comments {
-    padding-top: 16px;
-    padding-bottom: 24px;
+  .incident-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 24px;
 
-    span {
-      text-decoration: none;
+    .input-header {
       font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
+      font-size: 20px;
       font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    .input-sec-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 16px;
+      font-weight: normal;
       font-stretch: normal;
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
-      color: #2196f3;
-      cursor: pointer;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    .input-sub {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 10px;
+    }
+    .input-select {
+      max-width: 205px;
+      color: rgba(0, 0, 0, 0.72);
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 13px !important;
+      margin-bottom: 32px;
+    }
+    .first-select {
+      max-width: 554px;
+    }
+    ::v-deep .input-select > .v-input__control {
+      max-width: 554px !important;
+      align-items: center;
+      display: flex;
+      height: 40px !important;
+    }
+    .date-row {
+      max-width: 390px !important;
     }
   }
-}
-.open-comments {
-  min-height: 226px;
-  height: auto !important;
-  transition: max-height 0.25s ease-in;
-  padding-bottom: 24px;
-  opacity: 1;
-  z-index: -5;
-}
-.add-comment {
-  background-color: #fff !important;
-  height: 60px;
-  padding: 0 !important;
-}
-.unselected-warn {
-  border-bottom: 1px solid #bb2a45;
-  color: #bb2a45;
-  padding: 0 2px !important;
-}
-.hide-buttons {
-  opacity: 0;
-  padding: 0 !important;
-  height: 20px !important;
-}
-.display-none {
-  display: none !important;
-}
-.tooltip-wrapper {
-  max-width: 250px;
-  width: 130px;
-  height: 50px;
-  border-radius: 4px;
-  background-color: #6d6d6d;
-  position: absolute;
-  top: -55px;
-  left: -35px;
-  border-radius: 4px;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-  padding: 8px;
+  ::v-deep .v-input {
+    .v-input__slot {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 13px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.72);
+      border-radius: 8px !important;
+    }
+  }
+  ::v-deep .v-text-field {
+    .v-input__slot {
+      box-shadow: unset !important;
+    }
+  }
+  ::v-deep .v-select {
+    .v-input__slot {
+      box-shadow: unset !important;
+      height: 40px !important;
+    }
+  }
+  ::v-deep .v-autocomplete {
+    .v-input__slot {
+      border: 1px solid rgba(0, 0, 0, 0.16) !important;
+      box-shadow: unset !important;
+      height: 40px !important;
+    }
+  }
+  .upload-wrapper {
+    max-width: 109px;
+    margin-top: -2px;
+    border: unset !important;
+    position: relative;
 
-  > div {
+    ::v-deep .up-btn {
+      align-items: center;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+      background-color: #2196f3 !important;
+      text-transform: none !important;
+      padding: 0 !important;
+      display: flex !important;
+      justify-content: center !important;
+      max-height: 36px !important;
+      width: 100%;
+
+      .v-input__prepend-outer {
+        display: none !important;
+      }
+      .v-input__control {
+        cursor: pointer !important;
+
+        .v-input__prepend-inner {
+          margin-left: 8px !important;
+          margin-right: 0 !important;
+          margin-top: 7px;
+          i {
+            color: #fff !important;
+          }
+        }
+        .v-btn__content {
+          margin-left: -5px !important;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 14px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.71;
+          letter-spacing: normal;
+        }
+        .v-input__slot {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 0 !important;
+          cursor: pointer !important;
+
+          .v-text-field__slot {
+            flex: unset !important;
+            position: absolute;
+            width: 100%;
+            text-align: left;
+            z-index: 13;
+          }
+
+          .v-file-input__text {
+            color: #fff !important;
+            display: block !important;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding-left: 42px;
+            padding-top: 8px;
+            height: 35px;
+            width: 100%;
+            border-radius: 20px;
+          }
+          .v-input__icon {
+            min-width: 15px !important;
+            width: 16px !important;
+            position: absolute;
+            left: 23px;
+            z-index: 12;
+          }
+        }
+        .v-input__slot::before,
+        .v-input__slot::after {
+          display: none !important;
+        }
+
+        i {
+          font-size: 18px !important;
+          margin-top: 2px;
+          padding-right: 10px !important;
+        }
+
+        .v-text-field__details {
+          position: absolute;
+          bottom: -17px;
+        }
+      }
+    }
+    ::v-deep .v-input__append-inner {
+      display: none !important;
+    }
+  }
+  .step-container {
+    max-width: 554px;
+  }
+
+  .investigate-header {
+    p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 24px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 0 !important;
+    }
+    span {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .investigation-content {
+    border-radius: 12px !important;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: flex-start;
+
+    .mail-preview {
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .investigation-filters {
+      width: 300px;
+      background-color: white;
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      align-items: center;
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+      margin-left: 32px;
+      transition: all 0.3s ease-in-out;
+      position: relative;
+
+      @media only screen and (max-width: 1025px) {
+        position: absolute;
+        top: 170px;
+        right: 0;
+        z-index: 99999;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+        0 1px 1px -1px rgba(204, 204, 204, 0.12);
+        border: solid 1px #2196f3;
+      }
+
+      .filter-part {
+        border-bottom: 1px solid #b3d4fc;
+        display: flex;
+        flex-direction: column;
+        padding-top: 24px;
+        padding-bottom: 30px;
+        width: 240px;
+        max-height: 300px;
+        overflow-y: auto;
+        transition: all 0.3s ease-in-out;
+
+        @supports (overflow: -webkit-marquee) and (justify-content: inherit) {
+          overflow: scroll;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        ::v-deep .v-input--selection-controls.v-input {
+          margin-top: 10px !important;
+        }
+
+        .select-header {
+          transition: all 0.3s ease-in-out;
+        }
+
+        .switch-row {
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+
+          .img-wrapper {
+            align-items: center;
+            display: flex;
+            min-width: 40px;
+            max-width: 40px;
+
+            img {
+              padding-top: 25%;
+              padding-right: 8px;
+            }
+          }
+          label {
+            margin-top: 10px;
+            margin-left: 5px;
+            max-width: 170px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        ::v-deep .v-input--selection-controls:not(.v-input--hide-details) .v-input__slot {
+          height: 25px !important;
+          min-height: 25px !important;
+          margin-bottom: 0 !important;
+          max-width: 210px;
+
+          label {
+            height: 24px !important;
+            margin-left: 8px !important;
+            font-family: 'Open Sans', sans-serif !important;
+            font-size: 14px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.5;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.87);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: block;
+            max-width: 100%;
+          }
+        }
+        ::v-deep .accent--text {
+          color: #2196f3 !important;
+        }
+        ::v-deep .theme--light.v-messages {
+          display: none !important;
+        }
+      }
+      .filter-part:last-child {
+        border-bottom: unset !important;
+      }
+      .filter-part:nth-child(2) {
+        height: auto;
+        max-height: 300px;
+        overflow: auto;
+      }
+      .filter-part:first-child {
+        padding-top: 14.2px !important;
+      }
+      .attr-error {
+        position: absolute;
+        bottom: -20px;
+        right: 0;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 9px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #d0021b;
+      }
+    }
+  }
+  .filters-content {
+    display: flex;
     flex-direction: column;
-    height: 34px;
+    margin-top: 24px;
+
+    .input-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    .input-sub {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 16px;
+    }
+    .input-select {
+      max-width: 205px;
+      color: rgba(0, 0, 0, 0.72);
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 13px !important;
+      margin-bottom: 32px;
+    }
+    .first-select {
+      max-width: 554px;
+    }
+
+    ::v-deep .input-select > .v-input__control {
+      max-width: 554px !important;
+      align-items: center;
+      display: flex;
+      height: 40px !important;
+    }
+
+    .date-row {
+      max-width: 390px !important;
+    }
   }
-  span {
-    color: rgba(255, 255, 255, 0.87) !important;
-    font-size: 12px !important;
-    line-height: 1.33 !important;
+
+  .underlined-warn {
+    border-bottom: 1px solid #f56c6c;
+    color: inherit;
+
+    .icon {
+      color: #f56c6c !important;
+      font-size: 24px !important;
+      text-decoration: none !important;
+      margin-left: 20px;
+      margin-bottom: 7px;
+    }
+  }
+  .post-wrapper {
+    max-width: 696px;
+  }
+  .select-error {
     font-family: 'Open Sans', sans-serif !important;
-    font-weight: 400;
-  }
-  span:nth-child(2) {
-    padding-top: 4px;
-  }
-}
-
-// Threat sharing Content
-.threat-sharing-content {
-  min-height: 200px;
-  width: 100%;
-  padding: 24px !important;
-  background-color: #ffffff;
-  border-radius: 20px !important;
-
-  @media only screen and (max-width: 500px) {
-    padding: 16px !important;
-  }
-}
-.ts-header {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
-.ts-header-btn-1 {
-  display: flex;
-}
-.ts-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  max-width: 79%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-}
-// Threat sharing Content End
-
-.notification-wrapper {
-  background-color: #fff;
-  padding: 0;
-}
-.v-menu__content {
-  border-radius: 8px !important;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-
-  .v-list-item {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-  }
-  .v-list-item__title {
-    font-size: 14px;
+    font-size: 9px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: var(--black-87);
+    color: #d0021b;
+    margin-left: 8px;
+    margin-top: 17px;
   }
-}
-
-.v-application--is-ltr .v-list-item__icon:first-child {
-  margin-right: 10px !important;
-}
-.ts-user-comp-detail {
-  align-items: center;
-  display: flex;
-  margin-top: 8px;
-}
-::v-deep .v-btn--contained {
-  border-radius: 18px !important;
-  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-}
-::v-deep .v-data-footer {
-  margin-top: 24px !important;
-}
-::v-deep .v-data-footer__select {
-  .v-select {
-    margin: 0 !important;
-    margin-top: 3px !important;
-    margin-left: 32px !important;
-    height: 30px !important;
-  }
-  .v-text-field > .v-input__control > .v-input__slot:after {
-    border: none !important;
-    display: none !important;
-  }
-  .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-    border: none !important;
-  }
-  .v-input__append-inner {
-    margin-left: 0 !important;
-    margin-top: 3px !important;
-    margin-right: 5px !important;
-    padding-left: 0 !important;
-  }
-  .v-select__slot {
-    align-items: center;
+  .select-row-wrap {
     display: flex;
-    justify-content: center;
-    height: 27px !important;
-    background-color: #f2f2f2 !important;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2px;
 
-    .v-select__selections {
-      margin-left: 10px;
+    .select-row-inline {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding-left: 10px;
+      width: 230px;
+
+      .file-type-wrap {
+        display: flex;
+        justify-content: space-between;
+      }
     }
   }
-  .v-input__icon {
-    width: 20px !important;
-    min-width: 20px !important;
-    height: 20px !important;
-  }
-}
-::v-deep .v-btn:not(.v-btn--round).v-size--default,
-::v-deep .v-btn--icon.v-size--default {
-  height: 36px !important;
-}
-::v-deep .v-btn--icon.v-size--default {
-  margin-left: 4px;
-  width: 36px !important;
-}
-
-.ts-tags {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  max-width: max-content;
-
-  > .tag-btn,
-  > div > .tag-btn {
-    border-radius: 18px;
-    border: solid 1.5px #c0c4cc;
-    background-color: #fff;
+  .email-name {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.71;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    display: block;
+    width: 270px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .email-icon {
+    font-size: 19px !important;
+    padding-right: 24px;
+  }
+  .email-type {
+    height: 25px;
+    border-radius: 4px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
     letter-spacing: normal;
     text-align: center;
-    color: #000000;
-    height: 32px !important;
-  }
-}
-.ts-footer {
-  align-items: center;
-  display: flex;
-  margin-top: 22px;
-  margin-left: 0;
-  margin-right: 0;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: bold;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.ts-like {
-  margin-right: 10px;
-  align-items: center;
-  display: flex;
-
-  span {
+    color: #fff;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
+    padding: 0 6px;
+  }
+  .btn-pending {
+    background-color: #00bcd4;
+  }
+  .btn-active {
+    background-color: #2196f3;
+  }
+  .btn-inactive {
+    background-color: #757575;
+  }
+  .btn-warning {
+    background-color: #e6a23c;
+  }
+  .btn-cancelled {
+    background-color: #f56c6c;
+  }
+  .email-time {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #000;
+  }
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #000 !important;
+  }
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
+  }
+
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
+
+  .preview-header {
+    margin-top: 24px;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 16px;
+      width: 100%;
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-height: 80px;
+    }
+
+    .header-info {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 43px;
+      border-bottom: 1px solid #b3d4fc;
+    }
+  }
+  .preview-body {
+    margin-top: 24px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom: 1px solid #b3d4fc;
+    position: relative;
+    padding-bottom: 24px;
+    min-height: auto;
+    max-height: 500px;
+    overflow: auto;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
+    }
+
+    .company-img {
+      display: flex;
+      position: absolute;
+      right: 0;
+      top: 20px;
+      width: 84px;
+      height: 84px;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    ::v-deep a {
+      display: block !important;
+      min-width: max-content !important;
+    }
+  }
+  .bodyExpanded {
+    height: 100% !important;
+    max-height: 100% !important;
+    padding-bottom: 56px;
+  }
+  .preview-footer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    padding-bottom: 24px;
+    overflow: auto;
+    max-width: 100%;
+    height: auto;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
+    }
+    .attachment-wrapper {
+      display: flex;
+      flex-direction: row;
+
+      .attachment {
+        width: 182px;
+        height: 32px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin-right: 16px;
+        border: 1px solid transparent;
+
+        .attach-icon {
+          min-width: 40px;
+          height: 32px;
+          align-items: center;
+          display: flex;
+          justify-content: center;
+        }
+        .red-icon {
+          background-color: #bb2a45 !important;
+        }
+        .blue-icon {
+          background-color: #2196f3 !important;
+        }
+        .file-name {
+          width: 142px;
+          text-align: left;
+          display: block;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+          padding-left: 7px;
+        }
+      }
+      .red-attach {
+        border: 1px solid #bb2a45;
+      }
+      .blue-attach {
+        border: 1px solid #2196f3;
+      }
+    }
+  }
+  .unselected-warn {
+    border-bottom: 1px solid #bb2a45;
+    color: #bb2a45;
+    padding: 0 2px !important;
+  }
+  ::v-deep .v-autocomplete {
+    .v-input__slot {
+      box-shadow: unset !important;
+      border: 1px solid rgba(0, 0, 0, 0.24) !important;
+    }
+  }
+  ::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
+    margin-top: 0 !important;
+    display: flex;
+    align-items: center;
+  }
+  .first-date {
+    ::v-deep .v-input__slot {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-right: none !important;
+
+      label {
+        padding-left: 65px !important;
+      }
+    }
+  }
+  .sec-date {
+    ::v-deep .v-input__slot {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-left: none !important;
+
+      label {
+        padding-left: 60px !important;
+      }
+    }
+  }
+  .date-picker {
+    font-family: 'Open Sans', sans-serif !important;
+    ::v-deep .v-input__slot {
+      box-shadow: unset !important;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      border-radius: 4px;
+      text-align: center;
+
+      input {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.54);
+        padding-left: 50px !important;
+        padding-top: 8px !important;
+      }
+      label {
+        padding-top: 0 !important;
+      }
+    }
+    ::v-deep .v-input__slot::after,
+    ::v-deep .v-input__slot::before {
+      display: none;
+    }
+  }
+  .date-col {
+    position: relative;
+  }
+  .date-icon {
+    top: 12px;
+    left: 25px;
+    position: absolute;
+    font-size: 18px !important;
+    z-index: 99;
+  }
+  .date-to {
+    position: absolute;
+    left: 0;
+    top: 11px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+    z-index: 13;
+  }
+  .max-char {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    max-width: 100%;
+  }
+  .text-selected {
+    border-radius: 1px !important;
+    background-color: #d1e9fc !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    width: max-content;
+    max-width: 100%;
+  }
+  .clean-link {
+    padding: 0 2px !important;
+    border-radius: 1px !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: #2196f3 !important;
+  }
+  .selected-link {
+    background-color: #d1e9fc !important;
+  }
+  .phishing-link {
+    background-color: #f3e1e5 !important;
+    border-bottom: 1px solid #bb2a45 !important;
+    color: #bb2a45 !important;
+    width: max-content;
+  }
+  .clean-attach {
+    background-color: #f1f8fe;
+    border: 1px solid transparent !important;
+  }
+  .malicious-attach {
+    background-color: #f3e1e5;
+    border: 1px solid transparent !important;
+  }
+  ::v-deep .v-input > .v-input__control > .v-text-field__details {
+    // error messages.
+  }
+  ::v-deep .v-application input {
+    border-radius: 8px !important;
+    border: solid 1px rgba(0, 0, 0, 0.16) !important;
+  }
+  .required {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 9px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #474747;
+    margin-left: 6px;
+    margin-top: -2px;
+  }
+  .close-incident {
+    position: absolute;
+    right: -13px;
+    top: 13px;
+  }
+  ::v-deep
+  .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+  > .v-input__control
+  > .v-input__slot {
+    border: none !important;
+  }
+  .row-with-icon {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+  .icon-btn {
+    margin-top: unset;
+    margin-left: -5px;
+    height: 25px !important;
+    width: 25px !important;
+  }
+  .step-name {
+    width: max-content;
+  }
+  .filter-header {
+    align-items: center;
+    display: none;
+    justify-content: space-between;
+    padding-top: 24px;
+    width: 240px;
+    transition: all 0.3s ease-in-out;
+
+    .select-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      transition: all 0.3s ease-in-out;
+    }
+
+    i {
+      margin-top: 3px;
+      font-size: 27px;
+    }
+  }
+  .minify-filter {
+    width: 120px !important;
+  }
+  .minify-part,
+  .minify-switch {
+    padding-left: 10px;
+    width: 100% !important;
+  }
+
+  // Email Preview css
+  .preview-header {
+    margin-top: 24px;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 16px;
+      width: 100%;
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-height: 80px;
+    }
+
+    .header-info {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .preview-body {
+    margin-top: 24px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom: 1px solid #b3d4fc;
+    position: relative;
+    padding-bottom: 24px;
+    min-height: auto;
+    max-height: 500px;
+    overflow: auto;
+
+    .company-img {
+      display: flex;
+      position: absolute;
+      right: 0;
+      top: 20px;
+      width: 84px;
+      height: 84px;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+  .bodyExpanded {
+    height: 100% !important;
+    max-height: 100% !important;
+    padding-bottom: 56px;
+  }
+  .preview-footer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    position: relative;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
+    }
+    .attachment-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      max-width: 100%;
+
+      .attachment {
+        width: 182px;
+        height: 32px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin-right: 16px;
+        margin-bottom: 8px;
+
+        .attach-icon {
+          min-width: 40px;
+          height: 32px;
+          align-items: center;
+          display: flex;
+          justify-content: center;
+        }
+        .red-icon {
+          background-color: #bb2a45 !important;
+        }
+        .blue-icon {
+          background-color: #2196f3 !important;
+        }
+        span {
+          width: 100%;
+          text-align: center;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+        }
+      }
+      .red-attach {
+        background-color: #f3e1e5;
+      }
+      .blue-attach {
+        background-color: #f1f8fe;
+      }
+    }
+  }
+  .preview-buttons {
+    margin-top: 24px;
+    padding-bottom: 13px;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #b3d4fc;
+    padding-top: 24px;
+
+    ::v-deep .v-btn {
+      border-radius: 18px !important;
+      border: solid 1px #909399;
+      box-shadow: unset !important;
+      background-color: #fff !important;
+      margin-right: 16px;
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(0, 0, 0, 0.87);
+      padding-left: 16px !important;
+
+      .v-icon {
+        color: #909399;
+        font-size: 19px !important;
+        margin-right: 8px;
+        margin-top: 1px;
+        border: unset !important;
+      }
+    }
+    .active-act {
+      color: #2196f3 !important;
+      border: solid 1px #2196f3 !important;
+    }
+  }
+  .preview-border {
+    border-top: 1px solid #b3d4fc;
+    padding-top: 24px;
+  }
+
+  // Details css
+  .detail-parts:first-child {
+    margin-top: 24px !important;
+  }
+  .detail-parts {
+    margin-top: 16px;
+
+    .detail-black {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 4px !important;
+    }
+    .detail-red {
+      color: rgba(219, 37, 37, 0.87) !important;
+    }
+  }
+  .detail-discovery {
+    margin-top: 24px;
+
+    .disc-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 8px;
+    }
+    .discovery-p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .impact-row {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 8px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+
+    .impact-left {
+      min-width: 100px;
+      font-weight: 600 !important;
+    }
+    .impact-right {
+      margin-top: 2px;
+      max-width: 80%;
+    }
+  }
+  .border-padding {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #b3d4fc;
+  }
+  .member-company-body {
+    ::v-deep .v-slide-group__content {
+      border-bottom: unset !important;
+    }
+  }
+  .expand-contaniner {
+    width: 100%;
+    height: 50px;
+    position: absolute;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    bottom: 0;
+    background-image: linear-gradient(to bottom, transparent, #fff 50%);
+
+    button,
+    .v-btn:not(.v-btn--round).v-size--default {
+      width: auto !important;
+      height: 24px !important;
+      border-radius: 12px !important;
+      background-color: #409eff !important;
+      box-shadow: unset !important;
+      color: #fff;
+      text-transform: capitalize !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      padding-left: 13px !important;
+
+      i {
+        width: 18px !important;
+      }
+    }
+  }
+  .opacityExpanded {
+    background-image: none !important;
+  }
+  .preview-comments {
+    height: 0;
+    opacity: 0;
+    transition: max-height 0.25s ease-in;
+    overflow: hidden;
+
+    .comment-row {
+      display: flex;
+      flex-direction: row;
+      padding-top: 6px;
+
+      .comment-input {
+        margin-top: 3px;
+        margin-right: 16px;
+
+        ::v-deep .v-input__slot {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 13px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.54);
+          padding-left: 24px !important;
+          max-height: 70px;
+          min-height: 40px;
+
+          textarea {
+            max-height: 70px;
+            overflow: auto;
+            margin-bottom: 5px;
+            margin-top: 2px;
+            margin-right: 2px;
+          }
+          label {
+            top: 10px;
+          }
+          fieldset {
+            padding-left: 18px !important;
+          }
+        }
+      }
+      .send-btn {
+        border-radius: 18px !important;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+        background-color: #2196f3 !important;
+        color: #fff !important;
+        height: 36px !important;
+        margin-top: 5px;
+
+        i {
+          font-size: 18px !important;
+          padding-right: 8px;
+        }
+      }
+    }
+    .comment-row {
+      border-radius: 4px;
+      background-color: #f5f7fa;
+      display: flex;
+      padding: 16px;
+      margin-bottom: 8px;
+
+      .user-wrapper {
+        .username,
+        .company-name {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 14px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: #2196f3;
+          padding-right: 4px;
+          cursor: pointer;
+        }
+        .company-name {
+          padding-left: 4px;
+        }
+      }
+      .the-comment {
+        margin-bottom: 0 !important;
+        padding-top: 8px !important;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+      }
+    }
+    .see-all-comments {
+      padding-top: 16px;
+      padding-bottom: 24px;
+
+      span {
+        text-decoration: none;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #2196f3;
+        cursor: pointer;
+      }
+    }
+  }
+  .open-comments {
+    min-height: 226px;
+    height: auto !important;
+    transition: max-height 0.25s ease-in;
+    padding-bottom: 24px;
+    opacity: 1;
+    z-index: -5;
+  }
+  .add-comment {
+    background-color: #fff !important;
+    height: 60px;
+    padding: 0 !important;
+  }
+  .unselected-warn {
+    border-bottom: 1px solid #bb2a45;
+    color: #bb2a45;
+    padding: 0 2px !important;
+  }
+  .hide-buttons {
+    opacity: 0;
+    padding: 0 !important;
+    height: 20px !important;
+  }
+  .display-none {
+    display: none !important;
+  }
+  .tooltip-wrapper {
+    max-width: 250px;
+    width: 130px;
+    height: 50px;
+    border-radius: 4px;
+    background-color: #6d6d6d;
+    position: absolute;
+    top: -55px;
+    left: -35px;
+    border-radius: 4px;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+    padding: 8px;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 34px;
+    }
+    span {
+      color: rgba(255, 255, 255, 0.87) !important;
+      font-size: 12px !important;
+      line-height: 1.33 !important;
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 400;
+    }
+    span:nth-child(2) {
+      padding-top: 4px;
+    }
+  }
+
+  // Threat sharing Content
+  .threat-sharing-content {
+    min-height: 200px;
+    width: 100%;
+    padding: 24px !important;
+    background-color: #ffffff;
+    border-radius: 20px !important;
+
+    @media only screen and (max-width: 500px) {
+      padding: 16px !important;
+    }
+  }
+  .ts-header {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+  .ts-header-btn-1 {
+    display: flex;
+  }
+  .ts-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    max-width: 79%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  // Threat sharing Content End
+
+  .notification-wrapper {
+    background-color: #fff;
+    padding: 0;
+  }
+  .v-menu__content {
+    border-radius: 8px !important;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+    .v-list-item {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+    .v-list-item__title {
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: var(--black-87);
+    }
+  }
+
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 10px !important;
+  }
+  .ts-user-comp-detail {
+    align-items: center;
+    display: flex;
+    margin-top: 8px;
+  }
+  ::v-deep .v-btn--contained {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+  }
+  ::v-deep .v-data-footer {
+    margin-top: 24px !important;
+  }
+  ::v-deep .v-data-footer__select {
+    .v-select {
+      margin: 0 !important;
+      margin-top: 3px !important;
+      margin-left: 32px !important;
+      height: 30px !important;
+    }
+    .v-text-field > .v-input__control > .v-input__slot:after {
+      border: none !important;
+      display: none !important;
+    }
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+      border: none !important;
+    }
+    .v-input__append-inner {
+      margin-left: 0 !important;
+      margin-top: 3px !important;
+      margin-right: 5px !important;
+      padding-left: 0 !important;
+    }
+    .v-select__slot {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      height: 27px !important;
+      background-color: #f2f2f2 !important;
+
+      .v-select__selections {
+        margin-left: 10px;
+      }
+    }
+    .v-input__icon {
+      width: 20px !important;
+      min-width: 20px !important;
+      height: 20px !important;
+    }
+  }
+  ::v-deep .v-btn:not(.v-btn--round).v-size--default,
+  ::v-deep .v-btn--icon.v-size--default {
+    height: 36px !important;
+  }
+  ::v-deep .v-btn--icon.v-size--default {
     margin-left: 4px;
+    width: 36px !important;
   }
-}
-.ts-message {
-  margin-right: 40px;
-  align-items: center;
-  display: flex;
 
-  span {
+  .ts-tags {
     align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-    margin-left: 4px;
-  }
-}
-.ts-harmful {
-  margin-right: 15px;
-  align-items: center;
-  display: flex;
+    display: flex;
+    flex-direction: row;
+    max-width: max-content;
 
-  span {
+    > .tag-btn,
+    > div > .tag-btn {
+      border-radius: 18px;
+      border: solid 1.5px #c0c4cc;
+      background-color: #fff;
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center;
+      color: #000000;
+      height: 32px !important;
+    }
+  }
+  .ts-footer {
     align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
+    display: flex;
+    margin-top: 22px;
+    margin-left: 0;
+    margin-right: 0;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
   }
-}
-.ts-success {
-  display: flex;
-  align-items: center;
 
-  span {
+  .ts-like {
+    margin-right: 10px;
     align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-.ts-body {
-  margin-top: 10px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.ts-user-comp {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+    display: flex;
 
-  a {
-    text-decoration: none;
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+      margin-left: 4px;
+    }
   }
+  .ts-message {
+    margin-right: 40px;
+    align-items: center;
+    display: flex;
 
-  .ts-user-date {
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+      margin-left: 4px;
+    }
+  }
+  .ts-harmful {
+    margin-right: 15px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
+  .ts-success {
+    display: flex;
+    align-items: center;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
+  .ts-body {
+    margin-top: 10px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  .ts-user-comp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+
+    a {
+      text-decoration: none;
+    }
+
+    .ts-user-date {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.58;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .ts-action-counter {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: #4a4a4a;
+  }
+  .ts-actions {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: normal;
@@ -4124,183 +4399,211 @@ export default {
     line-height: 1.58;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    margin-left: 3px;
   }
-}
-.ts-action-counter {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: #4a4a4a;
-}
-.ts-actions {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-left: 3px;
-}
-::v-deep .v-expansion-panel {
-  border-radius: 20px !important;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+  ::v-deep .v-expansion-panel {
+    border-radius: 20px !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
     0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
-  background-color: #fff;
-  border: unset !important;
-}
-::v-deep .v-expansion-panel::before {
-  box-shadow: unset !important;
-}
-::v-deep .v-expansion-panel-header {
-  box-shadow: unset !important;
-  border: unset !important;
-}
+    background-color: #fff;
+    border: unset !important;
+  }
+  ::v-deep .v-expansion-panel::before {
+    box-shadow: unset !important;
+  }
+  ::v-deep .v-expansion-panel-header {
+    box-shadow: unset !important;
+    border: unset !important;
+  }
 
-.tab-bar {
-  width: 100%;
-  height: 48px;
-  padding: 0;
-  background-color: #f5f7fa;
-  border-radius: 0 !important;
-
-  ::v-deep .v-slide-group__wrapper {
-    padding-left: 0 !important;
-  }
-  ::v-deep .v-slide-group__content {
-    margin-right: 0 !important;
-  }
-  ::v-deep .v-tab--active {
-    color: #2196f3 !important;
-  }
-  ::v-deep .v-tab {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center !important;
-    margin-right: 32px !important;
-    padding: 0 !important;
-    padding-right: 3px !important;
-    min-width: auto !important;
-  }
-  ::v-deep .v-tabs-bar {
-    padding: 0 24px;
-    height: 48px !important;
+  .tab-bar {
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    background-color: #f5f7fa;
     border-radius: 0 !important;
-  }
-}
-::v-deep .v-window {
-  border-radius: 20px !important;
-  margin: 0 24px !important;
-}
-::v-deep .v-expansion-panel-content {
-  border-radius: 20px !important;
-  font-family: 'Open Sans', sans-serif !important;
-}
-::v-deep .v-expansion-panel-content__wrap {
-  padding: 0 !important;
-}
-::v-deep .title-field {
-  .v-text-field__details {
-    margin-bottom: 0 !important;
-  }
-}
-::v-deep .v-text-field.v-text-field--enclosed .v-text-field__details {
-  margin-bottom: 8px;
-}
-.disabled-cursor,
-button:disabled {
-  cursor: no-drop !important;
-  pointer-events: all !important;
-}
-.file-name {
-  padding-left: 7px;
-}
-#upload-file-input {
-  opacity: 0;
-  position: absolute;
-}
 
-input[type=file], /* FF, IE7+, chrome (except button) */
-input[type=file]::-webkit-file-upload-button {
-  /* chromes and blink button */
-  cursor: pointer !important;
-}
-@media only screen and (max-width: 1025px) {
-  .hide-step {
-    display: none !important;
-  }
-  .filter-header {
-    display: flex;
-  }
-}
-.display-none {
-  display: none !important;
-}
-
-#share-settings-links {
-  display: block;
-}
-.chevron-down {
-  transition: 0.3s all ease-in-out;
-  transform: rotate(180deg);
-
-  i {
-    text-decoration: none !important;
-  }
-}
-.mal-list-wrapper {
-  .mal-list-row {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-
-    .mal-icon-wrapper {
-      height: 35px;
-      width: 35px;
-      padding-top: 5px;
+    ::v-deep .v-slide-group__wrapper {
+      padding-left: 0 !important;
+    }
+    ::v-deep .v-slide-group__content {
+      margin-right: 0 !important;
+    }
+    ::v-deep .v-tab--active {
+      color: #2196f3 !important;
+    }
+    ::v-deep .v-tab {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center !important;
+      margin-right: 32px !important;
+      padding: 0 !important;
+      padding-right: 3px !important;
+      min-width: auto !important;
+    }
+    ::v-deep .v-tabs-bar {
+      padding: 0 24px;
+      height: 48px !important;
+      border-radius: 0 !important;
     }
   }
-}
-.mal-list-wrapper:hover,
-.mal-list-wrapper:active,
-.mal-list-wrapper:focus {
-  background-color: #f2f2f2;
-  transition: all 0.2s ease-in-out;
-}
-::v-deep .malicious-style {
-  border-color: #bb2a45 !important;
-  background-color: #f3e1e5 !important;
-  color: #bb2a45 !important;
+  ::v-deep .v-window {
+    border-radius: 20px !important;
+    margin: 0 24px !important;
+  }
+  ::v-deep .v-expansion-panel-content {
+    border-radius: 20px !important;
+    font-family: 'Open Sans', sans-serif !important;
+  }
+  ::v-deep .v-expansion-panel-content__wrap {
+    padding: 0 !important;
+  }
+  ::v-deep .title-field {
+    .v-text-field__details {
+      margin-bottom: 0 !important;
+    }
+  }
+  ::v-deep .v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 8px;
+  }
+  .disabled-cursor,
+  button:disabled {
+    cursor: no-drop !important;
+    pointer-events: all !important;
+  }
+  .file-name {
+    padding-left: 7px;
+  }
+  #upload-file-input {
+    opacity: 0;
+    position: absolute;
+  }
 
-  .share-setting-text {
-    text-decoration: none !important;
-    text-decoration-color: transparent !important;
-    text-decoration-style: unset !important;
-    border: none !important;
-    border-bottom: transparent !important;
+  input[type=file], /* FF, IE7+, chrome (except button) */
+  input[type=file]::-webkit-file-upload-button {
+    /* chromes and blink button */
+    cursor: pointer !important;
+  }
+  @media only screen and (max-width: 1025px) {
+    .hide-step {
+      display: none !important;
+    }
+    .filter-header {
+      display: flex;
+    }
+  }
+  .display-none {
+    display: none !important;
+  }
+
+  #share-settings-links {
+    display: block;
+  }
+  .chevron-down {
+    transition: 0.3s all ease-in-out;
+    transform: rotate(180deg);
+
+    i {
+      text-decoration: none !important;
+    }
+  }
+  .mal-list-wrapper {
+    .mal-list-row {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+
+      .mal-icon-wrapper {
+        height: 35px;
+        width: 35px;
+        padding-top: 5px;
+      }
+    }
+  }
+  .mal-list-wrapper:hover,
+  .mal-list-wrapper:active,
+  .mal-list-wrapper:focus {
+    background-color: #f2f2f2;
+    transition: all 0.2s ease-in-out;
+  }
+  ::v-deep .malicious-style,
+  ::v-deep .malicious-link {
+    border-bottom: 1px solid #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
+    color: #bb2a45 !important;
+
+    .share-setting-text {
+      text-decoration: none !important;
+      text-decoration-color: transparent !important;
+      text-decoration-style: unset !important;
+      border: none !important;
+      border-bottom: transparent !important;
+      border-bottom-color: transparent !important;
+      border-image: none !important;
+      border-image-width: 0 !important;
+    }
+  }
+  ::v-deep .v-btn--icon.v-size--default.chevron-btn-menu {
+    height: 30px !important;
+    width: 30px !important;
+    margin-top: 10px;
+
+    i {
+      height: 30px !important;
+      width: 30px !important;
+    }
+  }
+  ::v-deep .is-anonym-check {
+    height: 28px !important;
+    margin-bottom: 24px;
+    margin-top: 0 !important;
+    label {
+      height: 26px !important;
+    }
+  }
+
+  .malicious-icon {
+    font-size: 18px !important;
+    color: #bb2a45 !important;
+    caret-color: #bb2a45 !important;
+  }
+  ::v-deep .red-malicious-alert {
+    border: unset !important;
+    border-color: transparent !important;
     border-bottom-color: transparent !important;
     border-image: none !important;
     border-image-width: 0 !important;
+    color: #bb2a45 !important;
+    caret-color: #bb2a45 !important;
+    text-decoration: unset !important;
+    text-decoration-color: transparent !important;
+    font-size: 18px !important;
+    margin-top: -2px;
+    padding-right: 3px;
+    height: 16px !important;
+    overflow: hidden;
   }
-}
-::v-deep .v-btn--icon.v-size--default.chevron-btn-menu {
-  height: 20px !important;
-  width: 20px !important;
-
-  i {
-    height: 20px !important;
-    width: 20px !important;
+  ::v-deep .red-malicious-alert::before {
+    border: unset !important;
   }
-}
+  ::v-deep .malicious-style {
+    .red-malicious-alert:not(:first-child) {
+      display: none !important;
+    }
+  }
+  .filter-no-selected {
+    position: absolute;
+    bottom: -20px;
+    right: 20px;
+    color: #d0021b;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 9px;
+  }
 </style>

@@ -184,8 +184,9 @@
 <script>
   import Datatable from "../components/DataTable";
   import {getTopRules, getRunningInvestigations, searchNotifiedMail} from '../api/incidentResponder'
-  import {mapGetters} from "vuex";
+  import {mapActions, mapGetters} from "vuex";
   import {COMMON_CONSTANTS} from "../model/constants/commonConstants";
+  import AuthenticationService from "../services/authentication";
 
   export default {
     components: {
@@ -447,7 +448,6 @@
       })
     },
     mounted() {
-      // triggered to relevant action at investigations.js
       this.$store
         .dispatch("investigations/getIrSummary")
         .finally(() => (this.showDatatable = true)); //module name than method name
@@ -491,6 +491,11 @@
         })
       })
 
+    },
+    methods:{
+      ...mapActions({
+        getCurrentUser: 'auth/getCurrentUser'
+      }),
     }
   };
 </script>

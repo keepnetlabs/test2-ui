@@ -11,7 +11,7 @@ const testService = axios.create({
 })
 
 testService.interceptors.request.use(config => {
-  store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, {root: true})
+  store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
   if (config.url !== 'account/token') {
     config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
     config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
@@ -19,16 +19,16 @@ testService.interceptors.request.use(config => {
   }
   return config
 }, error => (error) => {
-  store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
+  store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
 })
 
 testService.interceptors.response.use(
   response => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
+    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     return response
   },
   error => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {root: true})
+    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
     }

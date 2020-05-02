@@ -25,31 +25,31 @@
               <v-btn
                 v-if="toggle[postIndex]"
                 @click.native="getPostDetails(post.CommunityPostId, postIndex, false)"
-                :id="'single-post-collapse' + post.Id"
-                :key="'single-post-collapse' + post.Id"
+                :id="'single-post-collapse' + post.CommunityPostId"
+                :key="'single-post-collapse' + post.CommunityPostId"
                 outlined
                 rounded
                 medium
                 color="blue"
-                >COLLAPSE</v-btn
+              >COLLAPSE</v-btn
               >
               <v-btn
                 v-else
                 @click.native="getPostDetails(post.CommunityPostId, postIndex, true)"
-                :id="'single-post-details' + post.Id"
-                :key="'single-post-collapse' + post.Id"
+                :id="'single-post-details' + post.CommunityPostId"
+                :key="'single-post-details' + post.CommunityPostId"
                 outlined
                 rounded
                 medium
                 color="blue"
-                >DETAILS</v-btn
+              >DETAILS</v-btn
               >
             </template>
           </v-expansion-panel-header>
         </div>
         <v-menu v-if="post.IsPreview" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
-            <v-btn :id="'single-post-dots' + post.Id" icon color="blue" v-on="on">
+            <v-btn :id="'single-post-dots' + post.CommunityPostId" icon color="blue" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
@@ -117,7 +117,7 @@
                 <v-list-item
                   :id="'delete-btn' + post.CommunityPostId"
                   v-if="canDelete(post.CompanyId)"
-                  @click="deleteIncident(post.CommunityPostId)"
+                  @click="deleteIncident(post.CommunityPostId, post.Title, post.CommunityId)"
                 >
                   <v-list-item-icon>
                     <v-icon>mdi-delete</v-icon>
@@ -131,18 +131,21 @@
           </div>
         </v-menu>
       </div>
-
       <div class="ts-user-comp">
         <div :id="'post-details' + post.CommunityPostId" class="ts-user-comp-detail">
           by
           <a :id="post.CreateUserName" v-if="post.CreateUserName" href="#" class="pl-1 pr-1">{{
             post.CreateUserName
-          }}</a>
+            }}</a>
           <a v-else href="#" class="pl-1 pr-1">Okan Yıldız</a> from
-          <a :id="post.CompanyName" v-if="post.CompanyName" href="#" class="pl-1">{{
+          <a :id="post.CompanyName" v-if="post.CompanyName" href="#" class="pl-1 pr-1">{{
             post.CompanyName
-          }}</a>
-          <a v-else class="pl-1">Company Name</a>
+            }}</a>
+          <a v-else class="pl-1 pr-1">Company Name</a> on
+          <a :id="post.CommunityName" v-if="post.CommunityName" href="#" class="pl-1">{{
+            post.CommunityName
+            }}</a>
+          <a v-else class="pl-1 pr-1">Community Name</a>
         </div>
         <div class="ts-user-date">
           <span :id="'date' + post.CreateDate" v-if="post.CreateDate">{{
@@ -157,7 +160,7 @@
           v-if="post.Description"
           autoresize
           :max-lines="3"
-          >{{ post.Description }}</v-clamp
+        >{{ post.Description }}</v-clamp
         >
         <v-clamp v-else autoresize :max-lines="3">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt
@@ -240,7 +243,7 @@
             outlined
             class="tag-btn ml-1 text-none"
             id="incident-badge"
-            >{{ post.CommunityPostCategory[0] }}</v-btn
+          >{{ post.CommunityPostCategory[0] }}</v-btn
           >
           <v-btn
             v-if="
@@ -254,7 +257,7 @@
             outlined
             class="tag-btn ml-1 text-none"
             id="incident-badge"
-            >{{ post.CommunityPostCategory[1] }}</v-btn
+          >{{ post.CommunityPostCategory[1] }}</v-btn
           >
           <div style="position: relative;">
             <v-btn
@@ -515,7 +518,7 @@
               "
             >
               <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                >Subject: {{ postDetail.Data.CommunityPostEmails[0].Subject }}</span
+              >Subject: {{ postDetail.Data.CommunityPostEmails[0].Subject }}</span
               >
               <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                 <template v-slot:activator="{ on }">
@@ -535,7 +538,7 @@
               :id="'detail-subject-' + el.Id"
             >
               <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                >Subject: hidden by owner</span
+              >Subject: hidden by owner</span
               >
               <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                 <template v-slot:activator="{ on }">
@@ -556,7 +559,7 @@
                 "
               >
                 <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >From: {{ postDetail.Data.CommunityPostEmails[0].From }}</span
+                >From: {{ postDetail.Data.CommunityPostEmails[0].From }}</span
                 >
                 <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                   <template v-slot:activator="{ on }">
@@ -577,7 +580,7 @@
                 :id="'detail-from-' + el.Id"
               >
                 <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >From: hidden by owner</span
+                >From: hidden by owner</span
                 >
                 <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                   <template v-slot:activator="{ on }">
@@ -597,7 +600,7 @@
                 "
               >
                 <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >To: {{ postDetail.Data.CommunityPostEmails[0].To }}</span
+                >To: {{ postDetail.Data.CommunityPostEmails[0].To }}</span
                 >
                 <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                   <template v-slot:activator="{ on }">
@@ -635,7 +638,7 @@
                 :id="'detail-cc-' + el.Id"
               >
                 <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >CC: {{ postDetail.Data.CommunityPostEmails[0].Cc }}</span
+                >CC: {{ postDetail.Data.CommunityPostEmails[0].Cc }}</span
                 >
                 <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                   <template v-slot:activator="{ on }">
@@ -717,7 +720,7 @@
               :disabled="!isJoined(postDetail.Data.CommunityId)"
               @click="userLikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
               :class="{ 'active-act': userLiked }"
-              :id="'like-btn' + postDetail.Data.CommunityId"
+              :id="'like-btn' + postDetail.Data.CommunityPostId"
             >
               <v-icon>mdi-thumb-up</v-icon>
               Useful {{ postDetail.Data.LikeCount }}
@@ -727,13 +730,13 @@
               :disabled="!isJoined(postDetail.Data.CommunityId)"
               @click="userUnlikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
               color="#2196f3"
-              :id="'unlike-btn' + postDetail.Data.CommunityId"
+              :id="'unlike-btn' + postDetail.Data.CommunityPostId"
             >
               <v-icon class="active-act">mdi-thumb-up</v-icon>
               Useful {{ postDetail.Data.LikeCount }}
             </v-btn>
             <v-btn
-              :id="'comments-btn' + postDetail.Data.CommentCount"
+              :id="'comments-btn' + postDetail.Data.CommunityPostId"
               :class="{ 'active-act': commentOpened }"
               @click="commentOpened = !commentOpened"
             >
@@ -753,7 +756,7 @@
                 :rules="[rules.regex, rules.required]"
               ></v-text-field>
               <v-btn
-                id="single-post-send-comment"
+                :id="'single-post-send-comment' + postDetail.Data.CommunityPostId"
                 :disabled="!isJoined(postDetail.Data.CommunityId) || !regexChar(addCommentValue)"
                 @click="
                   addPostComment(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)
@@ -827,517 +830,573 @@
 </template>
 
 <script>
-import VClamp from 'vue-clamp'
-import { mapGetters } from 'vuex'
-export default {
-  components: {
-    VClamp
-  },
-  props: {
-    post: {
-      type: Object,
-      required: false,
-      default: () => ({})
+  import VClamp from 'vue-clamp'
+  import { mapGetters } from 'vuex'
+  export default {
+    components: {
+      VClamp
     },
-    postIndex: {
-      type: Number,
-      required: true
+    props: {
+      post: {
+        type: Object,
+        required: false,
+        default: () => ({})
+      },
+      postIndex: {
+        type: Number,
+        required: true
+      },
+      totalPostCount: {
+        type: Number,
+        required: true
+      }
     },
-    totalPostCount: {
-      type: Number,
-      required: true
-    }
-  },
-  computed: {
-    ...mapGetters({
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      fetchedCommunity: 'threadSharing/fetchedCommunGetter',
-      userGetter: 'auth/userGetter',
-      postDetail: 'threadSharing/postDetailGetter',
-      myCommunities: 'threadSharing/myCommunitiesGetter',
-      getSelectedCompany: 'dashboard/getSelectedCompany',
-      toggle: 'threadSharing/collapsesGetter'
-    })
-  },
-  data: () => ({
-    expanded: false,
-    commentOpened: false,
-    isWantToShareIncident: false,
-    isWantToInvestigate: false,
-    isWantToPostIncident: false,
-    tab: 1,
-    showAllTags: false,
-    seeComments: false,
-    rules: {
-      required: v =>
-        (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
-      regex: v =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
+    computed: {
+      ...mapGetters({
+        selectedCommunity: 'threadSharing/selectedCommunityGetter',
+        fetchedCommunity: 'threadSharing/fetchedCommunGetter',
+        userGetter: 'auth/userGetter',
+        postDetail: 'threadSharing/postDetailGetter',
+        myCommunities: 'threadSharing/myCommunitiesGetter',
+        getSelectedCompany: 'dashboard/getSelectedCompany',
+        toggle: 'threadSharing/collapsesGetter'
+      })
     },
-    likeCount: 15,
-    userLiked: false,
-    hasPermission: false,
-    valid: false,
-    userComment: '',
-    comments: [],
-    hoverTool: false,
-    details: {},
-    shareSettings: {},
-    addCommentValue: ''
-  }),
-  watch: {
-    postDetail(val) {
-      const datas = val.Data
-      if (
-        datas &&
-        datas.CommunityPostEmails[0] &&
-        datas.CommunityPostEmails[0].ShareSettings.length
-      ) {
-        const ShareSettings = {
-          senderInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'SenderInfo'
-          ),
-          subject: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
-          receiverInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'ReceiverInfo'
-          ),
-          attachments: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'Attachment'
-          ),
-          links: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link')
-        }
-        if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function() {
-            for (let a of ShareSettings.links) {
-              var els = document.querySelectorAll('[href="' + a.Value + '"]')
-              for (var i = 0, l = els.length; i < l; i++) {
-                var el = els[i]
-                if (!a.IsShow) {
-                  el.innerHTML = 'hidden by owner'
-                  el.setAttribute('href', '#')
-                }
-                if (a.IsMalicious) {
-                  el.classList.add('malicious-style')
-                  var iEl = document.createElement('span')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
+    data: () => ({
+      expanded: false,
+      commentOpened: false,
+      isWantToShareIncident: false,
+      isWantToInvestigate: false,
+      isWantToPostIncident: false,
+      tab: 1,
+      showAllTags: false,
+      seeComments: false,
+      rules: {
+        required: v =>
+          (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
+        regex: v =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen'
+      },
+      likeCount: 15,
+      userLiked: false,
+      hasPermission: false,
+      valid: false,
+      userComment: '',
+      comments: [],
+      hoverTool: false,
+      details: {},
+      shareSettings: {},
+      addCommentValue: ''
+    }),
+    watch: {
+      postDetail(val) {
+        const datas = val.Data
+        if (
+          datas &&
+          datas.CommunityPostEmails[0] &&
+          datas.CommunityPostEmails[0].ShareSettings.length
+        ) {
+          const ShareSettings = {
+            senderInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
+              f => f.Type === 'SenderInfo'
+            ),
+            subject: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
+            receiverInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
+              f => f.Type === 'ReceiverInfo'
+            ),
+            attachments: datas.CommunityPostEmails[0].ShareSettings.filter(
+              f => f.Type === 'Attachment'
+            ),
+            links: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link')
+          }
+          if (ShareSettings.links && ShareSettings.links.length) {
+            setTimeout(function() {
+              for (let a of ShareSettings.links) {
+                var els = document.querySelectorAll('[href="' + a.Value + '"]')
+                for (var i = 0, l = els.length; i < l; i++) {
+                  var el = els[i]
+                  el.setAttribute('target', '_blank')
+                  if (!a.IsShow) {
+                    if (!el.hasChildNodes()) {
+                      el.innerHTML = 'hidden by owner'
+                    } else {
+                      el.lastChild.innerHTML = 'hidden by owner'
+                    }
+                    el.setAttribute('href', '#')
+                  }
+                  if (a.IsMalicious) {
+                    el.classList.add('malicious-style')
+                    var iEl = document.createElement('span')
+                    iEl.className +=
+                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                    el.appendChild(iEl)
+                  }
                 }
               }
-            }
-          }, 0)
+            }, 0)
+          }
+          this.shareSettings = ShareSettings
         }
-        this.shareSettings = ShareSettings
       }
-    }
-  },
-  methods: {
-    openInvestigate() {
-      this.$store.state.threadSharing.isWantToInvestigate = true
     },
-    shareIncident(postId, creatorUserId) {
-      this.$store.state.threadSharing.isWantToShareIncident = true
-      this.$store.state.threadSharing.sharedPost = postId
-      this.$store.state.threadSharing.postCreatorId = creatorUserId
-    },
-    userLike() {
-      this.userLiked = !this.userLiked
-      this.userLiked ? (this.likeCount = this.likeCount + 1) : (this.likeCount = this.likeCount - 1)
-    },
-    addComment() {
-      if (this.$refs.comment.validate()) {
-        const commentObj = {
-          comment: this.userComment,
-          name: this.$store.state.auth.user.fullName,
-          company: this.$store.state.auth.user.currentCompany.name
+    methods: {
+      openInvestigate() {
+        this.$store.state.threadSharing.isWantToInvestigate = true
+      },
+      shareIncident(postId, creatorUserId) {
+        this.$store.state.threadSharing.isWantToShareIncident = true
+        this.$store.state.threadSharing.sharedPost = postId
+        this.$store.state.threadSharing.postCreatorId = creatorUserId
+      },
+      userLike() {
+        this.userLiked = !this.userLiked
+        this.userLiked ? (this.likeCount = this.likeCount + 1) : (this.likeCount = this.likeCount - 1)
+      },
+      addComment() {
+        if (this.$refs.comment.validate()) {
+          const commentObj = {
+            comment: this.userComment,
+            name: this.$store.state.auth.user.fullName,
+            company: this.$store.state.auth.user.currentCompany.name
+          }
+          this.comments.push(commentObj)
+          this.userComment = ''
         }
-        this.comments.push(commentObj)
-        this.userComment = ''
-      }
-    },
-    openDetails() {
-      this.panel.push(0)
-    },
-    getPostDetails(postId, ind, bool) {
-      const postDetailObj = {
-        companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
-        communPostId: postId
-      }
-      this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
+      },
+      openDetails() {
+        this.panel.push(0)
+      },
+      getPostDetails(postId, ind, bool) {
+        const postDetailObj = {
+          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
+          communPostId: postId
+        }
+        this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
 
-      if (this.toggle && this.toggle.length < 1) {
-        let arr = []
-        for (let a = 0; a < this.totalPostCount; a++) {
-          arr.push(false)
+        if (this.toggle && this.toggle.length < 1) {
+          let arr = []
+          for (let a = 0; a < this.totalPostCount; a++) {
+            arr.push(false)
+          }
+          arr[ind] = bool
+          this.$store.commit('threadSharing/SET_COLLAPSES', arr)
+        } else {
+          let newToggle = this.toggle
+          for (let b = 0; b < newToggle.length; b++) {
+            newToggle[b] = false
+          }
+          newToggle[ind] = bool
+          this.$store.commit('threadSharing/SET_COLLAPSES', newToggle)
         }
-        arr[ind] = bool
-        this.$store.commit('threadSharing/SET_COLLAPSES', arr)
-      } else {
-        let newToggle = this.toggle
-        for (let b = 0; b < newToggle.length; b++) {
-          newToggle[b] = false
+        if (this.bool === true) {
         }
-        newToggle[ind] = bool
-        this.$store.commit('threadSharing/SET_COLLAPSES', newToggle)
-      }
-    },
-    userLikePost(postId, communId) {
-      if (this.isJoined(communId)) {
-        const likeObj = {
+      },
+      userLikePost(postId, communId) {
+        if (this.isJoined(communId)) {
+          const likeObj = {
+            communPostId: postId,
+            createUserId: this.userGetter.id || localStorage.getItem('userId'),
+            companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
+            communId: communId
+          }
+          this.$store.dispatch('threadSharing/likePost', likeObj)
+          this.post.LikeCount = this.post.LikeCount + 1
+          this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount + 1
+          const refThis = this
+          setTimeout(() => {
+            refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+            const yourPostsObj = {
+              compId: localStorage.getItem('companyId'),
+              userId: localStorage.getItem('userId')
+            }
+            refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+          }, 500)
+        }
+      },
+      userUnlikePost(postId, communId) {
+        if (this.isJoined(communId)) {
+          const unlikeObj = {
+            communPostId: postId,
+            createUserId: this.userGetter.id || localStorage.getItem('userId'),
+            companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
+            communId: communId
+          }
+          this.$store.dispatch('threadSharing/unlikePost', unlikeObj)
+          this.post.LikeCount = this.post.LikeCount - 1
+          this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount - 1
+          const refThis = this
+          setTimeout(() => {
+            refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+            const yourPostsObj = {
+              compId: localStorage.getItem('companyId'),
+              userId: localStorage.getItem('userId')
+            }
+            refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+          }, 500)
+        }
+      },
+      addPostComment(postId, communId) {
+        const commentObj = {
           communPostId: postId,
+          comment: this.addCommentValue,
           createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
+          companyId: this.getSelectedCompany.companyId,
           communId: communId
         }
-        this.$store.dispatch('threadSharing/likePost', likeObj)
-        this.post.LikeCount = this.post.LikeCount + 1
-        this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount + 1
-        setTimeout(() => {
-          this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
-    },
-    userUnlikePost(postId, communId) {
-      if (this.isJoined(communId)) {
-        const unlikeObj = {
-          communPostId: postId,
-          createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
-          communId: communId
+        if (
+          this.addCommentValue.length >= 5 &&
+          this.addCommentValue.length <= 300 &&
+          this.isJoined(communId) &&
+          this.regexChar(this.addCommentValue)
+        ) {
+          this.$store.dispatch('threadSharing/addComment', commentObj)
+          this.addCommentValue = ''
+          const refThis = this
+          setTimeout(() => {
+            refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+            const yourPostsObj = {
+              compId: localStorage.getItem('companyId'),
+              userId: localStorage.getItem('userId')
+            }
+            refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+          }, 500)
         }
-        this.$store.dispatch('threadSharing/unlikePost', unlikeObj)
-        this.post.LikeCount = this.post.LikeCount - 1
-        this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount - 1
-        setTimeout(() => {
-          this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
+      },
+      editIncident(postId) {
+        this.$store.commit('threadSharing/SET_INCIDENT_EDIT_STATUS', true)
+        this.$emit('edit-incident', postId)
+      },
+      deleteIncident(postId, name, postCommunityId) {
+        this.$emit('delete-incident', {
+          postId: postId,
+          name: name,
+          postCommunityId: postCommunityId
+        })
+      },
+      isJoined(communId) {
+        if (this.myCommunities && this.myCommunities.length) {
+          return this.myCommunities.some(cId => cId.CommunityId === communId)
+        } else {
+          return false
+        }
+      },
+      isOwnerOfTheCommunity() {
+        const creator = localStorage.getItem('communityCompanyId')
+        const user = localStorage.getItem('companyId')
+        if (
+          user == creator ||
+          this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId
+        ) {
+          return true
+        } else {
+          return false
+        }
+      },
+      regexChar(val) {
+        return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
+      },
+      canDelete(compId) {
+        if (
+          this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
+          localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
+          this.getSelectedCompany.companyId === compId
+        ) {
+          return true
+        } else {
+          return false
+        }
+      },
+      canEdit(compId) {
+        if (
+          this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
+          localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
+          this.getSelectedCompany.companyId === compId
+        ) {
+          return true
+        } else {
+          return false
+        }
+      },
+      maliciousFound() {
+        return this.shareSettings.attachments.some(at => at.IsMalicious === true)
       }
-    },
-    addPostComment(postId, communId) {
-      const commentObj = {
-        communPostId: postId,
-        comment: this.addCommentValue,
-        createUserId: this.userGetter.id || localStorage.getItem('userId'),
-        companyId: this.userGetter.currentCompany.id || localStorage.getItem('companyId'),
-        communId: communId
-      }
-      if (
-        this.addCommentValue.length >= 5 &&
-        this.addCommentValue.length <= 300 &&
-        this.isJoined(communId) &&
-        this.regexChar(this.addCommentValue)
-      ) {
-        this.$store.dispatch('threadSharing/addComment', commentObj)
-        this.addCommentValue = ''
-      }
-    },
-    editIncident(postId) {
-      this.$store.commit('threadSharing/SET_INCIDENT_EDIT_STATUS', true)
-      this.$emit('edit-incident', postId)
-    },
-    deleteIncident(postId) {
-      this.$emit('delete-incident', postId)
-    },
-    isJoined(communId) {
-      if (this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some(cId => cId.CommunityId === communId)
-      } else {
-        return false
-      }
-    },
-    isOwnerOfTheCommunity() {
-      const creator = localStorage.getItem('communityCompanyId')
-      const user = localStorage.getItem('companyId')
-      if (
-        user == creator ||
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
-    },
-    canDelete(compId) {
-      if (
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
-        localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
-        this.getSelectedCompany.companyId === compId
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    canEdit(compId) {
-      if (
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
-        localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
-        this.getSelectedCompany.companyId === compId
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    maliciousFound() {
-      return this.shareSettings.attachments.some(at => at.IsMalicious === true)
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>
-// Threat sharing Content
-.threat-sharing-content {
-  min-height: 200px;
-  width: 100%;
-  padding: 24px !important;
-  background-color: #ffffff;
-  border-radius: 20px !important;
+  // Threat sharing Content
+  .threat-sharing-content {
+    min-height: 200px;
+    width: 100%;
+    padding: 24px !important;
+    background-color: #ffffff;
+    border-radius: 20px !important;
 
-  @media only screen and (max-width: 500px) {
-    padding: 16px !important;
-  }
-}
-.ts-header {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
-.ts-header-btn-1 {
-  display: flex;
-}
-.ts-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  max-width: 79%;
-  position: relative;
-  display: flex;
-
-  @media only screen and (max-width: 1450px) {
-    max-width: 70%;
-  }
-}
-// Threat sharing Content End
-
-.notification-wrapper {
-  background-color: #fff;
-  padding: 0;
-}
-.v-menu__content {
-  border-radius: 8px !important;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-
-  .v-list-item {
-    padding-left: 29px !important;
-    padding-right: 16px !important;
-  }
-  .v-list-item__title {
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: var(--black-87);
-  }
-}
-
-.v-application--is-ltr .v-list-item__icon:first-child {
-  margin-right: 10px !important;
-}
-.ts-user-comp-detail {
-  align-items: center;
-  display: flex;
-  margin-top: 8px;
-}
-::v-deep .v-btn--contained {
-  border-radius: 18px !important;
-  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-}
-::v-deep .v-data-footer {
-  margin-top: 24px !important;
-}
-::v-deep .v-data-footer__select {
-  .v-select {
-    margin: 0 !important;
-    margin-top: 3px !important;
-    margin-left: 32px !important;
-    height: 30px !important;
-  }
-  .v-text-field > .v-input__control > .v-input__slot:after {
-    border: none !important;
-    display: none !important;
-  }
-  .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-    border: none !important;
-  }
-  .v-input__append-inner {
-    margin-left: 0 !important;
-    margin-top: 3px !important;
-    margin-right: 5px !important;
-    padding-left: 0 !important;
-  }
-  .v-select__slot {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    height: 27px !important;
-    background-color: #f2f2f2 !important;
-
-    .v-select__selections {
-      margin-left: 10px;
+    @media only screen and (max-width: 500px) {
+      padding: 16px !important;
     }
   }
-  .v-input__icon {
-    width: 20px !important;
-    min-width: 20px !important;
-    height: 20px !important;
+  .ts-header {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
   }
-}
-::v-deep .v-btn:not(.v-btn--round).v-size--default,
-::v-deep .v-btn--icon.v-size--default {
-  height: 36px !important;
-}
-::v-deep .v-btn--icon.v-size--default {
-  margin-left: 4px;
-  width: 36px !important;
-}
+  .ts-header-btn-1 {
+    display: flex;
+  }
+  .ts-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    max-width: 79%;
+    position: relative;
+    display: flex;
 
-.ts-tags {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  max-width: max-content;
+    @media only screen and (max-width: 1450px) {
+      max-width: 70%;
+    }
+  }
+  // Threat sharing Content End
 
-  > .tag-btn,
-  > div > .tag-btn {
-    border-radius: 18px;
-    border: solid 1.5px #c0c4cc;
+  .notification-wrapper {
     background-color: #fff;
+    padding: 0;
+  }
+  .v-menu__content {
+    border-radius: 8px !important;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+    .v-list-item {
+      padding-left: 29px !important;
+      padding-right: 16px !important;
+    }
+    .v-list-item__title {
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: var(--black-87);
+    }
+  }
+
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 10px !important;
+  }
+  .ts-user-comp-detail {
+    align-items: center;
+    display: flex;
+    margin-top: 8px;
+  }
+  ::v-deep .v-btn--contained {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+  }
+  ::v-deep .v-data-footer {
+    margin-top: 24px !important;
+  }
+  ::v-deep .v-data-footer__select {
+    .v-select {
+      margin: 0 !important;
+      margin-top: 3px !important;
+      margin-left: 32px !important;
+      height: 30px !important;
+    }
+    .v-text-field > .v-input__control > .v-input__slot:after {
+      border: none !important;
+      display: none !important;
+    }
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+      border: none !important;
+    }
+    .v-input__append-inner {
+      margin-left: 0 !important;
+      margin-top: 3px !important;
+      margin-right: 5px !important;
+      padding-left: 0 !important;
+    }
+    .v-select__slot {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      height: 27px !important;
+      background-color: #f2f2f2 !important;
+
+      .v-select__selections {
+        margin-left: 10px;
+      }
+    }
+    .v-input__icon {
+      width: 20px !important;
+      min-width: 20px !important;
+      height: 20px !important;
+    }
+  }
+  ::v-deep .v-btn:not(.v-btn--round).v-size--default,
+  ::v-deep .v-btn--icon.v-size--default {
+    height: 36px !important;
+  }
+  ::v-deep .v-btn--icon.v-size--default {
+    margin-left: 4px;
+    width: 36px !important;
+  }
+
+  .ts-tags {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    max-width: max-content;
+
+    > .tag-btn,
+    > div > .tag-btn {
+      border-radius: 18px;
+      border: solid 1.5px #c0c4cc;
+      background-color: #fff;
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center;
+      color: #000000;
+      height: 32px !important;
+    }
+  }
+  .ts-footer {
+    align-items: center;
+    display: flex;
+    margin-top: 22px;
+    margin-left: 0;
+    margin-right: 0;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .ts-like {
+    margin-right: 10px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+      margin-left: 4px;
+    }
+  }
+  .ts-message {
+    margin-right: 40px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+      margin-left: 4px;
+    }
+  }
+  .ts-harmful {
+    margin-right: 15px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
+  .ts-success {
+    display: flex;
+    align-items: center;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
+  .ts-body {
+    margin-top: 10px;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  .ts-user-comp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+
+    a:not(:last-child) {
+      text-decoration: none;
+      display: block;
+      width: max-content;
+      min-width: max-content;
+    }
+    a:last-child {
+      width: unset !important;
+      max-width: 100%;
+      display: block;
+      overflow: hidden;
+      text-decoration: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ts-user-date {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.58;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .ts-action-counter {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.71;
+    line-height: 1.33;
     letter-spacing: normal;
-    text-align: center;
-    color: #000000;
-    height: 32px !important;
+    color: #4a4a4a;
   }
-}
-.ts-footer {
-  align-items: center;
-  display: flex;
-  margin-top: 22px;
-  margin-left: 0;
-  margin-right: 0;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: bold;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.ts-like {
-  margin-right: 10px;
-  align-items: center;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-    margin-left: 4px;
-  }
-}
-.ts-message {
-  margin-right: 40px;
-  align-items: center;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-    margin-left: 4px;
-  }
-}
-.ts-harmful {
-  margin-right: 15px;
-  align-items: center;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-.ts-success {
-  display: flex;
-  align-items: center;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-.ts-body {
-  margin-top: 10px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.ts-user-comp {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  a {
-    text-decoration: none;
-  }
-
-  .ts-user-date {
+  .ts-actions {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: normal;
@@ -1346,520 +1405,90 @@ export default {
     line-height: 1.58;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    margin-left: 3px;
   }
-}
-.ts-action-counter {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: #4a4a4a;
-}
-.ts-actions {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-left: 3px;
-}
-::v-deep .v-expansion-panel {
-  border-radius: 20px !important;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+  ::v-deep .v-expansion-panel {
+    border-radius: 20px !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
     0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
-  background-color: #fff;
-  border: unset !important;
-}
-::v-deep .v-expansion-panel::before {
-  box-shadow: unset !important;
-}
-::v-deep .v-expansion-panel-header {
-  box-shadow: unset !important;
-  border: unset !important;
-}
+    background-color: #fff;
+    border: unset !important;
+  }
+  ::v-deep .v-expansion-panel::before {
+    box-shadow: unset !important;
+  }
+  ::v-deep .v-expansion-panel-header {
+    box-shadow: unset !important;
+    border: unset !important;
+  }
 
-.tab-bar {
-  width: 100%;
-  height: 48px;
-  padding: 0;
-  background-color: #f5f7fa;
-  border-radius: 0 !important;
-
-  ::v-deep .v-slide-group__wrapper {
-    padding-left: 0 !important;
-  }
-  ::v-deep .v-slide-group__content {
-    margin-right: 0 !important;
-  }
-  ::v-deep .v-tab--active {
-    color: #2196f3 !important;
-  }
-  ::v-deep .v-tab {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center !important;
-    margin-right: 32px !important;
-    padding: 0 !important;
-    padding-right: 3px !important;
-    min-width: auto !important;
-  }
-  ::v-deep .v-tabs-bar {
-    padding: 0 24px;
-    height: 48px !important;
+  .tab-bar {
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    background-color: #f5f7fa;
     border-radius: 0 !important;
-  }
-}
-::v-deep .v-window {
-  border-radius: 20px !important;
-  margin: 0 24px !important;
-}
-::v-deep .v-expansion-panel-content {
-  border-radius: 20px !important;
-  font-family: 'Open Sans', sans-serif !important;
-}
-::v-deep .v-expansion-panel-content__wrap {
-  padding: 0 !important;
-}
 
-// Email Preview css
-.preview-header {
-  margin-top: 32px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 16px;
-  }
-
-  .header-info {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.preview-body {
-  margin-top: 24px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  position: relative;
-  min-height: auto;
-  max-height: 500px;
-  overflow: auto;
-
-  .company-img {
-    display: flex;
-    position: absolute;
-    right: 0;
-    top: 20px;
-    width: 84px;
-    height: 84px;
-
-    img {
-      width: 100%;
-      height: auto;
+    ::v-deep .v-slide-group__wrapper {
+      padding-left: 0 !important;
     }
-  }
-}
-.bodyExpanded {
-  height: 100% !important;
-  max-height: 100% !important;
-  padding-bottom: 56px;
-}
-.details-attchments-wrapper {
-  display: flex;
-  flex-direction: column;
-
-  .details-attachments {
-    width: auto !important;
-
-    h2 {
+    ::v-deep .v-slide-group__content {
+      margin-right: 0 !important;
+    }
+    ::v-deep .v-tab--active {
+      color: #2196f3 !important;
+    }
+    ::v-deep .v-tab {
       font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      padding-bottom: 4px !important;
+      text-align: center !important;
+      margin-right: 32px !important;
+      padding: 0 !important;
+      padding-right: 3px !important;
+      min-width: auto !important;
     }
+    ::v-deep .v-tabs-bar {
+      padding: 0 24px;
+      height: 48px !important;
+      border-radius: 0 !important;
+    }
+  }
+  ::v-deep .v-window {
+    border-radius: 20px !important;
+    margin: 0 24px !important;
+  }
+  ::v-deep .v-expansion-panel-content {
+    border-radius: 20px !important;
+    display: block !important;
+    font-family: 'Open Sans', sans-serif !important;
+  }
+  ::v-deep .v-expansion-panel-content__wrap {
+    padding: 0 !important;
+  }
 
-    .file-name {
+  // Email Preview css
+  .preview-header {
+    margin-top: 32px;
+
+    h2 {
       font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
+      font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.5;
+      line-height: 1.15;
       letter-spacing: normal;
-      color: rgba(219, 37, 37, 0.87);
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 16px;
     }
-  }
-}
-.attach-found-malicious {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-top: 4px;
-}
-.preview-footer {
-  display: flex;
-  flex-direction: row;
-  max-width: 100%;
-  flex-wrap: wrap;
 
-  .preview-attch-wrapper {
-    width: max-content;
-  }
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
-    width: 100%;
-    padding-top: 13px;
-  }
-  .attachment-wrapper {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    max-width: max-content;
-    min-height: auto;
-
-    .attachment {
-      width: 182px;
-      min-width: 182px;
-      height: 32px;
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      margin: 16px;
-      margin-left: 0;
-      margin-top: 0;
-
-      .attach-icon {
-        min-width: 40px;
-        height: 32px;
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
-      .red-icon {
-        background-color: #bb2a45 !important;
-      }
-      .blue-icon {
-        background-color: #2196f3 !important;
-      }
-      span {
-        width: 100%;
-        text-align: center;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.58;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
-      }
-    }
-    .red-attach {
-      background-color: #f3e1e5;
-    }
-    .blue-attach {
-      background-color: #f1f8fe;
-    }
-    .file-name {
-      display: block;
-      max-width: 93%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-}
-.preview-buttons {
-  margin-top: 24px;
-  padding-bottom: 13px;
-  display: flex;
-  flex-direction: row;
-  border-top: 1px solid #b3d4fc;
-  padding-top: 24px;
-
-  ::v-deep .v-btn {
-    border-radius: 18px !important;
-    border: solid 1px #909399;
-    box-shadow: unset !important;
-    background-color: #fff !important;
-    margin-right: 16px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(0, 0, 0, 0.87);
-    padding-left: 16px !important;
-
-    .v-icon {
-      color: #909399;
-      font-size: 19px !important;
-      margin-right: 8px;
-      margin-top: 1px;
-      border: unset !important;
-    }
-  }
-  .active-act {
-    color: #2196f3 !important;
-    border: solid 1px #2196f3 !important;
-  }
-}
-.preview-border {
-  border-top: 1px solid #b3d4fc;
-  padding-top: 24px;
-}
-
-// Details css
-.detail-parts:first-child {
-  margin-top: 24px !important;
-}
-.detail-parts {
-  margin-top: 16px;
-
-  .detail-black {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 4px !important;
-  }
-  .detail-red {
-    color: rgba(219, 37, 37, 0.87) !important;
-  }
-}
-.detail-discovery {
-  margin-top: 24px;
-
-  .disc-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 8px;
-  }
-  .discovery-p {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.impact-row {
-  display: flex;
-  flex-direction: row;
-  padding-bottom: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  .impact-left {
-    min-width: 100px;
-    font-weight: 600 !important;
-  }
-  .impact-right {
-    margin-top: 2px;
-    max-width: 80%;
-  }
-}
-.border-padding {
-  padding-bottom: 8px;
-  border-bottom: 1px solid #b3d4fc;
-}
-.member-company-body {
-  ::v-deep .v-slide-group__content {
-    border-bottom: unset !important;
-  }
-}
-.expand-contaniner {
-  width: 100%;
-  height: 50px;
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  bottom: 0;
-  background-image: linear-gradient(to bottom, transparent, #fff 50%);
-
-  button,
-  .v-btn:not(.v-btn--round).v-size--default {
-    width: auto !important;
-    height: 24px !important;
-    border-radius: 12px !important;
-    background-color: #409eff !important;
-    box-shadow: unset !important;
-    color: #fff;
-    text-transform: capitalize !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    padding-left: 13px !important;
-
-    i {
-      width: 18px !important;
-    }
-  }
-}
-.opacityExpanded {
-  background-image: none !important;
-}
-.preview-comments {
-  height: 0;
-  opacity: 0;
-  transition: max-height 0.25s ease-in;
-  overflow: hidden;
-
-  .comment-row {
-    display: flex;
-    flex-direction: row;
-    padding-top: 6px;
-
-    .comment-input {
-      margin-top: 3px;
-      margin-right: 16px;
-
-      ::v-deep .v-input__slot {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 13px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.54);
-        padding-left: 24px !important;
-        max-height: 70px;
-        min-height: 40px;
-
-        textarea {
-          max-height: 70px;
-          overflow: auto;
-          margin-bottom: 5px;
-          margin-top: 2px;
-          margin-right: 2px;
-        }
-        label {
-          top: 10px;
-        }
-        fieldset {
-          padding-left: 18px !important;
-        }
-      }
-    }
-    .send-btn {
-      border-radius: 18px !important;
-      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-      height: 36px !important;
-      margin: 3px;
-
-      i {
-        font-size: 18px !important;
-        padding-right: 8px;
-      }
-    }
-  }
-  .comment-row {
-    border-radius: 4px;
-    background-color: #f5f7fa;
-    display: flex;
-    padding: 16px;
-    margin-bottom: 8px;
-
-    .user-wrapper {
-      display: block;
-      max-width: 100%;
-
-      .username,
-      .company-name {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: #2196f3;
-        padding-right: 4px;
-        cursor: pointer;
-      }
-      .company-name {
-        padding-left: 4px;
-      }
-    }
-    .the-comment {
-      margin-bottom: 0 !important;
-      padding-top: 8px !important;
+    .header-info {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
@@ -1868,158 +1497,570 @@ export default {
       line-height: 1.5;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      display: block;
-      max-width: 100%;
     }
   }
-  .see-all-comments {
-    padding-top: 16px;
-    padding-bottom: 24px;
+  .preview-body {
+    margin-top: 24px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    position: relative;
+    min-height: auto;
+    max-height: 500px;
+    overflow: auto;
 
-    span {
-      text-decoration: none;
+    .company-img {
+      display: flex;
+      position: absolute;
+      right: 0;
+      top: 20px;
+      width: 84px;
+      height: 84px;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+  .bodyExpanded {
+    height: 100% !important;
+    max-height: 100% !important;
+    padding-bottom: 56px;
+  }
+  .details-attchments-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    .details-attachments {
+      width: auto !important;
+
+      h2 {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+        padding-bottom: 4px !important;
+      }
+
+      .file-name {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(219, 37, 37, 0.87);
+      }
+    }
+  }
+  .attach-found-malicious {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-top: 4px;
+  }
+  .preview-footer {
+    display: flex;
+    flex-direction: row;
+    max-width: 100%;
+    flex-wrap: wrap;
+
+    .preview-attch-wrapper {
+      width: max-content;
+    }
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
+      width: 100%;
+      padding-top: 13px;
+    }
+    .attachment-wrapper {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      max-width: max-content;
+      min-height: auto;
+
+      .attachment {
+        width: 182px;
+        min-width: 182px;
+        height: 32px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin: 16px;
+        margin-left: 0;
+        margin-top: 0;
+
+        .attach-icon {
+          min-width: 40px;
+          height: 32px;
+          align-items: center;
+          display: flex;
+          justify-content: center;
+        }
+        .red-icon {
+          background-color: #bb2a45 !important;
+        }
+        .blue-icon {
+          background-color: #2196f3 !important;
+        }
+        span {
+          width: 100%;
+          text-align: center;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+        }
+      }
+      .red-attach {
+        background-color: #f3e1e5;
+      }
+      .blue-attach {
+        background-color: #f1f8fe;
+      }
+      .file-name {
+        display: block;
+        max-width: 93%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  .preview-buttons {
+    margin-top: 24px;
+    padding-bottom: 13px;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #b3d4fc;
+    padding-top: 24px;
+
+    ::v-deep .v-btn {
+      border-radius: 18px !important;
+      border: solid 1px #909399;
+      box-shadow: unset !important;
+      background-color: #fff !important;
+      margin-right: 16px;
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
       font-style: normal;
-      line-height: normal;
+      line-height: 1.71;
       letter-spacing: normal;
-      color: #2196f3;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(0, 0, 0, 0.87);
+      padding-left: 16px !important;
+
+      .v-icon {
+        color: #909399;
+        font-size: 19px !important;
+        margin-right: 8px;
+        margin-top: 1px;
+        border: unset !important;
+      }
+    }
+    .active-act {
+      color: #2196f3 !important;
+      border: solid 1px #2196f3 !important;
     }
   }
-}
-.open-comments {
-  height: auto !important;
-  transition: max-height 0.25s ease-in;
-  padding-bottom: 24px;
-  opacity: 1;
-  z-index: -5;
-}
-.add-comment {
-  background-color: #fff !important;
-  height: 60px;
-  padding: 0 !important;
-}
-.unselected-warn {
-  border-bottom: 1px solid #bb2a45;
-  color: #bb2a45;
-  padding: 0 2px !important;
-}
-.hide-buttons {
-  opacity: 0;
-  padding: 0 !important;
-  height: 20px !important;
-}
-.display-none {
-  display: none !important;
-}
-.tooltip-wrapper {
-  display: block;
-  max-width: 250px;
-  width: 130px;
-  height: 50px;
-  border-radius: 4px;
-  background-color: #6d6d6d;
-  position: absolute;
-  top: -55px;
-  left: -35px;
-  border-radius: 4px;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-  padding: 8px;
+  .preview-border {
+    border-top: 1px solid #b3d4fc;
+    padding-top: 24px;
+  }
 
-  > div {
+  // Details css
+  .detail-parts:first-child {
+    margin-top: 24px !important;
+  }
+  .detail-parts {
+    margin-top: 16px;
+
+    .detail-black {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 4px !important;
+    }
+    .detail-red {
+      color: rgba(219, 37, 37, 0.87) !important;
+    }
+  }
+  .detail-discovery {
+    margin-top: 24px;
+
+    .disc-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 8px;
+    }
+    .discovery-p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  .impact-row {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 34px;
-  }
-
-  span {
-    color: rgba(255, 255, 255, 0.87) !important;
-    font-size: 12px !important;
-    line-height: 1.33 !important;
+    flex-direction: row;
+    padding-bottom: 8px;
     font-family: 'Open Sans', sans-serif !important;
-    font-weight: 400;
-  }
-  span:nth-child(2) {
-    padding-top: 4px;
-  }
-}
-.add-comment-row {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
 
-  .comment-input {
-    max-width: 80%;
-  }
-  .send-btn {
-    border-radius: 18px !important;
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
-    background-color: #2196f3 !important;
-    color: #fff !important;
-    height: 36px !important;
-
-    i {
-      font-size: 18px !important;
-      padding-right: 8px;
+    .impact-left {
+      min-width: 100px;
+      font-weight: 600 !important;
+    }
+    .impact-right {
+      margin-top: 2px;
+      max-width: 80%;
     }
   }
-}
-.file-name {
-  padding-left: 7px;
-}
-#incident-badge {
-  padding: 4px 12px;
-}
-.detected-items {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 16px;
-  padding-top: 24px;
-}
-::v-deep .malicious-style {
-  background-color: #f3e1e5 !important;
-  color: #bb2a45 !important;
-  text-decoration: underline !important;
-}
-.malicious-icon {
-  font-size: 18px !important;
-}
-::v-deep .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: rgb(245, 108, 108) !important;
-  caret-color: rgb(245, 108, 108) !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
-}
-::v-deep .red-malicious-alert::before {
-  border: unset !important;
-}
-::v-deep .malicious-style {
-  .red-malicious-alert:not(:first-child) {
+  .border-padding {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #b3d4fc;
+  }
+  .member-company-body {
+    ::v-deep .v-slide-group__content {
+      border-bottom: unset !important;
+    }
+  }
+  .expand-contaniner {
+    width: 100%;
+    height: 50px;
+    position: absolute;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    bottom: 0;
+    background-image: linear-gradient(to bottom, transparent, #fff 50%);
+
+    button,
+    .v-btn:not(.v-btn--round).v-size--default {
+      width: auto !important;
+      height: 24px !important;
+      border-radius: 12px !important;
+      background-color: #409eff !important;
+      box-shadow: unset !important;
+      color: #fff;
+      text-transform: capitalize !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      padding-left: 13px !important;
+
+      i {
+        width: 18px !important;
+      }
+    }
+  }
+  .opacityExpanded {
+    background-image: none !important;
+  }
+  .preview-comments {
+    height: 0;
+    opacity: 0;
+    transition: max-height 0.25s ease-in;
+    overflow: hidden;
+
+    .comment-row {
+      display: flex;
+      flex-direction: row;
+      padding-top: 6px;
+
+      .comment-input {
+        margin-top: 3px;
+        margin-right: 16px;
+
+        ::v-deep .v-input__slot {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 13px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.54);
+          padding-left: 24px !important;
+          max-height: 70px;
+          min-height: 40px;
+
+          textarea {
+            max-height: 70px;
+            overflow: auto;
+            margin-bottom: 5px;
+            margin-top: 2px;
+            margin-right: 2px;
+          }
+          label {
+            top: 10px;
+          }
+          fieldset {
+            padding-left: 18px !important;
+          }
+        }
+      }
+      .send-btn {
+        border-radius: 18px !important;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+        background-color: #2196f3 !important;
+        color: #fff !important;
+        height: 36px !important;
+        margin: 3px;
+
+        i {
+          font-size: 18px !important;
+          padding-right: 8px;
+        }
+      }
+    }
+    .comment-row {
+      border-radius: 4px;
+      background-color: #f5f7fa;
+      display: flex;
+      padding: 16px;
+      margin-bottom: 8px;
+
+      .user-wrapper {
+        display: block;
+        max-width: 100%;
+
+        .username,
+        .company-name {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 14px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: #2196f3;
+          padding-right: 4px;
+          cursor: pointer;
+        }
+        .company-name {
+          padding-left: 4px;
+        }
+      }
+      .the-comment {
+        margin-bottom: 0 !important;
+        padding-top: 8px !important;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+        max-width: 100%;
+      }
+    }
+    .see-all-comments {
+      padding-top: 16px;
+      padding-bottom: 24px;
+
+      span {
+        text-decoration: none;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #2196f3;
+        cursor: pointer;
+      }
+    }
+  }
+  .open-comments {
+    height: auto !important;
+    transition: max-height 0.25s ease-in;
+    padding-bottom: 24px;
+    opacity: 1;
+    z-index: -5;
+  }
+  .add-comment {
+    background-color: #fff !important;
+    height: 60px;
+    padding: 0 !important;
+  }
+  .unselected-warn {
+    border-bottom: 1px solid #bb2a45;
+    color: #bb2a45;
+    padding: 0 2px !important;
+  }
+  .hide-buttons {
+    opacity: 0;
+    padding: 0 !important;
+    height: 20px !important;
+  }
+  .display-none {
     display: none !important;
   }
-}
+  .tooltip-wrapper {
+    display: block;
+    max-width: 250px;
+    width: 130px;
+    height: 50px;
+    border-radius: 4px;
+    background-color: #6d6d6d;
+    position: absolute;
+    top: -55px;
+    left: -35px;
+    border-radius: 4px;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+    padding: 8px;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 34px;
+    }
+
+    span {
+      color: rgba(255, 255, 255, 0.87) !important;
+      font-size: 12px !important;
+      line-height: 1.33 !important;
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 400;
+    }
+    span:nth-child(2) {
+      padding-top: 4px;
+    }
+  }
+  .add-comment-row {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+
+    .comment-input {
+      max-width: 80%;
+    }
+    .send-btn {
+      border-radius: 18px !important;
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+      background-color: #2196f3 !important;
+      color: #fff !important;
+      height: 36px !important;
+
+      i {
+        font-size: 18px !important;
+        padding-right: 8px;
+      }
+    }
+  }
+  .file-name {
+    padding-left: 7px;
+  }
+  #incident-badge {
+    padding: 4px 12px;
+  }
+  .detected-items {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 16px;
+    padding-top: 24px;
+  }
+  ::v-deep .malicious-style {
+    background-color: #f3e1e5 !important;
+    color: #bb2a45 !important;
+    text-decoration: underline !important;
+  }
+  .malicious-icon {
+    font-size: 18px !important;
+    color: #bb2a45 !important;
+    caret-color: #bb2a45 !important;
+  }
+  ::v-deep .red-malicious-alert {
+    border: unset !important;
+    border-color: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+    color: #bb2a45 !important;
+    caret-color: #bb2a45 !important;
+    text-decoration: unset !important;
+    text-decoration-color: transparent !important;
+    font-size: 18px !important;
+    margin-top: -2px;
+    padding-right: 3px;
+    height: 16px !important;
+    overflow: hidden;
+  }
+  ::v-deep .red-malicious-alert::before {
+    border: unset !important;
+  }
+  ::v-deep .malicious-style {
+    .red-malicious-alert:not(:first-child) {
+      display: none !important;
+    }
+  }
 </style>
