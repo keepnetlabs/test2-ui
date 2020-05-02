@@ -79,7 +79,7 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 80
+        width: 100
       },
       {
         property: 'delivery',
