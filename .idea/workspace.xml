@@ -4,7 +4,10 @@
     <list default="true" id="7ebc564b-c1ec-47ff-aa44-c1fa5f13d395" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/DataTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DataTable.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/layout/Main.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/layout/Main.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/IncidentResponder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/IncidentResponder.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Login.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +45,7 @@
       <workItem from="1588190079994" duration="11855000" />
       <workItem from="1588418521121" duration="35000" />
       <workItem from="1588418558043" duration="74000" />
-      <workItem from="1588419721577" duration="6688000" />
+      <workItem from="1588419721577" duration="6809000" />
     </task>
     <servers />
   </component>
@@ -54,10 +57,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1588418553845" />
-    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588462677701">
+    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588506772882">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588462677701" />
+    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588506772882" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588461875463">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

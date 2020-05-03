@@ -11,7 +11,7 @@
     </v-dialog>
     <v-overlay :z-index="15" :value="isTourActive"></v-overlay>
     <tour-widget></tour-widget>
-    <v-overlay :value="isLoading" :z-index="9999999">
+    <v-overlay :value="isLoadingFromStore>0" :z-index="9999999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
       </div>
