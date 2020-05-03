@@ -220,11 +220,10 @@
                   <template v-slot:activator="{ on }">
                     <div v-on="on">{{statsAndMenuData.estimatedTime}} remaining</div>
                   </template>
-              <p
-                class="tooltip-wrapper"
-              >Actual remaining time may be different from estimated time and is depended on
-                conditions such as online user count, mailbox size, etc.</p>
-              </v-tooltip>
+                  <p class="tooltip-wrapper" >Actual remaining time may be different from estimated time and is depended on
+                    conditions such as online user count, mailbox size, etc.
+                  </p>
+                </v-tooltip>
               <span v-else>{{getStatusText('statusTime', null)}}</span>
               </p>
             </div>
@@ -313,7 +312,6 @@
                     link
                     @click="menuClick('targetUsers')"
                     :class="{'v-list-item--active': activeMenu =='targetUsers'}"
-                    :disabled="investigationDetailsTargetUsersListData && !investigationDetailsTargetUsersListData.results.length"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-account-multiple</v-icon>
@@ -333,7 +331,6 @@
                     link
                     @click="menuClick('Inbox')"
                     :class="{'v-list-item--active': activeMenu =='Inbox'}"
-                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'Inbox')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-inbox</v-icon>
@@ -353,7 +350,6 @@
                     link
                     @click="menuClick('JunkEmail')"
                     :class="{'v-list-item--active': activeMenu =='JunkEmail'}"
-                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-alert</v-icon>
@@ -373,7 +369,6 @@
                     link
                     @click="menuClick('Drafts')"
                     :class="{'v-list-item--active': activeMenu =='Drafts'}"
-                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'Drafts')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-file</v-icon>
@@ -393,7 +388,6 @@
                     link
                     @click="menuClick('SentItems')"
                     :class="{'v-list-item--active': activeMenu =='SentItems'}"
-                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'SentItems')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-send</v-icon>
@@ -413,7 +407,6 @@
                     link
                     @click="menuClick('DeletedItems')"
                     :class="{'v-list-item--active': activeMenu =='DeletedItems'}"
-                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'DeletedItems')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-delete</v-icon>
@@ -433,7 +426,6 @@
                     link
                     @click="menuClick('Others')"
                     :class="{'v-list-item--active': activeMenu =='Others'}"
-                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'Others')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-plus-box</v-icon>
@@ -913,7 +905,7 @@
         let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10);
         let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10);
         this.diffDays = diffDays;
-        let progressValue = (diffDays * 100) / totalDays;
+        let progressValue = (diffDays === 0 ? 100 : diffDays * 100) / totalDays;
         if (diffDays < 0) {
           this.diffDays = 0;
           this.progressValue = 100;

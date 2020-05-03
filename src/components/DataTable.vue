@@ -648,7 +648,6 @@
                     scope.row.detected === 'Deactivated' ? 'btn-no_match ' : '',
                     scope.row.detected === 'User Unavailable' ? 'btn-no_match ' : '',
                     scope.row.detected === 'Not Installed' ? 'btn-no_match ' : '',
-
                   ]"
                   block
                   rounded
@@ -838,6 +837,7 @@
                     scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
                     scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
                     scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
+                    scope.row.status === 'N/A' ? 'btn-none' : '',
                   ]"
                     block
                     rounded
