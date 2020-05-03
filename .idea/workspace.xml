@@ -4,7 +4,14 @@
     <list default="true" id="7ebc564b-c1ec-47ff-aa44-c1fa5f13d395" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/DataTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DataTable.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SwitchAccount.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SwitchAccount.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ThreadSharing/PostIncident.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ThreadSharing/PostIncident.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/modules/common.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/modules/common.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/request.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/testRequest.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/testRequest.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/IncidentResponder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/IncidentResponder.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/Investigations.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Investigations.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,13 +61,13 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1588418553845" />
-    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588506772882">
+    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588515444787">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588506772882" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588461875463">
+    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588515444787" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588515296003">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588461875463" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588515296003" />
   </component>
 </project>

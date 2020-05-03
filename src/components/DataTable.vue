@@ -1254,7 +1254,8 @@
         let text = ""
         selections.forEach((item, index) => {
           headerKeys.forEach((a, i) => {
-            let lengthOfItem = item[a].toString().length || 0
+            if(!item[a]) item[a] = "Empty";
+              let lengthOfItem = item[a].toString().length || 0
             lengthOfItem -= a.length - 1
             if (lengthOfItem < 0) {
               lengthOfItem = 0

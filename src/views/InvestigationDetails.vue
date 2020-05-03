@@ -1286,7 +1286,7 @@
       this.autoRequest = setInterval(function () {
         if (_this.statsAndMenuData && _this.statsAndMenuData.status == "Running")
           _this.refreshDatatable();
-      }, 5000);
+      }, 15000);
     },
     beforeDestroy() {
       clearInterval(this.autoRequest);

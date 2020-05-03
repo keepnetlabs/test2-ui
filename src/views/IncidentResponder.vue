@@ -327,7 +327,7 @@
             sortable: true,
             show: true,
             type: "text",
-            width: "400"
+            width: "300"
             //minWidth: 80
           },
           {
@@ -380,15 +380,15 @@
           },
           {
             property: "createDate",
-            align: "right",
+            align: "left",
             editable: false,
             label: "Created",
             fixed: false,
             sortable: true,
             show: true,
             type: "text",
-            minWidth: 80
-            //width: "230"
+            //minWidth: 80
+            width: "230"
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
