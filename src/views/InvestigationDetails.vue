@@ -920,7 +920,7 @@
           .dispatch("investigations/cancelInvestigation", this.$route.params.id)
           .catch(() => {
           })
-          .then(() => {
+          .finally(() => {
             this.isWantToStop = false;
             this.refreshDatatable();
             this.restartStopInvestigationData();
@@ -1083,19 +1083,19 @@
       restartStopInvestigationData() {
         this.$store
           .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
-          .then(() => {
+          .finally(() => {
             this.$store
               .dispatch(
                 "investigations/getInvestigationDetailsData",
                 this.$route.params.id
               )
-              .then(() => {
+              .finally(() => {
                 this.$store
                   .dispatch("investigations/getInvestigationDetailsListData", {
                     data: this.investigationListBodyData,
                     id: this.$route.params.id
                   })
-                  .then(() => {
+                  .finally(() => {
                     this.showEmails = false;
                     this.showTargetUsersDetails = false;
                     this.showEmails = true;
@@ -1129,7 +1129,7 @@
                 id: this.$route.params.id
               }
             )
-            .then(() => {
+            .finally(() => {
               vm.$forceUpdate();
               this.showEmails = true;
             });
@@ -1139,19 +1139,19 @@
 
         this.$store
           .dispatch("investigations/getStatsAndMenuData", this.$route.params.id)
-          .then(() => {
+          .finally(() => {
             this.$store
               .dispatch(
                 "investigations/getInvestigationDetailsData",
                 this.$route.params.id
               )
-              .then(() => {
+              .finally(() => {
                 this.$store
                   .dispatch("investigations/getInvestigationDetailsListData", {
                     data: this.investigationListBodyData,
                     id: this.$route.params.id
                   })
-                  .then(() => {
+                  .finally(() => {
                     this.calculateProgressData();
                     this.showEmails = false;
                     this.showTargetUsersDetails = false;
@@ -1200,7 +1200,7 @@
             },
             id: this.$route.params.id
           })
-          .then(() => {
+          .finally(() => {
             this.refreshDatatable();
             this.isWantToWarn = false;
           });
@@ -1227,7 +1227,7 @@
             },
             id: this.$route.params.id
           })
-          .then(() => {
+          .finally(() => {
             this.refreshDatatable();
             this.isWantToDelete = false;
             this.isWantToWarnAndDelete = false;

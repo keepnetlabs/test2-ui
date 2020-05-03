@@ -174,7 +174,17 @@ const investigations = {
           commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
         })
         .catch(error => {
-          if(error && error.response && error.response.status!==404){
+          const payload = {
+            data: {
+              pageNumber: 1,
+              pageSize: 1,
+              results: [],
+              totalNumberOfPages: 1,
+              totalNumberOfRecords: 1,
+            }
+          }
+          commit('SET_INVESTIGATIONDETAILSLISTDATA', payload)
+          if (error && error.response && error.response.status !== 404) {
             dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
