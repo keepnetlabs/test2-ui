@@ -272,49 +272,64 @@
             </v-btn>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-            <v-menu
-              v-if="addUsers && addUsers.show && !addUsers.popUp && !addUsers.action"
-              offset-y
-              transition="scale-transition"
-              v-on="on"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn icon class="btn-hover mr-1" v-on="on">
-                  <v-icon>mdi-plus-circle</v-icon>
-                </v-btn>
-              </template>
-              <v-list class="v-cart-dropdown-list">
-                <v-list-item>
-                  <v-list-item-title>Add users manually</v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>Import .xls</v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>LDAP Integration</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+                <v-menu
+                  v-if="addUsers && addUsers.show && !addUsers.popUp && !addUsers.action"
+                  offset-y
+                  transition="scale-transition"
+                  v-on="on"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon class="btn-hover mr-1" v-on="on">
+                      <v-icon>mdi-plus-circle</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list class="v-cart-dropdown-list">
+                    <v-list-item>
+                      <v-list-item-title>Add users manually</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-title>Import .xls</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-title>LDAP Integration</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
 
-            <v-btn
-              v-else-if="addUsers && addUsers.show && addUsers.popUp"
-              icon
-              v-on="on"
-              class="btn-hover mr-1"
-            >
-              <v-icon @click="isWantToAddUsers = true">mdi-plus-circle</v-icon>
-            </v-btn>
-            <v-btn
-              icon
-              class="btn-hover mr-1"
-              v-else-if="addUsers && addUsers.show && addUsers.action"
-              v-on="on"
-            >
-              <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus-circle</v-icon>
-            </v-btn>
+                <v-btn
+                  v-else-if="addUsers && addUsers.show && addUsers.popUp"
+                  icon
+                  v-on="on"
+                  class="btn-hover mr-1"
+                >
+                  <v-icon @click="isWantToAddUsers = true">mdi-plus-circle</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
+                  class="btn-hover mr-1"
+                  v-else-if="addUsers && addUsers.show && addUsers.action"
+                  v-on="on"
+                >
+                  <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus-circle</v-icon>
+                </v-btn>
               </template>
               <span class="tooltip-span">Add</span>
             </v-tooltip>
+
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{on}">
+                <v-btn
+                  icon
+                  class="btn-add mr-1"
+                  v-if="addButton && addButton.show && addButton.action"
+                  v-on="on"
+                >
+                  <v-icon @click="addButtonFunction(addButton.action)">mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Add</span>
+            </v-tooltip>
+
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn @click="isWantToDownload = true" icon class="btn-hover mr-1" v-on="on">
@@ -626,6 +641,14 @@
                     scope.row.detected === 'No Match' ? 'btn-no_match' : '',
                     scope.row.detected === 'Finished' ? 'btn-success' : '',
                     scope.row.detected === 'N/A' ? 'btn-none' : '',
+                    scope.row.detected === 'Offline' ? 'btn-warning' : '',
+                    scope.row.detected === 'Online' ? 'btn-success' : '',
+                    scope.row.detected === 'Disabled' ? 'btn-cancelled' : '',
+                    scope.row.detected === 'Network Error' ? 'btn-cancelled' : '',
+                    scope.row.detected === 'Deactivated' ? 'btn-no_match ' : '',
+                    scope.row.detected === 'User Unavailable' ? 'btn-no_match ' : '',
+                    scope.row.detected === 'Not Installed' ? 'btn-no_match ' : '',
+
                   ]"
                   block
                   rounded
@@ -743,8 +766,12 @@
               :minWidth="col.minWidth || ''"
             >
               <template slot-scope="scope">
-                <v-btn
-                  :class="[
+                <template v-if="col.hasTooltip">
+                  <v-tooltip bottom opacity="1">
+                    <template v-slot:activator="{on}">
+                      <v-btn
+                        v-on="on"
+                        :class="[
                     'btn-status',
                     scope.row.status === 'Pending' ? 'btn-pending' : '',
                     scope.row.status === 'Clean' ? 'btn-pending' : '',
@@ -763,13 +790,62 @@
                     scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
                     scope.row.status === 'No Match' ? 'btn-no_match' : '',
                     scope.row.status === 'Finished' ? 'btn-success' : '',
+                    scope.row.status === 'Offline' ? 'btn-warning' : '',
+                    scope.row.status === 'Online' ? 'btn-success' : '',
+                    scope.row.status === 'Disabled' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Network Error' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
+                    scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
+                    scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
                   ]"
-                  block
-                  rounded
-                  v-if="scope.row && scope.row[col.property]"
-                >{{ scope.row.status }}
-                </v-btn>
-                <span v-else>Empty</span>
+                        block
+                        rounded
+                        v-if="scope.row && scope.row[col.property]"
+                      >{{ scope.row.status }}
+                      </v-btn>
+                      <span v-else>Empty</span>
+                    </template>
+                    <span class="tooltip-span">{{scope.row.status}}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <v-btn
+                    v-on="on"
+                    :class="[
+                    'btn-status',
+                    scope.row.status === 'Pending' ? 'btn-pending' : '',
+                    scope.row.status === 'Clean' ? 'btn-pending' : '',
+                    scope.row.status === 'Active' ? 'btn-active' : '',
+                    scope.row.status === 'Inactive' ? 'btn-inactive' : '',
+                    scope.row.status === 'Warning' ? 'btn-warning' : '',
+                    scope.row.status === 'Malicious' ? 'btn-warning' : '',
+                    scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Phishing' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Idle' ? 'btn-cancelled' : '',
+                    scope.row.status === 'None' ? 'btn-none' : '',
+                    scope.row.status === 'Quedued' ? 'btn-none' : '',
+                    scope.row.status === 'Running' ? 'btn-primary' : '',
+                    scope.row.status === 'Expired' ? 'btn-warning' : '',
+                    scope.row.status === 'Completed' ? 'btn-success' : '',
+                    scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
+                    scope.row.status === 'No Match' ? 'btn-no_match' : '',
+                    scope.row.status === 'Finished' ? 'btn-success' : '',
+                    scope.row.status === 'Offline' ? 'btn-warning' : '',
+                    scope.row.status === 'Online' ? 'btn-success' : '',
+                    scope.row.status === 'Disabled' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Network Error' ? 'btn-cancelled' : '',
+                    scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
+                    scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
+                    scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
+                  ]"
+                    block
+                    rounded
+                    v-if="scope.row && scope.row[col.property]"
+                  >{{ scope.row.status }}
+                  </v-btn>
+                  <span v-else>Empty</span>
+                </template>
+
               </template>
             </el-table-column>
             <el-table-column
@@ -779,72 +855,72 @@
               align="right"
               width="160"
             >
-            <template slot-scope="scope">
-              <v-btn
-                icon
-                class="btn-hover"
-                @click="handleEdit(scope.row)"
-                v-if="rowActions[0].action === 'edit'"
-              >
-                <v-icon>{{ rowActions[0].icon }}</v-icon>
-              </v-btn>
-              <v-btn
-                icon
-                class="btn-hover"
-                @click="rowAct(rowActions[0].action, scope.row)"
-                v-else
-              >
-                <v-icon>{{ rowActions[0].icon }}</v-icon>
-              </v-btn>
-              <v-menu offset-y transition="scale-transition">
-                <template v-slot:activator="{ on }">
-                  <v-btn icon class="btn-hover" v-on="on">
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                </template>
-                <v-list class="v-cart-dropdown-list">
-                  <v-list-item
-                    v-for="(act, ind) of rowActions"
-                    :key="ind"
-                    v-if="!act.subElements"
-                    class="sub-menu-el"
-                  >
-                    <v-list-item-title @click="rowAct(act.action, scope.row)">
-                      <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                      <span>{{ act.name }}</span>
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item
-                    v-for="(act, ind) of rowActions"
-                    :key="ind + 'sub-item'"
-                    v-if="act.subElements && act.subElements.length"
-                  >
-                    <v-menu :content-class="'sub-menu-sub'" open-on-hover>
-                      <template v-slot:activator="{ on }">
-                        <v-list-item-title class="sub-element-wrapper" v-on="on">
-                          <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                          <span>{{ act.name }}</span>
-                          <v-icon style="float: right;">mdi-chevron-right</v-icon>
-                        </v-list-item-title>
-                      </template>
-                      <v-list>
-                        <v-list-item v-for="(item, ind) of act.subElements" :key="ind">
-                          {{
-                          item
-                          }}
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </template>
+              <template slot-scope="scope">
+                <v-btn
+                  icon
+                  class="btn-hover"
+                  @click="handleEdit(scope.row)"
+                  v-if="rowActions[0].action === 'edit'"
+                >
+                  <v-icon>{{ rowActions[0].icon }}</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
+                  class="btn-hover"
+                  @click="rowAct(rowActions[0].action, scope.row)"
+                  v-else
+                >
+                  <v-icon>{{ rowActions[0].icon }}</v-icon>
+                </v-btn>
+                <v-menu offset-y transition="scale-transition">
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon class="btn-hover" v-on="on">
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list class="v-cart-dropdown-list">
+                    <v-list-item
+                      v-for="(act, ind) of rowActions"
+                      :key="ind"
+                      v-if="!act.subElements"
+                      class="sub-menu-el"
+                    >
+                      <v-list-item-title @click="rowAct(act.action, scope.row)">
+                        <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                        <span>{{ act.name }}</span>
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item
+                      v-for="(act, ind) of rowActions"
+                      :key="ind + 'sub-item'"
+                      v-if="act.subElements && act.subElements.length"
+                    >
+                      <v-menu :content-class="'sub-menu-sub'" open-on-hover>
+                        <template v-slot:activator="{ on }">
+                          <v-list-item-title class="sub-element-wrapper" v-on="on">
+                            <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                            <span>{{ act.name }}</span>
+                            <v-icon style="float: right;">mdi-chevron-right</v-icon>
+                          </v-list-item-title>
+                        </template>
+                        <v-list>
+                          <v-list-item v-for="(item, ind) of act.subElements" :key="ind">
+                            {{
+                            item
+                            }}
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </template>
             </el-table-column>
             <el-table-column
               v-if="rowActions && rowActions.length === 1"
               :fixed="actionFixed"
               label="Actions"
-              align="right"
+              align="center"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -987,6 +1063,10 @@
         required: false
       },
       addUsers: {
+        type: Object,
+        required: false
+      },
+      addButton: {
         type: Object,
         required: false
       },
@@ -1141,6 +1221,9 @@
             break;
         }
       },
+      addButtonFunction(action, row) {
+        this.$emit(action, row)
+      },
       tableRowClassName(row) {
         if (this.multipleSelection.some(r => r.id === row.row.id)) {
           return "selected-row";
@@ -1179,8 +1262,8 @@
           );
         }
       },
-      onEmptyBtnClicked(e){
-        this.$emit('onEmptyBtnClicked',e)
+      onEmptyBtnClicked(e) {
+        this.$emit('onEmptyBtnClicked', e)
       },
       downloadEvent(e) {
         this.$emit("downloadEvent", this.downloadType)
@@ -1218,6 +1301,7 @@
             );
             break;
           default:
+            this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
             return false;
         }
       },
@@ -1750,8 +1834,7 @@
           margin: 0 auto;
           text-transform: capitalize;
           min-width: 80px !important;
-          max-width: 100px !important;
-          width: 90px !important;
+          max-width: 125px !important;
           height: 32px !important;
         }
 
@@ -1761,6 +1844,19 @@
 
         .btn-active {
           background-color: #2196f3;
+        }
+
+        .btn-add {
+          width: 36px;
+          height: 36px;
+          border-radius: 18px;
+          box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+          background-color: #2196f3;
+          color: white;
+
+          .v-icon {
+            font-size: 18px !important;
+          }
         }
 
         .btn-inactive {
