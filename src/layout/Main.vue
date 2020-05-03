@@ -192,11 +192,15 @@
                   <span class="menu-item-span">Incident Responder</span>
                 </v-list-item-title>
               </router-link>
-              <!--<router-link to="/investigations" class="menu-link-default">
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/phishing-reporter" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Investigations</span>
+                  <span class="menu-item-span">Phishing Reporter</span>
                 </v-list-item-title>
-              </router-link>-->
+              </router-link>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
@@ -349,6 +353,15 @@
               </router-link>
               <router-link
                 class="breadcrumb-links"
+                to="/threatsharing"
+                style=" display: flex;align-items: center;"
+                v-if="routerName === 'Phishing Reporter'"
+              >
+                {{ breadcrumbs[1].text }}
+                <v-icon style="color: #fff; font-size: 16px; ">mdi-chevron-right</v-icon>Playbook
+              </router-link>
+              <router-link
+                class="breadcrumb-links"
                 to="/analysis-details"
                 v-if="routerName === 'Analysis Details'"
                 >{{ breadcrumbs[3].text }}</router-link
@@ -374,12 +387,12 @@
                 >Incident Responder > {{ routerName }}</router-link
               >
               <v-icon
-                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations'"
+                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations'  && routerName !=='Phishing Reporter'"
                 style="color: #fff; font-size: 16px;"
                 >mdi-chevron-right</v-icon
               >
               <router-link
-                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations'"
+                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations' && routerName !=='Phishing Reporter'"
                 :to="$route.path"
                 class="bread-last-step breadcrumb-links"
                 >{{ routerName }}</router-link
@@ -1565,6 +1578,7 @@ header {
   text-decoration: none !important;
   color: #fff !important;
   cursor: pointer;
+
 }
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .v-cart-dropdown-list {
