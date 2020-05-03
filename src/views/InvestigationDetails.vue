@@ -313,6 +313,7 @@
                     link
                     @click="menuClick('targetUsers')"
                     :class="{'v-list-item--active': activeMenu =='targetUsers'}"
+                    :disabled="investigationDetailsTargetUsersListData && !investigationDetailsTargetUsersListData.results.length"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-account-multiple</v-icon>
@@ -332,6 +333,7 @@
                     link
                     @click="menuClick('Inbox')"
                     :class="{'v-list-item--active': activeMenu =='Inbox'}"
+                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'Inbox')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-inbox</v-icon>
@@ -351,6 +353,7 @@
                     link
                     @click="menuClick('JunkEmail')"
                     :class="{'v-list-item--active': activeMenu =='JunkEmail'}"
+                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-alert</v-icon>
@@ -370,6 +373,7 @@
                     link
                     @click="menuClick('Drafts')"
                     :class="{'v-list-item--active': activeMenu =='Drafts'}"
+                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'Drafts')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-file</v-icon>
@@ -389,6 +393,7 @@
                     link
                     @click="menuClick('SentItems')"
                     :class="{'v-list-item--active': activeMenu =='SentItems'}"
+                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'SentItems')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-send</v-icon>
@@ -408,6 +413,7 @@
                     link
                     @click="menuClick('DeletedItems')"
                     :class="{'v-list-item--active': activeMenu =='DeletedItems'}"
+                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'DeletedItems')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-delete</v-icon>
@@ -427,6 +433,7 @@
                     link
                     @click="menuClick('Others')"
                     :class="{'v-list-item--active': activeMenu =='Others'}"
+                    :disabled="statsAndMenuData.folders && !statsAndMenuData.folders.find(item => item.folderName == 'Others')"
                   >
                     <v-list-item-icon>
                       <v-icon medium left color="#909399">mdi-plus-box</v-icon>
@@ -1299,6 +1306,10 @@
       //max-height: 40px !important;
       min-height: 40px !important;
     }
+  }
+
+  ::v-deep .v-list-item--disabled{
+    opacity: 0.5 !important;
   }
 
   ::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
