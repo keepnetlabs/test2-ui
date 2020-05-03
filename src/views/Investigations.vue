@@ -55,6 +55,7 @@
       @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
       @stopInvestigationFunc="stopInvestigationFunc($event)"
       @investigationDetails="investigationDetails($event)"
+      @downloadEvent="this.exportInvestigationList"
       v-if="showDatatable"
     />
   </div>
@@ -63,7 +64,7 @@
   import Datatable from "../components/DataTable";
   import newInvestigation from "../components/Investigation/NewInvestigation";
   import {mapActions, mapGetters} from "vuex";
-
+  import {exportInvestigationList} from '../api/incidentResponder'
   export default {
     components: {
       Datatable,
@@ -281,6 +282,24 @@
           name: "Investigation Details",
           params: {id: value.row.resourceId}
         });
+      },
+      exportInvestigationList(exportType) {
+        const payload = {
+          pageNumber: 0,
+          pageSize: 0,
+          orderBy: "ExpireDate",
+          ascending: true,
+          reportAllPages: true,
+          exportType: exportType === "XLS" ? "Excel" : exportType
+        }
+
+        exportInvestigationList(payload).then(response => {
+          const {data} = response
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(data);
+          link.download = `investigations.${exportType.toLocaleLowerCase()}`;
+          link.click();
+        })
       },
 
       stopInvestigationFunc(value) {

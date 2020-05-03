@@ -18,7 +18,8 @@ testService.interceptors.request.use(config => {
     config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
   }
   return config
-}, error => (error) => {
+}, error => {
+
   store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
 })
 
@@ -28,6 +29,7 @@ testService.interceptors.response.use(
     return response
   },
   error => {
+
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)

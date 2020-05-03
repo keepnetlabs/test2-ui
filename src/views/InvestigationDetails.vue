@@ -595,7 +595,6 @@
               @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
               @sendInvestigationdetailsWarningMessage="sendInvestigationdetailsWarningMessage($event)"
               @deleteAndNotifyInvestigationDetailsFunction="deleteAndNotifyInvestigationDetailsFunction($event)"
-              @downloadEvent="this.exportInvestigationList"
               :rowActionsMinWidth="80"
               v-if="showEmails"
 
@@ -634,7 +633,7 @@
   import Datatable from "../components/DataTable";
   import newInvestigation from "../components/Investigation/NewInvestigation";
   import {mapActions, mapGetters} from "vuex";
-  import {exportInvestigationList} from '../api/incidentResponder'
+
 
   export default {
     components: {
@@ -905,24 +904,6 @@
         return `${this.totalSelectedItemsCount} ${
           this.totalSelectedItemsCount > 1 ? "emails" : "email"
         } will be deleted from mailbox`;
-      },
-      exportInvestigationList(exportType) {
-        const payload = {
-          pageNumber: 0,
-          pageSize: 0,
-          orderBy: "ExpireDate",
-          ascending: true,
-          reportAllPages: true,
-          exportType: exportType === "XLS" ? "Excel" : exportType
-        }
-
-        exportInvestigationList(payload).then(response => {
-          const {data} = response
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(data);
-          link.download = `investigation-details.${exportType.toLocaleLowerCase()}`;
-          link.click();
-        })
       },
       calculateProgressData() {
         let today = new Date();

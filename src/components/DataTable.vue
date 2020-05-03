@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <v-overlay fixed :opacity="0.46" :value="isWantToDownload" :z-index="999">
-      <v-card light class="pb-4 pa-6" style="max-width: 580px;">
+      <v-card light class="pb-4 pa-6" style="max-width: 580px; border-radius: 12px !important;">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">mdi-download</v-icon>
