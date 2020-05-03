@@ -797,6 +797,7 @@
                     scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
                     scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
                     scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
+                    scope.row.status === 'N/A' ? 'btn-none' : '',
                   ]"
                         block
                         rounded
@@ -853,7 +854,8 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              width="160"
+              width="120"
+              min-width="30"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -921,6 +923,9 @@
               :fixed="actionFixed"
               label="Actions"
               align="center"
+              width="120"
+              min-width="30"
+
             >
               <template slot-scope="scope">
                 <v-btn
@@ -937,7 +942,9 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              width="160"
+              width="120"
+              min-width="30"
+
             >
               <template slot-scope="scope">
                 <v-btn
@@ -1331,7 +1338,8 @@
         let text = ""
         selections.forEach((item, index) => {
           headerKeys.forEach((a, i) => {
-            let lengthOfItem = item[a].toString().length || 0
+            if(!item[a]) item[a] = "Empty";
+              let lengthOfItem = item[a].toString().length || 0
             lengthOfItem -= a.length - 1
             if (lengthOfItem < 0) {
               lengthOfItem = 0

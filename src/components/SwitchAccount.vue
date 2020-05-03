@@ -104,16 +104,17 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
     onClickSelectedAccount(account) {
-      this.$store.dispatch('common/activateLoader', true)
+      //this.$store.dispatch('common/activateLoader', true)
       const refThis = this
       setTimeout(() => {
-        refThis.$store.dispatch('common/activateLoader', false)
+        //refThis.$store.dispatch('common/activateLoader', false)
       }, 1000)
       this.setDialogBar(false)
       this.selectCompany(account)
       this.$store.dispatch('threadSharing/getCommunities', account.companyId)
       localStorage.setItem('companyId', account.companyId)
       localStorage.setItem('companyManager', account.manager)
+      this.$router.go(0); // refresh page after company id changed
       this.search = ''
     }
   },

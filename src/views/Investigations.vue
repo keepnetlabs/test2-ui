@@ -84,7 +84,7 @@
           sortable: true,
           show: true,
           type: "text",
-          width: 200,
+          width: 250,
           //minWidth: 80
         },
         {
@@ -96,7 +96,7 @@
           sortable: true,
           show: true,
           type: "detected",
-          width: 120,
+          width: 150,
           //minWidth: 80
         },
         {
@@ -108,7 +108,7 @@
           sortable: true,
           show: true,
           type: "text",
-          width: 200,
+          width: 250,
           //minWidth: 80
         },
         {
@@ -124,15 +124,15 @@
           //minWidth: 80
         },
         {
-          property: "startDate",
+          property: "createDate",
           align: "left",
           editable: false,
-          label: "Start Date",
+          label: "Create Date",
           fixed: false,
           sortable: true,
           show: true,
           type: "text",
-          width: 160,
+          width: 185,
           //minWidth: 80
         },
         {
@@ -144,7 +144,7 @@
           sortable: true,
           show: true,
           type: "text",
-          width: 160,
+          width: 185,
           //minWidth: 80
         },
         {
@@ -237,7 +237,7 @@
         // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
         pageNumber: 1,
         pageSize: 500,
-        orderBy: "StartDate",
+        orderBy: "startDate",
         ascending: false,
         filter: {
           Condition: "AND",

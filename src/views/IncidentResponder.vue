@@ -327,8 +327,8 @@
             sortable: true,
             show: true,
             type: "text",
-            //width: "400"
-            minWidth: 80
+            width: "300"
+            //minWidth: 80
           },
           {
             property: "reportedBy",
@@ -339,8 +339,8 @@
             sortable: true,
             show: true,
             type: "text",
-            //width: "300"
-            minWidth: 100
+            width: "300"
+            //minWidth: 100
           },
           {
             property: "source",
@@ -351,8 +351,8 @@
             sortable: true,
             show: true,
             type: "text",
-            //width: "150"
-            minWidth: 80
+            width: "150"
+            //minWidth: 80
           },
           {
             property: "priority",
@@ -363,32 +363,32 @@
             sortable: false,
             show: true,
             type: "text",
-            //width: "150"
-            minWidth: 80
+            width: "150"
+            //minWidth: 80
           },
           {
             property: "status",
             align: "center",
             editable: false,
             label: "Status",
-            fixed: "right",
+            fixed: false,
             sortable: false,
             show: true,
             type: "status",
-            //width: "150"
-            minWidth: 80
+            width: "150"
+           // minWidth: 80
           },
           {
             property: "createDate",
-            align: "right",
+            align: "left",
             editable: false,
             label: "Created",
             fixed: false,
             sortable: true,
             show: true,
             type: "text",
-            minWidth: 80
-            //width: "230"
+            //minWidth: 80
+            width: "230"
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
