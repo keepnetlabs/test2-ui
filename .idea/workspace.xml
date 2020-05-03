@@ -3,28 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7ebc564b-c1ec-47ff-aa44-c1fa5f13d395" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/css/app.b7cf8e40.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/attach-file.81627c44.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/attach-file.81627c44.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/attach-red.97e57ee5.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/attach-red.97e57ee5.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/attachment-all.9ec6fecd.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/attachment-all.9ec6fecd.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/header-all.6da790e5.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/header-all.6da790e5.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/ic-check-box.678af74e.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/ic-check-box.678af74e.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/ic-insert-chart.c806d5fe.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/ic-insert-chart.c806d5fe.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/ic-warning.ab3112c0.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/ic-warning.ab3112c0.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/light.c7bb8026.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/light.c7bb8026.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/link-red.8532cb1e.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/link-red.8532cb1e.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/link.6fe8084d.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/link.6fe8084d.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/login-bg.3dae228a.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/login-bg.3dae228a.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/shape.4e821d6d.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/shape.4e821d6d.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/short-text.f2c998a2.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/short-text.f2c998a2.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/user-in.55dcd217.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/user-in.55dcd217.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/img/user-out.d4e799cb.svg" beforeDir="false" afterPath="$PROJECT_DIR$/dist/img/user-out.d4e799cb.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/js/app.7c92fe9d.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/js/app.7c92fe9d.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/js/chunk-vendors.b88a4763.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/js/chunk-vendors.b88a4763.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/modules/investigations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/modules/investigations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/IncidentResponder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/IncidentResponder.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,10 +54,14 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1588418553845" />
-    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588526210056">
+    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588540952716">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588526210056" />
+    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588540952716" />
+    <state x="616" y="240" key="run.anything.popup" timestamp="1588538002406">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588538002406" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588526944007">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

@@ -497,7 +497,7 @@
       }
       searchNotifiedMail(payload).then(response => {
         const {data: {data: {results}, status}} = response
-        console.log("results", results)
+
         this.$refs.refReportedEmails.loadWithDataArray(results)
       }).catch(error => {
         this.$store.dispatch('common/createSnackBar', {
