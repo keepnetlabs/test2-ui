@@ -763,6 +763,7 @@
                     scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
                     scope.row.status === 'No Match' ? 'btn-no_match' : '',
                     scope.row.status === 'Finished' ? 'btn-success' : '',
+                    scope.row.status === 'N/A' ? 'btn-none' : '',
                   ]"
                   block
                   rounded
@@ -777,7 +778,8 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              width="180"
+              width="120"
+              min-width="30"
             >
             <template slot-scope="scope">
               <v-btn
@@ -845,7 +847,9 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              :minWidth="rowActionsMinWidth"
+              width="120"
+              min-width="30"
+
             >
               <template slot-scope="scope">
                 <v-btn
@@ -862,7 +866,9 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              :minWidth="rowActionsMinWidth"
+              width="120"
+              min-width="30"
+
             >
               <template slot-scope="scope">
                 <v-btn

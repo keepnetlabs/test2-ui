@@ -4,10 +4,7 @@
     <list default="true" id="7ebc564b-c1ec-47ff-aa44-c1fa5f13d395" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/DataTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DataTable.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/layout/Main.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/layout/Main.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/IncidentResponder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/IncidentResponder.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Login.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
