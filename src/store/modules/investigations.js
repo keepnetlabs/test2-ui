@@ -173,12 +173,14 @@ const investigations = {
           const result = response.data
           commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
         })
-        .catch(() => {
-          dispatch('common/createSnackBar', {
-            errorState: true,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting investigation details'
-          }, {root: true})
+        .catch(error => {
+          if(error && error.response && error.response.status!==404){
+            dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting investigation details'
+            }, {root: true})
+          }
         })
     },
     async getInvestigationDetailsData({commit, dispatch}, id) {

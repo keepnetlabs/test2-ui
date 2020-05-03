@@ -6,6 +6,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/DataTable.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DataTable.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/InvestigationDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/modules/investigations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/modules/investigations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/IncidentResponder.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/IncidentResponder.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,11 +57,23 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1588418553845" />
+<<<<<<< HEAD
     <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588540608847">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588540608847" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588540272309">
+=======
+    <state x="667" y="122" width="585" height="795" key="find.popup" timestamp="1588540952716">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="667" y="122" width="585" height="795" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588540952716" />
+    <state x="616" y="240" key="run.anything.popup" timestamp="1588538002406">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588538002406" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588526944007">
+>>>>>>> 2ed7d0e1aa617cf9586a6613c509a1b1cdd35308
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588540272309" />
