@@ -766,7 +766,7 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              :minWidth="rowActionsMinWidth"
+              width="180"
             >
               <template slot-scope="scope">
                 <v-btn

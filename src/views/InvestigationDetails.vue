@@ -293,7 +293,7 @@
             >Expiry Time
             </div>
             <div class="investigation-details__container__content--left-menu--time--progress">
-              <span>{{investigationDetailsData.createTime}}</span>
+              <span>{{investigationDetailsData.createDate}}</span>
               <span>{{investigationDetailsData.expireDate}}</span>
             </div>
             <div class="investigation-details__container__content--left-menu--time--progress--bar">
@@ -919,11 +919,11 @@
       },
       calculateProgressData() {
         let today = new Date();
-        let createTime = new Date(this.investigationDetailsData.createTime);
+        let createDate = new Date(this.investigationDetailsData.createDate);
         let expireDate = new Date(this.investigationDetailsData.expireDate);
         let startDate = new Date(this.investigationDetailsData.startDate);
         let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10);
-        let totalDays = parseInt((expireDate - createTime) / (1000 * 60 * 60 * 24), 10);
+        let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10);
         this.diffDays = diffDays;
         let progressValue = (diffDays * 100) / totalDays;
         if (diffDays < 0) {
