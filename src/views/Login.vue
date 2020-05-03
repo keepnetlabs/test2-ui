@@ -7,7 +7,7 @@
       </v-btn>
     </v-snackbar>
 
-    <v-overlay :value="isLoading" z-index="999">
+    <v-overlay :value="isLoading>0" z-index="999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
       </div>
@@ -331,7 +331,7 @@
           this.$refs.password.validate() &&
           this.wrongLoginAttempt < 3
         ) {
-          this.isLoading = true
+         // this.isLoading = true
           this.$store.dispatch('login/loginAction', {
             email: this.email,
             password: this.password,
@@ -342,7 +342,7 @@
           this.$refs.password.validate &&
           this.wrongLoginAttempt >= 3
         ) {
-          this.isLoading = true
+          //this.isLoading = true
           if (window.grecaptcha.getResponse() == '') {
             // Business decided no need for Robot error
             /*

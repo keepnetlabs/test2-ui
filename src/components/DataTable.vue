@@ -270,10 +270,13 @@
                 </v-list>
               </v-menu>
             </v-btn>
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on }">
             <v-menu
               v-if="addUsers && addUsers.show && !addUsers.popUp && !addUsers.action"
               offset-y
               transition="scale-transition"
+              v-on="on"
             >
               <template v-slot:activator="{ on }">
                 <v-btn icon class="btn-hover mr-1" v-on="on">
@@ -292,9 +295,11 @@
                 </v-list-item>
               </v-list>
             </v-menu>
+
             <v-btn
               v-else-if="addUsers && addUsers.show && addUsers.popUp"
               icon
+              v-on="on"
               class="btn-hover mr-1"
             >
               <v-icon @click="isWantToAddUsers = true">mdi-plus-circle</v-icon>
@@ -303,9 +308,13 @@
               icon
               class="btn-hover mr-1"
               v-else-if="addUsers && addUsers.show && addUsers.action"
+              v-on="on"
             >
               <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus-circle</v-icon>
             </v-btn>
+              </template>
+              <span class="tooltip-span">Add</span>
+            </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn @click="isWantToDownload = true" icon class="btn-hover mr-1" v-on="on">
@@ -558,7 +567,9 @@
               :minWidth="col.minWidth || ''"
             >
               <template slot-scope="scope">
-                <v-tooltip v-if="scope.row && scope.row[col.property]" bottom opacity="1">
+                <v-tooltip
+                  v-if="scope.row && scope.row[col.property] && scope.row[col.property].filter(item=>(item===0)).length !== scope.row[col.property].length"
+                  bottom opacity="1">
                   <template v-slot:activator="{ on }">
                     <div v-on="on">
                       <apexchart
@@ -766,68 +777,68 @@
               :fixed="actionFixed"
               label="Actions"
               align="right"
-              :minWidth="rowActionsMinWidth"
+              width="160"
             >
-              <template slot-scope="scope">
-                <v-btn
-                  icon
-                  class="btn-hover"
-                  @click="handleEdit(scope.row)"
-                  v-if="rowActions[0].action === 'edit'"
-                >
-                  <v-icon>{{ rowActions[0].icon }}</v-icon>
-                </v-btn>
-                <v-btn
-                  icon
-                  class="btn-hover"
-                  @click="rowAct(rowActions[0].action, scope.row)"
-                  v-else
-                >
-                  <v-icon>{{ rowActions[0].icon }}</v-icon>
-                </v-btn>
-                <v-menu offset-y transition="scale-transition">
-                  <template v-slot:activator="{ on }">
-                    <v-btn icon class="btn-hover" v-on="on">
-                      <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list class="v-cart-dropdown-list">
-                    <v-list-item
-                      v-for="(act, ind) of rowActions"
-                      :key="ind"
-                      v-if="!act.subElements"
-                      class="sub-menu-el"
-                    >
-                      <v-list-item-title @click="rowAct(act.action, scope.row)">
-                        <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                        <span>{{ act.name }}</span>
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item
-                      v-for="(act, ind) of rowActions"
-                      :key="ind + 'sub-item'"
-                      v-if="act.subElements && act.subElements.length"
-                    >
-                      <v-menu :content-class="'sub-menu-sub'" open-on-hover>
-                        <template v-slot:activator="{ on }">
-                          <v-list-item-title class="sub-element-wrapper" v-on="on">
-                            <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                            <span>{{ act.name }}</span>
-                            <v-icon style="float: right;">mdi-chevron-right</v-icon>
-                          </v-list-item-title>
-                        </template>
-                        <v-list>
-                          <v-list-item v-for="(item, ind) of act.subElements" :key="ind">
-                            {{
-                            item
-                            }}
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </template>
+            <template slot-scope="scope">
+              <v-btn
+                icon
+                class="btn-hover"
+                @click="handleEdit(scope.row)"
+                v-if="rowActions[0].action === 'edit'"
+              >
+                <v-icon>{{ rowActions[0].icon }}</v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                class="btn-hover"
+                @click="rowAct(rowActions[0].action, scope.row)"
+                v-else
+              >
+                <v-icon>{{ rowActions[0].icon }}</v-icon>
+              </v-btn>
+              <v-menu offset-y transition="scale-transition">
+                <template v-slot:activator="{ on }">
+                  <v-btn icon class="btn-hover" v-on="on">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <v-list class="v-cart-dropdown-list">
+                  <v-list-item
+                    v-for="(act, ind) of rowActions"
+                    :key="ind"
+                    v-if="!act.subElements"
+                    class="sub-menu-el"
+                  >
+                    <v-list-item-title @click="rowAct(act.action, scope.row)">
+                      <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                      <span>{{ act.name }}</span>
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    v-for="(act, ind) of rowActions"
+                    :key="ind + 'sub-item'"
+                    v-if="act.subElements && act.subElements.length"
+                  >
+                    <v-menu :content-class="'sub-menu-sub'" open-on-hover>
+                      <template v-slot:activator="{ on }">
+                        <v-list-item-title class="sub-element-wrapper" v-on="on">
+                          <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                          <span>{{ act.name }}</span>
+                          <v-icon style="float: right;">mdi-chevron-right</v-icon>
+                        </v-list-item-title>
+                      </template>
+                      <v-list>
+                        <v-list-item v-for="(item, ind) of act.subElements" :key="ind">
+                          {{
+                          item
+                          }}
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </template>
             </el-table-column>
             <el-table-column
               v-if="rowActions && rowActions.length === 1"
@@ -884,7 +895,7 @@
           <div class="empty-inline">
             <h2>{{ empty.message }}</h2>
             <p>{{ empty.subMes }}</p>
-            <v-btn class="empty-btn" v-if="empty.btn">
+            <v-btn class="empty-btn" v-if="empty.btn" @click="onEmptyBtnClicked">
               <!-- empty action -->
               <v-icon class="mr-2">{{ empty.icon }}</v-icon>
               {{ empty.btn }}
@@ -1168,6 +1179,9 @@
             pageNum * this.rowCount
           );
         }
+      },
+      onEmptyBtnClicked(e){
+        this.$emit('onEmptyBtnClicked',e)
       },
       downloadEvent(e) {
         this.$emit("downloadEvent", this.downloadType)

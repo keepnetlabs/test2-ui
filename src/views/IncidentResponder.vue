@@ -1,5 +1,15 @@
 <template>
   <div class="incident-responder">
+    <v-overlay
+      id="add-new-community-overlay"
+      :value="openInvestigationOverlay"
+      :class="{ newInvestigationOverlay: openInvestigationOverlay }"
+      :opacity="1"
+      :z-index="999"
+      color="white"
+    >
+      <new-investigation @closeAdd="openInvestigationOverlay=false"/>
+    </v-overlay>
     <div class="columns-row">
       <div class="dashboard-cards phishing-reporter mr-2">
         <div class="card-header">
@@ -107,7 +117,7 @@
               :empty="topRules.iEmpty"
               :selectEvent="topRules.selectEvent"
               :border="false"
-              :rowActionsMinWidth="40"
+
             />
           </div>
         </v-card>
@@ -147,6 +157,7 @@
               :empty="recentInv.iEmpty"
               :selectEvent="recentInv.selectEvent"
               :border="false"
+              @onEmptyBtnClicked="onEmptyBtnClicked"
             />
           </div>
         </v-card>
@@ -176,6 +187,7 @@
           :empty="emails.iEmpty"
           :selectEvent="emails.selectEvent"
 
+
         />
       </v-card>
     </div>
@@ -183,6 +195,7 @@
 </template>
 <script>
   import Datatable from "../components/DataTable";
+  import NewInvestigation from "../components/Investigation/NewInvestigation";
   import {getTopRules, getRunningInvestigations, searchNotifiedMail} from '../api/incidentResponder'
   import {mapActions, mapGetters} from "vuex";
   import {COMMON_CONSTANTS} from "../model/constants/commonConstants";
@@ -190,10 +203,12 @@
 
   export default {
     components: {
-      Datatable
+      Datatable,
+      NewInvestigation
     },
 
     data: () => ({
+      openInvestigationOverlay: false,
       topRules: {
         table: [],
         columns: [
@@ -245,7 +260,7 @@
           popUp: false
         },
         selectEvent: {},
-        chartOptions: {}
+
       },
       recentInv: {
         table: [],
@@ -295,7 +310,7 @@
         iEmpty: {
           message: "There isn't any investigations, yet",
           btn: "Start and Investigation",
-          icon: "mdi-plus"
+          icon: "mdi-plus",
         },
         selectEvent: {},
         chartOptions: {}
@@ -439,7 +454,7 @@
             enabled: false
           }
         }
-      }
+      },
     }),
     computed: {
       ...mapGetters({
@@ -482,6 +497,7 @@
       }
       searchNotifiedMail(payload).then(response => {
         const {data: {data: {results}, status}} = response
+        console.log("results", results)
         this.$refs.refReportedEmails.loadWithDataArray(results)
       }).catch(error => {
         this.$store.dispatch('common/createSnackBar', {
@@ -492,10 +508,14 @@
       })
 
     },
-    methods:{
+    methods: {
       ...mapActions({
         getCurrentUser: 'auth/getCurrentUser'
       }),
+      onEmptyBtnClicked() {
+        debugger
+        this.openInvestigationOverlay = true
+      }
     }
   };
 </script>
@@ -843,6 +863,22 @@
             }
           }
         }
+      }
+    }
+
+    .newInvestigationOverlay {
+      background-color: #fff !important;
+      overflow: auto !important;
+      height: 100% !important;
+      max-width: 100vw !important;
+      width: 100% !important;
+      display: block !important;
+      justify-content: center !important;
+      align-items: center !important;
+
+      > ::v-deep .v-overlay__content {
+        height: auto;
+        width: 100%;
       }
     }
 
