@@ -88,6 +88,10 @@
           </div>
         </div>
       </div>
+      <div class="investigation-details__container__panel">
+        <div class="investigation-details__container__panel-text">Last 24h</div>
+        <v-icon>mdi-chevron-down</v-icon>
+      </div>
     </div>
     <div class="phishing-reporter">
       <v-layout id="ts-layout" wrap style="min-height: 79vh;">
@@ -185,7 +189,7 @@
   .pr-card {
     box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14), 0 1px 1px -1px rgba(204, 204, 204, 0.12);
     padding: 10px 5px 18px 20px !important;
-    border-radius:20px;
+    border-radius: 20px;
   }
 
   ::v-deep .v-window {
@@ -197,20 +201,55 @@
     padding-top: 10px;
 
     &__container {
-      &__stats {
-        border-radius: 20px;
-        box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-        background-color: #ffffff;
-        padding: 24px;
-        margin-bottom: 34px;
+      border-radius: 20px;
+      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+      background-color: #ffffff;
+
+      &__panel {
+        margin: 0 37px;
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;
+        -webkit-box-pack: end;
+        -ms-flex-pack: end;
+        justify-content: flex-end;
+        padding: 14px 0;
+        align-items: center;
+
+        &-text {
+          font-family: "Open Sans", sans-serif;
+          font-size: 14px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: #000000;
+        }
+      }
+
+      &__stats {
+        padding: 24px 0;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
         flex-wrap: wrap;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-flow: row;
         flex-flow: row;
+        border-bottom: 2px solid #e4e7ed;
+        margin: 0 28px;
 
         &__cards {
           display: flex;
-          flex-basis: 25%;
+          flex-basis: 30%;
           flex-grow: 0;
+
+          &:last-child {
+            flex-basis: 12%;
+          }
 
           &__card {
             display: flex;
