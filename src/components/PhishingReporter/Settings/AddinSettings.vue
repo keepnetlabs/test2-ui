@@ -34,7 +34,9 @@
       <v-list-item class="px-0 list__item">
         <v-list-item-content>
           <label class="add-in-settings__label">Add-in Logo</label>
-          <div class="add-in-settings__subtitle mt-2">JPEG, PNG or GIF. Recommended size is 60x60px</div>
+          <div class="add-in-settings__subtitle mt-2">JPEG, PNG or GIF. Recommended size is
+            60x60px
+          </div>
           <v-btn class="btn-select-file mt-2" rounded @click="onBtnSelectFileClick">
             SELECT FILE
             <input
@@ -157,7 +159,9 @@
         </v-btn>
         <a
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-          class="add-in-settings__link">
+          class="add-in-settings__link"
+          target="_blank"
+        >
           Installation and configuration guide
         </a>
       </div>
@@ -188,11 +192,10 @@
         this.$refs.uploader.click()
       },
       onFileChanged(e) {
-        this.formValues.logoFile = e.target.files[0]
+        this.formValues.logoFile = e.target.files
       },
       submit() {
-        console.log(this.$data)
-        console.log("this.$refs.refForm.validate()",this.$refs.refForm.validate())
+        console.log("this.$refs.refForm.validate()", this.$refs.refForm.validate())
       }
     }
   }
@@ -248,6 +251,7 @@
         font-style: normal;
         line-height: normal;
         letter-spacing: normal;
+
         ::v-deep fieldset:not(focus) {
           // border: 1px solid #dcdfe6;
         }
@@ -356,6 +360,10 @@
     .v-icon {
       font-size: 19px;
     }
+  }
+
+  ::v-deep .v-list-item__content > *:not(:last-child) {
+    margin-bottom: 6px;
   }
 
 </style>

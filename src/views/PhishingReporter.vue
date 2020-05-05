@@ -188,7 +188,7 @@
 
   .pr-card {
     box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14), 0 1px 1px -1px rgba(204, 204, 204, 0.12);
-    padding: 10px 5px 18px 20px !important;
+    padding: 10px 5px 18px 24px !important;
     border-radius: 20px;
   }
 
