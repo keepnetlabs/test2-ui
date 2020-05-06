@@ -95,7 +95,7 @@
     </div>
     <div class="phishing-reporter">
       <v-layout id="ts-layout" wrap style="min-height: 79vh;">
-        <v-col class="p-0" cols="12">
+        <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card id="pr-card" class="pr-card">
             <v-tabs id="pr-tabs" v-model="tab" background-color="transparent" color="basil"
                     active-class="pr-tab-active">
@@ -149,6 +149,14 @@
   .page-wrapper {
     height: 100%;
     position: relative;
+  }
+
+  .phishing-reporter {
+    &__tab-container {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-top: 16px !important;
+    }
   }
 
   .pr-tab {
@@ -242,10 +250,18 @@
         border-bottom: 2px solid #e4e7ed;
         margin: 0 28px;
 
+        @media (max-width: 768px) {
+          flex-direction: column;
+        }
+
         &__cards {
           display: flex;
           flex-basis: 30%;
           flex-grow: 0;
+
+          @media (max-width: 768px) {
+            margin-bottom: 10px;
+          }
 
           &:last-child {
             flex-basis: 12%;
@@ -630,5 +646,9 @@
         }
       }
     }
+  }
+
+  ::v-deep .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
+    border-radius: 20px;
   }
 </style>
