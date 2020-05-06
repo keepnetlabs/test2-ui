@@ -20,6 +20,7 @@
                 class="diagnostic-tool__select"
                 required
                 dense
+                placeholder="Weekly"
                 height="40"
               ></v-select>
             </div>
@@ -35,6 +36,7 @@
                 required
                 dense
                 height="40"
+                placeholder="Monday"
               ></v-select>
             </div>
             <div class="items__text">
@@ -51,6 +53,7 @@
                 required
                 height="40"
                 readonly
+                placeholder="PM"
               ></v-text-field>
             </div>
 
@@ -67,6 +70,7 @@
                 required
                 dense
                 height="40"
+                placeholder="GMT +3"
               ></v-select>
             </div>
 

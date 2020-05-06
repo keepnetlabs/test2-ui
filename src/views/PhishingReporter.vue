@@ -110,7 +110,7 @@
                 <users/>
               </v-tab-item>
               <v-tab-item>
-                <settings/>
+                <settings />
               </v-tab-item>
             </v-tabs-items>
           </v-card>
@@ -124,13 +124,15 @@
   import DataTable from "../components/DataTable";
   import Settings from "../components/PhishingReporter/Settings/Settings";
   import Users from "../components/PhishingReporter/Users";
+  import FirstTime from "../components/PhishingReporter/Settings/FirstTime";
 
   export default {
     name: "PhishingReporter",
     components: {
       DataTable,
       Settings,
-      Users
+      Users,
+      FirstTime
     },
     data() {
       return {
