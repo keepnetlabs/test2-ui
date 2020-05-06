@@ -1,5 +1,5 @@
 <template>
-  <div id="other-settings" class="other-settings">
+  <v-container fluid id="other-settings" class="other-settings">
     <v-list-item class="px-0 list__item">
       <v-list-item-content>
         <div class="list__item__header"> Optional Features</div>
@@ -19,13 +19,13 @@
       </v-list-item-content>
     </v-list-item>
     <div class="site-url__container">
-      <span class="site-url__message">Site URL</span>
+      <span class="site-url__message site-url__message--1">Site URL</span>
       <v-text-field
         placeholder="https://dashboard.abc.com/"
         outlined
         dense
         disabled
-        class="list__item__text list__item__text--special list__item__text--special-1 mt-2"
+        class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-1 mt-2"
         v-model="formValues.siteURL"
         required
         id="site-url"
@@ -34,13 +34,13 @@
       ></v-text-field>
     </div>
     <div class="site-url__container">
-      <span class="site-url__message">Company ID</span>
+      <span class="site-url__message site-url__message--2">Company ID</span>
       <v-text-field
         placeholder="httpasd785764asd-76acg-87sa-jkfhgsya765s"
         outlined
         dense
         disabled
-        class="list__item__text list__item__text--special list__item__text--special-2"
+        class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-2"
         v-model="formValues.companyId"
         required
         id="company-id"
@@ -55,7 +55,7 @@
           placeholder="Extra message in the dialog boxes"
           outlined
           dense
-          class="add-in-settings__textfield mt-2"
+          class="other-settings__textfield mt-2"
           v-model="formValues.extraMessage"
           required
           id="extra-message-text"
@@ -70,7 +70,7 @@
           placeholder="Popup tooltip text"
           outlined
           dense
-          class="add-in-settings__textfield mt-2"
+          class="other-settings__textfield mt-2"
           v-model="formValues.screenTip"
           required
           id="screen-tip-text"
@@ -85,7 +85,7 @@
           placeholder="Text under the screen tip"
           outlined
           dense
-          class="add-in-settings__textfield mt-2"
+          class="other-settings__textfield mt-2"
           v-model="formValues.superTip"
           required
           id="super-tip-text"
@@ -103,13 +103,13 @@
     </v-list-item>
     <template>
       <div class="site-url__container">
-        <span class="site-url__message">Enterprise vault URL</span>
+        <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
         <v-text-field
           placeholder="www.bc.com"
           outlined
           disabled
           dense
-          class="list__item__text list__item__text--special  mt-2"
+          class="list__item__text  other-settings__textfield list__item__text--special  mt-2"
           v-model="formValues.enterpriseVault"
           required
           height="40"
@@ -117,18 +117,22 @@
       </div>
     </template>
     <div class="other-settings__footer">
-      <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
-        SAVE CHANGES
-      </v-btn>
-      <a
-        href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-        class="other-settings__link"
-        target="_blank"
-      >
-        Installation and configuration guide
-      </a>
+      <div class="d-flex justify-center">
+        <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
+          SAVE CHANGES
+        </v-btn>
+      </div>
+      <div>
+        <a
+          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          class="other-settings__link"
+          target="_blank"
+        >
+          Installation and configuration guide
+        </a>
+      </div>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -160,7 +164,6 @@
 
 <style scoped lang="scss">
   .list__item {
-    width: 554px;
     font-family: "Open Sans", sans-serif !important;
 
     &__text {
@@ -169,12 +172,12 @@
       font-stretch: normal;
       font-style: normal;
 
-      &--special {
-        width: 365px;
-        display: inline-block;
+      &__special {
+        max-width: 365px !important;
 
         &-1 {
           margin-left: 25px;
+          margin-right: 47px;
         }
 
         &-2 {
@@ -225,17 +228,36 @@
       letter-spacing: normal;
       color: #2196f3;
       flex-basis: 100%;
-      text-align: right;
+      text-align: center;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      @media (max-width: 768px) {
+        margin-top: 10px;
+        justify-content: center;
+      }
+    }
+
+    &__textfield {
+      max-width: 554px;
     }
 
     &__footer {
       display: flex;
       justify-content: space-between;
+      @media (max-width: 768px) {
+        flex-direction: column;
+      }
     }
   }
 
   .site-url__container {
     margin-left: 32px;
+    display: flex;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      margin-left: 0;
+    }
   }
 
   .site-url__message {
@@ -250,6 +272,23 @@
     color: rgba(0, 0, 0, 0.87);
     display: inline-block;
     margin-right: 21px;
+
+    &--1 {
+      margin-top: 18px !important;
+      margin-right: 47px;
+    }
+
+    &--2 {
+      margin-top: 10px !important;
+      @media (max-width: 768px) {
+        margin-bottom: 10px;
+      }
+    }
+
+    &--3 {
+      margin-top: 17px !important;
+    }
+
   }
 
   ::v-deep .v-list-item__content {

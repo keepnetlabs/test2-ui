@@ -1,5 +1,5 @@
 <template>
-  <div id="email-settings" class="email-settings">
+  <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item class="px-0 list__item">
       <v-list-item-content>
         <v-list-item-title class="list__item__text list__item__header">Send Suspicious Emails To
@@ -90,7 +90,7 @@
         SAVE CHANGES
       </v-btn>
     </v-form>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -130,12 +130,12 @@
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
+      max-width: 554px !important;
+
     }
   }
 
   .list__item {
-    width: 554px;
-
     &__text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
