@@ -604,7 +604,6 @@
               :selectable="true"
               :filterable="true"
               :options="true"
-              :rowActions="rowActions"
               :empty="iEmpty"
               :selectEvent="selectEvent"
               :chartOptions="chartOptions"
