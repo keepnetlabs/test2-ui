@@ -73,7 +73,6 @@
                 placeholder="GMT +3"
               ></v-select>
             </div>
-
           </div>
 
         </v-list-item-content>
@@ -109,13 +108,14 @@
           day: "",
           time: "",
           menu2: false,
-        }
+        },
+        showTimePicker: false,
       }
     },
     methods: {
       submit() {
 
-      }
+      },
     }
   }
 </script>

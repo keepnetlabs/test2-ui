@@ -1,6 +1,6 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
-    <v-list-item class="px-0 list__item">
+    <v-list-item class="px-0 list__item" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="list__item__text list__item__header">Send Suspicious Emails To
         </v-list-item-title>
@@ -86,7 +86,7 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
+      <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3" v-if="showFooter">
         SAVE CHANGES
       </v-btn>
     </v-form>
@@ -96,6 +96,16 @@
 <script>
   export default {
     name: "EmailSettings",
+    props: {
+      showHeader: {
+        type: Boolean,
+        default: true
+      },
+      showFooter: {
+        type: Boolean,
+        default: true
+      }
+    },
     data() {
       return {
         formValues: {

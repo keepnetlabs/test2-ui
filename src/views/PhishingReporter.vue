@@ -110,7 +110,7 @@
                 <users/>
               </v-tab-item>
               <v-tab-item>
-                <settings />
+                <settings/>
               </v-tab-item>
             </v-tabs-items>
           </v-card>

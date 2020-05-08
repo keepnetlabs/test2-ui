@@ -116,7 +116,7 @@
         ></v-text-field>
       </div>
     </template>
-    <div class="other-settings__footer">
+    <div class="other-settings__footer" v-if="showFooter">
       <div class="d-flex justify-center">
         <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
           SAVE CHANGES
@@ -138,6 +138,12 @@
 <script>
   export default {
     name: "OtherSettings",
+    props: {
+      showFooter: {
+        type: Boolean,
+        value: true
+      }
+    },
     data() {
       return {
         formValues: {

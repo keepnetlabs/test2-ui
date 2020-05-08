@@ -189,7 +189,7 @@
           </v-list-item>
         </v-col>
       </v-row>
-      <div class="add-in-settings__footer mt-2 mb-2">
+      <div class="add-in-settings__footer mt-2 mb-2" v-if="showFooter">
         <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
           SAVE CHANGES
         </v-btn>
@@ -212,6 +212,12 @@
 <script>
   export default {
     name: "AddinSettings",
+    props: {
+      showFooter: {
+        type: Boolean,
+        default: true
+      }
+    },
     data() {
       return {
         isValid: false,

@@ -1,74 +1,93 @@
 <template>
-  <v-container tag="div" id="first-time" fluid>
-    <v-list-item>
-      <v-list-item-content>
-        <div class="first-time__header">Phishing Reporter Add-in</div>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <div class="first-time__sub-header">Available for</div>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <div class="first-time__icon-container">
-          <div>
-            <img src="../../../assets/img/gsuite-logo.png" alt="gsuite-logo">
+  <div>
+    <v-overlay id="first-time__overlay"
+               fixed
+               :opacity="0.46"
+               :value="showAddInConfiguration"
+               :z-index="999"
+               color="white"
+               class="first-time__overlay">
+      <add-in-configuration @changeAddInConfigurationStatus="changeAddInConfigurationStatus"/>
+    </v-overlay>
+    <v-container tag="div" id="first-time" fluid>
+      <v-list-item>
+        <v-list-item-content>
+          <div class="first-time__header">Phishing Reporter Add-in</div>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <div class="first-time__sub-header">Available for</div>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <div class="first-time__icon-container">
+            <div>
+              <img src="../../../assets/img/gsuite-logo.png" alt="gsuite-logo">
+            </div>
+            <div>
+              <img src="../../../assets/img/outlook.png" alt="outlook-logo">
+            </div>
+            <div>
+              <img src="../../../assets/img/office-365-logo.png" alt="office-logo">
+            </div>
           </div>
-          <div>
-            <img src="../../../assets/img/outlook.png" alt="outlook-logo">
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <div class="first-time__button-container">
+            <v-btn @click="changeAddInConfigurationStatus" rounded class="white--text btn-util"
+                   color="#2196f3">
+              <v-icon left>mdi-plus</v-icon>
+              Configure Add-in
+            </v-btn>
           </div>
-          <div>
-            <img src="../../../assets/img/office-365-logo.png" alt="office-logo">
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <div class="first-time__guide-container">
+            <a
+              href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+              target="_blank"
+            >
+              Installation and configuration guide
+            </a>
           </div>
-        </div>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <div class="first-time__button-container">
-          <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
-            <v-icon left>mdi-plus</v-icon>
-            Configure Add-in
-          </v-btn>
-        </div>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <div class="first-time__guide-container">
-          <a
-            href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-            target="_blank"
-          >
-            Installation and configuration guide
-          </a>
-        </div>
-      </v-list-item-content>
-    </v-list-item>
-    <div class="first-time__footer">
-      <v-btn @click="submit" disabled rounded class="white--text btn-util btn-save-changes"
-             color="#2196f3">
-        SAVE CHANGES
-      </v-btn>
-      <v-btn rounded class="white--text btn-util ml-3" disabled>
-        <v-icon left color="#fff">mdi-download</v-icon>
-        Download diagnostic tool
-      </v-btn>
-    </div>
-  </v-container>
+        </v-list-item-content>
+      </v-list-item>
+      <div class="first-time__footer">
+        <v-btn @click="submit" disabled rounded class="white--text btn-util btn-save-changes"
+               color="#2196f3">
+          SAVE CHANGES
+        </v-btn>
+        <v-btn rounded class="white--text btn-util ml-3" disabled>
+          <v-icon left color="#fff">mdi-download</v-icon>
+          Download diagnostic tool
+        </v-btn>
+      </div>
+    </v-container>
+  </div>
 </template>
 
 <script>
+  import AddInConfiguration from "../AddInConfiguration";
+
   export default {
+    components: {
+      AddInConfiguration
+    },
     name: "FirstTime",
     data() {
-
+      return {
+        showAddInConfiguration: false
+      }
     },
     methods: {
-      submit() {
-
+      changeAddInConfigurationStatus(flag = true) {
+        this.showAddInConfiguration = flag
       }
     }
   }
@@ -88,6 +107,11 @@
       color: rgba(0, 0, 0, 0.87);
       text-align: center;
       margin-top: 66px;
+
+      @media (max-width: 768px) {
+        margin-top: 0;
+      }
+
     }
 
     &__sub-header {
@@ -105,6 +129,10 @@
     &__icon-container {
       display: flex;
       justify-content: center;
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+      }
 
       > div:nth-child(2) {
         margin: 0 48px
@@ -137,8 +165,15 @@
 
     &__footer {
       margin-top: 92px;
+      display: flex;
+      @media (max-width: 768px) {
+        margin-top: 20px;
+      }
     }
 
+    &__overlay {
+
+    }
 
   }
 
@@ -176,4 +211,16 @@
     text-align: right;
     color: #ffffff;
   }
+
+  ::v-deep .first-time__overlay {
+    .v-overlay__content {
+      width: 100%;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: scroll;
+    }
+  }
+
 </style>
