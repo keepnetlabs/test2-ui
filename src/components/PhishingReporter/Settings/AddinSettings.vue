@@ -15,6 +15,7 @@
                 required
                 id="add-in-text"
                 height="40"
+                :rules="([v=>validations.maxLength(v,50,'Investigation Name must between 1-50 characters')])"
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
@@ -33,6 +34,7 @@
                 v-model="formValues.brandName"
                 required
                 id="company-text"
+                :rules="([v=>validations.maxLength(v,50,'Brand Name must between 1-50 characters')])"
                 height="40"
               ></v-text-field>
             </v-list-item-content>
@@ -53,7 +55,7 @@
                   ref="uploader"
                   class="d-none"
                   type="file"
-                  :value="formValues.logoFile"
+                  :value="formValues.file"
                   accept="image/gif, image/jpeg, image/png"
                   @change="onFileChanged"
                 >
@@ -72,8 +74,9 @@
                 outlined
                 dense
                 class="add-in-settings__textfield mt-2"
-                v-model="formValues.alertboxHeading"
+                v-model="formValues.msgBoxTitle"
                 required
+                :rules="([v=>validations.maxLength(v,150,'Alertbox Heading must between 1-150 characters')])"
                 id="alertbox-text"
                 height="40"
               ></v-text-field>
@@ -161,7 +164,7 @@
                 outlined
                 dense
                 class="add-in-settings__textfield mt-2"
-                v-model="formValues.alertboxHeading"
+                v-model="formValues.deletedMessage"
                 required
                 id="deleted-text"
                 height="40"
@@ -180,10 +183,11 @@
                 outlined
                 dense
                 class="add-in-settings__textfield mt-2"
-                v-model="formValues.alertboxHeading"
+                v-model="formValues.warningLabel"
                 required
                 id="alertbox-text"
                 height="40"
+                :rules="([v=>validations.maxLength(v,50,'Warning Label must between 1-150 characters')])"
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
@@ -210,6 +214,8 @@
 </template>
 
 <script>
+  import {maxLength} from "../../../utils/validations";
+
   export default {
     name: "AddinSettings",
     props: {
@@ -224,13 +230,18 @@
         formValues: {
           addInName: "",
           brandName: "",
-          logoFile: "",
-          alertboxHeading: "",
+          file: "",
+          msgBoxTitle: "",
           showWarning: true,
           reportWarningMessage: "",
           reportedMessage: "",
           deleteText: "",
+          warningLabel: "",
+          deletedMessage: ""
         },
+        validations: {
+          maxLength
+        }
       }
     },
     methods: {
@@ -238,10 +249,10 @@
         this.$refs.uploader.click()
       },
       onFileChanged(e) {
-        this.formValues.logoFile = e.target.files
+        this.formValues.file = e.target.files
       },
       submit() {
-        console.log("this.$refs.refForm.validate()", this.$refs.refForm.validate())
+        return this.$refs.refForm.validate() && this.formValues
       }
     }
   }

@@ -3,15 +3,15 @@
     <div id="diagnostic-tool" class="diagnostic-tool">
       <v-list-item class="px-0 list__item">
         <v-list-item-content>
-          <div class="list__item__header"> Optional Features</div>
+          <div class="list__item__header" v-if="showHeader"> Optional Features</div>
           <v-checkbox v-model="formValues.enableAllAddIns" class="checkbox-text mt-4"
                       color="#2196f3"
                       label="Check and enable all disabled add-ins automatically"></v-checkbox>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
+      <v-list-item :class="isInModal && 'mt-n3'">
         <v-list-item-content>
-          <div class="diagnostic-tool__form-container ml-4">
+          <div class="diagnostic-tool__form-container ml-4" :style="getDiagnosticToolFormStyle">
             <div>
               <v-select
                 :items="[]"
@@ -57,11 +57,11 @@
               ></v-text-field>
             </div>
 
-            <div class="items__text items__text-timezone">
+            <div class="items__text items__text-timezone" :style="getTimezoneStyle">
               Timezone
             </div>
 
-            <div>
+            <div :style="getTimezoneSelectStyle">
               <v-select
                 :items="[]"
                 v-model="formValues.day"
@@ -78,7 +78,7 @@
         </v-list-item-content>
       </v-list-item>
     </div>
-    <div class="diagnostic-tool__footer">
+    <div class="diagnostic-tool__footer" v-if="showFooter">
       <v-btn @click="submit" rounded class="white--text btn-util btn-save-changes" color="#2196f3">
         SAVE CHANGES
       </v-btn>
@@ -100,6 +100,20 @@
 <script>
   export default {
     name: "DiagnosticTool",
+    props: {
+      isInModal: {
+        type: Boolean,
+        default: false
+      },
+      showFooter: {
+        type: Boolean,
+        default: true
+      },
+      showHeader: {
+        type: Boolean,
+        default: true
+      }
+    },
     data() {
       return {
         formValues: {
@@ -112,9 +126,20 @@
         showTimePicker: false,
       }
     },
+    computed: {
+      getDiagnosticToolFormStyle() {
+        return this.isInModal && {flexWrap: "wrap", marginLeft: "16px"}
+      },
+      getTimezoneStyle() {
+        return this.isInModal && {marginLeft: "10px !important", marginTop: "-8px !important"}
+      },
+      getTimezoneSelectStyle() {
+        return this.isInModal && {marginTop: '-20px !important'}
+      }
+    },
     methods: {
       submit() {
-
+        return this.formValues
       },
     }
   }

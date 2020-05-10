@@ -13,7 +13,7 @@
                       label="Enable proxy"></v-checkbox>
         </div>
         <div>
-          <v-checkbox v-model="formValues.onPremiseSettings" color="#2196f3" class="checkbox-text"
+          <v-checkbox v-model="formValues.isOnPremise" color="#2196f3" class="checkbox-text"
                       label="On-premise settings"></v-checkbox>
         </div>
       </v-list-item-content>
@@ -27,7 +27,6 @@
         disabled
         class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-1 mt-2"
         v-model="formValues.siteURL"
-        required
         id="site-url"
         height="40"
         color="rgba(0, 0, 0, 0.72)"
@@ -42,7 +41,6 @@
         disabled
         class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-2"
         v-model="formValues.companyId"
-        required
         id="company-id"
         height="40"
         color="rgba(0, 0, 0, 0.72)"
@@ -57,7 +55,6 @@
           dense
           class="other-settings__textfield mt-2"
           v-model="formValues.extraMessage"
-          required
           id="extra-message-text"
           height="40"
         ></v-text-field>
@@ -72,7 +69,6 @@
           dense
           class="other-settings__textfield mt-2"
           v-model="formValues.screenTip"
-          required
           id="screen-tip-text"
           height="40"
         ></v-text-field>
@@ -87,7 +83,6 @@
           dense
           class="other-settings__textfield mt-2"
           v-model="formValues.superTip"
-          required
           id="super-tip-text"
           height="40"
         ></v-text-field>
@@ -98,6 +93,8 @@
       <v-list-item-content>
         <label class="list__item__header" for="alertbox-text">Enterprise Vault</label>
         <v-checkbox v-model="formValues.enableEnterpriseVault" class="checkbox-text mt-2"
+                    @change="handleEnterpriseVaultChange"
+                    color="#2196f3"
                     label="Enable enterprise vault"></v-checkbox>
       </v-list-item-content>
     </v-list-item>
@@ -107,11 +104,11 @@
         <v-text-field
           placeholder="www.bc.com"
           outlined
-          disabled
+          :disabled="enterpriseVaultDisabled"
           dense
           class="list__item__text  other-settings__textfield list__item__text--special  mt-2"
           v-model="formValues.enterpriseVault"
-          required
+
           height="40"
         ></v-text-field>
       </div>
@@ -149,7 +146,7 @@
         formValues: {
           deleteOriginalMail: true,
           enableProxy: false,
-          onPremiseSettings: false,
+          isOnPremise: false,
           siteURL: "",
           companyId: "",
           extraMessage: "",
@@ -157,12 +154,16 @@
           enableEnterpriseVault: false,
           enterpriseVault: "",
           superTip: "",
-        }
+        },
+        enterpriseVaultDisabled: true
       }
     },
     methods: {
       submit() {
-
+        return this.$refs.refForm.validate() && this.formValues
+      },
+      handleEnterpriseVaultChange(value) {
+        this.enterpriseVaultDisabled = !value
       }
     }
   }

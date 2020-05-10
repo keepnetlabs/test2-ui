@@ -17,7 +17,7 @@
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
                 style="color:#00bcd4"
-              >1243</h3>
+              >{{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}</h3>
               <p class="investigation-details__container__stats__cards__card-right__stats">
                 Online Users
               </p>
@@ -38,7 +38,7 @@
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
                 style="color:#2196f3"
-              >1243 of 2425</h3>
+              >{{getAddOnStatus}}</h3>
               <p class="investigation-details__container__stats__cards__card-right__stats">
                 Users have the add-on
               </p>
@@ -59,7 +59,7 @@
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
                 style="color:#f56c6c"
-              >324</h3>
+              >{{(phishingReportSummary && phishingReportSummary.offlineUsersCount) || 0 }}</h3>
               <p class="investigation-details__container__stats__cards__card-right__stats">
                 Users Stayed Offline
               </p>
@@ -80,7 +80,7 @@
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
                 style="color:#9c28b0"
-              >2.0.8.0</h3>
+              >{{(phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}</h3>
               <p class="investigation-details__container__stats__cards__card-right__stats">
                 Latest Release
               </p>
@@ -110,7 +110,7 @@
                 <users/>
               </v-tab-item>
               <v-tab-item>
-                <settings/>
+                <first-time/>
               </v-tab-item>
             </v-tabs-items>
           </v-card>
@@ -125,6 +125,7 @@
   import Settings from "../components/PhishingReporter/Settings/Settings";
   import Users from "../components/PhishingReporter/Users";
   import FirstTime from "../components/PhishingReporter/Settings/FirstTime";
+  import {getPhishingReportSummary} from "../api/phishingReporter";
 
   export default {
     name: "PhishingReporter",
@@ -137,12 +138,33 @@
     data() {
       return {
         tab: 0,
+        phishingReportSummary: null
+      }
+    },
+    computed: {
+      getAddOnStatus() {
+        return this.phishingReportSummary && `${this.phishingReportSummary.onlineUsersCount} of ${this.phishingReportSummary.totalUsersCount}`
       }
     },
     methods: {
       changeTabStatus(status) {
         this.tab = status
       },
+      getPhishingReportSummary() {
+        getPhishingReportSummary({
+          startDate: "09.05.2020",
+          endDate: "10.05.2020"
+        }).then(response => {
+          const {data: {data}} = response
+          console.log(data)
+          this.phishingReportSummary = data
+        }).catch(error => {
+          console.log("error", error)
+        })
+      }
+    },
+    created() {
+      this.getPhishingReportSummary()
     }
   }
 </script>

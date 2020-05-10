@@ -22,17 +22,7 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <div class="first-time__icon-container">
-            <div>
-              <img src="../../../assets/img/gsuite-logo.png" alt="gsuite-logo">
-            </div>
-            <div>
-              <img src="../../../assets/img/outlook.png" alt="outlook-logo">
-            </div>
-            <div>
-              <img src="../../../assets/img/office-365-logo.png" alt="office-logo">
-            </div>
-          </div>
+          <logos wrapperClasses="first-time__icon-container"/>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
@@ -74,10 +64,12 @@
 
 <script>
   import AddInConfiguration from "../AddInConfiguration";
+  import Logos from "../Logos";
 
   export default {
     components: {
-      AddInConfiguration
+      AddInConfiguration,
+      Logos
     },
     name: "FirstTime",
     data() {
@@ -88,6 +80,9 @@
     methods: {
       changeAddInConfigurationStatus(flag = true) {
         this.showAddInConfiguration = flag
+      },
+      submit() {
+
       }
     }
   }

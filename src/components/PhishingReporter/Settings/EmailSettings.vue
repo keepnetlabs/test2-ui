@@ -19,8 +19,9 @@
             outlined
             dense
             class="email-settings__textfield mt-2"
-            v-model="formValues.recipientEmailAddress"
-            required
+            v-model="formValues.to"
+            :rules="[v=> validations.required(v,'Required'),
+            v=> validations.mail(v,'Invalid recipient email address'),v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
             id="recipient-email-address"
             height="40"
           ></v-text-field>
@@ -35,8 +36,8 @@
             dense
             class="email-settings__textfield mt-2"
             v-model="formValues.cc"
-            required
             id="cc"
+            :rules="[v=> validations.mail(v,'Invalid to address'),  v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -50,8 +51,8 @@
             dense
             class="email-settings__textfield mt-2"
             v-model="formValues.bcc"
-            required
             id="bcc"
+            :rules="[v=> validations.mail(v,'Invalid bcc address'),v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -64,9 +65,9 @@
             outlined
             dense
             class="email-settings__textfield mt-2"
-            v-model="formValues.emailSubject"
-            required
+            v-model.trim="formValues.subject"
             id="email-subject"
+            :rules="[v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -79,8 +80,8 @@
             outlined
             dense
             class="email-settings__textfield mt-2"
-            v-model="formValues.emailMessage"
-            required
+            v-model.trim="formValues.content"
+            :rules="[v=>validations.maxLength(v,1000,'It must between 1 - 1000 characters')]"
             id="email-message"
             height="40"
           ></v-text-field>
@@ -94,6 +95,8 @@
 </template>
 
 <script>
+  import {maxLength, mail, required} from "../../../utils/validations";
+
   export default {
     name: "EmailSettings",
     props: {
@@ -109,17 +112,23 @@
     data() {
       return {
         formValues: {
-          recipientEmailAddress: "",
+          to: "",
           cc: "",
           bcc: "",
-          emailSubject: "",
-          emailMessage: "",
+          subject: "",
+          content: "",
+        },
+        validations: {
+          maxLength,
+          mail,
+          required
+
         }
       }
     },
     methods: {
       submit() {
-        this.$ref.refForm.validate()
+        return this.$refs.refForm.validate() && this.formValues
       }
     }
   }

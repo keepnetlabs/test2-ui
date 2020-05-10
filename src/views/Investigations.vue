@@ -55,7 +55,7 @@
       @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
       @stopInvestigationFunc="stopInvestigationFunc($event)"
       @investigationDetails="investigationDetails($event)"
-      @downloadEvent="this.exportInvestigationList"
+      @downloadEvent="exportInvestigationList"
       v-if="showDatatable"
     />
   </div>

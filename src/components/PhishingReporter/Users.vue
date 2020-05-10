@@ -16,12 +16,18 @@
       :addButton="tableOptions.addButton"
       @deleteAction="handleDelete"
       @addAction="handleAdd"
+      @downloadEvent="exportPhishingReporterUserList"
     />
   </div>
 </template>
 
 <script>
   import DataTable from "../DataTable";
+  import {
+    searchPhishingReporterUser,
+    exportPhishingReporterUserList
+  } from "../../api/phishingReporter";
+  import {COMMON_CONSTANTS} from "../../model/constants/commonConstants";
 
   export default {
     name: "Users",
@@ -112,7 +118,7 @@
               show: true,
               type: "status",
               width: 160,
-              hasTooltip:true,
+              hasTooltip: true,
               //minWidth: 80
             },
           ],
@@ -130,9 +136,9 @@
             }
           ],
           pageSizes: [5, 10, 25, 50, 100],
-          addButton:{
-            show:true,
-            action:"addAction"
+          addButton: {
+            show: true,
+            action: "addAction"
           }
         }
       }
@@ -141,8 +147,58 @@
       handleDelete(row) {
         console.log("row", row)
       },
-      handleAdd(row){
-        console.log("row",row)
+      handleAdd(row) {
+        console.log("row", row)
+      },
+      callForPhishingReporterUser() {
+        const payload = {
+          pageNumber: 1,
+          pageSize: 3,
+          orderBy: "LastSeen",
+          ascending: false,
+          filter: {
+            Condition: "AND",
+            FilterGroups: [{
+              Condition: "AND",
+              FilterItems: [{
+                FieldName: "DeviceName",
+                Operator: "=",
+                Value: "DESKTOP-U4ES7J3"
+              }
+              ],
+            }
+            ]
+          }
+        }
+        searchPhishingReporterUser(payload).then(response => {
+          console.log("response", response)
+        }).catch(error => {
+          /*
+          this.$store.dispatch('common/createSnackBar', {
+            errorState: true,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: "Error when getting the user phishing reporter! "
+          })
+           */
+        })
+      },
+      exportPhishingReporterUserList(exportType) {
+        const payload = {
+          pageNumber: 1,
+          pageSize: 10,
+          orderBy: "LastSeen",
+          ascending: false,
+          reportAllPages: true,
+          exportType: exportType === "XLS" ? "Excel" : exportType
+        }
+        exportPhishingReporterUserList(payload).then(response => {
+          const {data} = response
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(data);
+          link.download = `users.${exportType.toLocaleLowerCase()}`;
+          link.click();
+        }).catch(error => {
+        })
       }
     },
     mounted() {
@@ -211,6 +267,9 @@
         },
 
       ])
+    },
+    created() {
+      this.callForPhishingReporterUser()
     }
   }
 </script>
