@@ -203,6 +203,15 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/integrations" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Integrations</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
         <!--
         <div v-for="(item, index) in menuList" :key="index">
@@ -350,6 +359,13 @@
               >
                 {{ breadcrumbs[3].text }}
                 <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>Dashboard
+              </router-link>
+              <router-link
+                class="breadcrumb-links"
+                to="/integrations"
+                v-if="routerName === 'Integrations'"
+              >
+                {{ breadcrumbs[3].text }}
               </router-link>
               <router-link
                 class="breadcrumb-links"
