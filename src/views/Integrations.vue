@@ -16,7 +16,7 @@
               <integration/>
             </v-tab-item>
             <v-tab-item>
-              TAB 2
+              <clients/>
             </v-tab-item>
           </v-tabs-items>
         </v-card>
@@ -27,11 +27,13 @@
 
 <script>
   import Integrations from "../components/Integrations/Integrations";
+  import Clients from "../components/Integrations/Clients";
 
   export default {
     name: "Integrations",
     components: {
-      "integration": Integrations
+      "integration": Integrations,
+      "clients": Clients
     },
     data() {
       return {
