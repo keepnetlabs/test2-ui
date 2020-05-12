@@ -16,6 +16,7 @@ import AuthenticationStatus from '../model/constants/authenticationStatus'
 import InvestigationComponent from '../views/Investigations.vue'
 import InvestigationDetailsComponent from '../views/InvestigationDetails.vue'
 import PhishingReporter from "../views/PhishingReporter";
+import Playbook from "../views/Playbook";
 
 Vue.use(Router)
 
@@ -82,6 +83,14 @@ const router = new Router({
           path: '/phishing-reporter',
           name: 'Phishing Reporter',
           component: PhishingReporter,
+          meta: {
+            isAuthenticated: true
+          }
+        },
+        {
+          path: '/playbook',
+          name: 'Playbook',
+          component: Playbook,
           meta: {
             isAuthenticated: true
           }
