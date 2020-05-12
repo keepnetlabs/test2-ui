@@ -9,3 +9,4 @@ package-lock.json
 yarn.lock
 dist/
 idea/
+/.idea/inspectionProfiles/Project_Default.xml

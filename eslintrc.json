@@ -14,12 +14,14 @@
       "semi": false,
       "trailingComma": "none",
       "no-unused-vars": false,
+      "indent": "off",
       "vue/no-use-v-if-with-v-for": [
-        "warn",
+        "none",
         {
           "allowUsingIterationVar": false
         }
       ],
+      "vue/script-indent": ["error", 2, {"baseIndent": 1}],
       "vue/require-v-for-key": "none"
     }
   ]
