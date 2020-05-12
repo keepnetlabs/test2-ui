@@ -29,10 +29,15 @@ testService.interceptors.response.use(
     return response
   },
   error => {
-
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
+    } else if (error.response && error.response.status !== 404) {
+      store.dispatch('common/createSnackBar', {
+        errorState: true,
+        color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+        message: error.response.data.message
+      }, {root: true})
     }
     if (
       AuthenticationService.getToken() == null ||

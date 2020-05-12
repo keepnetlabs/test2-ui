@@ -184,13 +184,6 @@ const investigations = {
             }
           }
           commit('SET_INVESTIGATIONDETAILSLISTDATA', payload)
-          if (error && error.response && error.response.status !== 404) {
-            dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting investigation details'
-            }, {root: true})
-          }
         })
     },
     async getInvestigationDetailsData({commit, dispatch}, id) {

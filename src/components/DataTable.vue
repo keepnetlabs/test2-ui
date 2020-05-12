@@ -1338,8 +1338,8 @@
         let text = ""
         selections.forEach((item, index) => {
           headerKeys.forEach((a, i) => {
-            if(!item[a]) item[a] = "Empty";
-              let lengthOfItem = item[a].toString().length || 0
+            if (!item[a]) item[a] = "Empty";
+            let lengthOfItem = item[a].toString().length || 0
             lengthOfItem -= a.length - 1
             if (lengthOfItem < 0) {
               lengthOfItem = 0
@@ -1841,7 +1841,7 @@
           margin-bottom: 3px;
           margin: 0 auto;
           text-transform: capitalize;
-          min-width: 80px !important;
+          min-width: 96px !important;
           max-width: 125px !important;
           height: 32px !important;
         }
