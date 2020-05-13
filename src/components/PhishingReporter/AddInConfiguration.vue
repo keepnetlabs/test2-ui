@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-overlay fixed :opacity="0.46" :value="showModal" :z-index="999">
-      <v-card light class="pb-4 pa-6" style="max-width: 600px; border-radius: 12px !important;">
+    <v-overlay fixed :opacity="0.46" :value="showModal" :z-index="999" absolute>
+      <v-card light class="pb-4 pa-6 overlay__container" style="border-radius: 12px !important;">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">mdi-download</v-icon>
@@ -13,38 +13,38 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="pl-0 pr-0">
-          <logos wrapperClasses="mt-10 d-flex"/>
-        </v-list-item>
-        <v-list-item class="pl-0 pr-0">
-          <div class="buttons__container mt-2">
-            <v-btn rounded class="white--text btn-util" color="#2196f3">
-              <v-icon left>mdi-download</v-icon>
-              Download
-            </v-btn>
-            <v-btn rounded class="white--text btn-util" color="#2196f3">
-              <v-icon left>mdi-download</v-icon>
-              Download
-            </v-btn>
-            <v-btn rounded class="white--text btn-util " color="#2196f3">
-              <v-icon left>mdi-download</v-icon>
-              Download
-            </v-btn>
+          <div class="logos-buttons__container">
+            <logos wrapperClasses="mt-10 logos"/>
+            <div class="buttons__container ">
+              <v-btn rounded class="white--text btn-util" color="#2196f3">
+                <v-icon left>mdi-download</v-icon>
+                Download
+              </v-btn>
+              <v-btn rounded class="white--text btn-util" color="#2196f3">
+                <v-icon left>mdi-download</v-icon>
+                Download
+              </v-btn>
+              <v-btn rounded class="white--text btn-util " color="#2196f3">
+                <v-icon left>mdi-download</v-icon>
+                Download
+              </v-btn>
+            </div>
           </div>
         </v-list-item>
-        <v-list-item class="pl-0 pr-0">
+        <v-list-item class="pl-0 pr-0 mt-2">
           <div class="link__container mr-8">
             <img src="../../assets/img/copy-icon.png"/>
             <div class="link__text ml-2">Copy Link</div>
           </div>
         </v-list-item>
 
-        <v-list-item class="px-0 d-flex align-end mt-n6">
+        <v-list-item class="px-0 d-flex align-end mt-6">
           <div class="link__header">Diagnostic Tool</div>
         </v-list-item>
         <v-list-item class="px-0 d-flex align-start">
           <div class="link__sub-header">Only for Outlook Desktop (Windows OS only)</div>
         </v-list-item>
-        <v-list-item class="px-0 mt-n12">
+        <v-list-item class="px-0 mt-n3">
           <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false"/>
         </v-list-item>
         <v-list-item class="px-0">
@@ -53,7 +53,7 @@
             Download
           </v-btn>
         </v-list-item>
-        <v-list-item class="px-0">
+        <v-list-item class="px-0 mt-6">
           <div class="px-0 overlay__footer">
             <a class="overlay__footer-text"
                href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
@@ -278,12 +278,12 @@
           isOnPremise
         }
         createPhishingReporter(payload).then(response => {
-          console.log("response",response)
+          console.log("response", response)
         }).catch(error => {
           console.log(error)
         })
       }
-      },
+    },
   }
 </script>
 
@@ -581,6 +581,7 @@
     text-align: center;
     color: #ffffff;
     max-height: 36px;
+    //max-width: 143px;
 
     @media (max-width: 768px) {
       margin: 8px 0;
@@ -595,6 +596,17 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
+    margin-top: 8px;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      margin-top: 32px;
+    }
+
+    .btn-util {
+      @media (max-width: 768px) {
+        max-width: 143px;
+      }
+    }
   }
 
   .link {
@@ -639,23 +651,35 @@
     }
   }
 
-  .overlay__footer {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
 
-    &-text {
-      font-family: "Open Sans", sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: #2196f3;
-      cursor: pointer;
-      text-transform: uppercase;
-      text-decoration: none;
+  .overlay {
+
+    &__footer {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+
+      &-text {
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: #2196f3;
+        cursor: pointer;
+        text-transform: uppercase;
+        text-decoration: none;
+      }
+    }
+
+    &__container {
+      border-radius: 12px;
+      box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14), 0 9px 46px 8px rgba(80, 80, 80, 0.12);
+      @media (min-width: 768px) {
+        max-width: 600px !important;
+      }
     }
   }
 
@@ -669,5 +693,31 @@
     line-height: normal;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  .w-100 {
+    width: 100%;
+  }
+
+  .logos {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+
+    &-buttons__container {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      @media (max-width: 768px) {
+        flex-direction: row;
+      }
+    }
+  }
+
+  ::v-deep .v-list-item {
+    min-height: 100% !important;
   }
 </style>

@@ -3,7 +3,7 @@ export function hasValue(value) {
 }
 
 export function maxLength(value, length, message) {
-  return (hasValue(value) && value.length < length) || message
+  return (value.length < length) || message
 }
 
 export function mail(value, message) {

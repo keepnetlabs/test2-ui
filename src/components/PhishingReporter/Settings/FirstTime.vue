@@ -22,7 +22,7 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <logos wrapperClasses="first-time__icon-container"/>
+          <logos wrapperClasses="first-time__icon-container" hasMidMargin/>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
@@ -124,6 +124,7 @@
     &__icon-container {
       display: flex;
       justify-content: center;
+      width: 100%;
       @media (max-width: 768px) {
         flex-direction: column;
         align-items: center;
@@ -163,6 +164,12 @@
       display: flex;
       @media (max-width: 768px) {
         margin-top: 20px;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        .btn-util:last-child{
+          margin-top: 8px;
+        }
       }
     }
 
@@ -210,7 +217,7 @@
   ::v-deep .first-time__overlay {
     .v-overlay__content {
       width: 100%;
-      height: 100vh;
+      height: 100%;
       position: fixed;
       left: 0;
       top: 0;

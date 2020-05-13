@@ -15,7 +15,6 @@
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
       @deleteAction="handleDelete"
-      @addAction="handleAdd"
       @downloadEvent="exportPhishingReporterUserList"
     />
   </div>
@@ -42,7 +41,7 @@
               property: "firstName",
               align: "left",
               editable: false,
-              label: "Name",
+              label: "First Name",
               sortable: true,
               show: true,
               type: "text",
@@ -73,7 +72,7 @@
               //minWidth: 80
             },
             {
-              property: "deviceName",
+              property: "hostName",
               align: "left",
               editable: false,
               label: "Device Name",
@@ -97,7 +96,7 @@
               //minWidth: 80
             },
             {
-              property: "version",
+              property: "addInVersion",
               align: "left",
               editable: false,
               label: "Version",
@@ -109,7 +108,7 @@
               //minWidth: 80
             },
             {
-              property: "status",
+              property: "addInStatus",
               align: "left",
               editable: false,
               label: "Status",
@@ -136,10 +135,6 @@
             }
           ],
           pageSizes: [5, 10, 25, 50, 100],
-          addButton: {
-            show: true,
-            action: "addAction"
-          }
         }
       }
     },
@@ -153,25 +148,16 @@
       callForPhishingReporterUser() {
         const payload = {
           pageNumber: 1,
-          pageSize: 3,
+          pageSize: 5,
           orderBy: "LastSeen",
           ascending: false,
-          filter: {
-            Condition: "AND",
-            FilterGroups: [{
-              Condition: "AND",
-              FilterItems: [{
-                FieldName: "DeviceName",
-                Operator: "=",
-                Value: "DESKTOP-U4ES7J3"
-              }
-              ],
-            }
-            ]
-          }
         }
         searchPhishingReporterUser(payload).then(response => {
-          console.log("response", response)
+          const {data: {data: {results}}} = response
+          console.log(results)
+          this.$refs.refUsersList.loadWithDataArray(results.map(item => {
+            return {...item, status: item.addInStatus}
+          }))
         }).catch(error => {
           /*
           this.$store.dispatch('common/createSnackBar', {
@@ -201,73 +187,7 @@
         })
       }
     },
-    mounted() {
-      this.$refs.refUsersList.loadWithDataArray([{
-        firstName: "Gürkan",
-        lastName: "Uğurlu",
-        email: "gurkan.ugurlu@keepnetslab.com",
-        deviceName: "pc",
-        lastSeen: "10.10.2020",
-        version: "1.0.8",
-        status: "Online"
-      },
-        {
-          firstName: "Gürkan",
-          lastName: "Uğurlu",
-          email: "gurkan.ugurlu@keepnetslab.com",
-          deviceName: "pc",
-          lastSeen: "10.10.2020",
-          version: "1.0.8",
-          status: "Offline"
-        },
-        {
-          firstName: "Gürkan",
-          lastName: "Uğurlu",
-          email: "gurkan.ugurlu@keepnetslab.com",
-          deviceName: "pc",
-          lastSeen: "10.10.2020",
-          version: "1.0.8",
-          status: "Disabled"
-        },
-        {
-          firstName: "Gürkan",
-          lastName: "Uğurlu",
-          email: "gurkan.ugurlu@keepnetslab.com",
-          deviceName: "pc",
-          lastSeen: "10.10.2020",
-          version: "1.0.8",
-          status: "Deactivated"
-        },
-        {
-          firstName: "Gürkan",
-          lastName: "Uğurlu",
-          email: "gurkan.ugurlu@keepnetslab.com",
-          deviceName: "pc",
-          lastSeen: "10.10.2020",
-          version: "1.0.8",
-          status: "Network Error"
-        },
-        {
-          firstName: "Gürkan",
-          lastName: "Uğurlu",
-          email: "gurkan.ugurlu@keepnetslab.com",
-          deviceName: "pc",
-          lastSeen: "10.10.2020",
-          version: "1.0.8",
-          status: "User Unavailable"
-        },
-        {
-          firstName: "Gürkan",
-          lastName: "Uğurlu",
-          email: "gurkan.ugurlu@keepnetslab.com",
-          deviceName: "pc",
-          lastSeen: "10.10.2020",
-          version: "1.0.8",
-          status: "Not Installed"
-        },
 
-      ])
-    },
     created() {
       this.callForPhishingReporterUser()
     }
