@@ -8,6 +8,7 @@ import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import AnalysisDetails from '../views/AnalysisDetails'
+import NewCommunity from "../components/ThreadSharing/NewCommunity";
 //import SharedIncident from '../views/SharedIncident'
 import Test from '../views/Test'
 import PermissionTypes from '../model/constants/permissionTypes'
@@ -145,6 +146,10 @@ const router = new Router({
       meta: {
         isAuthenticated: false
       }
+    },
+    {
+      path:"*",
+      redirect:"/"
     }
   ]
 })

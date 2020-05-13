@@ -212,6 +212,7 @@ const threadSharing = {
       state.communityPosts = posts
     },
     SET_POST_DETAIL(state, details) {
+
       state.postDetail = details
     },
     SET_TOP_POSTS(state, topPosts) {
@@ -606,11 +607,11 @@ const threadSharing = {
           if (privacy) {
             dispatch(
               'common/setErrorMessage',
-              `Join Request successfully sent to  ${obj.CommunityName}`,
+              `Join Request successfully sent to  ${obj.Name}`,
               { root: true }
             )
           } else {
-            dispatch('common/setErrorMessage', `You joined ${obj.CommunityName}`, { root: true })
+            dispatch('common/setErrorMessage', `You joined ${obj.Name}`, { root: true })
           }
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           dispatch('getCommunities')

@@ -23,8 +23,10 @@
             :rules="[v=> validations.required(v,'Required'),
             v=> validations.mail(v,'Invalid recipient email address'),v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
             id="recipient-email-address"
+            @input="handleEmailAddressChange"
             height="40"
           ></v-text-field>
+          <div v-if="!hasError" style="    margin-top: -36px;    z-index: 9">* Required</div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 list__item">
@@ -37,7 +39,6 @@
             class="email-settings__textfield mt-2"
             v-model="formValues.cc"
             id="cc"
-            :rules="[v=> validations.mail(v,'Invalid to address'),  v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -52,7 +53,7 @@
             class="email-settings__textfield mt-2"
             v-model="formValues.bcc"
             id="bcc"
-            :rules="[v=> validations.mail(v,'Invalid bcc address'),v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
+            :rules="[v=>validations.maxLength(v,255,'It must be maximum 55 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -67,7 +68,7 @@
             class="email-settings__textfield mt-2"
             v-model.trim="formValues.subject"
             id="email-subject"
-            :rules="[v=>validations.maxLength(v,255,'It must between 1 - 255 characters')]"
+            :rules="[v=>validations.maxLength(v,255,'It must be maximum 255 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -81,7 +82,7 @@
             dense
             class="email-settings__textfield mt-2"
             v-model.trim="formValues.content"
-            :rules="[v=>validations.maxLength(v,1000,'It must between 1 - 1000 characters')]"
+            :rules="[v=>validations.maxLength(v,1000,'It must maximum 1000 characters')]"
             id="email-message"
             height="40"
           ></v-text-field>
@@ -118,6 +119,7 @@
           subject: "",
           content: "",
         },
+        hasError: false,
         validations: {
           maxLength,
           mail,
@@ -128,7 +130,16 @@
     },
     methods: {
       submit() {
-        return this.$refs.refForm.validate() && this.formValues
+        const result = this.$refs.refForm.validate()
+        if (!result) {
+          this.hasError = true
+        }
+        return result && this.formValues
+      },
+      handleEmailAddressChange(value) {
+        if (value) {
+          this.hasError = true
+        }
       }
     }
   }

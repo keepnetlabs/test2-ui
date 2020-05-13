@@ -71,15 +71,15 @@
             <div class="investigation-details__container__stats__cards__card-left">
               <div
                 class="investigation-details__container__stats__cards__card-left__icon"
-                style="background-color:#9c28b0"
+                style="background-color:#2196f3"
               >
-                <v-icon medium left color="white">mdi-file-tree</v-icon>
+                <img src="../assets/img/account-tree.png"/>
               </div>
             </div>
             <div class="investigation-details__container__stats__cards__card-right">
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
-                style="color:#9c28b0"
+                style="color:#2196f3"
               >{{(phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}</h3>
               <p class="investigation-details__container__stats__cards__card-right__stats">
                 Latest Release
@@ -156,10 +156,10 @@
           endDate: "10.05.2020"
         }).then(response => {
           const {data: {data}} = response
-          console.log(data)
+
           this.phishingReportSummary = data
         }).catch(error => {
-          console.log("error", error)
+
         })
       }
     },
@@ -245,7 +245,7 @@
         -webkit-box-pack: end;
         -ms-flex-pack: end;
         justify-content: flex-end;
-        padding: 14px 0;
+        padding: 14px 0 27px 0;
         align-items: center;
 
         &-text {
@@ -674,5 +674,12 @@
 
   ::v-deep .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
     border-radius: 20px;
+  }
+
+  ::v-deep .v-stepper__header{
+    @media (max-width:500px){
+      padding-left: 0 !important;
+      justify-content: center;
+    }
   }
 </style>

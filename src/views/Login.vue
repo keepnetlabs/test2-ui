@@ -260,7 +260,7 @@
         // TO-DO
         // You should do redirect after login in here for users which come from email links
         // And also you have to dispatch a accept Community invitaion or which parameter came on here.
-        console.log(this.$route.query)
+
       }
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
         this.$router.push('/')

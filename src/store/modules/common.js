@@ -50,7 +50,6 @@ const common = {
       commit('SET_IS_LOADING', payload)
     },
     createSnackBar({commit}, payload) {
-      console.log("payload",payload)
       const {errorState, color, message} = payload
       commit('SET_SNACK_STATUS', true)
       commit('SET_SNACKBAR_COLOR', color)

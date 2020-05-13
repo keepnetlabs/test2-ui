@@ -70,7 +70,7 @@
             <v-list-item-content>
               <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
               <v-text-field
-                placeholder="Keepnet Labs Phishing Reporter"
+                placeholder="Phishing Reporter"
                 outlined
                 dense
                 class="add-in-settings__textfield mt-2"
@@ -86,34 +86,42 @@
       </v-row>
       <v-row no-gutters>
         <v-col xl="4" lg="4" md="12">
-          <v-list-item class="px-0 list__item">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="alertbox-text">Report Warning</label>
-              <v-checkbox v-model="formValues.showWarning" class="checkbox-text"
-                          label="Show Warning" color="#2196f3"></v-checkbox>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col xl="5" lg="5" md="12">
-          <template v-if="formValues.showWarning">
-            <transition name="fade" appear>
-              <div class="report-warning__container">
-                <span class="report-warning__message mt-4">Report Warning Message</span>
-                <v-text-field
-                  placeholder="Report this email?"
-                  outlined
-                  dense
-                  class="add-in-settings__textfield add-in-settings__textfield-report mt-2"
-                  v-model="formValues.reportWarningMessage"
-                  required
-                  id="alertbox-text"
-                  height="40"
-                ></v-text-field>
-              </div>
-            </transition>
-          </template>
+          <v-list-group
+            no-action
+            :class="{'mb-5':marginStatus}"
+          >
+            <template v-slot:activator>
+              <v-list-item-content @click="handleMarginStatus">
+                <label class="add-in-settings__label"  for="alertbox-text"
+                       >Report
+                  Warning</label>
+              </v-list-item-content>
+            </template>
+
+            <v-list-item>
+              <v-list-item-content>
+                <v-checkbox v-model="formValues.showWarning" class="checkbox-text"
+                            label="Show Warning" color="#2196f3"></v-checkbox>
+                <template v-if="formValues.showWarning">
+                  <transition name="fade" appear>
+                    <div class="report-warning__container">
+                      <span class="report-warning__message mt-4">Report Warning Message</span>
+                      <v-text-field
+                        placeholder="Report this email?"
+                        outlined
+                        dense
+                        class="add-in-settings__textfield add-in-settings__textfield-report mt-2"
+                        v-model="formValues.reportWarningMessage"
+                        required
+                        id="alertbox-text"
+                        height="40"
+                      ></v-text-field>
+                    </div>
+                  </transition>
+                </template>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
         </v-col>
       </v-row>
       <v-row no-gutters>
@@ -239,6 +247,7 @@
           warningLabel: "",
           deletedMessage: ""
         },
+        marginStatus: true,
         validations: {
           maxLength
         }
@@ -253,7 +262,22 @@
       },
       submit() {
         return this.$refs.refForm.validate() && this.formValues
+      },
+      handleMarginStatus() {
+
+        this.marginStatus = !this.marginStatus
       }
+    },
+    created() {
+      this.formValues.brandName = localStorage.getItem("companyName")
+      this.formValues.addInName = "Suspicious E-Mail Reporter"
+      this.formValues.msgBoxTitle = "Phishing Reporter"
+      this.formValues.reportWarningMessage = "Report this email?"
+      this.formValues.deleteText = "Do you wish to delete original email?"
+      this.formValues.reportedMessage = "Thank you for reporting this email. Our organisation is more secure thanks to you."
+      this.formValues.deletedMessage = "The mail has been deleted"
+      this.formValues.warningLabel = "Suspicious E-Mail"
+
     }
   }
 </script>
@@ -317,6 +341,7 @@
         }
 
         &-report {
+          max-width: 365px !important;
         }
       }
 
@@ -436,4 +461,18 @@
     margin-bottom: 6px;
   }
 
+  ::v-deep .v-list-group__header {
+    max-width: 554px;
+    padding: 0 !important
+  }
+
+  ::v-deep {
+    .v-list-item {
+      padding: 0 !important;
+
+      &--active {
+        border-left: none !important;
+      }
+    }
+  }
 </style>

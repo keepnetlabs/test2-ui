@@ -277,7 +277,7 @@
         this.isWantToAddNewCommunity = true;
       },
       investigationDetails(value) {
-        console.log("value")
+
         this.$router.push({
           name: "Investigation Details",
           params: {id: value.row.resourceId}

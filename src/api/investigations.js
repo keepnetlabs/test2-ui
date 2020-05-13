@@ -51,7 +51,6 @@ export function investigationDetailsListFunction(obj, id) {
 }
 
 export function investigationDetailsTargetUsersListFunction(obj, id) {
-  console.log(obj)
   return testRequest.post(`investigations/${id}/search-user`, obj)
 }
 
