@@ -264,7 +264,7 @@
         return this.$refs.refForm.validate() && this.formValues
       },
       handleMarginStatus() {
-        console.log("this.marginStatus",!this.marginStatus)
+
         this.marginStatus = !this.marginStatus
       }
     },

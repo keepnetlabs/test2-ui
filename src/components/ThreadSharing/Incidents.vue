@@ -17,7 +17,8 @@
           <v-list-item-content class="pt-0 pb-0">
             <v-list-item-title class="v-card-headline">Share Incidents</v-list-item-title>
             <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-            >Share this incident via email</v-list-item-subtitle
+            >Share this incident via email
+            </v-list-item-subtitle
             >
           </v-list-item-content>
         </v-list-item>
@@ -71,9 +72,7 @@
       class="investigate-overlay"
       id="investigate-overlay"
     >
-      <transition name="fade">
-        <investigate v-show="isWantToInvestigate" @closeInvestigate="isWantToInvestigate = false" />
-      </transition>
+        <investigate @closeInvestigate="isWantToInvestigate = false"/>
     </v-overlay>
     <v-overlay
       fixed
@@ -87,6 +86,7 @@
       <postIncident
         @closePostIncident="closePost()"
         :updatePost="postId"
+        :communityName="communityName"
         :isEditMode="editIncident"
       />
     </v-overlay>
@@ -197,10 +197,11 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
   import Investigate from '../ThreadSharing/Investigate'
   import PostIncident from '../ThreadSharing/PostIncident'
   import SinglePost from '../ThreadSharing/SinglePost'
+
   export default {
     components: {
       Investigate,
@@ -231,6 +232,7 @@
       index: -1,
       items: [],
       nonce: 1,
+      communityName: "",
       menu: false,
       emailsModel: [],
       x: 0,
@@ -323,7 +325,7 @@
     watch: {
       postsGetter(arr) {
         if (arr && arr.Data && arr.Data.length) {
-          const propData = arr.Data.sort(function(a, b) {
+          const propData = arr.Data.sort(function (a, b) {
             if (a.Title.toLowerCase() < b.Title.toLowerCase()) {
               return -1
             }
@@ -334,7 +336,7 @@
           })
           this.postList = propData
         } else if (this.posts && this.posts.Data && this.posts.Data.length) {
-          const postsData = this.posts.Data.sort(function(a, b) {
+          const postsData = this.posts.Data.sort(function (a, b) {
             if (a.Title.toLowerCase() < b.Title.toLowerCase()) {
               return -1
             }
@@ -403,10 +405,11 @@
       }
     },
     methods: {
-      editTheIncident(postId) {
+      editTheIncident({postId, communityName}) {
         this.isWantToPostIncident = true
         this.editIncident = true
         this.postId = postId
+        this.communityName = communityName
       },
       deleteIncidentAct(post) {
         this.postId = post.postId
@@ -471,7 +474,7 @@
       },
       validateEmailArea() {
         const refThis = this
-        setTimeout(function() {
+        setTimeout(function () {
           if (refThis.emailsModel) {
             let i = refThis.emailsModel.length
             while (i--) {
@@ -541,7 +544,7 @@
           communId: communId
         })
       }
-    }
+    },
   }
 </script>
 
@@ -561,6 +564,7 @@
       cursor: pointer;
     }
   }
+
   .v-tab {
     padding: 0 3px !important;
     font-size: 20px;
@@ -584,6 +588,7 @@
     border: solid 1px rgba(100, 181, 246, 0.5);
     background-color: #e3f2fd;
   }
+
   .delete-info {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
@@ -594,6 +599,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.72);
   }
+
   .invite-sub-header {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -604,6 +610,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   ::v-deep .invite-input > .v-input__control > .v-input__slot {
     align-items: center;
     border-radius: 8px;
@@ -627,6 +634,7 @@
 
     .invite-chip {
       border-radius: 18px !important;
+
       > span > span {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
@@ -639,10 +647,12 @@
         color: #000000;
       }
     }
+
     .mdi-menu-down {
       display: none !important;
     }
   }
+
   .v-card-headline {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
@@ -653,6 +663,7 @@
     letter-spacing: normal;
     color: #2196f3;
   }
+
   .v-card-sub-header {
     font-family: Helvetica;
     font-size: 15px;
@@ -663,6 +674,7 @@
     letter-spacing: normal;
     color: #000 !important;
   }
+
   .share-inline-wrapper {
     display: flex;
     flex-direction: column;
@@ -681,6 +693,7 @@
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
+
     .v-input {
       width: 100%;
       font-family: 'Open Sans', sans-serif !important;
@@ -693,17 +706,21 @@
       color: rgba(0, 0, 0, 0.54);
     }
   }
+
   ::v-deep .v-overlay__scrim {
     border-radius: 0 !important;
   }
+
   ::v-deep .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
     border-radius: 12px !important;
   }
+
   ::v-deep .v-overlay__content {
     border-radius: 12px !important;
     box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
     0 9px 46px 8px rgba(201, 113, 113, 0.12) !important;
   }
+
   .send-incident {
     margin-right: -18px;
   }
@@ -719,19 +736,25 @@
       overflow-y: scroll;
     }
   }
+
   ::v-deep .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.5s !important;
   }
+
   ::v-deep .fade-enter-active {
     transition: all 0.3s ease;
   }
+
   ::v-deep .fade-leave-active {
     transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
   }
-  ::v-deep .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+  ::v-deep .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+  {
     opacity: 0 !important;
   }
+
   .empty-communities {
     align-items: center;
     display: flex;
@@ -787,27 +810,34 @@
     background-color: #fff;
     border: unset !important;
   }
+
   ::v-deep .v-expansion-panel::before {
     box-shadow: unset !important;
   }
+
   ::v-deep .v-expansion-panel::after {
     border: unset !important;
   }
+
   ::v-deep .v-expansion-panel-header {
     box-shadow: unset !important;
     border: unset !important;
   }
+
   ::v-deep .v-window {
     border-radius: 20px !important;
     margin: 0 24px !important;
   }
+
   ::v-deep .v-expansion-panel-content {
     border-radius: 20px !important;
     font-family: 'Open Sans', sans-serif !important;
   }
+
   ::v-deep .v-expansion-panel-content__wrap {
     padding: 0 !important;
   }
+
   .create-com-btn {
     background-color: #2196f3 !important;
     color: #fff;
@@ -824,9 +854,11 @@
     width: 193px !important;
     max-width: 193px !important;
   }
+
   ::v-deep .v-form {
     width: 100%;
   }
+
   .delete-dialog-body {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;

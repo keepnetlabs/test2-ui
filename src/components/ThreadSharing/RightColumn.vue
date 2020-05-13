@@ -17,7 +17,8 @@
       block
       rounded
       id="create-community-btn"
-    >CREATE COMMUNITY</v-btn
+    >CREATE COMMUNITY
+    </v-btn
     >
     <v-btn
       v-if="
@@ -29,7 +30,8 @@
       block
       rounded
       id="post-inc-btn"
-    >POST INCIDENT</v-btn
+    >POST INCIDENT
+    </v-btn
     >
     <v-btn
       v-else-if="$route.name == 'Community' && !isJoined(fetchedCommunity.CommunityId)"
@@ -38,7 +40,8 @@
       block
       rounded
       id="join-community-btn"
-    >JOIN</v-btn
+    >JOIN
+    </v-btn
     >
     <div class="right-side-content wrapper pt-8 pb-4">
       <div v-if="$route.name == 'Community'">
@@ -146,7 +149,8 @@
               </v-col>
               <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">{{
                 fetchedCommunity.IncidentCount
-                }}</v-col>
+                }}
+              </v-col>
             </v-row>
             <v-row v-if="false">
               <!-- Made by Burak Turan Ülker -->
@@ -255,7 +259,7 @@
                 <span class="pr-2">Member</span>
               </v-btn>
               <v-btn
-                @click="joinCommunity(commun.CommunityId, commun.CreateUserId)"
+                @click="joinCommunity(commun.CommunityId, commun.CreateUserId,commun.Name)"
                 class="suggested-btn"
                 block
                 rounded
@@ -264,13 +268,15 @@
                 style="background-color: #2196f3 !important;"
               >
                 <v-icon v-if="!isRequestSent(commun.CommunityId)" class="pr-2"
-                >mdi-account-circle</v-icon
+                >mdi-account-circle
+                </v-icon
                 >
                 <v-icon
                   v-if="isRequestSent(commun.CommunityId)"
                   class="pr-2"
                   style="color: #fff !important;"
-                >mdi-account-clock</v-icon
+                >mdi-account-clock
+                </v-icon
                 >
                 <div v-if="!commun.IsPrivate" :key="commun.CommunityId">Join</div>
                 <div v-else-if="isRequestSent(commun.CommunityId)" :key="commun.CommunityId">
@@ -293,14 +299,16 @@
           rounded
         >{{
           myCommunities.length > 0 ? 'Create A New Community' : 'Create Your First Community'
-          }}</v-btn
+          }}
+        </v-btn
         >
       </div>
     </div>
   </v-card>
 </template>
 <script>
-  import { mapState, mapGetters } from 'vuex'
+  import {mapState, mapGetters} from 'vuex'
+
   export default {
     props: {
       pageView: {
@@ -352,7 +360,7 @@
         this.$emit('postIncident')
         this.closeCommunityInfo()
       },
-      joinCommunity(communityId, creatorId) {
+      joinCommunity(communityId, creatorId, name) {
         if (!communityId && !creatorId) {
           this.$store
             .dispatch('threadSharing/joinCommunity', {
@@ -367,7 +375,8 @@
           this.$store
             .dispatch('threadSharing/joinCommunity', {
               CommunityId: communityId,
-              CreatorId: creatorId
+              CreatorId: creatorId,
+              Name: name
             })
             .then(() => {
               this.refreshCommunities()
@@ -436,6 +445,7 @@
       margin-bottom: 0 !important;
     }
   }
+
   .right-col-sub-header {
     font-family: Helvetica;
     font-size: 16px;
@@ -447,12 +457,14 @@
     color: #000;
     padding-bottom: 20px !important;
   }
+
   .pop-up-card {
     width: 100%;
     border-radius: 20px !important;
     box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
     background-color: #fff;
   }
+
   @media only screen and (max-width: 1023px) {
     ::-webkit-scrollbar {
       -webkit-overflow-scrolling: auto;
@@ -485,6 +497,7 @@
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
+
   .right-side- {
     &title {
       font-family: 'Open Sans', sans-serif !important;
@@ -497,9 +510,11 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .ts-tags {
     align-items: center;
   }
+
   .ts-footer {
     display: flex;
     margin-top: 10px;
@@ -517,6 +532,7 @@
   .ts-like {
     margin-right: 10px;
     display: flex;
+
     span {
       align-items: center;
       font-size: inherit;
@@ -524,9 +540,11 @@
       line-height: 2;
     }
   }
+
   .ts-message {
     margin-right: 40px;
     display: flex;
+
     span {
       align-items: center;
       font-size: inherit;
@@ -534,6 +552,7 @@
       line-height: 2;
     }
   }
+
   .ts-harmful {
     margin-right: 15px;
     display: flex;
@@ -545,6 +564,7 @@
       line-height: 2;
     }
   }
+
   .ts-success {
     display: flex;
 
@@ -555,6 +575,7 @@
       line-height: 2;
     }
   }
+
   .ts-body {
     margin-top: 8px;
     font-family: 'Open Sans', sans-serif !important;
@@ -566,6 +587,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .ts-user-comp {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -595,11 +617,13 @@
     background-color: #ffffff;
     padding: 29px 32px 16px 32px;
   }
+
   .ts-header {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
   }
+
   .ts-title {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
@@ -610,6 +634,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   // Threat sharing Content End
 
   .v-tab {
@@ -624,9 +649,11 @@
     color: rgba(0, 0, 0, 0.87);
     text-align: left !important;
   }
+
   ::v-deep .v-slide-group__wrapper {
     padding-left: 20px !important;
   }
+
   .v-card.v-sheet.theme--light {
     padding-top: 0;
     padding-left: 3px;
@@ -638,18 +665,22 @@
   ::v-deep .v-label--active {
     transform: translateY(-15px) scale(0.75);
   }
+
   ::v-deep .v-text-field--outlined .v-label {
     top: 11px;
   }
+
   ::v-deep .v-input__slot {
     -webkit-box-align: stretch;
     -ms-flex-align: stretch;
     align-items: stretch;
     min-height: 40px !important;
   }
+
   ::v-deep label.v-label.theme--light {
     font-size: 12px;
   }
+
   .v-input {
     font-size: 13px !important;
     font-weight: 600;
@@ -659,12 +690,14 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.54);
   }
+
   // end search input
 
   ::v-deep .v-slide-group__content {
     border-bottom: 2px solid #e4e7ed;
     margin-right: 20px;
   }
+
   ::v-deep .v-tabs-slider-wrapper {
     bottom: -1px !important;
     color: #0486fe !important;
@@ -686,6 +719,7 @@
       height: 44px !important;
     }
   }
+
   ::v-deep .community-selector .v-slide-group__wrapper {
     background-color: #f5f7fa !important;
     height: 44px !important;
@@ -698,10 +732,12 @@
       margin-right: 32px !important;
     }
   }
+
   ::v-deep .community-selector .v-slide-group__wrapper > div {
     height: 100%;
     margin-right: 0 !important;
   }
+
   ::v-deep .v-text-field--outlined fieldset {
     border-radius: 6px !important;
   }
@@ -721,6 +757,7 @@
       cursor: pointer;
     }
   }
+
   .filter-field {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
@@ -731,6 +768,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.54);
   }
+
   .create-com-btn {
     background-color: #2196f3 !important;
     color: #fff;
@@ -744,6 +782,7 @@
     height: 36px !important;
     text-transform: unset !important;
   }
+
   .ts-community-industry {
     color: rgba(0, 0, 0, 0.87) !important;
     font-size: 14px;
@@ -752,12 +791,15 @@
     font-style: normal;
     line-height: 1.71;
   }
+
   .ts-people-icon {
     font-size: 16px;
   }
+
   .notification-wrapper {
     background-color: #fff;
   }
+
   .v-menu__content {
     border-radius: 8px !important;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
@@ -777,17 +819,21 @@
       color: var(--black-87);
     }
   }
+
   .v-application--is-ltr .v-list-item__icon:first-child {
     margin-right: 10px !important;
   }
+
   .ts-user-comp-detail {
     align-items: center;
     display: flex;
   }
+
   ::v-deep .v-btn:not(.v-btn--round).v-size--default,
   ::v-deep .v-btn--icon.v-size--default {
     height: 36px !important;
   }
+
   ::v-deep .v-btn--icon.v-size--default {
     margin-left: 4px;
     width: 36px !important;
@@ -798,10 +844,12 @@
     a {
       text-decoration: none !important;
     }
+
     a:hover {
       text-decoration: underline !important;
     }
   }
+
   .right-side-title {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
@@ -812,6 +860,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .right-side-sub-title {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -822,10 +871,12 @@
     letter-spacing: normal;
     color: #2196f3;
   }
+
   .about-community {
     display: flex;
     justify-content: space-between;
   }
+
   .about-community-statement {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -836,6 +887,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .about-community-table-td {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 16px;
@@ -846,6 +898,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .about-community-table-td-sec {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -856,17 +909,20 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   ::v-deep .right-side-like .v-icon,
   ::v-deep .right-side-message .v-icon {
     height: 14px !important;
     width: 14px !important;
     font-size: 14px !important;
   }
+
   .right-side-like-comment-wrapper {
     align-items: center;
     display: flex;
     flex-direction: row;
   }
+
   .like-count,
   .comment-count {
     font-family: 'Open Sans', sans-serif !important;
@@ -879,6 +935,7 @@
     color: rgba(0, 0, 0, 0.87);
     padding-left: 2px;
   }
+
   .suggested-card {
     display: flex;
     flex-direction: row;
@@ -933,6 +990,7 @@
         .suggested-people-icon {
           font-size: 14px !important;
         }
+
         .suggested-industry {
           font-family: 'Open Sans', sans-serif !important;
           font-size: 12px;
@@ -945,6 +1003,7 @@
         }
       }
     }
+
     .suggested-right-action {
       align-items: center;
       display: flex;
@@ -965,6 +1024,7 @@
       }
     }
   }
+
   .community-notification-header {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
@@ -975,6 +1035,7 @@
     letter-spacing: normal;
     color: #000;
   }
+
   .community-notification-row {
     display: flex;
     align-items: center;
@@ -996,9 +1057,11 @@
       margin-top: 10px !important;
     }
   }
+
   .community-notification-row:first-child {
     border-bottom: 1px solid gray !important;
   }
+
   .v-card-headline {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
@@ -1009,6 +1072,7 @@
     letter-spacing: normal;
     color: #2196f3;
   }
+
   .v-card-sub-header {
     font-family: Helvetica;
     font-size: 15px;
@@ -1019,6 +1083,7 @@
     letter-spacing: normal;
     color: #000 !important;
   }
+
   .edit-name-textfield,
   .edit-description,
   .edit-select {
@@ -1034,6 +1099,7 @@
     border: solid 1px rgba(100, 181, 246, 0.5);
     background-color: #e3f2fd;
   }
+
   .delete-info {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
@@ -1044,6 +1110,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.72);
   }
+
   .invite-sub-header {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -1054,6 +1121,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   ::v-deep .invite-input > .v-input__control > .v-input__slot {
     align-items: center;
     border-radius: 8px;
@@ -1077,6 +1145,7 @@
 
     .invite-chip {
       border-radius: 18px !important;
+
       > span > span {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
@@ -1089,10 +1158,12 @@
         color: #000000;
       }
     }
+
     .mdi-menu-down {
       display: none !important;
     }
   }
+
   .newCommunityOverlay {
     background-color: #fff !important;
     overflow: auto !important;
@@ -1120,10 +1191,12 @@
     color: #212121;
     display: block;
   }
+
   .empty-suggested-span {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
   }
+
   .create-first-btn {
     min-width: 70% !important;
     width: 221px !important;
@@ -1135,12 +1208,14 @@
     line-height: 1.71 !important;
     letter-spacing: normal !important;
   }
+
   .right-col-semibold-label {
     color: rgba(0, 0, 0, 0.87);
     font-family: 'Open Sans', sans-serif !important;
     font-size: 16px;
     font-weight: 600;
   }
+
   @media only screen and (max-width: 1023px) {
     ::-webkit-scrollbar {
       -webkit-appearance: none;

@@ -140,7 +140,7 @@ export default {
   },
   methods: {
     handleDelete(row) {
-      console.log('row', row)
+
     },
     handleAdd() {
       this.isCreateNewRule = !this.isCreateNewRule;

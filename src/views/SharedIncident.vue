@@ -710,8 +710,7 @@ export default {
       // TO-DO
       // Incident posted email email come here.
       // You have to getIncident dispatch here apply it to the page.
-      console.log(this.$route.query)
-      console.log(this.postDetail)
+
     }
   }
 }

@@ -31,7 +31,8 @@
                 rounded
                 medium
                 color="blue"
-              >COLLAPSE</v-btn
+              >COLLAPSE
+              </v-btn
               >
               <v-btn
                 v-else
@@ -42,7 +43,8 @@
                 rounded
                 medium
                 color="blue"
-              >DETAILS</v-btn
+              >DETAILS
+              </v-btn
               >
             </template>
           </v-expansion-panel-header>
@@ -59,7 +61,7 @@
                 <v-list-item
                   :id="'edit-btn' + post.CommunityPostId"
                   v-if="canEdit(post.CompanyId)"
-                  @click="editIncident(post.CommunityPostId)"
+                  @click="editIncident(post.CommunityPostId,post.CommunityName)"
                 >
                   <v-list-item-icon>
                     <v-icon>mdi-pencil</v-icon>
@@ -143,13 +145,13 @@
             }}</a>
           <a v-else class="pl-1 pr-1">Company Name</a> on
           <a :id="post.CommunityName" v-if="post.CommunityName" href="#" class="pl-1">{{
-            post.CommunityName
+            post.IsAnonymous ? 'Anonymous':post.CommunityName
             }}</a>
           <a v-else class="pl-1 pr-1">Community Name</a>
         </div>
         <div class="ts-user-date">
           <span :id="'date' + post.CreateDate" v-if="post.CreateDate">{{
-            post.CreateDate | moment('dddd, MMMM Do YYYY')
+            post.CreateDate | moment('dddd, MMMM Do YYYY HH:mm')
           }}</span>
           <span v-else>04.05.2019</span>
         </div>
@@ -160,7 +162,8 @@
           v-if="post.Description"
           autoresize
           :max-lines="3"
-        >{{ post.Description }}</v-clamp
+        >{{ post.Description }}
+        </v-clamp
         >
         <v-clamp v-else autoresize :max-lines="3">
           Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt
@@ -243,7 +246,8 @@
             outlined
             class="tag-btn ml-1 text-none"
             id="incident-badge"
-          >{{ post.CommunityPostCategory[0] }}</v-btn
+          >{{ post.CommunityPostCategory[0] }}
+          </v-btn
           >
           <v-btn
             v-if="
@@ -257,7 +261,8 @@
             outlined
             class="tag-btn ml-1 text-none"
             id="incident-badge"
-          >{{ post.CommunityPostCategory[1] }}</v-btn
+          >{{ post.CommunityPostCategory[1] }}
+          </v-btn
           >
           <div style="position: relative;">
             <v-btn
@@ -425,7 +430,7 @@
               :id="'detail-links-' + el.Id"
               class="detail-black detail-red"
             >
-              Link: {{ el.Value }} <br />
+              Link: {{ el.Value }} <br/>
             </p>
             <div
               v-for="(att, ind) of shareSettings.attachments"
@@ -524,7 +529,7 @@
                 <template v-slot:activator="{ on }">
                   <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
                 </template>
-                <span>This email address has been reported as a threat source</span>
+                <span>The subject has been reported as a threat source</span>
               </v-tooltip>
             </h2>
             <h2
@@ -567,7 +572,7 @@
                   </template>
                   <span>This email address has been reported as a threat source</span>
                 </v-tooltip>
-                <br />
+                <br/>
               </div>
               <div
                 v-for="(el, ind) of shareSettings.senderInfo"
@@ -669,7 +674,7 @@
                 Date:
                 {{ postDetail.Data.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                 {{ postDetail.Data.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                <br />
+                <br/>
               </div>
             </div>
           </div>
@@ -697,7 +702,7 @@
                     !att.IsMalicious ? 'blue-attach' : ''
                   ]"
                 >
-                  <v-tooltip v-if="att.IsMalicious" bottom opacity="1">
+                  <v-tooltip v-if="att.IsMalicious" bottom opacity="1" z-index="9999">
                     <template v-slot:activator="{ on }">
                       <div v-on="on" class="attach-icon red-icon">
                         <v-icon color="white" style="font-size: 20px">mdi-alert</v-icon>
@@ -763,7 +768,8 @@
                 "
                 class="send-btn"
               >
-                <v-icon>mdi-send</v-icon>SEND
+                <v-icon>mdi-send</v-icon>
+                SEND
               </v-btn>
             </div>
             <div
@@ -831,7 +837,8 @@
 
 <script>
   import VClamp from 'vue-clamp'
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
+
   export default {
     components: {
       VClamp
@@ -911,7 +918,7 @@
             links: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link')
           }
           if (ShareSettings.links && ShareSettings.links.length) {
-            setTimeout(function() {
+            setTimeout(function () {
               for (let a of ShareSettings.links) {
                 var els = document.querySelectorAll('[href="' + a.Value + '"]')
                 for (var i = 0, l = els.length; i < l; i++) {
@@ -1063,9 +1070,9 @@
           }, 500)
         }
       },
-      editIncident(postId) {
+      editIncident(postId, communityName) {
         this.$store.commit('threadSharing/SET_INCIDENT_EDIT_STATUS', true)
-        this.$emit('edit-incident', postId)
+        this.$emit('edit-incident', {postId, communityName})
       },
       deleteIncident(postId, name, postCommunityId) {
         this.$emit('delete-incident', {
@@ -1121,6 +1128,9 @@
       maliciousFound() {
         return this.shareSettings.attachments.some(at => at.IsMalicious === true)
       }
+    },
+    mounted() {
+      console.log(this.post)
     }
   }
 </script>
@@ -1138,15 +1148,18 @@
       padding: 16px !important;
     }
   }
+
   .ts-header {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
   }
+
   .ts-header-btn-1 {
     display: flex;
   }
+
   .ts-title {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
@@ -1164,12 +1177,14 @@
       max-width: 70%;
     }
   }
+
   // Threat sharing Content End
 
   .notification-wrapper {
     background-color: #fff;
     padding: 0;
   }
+
   .v-menu__content {
     border-radius: 8px !important;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
@@ -1178,6 +1193,7 @@
       padding-left: 29px !important;
       padding-right: 16px !important;
     }
+
     .v-list-item__title {
       font-size: 14px;
       font-weight: normal;
@@ -1192,18 +1208,22 @@
   .v-application--is-ltr .v-list-item__icon:first-child {
     margin-right: 10px !important;
   }
+
   .ts-user-comp-detail {
     align-items: center;
     display: flex;
     margin-top: 8px;
   }
+
   ::v-deep .v-btn--contained {
     border-radius: 18px !important;
     box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
   }
+
   ::v-deep .v-data-footer {
     margin-top: 24px !important;
   }
+
   ::v-deep .v-data-footer__select {
     .v-select {
       margin: 0 !important;
@@ -1211,19 +1231,23 @@
       margin-left: 32px !important;
       height: 30px !important;
     }
+
     .v-text-field > .v-input__control > .v-input__slot:after {
       border: none !important;
       display: none !important;
     }
+
     .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
       border: none !important;
     }
+
     .v-input__append-inner {
       margin-left: 0 !important;
       margin-top: 3px !important;
       margin-right: 5px !important;
       padding-left: 0 !important;
     }
+
     .v-select__slot {
       align-items: center;
       display: flex;
@@ -1235,16 +1259,19 @@
         margin-left: 10px;
       }
     }
+
     .v-input__icon {
       width: 20px !important;
       min-width: 20px !important;
       height: 20px !important;
     }
   }
+
   ::v-deep .v-btn:not(.v-btn--round).v-size--default,
   ::v-deep .v-btn--icon.v-size--default {
     height: 36px !important;
   }
+
   ::v-deep .v-btn--icon.v-size--default {
     margin-left: 4px;
     width: 36px !important;
@@ -1273,6 +1300,7 @@
       height: 32px !important;
     }
   }
+
   .ts-footer {
     align-items: center;
     display: flex;
@@ -1302,6 +1330,7 @@
       margin-left: 4px;
     }
   }
+
   .ts-message {
     margin-right: 40px;
     align-items: center;
@@ -1315,6 +1344,7 @@
       margin-left: 4px;
     }
   }
+
   .ts-harmful {
     margin-right: 15px;
     align-items: center;
@@ -1327,6 +1357,7 @@
       line-height: 2;
     }
   }
+
   .ts-success {
     display: flex;
     align-items: center;
@@ -1338,6 +1369,7 @@
       line-height: 2;
     }
   }
+
   .ts-body {
     margin-top: 10px;
     font-family: 'Open Sans', sans-serif !important;
@@ -1349,6 +1381,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .ts-user-comp {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -1365,6 +1398,7 @@
       width: max-content;
       min-width: max-content;
     }
+
     a:last-child {
       width: unset !important;
       max-width: 100%;
@@ -1386,6 +1420,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .ts-action-counter {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -1396,6 +1431,7 @@
     letter-spacing: normal;
     color: #4a4a4a;
   }
+
   .ts-actions {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -1407,6 +1443,7 @@
     color: rgba(0, 0, 0, 0.87);
     margin-left: 3px;
   }
+
   ::v-deep .v-expansion-panel {
     border-radius: 20px !important;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
@@ -1414,9 +1451,11 @@
     background-color: #fff;
     border: unset !important;
   }
+
   ::v-deep .v-expansion-panel::before {
     box-shadow: unset !important;
   }
+
   ::v-deep .v-expansion-panel-header {
     box-shadow: unset !important;
     border: unset !important;
@@ -1432,12 +1471,15 @@
     ::v-deep .v-slide-group__wrapper {
       padding-left: 0 !important;
     }
+
     ::v-deep .v-slide-group__content {
       margin-right: 0 !important;
     }
+
     ::v-deep .v-tab--active {
       color: #2196f3 !important;
     }
+
     ::v-deep .v-tab {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px !important;
@@ -1453,21 +1495,25 @@
       padding-right: 3px !important;
       min-width: auto !important;
     }
+
     ::v-deep .v-tabs-bar {
       padding: 0 24px;
       height: 48px !important;
       border-radius: 0 !important;
     }
   }
+
   ::v-deep .v-window {
     border-radius: 20px !important;
     margin: 0 24px !important;
   }
+
   ::v-deep .v-expansion-panel-content {
     border-radius: 20px !important;
     display: block !important;
     font-family: 'Open Sans', sans-serif !important;
   }
+
   ::v-deep .v-expansion-panel-content__wrap {
     padding: 0 !important;
   }
@@ -1499,6 +1545,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .preview-body {
     margin-top: 24px;
     font-family: 'Open Sans', sans-serif !important;
@@ -1528,11 +1575,13 @@
       }
     }
   }
+
   .bodyExpanded {
     height: 100% !important;
     max-height: 100% !important;
     padding-bottom: 56px;
   }
+
   .details-attchments-wrapper {
     display: flex;
     flex-direction: column;
@@ -1564,6 +1613,7 @@
       }
     }
   }
+
   .attach-found-malicious {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -1575,6 +1625,7 @@
     color: rgba(0, 0, 0, 0.87);
     margin-top: 4px;
   }
+
   .preview-footer {
     display: flex;
     flex-direction: row;
@@ -1598,6 +1649,7 @@
       width: 100%;
       padding-top: 13px;
     }
+
     .attachment-wrapper {
       display: flex;
       flex-direction: row;
@@ -1623,12 +1675,15 @@
           display: flex;
           justify-content: center;
         }
+
         .red-icon {
           background-color: #bb2a45 !important;
         }
+
         .blue-icon {
           background-color: #2196f3 !important;
         }
+
         span {
           width: 100%;
           text-align: center;
@@ -1642,12 +1697,15 @@
           color: rgba(0, 0, 0, 0.87);
         }
       }
+
       .red-attach {
         background-color: #f3e1e5;
       }
+
       .blue-attach {
         background-color: #f1f8fe;
       }
+
       .file-name {
         display: block;
         max-width: 93%;
@@ -1657,6 +1715,7 @@
       }
     }
   }
+
   .preview-buttons {
     margin-top: 24px;
     padding-bottom: 13px;
@@ -1692,11 +1751,13 @@
         border: unset !important;
       }
     }
+
     .active-act {
       color: #2196f3 !important;
       border: solid 1px #2196f3 !important;
     }
   }
+
   .preview-border {
     border-top: 1px solid #b3d4fc;
     padding-top: 24px;
@@ -1706,6 +1767,7 @@
   .detail-parts:first-child {
     margin-top: 24px !important;
   }
+
   .detail-parts {
     margin-top: 16px;
 
@@ -1720,10 +1782,12 @@
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 4px !important;
     }
+
     .detail-red {
       color: rgba(219, 37, 37, 0.87) !important;
     }
   }
+
   .detail-discovery {
     margin-top: 24px;
 
@@ -1738,6 +1802,7 @@
       color: rgba(0, 0, 0, 0.87);
       padding-bottom: 8px;
     }
+
     .discovery-p {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -1749,6 +1814,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .impact-row {
     display: flex;
     flex-direction: row;
@@ -1766,20 +1832,24 @@
       min-width: 100px;
       font-weight: 600 !important;
     }
+
     .impact-right {
       margin-top: 2px;
       max-width: 80%;
     }
   }
+
   .border-padding {
     padding-bottom: 8px;
     border-bottom: 1px solid #b3d4fc;
   }
+
   .member-company-body {
     ::v-deep .v-slide-group__content {
       border-bottom: unset !important;
     }
   }
+
   .expand-contaniner {
     width: 100%;
     height: 50px;
@@ -1808,9 +1878,11 @@
       }
     }
   }
+
   .opacityExpanded {
     background-image: none !important;
   }
+
   .preview-comments {
     height: 0;
     opacity: 0;
@@ -1846,14 +1918,17 @@
             margin-top: 2px;
             margin-right: 2px;
           }
+
           label {
             top: 10px;
           }
+
           fieldset {
             padding-left: 18px !important;
           }
         }
       }
+
       .send-btn {
         border-radius: 18px !important;
         box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
@@ -1868,6 +1943,7 @@
         }
       }
     }
+
     .comment-row {
       border-radius: 4px;
       background-color: #f5f7fa;
@@ -1892,10 +1968,12 @@
           padding-right: 4px;
           cursor: pointer;
         }
+
         .company-name {
           padding-left: 4px;
         }
       }
+
       .the-comment {
         margin-bottom: 0 !important;
         padding-top: 8px !important;
@@ -1914,6 +1992,7 @@
         max-width: 100%;
       }
     }
+
     .see-all-comments {
       padding-top: 16px;
       padding-bottom: 24px;
@@ -1932,6 +2011,7 @@
       }
     }
   }
+
   .open-comments {
     height: auto !important;
     transition: max-height 0.25s ease-in;
@@ -1939,24 +2019,29 @@
     opacity: 1;
     z-index: -5;
   }
+
   .add-comment {
     background-color: #fff !important;
     height: 60px;
     padding: 0 !important;
   }
+
   .unselected-warn {
     border-bottom: 1px solid #bb2a45;
     color: #bb2a45;
     padding: 0 2px !important;
   }
+
   .hide-buttons {
     opacity: 0;
     padding: 0 !important;
     height: 20px !important;
   }
+
   .display-none {
     display: none !important;
   }
+
   .tooltip-wrapper {
     display: block;
     max-width: 250px;
@@ -1986,10 +2071,12 @@
       font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
     }
+
     span:nth-child(2) {
       padding-top: 4px;
     }
   }
+
   .add-comment-row {
     display: flex;
     justify-content: space-between;
@@ -1998,6 +2085,7 @@
     .comment-input {
       max-width: 80%;
     }
+
     .send-btn {
       border-radius: 18px !important;
       box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
@@ -2011,12 +2099,15 @@
       }
     }
   }
+
   .file-name {
     padding-left: 7px;
   }
+
   #incident-badge {
     padding: 4px 12px;
   }
+
   .detected-items {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
@@ -2029,16 +2120,19 @@
     margin-bottom: 16px;
     padding-top: 24px;
   }
+
   ::v-deep .malicious-style {
     background-color: #f3e1e5 !important;
     color: #bb2a45 !important;
     text-decoration: underline !important;
   }
+
   .malicious-icon {
     font-size: 18px !important;
     color: #bb2a45 !important;
     caret-color: #bb2a45 !important;
   }
+
   ::v-deep .red-malicious-alert {
     border: unset !important;
     border-color: transparent !important;
@@ -2055,9 +2149,11 @@
     height: 16px !important;
     overflow: hidden;
   }
+
   ::v-deep .red-malicious-alert::before {
     border: unset !important;
   }
+
   ::v-deep .malicious-style {
     .red-malicious-alert:not(:first-child) {
       display: none !important;

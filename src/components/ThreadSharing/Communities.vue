@@ -627,7 +627,7 @@
             CompanyId: localStorage.getItem('companyId'),
             CreateUserId: localStorage.getItem('userId'),
             IsPrivate: privacy,
-            CommunityName: name
+            Name: name
           })
           .then(() => {
             this.refreshRequests()

@@ -156,10 +156,10 @@
           endDate: "10.05.2020"
         }).then(response => {
           const {data: {data}} = response
-          console.log(data)
+
           this.phishingReportSummary = data
         }).catch(error => {
-          console.log("error", error)
+
         })
       }
     },

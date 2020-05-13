@@ -140,10 +140,10 @@
     },
     methods: {
       handleDelete(row) {
-        console.log("row", row)
+
       },
       handleAdd(row) {
-        console.log("row", row)
+
       },
       callForPhishingReporterUser() {
         const payload = {
@@ -154,7 +154,7 @@
         }
         searchPhishingReporterUser(payload).then(response => {
           const {data: {data: {results}}} = response
-          console.log(results)
+
           this.$refs.refUsersList.loadWithDataArray(results.map(item => {
             return {...item, status: item.addInStatus}
           }))

@@ -29,7 +29,7 @@
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-two-container" class="steps">
             <div v-if="step < 3" :class="{ 'active-step': step === 2 }" class="step-number">2</div>
@@ -44,7 +44,7 @@
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-three-container" class="steps">
             <div v-if="step < 4" :class="{ 'active-step': step === 3 }" class="step-number">3</div>
@@ -59,7 +59,7 @@
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-four-container" class="steps">
             <div v-if="step < 5" :class="{ 'active-step': step === 4 }" class="step-number">4</div>
@@ -74,7 +74,7 @@
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-five-container" class="steps">
             <div v-if="step < 6" :class="{ 'active-step': step === 5 }" class="step-number">5</div>
@@ -97,7 +97,7 @@
           <div v-if="!selectedEmail && !uploadRespond.CommunityPostEmails" class="incident-content">
             <div class="input-header">Find Incident</div>
             <div class="input-sub">Search and find emails among reported incidents</div>
-            <input style="display: none;" type="text" name="fakeusernameremembered" />
+            <input style="display: none;" type="text" name="fakeusernameremembered"/>
             <v-autocomplete
               id="select-incident-autocomplete"
               v-model="selectedEmail"
@@ -132,7 +132,8 @@
                   <div class="select-row-inline">
                     <div class="file-type-wrap">
                       <v-icon v-if="item.AttachmentCount != 0" class="email-icon"
-                      >mdi-paperclip</v-icon
+                      >mdi-paperclip
+                      </v-icon
                       >
                       <div
                         v-for="(st, ind) of item.Status"
@@ -222,7 +223,8 @@
                   :disabled="isEditMode"
                   class="close-incident"
                   @click="closePreview()"
-                >mdi-close-circle</v-icon
+                >mdi-close-circle
+                </v-icon
                 >
                 <div class="preview-header pt-0">
                   <h2
@@ -261,7 +263,7 @@
                       "
                     >
                       From: {{ uploadRespond.CommunityPostEmails[0].From }}
-                      <br />
+                      <br/>
                     </span>
                     <span
                       v-else-if="
@@ -327,7 +329,7 @@
                       Date:
                       {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                       {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                      <br />
+                      <br/>
                     </div>
                   </div>
                 </div>
@@ -589,7 +591,7 @@
                     <span class="share-setting-text"
                     >From: {{ uploadRespond.CommunityPostEmails[0].From }}</span
                     >
-                    <br />
+                    <br/>
                   </div>
                   <div
                     v-else-if="
@@ -680,7 +682,7 @@
                     Date:
                     {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                     {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                    <br />
+                    <br/>
                   </div>
                 </div>
               </div>
@@ -727,10 +729,12 @@
               <div :class="{ 'minify-part': !filterOpened }" class="filter-header">
                 <div class="select-header" v-if="filterOpened">Select Attributes</div>
                 <v-icon @click="filterOpened = true" :class="{ 'display-none': filterOpened }"
-                >mdi-arrow-left</v-icon
+                >mdi-arrow-left
+                </v-icon
                 >
                 <v-icon @click="filterOpened = false" :class="{ 'display-none': !filterOpened }"
-                >mdi-arrow-right</v-icon
+                >mdi-arrow-right
+                </v-icon
                 >
               </div>
               <div :class="{ 'minify-part': !filterOpened }" class="filter-part">
@@ -741,7 +745,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/header-all.svg" />
+                    <img src="../../assets/img/filter-icons/header-all.svg"/>
                   </div>
                   <v-switch
                     :id="'attachment-switch-' + s.Id"
@@ -760,7 +764,7 @@
                   v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <img src="../../assets/img/filter-icons/short-text.svg"/>
                   </div>
                   <v-switch :id="'subject-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">Subject</label>
@@ -771,7 +775,8 @@
                           :class="{ 'chevron-down': subChevron }"
                           v-on="on"
                           @click="subChevron = !subChevron"
-                        >mdi-chevron-down</v-icon
+                        >mdi-chevron-down
+                        </v-icon
                         >
                       </v-btn>
                     </template>
@@ -803,7 +808,7 @@
                   v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/user-out.svg" />
+                    <img src="../../assets/img/filter-icons/user-out.svg"/>
                   </div>
                   <v-switch :id="'sender-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">Sender Info</label>
@@ -814,7 +819,8 @@
                           :class="{ 'chevron-down': fromChevron }"
                           v-on="on"
                           @click="fromChevron = !fromChevron"
-                        >mdi-chevron-down</v-icon
+                        >mdi-chevron-down
+                        </v-icon
                         >
                       </v-btn>
                     </template>
@@ -846,7 +852,7 @@
                   v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/user-in.svg" />
+                    <img src="../../assets/img/filter-icons/user-in.svg"/>
                   </div>
                   <v-switch :id="'receiver-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">Receiver Info</label>
@@ -857,7 +863,8 @@
                           :class="{ 'chevron-down': toChevron }"
                           v-on="on"
                           @click="toChevron = !toChevron"
-                        >mdi-chevron-down</v-icon
+                        >mdi-chevron-down
+                        </v-icon
                         >
                       </v-btn>
                     </template>
@@ -894,7 +901,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/link.svg" />
+                    <img src="../../assets/img/filter-icons/link.svg"/>
                   </div>
                   <v-switch
                     :id="'link-switch-' + s.Id"
@@ -912,7 +919,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/link.svg" />
+                    <img src="../../assets/img/filter-icons/link.svg"/>
                   </div>
                   <v-switch
                     :id="'phishing-switch-' + s.Id"
@@ -927,7 +934,8 @@
                           :class="{ 'chevron-down': linkChevron[ind] }"
                           v-on="on"
                           @click="linkChevron[ind] = !linkChevron[ind]"
-                        >mdi-chevron-down</v-icon
+                        >mdi-chevron-down
+                        </v-icon
                         >
                       </v-btn>
                     </template>
@@ -961,7 +969,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/attachment-all.svg" />
+                    <img src="../../assets/img/filter-icons/attachment-all.svg"/>
                   </div>
                   <v-switch
                     :id="'attachment-switch-' + s.Id"
@@ -983,10 +991,10 @@
                   class="switch-row"
                 >
                   <div v-if="s.Type === 'Attachment'" class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/attach-file.svg" />
+                    <img src="../../assets/img/filter-icons/attach-file.svg"/>
                   </div>
                   <div v-else class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/attach-red.svg" />
+                    <img src="../../assets/img/filter-icons/attach-red.svg"/>
                   </div>
                   <v-switch :id="'attach-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">{{ s.Name }}</label>
@@ -997,7 +1005,8 @@
                           :class="{ 'chevron-down': attcChevron[ind] }"
                           v-on="on"
                           @click="attcChevron[ind] = !attcChevron[ind]"
-                        >mdi-chevron-down</v-icon
+                        >mdi-chevron-down
+                        </v-icon
                         >
                       </v-btn>
                     </template>
@@ -1066,7 +1075,8 @@
                             rounded
                             medium
                             color="blue"
-                          >COLLAPSE</v-btn
+                          >COLLAPSE
+                          </v-btn
                           >
                           <v-btn
                             id="last-preview-details"
@@ -1075,7 +1085,8 @@
                             rounded
                             medium
                             color="blue"
-                          >DETAILS</v-btn
+                          >DETAILS
+                          </v-btn
                           >
                         </template>
                       </v-expansion-panel-header>
@@ -1101,13 +1112,13 @@
                       </a>
                       <a v-else class="pl-1 pr-1">Company Name</a> on
                       <a
-                        v-if="postDetail && postDetail.Data && postDetail.Data.CommunityName"
+                        v-if="!isAnonym"
                         class="pl-1 pr-1"
                       >
-                        {{ postDetail.Data.CommunityName }}
+                        {{(postDetail && postDetail.Data && postDetail.Data.CommunityName) || communityName }}
                       </a>
                       <a v-else class="pl-1 pr-1">
-                        Community Name
+                        Anonymous
                       </a>
                     </div>
                     <div class="ts-user-date">
@@ -1120,7 +1131,8 @@
                       :id="uploadRespond.Description"
                       autoresize
                       :max-lines="3"
-                    >{{ uploadRespond.Description }}</v-clamp
+                    >{{ uploadRespond.Description }}
+                    </v-clamp
                     >
                     <v-clamp v-else autoresize :max-lines="3">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -1134,13 +1146,13 @@
                       <v-btn text x-small icon color="grey">
                         <v-icon>mdi-thumb-up</v-icon>
                       </v-btn>
-                      <span class="ts-action-counter">6</span>
+                      <span class="ts-action-counter">{{uploadRespond.LikeCount}}</span>
                     </div>
                     <div class="ts-message mt-1">
                       <v-btn text x-small icon color="grey">
                         <v-icon>mdi-message-reply-text</v-icon>
                       </v-btn>
-                      <span class="ts-action-counter">4</span>
+                      <span class="ts-action-counter">{{uploadRespond.CommentCount}}</span>
                     </div>
                     <div class="ts-harmful mt-1">
                       <v-btn v-if="uploadRespond.HarmfulItems" text x-small icon color="red">
@@ -1181,7 +1193,8 @@
                         outlined
                         class="tag-btn ml-1 text-none"
                         id="incident-badge"
-                      >{{ uploadRespond.CommunityPostCategory[0] }}</v-btn
+                      >{{ uploadRespond.CommunityPostCategory[0] }}
+                      </v-btn
                       >
                       <v-btn
                         v-if="
@@ -1196,7 +1209,8 @@
                         outlined
                         class="tag-btn ml-1 text-none"
                         id="incident-badge"
-                      >{{ uploadRespond.CommunityPostCategory[1] }}</v-btn
+                      >{{ uploadRespond.CommunityPostCategory[1] }}
+                      </v-btn
                       >
                       <div style="position: relative;">
                         <v-btn
@@ -1331,7 +1345,7 @@
                           class="detail-black detail-red"
                         >
                           Link: {{ el.Value }}
-                          <br />
+                          <br/>
                           <span style="color: #000 !important;"
                           >This link has been reported as a phising link</span
                           >
@@ -1378,6 +1392,7 @@
                                 id="harmful-attachment"
                                 v-if="att.IsMalicious"
                                 class="detail-black"
+                                style="position: absolute;max-width: 185px;bottom: -38px;"
                               >
                                 The sender email address has been reported as harmful email sender.
                               </p>
@@ -1465,7 +1480,7 @@
                             :class="[el.IsMalicious ? 'malicious-style' : '']"
                           >
                             From: {{ uploadRespond.CommunityPostEmails[0].From }}
-                            <br />
+                            <br/>
                           </span>
                           <span
                             v-else-if="
@@ -1493,7 +1508,8 @@
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                >mdi-alert</v-icon
+                                >mdi-alert
+                                </v-icon
                                 >
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1514,7 +1530,8 @@
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                >mdi-alert</v-icon
+                                >mdi-alert
+                                </v-icon
                                 >
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1537,7 +1554,8 @@
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                >mdi-alert</v-icon
+                                >mdi-alert
+                                </v-icon
                                 >
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1558,7 +1576,8 @@
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                >mdi-alert</v-icon
+                                >mdi-alert
+                                </v-icon
                                 >
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1568,7 +1587,7 @@
                             Date:
                             {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                             {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                            <br />
+                            <br/>
                           </div>
                         </div>
                       </div>
@@ -1613,15 +1632,18 @@
                       </div>
                       <div id="last-step-preview-buttons" class="preview-buttons">
                         <v-btn id="last-step-useful-btn">
-                          <v-icon>mdi-thumb-up</v-icon>Useful 7
+                          <v-icon>mdi-thumb-up</v-icon>
+                          Useful 7
                         </v-btn>
                         <v-btn
                           id="last-step-comment-opened"
                           :class="{ 'active-act': commentOpened }"
                           @click="commentOpened = !commentOpened"
                         >
-                          <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon
-                          >Comments (4)
+                          <v-icon :class="{ 'active-act': commentOpened }">mdi-comment
+                          </v-icon
+                          >
+                          Comments (4)
                         </v-btn>
                       </div>
                       <div
@@ -1704,7 +1726,8 @@
       </v-card>
       <div id="post-footer-actions" class="footer-actions">
         <v-btn id="post-cancel-btn" class="cancel-btn" text color="#f56c6c" @click="onCancelClicked"
-        >Cancel</v-btn
+        >Cancel
+        </v-btn
         >
         <div>
           <v-btn
@@ -1714,7 +1737,8 @@
             text
             color="#2196f3"
             @click="step = step - 1"
-          >Previous</v-btn
+          >Previous
+          </v-btn
           >
           <v-btn
             v-if="step === 1"
@@ -1725,7 +1749,8 @@
             text
             color="#2196f3"
             @click="onContinue"
-          >Next</v-btn
+          >Next
+          </v-btn
           >
           <v-btn
             v-if="step === 2"
@@ -1735,7 +1760,8 @@
             text
             color="#2196f3"
             @click="onSecondStep"
-          >Next</v-btn
+          >Next
+          </v-btn
           >
           <v-btn
             v-if="step === 3"
@@ -1745,7 +1771,8 @@
             text
             color="#2196f3"
             @click="onThirdStep"
-          >Next</v-btn
+          >Next
+          </v-btn
           >
           <v-btn
             id="post-step-four-next-btn"
@@ -1755,7 +1782,8 @@
             text
             color="#2196f3"
             @click="onBeforeLastStep"
-          >Next</v-btn
+          >Next
+          </v-btn
           >
           <v-btn
             id="post-step-five-next-btn"
@@ -1764,7 +1792,8 @@
             text
             color="#2196f3"
             @click="onFinish"
-          >Post</v-btn
+          >Post
+          </v-btn
           >
         </div>
       </div>
@@ -1772,8 +1801,9 @@
   </div>
 </template>
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
   import VClamp from 'vue-clamp'
+
   export default {
     components: {
       VClamp
@@ -1787,6 +1817,9 @@
         type: Boolean,
         required: false,
         default: false
+      },
+      communityName: {
+        type: String,
       }
     },
     computed: {
@@ -1959,7 +1992,7 @@
       isAnonym: false
     }),
     watch: {
-      'shareSettings.allHeader': function(newVal, oldVal) {
+      'shareSettings.allHeader': function (newVal, oldVal) {
         if (newVal && newVal.length) {
           this.allHeader = newVal[0].IsShow
         }
@@ -1975,13 +2008,13 @@
           this.shareSettings.receiverInfo[0].IsShow = false
         }
       },
-      'shareSettings.allAttachments': function(newVal, oldVal) {
+      'shareSettings.allAttachments': function (newVal, oldVal) {
         if (newVal && newVal.length) {
           this.allAttachments = newVal[0].IsShow
         }
       },
       'shareSettings.subject': {
-        handler: function(newVal, oldWal) {
+        handler: function (newVal, oldWal) {
           if (
             newVal &&
             newVal.length &&
@@ -2002,7 +2035,7 @@
         deep: true
       },
       'shareSettings.senderInfo': {
-        handler: function(newVal, oldWal) {
+        handler: function (newVal, oldWal) {
           if (
             newVal &&
             newVal.length &&
@@ -2023,7 +2056,7 @@
         deep: true
       },
       'shareSettings.receiverInfo': {
-        handler: function(newVal, oldWal) {
+        handler: function (newVal, oldWal) {
           if (
             newVal &&
             newVal.length &&
@@ -2046,7 +2079,7 @@
         deep: true
       },
       'shareSettings.attachments': {
-        handler: function(newVal, oldWal) {
+        handler: function (newVal, oldWal) {
           if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
             this.allAttachments = true
           }
@@ -2057,7 +2090,7 @@
         deep: true
       },
       'shareSettings.links': {
-        handler: function(newVal, oldWal) {
+        handler: function (newVal, oldWal) {
           if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
             this.allLinks = true
           }
@@ -2078,7 +2111,7 @@
           }
         }
       },
-      'shareSettings.allLinks': function(newVal, oldVal) {
+      'shareSettings.allLinks': function (newVal, oldVal) {
         if (newVal && newVal.length) {
           this.allLinks = newVal[0].IsShow
         }
@@ -2094,7 +2127,7 @@
           }
         }
       },
-      'uploadRespond.AffectArea': function(newVal, oldVal) {
+      'uploadRespond.AffectArea': function (newVal, oldVal) {
         if (newVal && newVal.length > 5) {
           this.uploadRespond.AffectArea.pop()
         }
@@ -2246,7 +2279,7 @@
         } else {
           this.step++
           const refThis = this
-          setTimeout(function() {
+          setTimeout(function () {
             refThis.previewHideShow()
           }, 0)
         }
@@ -2255,9 +2288,9 @@
         this.msgEmlFile = e.target.files || e.dataTransfer.files
         const extensionName = this.msgEmlFile[0].name.slice(-3)
         if (extensionName != 'msg' && extensionName != 'eml') {
-          this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-          this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          this.$store.commit('common/SET_SNACK_STATUS', true, {root: true})
+          this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          this.$store.commit('common/SET_ERROR_STATE', true, {root: true})
           this.$store.commit('common/SET_ERROR_MESSAGE', 'Allowed .eml or .msg files only', {
             root: true
           })
@@ -2293,7 +2326,7 @@
           this.createInc.onPreview = true
           this.step++
           const refThis = this
-          setTimeout(function() {
+          setTimeout(function () {
             refThis.previewHideShow()
           }, 0)
         }
@@ -2330,7 +2363,7 @@
           this.updateRightCol()
         })
         this.createInc.onPreview = false
-        this.$store.commit('common/SET_IS_LOADING', false, { root: true })
+        this.$store.commit('common/SET_IS_LOADING', false, {root: true})
         this.$emit('closePostIncident')
       },
       updateTags() {
@@ -2376,6 +2409,7 @@
           val.CommunityPostEmails[0].ShareSettings.length
         ) {
           this.uploadRespond = val
+
           const ShareSettings = {
             senderInfo: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'SenderInfo'),
             subject: val.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
@@ -2393,7 +2427,7 @@
             )
           }
           if (ShareSettings.links && ShareSettings.links.length) {
-            setTimeout(function() {
+            setTimeout(function () {
               for (let a of ShareSettings.links) {
                 var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
                 // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
@@ -2499,7 +2533,7 @@
       },
       validateAffectArea() {
         const refThis = this
-        setTimeout(function() {
+        setTimeout(function () {
           if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
             let i = refThis.uploadRespond.AffectArea.length
             while (i--) {
@@ -2569,6 +2603,7 @@
         padding: 32px 96px !important;
         padding-bottom: 100px !important;
       }
+
       .incident-steps {
         display: flex;
         flex-direction: row;
@@ -2609,9 +2644,11 @@
             font-size: 14px;
             color: rgba(0, 0, 0, 0.87);
           }
+
           .active-step-num {
             border: solid 1px rgba(0, 0, 0, 0.87) !important;
           }
+
           .active-step-span {
             color: rgba(0, 0, 0, 0.87) !important;
           }
@@ -2628,6 +2665,7 @@
           }
         }
       }
+
       .incident-header {
         p {
           font-family: 'Open Sans', sans-serif !important;
@@ -2640,6 +2678,7 @@
           color: rgba(0, 0, 0, 0.87);
           margin-bottom: 0 !important;
         }
+
         span {
           font-family: 'Open Sans', sans-serif !important;
           font-size: 14px;
@@ -2653,6 +2692,7 @@
       }
     }
   }
+
   .footer-actions {
     align-items: center;
     bottom: 0;
@@ -2673,12 +2713,14 @@
       color: #f56c6c !important;
       z-index: 9999;
     }
+
     .previous-btn {
       border-radius: 18px !important;
       border: solid 1px #2196f3 !important;
       color: #2196f3 !important;
       z-index: 9999;
     }
+
     .create-btn {
       border-radius: 18px !important;
       box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
@@ -2687,20 +2729,25 @@
       z-index: 9999;
     }
   }
+
   ::v-deep .v-text-field--outlined.error--text fieldset {
     border: 1px solid #ff5252 !important;
   }
+
   ::v-deep .v-text-field--outlined.errored-selectbox fieldset {
     border: 1px solid #ff5252 !important;
   }
+
   ::v-deep .v-autocomplete.affect-combobox .v-input__slot {
     height: auto !important;
   }
+
   ::v-deep .v-autocomplete.affect-combobox {
     .v-messages__message {
       color: #f56c6c !important;
     }
   }
+
   .v-card-headline {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
@@ -2711,6 +2758,7 @@
     letter-spacing: normal;
     color: #000;
   }
+
   .v-card-sub-header {
     font-family: Helvetica;
     font-size: 15px;
@@ -2721,6 +2769,7 @@
     letter-spacing: normal;
     color: #000 !important;
   }
+
   .edit-name-textfield,
   .edit-description,
   .edit-select {
@@ -2749,6 +2798,7 @@
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 0 !important;
     }
+
     span {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -2760,6 +2810,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .incident-content {
     display: flex;
     flex-direction: column;
@@ -2776,6 +2827,7 @@
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
+
     .input-sec-header {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 16px;
@@ -2786,6 +2838,7 @@
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
+
     .input-sub {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -2797,6 +2850,7 @@
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 10px;
     }
+
     .input-select {
       max-width: 205px;
       color: rgba(0, 0, 0, 0.72);
@@ -2804,19 +2858,23 @@
       font-size: 13px !important;
       margin-bottom: 32px;
     }
+
     .first-select {
       max-width: 554px;
     }
+
     ::v-deep .input-select > .v-input__control {
       max-width: 554px !important;
       align-items: center;
       display: flex;
       height: 40px !important;
     }
+
     .date-row {
       max-width: 390px !important;
     }
   }
+
   ::v-deep .v-input {
     .v-input__slot {
       font-family: 'Open Sans', sans-serif !important;
@@ -2830,17 +2888,20 @@
       border-radius: 8px !important;
     }
   }
+
   ::v-deep .v-text-field {
     .v-input__slot {
       box-shadow: unset !important;
     }
   }
+
   ::v-deep .v-select {
     .v-input__slot {
       box-shadow: unset !important;
       height: 40px !important;
     }
   }
+
   ::v-deep .v-autocomplete {
     .v-input__slot {
       border: 1px solid rgba(0, 0, 0, 0.16) !important;
@@ -2848,6 +2909,7 @@
       height: 40px !important;
     }
   }
+
   .upload-wrapper {
     max-width: 109px;
     margin-top: -2px;
@@ -2869,6 +2931,7 @@
       .v-input__prepend-outer {
         display: none !important;
       }
+
       .v-input__control {
         cursor: pointer !important;
 
@@ -2876,10 +2939,12 @@
           margin-left: 8px !important;
           margin-right: 0 !important;
           margin-top: 7px;
+
           i {
             color: #fff !important;
           }
         }
+
         .v-btn__content {
           margin-left: -5px !important;
           font-family: 'Open Sans', sans-serif !important;
@@ -2890,6 +2955,7 @@
           line-height: 1.71;
           letter-spacing: normal;
         }
+
         .v-input__slot {
           display: flex;
           justify-content: center;
@@ -2917,6 +2983,7 @@
             width: 100%;
             border-radius: 20px;
           }
+
           .v-input__icon {
             min-width: 15px !important;
             width: 16px !important;
@@ -2925,6 +2992,7 @@
             z-index: 12;
           }
         }
+
         .v-input__slot::before,
         .v-input__slot::after {
           display: none !important;
@@ -2942,10 +3010,12 @@
         }
       }
     }
+
     ::v-deep .v-input__append-inner {
       display: none !important;
     }
   }
+
   .step-container {
     max-width: 554px;
   }
@@ -2962,6 +3032,7 @@
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 0 !important;
     }
+
     span {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -2973,6 +3044,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .investigation-content {
     border-radius: 12px !important;
     display: flex;
@@ -3050,6 +3122,7 @@
               padding-right: 8px;
             }
           }
+
           label {
             margin-top: 10px;
             margin-left: 5px;
@@ -3085,24 +3158,30 @@
             max-width: 100%;
           }
         }
+
         ::v-deep .accent--text {
           color: #2196f3 !important;
         }
+
         ::v-deep .theme--light.v-messages {
           display: none !important;
         }
       }
+
       .filter-part:last-child {
         border-bottom: unset !important;
       }
+
       .filter-part:nth-child(2) {
         height: auto;
         max-height: 300px;
         overflow: auto;
       }
+
       .filter-part:first-child {
         padding-top: 14.2px !important;
       }
+
       .attr-error {
         position: absolute;
         bottom: -20px;
@@ -3118,6 +3197,7 @@
       }
     }
   }
+
   .filters-content {
     display: flex;
     flex-direction: column;
@@ -3133,6 +3213,7 @@
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
+
     .input-sub {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -3144,6 +3225,7 @@
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 16px;
     }
+
     .input-select {
       max-width: 205px;
       color: rgba(0, 0, 0, 0.72);
@@ -3151,6 +3233,7 @@
       font-size: 13px !important;
       margin-bottom: 32px;
     }
+
     .first-select {
       max-width: 554px;
     }
@@ -3179,9 +3262,11 @@
       margin-bottom: 7px;
     }
   }
+
   .post-wrapper {
     max-width: 696px;
   }
+
   .select-error {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 9px;
@@ -3194,6 +3279,7 @@
     margin-left: 8px;
     margin-top: 17px;
   }
+
   .select-row-wrap {
     display: flex;
     justify-content: space-between;
@@ -3214,6 +3300,7 @@
       }
     }
   }
+
   .email-name {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -3229,10 +3316,12 @@
     white-space: nowrap;
     overflow: hidden;
   }
+
   .email-icon {
     font-size: 19px !important;
     padding-right: 24px;
   }
+
   .email-type {
     height: 25px;
     border-radius: 4px;
@@ -3250,21 +3339,27 @@
     align-items: center;
     padding: 0 6px;
   }
+
   .btn-pending {
     background-color: #00bcd4;
   }
+
   .btn-active {
     background-color: #2196f3;
   }
+
   .btn-inactive {
     background-color: #757575;
   }
+
   .btn-warning {
     background-color: #e6a23c;
   }
+
   .btn-cancelled {
     background-color: #f56c6c;
   }
+
   .email-time {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -3286,6 +3381,7 @@
     letter-spacing: normal;
     color: #000;
   }
+
   .v-card-sub-header {
     font-family: Helvetica;
     font-size: 15px;
@@ -3296,6 +3392,7 @@
     letter-spacing: normal;
     color: #000 !important;
   }
+
   .edit-name-textfield,
   .edit-description,
   .edit-select {
@@ -3346,6 +3443,7 @@
       border-bottom: 1px solid #b3d4fc;
     }
   }
+
   .preview-body {
     margin-top: 24px;
     font-family: 'Open Sans', sans-serif !important;
@@ -3394,11 +3492,13 @@
       min-width: max-content !important;
     }
   }
+
   .bodyExpanded {
     height: 100% !important;
     max-height: 100% !important;
     padding-bottom: 56px;
   }
+
   .preview-footer {
     display: flex;
     flex-direction: column;
@@ -3419,6 +3519,7 @@
       color: rgba(0, 0, 0, 0.87);
       padding-bottom: 16px;
     }
+
     .attachment-wrapper {
       display: flex;
       flex-direction: row;
@@ -3439,12 +3540,15 @@
           display: flex;
           justify-content: center;
         }
+
         .red-icon {
           background-color: #bb2a45 !important;
         }
+
         .blue-icon {
           background-color: #2196f3 !important;
         }
+
         .file-name {
           width: 142px;
           text-align: left;
@@ -3460,30 +3564,36 @@
           padding-left: 7px;
         }
       }
+
       .red-attach {
         border: 1px solid #bb2a45;
       }
+
       .blue-attach {
         border: 1px solid #2196f3;
       }
     }
   }
+
   .unselected-warn {
     border-bottom: 1px solid #bb2a45;
     color: #bb2a45;
     padding: 0 2px !important;
   }
+
   ::v-deep .v-autocomplete {
     .v-input__slot {
       box-shadow: unset !important;
       border: 1px solid rgba(0, 0, 0, 0.24) !important;
     }
   }
+
   ::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
     margin-top: 0 !important;
     display: flex;
     align-items: center;
   }
+
   .first-date {
     ::v-deep .v-input__slot {
       border-top-right-radius: 0 !important;
@@ -3495,6 +3605,7 @@
       }
     }
   }
+
   .sec-date {
     ::v-deep .v-input__slot {
       border-top-left-radius: 0 !important;
@@ -3506,8 +3617,10 @@
       }
     }
   }
+
   .date-picker {
     font-family: 'Open Sans', sans-serif !important;
+
     ::v-deep .v-input__slot {
       box-shadow: unset !important;
       border: 1px solid rgba(0, 0, 0, 0.24);
@@ -3526,18 +3639,22 @@
         padding-left: 50px !important;
         padding-top: 8px !important;
       }
+
       label {
         padding-top: 0 !important;
       }
     }
+
     ::v-deep .v-input__slot::after,
     ::v-deep .v-input__slot::before {
       display: none;
     }
   }
+
   .date-col {
     position: relative;
   }
+
   .date-icon {
     top: 12px;
     left: 25px;
@@ -3545,6 +3662,7 @@
     font-size: 18px !important;
     z-index: 99;
   }
+
   .date-to {
     position: absolute;
     left: 0;
@@ -3559,6 +3677,7 @@
     color: rgba(0, 0, 0, 0.72);
     z-index: 13;
   }
+
   .max-char {
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -3566,6 +3685,7 @@
     display: block;
     max-width: 100%;
   }
+
   .text-selected {
     border-radius: 1px !important;
     background-color: #d1e9fc !important;
@@ -3574,36 +3694,44 @@
     width: max-content;
     max-width: 100%;
   }
+
   .clean-link {
     padding: 0 2px !important;
     border-radius: 1px !important;
     border-bottom: 1px solid #2196f3 !important;
     color: #2196f3 !important;
   }
+
   .selected-link {
     background-color: #d1e9fc !important;
   }
+
   .phishing-link {
     background-color: #f3e1e5 !important;
     border-bottom: 1px solid #bb2a45 !important;
     color: #bb2a45 !important;
     width: max-content;
   }
+
   .clean-attach {
     background-color: #f1f8fe;
     border: 1px solid transparent !important;
   }
+
   .malicious-attach {
     background-color: #f3e1e5;
     border: 1px solid transparent !important;
   }
+
   ::v-deep .v-input > .v-input__control > .v-text-field__details {
     // error messages.
   }
+
   ::v-deep .v-application input {
     border-radius: 8px !important;
     border: solid 1px rgba(0, 0, 0, 0.16) !important;
   }
+
   .required {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 9px;
@@ -3616,31 +3744,37 @@
     margin-left: 6px;
     margin-top: -2px;
   }
+
   .close-incident {
     position: absolute;
     right: -13px;
     top: 13px;
   }
+
   ::v-deep
   .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
   > .v-input__control
   > .v-input__slot {
     border: none !important;
   }
+
   .row-with-icon {
     align-items: center;
     display: flex;
     flex-direction: row;
   }
+
   .icon-btn {
     margin-top: unset;
     margin-left: -5px;
     height: 25px !important;
     width: 25px !important;
   }
+
   .step-name {
     width: max-content;
   }
+
   .filter-header {
     align-items: center;
     display: none;
@@ -3666,9 +3800,11 @@
       font-size: 27px;
     }
   }
+
   .minify-filter {
     width: 120px !important;
   }
+
   .minify-part,
   .minify-switch {
     padding-left: 10px;
@@ -3708,6 +3844,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .preview-body {
     margin-top: 24px;
     font-family: 'Open Sans', sans-serif !important;
@@ -3739,11 +3876,13 @@
       }
     }
   }
+
   .bodyExpanded {
     height: 100% !important;
     max-height: 100% !important;
     padding-bottom: 56px;
   }
+
   .preview-footer {
     display: flex;
     flex-direction: column;
@@ -3761,6 +3900,7 @@
       color: rgba(0, 0, 0, 0.87);
       padding-bottom: 16px;
     }
+
     .attachment-wrapper {
       display: flex;
       flex-direction: row;
@@ -3783,12 +3923,15 @@
           display: flex;
           justify-content: center;
         }
+
         .red-icon {
           background-color: #bb2a45 !important;
         }
+
         .blue-icon {
           background-color: #2196f3 !important;
         }
+
         span {
           width: 100%;
           text-align: center;
@@ -3802,14 +3945,17 @@
           color: rgba(0, 0, 0, 0.87);
         }
       }
+
       .red-attach {
         background-color: #f3e1e5;
       }
+
       .blue-attach {
         background-color: #f1f8fe;
       }
     }
   }
+
   .preview-buttons {
     margin-top: 24px;
     padding-bottom: 13px;
@@ -3845,11 +3991,13 @@
         border: unset !important;
       }
     }
+
     .active-act {
       color: #2196f3 !important;
       border: solid 1px #2196f3 !important;
     }
   }
+
   .preview-border {
     border-top: 1px solid #b3d4fc;
     padding-top: 24px;
@@ -3859,6 +4007,7 @@
   .detail-parts:first-child {
     margin-top: 24px !important;
   }
+
   .detail-parts {
     margin-top: 16px;
 
@@ -3873,10 +4022,12 @@
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 4px !important;
     }
+
     .detail-red {
       color: rgba(219, 37, 37, 0.87) !important;
     }
   }
+
   .detail-discovery {
     margin-top: 24px;
 
@@ -3891,6 +4042,7 @@
       color: rgba(0, 0, 0, 0.87);
       padding-bottom: 8px;
     }
+
     .discovery-p {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -3902,6 +4054,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .impact-row {
     display: flex;
     flex-direction: row;
@@ -3919,20 +4072,24 @@
       min-width: 100px;
       font-weight: 600 !important;
     }
+
     .impact-right {
       margin-top: 2px;
       max-width: 80%;
     }
   }
+
   .border-padding {
     padding-bottom: 8px;
     border-bottom: 1px solid #b3d4fc;
   }
+
   .member-company-body {
     ::v-deep .v-slide-group__content {
       border-bottom: unset !important;
     }
   }
+
   .expand-contaniner {
     width: 100%;
     height: 50px;
@@ -3961,9 +4118,11 @@
       }
     }
   }
+
   .opacityExpanded {
     background-image: none !important;
   }
+
   .preview-comments {
     height: 0;
     opacity: 0;
@@ -3999,14 +4158,17 @@
             margin-top: 2px;
             margin-right: 2px;
           }
+
           label {
             top: 10px;
           }
+
           fieldset {
             padding-left: 18px !important;
           }
         }
       }
+
       .send-btn {
         border-radius: 18px !important;
         box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
@@ -4021,6 +4183,7 @@
         }
       }
     }
+
     .comment-row {
       border-radius: 4px;
       background-color: #f5f7fa;
@@ -4042,10 +4205,12 @@
           padding-right: 4px;
           cursor: pointer;
         }
+
         .company-name {
           padding-left: 4px;
         }
       }
+
       .the-comment {
         margin-bottom: 0 !important;
         padding-top: 8px !important;
@@ -4059,6 +4224,7 @@
         color: rgba(0, 0, 0, 0.87);
       }
     }
+
     .see-all-comments {
       padding-top: 16px;
       padding-bottom: 24px;
@@ -4077,6 +4243,7 @@
       }
     }
   }
+
   .open-comments {
     min-height: 226px;
     height: auto !important;
@@ -4085,24 +4252,29 @@
     opacity: 1;
     z-index: -5;
   }
+
   .add-comment {
     background-color: #fff !important;
     height: 60px;
     padding: 0 !important;
   }
+
   .unselected-warn {
     border-bottom: 1px solid #bb2a45;
     color: #bb2a45;
     padding: 0 2px !important;
   }
+
   .hide-buttons {
     opacity: 0;
     padding: 0 !important;
     height: 20px !important;
   }
+
   .display-none {
     display: none !important;
   }
+
   .tooltip-wrapper {
     max-width: 250px;
     width: 130px;
@@ -4123,6 +4295,7 @@
       flex-direction: column;
       height: 34px;
     }
+
     span {
       color: rgba(255, 255, 255, 0.87) !important;
       font-size: 12px !important;
@@ -4130,6 +4303,7 @@
       font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
     }
+
     span:nth-child(2) {
       padding-top: 4px;
     }
@@ -4147,14 +4321,17 @@
       padding: 16px !important;
     }
   }
+
   .ts-header {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
   }
+
   .ts-header-btn-1 {
     display: flex;
   }
+
   .ts-title {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
@@ -4170,12 +4347,14 @@
     text-overflow: ellipsis;
     display: block;
   }
+
   // Threat sharing Content End
 
   .notification-wrapper {
     background-color: #fff;
     padding: 0;
   }
+
   .v-menu__content {
     border-radius: 8px !important;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
@@ -4184,6 +4363,7 @@
       padding-left: 16px !important;
       padding-right: 16px !important;
     }
+
     .v-list-item__title {
       font-size: 14px;
       font-weight: normal;
@@ -4198,18 +4378,22 @@
   .v-application--is-ltr .v-list-item__icon:first-child {
     margin-right: 10px !important;
   }
+
   .ts-user-comp-detail {
     align-items: center;
     display: flex;
     margin-top: 8px;
   }
+
   ::v-deep .v-btn--contained {
     border-radius: 18px !important;
     box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
   }
+
   ::v-deep .v-data-footer {
     margin-top: 24px !important;
   }
+
   ::v-deep .v-data-footer__select {
     .v-select {
       margin: 0 !important;
@@ -4217,19 +4401,23 @@
       margin-left: 32px !important;
       height: 30px !important;
     }
+
     .v-text-field > .v-input__control > .v-input__slot:after {
       border: none !important;
       display: none !important;
     }
+
     .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
       border: none !important;
     }
+
     .v-input__append-inner {
       margin-left: 0 !important;
       margin-top: 3px !important;
       margin-right: 5px !important;
       padding-left: 0 !important;
     }
+
     .v-select__slot {
       align-items: center;
       display: flex;
@@ -4241,16 +4429,19 @@
         margin-left: 10px;
       }
     }
+
     .v-input__icon {
       width: 20px !important;
       min-width: 20px !important;
       height: 20px !important;
     }
   }
+
   ::v-deep .v-btn:not(.v-btn--round).v-size--default,
   ::v-deep .v-btn--icon.v-size--default {
     height: 36px !important;
   }
+
   ::v-deep .v-btn--icon.v-size--default {
     margin-left: 4px;
     width: 36px !important;
@@ -4279,6 +4470,7 @@
       height: 32px !important;
     }
   }
+
   .ts-footer {
     align-items: center;
     display: flex;
@@ -4308,6 +4500,7 @@
       margin-left: 4px;
     }
   }
+
   .ts-message {
     margin-right: 40px;
     align-items: center;
@@ -4321,6 +4514,7 @@
       margin-left: 4px;
     }
   }
+
   .ts-harmful {
     margin-right: 15px;
     align-items: center;
@@ -4333,6 +4527,7 @@
       line-height: 2;
     }
   }
+
   .ts-success {
     display: flex;
     align-items: center;
@@ -4344,6 +4539,7 @@
       line-height: 2;
     }
   }
+
   .ts-body {
     margin-top: 10px;
     font-family: 'Open Sans', sans-serif !important;
@@ -4355,6 +4551,7 @@
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .ts-user-comp {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -4380,6 +4577,7 @@
       color: rgba(0, 0, 0, 0.87);
     }
   }
+
   .ts-action-counter {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -4390,6 +4588,7 @@
     letter-spacing: normal;
     color: #4a4a4a;
   }
+
   .ts-actions {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
@@ -4401,6 +4600,7 @@
     color: rgba(0, 0, 0, 0.87);
     margin-left: 3px;
   }
+
   ::v-deep .v-expansion-panel {
     border-radius: 20px !important;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
@@ -4408,9 +4608,11 @@
     background-color: #fff;
     border: unset !important;
   }
+
   ::v-deep .v-expansion-panel::before {
     box-shadow: unset !important;
   }
+
   ::v-deep .v-expansion-panel-header {
     box-shadow: unset !important;
     border: unset !important;
@@ -4426,12 +4628,15 @@
     ::v-deep .v-slide-group__wrapper {
       padding-left: 0 !important;
     }
+
     ::v-deep .v-slide-group__content {
       margin-right: 0 !important;
     }
+
     ::v-deep .v-tab--active {
       color: #2196f3 !important;
     }
+
     ::v-deep .v-tab {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px !important;
@@ -4447,39 +4652,48 @@
       padding-right: 3px !important;
       min-width: auto !important;
     }
+
     ::v-deep .v-tabs-bar {
       padding: 0 24px;
       height: 48px !important;
       border-radius: 0 !important;
     }
   }
+
   ::v-deep .v-window {
     border-radius: 20px !important;
     margin: 0 24px !important;
   }
+
   ::v-deep .v-expansion-panel-content {
     border-radius: 20px !important;
     font-family: 'Open Sans', sans-serif !important;
   }
+
   ::v-deep .v-expansion-panel-content__wrap {
     padding: 0 !important;
   }
+
   ::v-deep .title-field {
     .v-text-field__details {
       margin-bottom: 0 !important;
     }
   }
+
   ::v-deep .v-text-field.v-text-field--enclosed .v-text-field__details {
     margin-bottom: 8px;
   }
+
   .disabled-cursor,
   button:disabled {
     cursor: no-drop !important;
     pointer-events: all !important;
   }
+
   .file-name {
     padding-left: 7px;
   }
+
   #upload-file-input {
     opacity: 0;
     position: absolute;
@@ -4490,6 +4704,7 @@
     /* chromes and blink button */
     cursor: pointer !important;
   }
+
   @media only screen and (max-width: 1025px) {
     .hide-step {
       display: none !important;
@@ -4498,6 +4713,7 @@
       display: flex;
     }
   }
+
   .display-none {
     display: none !important;
   }
@@ -4505,6 +4721,7 @@
   #share-settings-links {
     display: block;
   }
+
   .chevron-down {
     transition: 0.3s all ease-in-out;
     transform: rotate(180deg);
@@ -4513,6 +4730,7 @@
       text-decoration: none !important;
     }
   }
+
   .mal-list-wrapper {
     .mal-list-row {
       align-items: center;
@@ -4526,12 +4744,14 @@
       }
     }
   }
+
   .mal-list-wrapper:hover,
   .mal-list-wrapper:active,
   .mal-list-wrapper:focus {
     background-color: #f2f2f2;
     transition: all 0.2s ease-in-out;
   }
+
   ::v-deep .malicious-style,
   ::v-deep .malicious-link {
     border-bottom: 1px solid #bb2a45 !important;
@@ -4550,6 +4770,7 @@
       border-image-width: 0 !important;
     }
   }
+
   ::v-deep .v-btn--icon.v-size--default.chevron-btn-menu {
     height: 30px !important;
     width: 30px !important;
@@ -4560,10 +4781,12 @@
       width: 30px !important;
     }
   }
+
   ::v-deep .is-anonym-check {
     height: 28px !important;
     margin-bottom: 24px;
     margin-top: 0 !important;
+
     label {
       height: 26px !important;
     }
@@ -4574,6 +4797,7 @@
     color: #bb2a45 !important;
     caret-color: #bb2a45 !important;
   }
+
   ::v-deep .red-malicious-alert {
     border: unset !important;
     border-color: transparent !important;
@@ -4590,14 +4814,17 @@
     height: 16px !important;
     overflow: hidden;
   }
+
   ::v-deep .red-malicious-alert::before {
     border: unset !important;
   }
+
   ::v-deep .malicious-style {
     .red-malicious-alert:not(:first-child) {
       display: none !important;
     }
   }
+
   .filter-no-selected {
     position: absolute;
     bottom: -20px;
