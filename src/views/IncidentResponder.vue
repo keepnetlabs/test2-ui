@@ -513,7 +513,6 @@
         getCurrentUser: 'auth/getCurrentUser'
       }),
       onEmptyBtnClicked() {
-        debugger
         this.openInvestigationOverlay = true
       }
     }

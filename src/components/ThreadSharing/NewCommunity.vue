@@ -20,7 +20,7 @@
                 class="edit-name-textfield"
                 :class="{ 'error-border': communNameAvailable }"
                 v-model="name"
-                :rules="[nameRules.regex, nameRules.required, nameRules.empty]"
+                :rules="[nameRules.regex, nameRules.required]"
                 required
                 @blur="checkCommunName()"
               >
@@ -111,9 +111,9 @@ export default {
         required: v =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
         regex: v =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ,.\-_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+        empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space',
       },
       descriptionRules: {
         required: v =>

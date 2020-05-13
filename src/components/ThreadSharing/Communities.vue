@@ -325,8 +325,8 @@
                     {{ comp.BusinessCategoryText || 'Industry' }}
                   </span>
                 </div>
-                <div v-if="comp && comp.ModifyDate" class="ts-community-date pt-1">
-                  Last update: {{ comp.ModifyDate.substring(0, 10).replace(/-/g, '.') }}
+                <div v-if="comp && comp.LastUpdateDate" class="ts-community-date pt-1">
+                  Last update: {{ comp.LastUpdateDate.substring(0, 10).replace(/-/g, '.') }}
                 </div>
               </div>
               <div class="ts-body">
@@ -549,11 +549,6 @@
         localStorage.setItem('creatorId', creator)
         localStorage.setItem('communityId', communityId)
         localStorage.setItem('communityCompanyId', communCompId)
-        this.$store.dispatch('common/activateLoader', true)
-        const refThis = this
-        setTimeout(() => {
-          refThis.$store.dispatch('common/activateLoader', false)
-        }, 700)
         this.$router.push({ path: `/Community/${name}` })
         this.$store.dispatch('threadSharing/setSelectedCommunity', {
           id: communityId,

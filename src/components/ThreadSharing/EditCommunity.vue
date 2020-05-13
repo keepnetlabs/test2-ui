@@ -447,11 +447,7 @@
     @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
       .edit-community-container {
         overflow-y: auto;
-
-        .edit-community {
-          top: 250px;
-          margin-bottom: 200px;
-        }
+        max-height: 100vh;
       }
     }
 

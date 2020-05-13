@@ -441,6 +441,7 @@ export default {
       }
     },
     removeFromCommunity(compId) {
+      debugger
       this.isWantToRemoveMember = true
       this.memberCompId = compId
     },
