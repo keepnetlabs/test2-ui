@@ -8,6 +8,4 @@ src/_drafts
 package-lock.json
 yarn.lock
 dist/
-idea/
-/.idea/
-.idea/
+.idea/*

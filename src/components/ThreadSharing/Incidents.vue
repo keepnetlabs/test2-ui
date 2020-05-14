@@ -456,9 +456,9 @@
               (this.userGetter.currentCompany && this.userGetter.currentCompany.id) ||
               localStorage.getItem('companyId')
             const emailObj = {
-              CommunityPostId: postId,
-              ShareCompanyId: compId,
-              SharedCompanyId: mail,
+              CompanyId: postId,
+              CommunityPostId: compId,
+              Email: mail,
               CreateUserId: postCreatorId
             }
             this.emailsForApi.push(emailObj)
