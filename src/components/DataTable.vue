@@ -1,7 +1,8 @@
 <template>
   <div class="wrapper">
     <v-overlay fixed :opacity="0.46" :value="isWantToDownload" :z-index="999">
-      <v-card light class="pb-4 pa-6" style="max-width: 580px; border-radius: 12px !important;">
+      <v-card light class="pb-4 pa-6"
+              style="max-width: 580px; border-radius: 12px !important; padding:24px 24px 16px 24px !important;">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">mdi-download</v-icon>
@@ -13,9 +14,9 @@
         </v-list-item>
         <v-list-item class="check-wrapper pl-0 pr-0">
           <v-radio-group row class="ml-3" v-model="downloadType">
-            <v-radio color="#2196f3" label="XLS" value="XLS" />
-            <v-radio color="#2196f3" label="CSV" value="CSV" />
-            <v-radio color="#2196f3" label="PDF" value="PDF" />
+            <v-radio color="#2196f3" label="XLS" value="XLS"/>
+            <v-radio color="#2196f3" label="CSV" value="CSV"/>
+            <v-radio color="#2196f3" label="PDF" value="PDF"/>
           </v-radio-group>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap">
@@ -38,10 +39,10 @@
         </v-list-item>
         <v-list-item class="check-wrapper pl-0 pr-0">
           <div class="check-row">
-            <v-checkbox color="#2196f3" v-model="download.xls" label="ITEM 1" value="XLS" />
+            <v-checkbox color="#2196f3" v-model="download.xls" label="ITEM 1" value="XLS"/>
           </div>
           <div class="check-row">
-            <v-checkbox color="#2196f3" v-model="download.csv" label="ITEM 2" value="CSV" />
+            <v-checkbox color="#2196f3" v-model="download.csv" label="ITEM 2" value="CSV"/>
           </div>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap">
@@ -70,16 +71,16 @@
           <div class="sub-header">Show / Hide Columns</div>
           <div class="popup-row" v-for="(col, ind) of columns" :key="ind" v-if="ind != 0">
             {{ col.label }}
-            <v-switch v-model="col.show" />
+            <v-switch v-model="col.show"/>
           </div>
           <div class="sub-header">Freeze Columns</div>
           <div class="popup-row">
             First Column
-            <v-switch v-model="firstColFixed" />
+            <v-switch v-model="firstColFixed"/>
           </div>
           <div class="popup-row">
             Last Column
-            <v-switch v-model="lastColFixed" />
+            <v-switch v-model="lastColFixed"/>
           </div>
         </div>
         <div
@@ -96,7 +97,7 @@
                 {{ multipleSelection[0][columns[0].property] }}
               </span>
               <span v-else class="settings-span"
-                >{{ multipleSelection.length }} Items Selected</span
+              >{{ multipleSelection.length }} Items Selected</span
               >
               <div class="edit-actions">
                 <v-btn icon v-if="!editMode" @click="editMode = true">
@@ -112,7 +113,7 @@
                   dense
                   @click="editMode = false"
                   color="#f56c6c"
-                  >CANCEL
+                >CANCEL
                 </v-btn>
                 <v-btn
                   class="pl-1 pr-1"
@@ -121,7 +122,7 @@
                   dense
                   @click="saveEditedOnes()"
                   color="#2196f3"
-                  >SAVE
+                >SAVE
                 </v-btn>
               </div>
             </div>
@@ -470,7 +471,7 @@
             default-expand-all
             :border="border"
           >
-            <el-table-column v-if="selectable" type="selection" width="60" align="center" />
+            <el-table-column v-if="selectable" type="selection" width="60" align="center"/>
             <el-table-column
               v-for="(col, ind) of columns"
               :key="'company' + ind"
@@ -570,7 +571,7 @@
                 <span v-if="scope.row && scope.row[col.property] > 0">
                   <v-icon color="#757575">mdi-paperclip</v-icon>
                 </span>
-                <span v-else />
+                <span v-else/>
               </template>
             </el-table-column>
             <el-table-column
@@ -666,7 +667,7 @@
                   block
                   rounded
                   v-if="scope.row && scope.row[col.property]"
-                  >{{ scope.row.detected }}
+                >{{ scope.row.detected }}
                 </v-btn>
                 <span v-else>Empty</span>
               </template>
@@ -693,7 +694,7 @@
                   block
                   rounded
                   v-if="scope.row && scope.row[col.property]"
-                  >{{ scope.row.userStatus }}
+                >{{ scope.row.userStatus }}
                 </v-btn>
                 <span v-else>Empty</span>
               </template>
@@ -762,7 +763,7 @@
                   />
                   <span class="ml-2">{{ scope.row[col.property] }}</span>
                 </span>
-                <span v-else />
+                <span v-else/>
               </template>
             </el-table-column>
 
@@ -814,7 +815,7 @@
                       block
                       rounded
                       v-if="scope.row && scope.row[col.property]"
-                      >{{ scope.row.status }}
+                    >{{ scope.row.status }}
                     </v-btn>
                     <span v-else>Empty</span>
                   </template>
@@ -852,7 +853,7 @@
                       block
                       rounded
                       v-if="scope.row && scope.row[col.property]"
-                      >{{ scope.row.priority }}
+                    >{{ scope.row.priority }}
                     </v-btn>
                     <span v-else>Empty</span>
                   </template>
@@ -1013,1285 +1014,1285 @@
   </div>
 </template>
 <script>
-import Vue from 'vue'
+  import Vue from 'vue'
 
-window.Vue = Vue
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en'
-import VueApexCharts from 'vue-apexcharts'
+  window.Vue = Vue
+  import ElementUI from 'element-ui'
+  import 'element-ui/lib/theme-chalk/index.css'
+  import locale from 'element-ui/lib/locale/lang/en'
+  import VueApexCharts from 'vue-apexcharts'
 
-Vue.use(ElementUI, { locale })
-import printJS from 'print-js'
+  Vue.use(ElementUI, {locale})
+  import printJS from 'print-js'
 
-export default {
-  components: {
-    apexchart: VueApexCharts
-  },
-  props: {
-    columns: {
-      type: Array,
-      required: true
+  export default {
+    components: {
+      apexchart: VueApexCharts
     },
-    rowActionsMinWidth: {
-      type: Number,
-      default: 60
-    },
-    table: {
-      type: Array,
-      required: false
-    },
-    refName: {
-      type: String,
-      required: true
-    },
-    title: {
-      type: Object,
-      required: false
-    },
-    pageSizes: {
-      type: Array,
-      required: false
-    },
-    defaultSort: {
-      type: String,
-      required: false
-    },
-    selectable: {
-      type: Boolean,
-      required: false
-    },
-    countRow: {
-      type: Number,
-      required: false
-    },
-    filterable: {
-      type: Boolean,
-      required: false
-    },
-    options: {
-      type: Boolean,
-      required: false
-    },
-    groupable: {
-      type: Boolean,
-      required: false
-    },
-    rowActions: {
-      type: Array,
-      required: false
-    },
-    addUsers: {
-      type: Object,
-      required: false
-    },
-    addButton: {
-      type: Object,
-      required: false
-    },
-    empty: {
-      type: Object,
-      required: false
-    },
-    selectEvent: {
-      type: Object,
-      required: false
-    },
-    chartOptions: {
-      type: Object,
-      required: false
-    },
-    clusterItems: {
-      type: Array,
-      required: false
-    },
-    border: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data() {
-    return {
-      initialData: [],
-      tableData: [],
-      rowCount: 10,
-      totalCount: 100,
-      currentPage: 1,
-      multipleSelection: [],
-      selectionCheckbox: false,
-      selectionAll: false,
-      series: [44, 55, 13, 43],
-      search: '',
-      isSettingsOpened: false,
-      isWantToDownload: false,
-      isWantToAddUsers: false,
-      isWantToEditRow: false,
-      editMode: false,
-      firstColFixed: true,
-      lastColFixed: true,
-      download: {
-        xls: false,
-        csv: false,
-        pdf: false
+    props: {
+      columns: {
+        type: Array,
+        required: true
       },
-      downloadType: 'PDF',
-      actionFixed: 'right',
-      allHidden: false,
-      printObj: {
-        id: 'table-container',
-        popTitle: 'Datatable Print',
-        extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
-        extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>'
+      rowActionsMinWidth: {
+        type: Number,
+        default: 60
       },
-      clusterChevron: false
-    }
-  },
-  watch: {
-    tableData(data) {
-      if (!this.tableData || this.tableData.length === 0) return []
-      else return data
+      table: {
+        type: Array,
+        required: false
+      },
+      refName: {
+        type: String,
+        required: true
+      },
+      title: {
+        type: Object,
+        required: false
+      },
+      pageSizes: {
+        type: Array,
+        required: false
+      },
+      defaultSort: {
+        type: String,
+        required: false
+      },
+      selectable: {
+        type: Boolean,
+        required: false
+      },
+      countRow: {
+        type: Number,
+        required: false
+      },
+      filterable: {
+        type: Boolean,
+        required: false
+      },
+      options: {
+        type: Boolean,
+        required: false
+      },
+      groupable: {
+        type: Boolean,
+        required: false
+      },
+      rowActions: {
+        type: Array,
+        required: false
+      },
+      addUsers: {
+        type: Object,
+        required: false
+      },
+      addButton: {
+        type: Object,
+        required: false
+      },
+      empty: {
+        type: Object,
+        required: false
+      },
+      selectEvent: {
+        type: Object,
+        required: false
+      },
+      chartOptions: {
+        type: Object,
+        required: false
+      },
+      clusterItems: {
+        type: Array,
+        required: false
+      },
+      border: {
+        type: Boolean,
+        default: true
+      }
     },
-    firstColFixed(val) {
-      if (!val) {
-        const fixedCol = this.columns.filter(c => c.fixed === 'left')
-        if (fixedCol && fixedCol.length) {
-          fixedCol[0].fixed = false
+    data() {
+      return {
+        initialData: [],
+        tableData: [],
+        rowCount: 10,
+        totalCount: 100,
+        currentPage: 1,
+        multipleSelection: [],
+        selectionCheckbox: false,
+        selectionAll: false,
+        series: [44, 55, 13, 43],
+        search: '',
+        isSettingsOpened: false,
+        isWantToDownload: false,
+        isWantToAddUsers: false,
+        isWantToEditRow: false,
+        editMode: false,
+        firstColFixed: true,
+        lastColFixed: true,
+        download: {
+          xls: false,
+          csv: false,
+          pdf: false
+        },
+        downloadType: 'PDF',
+        actionFixed: 'right',
+        allHidden: false,
+        printObj: {
+          id: 'table-container',
+          popTitle: 'Datatable Print',
+          extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
+          extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>'
+        },
+        clusterChevron: false
+      }
+    },
+    watch: {
+      tableData(data) {
+        if (!this.tableData || this.tableData.length === 0) return []
+        else return data
+      },
+      firstColFixed(val) {
+        if (!val) {
+          const fixedCol = this.columns.filter(c => c.fixed === 'left')
+          if (fixedCol && fixedCol.length) {
+            fixedCol[0].fixed = false
+            this.firstColFixed = false
+          }
+        } else {
+          const disabledCol = this.columns.filter(c => c.fixed === false)
+          disabledCol[0].fixed = 'left'
+          this.firstColFixed = true
+        }
+      },
+      lastColFixed(val) {
+        if (!val) {
+          this.actionFixed = false
+        } else {
+          this.actionFixed = 'right'
+        }
+      },
+      multipleSelection(selecteds) {
+        if (this.countRow && this.countRow == selecteds.length) {
+          this.selectionCheckbox = true
+        } else if (this.rowCount && this.rowCount == selecteds.length) {
+          this.selectionCheckbox = true
+        } else {
+          this.selectionCheckbox = false
+        }
+      },
+      columns: {
+        deep: true,
+        handler(val) {
+          if (!val.some(col => col.show)) this.allHidden = true
+          else this.allHidden = false
+        }
+      }
+    },
+    created() {
+      if (this.table && this.table.length) {
+        this.initialData = this.table
+        this.tableData = this.table
+      }
+      this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
+      if (this.countRow) this.rowCount = this.countRow
+    },
+    mounted() {
+      if (window.outerWidth < 1023) {
+        this.actionFixed = false
+        const leftFixed = this.columns.filter(col => col.fixed === 'left')
+        if (leftFixed && leftFixed.length) {
+          leftFixed[0].fixed = false
           this.firstColFixed = false
         }
-      } else {
-        const disabledCol = this.columns.filter(c => c.fixed === false)
-        disabledCol[0].fixed = 'left'
-        this.firstColFixed = true
-      }
-    },
-    lastColFixed(val) {
-      if (!val) {
+        const rightFixed = this.columns.filter(col => col.fixed === 'right')
+        if (rightFixed && rightFixed.length) {
+          rightFixed[0].fixed = false
+        }
+        this.lastColFixed = false
         this.actionFixed = false
-      } else {
-        this.actionFixed = 'right'
       }
     },
-    multipleSelection(selecteds) {
-      if (this.countRow && this.countRow == selecteds.length) {
-        this.selectionCheckbox = true
-      } else if (this.rowCount && this.rowCount == selecteds.length) {
-        this.selectionCheckbox = true
-      } else {
-        this.selectionCheckbox = false
-      }
-    },
-    columns: {
-      deep: true,
-      handler(val) {
-        if (!val.some(col => col.show)) this.allHidden = true
-        else this.allHidden = false
-      }
-    }
-  },
-  created() {
-    if (this.table && this.table.length) {
-      this.initialData = this.table
-      this.tableData = this.table
-    }
-    this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
-    if (this.countRow) this.rowCount = this.countRow
-  },
-  mounted() {
-    if (window.outerWidth < 1023) {
-      this.actionFixed = false
-      const leftFixed = this.columns.filter(col => col.fixed === 'left')
-      if (leftFixed && leftFixed.length) {
-        leftFixed[0].fixed = false
-        this.firstColFixed = false
-      }
-      const rightFixed = this.columns.filter(col => col.fixed === 'right')
-      if (rightFixed && rightFixed.length) {
-        rightFixed[0].fixed = false
-      }
-      this.lastColFixed = false
-      this.actionFixed = false
-    }
-  },
 
-  methods: {
-    addUsersAction(actionName, row) {
-      switch (actionName) {
-        case 'createCommunityFromMobileInfo':
-          this.$emit('createCommunityFromMobileInfo', true)
-          break
-        case 'stopInvestigationFunc':
-          this.$emit('stopInvestigationFunc', row)
-          break
-        case 'investigationDetails':
-          this.$emit('investigationDetails', row)
-          break
-        case 'deleteInvestigationDetails':
-          this.$emit('deleteInvestigationDetailsFunction', row)
-          break
-        case 'deleteAndNotifyInvestigationDetails':
-          this.$emit('deleteAndNotifyInvestigationDetailsFunction', row)
-          break
-        case 'sendWarningMessage':
-          this.$emit('sendInvestigationdetailsWarningMessage', row)
-          break
-        default:
-          break
-      }
-    },
-    addButtonFunction(action, row) {
-      this.$emit(action, row)
-    },
-    tableRowClassName(row) {
-      if (this.multipleSelection.some(r => r.id === row.row.id)) {
-        return 'selected-row'
-      }
-      return ''
-    },
-    handleSelectionChange(val) {
-      if (this.currentPage === 1) {
-        this.multipleSelection = val
-      } else {
-        this.multipleSelection.push(val)
-      }
-    },
-    deleteRow(index, rows) {
-      rows.splice(index, 1)
-    },
-    handleSizeChange(rows) {
-      this.rowCount = rows
-      if (this.currentPage === 1) {
-        this.tableData = this.initialData.slice(0, rows)
-      } else {
-        this.tableData = this.initialData.slice(
-          (this.currentPage - 1) * rows,
-          this.currentPage * rows
-        )
-      }
-    },
-    handleCurrentChange(pageNum) {
-      this.currentPage = pageNum
-      if (pageNum === 1) {
-        this.tableData = this.initialData.slice(0, this.rowCount)
-      } else {
-        this.tableData = this.initialData.slice(
-          (pageNum - 1) * this.rowCount,
-          pageNum * this.rowCount
-        )
-      }
-    },
-    onEmptyBtnClicked(e) {
-      this.$emit('onEmptyBtnClicked', e)
-    },
-    downloadEvent(e) {
-      this.$emit('downloadEvent', this.downloadType)
-    },
-    toggleAll() {
-      this.$refs.elTableRef.toggleAllSelection()
-    },
-    rowAct(action, row, multiSelection, tableData) {
-      switch (action) {
-        case 'details':
-          this.$router.push('/analysis-details')
-          break
-        case 'stopInvestigationFunc':
-          this.$emit('stopInvestigationFunc', { row })
-          break
-        case 'investigationDetails':
-          this.$emit('investigationDetails', { row })
-          break
-        case 'deleteInvestigationDetails':
-          this.$emit(
-            'deleteInvestigationDetailsFunction',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
+    methods: {
+      addUsersAction(actionName, row) {
+        switch (actionName) {
+          case 'createCommunityFromMobileInfo':
+            this.$emit('createCommunityFromMobileInfo', true)
+            break
+          case 'stopInvestigationFunc':
+            this.$emit('stopInvestigationFunc', row)
+            break
+          case 'investigationDetails':
+            this.$emit('investigationDetails', row)
+            break
+          case 'deleteInvestigationDetails':
+            this.$emit('deleteInvestigationDetailsFunction', row)
+            break
+          case 'deleteAndNotifyInvestigationDetails':
+            this.$emit('deleteAndNotifyInvestigationDetailsFunction', row)
+            break
+          case 'sendWarningMessage':
+            this.$emit('sendInvestigationdetailsWarningMessage', row)
+            break
+          default:
+            break
+        }
+      },
+      addButtonFunction(action, row) {
+        this.$emit(action, row)
+      },
+      tableRowClassName(row) {
+        if (this.multipleSelection.some(r => r.id === row.row.id)) {
+          return 'selected-row'
+        }
+        return ''
+      },
+      handleSelectionChange(val) {
+        if (this.currentPage === 1) {
+          this.multipleSelection = val
+        } else {
+          this.multipleSelection.push(val)
+        }
+      },
+      deleteRow(index, rows) {
+        rows.splice(index, 1)
+      },
+      handleSizeChange(rows) {
+        this.rowCount = rows
+        if (this.currentPage === 1) {
+          this.tableData = this.initialData.slice(0, rows)
+        } else {
+          this.tableData = this.initialData.slice(
+            (this.currentPage - 1) * rows,
+            this.currentPage * rows
           )
-          break
-        case 'deleteAndNotifyInvestigationDetails':
-          this.$emit(
-            'deleteAndNotifyInvestigationDetailsFunction',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
+        }
+      },
+      handleCurrentChange(pageNum) {
+        this.currentPage = pageNum
+        if (pageNum === 1) {
+          this.tableData = this.initialData.slice(0, this.rowCount)
+        } else {
+          this.tableData = this.initialData.slice(
+            (pageNum - 1) * this.rowCount,
+            pageNum * this.rowCount
           )
-          break
-        case 'sendWarningMessage':
-          this.$emit(
-            'sendInvestigationdetailsWarningMessage',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
-          )
-          break
-        default:
-          this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
-          return false
-      }
-    },
-    printMethod() {
-      printJS('table-container', 'html')
-    },
-    addRow() {
-      // Do something
-    },
-    clusterSelected(name, ind) {
-      this.clusterItems[ind].selected = !this.clusterItems[ind].selected
-      // emit to parent with name --- this.$emit(name)
-      // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
-    },
-    handleCopy(selections) {
-      let headerKeys = this.columns.reduce((acc, item) => {
-        acc.push(item.property)
-        return acc
-      }, [])
-      let headerText = this.columns.reduce((acc, item) => {
-        acc.push(item.label)
-        return acc
-      }, [])
+        }
+      },
+      onEmptyBtnClicked(e) {
+        this.$emit('onEmptyBtnClicked', e)
+      },
+      downloadEvent(e) {
+        this.$emit('downloadEvent', this.downloadType)
+      },
+      toggleAll() {
+        this.$refs.elTableRef.toggleAllSelection()
+      },
+      rowAct(action, row, multiSelection, tableData) {
+        switch (action) {
+          case 'details':
+            this.$router.push('/analysis-details')
+            break
+          case 'stopInvestigationFunc':
+            this.$emit('stopInvestigationFunc', {row})
+            break
+          case 'investigationDetails':
+            this.$emit('investigationDetails', {row})
+            break
+          case 'deleteInvestigationDetails':
+            this.$emit(
+              'deleteInvestigationDetailsFunction',
+              this.multipleSelection.length > 0 ? this.multipleSelection : row
+            )
+            break
+          case 'deleteAndNotifyInvestigationDetails':
+            this.$emit(
+              'deleteAndNotifyInvestigationDetailsFunction',
+              this.multipleSelection.length > 0 ? this.multipleSelection : row
+            )
+            break
+          case 'sendWarningMessage':
+            this.$emit(
+              'sendInvestigationdetailsWarningMessage',
+              this.multipleSelection.length > 0 ? this.multipleSelection : row
+            )
+            break
+          default:
+            this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
+            return false
+        }
+      },
+      printMethod() {
+        printJS('table-container', 'html')
+      },
+      addRow() {
+        // Do something
+      },
+      clusterSelected(name, ind) {
+        this.clusterItems[ind].selected = !this.clusterItems[ind].selected
+        // emit to parent with name --- this.$emit(name)
+        // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
+      },
+      handleCopy(selections) {
+        let headerKeys = this.columns.reduce((acc, item) => {
+          acc.push(item.property)
+          return acc
+        }, [])
+        let headerText = this.columns.reduce((acc, item) => {
+          acc.push(item.label)
+          return acc
+        }, [])
 
-      const columnsLength = []
-      let text = ''
-      selections.forEach((item, index) => {
-        headerKeys.forEach((a, i) => {
-          if (!item[a]) item[a] = 'Empty'
+        const columnsLength = []
+        let text = ''
+        selections.forEach((item, index) => {
+          headerKeys.forEach((a, i) => {
+            if (!item[a]) item[a] = 'Empty'
             let lengthOfItem = item[a].toString().length || 0
             lengthOfItem -= a.length - 1
             if (lengthOfItem < 0) {
               lengthOfItem = 0
             }
 
-          if (columnsLength[i]) {
-            if (columnsLength[i] < lengthOfItem) {
-              columnsLength[i] = lengthOfItem
+            if (columnsLength[i]) {
+              if (columnsLength[i] < lengthOfItem) {
+                columnsLength[i] = lengthOfItem
+              }
+            } else {
+              columnsLength.push(lengthOfItem)
             }
-          } else {
-            columnsLength.push(lengthOfItem)
-          }
-          text += `${item[a]} `
+            text += `${item[a]} `
+          })
+          text += '\n'
         })
-        text += '\n'
-      })
 
-      const getHeader = headerText.reduce((acc, item, index) => {
-        acc += item
-        for (let i = 0; i < columnsLength[index]; i++) {
-          acc += '\xa0'
+        const getHeader = headerText.reduce((acc, item, index) => {
+          acc += item
+          for (let i = 0; i < columnsLength[index]; i++) {
+            acc += '\xa0'
+          }
+          return acc
+        }, '')
+
+        navigator.clipboard.writeText(text)
+      },
+      handleEdit(selections) {
+        if (typeof selections === 'object' && !this.multipleSelection.length) {
+          this.multipleSelection.push(selections)
         }
-        return acc
-      }, '')
+        // Edit actions should handle here.
+        // selections property is an array and has the selected row object data
+        if (selections) {
+          this.isWantToEditRow = true
+        } else {
+          // Nothing selected
+        }
+      },
+      handleDelete(selections) {
+        switch (this.refName) {
+          case 'investigationDetailsListTable':
+            this.$emit('deleteInvestigationDetailsFunction', selections)
+            break
 
-      navigator.clipboard.writeText(text)
-    },
-    handleEdit(selections) {
-      if (typeof selections === 'object' && !this.multipleSelection.length) {
-        this.multipleSelection.push(selections)
-      }
-      // Edit actions should handle here.
-      // selections property is an array and has the selected row object data
-      if (selections) {
-        this.isWantToEditRow = true
-      } else {
-        // Nothing selected
-      }
-    },
-    handleDelete(selections) {
-      switch (this.refName) {
-        case 'investigationDetailsListTable':
-          this.$emit('deleteInvestigationDetailsFunction', selections)
-          break
-
-        default:
-          break
-      }
-      // You should handle the Delete row action in here
-    },
-    handleWarning(selections) {
-      this.rowAct('sendWarningMessage', selections)
-    },
-    handleDeleteAndNotify(selections) {
-      this.rowAct('deleteAndNotifyInvestigationDetails', selections)
-    },
-    handleDownload(selections) {
-      // You should handle the Download row action in here
-    },
-    multipleValues(key, val) {
-      // This method controls whether selected items has same value or not
-      if (this.multipleSelection && this.multipleSelection.length > 1) {
-        const refThis = this
-        for (let a = 0; a < this.multipleSelection.length - 1; a++) {
-          let el = this.multipleSelection[a]
-          if (el[key] === refThis.multipleSelection[a + 1][key]) {
-            return false
-          } else {
-            return true
+          default:
+            break
+        }
+        // You should handle the Delete row action in here
+      },
+      handleWarning(selections) {
+        this.rowAct('sendWarningMessage', selections)
+      },
+      handleDeleteAndNotify(selections) {
+        this.rowAct('deleteAndNotifyInvestigationDetails', selections)
+      },
+      handleDownload(selections) {
+        // You should handle the Download row action in here
+      },
+      multipleValues(key, val) {
+        // This method controls whether selected items has same value or not
+        if (this.multipleSelection && this.multipleSelection.length > 1) {
+          const refThis = this
+          for (let a = 0; a < this.multipleSelection.length - 1; a++) {
+            let el = this.multipleSelection[a]
+            if (el[key] === refThis.multipleSelection[a + 1][key]) {
+              return false
+            } else {
+              return true
+            }
           }
         }
+      },
+      closeEditPopup() {
+        this.editMode = false
+        this.isWantToEditRow = false
+        this.multipleSelection = []
+      },
+      saveEditedOnes() {
+        // After user edited the row and pressed SAVE button
+        this.editMode = false
+        this.isWantToEditRow = false
+        this.multipleSelection = []
+      },
+      loadWithDataArray(data) {
+        this.initialData = data
+        this.tableData = data.slice(0, this.countRow || this.rowCount)
+      },
+      getChartSummary(property, seperator = '/') {
+        return property.join(seperator)
       }
-    },
-    closeEditPopup() {
-      this.editMode = false
-      this.isWantToEditRow = false
-      this.multipleSelection = []
-    },
-    saveEditedOnes() {
-      // After user edited the row and pressed SAVE button
-      this.editMode = false
-      this.isWantToEditRow = false
-      this.multipleSelection = []
-    },
-    loadWithDataArray(data) {
-      this.initialData = data
-      this.tableData = data.slice(0, this.countRow || this.rowCount)
-    },
-    getChartSummary(property, seperator = '/') {
-      return property.join(seperator)
     }
   }
-}
 </script>
 <style lang="scss" scoped>
-.external-data {
-  position: absolute;
-  right: 0px;
-  top: 10px;
-  border-radius: 4px;
-  background-color: #2196f3;
-  color: #ffffff;
-  width: 26px;
-  height: 25px;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  cursor: default;
-  z-index: 10;
-}
-
-.service-icon-content {
-  img {
-    max-width: 16px;
-    max-height: 16px;
-  }
-}
-
-.wrapper {
-  border-radius: 20px;
-  padding-bottom: 24px;
-  position: relative;
-  height: max-content;
-
-  @media only screen and (max-width: 500px) {
-    padding-bottom: 200px;
-  }
-
-  .card {
-    padding: 24px;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-    background-color: #fff;
-    display: flex;
+  .external-data {
+    position: absolute;
+    right: 0px;
+    top: 10px;
+    border-radius: 4px;
+    background-color: #2196f3;
+    color: #ffffff;
+    width: 26px;
+    height: 25px;
     justify-content: center;
-    flex-direction: column;
+    align-items: center;
+    display: flex;
+    cursor: default;
+    z-index: 10;
+  }
+
+  .service-icon-content {
+    img {
+      max-width: 16px;
+      max-height: 16px;
+    }
+  }
+
+  .wrapper {
+    border-radius: 20px;
+    padding-bottom: 24px;
+    position: relative;
+    height: max-content;
 
     @media only screen and (max-width: 500px) {
-      padding: 13px 0;
+      padding-bottom: 200px;
     }
 
-    .table-wrapper {
-      max-width: 100%;
-      height: auto;
-      position: relative;
-      display: block;
-      font-family: 'Open Sans', sans-serif !important;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12);
-      padding: 16px 0;
+    .card {
+      padding: 24px;
+      border-radius: 12px !important;
+      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
 
-      .table-container {
-        width: auto;
-        max-width: 100%;
-
-        #data-table-container {
-          margin-left: 0;
-        }
+      @media only screen and (max-width: 500px) {
+        padding: 13px 0;
       }
 
-      .settings-popup {
-        background-color: #fff;
-        top: 40px;
-        border: 1px solid #2196f3;
+      .table-wrapper {
+        max-width: 100%;
+        height: auto;
+        position: relative;
+        display: block;
+        font-family: 'Open Sans', sans-serif !important;
         border-radius: 12px;
         box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-          0 1px 1px -1px rgba(204, 204, 204, 0.12);
-        padding: 24px;
-        position: absolute;
-        right: 0;
-        transition: all 0.2s ease-in-out;
-        overflow: hidden;
-        z-index: 999999;
-        width: 277px;
+        0 1px 1px -1px rgba(204, 204, 204, 0.12);
+        padding: 16px 0;
 
-        .settings-header {
-          align-items: center;
-          display: flex;
-          justify-content: space-between;
-          flex-direction: row;
-          padding-bottom: 19px;
-
-          .settings-span {
-            text-overflow: ellipsis;
-            display: block;
-            overflow: hidden;
-            white-space: nowrap;
-            max-width: 100%;
-            font-size: 20px !important;
-            font-weight: 600 !important;
-          }
-
-          .close-icon {
-            cursor: pointer;
-          }
-
-          span {
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 24px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: 1.29;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-          }
-        }
-
-        .edit-actions {
+        .table-container {
+          width: auto;
           max-width: 100%;
-          display: flex;
-          flex-direction: row;
+
+          #data-table-container {
+            margin-left: 0;
+          }
         }
 
-        .edit-popup-body {
-          width: 100%;
-          position: relative;
+        .settings-popup {
+          background-color: #fff;
+          top: 40px;
+          border: 1px solid #2196f3;
+          border-radius: 12px;
+          box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+          0 1px 1px -1px rgba(204, 204, 204, 0.12);
+          padding: 24px;
+          position: absolute;
+          right: 0;
+          transition: all 0.2s ease-in-out;
+          overflow: hidden;
+          z-index: 999999;
+          width: 277px;
 
-          .items-wrapper {
-            > .row-edit-div {
-              width: 100%;
-              align-items: center;
-              display: flex;
-              flex-direction: row;
-              padding-bottom: 6px;
+          .settings-header {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            padding-bottom: 19px;
 
-              ::v-deep .v-input__slot {
-                box-shadow: unset !important;
-                border: 1px solid rgba(205, 205, 205, 0.5);
-                border-radius: 8px !important;
-              }
-
-              ::v-deep .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
-                min-height: 32px !important;
-              }
-
-              ::v-deep .v-text-field__details {
-                display: none !important;
-              }
-
-              ::v-deep input {
-                font-size: 13px !important;
-                padding: 6px 0 !important;
-              }
-            }
-
-            label {
-              width: 120px;
-              min-width: 120px;
-              text-transform: capitalize;
+            .settings-span {
               text-overflow: ellipsis;
-              white-space: nowrap;
               display: block;
               overflow: hidden;
-              font-family: 'Open Sans', sans-serif !important;
-              font-size: 12px;
-              font-weight: 600;
+              white-space: nowrap;
+              max-width: 100%;
+              font-size: 20px !important;
+              font-weight: 600 !important;
+            }
+
+            .close-icon {
+              cursor: pointer;
             }
 
             span {
-              max-width: 100%;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              display: block;
-              overflow: hidden;
               font-family: 'Open Sans', sans-serif !important;
-              font-size: 12px;
+              font-size: 24px;
+              font-weight: normal;
+              font-stretch: normal;
+              font-style: normal;
+              line-height: 1.29;
+              letter-spacing: normal;
+              color: rgba(0, 0, 0, 0.87);
             }
           }
-        }
 
-        .edit-popup-footer {
-          width: 360px;
-          height: 68px;
-          border-radius: 0;
-          background-color: #f1f8fe;
-          margin: -24px;
-          padding: 24px;
-          margin-top: 50px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-
-          .edit-footer-date {
-            min-width: 120px;
+          .edit-actions {
+            max-width: 100%;
             display: flex;
             flex-direction: row;
+          }
 
-            .edit-date-created {
-              display: flex;
-              flex-direction: column;
-              margin-right: 54px;
+          .edit-popup-body {
+            width: 100%;
+            position: relative;
+
+            .items-wrapper {
+              > .row-edit-div {
+                width: 100%;
+                align-items: center;
+                display: flex;
+                flex-direction: row;
+                padding-bottom: 6px;
+
+                ::v-deep .v-input__slot {
+                  box-shadow: unset !important;
+                  border: 1px solid rgba(205, 205, 205, 0.5);
+                  border-radius: 8px !important;
+                }
+
+                ::v-deep .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
+                  min-height: 32px !important;
+                }
+
+                ::v-deep .v-text-field__details {
+                  display: none !important;
+                }
+
+                ::v-deep input {
+                  font-size: 13px !important;
+                  padding: 6px 0 !important;
+                }
+              }
 
               label {
+                width: 120px;
+                min-width: 120px;
+                text-transform: capitalize;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+                overflow: hidden;
                 font-family: 'Open Sans', sans-serif !important;
                 font-size: 12px;
                 font-weight: 600;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: normal;
-                letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87);
               }
 
               span {
+                max-width: 100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+                overflow: hidden;
                 font-family: 'Open Sans', sans-serif !important;
-                font-size: 14px;
-                color: rgba(0, 0, 0, 0.87);
+                font-size: 12px;
+              }
+            }
+          }
+
+          .edit-popup-footer {
+            width: 360px;
+            height: 68px;
+            border-radius: 0;
+            background-color: #f1f8fe;
+            margin: -24px;
+            padding: 24px;
+            margin-top: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .edit-footer-date {
+              min-width: 120px;
+              display: flex;
+              flex-direction: row;
+
+              .edit-date-created {
+                display: flex;
+                flex-direction: column;
+                margin-right: 54px;
+
+                label {
+                  font-family: 'Open Sans', sans-serif !important;
+                  font-size: 12px;
+                  font-weight: 600;
+                  font-stretch: normal;
+                  font-style: normal;
+                  line-height: normal;
+                  letter-spacing: normal;
+                  color: rgba(0, 0, 0, 0.87);
+                }
+
+                span {
+                  font-family: 'Open Sans', sans-serif !important;
+                  font-size: 14px;
+                  color: rgba(0, 0, 0, 0.87);
+                }
+              }
+            }
+          }
+
+          .sub-header {
+            display: block;
+            font-family: 'Open Sans', sans-serif !important;
+            font-size: 16px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.75;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.87);
+            margin-bottom: 14px;
+          }
+
+          .popup-row {
+            align-items: center;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+
+            ::v-deep .v-input--selection-controls {
+              margin-top: 0 !important;
+
+              .accent--text {
+                color: #2196f3 !important;
+              }
+
+              .v-input__slot {
+                margin-bottom: 0 !important;
+              }
+
+              .v-messages {
+                display: none !important;
               }
             }
           }
         }
 
-        .sub-header {
-          display: block;
+        ::v-deep .el-table {
+          border-bottom: unset !important;
+          margin: 0 auto;
+          width: 100% !important;
+        }
+
+        ::v-deep .el-table::before {
+          display: none;
+        }
+
+        ::v-deep .el-table tr {
+          height: 45px !important;
+        }
+
+        ::v-deep .el-table td {
+          padding: 2px 0 !important;
+          height: 45px !important;
+          border: none !important;
+        }
+
+        ::v-deep .el-table th {
+          border-bottom: 1px solid #9e9e9e;
+          padding: 5px 0 !important;
+
+          .el-checkbox {
+            z-index: 2;
+          }
+
+          .el-checkbox__inner {
+            margin-bottom: 3px;
+          }
+        }
+
+        ::v-deep .el-table tr:nth-child(even) {
+          background-color: #fafafa;
+        }
+
+        ::v-deep .el-table .hover-row {
+          background-color: #f1f8fe !important;
+        }
+
+        ::v-deep .el-table td > .cell {
+          color: #212121;
           font-family: 'Open Sans', sans-serif !important;
-          font-size: 16px;
+          font-size: 14px;
+          white-space: nowrap !important;
+          width: 100%;
+        }
+
+        ::v-deep .el-table th > .cell {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 12px;
+          font-weight: 600;
+          line-height: 1.3rem;
+          color: #000000;
+          min-height: 21px;
+
+          .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+            background-color: #2196f3;
+            border-color: #2196f3 !important;
+          }
+
+          .el-checkbox__input.is-checked .el-checkbox__inner {
+            background-color: #2196f3;
+            border-color: #2196f3 !important;
+          }
+
+          .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+            content: '';
+            position: absolute;
+            display: block;
+            background-color: #fff;
+            height: 3px;
+            left: -1.4px;
+            right: 0;
+            top: 5px;
+            width: 16px;
+          }
+        }
+
+        ::v-deep .el-checkbox__input {
+          line-height: 0;
+        }
+
+        ::v-deep .el-checkbox__inner {
+          border: 1.5px solid #757575;
+          border-radius: 3px;
+          height: 16px;
+          width: 16px;
+        }
+
+        ::v-deep .el-checkbox__input.is-checked > .el-checkbox__inner {
+          border: 1.5px solid #2196f3;
+        }
+
+        ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner::after {
+          border: 1.3px solid #fff;
+          border-left: 0;
+          border-top: 0;
+          height: 8px;
+          left: 4px;
+          top: 0px;
+          width: 4px;
+        }
+
+        ::v-deep .v-progress-linear {
+          margin-bottom: 7px !important;
+          margin-top: 5px !important;
+        }
+
+        .progress-per {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 10px;
           font-weight: normal;
           font-stretch: normal;
           font-style: normal;
-          line-height: 1.75;
+          line-height: 1.9;
           letter-spacing: normal;
+          text-align: center;
           color: rgba(0, 0, 0, 0.87);
-          margin-bottom: 14px;
         }
 
-        .popup-row {
-          align-items: center;
-          padding-bottom: 10px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-
-          ::v-deep .v-input--selection-controls {
-            margin-top: 0 !important;
-
-            .accent--text {
-              color: #2196f3 !important;
-            }
-
-            .v-input__slot {
-              margin-bottom: 0 !important;
-            }
-
-            .v-messages {
-              display: none !important;
-            }
-          }
-        }
-      }
-
-      ::v-deep .el-table {
-        border-bottom: unset !important;
-        margin: 0 auto;
-        width: 100% !important;
-      }
-
-      ::v-deep .el-table::before {
-        display: none;
-      }
-
-      ::v-deep .el-table tr {
-        height: 45px !important;
-      }
-
-      ::v-deep .el-table td {
-        padding: 2px 0 !important;
-        height: 45px !important;
-        border: none !important;
-      }
-
-      ::v-deep .el-table th {
-        border-bottom: 1px solid #9e9e9e;
-        padding: 5px 0 !important;
-
-        .el-checkbox {
-          z-index: 2;
-        }
-
-        .el-checkbox__inner {
-          margin-bottom: 3px;
-        }
-      }
-
-      ::v-deep .el-table tr:nth-child(even) {
-        background-color: #fafafa;
-      }
-
-      ::v-deep .el-table .hover-row {
-        background-color: #f1f8fe !important;
-      }
-
-      ::v-deep .el-table td > .cell {
-        color: #212121;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px;
-        white-space: nowrap !important;
-        width: 100%;
-      }
-
-      ::v-deep .el-table th > .cell {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 1.3rem;
-        color: #000000;
-        min-height: 21px;
-
-        .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-          background-color: #2196f3;
-          border-color: #2196f3 !important;
-        }
-
-        .el-checkbox__input.is-checked .el-checkbox__inner {
-          background-color: #2196f3;
-          border-color: #2196f3 !important;
-        }
-
-        .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
-          content: '';
-          position: absolute;
-          display: block;
-          background-color: #fff;
-          height: 3px;
-          left: -1.4px;
-          right: 0;
-          top: 5px;
-          width: 16px;
-        }
-      }
-
-      ::v-deep .el-checkbox__input {
-        line-height: 0;
-      }
-
-      ::v-deep .el-checkbox__inner {
-        border: 1.5px solid #757575;
-        border-radius: 3px;
-        height: 16px;
-        width: 16px;
-      }
-
-      ::v-deep .el-checkbox__input.is-checked > .el-checkbox__inner {
-        border: 1.5px solid #2196f3;
-      }
-
-      ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner::after {
-        border: 1.3px solid #fff;
-        border-left: 0;
-        border-top: 0;
-        height: 8px;
-        left: 4px;
-        top: 0px;
-        width: 4px;
-      }
-
-      ::v-deep .v-progress-linear {
-        margin-bottom: 7px !important;
-        margin-top: 5px !important;
-      }
-
-      .progress-per {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 10px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.9;
-        letter-spacing: normal;
-        text-align: center;
-        color: rgba(0, 0, 0, 0.87);
-      }
-
-      .btn-status {
-        border-radius: 18px !important;
-        box-shadow: unset !important;
-        color: #fff;
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 14px !important;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.71;
-        margin-bottom: 3px;
-        margin: 0 auto;
-        text-transform: capitalize;
-          min-width: 96px !important;
-        max-width: 125px !important;
-        height: 32px !important;
-      }
-
-      .btn-pending {
-        background-color: #00bcd4;
-      }
-
-      .btn-active {
-        background-color: #2196f3;
-      }
-
-      .btn-low {
-        background-color: #00bcd4;
-      }
-
-      .btn-very_low {
-        background-color: #757575;
-      }
-
-      .btn-high {
-        background-color: #e6a23c;
-      }
-
-      .btn-very_high {
-        background-color: #f56c6c;
-      }
-
-      .btn-add {
-        width: 36px;
-        height: 36px;
-        border-radius: 18px;
-        box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
-        background-color: #2196f3;
-        color: white;
-
-        .v-icon {
-          font-size: 18px !important;
-        }
-      }
-
-      .btn-inactive {
-        background-color: #f56c6c;
-      }
-
-      .btn-warning {
-        background-color: #e6a23c;
-      }
-
-      .btn-cancelled,
-      .btn-offline {
-        background-color: #f56c6c;
-      }
-
-      .btn-primary {
-        background-color: #2196f3;
-      }
-
-      .btn-none,
-      .btn-quedued,
-      .btn-online {
-        background-color: #00bcd4;
-      }
-
-      .btn-success {
-        background-color: #43a047;
-      }
-
-      .btn-no_match {
-        background-color: #757575;
-      }
-
-      ::v-deep .selected-row {
-        background-color: #bde0ff !important;
-      }
-
-      .selection-row {
-        align-items: center;
-        background-color: #2196f3;
-        display: flex;
-        height: 47px;
-        padding: 0 12px;
-        position: absolute;
-        top: 75px;
-        width: 100%;
-        z-index: 9;
-
-        .selection-span {
-          font-family: 'Open Sans', sans-serif;
-          font-size: 12px;
+        .btn-status {
+          border-radius: 18px !important;
+          box-shadow: unset !important;
+          color: #fff;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 14px !important;
           font-weight: 600;
           font-stretch: normal;
           font-style: normal;
-          line-height: normal;
-          letter-spacing: normal;
-          color: #fff;
-          margin-left: 20px;
+          line-height: 1.71;
+          margin-bottom: 3px;
+          margin: 0 auto;
+          text-transform: capitalize;
+          min-width: 96px !important;
+          max-width: 125px !important;
+          height: 32px !important;
         }
 
-        .action-icons {
-          margin-left: 109px;
+        .btn-pending {
+          background-color: #00bcd4;
+        }
 
-          .selection-icons {
+        .btn-active {
+          background-color: #2196f3;
+        }
+
+        .btn-low {
+          background-color: #00bcd4;
+        }
+
+        .btn-very_low {
+          background-color: #757575;
+        }
+
+        .btn-high {
+          background-color: #e6a23c;
+        }
+
+        .btn-very_high {
+          background-color: #f56c6c;
+        }
+
+        .btn-add {
+          width: 36px;
+          height: 36px;
+          border-radius: 18px;
+          box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+          background-color: #2196f3;
+          color: white;
+
+          .v-icon {
+            font-size: 18px !important;
+          }
+        }
+
+        .btn-inactive {
+          background-color: #f56c6c;
+        }
+
+        .btn-warning {
+          background-color: #e6a23c;
+        }
+
+        .btn-cancelled,
+        .btn-offline {
+          background-color: #f56c6c;
+        }
+
+        .btn-primary {
+          background-color: #2196f3;
+        }
+
+        .btn-none,
+        .btn-quedued,
+        .btn-online {
+          background-color: #00bcd4;
+        }
+
+        .btn-success {
+          background-color: #43a047;
+        }
+
+        .btn-no_match {
+          background-color: #757575;
+        }
+
+        ::v-deep .selected-row {
+          background-color: #bde0ff !important;
+        }
+
+        .selection-row {
+          align-items: center;
+          background-color: #2196f3;
+          display: flex;
+          height: 47px;
+          padding: 0 12px;
+          position: absolute;
+          top: 75px;
+          width: 100%;
+          z-index: 9;
+
+          .selection-span {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: #fff;
+            margin-left: 20px;
+          }
+
+          .action-icons {
+            margin-left: 109px;
+
+            .selection-icons {
+              cursor: pointer;
+            }
+          }
+        }
+
+        .table-header {
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding-bottom: 20px;
+          position: relative;
+          width: 100%;
+          min-height: 50px;
+
+          @media only screen and (max-width: 500px) {
+            flex-direction: column;
+            .table-search {
+              width: 100% !important;
+            }
+          }
+
+          .table-search {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            height: 40px;
+            width: 60%;
+
+            ::v-deep .v-text-field.v-text-field--enclosed {
+              height: 40px !important;
+            }
+          }
+
+          .table-settings {
+            cursor: pointer;
+
+            @media only screen and (max-width: 500px) {
+              padding-right: 0;
+              padding-top: 13px;
+            }
+          }
+
+          ::v-deep label {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 13px !important;
+            font-weight: 600;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.54);
+          }
+
+          > div {
+            padding-right: 10px;
+          }
+
+          .filter-icon {
             cursor: pointer;
           }
         }
       }
 
-      .table-header {
+      .pagination {
+        padding-top: 20px;
         align-items: center;
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding-bottom: 20px;
-        position: relative;
+        justify-content: flex-end;
         width: 100%;
-        min-height: 50px;
+      }
 
-        @media only screen and (max-width: 500px) {
-          flex-direction: column;
-          .table-search {
-            width: 100% !important;
-          }
-        }
+      ::v-deep .el-pagination .el-select .el-input {
+        width: 90px;
 
-        .table-search {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          height: 40px;
-          width: 60%;
-
-          ::v-deep .v-text-field.v-text-field--enclosed {
-            height: 40px !important;
-          }
-        }
-
-        .table-settings {
-          cursor: pointer;
-
-          @media only screen and (max-width: 500px) {
-            padding-right: 0;
-            padding-top: 13px;
-          }
-        }
-
-        ::v-deep label {
-          font-family: 'Open Sans', sans-serif;
-          font-size: 13px !important;
-          font-weight: 600;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: normal;
-          letter-spacing: normal;
-          color: rgba(0, 0, 0, 0.54);
-        }
-
-        > div {
-          padding-right: 10px;
-        }
-
-        .filter-icon {
-          cursor: pointer;
+        .el-input__inner {
+          background-color: #f2f2f2;
         }
       }
-    }
 
-    .pagination {
-      padding-top: 20px;
-      align-items: center;
+      ::v-deep .el-select .el-input .el-select__caret {
+        color: rgba(0, 0, 0, 0.87);
+        font-weight: 700;
+      }
+
+      ::v-deep .el-pager {
+        padding-left: 0 !important;
+      }
+
+      ::v-deep .el-pager > li {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 12px;
+        min-width: 13px;
+      }
+    }
+  }
+
+  .v-tooltip__content {
+    background: #6d6d6d !important;
+  }
+
+  ::v-deep .tooltip-line {
+    font-size: 12px !important;
+    font-family: 'Open Sans', sans-serif !important;
+    margin-bottom: 3px !important;
+  }
+
+  ::v-deep .k-grid td.k-state-selected,
+  ::v-deep .k-grid tr.k-state-selected > td {
+    background-color: rgba(0, 188, 212, 0.05) !important;
+  }
+
+  .v-list-item__subtitle {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.2 !important;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+    margin-left: 2px;
+  }
+
+  .v-sheet {
+    border-radius: 20px !important;
+  }
+
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
+
+  .table-row .wrapper .download-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 420px;
+    min-height: 300px;
+    position: relative;
+    border-radius: 12px !important;
+    padding: 16px !important;
+
+    .check-wrapper {
       display: flex;
-      justify-content: flex-end;
+      flex-direction: column;
+
+      .check-row {
+        padding-left: 70px;
+        width: 100%;
+
+        ::v-deep .v-input--selection-controls.v-input {
+          margin-top: 0 !important;
+        }
+
+        ::v-deep .v-label {
+          font-size: 14px !important;
+        }
+
+        ::v-deep .v-messages {
+          display: none;
+        }
+      }
+
+      .check-row:first-child {
+        padding-top: 27px;
+      }
+
+      .check-row:last-child {
+        padding-bottom: 18px;
+      }
+    }
+
+    .download-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 10px;
       width: 100%;
-    }
-
-    ::v-deep .el-pagination .el-select .el-input {
-      width: 90px;
-
-      .el-input__inner {
-        background-color: #f2f2f2;
-      }
-    }
-
-    ::v-deep .el-select .el-input .el-select__caret {
-      color: rgba(0, 0, 0, 0.87);
-      font-weight: 700;
-    }
-
-    ::v-deep .el-pager {
-      padding-left: 0 !important;
-    }
-
-    ::v-deep .el-pager > li {
-      font-family: 'Open Sans', sans-serif;
-      font-size: 12px;
-      min-width: 13px;
-    }
-  }
-}
-
-.v-tooltip__content {
-  background: #6d6d6d !important;
-}
-
-::v-deep .tooltip-line {
-  font-size: 12px !important;
-  font-family: 'Open Sans', sans-serif !important;
-  margin-bottom: 3px !important;
-}
-
-::v-deep .k-grid td.k-state-selected,
-::v-deep .k-grid tr.k-state-selected > td {
-  background-color: rgba(0, 188, 212, 0.05) !important;
-}
-
-.v-list-item__subtitle {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.2 !important;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
-  margin-left: 2px;
-}
-
-.v-sheet {
-  border-radius: 20px !important;
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #2196f3;
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.table-row .wrapper .download-card {
-  display: flex;
-  flex-direction: column;
-  min-width: 420px;
-  min-height: 300px;
-  position: relative;
-  border-radius: 12px !important;
-  padding: 16px !important;
-
-  .check-wrapper {
-    display: flex;
-    flex-direction: column;
-
-    .check-row {
-      padding-left: 70px;
-      width: 100%;
-
-      ::v-deep .v-input--selection-controls.v-input {
-        margin-top: 0 !important;
-      }
-
-      ::v-deep .v-label {
-        font-size: 14px !important;
-      }
-
-      ::v-deep .v-messages {
-        display: none;
-      }
-    }
-
-    .check-row:first-child {
-      padding-top: 27px;
-    }
-
-    .check-row:last-child {
-      padding-bottom: 18px;
+      padding: 0 16px;
     }
   }
 
-  .download-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    padding: 0 16px;
+  .btn-hover:hover {
+    color: #2196f3;
   }
-}
 
-.btn-hover:hover {
-  color: #2196f3;
-}
+  .btn-selected-hover {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
 
-.btn-selected-hover {
-  color: rgba(0, 0, 0, 0.87) !important;
-}
+  .tooltip-span {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: rgba(255, 255, 255, 0.87);
+  }
 
-.tooltip-span {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: rgba(255, 255, 255, 0.87);
-}
+  ::v-deep .v-sheet {
+    border-radius: unset !important;
+  }
 
-::v-deep .v-sheet {
-  border-radius: unset !important;
-}
+  .chart__summary-text {
+    margin-top: -18px;
+    margin-left: 2px;
+    font-family: OpenSans;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.9;
+    letter-spacing: normal;
+    text-align: center;
+  }
 
-.chart__summary-text {
-  margin-top: -18px;
-  margin-left: 2px;
-  font-family: OpenSans;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.9;
-  letter-spacing: normal;
-  text-align: center;
-}
+  .sub-menu-el {
+    cursor: pointer;
+  }
 
-.sub-menu-el {
-  cursor: pointer;
-}
+  .sub-element-wrapper {
+    cursor: pointer;
+  }
 
-.sub-element-wrapper {
-  cursor: pointer;
-}
-
-.empty-table {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 300px;
-  width: 100%;
-
-  .empty-inline {
+  .empty-table {
     display: flex;
-    align-items: center;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    width: 100%;
 
-    h2 {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 24px;
-      line-height: 1.29;
-      font-weight: 400 !important;
-      color: rgba(0, 0, 0, 0.87);
-      padding-bottom: 16px;
-      margin-bottom: 0 !important;
-    }
+    .empty-inline {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
 
-    p {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.87);
-      margin-bottom: 8px !important;
-    }
+      h2 {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 24px;
+        line-height: 1.29;
+        font-weight: 400 !important;
+        color: rgba(0, 0, 0, 0.87);
+        padding-bottom: 16px;
+        margin-bottom: 0 !important;
+      }
 
-    .empty-btn {
-      border-radius: 18px;
-      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-      text-transform: capitalize !important;
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      height: 36px !important;
+      p {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.87);
+        margin-bottom: 8px !important;
+      }
+
+      .empty-btn {
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+        background-color: #2196f3 !important;
+        color: #fff !important;
+        text-transform: capitalize !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        height: 36px !important;
+      }
     }
   }
-}
 
-::v-deep .el-table__body,
-.el-table__footer,
-.el-table__header {
-  border-collapse: collapse !important;
-}
-
-.sub-menu-sub {
-  left: unset !important;
-  right: 220px !important;
-}
-
-::v-deep .el-table [class*='el-table__row--level'] .el-table__expand-icon {
-  float: right !important;
-  margin-top: 2px;
-
-  .el-icon-arrow-right:before {
-    font-weight: 900;
-    font-size: 15px;
+  ::v-deep .el-table__body,
+  .el-table__footer,
+  .el-table__header {
+    border-collapse: collapse !important;
   }
-}
 
-.cluster-btn {
-  background-color: #2196f3 !important;
-  color: #fff;
-  width: 60px !important;
-}
-
-.chevron-down {
-  transition: 0.3s all ease-in-out;
-  transform: rotate(180deg);
-}
-
-.header-list-item {
-  border-left: 2px solid white;
-  margin-left: 5px;
-  height: 34px;
-  width: 16px;
-
-  .v-icon {
-    margin-top: 5px;
-    margin-left: -1px;
+  .sub-menu-sub {
+    left: unset !important;
+    right: 220px !important;
   }
-}
 
-.clust-btn {
-  height: 34px;
-}
+  ::v-deep .el-table [class*='el-table__row--level'] .el-table__expand-icon {
+    float: right !important;
+    margin-top: 2px;
 
-::v-deep .cluster-label {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: 600;
-}
+    .el-icon-arrow-right:before {
+      font-weight: 900;
+      font-size: 15px;
+    }
+  }
 
-.cluster-span {
-  padding-right: 8px;
-}
+  .cluster-btn {
+    background-color: #2196f3 !important;
+    color: #fff;
+    width: 60px !important;
+  }
 
-/*.date-format {
-          text-align: left !important;
-          span {
-            text-overflow: ellipsis;
-            white-space: normal;
-          }
-        }*/
+  .chevron-down {
+    transition: 0.3s all ease-in-out;
+    transform: rotate(180deg);
+  }
+
+  .header-list-item {
+    border-left: 2px solid white;
+    margin-left: 5px;
+    height: 34px;
+    width: 16px;
+
+    .v-icon {
+      margin-top: 5px;
+      margin-left: -1px;
+    }
+  }
+
+  .clust-btn {
+    height: 34px;
+  }
+
+  ::v-deep .cluster-label {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .cluster-span {
+    padding-right: 8px;
+  }
+
+  /*.date-format {
+            text-align: left !important;
+            span {
+              text-overflow: ellipsis;
+              white-space: normal;
+            }
+          }*/
 </style>
 <!--
   DataTable COMPONENT

@@ -11,7 +11,7 @@
           </v-list-item-content>
         </template>
         <v-list-item>
-          <v-list-item-content>
+          <v-list-item-content style="padding:12px 0 !important;">
             <div>
               <v-checkbox v-model="formValues.deleteOriginalMail" class="checkbox-text mt-4"
                           color="#2196f3"
@@ -109,7 +109,7 @@
           </v-list-item-content>
         </template>
         <v-list-item>
-          <v-list-item-content>
+          <v-list-item-content style="padding:12px 0 !important;">
             <v-checkbox v-model="formValues.enableEnterpriseVault" class="checkbox-text mt-2"
                         @change="handleEnterpriseVaultChange"
                         color="#2196f3"
