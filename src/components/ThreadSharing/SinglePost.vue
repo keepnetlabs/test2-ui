@@ -713,8 +713,16 @@
                   <div v-else class="attach-icon blue-icon">
                     <v-icon color="white" style="font-size: 20px">mdi-paperclip</v-icon>
                   </div>
-                  <div v-if="att.IsShow" class="file-name max-char pl-2">{{ att.Name }}</div>
-                  <div v-if="!att.IsShow" class="file-name max-char pl-2">hidden by owner</div>
+                  <v-tooltip bottom opacity="1" z-index="9999">
+                    <template v-slot:activator="{on}">
+                      <div v-on="on" v-if="att.IsShow" class="file-name max-char pl-2">{{ att.Name }}</div>
+                      <div v-on="on" v-if="!att.IsShow" class="file-name max-char pl-2">hidden by owner</div>
+                    </template>
+                    <span>{{
+                            att.IsShow ? att.Name : 'hidden by owner'
+                      }}</span>
+                  </v-tooltip>
+
                 </div>
               </div>
             </div>
@@ -1129,9 +1137,6 @@
         return this.shareSettings.attachments.some(at => at.IsMalicious === true)
       }
     },
-    mounted() {
-      console.log(this.post)
-    }
   }
 </script>
 
