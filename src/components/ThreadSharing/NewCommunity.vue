@@ -97,35 +97,37 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-export default {
-  data() {
-    return {
-      name: '',
-      description: '',
-      privacy: false,
-      categories: [],
-      selectedCategory: '',
-      valid: false,
-      nameRules: {
-        required: v =>
-          (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
-        regex: v =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ,.\-_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space',
-      },
-      descriptionRules: {
-        required: v =>
-          (!!v && v.length >= 5 && v.length <= 300) ||
-          'Description required and must between 5-300 characters.',
-        regex: v =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
-      },
-      categoryRules: {
-        required: v => (!!v && v.length < 1) || 'Category required for creating a community'
+  import {mapGetters} from 'vuex'
+
+  export default {
+    data() {
+      return {
+        name: '',
+        description: '',
+        privacy: false,
+        categories: [],
+        selectedCategory: '',
+        valid: false,
+        nameRules: {
+          required: v =>
+            (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
+          regex: v =>
+            /^[A-Za-z0-9ışŞğĞçÇöÖüÜ,.\-_\s]*$/gi.test(v) ||
+            'Only use letters, digits, period, comma, underline and hyphen',
+          empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+        },
+        descriptionRules: {
+          required: v =>
+            (!!v && v.length >= 5 && v.length <= 300) ||
+            'Description required and must between 5-300 characters.',
+          regex: v =>
+            /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+            'Only use letters, digits, period, comma, underline and hyphen',
+          empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        },
+        categoryRules: {
+          required: v => (!!v && v.length < 1) || 'Category required for creating a community'
+        }
       }
     },
     computed: {
