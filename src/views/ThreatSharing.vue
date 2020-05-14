@@ -362,12 +362,14 @@
       window.removeEventListener('resize', this.onResize)
     },
     beforeRouteLeave(to, from, next) {
-
       if (this.isWantToAddNewCommunity) {
         this.onAddClose()
         next(false)
       } else if (this.$refs.refIncidents.isWantToInvestigate) {
         this.$refs.refIncidents.isWantToInvestigate = false
+        next(false)
+      } else if (this.$refs.refIncidents.isWantToShareIncident) {
+        this.$refs.refIncidents.isWantToShareIncident = false
         next(false)
       } else {
         next()

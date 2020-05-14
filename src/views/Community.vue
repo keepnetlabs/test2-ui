@@ -260,7 +260,7 @@
       color="white"
       class="post-incident-overlay"
     >
-      <post-incident @closePostIncident="closePost()"/>
+      <post-incident @closePostIncident="closePost()"  :communityName="selectedCommunity.name"/>
     </v-overlay>
     <v-overlay
       id="mobile-right-column-overlay"
