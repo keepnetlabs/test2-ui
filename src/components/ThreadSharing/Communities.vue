@@ -113,7 +113,8 @@
                       comp.BusinessCategoryText,
                       comp.IsPrivate,
                       comp.CreateUserId,
-                      comp.CommunityCompany[0].CompanyId
+                      comp.CommunityCompany[0].CompanyId,
+                      isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
                     )
                   "
                 >
@@ -537,7 +538,7 @@
         localStorage.setItem('creatorId', creator)
         this.$emit('edit-community')
       },
-      goToCommunity(name, communityId, description, category, privacy, creator, communCompId) {
+      goToCommunity(name, communityId, description, category, privacy, creator, communCompId, isOwner) {
         if (!this.isJoined(communityId) && privacy) {
           return
         }
@@ -549,6 +550,7 @@
         localStorage.setItem('creatorId', creator)
         localStorage.setItem('communityId', communityId)
         localStorage.setItem('communityCompanyId', communCompId)
+        localStorage.setItem('isOwner', isOwner)
         this.$router.push({ path: `/Community/${name}` })
         this.$store.dispatch('threadSharing/setSelectedCommunity', {
           id: communityId,
@@ -556,7 +558,8 @@
           description: description,
           industry: category,
           privacy: privacy,
-          communityCompanyId: communCompId
+          communityCompanyId: communCompId,
+          isOwner: isOwner
         })
       },
       isJoined(id) {

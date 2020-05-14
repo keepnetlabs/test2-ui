@@ -171,7 +171,7 @@ const threadSharing = {
     },
     SET_SELECTED_COMMUNITY(
       state,
-      { id, name, description, industry, privacy, communityCompanyId }
+      { id, name, description, industry, privacy, communityCompanyId, isOwner }
     ) {
       state.selectedCommunity.id = id
       state.selectedCommunity.name = name
@@ -179,6 +179,7 @@ const threadSharing = {
       state.selectedCommunity.industry = industry
       state.selectedCommunity.privacy = privacy
       if (communityCompanyId) state.selectedCommunity.communityCompanyId = communityCompanyId
+      state.selectedCommunity.isOwner = isOwner
     },
     SET_MEMBERS(state, payload) {
       state.members = payload
@@ -321,7 +322,7 @@ const threadSharing = {
     },
     setSelectedCommunity(
       { commit },
-      { id, name, description, industry, privacy, communityCompanyId }
+      { id, name, description, industry, privacy, communityCompanyId, isOwner }
     ) {
       commit('SET_SELECTED_COMMUNITY', {
         id,
@@ -329,7 +330,8 @@ const threadSharing = {
         description,
         industry,
         privacy,
-        communityCompanyId
+        communityCompanyId,
+        isOwner
       })
       localStorage.setItem('communityId', id)
       localStorage.setItem('communityName', name)
@@ -337,6 +339,7 @@ const threadSharing = {
       localStorage.setItem('communityCat', industry)
       localStorage.setItem('communityPrivacy', privacy)
       localStorage.setItem('communityCompanyId', communityCompanyId)
+      localStorage.setItem('isOwner', isOwner)
     },
     async createCommunity({ commit, dispatch }, obj) {
       await saveNewCommunity(obj)
