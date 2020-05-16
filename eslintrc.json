@@ -6,21 +6,27 @@
       "jsx": true
     }
   },
-  "prettier/prettier": [
-    "warn",
-    {
-      "#": "prettier config in here :)",
-      "singleQuote": true,
-      "semi": false,
-      "trailingComma": "none",
-      "no-unused-vars": false,
-      "vue/no-use-v-if-with-v-for": [
-        "warn",
-        {
-          "allowUsingIterationVar": false
-        }
-      ],
-      "vue/require-v-for-key": "none"
-    }
-  ]
+  "plugins": [
+    "prettier"
+  ],
+  "extends": ["plugin:prettier/recommended"],
+  "rules": {
+    "prettier/prettier": [
+      "warn",
+      {
+        "#": "prettier config in here :)",
+        "singleQuote": true,
+        "semi": false,
+        "trailingComma": "none",
+        "no-unused-vars": false,
+        "vue/no-use-v-if-with-v-for": [
+          "warn",
+          {
+            "allowUsingIterationVar": true
+          }
+        ],
+        "vue/require-v-for-key": false
+      }
+    ]
+  }
 }
