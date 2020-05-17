@@ -320,19 +320,23 @@
               <span class="tooltip-span">Add</span>
             </v-tooltip>
 
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  class="btn-add mr-1"
-                  icon
-                  v-if="addButton && addButton.show && addButton.action"
-                  v-on="on"
-                >
-                  <v-icon @click="addButtonFunction(addButton.action)">mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">Add</span>
-            </v-tooltip>
+            <slot name="addUsers">
+              <v-tooltip bottom opacity="1">
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    class="btn-add mr-1"
+                    icon
+                    v-if="addButton && addButton.show && addButton.action"
+                    v-on="on"
+                  >
+                    <v-icon @click="addButtonFunction(addButton.action)">mdi-plus</v-icon>
+                  </v-btn>
+                </template>
+                <span class="tooltip-span">{{
+                  (addButton && addButton.tooltip) || 'Add Users'
+                }}</span>
+              </v-tooltip>
+            </slot>
 
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
@@ -850,8 +854,11 @@
                         scope.row.priority === 'Low' ? 'btn-low' : '',
                         scope.row.priority === 'Very Low' ? 'btn-very_low' : '',
                         scope.row.priority === 'High' ? 'btn-high' : '',
+                        scope.row.priority === 'Medium' ? 'btn-active' : '',
                         scope.row.priority === 'Very High' ? 'btn-very_high' : '',
-                        scope.row.priority === 'N/A' ? 'btn-none' : ''
+                        scope.row.priority === 'N/A' ? 'btn-none' : '',
+
+                        col.fullWidth ? 'full-width' : ''
                       ]"
                       block
                       rounded
@@ -890,7 +897,7 @@
                 >
                   <v-icon>{{ rowActions[0].icon }}</v-icon>
                 </v-btn>
-                <v-menu offset-y transition="scale-transition">
+                <v-menu offset-y transition="scale-transition" bottom left>
                   <template v-slot:activator="{ on }">
                     <v-btn class="btn-hover" icon v-on="on">
                       <v-icon>mdi-dots-vertical</v-icon>
@@ -901,7 +908,7 @@
                       :key="ind"
                       class="sub-menu-el"
                       v-for="(act, ind) of rowActions"
-                      v-if="!act.subElements"
+                      v-if="!act.subElements && !act.isNotShow"
                     >
                       <v-list-item-title @click="rowAct(act.action, scope.row)">
                         <v-icon class="pr-3">{{ act.icon }}</v-icon>
@@ -922,7 +929,11 @@
                           </v-list-item-title>
                         </template>
                         <v-list>
-                          <v-list-item :key="ind" v-for="(item, ind) of act.subElements">
+                          <v-list-item
+                            :key="item"
+                            v-for="item of act.subElements"
+                            @click="handleSubMenuItemClick(item)"
+                          >
                             {{ item }}
                           </v-list-item>
                         </v-list>
@@ -1290,6 +1301,9 @@ export default {
     downloadEvent(e) {
       this.$emit('downloadEvent', this.downloadType)
     },
+    handleSubMenuItemClick(item) {
+      this.$emit('submenuItemClick', item)
+    },
     toggleAll() {
       this.$refs.elTableRef.toggleAllSelection()
     },
@@ -1322,6 +1336,7 @@ export default {
             this.multipleSelection.length > 0 ? this.multipleSelection : row
           )
           break
+        case 'delete':
         default:
           this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
           return false

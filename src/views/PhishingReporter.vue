@@ -185,7 +185,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
-    if (refs.refFirstTime.showAddInConfiguration) {
+    if (refs && refs.refFirstTime && refs.refFirstTime.showAddInConfiguration) {
       refs.refFirstTime.showAddInConfiguration = false
       next(false)
     } else {
