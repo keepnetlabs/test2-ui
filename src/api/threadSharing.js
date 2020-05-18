@@ -144,3 +144,6 @@ export function checkShareMail(email) {
 export function shareIncidentsWithMails(shareArr) {
   return webRequest.post(`CommunityPostInner/SharePost`, shareArr)
 }
+export function checkCommunNameForUpdate(obj) {
+  return webRequest.get(`CommunityInner/NameControlUpdate?Name=${obj.name}&communityId=${obj.communId}`)
+}

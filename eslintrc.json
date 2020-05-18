@@ -15,7 +15,7 @@
       "trailingComma": "none",
       "no-unused-vars": false,
       "vue/no-use-v-if-with-v-for": [
-        "warn",
+        "none",
         {
           "allowUsingIterationVar": false
         }
