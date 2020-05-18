@@ -1622,7 +1622,7 @@
                       <div id="last-step-preview-buttons" class="preview-buttons">
                         <v-btn id="last-step-useful-btn">
                           <v-icon>mdi-thumb-up</v-icon>
-                          Useful 7
+                          Useful 0
                         </v-btn>
                         <v-btn
                           id="last-step-comment-opened"
@@ -1630,7 +1630,7 @@
                           @click="commentOpened = !commentOpened"
                         >
                           <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
-                          Comments (4)
+                          Comments (0)
                         </v-btn>
                       </div>
                       <div
