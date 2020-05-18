@@ -1615,9 +1615,9 @@ export default {
   .right-col-desktop {
     display: none !important;
   }
-
-  ::v-deep .text-decoration-none{
-    text-decoration: none !important;
-    text-decoration-line: none !important;
-  }
+}
+::v-deep .text-decoration-none {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
 </style>
