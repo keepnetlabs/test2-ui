@@ -611,11 +611,15 @@ const threadSharing = {
         .then(() => {
           dispatch('common/setSnackStatus', true, { root: true })
           if (privacy) {
-            dispatch('common/setErrorMessage', `Join Request successfully sent to  ${obj.Name}`, {
-              root: true
-            })
+            dispatch(
+              'common/setErrorMessage',
+              `Your request to join “${obj.Name}” has been delivered`,
+              {
+                root: true
+              }
+            )
           } else {
-            dispatch('common/setErrorMessage', `You joined ${obj.Name}`, { root: true })
+            dispatch('common/setErrorMessage', `You joined ”${obj.Name}”`, { root: true })
           }
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           dispatch('getCommunities')
@@ -658,9 +662,11 @@ const threadSharing = {
           })
         })
     },
-    investigationStarted({ commit, dispatch }) {
+    investigationStarted({ commit, dispatch }, payload) {
       dispatch('common/setSnackStatus', true, { root: true })
-      dispatch('common/setErrorMessage', 'The Investigation has started.', { root: true })
+      dispatch('common/setErrorMessage', `Investigation has been started for “${payload.title}”.`, {
+        root: true
+      })
       commit('common/SET_SNACKBAR_COLOR', '#43a047', { root: true })
     },
     postIncident({ commit, dispatch }, incident) {
@@ -793,9 +799,13 @@ const threadSharing = {
               root: true
             })
           } else {
-            commit('common/SET_ERROR_MESSAGE', `You posted “${obj.Title}” incident`, {
-              root: true
-            })
+            commit(
+              'common/SET_ERROR_MESSAGE',
+              `You posted “${obj.Title}” incident in ${state.selectedCommunity.name}`,
+              {
+                root: true
+              }
+            )
           }
           dispatch('fetchCommunityPosts', obj)
           commit('SET_INCIDENT_EDIT_STATUS', false)
