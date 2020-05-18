@@ -80,6 +80,7 @@
               :key="ind"
               @click="subTabSelected(tab)"
               :href="`#tab-${ind}`"
+              class="text-decoration-none"
             >
               {{ tab }}
             </v-tab>
@@ -142,7 +143,7 @@
                     medium
                     class="join-button"
                   >
-                    <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-clock </v-icon>
+                    <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-clock</v-icon>
                     REQUEST SENT
                   </v-btn>
                   <v-btn
@@ -162,7 +163,7 @@
                     class="join-button"
                     @click="requestJoin(comp.CommunityId, comp.IsPrivate, comp.Name)"
                   >
-                    <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus </v-icon>
+                    <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                     REQUEST TO JOIN
                   </v-btn>
                   <v-btn
@@ -173,7 +174,7 @@
                     class="join-button"
                     @click="requestJoin(comp.CommunityId, comp.IsPrivate, comp.Name)"
                   >
-                    <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus </v-icon>
+                    <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                     JOIN
                   </v-btn>
                 </div>
@@ -376,7 +377,7 @@
 </template>
 <script>
   import VClamp from 'vue-clamp'
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
 
   export default {
     components: {
@@ -417,7 +418,7 @@
       listCommunities: {
         get() {
           if (this.yoursOrAll === 'tab-1') {
-            return this.communityList.Results.sort(function(a, b) {
+            return this.communityList.Results.sort(function (a, b) {
               if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
                 return -1
               }
@@ -427,7 +428,7 @@
               return 0
             })
           } else if (this.yoursOrAll === 'tab-0') {
-            return this.myCommunities.sort(function(a, b) {
+            return this.myCommunities.sort(function (a, b) {
               if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
                 return -1
               }
@@ -467,12 +468,27 @@
       this.yoursOrAll = 'tab-1'
       this.mountedCommunities = this.communityList.Results
       this.$store.dispatch('threadSharing/getInvitions')
+      if (this.$route.query && !!this.$route.query.communityID) {
+        const comp = this.listCommunities.find(item => item.CommunityId === this.$route.query.communityID)
+        if (comp) {
+          this.goToCommunity(
+            comp.Name,
+            comp.CommunityId,
+            comp.Description,
+            comp.BusinessCategoryText,
+            comp.IsPrivate,
+            comp.CreateUserId,
+            comp.CommunityCompany[0].CompanyId,
+            this.isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
+          )
+        }
+      }
     },
     methods: {
       updateCommunities() {
         clearTimeout(this.debounce)
         const refThis = this
-        this.debounce = setTimeout(function() {
+        this.debounce = setTimeout(function () {
           if (refThis.filteredValue != refThis.filter) {
             if (refThis.filter.length) {
               if (refThis.yoursOrAll === 'tab-1') {
@@ -551,7 +567,7 @@
         localStorage.setItem('communityId', communityId)
         localStorage.setItem('communityCompanyId', communCompId)
         localStorage.setItem('isOwner', isOwner)
-        this.$router.push({ path: `/Community/${name}` })
+        this.$router.push({path: `/Community/${name}`})
         this.$store.dispatch('threadSharing/setSelectedCommunity', {
           id: communityId,
           name: name,
@@ -953,12 +969,19 @@
     box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
     border: none !important;
   }
+
   .invitation-cancel {
     color: #fff;
     background-color: #f56c6c;
   }
+
   .invitation-accept {
     color: #fff;
     background-color: #2196f3;
+  }
+
+  ::v-deep .text-decoration-none {
+    text-decoration: none !important;
+    text-decoration-line: none !important;
   }
 </style>

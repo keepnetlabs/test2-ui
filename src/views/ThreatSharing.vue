@@ -349,6 +349,8 @@
         }
       }
     },
+    created() {
+    },
     mounted() {
       this.$nextTick(() => {
         if (AuthenticationService.isAuthenticated()) {
@@ -357,6 +359,9 @@
         }
         window.addEventListener('resize', this.onResize)
       })
+      if (this.$route.query && !!this.$route.query.communityID) {
+        this.getCommunities(2, true);
+      }
     },
     beforeDestroy() {
       window.removeEventListener('resize', this.onResize)
@@ -400,14 +405,17 @@
         }
         this.isWantToEditCommunity = false
       },
-      getCommunities() {
-        if (this.firstClick > 1) {
+      getCommunities(firstClickValue, isDefault) {
+        if (firstClickValue || this.firstClick > 1) {
           const refThis = this
+          refThis.isDefault = isDefault
           if (this.timer) {
             clearTimeout(this.timer)
           }
           this.timer = setTimeout(function () {
-            refThis.$store.dispatch('threadSharing/getCommunities')
+            refThis.$store.dispatch('threadSharing/getCommunities').finally((res) => {
+              refThis.isDefault ? refThis.tab = 1 : '';
+            })
           }, 3000)
         }
         this.firstClick = this.firstClick + 1

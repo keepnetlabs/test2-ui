@@ -11,59 +11,93 @@
       <new-investigation @closeAdd="openInvestigationOverlay=false"/>
     </v-overlay>
     <div class="columns-row">
-      <div class="dashboard-cards phishing-reporter mr-2">
+      <div class="dashboard-cards phishing-reporter mr-2"
+           :class="{'no-data__opacity-blue' : (irSummary && !irSummary.phishingReporterUserStatusCount) || (irSummary.phishingReporterUserStatusCount && !irSummary.phishingReporterUserStatusCount.totalUserCount)}">
         <div class="card-header">
           <span class="head">Phishing Reporter</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div class="card-body">
+        <div class="columns-row__body"
+             v-if="irSummary && irSummary.phishingReporterUserStatusCount && irSummary.phishingReporterUserStatusCount.totalUserCount">
+          <div class="card-body">
           <span
-            class="biggest">{{(irSummary.phishingReporterUserStatusCount && irSummary.phishingReporterUserStatusCount.onlineUsersCount) || 0 }}</span>
+            class="biggest">{{(irSummary && irSummary.phishingReporterUserStatusCount && irSummary.phishingReporterUserStatusCount.onlineUsersCount) || 0 }}</span>
+          </div>
+          <div class="card-footer">of {{ (irSummary && irSummary.phishingReporterUserStatusCount &&
+            irSummary.phishingReporterUserStatusCount.totalUserCount) || 0 }}
+            users are
+          </div>
+          <div class="card-status">Online</div>
         </div>
-        <div class="card-footer">of {{ (irSummary.phishingReporterUserStatusCount &&
-          irSummary.phishingReporterUserStatusCount.totalUserCount) || 0 }}
-          users are
+        <div class="columns-row__body" v-else>
+          <div class="card-footer no-data-text">Add-in isn’t installed at
+            any users’ account, yet
+          </div>
+          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded>
+            Start Now
+          </button>
         </div>
-        <div class="card-status">Online</div>
         <div class="bg-image" style="bottom: 10px;">
           <img src="../assets/img/shape.svg"/>
         </div>
       </div>
-      <div class="dashboard-cards incident-analysis mr-2">
+      <div class="dashboard-cards incident-analysis mr-2"
+           :class="{'no-data__opacity-red' : (irSummary && !irSummary.notifiedEmailResultCount) || (irSummary.notifiedEmailResultCount && !irSummary.notifiedEmailResultCount.maliciousCount)}">
         <div class="card-header">
           <span class="head">Incident Analysis</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div class="card-body">
-          <span class="biggest">{{(irSummary.notifiedEmailResultCount && irSummary.notifiedEmailResultCount.phishingCount) || 0}}</span>
+        <div class="columns-row__body"
+             v-if="irSummary && irSummary.notifiedEmailResultCount && irSummary.phishingReporterUserStatusCount.totalUserCount">
+          <div class="card-body">
+            <span class="biggest">{{(irSummary && irSummary.notifiedEmailResultCount && irSummary.notifiedEmailResultCount.maliciousCount) || 0}}</span>
+          </div>
+          <div class="card-footer">of {{(irSummary && irSummary.notifiedEmailResultCount &&
+            irSummary.notifiedEmailResultCount.maliciousCount)||0}} reported
+            emails
+          </div>
+          <div class="card-status">Found harmful</div>
         </div>
-        <div class="card-footer">of {{(irSummary.notifiedEmailResultCount &&
-          irSummary.notifiedEmailResultCount.maliciousCount)||0}} reported
-          emails
+        <div class="columns-row__body" v-else>
+          <div class="card-footer no-data-text">You haven’t analysed any emails, yet
+          </div>
+          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded>
+            Start Now
+          </button>
         </div>
-        <div class="card-status">Found harmful</div>
         <div class="bg-image">
           <img src="../assets/img/ic-warning.svg"/>
         </div>
       </div>
-      <div class="dashboard-cards investigations mr-2">
+      <div class="dashboard-cards investigations mr-2"
+           :class="{'no-data__opacity-green' : !investigationListData.length}">
         <div class="card-header">
           <span class="head">Investigations</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div class="card-body">
-          <div class="body-row">
-            {{(irSummary.investigationTypeCount &&
-            irSummary.investigationTypeCount.automaticInvestigationCount)||0}}
-            <span>automated</span>
+        <div class="columns-row__body"
+             v-if="investigationListData && investigationListData.length">
+          <div class="card-body">
+            <div class="body-row">
+              {{(irSummary && irSummary.investigationTypeCount &&
+              irSummary.investigationTypeCount.automaticInvestigationCount)||0}}
+              <span>automated</span>
+            </div>
+            <div class="body-row">
+              {{ ( irSummary && irSummary.investigationTypeCount
+              && irSummary.investigationTypeCount.automaticInvestigationCount)||0}}
+              <span>manual</span>
+            </div>
           </div>
-          <div class="body-row">
-            {{ (irSummary.investigationTypeCount
-            && irSummary.investigationTypeCount.automaticInvestigationCount)||0}}
-            <span>manual</span>
-          </div>
+          <div class="card-status">Incidents resolved</div>
         </div>
-        <div class="card-status">Incidents resolved</div>
+        <div class="columns-row__body" v-else>
+          <div class="card-footer no-data-text">You haven’t started any investigations, yet
+          </div>
+          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded>
+            Start Now
+          </button>
+        </div>
         <div class="bg-image">
           <img src="../assets/img/ic-check-box.svg"/>
         </div>
@@ -74,10 +108,11 @@
         </div>
         <div class="card-body">
           <div class="body-row">
-            {{(irSummary.roiSummary && irSummary.roiSummary.time)||0}}h
+            {{(irSummary && irSummary.roiSummary && irSummary.roiSummary.time)||0}}h
             <span>and</span>
           </div>
-          <div class="body-row">${{(irSummary.roiSummary && irSummary.roiSummary.revenue)||0}}k
+          <div class="body-row">${{(irSummary && irSummary.roiSummary &&
+            irSummary.roiSummary.revenue)||0}}k
           </div>
         </div>
         <div class="card-status">Saved</div>
@@ -209,6 +244,7 @@
 
     data: () => ({
       openInvestigationOverlay: false,
+      investigationListData: [],
       topRules: {
         table: [],
         columns: [
@@ -376,7 +412,7 @@
             show: true,
             type: "status",
             width: "150"
-           // minWidth: 80
+            // minWidth: 80
           },
           {
             property: "createDate",
@@ -470,6 +506,7 @@
     created() {
       getRunningInvestigations().then(response => {
         const {data: {data, status}} = response
+        this.investigationListData = data
         this.$refs.refRecentInv.loadWithDataArray(data)
       }).catch(error => {
         this.$store.dispatch('common/createSnackBar', {
@@ -522,6 +559,38 @@
   .incident-responder {
     padding: 0 8px;
     padding-bottom: 35px;
+
+    .no-data {
+      &__opacity-blue {
+        background-image: linear-gradient(to bottom, #3c768e, #25608a) !important;
+      }
+
+      &__opacity-red {
+        background-image: linear-gradient(to bottom, #895f5f, #8a4646) !important;;
+      }
+
+      &__opacity-green {
+        background-image: linear-gradient(to bottom, #4a764d, #356437) !important;;
+      }
+    }
+
+    .btn-playbook {
+      &__no-data {
+        border-radius: 18px;
+        background-color: #ffffff;
+        font-family: "Open Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: #2196f3;
+        max-width: 112px;
+        min-width: 112px;
+        height: 36px;
+      }
+    }
   }
 
   .columns-row {
@@ -546,7 +615,6 @@
 
     .dashboard-cards {
       width: 25%;
-      max-width: 300px;
       min-height: 250px;
       border-radius: 8px;
       margin: 8px;
@@ -614,6 +682,19 @@
         letter-spacing: normal;
         color: #fff;
         padding-bottom: 16px;
+
+        &.no-data-text {
+          font-family: "Open Sans", sans-serif;
+          font-size: 20px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.25;
+          letter-spacing: normal;
+          color: #ffffff;
+          margin-top: 40px;
+          min-height: 80px;
+        }
       }
 
       .card-status {
@@ -861,6 +942,7 @@
               font-size: 19px !important;
             }
           }
+
         }
       }
     }

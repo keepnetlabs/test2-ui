@@ -25,7 +25,7 @@
               <v-card-title class="d-flex pa-0">
                 <div class="logo-wrapper">
                   <div class="v-responsive">
-                    <img src="../assets/img/logo-kep.png" />
+                    <img src="../assets/img/logo-kep.png"/>
                   </div>
                 </div>
                 <div class="flex-grow-1"></div>
@@ -225,13 +225,13 @@
 
 <script>
   import VueRecaptcha from 'vue-recaptcha'
-  import { mapActions, mapGetters } from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
   import AuthenticationService from '../services/authentication'
   import AuthenticationStatus from '../model/constants/authenticationStatus'
 
   export default {
     name: 'Login',
-    components: { VueRecaptcha },
+    components: {VueRecaptcha},
     data() {
       return {
         email: '',
@@ -255,15 +255,20 @@
         validReset: false
       }
     },
+    created() {
+      if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
+        if (this.$route.query && !!this.$route.query.CommunityRequestId) {
+          this.$router.push(`/threat-sharing?communityID=${this.$route.query.CommunityRequestId}`)
+        } else {
+          this.$router.push('/')
+        }
+      }
+    },
     mounted() {
       if (this.$route.query) {
         // TO-DO
         // You should do redirect after login in here for users which come from email links
         // And also you have to dispatch a accept Community invitaion or which parameter came on here.
-
-      }
-      if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
-        this.$router.push('/')
       }
       /*
       setTimeout(() => {
@@ -304,7 +309,8 @@
         get() {
           return this.isLoadingFromStore
         },
-        set() {}
+        set() {
+        }
       },
       wrongLoginAttempt() {
         return this.$store.state.login.wrongLoginAttempt
@@ -331,7 +337,7 @@
           this.$refs.password.validate() &&
           this.wrongLoginAttempt < 3
         ) {
-         // this.isLoading = true
+          // this.isLoading = true
           this.$store.dispatch('login/loginAction', {
             email: this.email,
             password: this.password,
@@ -558,6 +564,7 @@
   ::v-deep .v-input {
     height: 40px !important;
   }
+
   ::v-deep .v-input .v-label {
     font-family: 'Open Sans', sans-serif;
     font-size: 12px;
@@ -568,6 +575,7 @@
   ::v-deep .v-input--is-focused {
     border: 0px;
   }
+
   ::v-deep .v-input__slot {
     margin-bottom: -1px;
   }
@@ -683,12 +691,14 @@
     -webkit-box-shadow: 0 0 0px 1000px #fff inset;
     transition: background-color 5000s ease-in-out 0s;
   }
+
   .login-label {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     line-height: 1.2;
   }
+
   .username-field {
     padding-left: 8px !important;
     padding-top: 7px !important;
@@ -701,6 +711,7 @@
       margin-top: 4px;
     }
   }
+
   @media only screen and (max-width: 769px) {
     .login-card-wrapper {
       padding: 10px !important;
