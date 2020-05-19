@@ -8,47 +8,50 @@ import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import AnalysisDetails from '../views/AnalysisDetails'
-import NewCommunity from "../components/ThreadSharing/NewCommunity";
+import NewCommunity from '../components/ThreadSharing/NewCommunity'
 //import SharedIncident from '../views/SharedIncident'
+
 import Test from '../views/Test'
 import PermissionTypes from '../model/constants/permissionTypes'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 import InvestigationComponent from '../views/Investigations.vue'
 import InvestigationDetailsComponent from '../views/InvestigationDetails.vue'
-import PhishingReporter from "../views/PhishingReporter";
-import Integrations from "../views/Integrations";
-import Playbook from "../views/Playbook";
-
+import PhishingReporter from '../views/PhishingReporter'
+import Integrations from '../views/Integrations'
+import Playbook from '../views/Playbook'
+import store from '../store'
 Vue.use(Router)
 
 const router = new Router({
   mode: 'history',
   linkExactActiveClass: 'active-link',
   scrollBehavior() {
-    return {x: 0, y: 0}
+    return { x: 0, y: 0 }
   },
-  routes: [{
-    path: '/login',
-    name: 'login',
-    component: Login,
-    meta: {
-      isAuthenticated: false
-    }
-  },
+  routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {
+        isAuthenticated: false
+      }
+    },
     {
       path: '/',
       name: 'home',
       component: Main,
-      children: [{
-        path: '/',
-        name: 'Dashboard',
-        meta: {
-          isAuthenticated: true,
-          permissions: [PermissionTypes.Permissions_Administrator]
+      children: [
+        {
+          path: '/',
+          name: 'Dashboard',
+          meta: {
+            isAuthenticated: true,
+            permissions: [PermissionTypes.Permissions_Administrator]
+          },
+          component: DashBoard
         },
-        component: DashBoard
-      },
         {
           path: '/threat-sharing',
           name: 'Threat Sharing',
@@ -148,17 +151,24 @@ const router = new Router({
       }
     },
     {
-      path:"*",
-      redirect:"/"
+      path: '*',
+      redirect: '/'
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
+  const storeRef = store
+  //storeli alakalı route değişiklikleri burada yönetilecek.
   if (to.meta.isAuthenticated) {
     let authenticationStatus = AuthenticationService.getAuthenticationStatus()
     if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
-      next()
+      if (storeRef.state.common.downloadModalStatus) {
+        storeRef.dispatch('common/changeDownloadModalStatus', false)
+        next(false)
+      } else {
+        next()
+      }
     } else {
       next('/login')
     }

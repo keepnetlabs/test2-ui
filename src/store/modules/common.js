@@ -6,7 +6,8 @@ const common = {
     snackStatus: false,
     snackbarColor: 'red',
     errors: '',
-    errorState: false
+    errorState: false,
+    downloadModalStatus: false
   },
   getters: {
     getMenuStatus: state => state.menuStatus,
@@ -14,7 +15,8 @@ const common = {
     getSnackStatus: state => state.snackStatus,
     getColor: state => state.snackbarColor,
     getErrors: state => state.errors,
-    getErrorStatus: state => state.errorState
+    getErrorStatus: state => state.errorState,
+    getDownloadModalStatus: state => state.downloadModalStatus
   },
   mutations: {
     CHANGE_MENU_STATUS(state, payload) {
@@ -34,29 +36,34 @@ const common = {
     },
     SET_ERROR_STATE(state, payload) {
       state.errorState = payload
+    },
+    SET_DOWNLOAD_MODAL_STATUS(state, payload) {
+      state.downloadModalStatus = payload
     }
   },
   actions: {
-    changeMenuStatus({commit}, payload) {
+    changeMenuStatus({ commit }, payload) {
       commit('CHANGE_MENU_STATUS', payload)
     },
-    setSnackStatus({commit}, payload) {
+    setSnackStatus({ commit }, payload) {
       commit('SET_SNACK_STATUS', payload)
     },
-    setErrorMessage({commit}, payload) {
+    setErrorMessage({ commit }, payload) {
       commit('SET_ERROR_MESSAGE', payload)
     },
-    activateLoader({commit}, payload) {
+    activateLoader({ commit }, payload) {
       commit('SET_IS_LOADING', payload)
     },
-    createSnackBar({commit}, payload) {
-      const {errorState, color, message} = payload
+    createSnackBar({ commit }, payload) {
+      const { errorState, color, message } = payload
       commit('SET_SNACK_STATUS', true)
       commit('SET_SNACKBAR_COLOR', color)
       commit('SET_ERROR_STATE', errorState)
       commit('SET_ERROR_MESSAGE', message)
+    },
+    changeDownloadModalStatus({ commit }, payload) {
+      commit('SET_DOWNLOAD_MODAL_STATUS', payload)
     }
-
   }
 }
 

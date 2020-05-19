@@ -578,7 +578,7 @@ export default {
       localStorage.setItem('communityId', communityId)
       localStorage.setItem('communityCompanyId', communCompId)
       localStorage.setItem('isOwner', isOwner)
-      this.$router.push({ path: `/Community/${name}` })
+      this.$router.push({ path: `/Community/${communityId}` })
       this.$store.dispatch('threadSharing/setSelectedCommunity', {
         id: communityId,
         name: name,

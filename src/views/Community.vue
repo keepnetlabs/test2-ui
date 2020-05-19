@@ -513,6 +513,57 @@ export default {
       }
     }
   },
+  created() {
+    const communityId = this.$route.params.name
+    localStorage.setItem('communityId', communityId)
+    this.$store.dispatch('threadSharing/getCommunities')
+    this.$store
+      .dispatch('threadSharing/getCommunityInfo')
+      .then(data => {
+        console.log(data)
+        this.$store
+          .dispatch('threadSharing/setSelectedCommunity', {
+            id: data.CommunityId,
+            name: data.Name,
+            description: data.Description,
+            industry: data.BusinessCategoryText,
+            privacy: data.IsPrivate,
+            communityCompanyId: data.CommunityCompany[0].CompanyId,
+            isOwner: data.CommunityCompany[0].CompanyId === this.getSelectedCompany.companyId
+          })
+          .then(response => {
+            localStorage.setItem('communityName', data.Name)
+            localStorage.setItem('communityDesc', data.Description)
+            localStorage.setItem('communityCat', data.BusinessCategoryText)
+            localStorage.setItem('communityPrivacy', data.IsPrivate)
+            localStorage.setItem('creatorId', data.CreateUserId)
+            localStorage.setItem('communityId', data.CommunityId)
+            localStorage.setItem('communityCompanyId', data.CommunityCompany[0].CompanyId)
+            localStorage.setItem(
+              'isOwner',
+              data.CommunityCompany[0].CompanyId === this.getSelectedCompany.companyId
+            )
+
+            if (
+              encodeURI(this.selectedCommunity.id) !=
+              window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
+            ) {
+              this.$router.push('/threat-sharing')
+            }
+            this.$store.dispatch('threadSharing/getBusinessCategories')
+            this.$store.dispatch('threadSharing/getSuggestedCommunities')
+            this.$store.dispatch('threadSharing/getMembers')
+          })
+      })
+      .catch(error => {
+        if (
+          encodeURI(this.selectedCommunity.id) !=
+          window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
+        ) {
+          this.$router.push('/threat-sharing')
+        }
+      })
+  },
   mounted() {
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
@@ -522,21 +573,11 @@ export default {
         this.$router.push('/threat-sharing')
       }
       window.addEventListener('resize', this.onResize)
-    }),
-      this.$store.dispatch('threadSharing/getCommunities')
-    this.$store.dispatch('threadSharing/getCommunityInfo')
-    this.$store.dispatch('threadSharing/getBusinessCategories')
-    this.$store.dispatch('threadSharing/getSuggestedCommunities')
-    this.$store.dispatch('threadSharing/getMembers')
+    })
     const compId =
       (this.userGetter.currentCompany && this.userGetter.currentCompany.id) ||
       localStorage.getItem('companyId')
-    if (
-      encodeURI(this.selectedCommunity.name) !=
-      window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
-    ) {
-      this.$router.push('/threat-sharing')
-    }
+
     const communId = this.selectedCommunity.id || localStorage.getItem('communityId')
     this.$store.dispatch('threadSharing/fetchCommunityPosts', {
       companyId: compId,
@@ -558,16 +599,16 @@ export default {
     if (this.$store.state.threadSharing.isWantToShareIncident) {
       this.$store.state.threadSharing.isWantToShareIncident = false
       next(false)
-    } else if (this.$refs.refIncidents.isWantToInvestigate) {
+    } else if (this.$refs.refIncidents && this.$refs.refIncidents.isWantToInvestigate) {
       this.$refs.refIncidents.isWantToInvestigate = false
       next(false)
-    } else if (this.$refs.refIncidents.isWantToShareIncident) {
+    } else if (this.$refs.refIncidents && this.$refs.refIncidents.isWantToShareIncident) {
       this.$refs.refIncidents.isWantToShareIncident = false
       next(false)
-    } else if (this.$refs.refIncidents.isWantToPostIncident) {
+    } else if (this.$refs.refIncidents && this.$refs.refIncidents.isWantToPostIncident) {
       this.$refs.refIncidents.isWantToPostIncident = false
       next(false)
-    } else if (this.$refs.refIncidents.deleteIncidentModal) {
+    } else if (this.$refs.refIncidents && this.$refs.refIncidents.deleteIncidentModal) {
       this.$refs.refIncidents.deleteIncidentModal = false
       next(false)
     } else if (this.isWantToPostIncident) {

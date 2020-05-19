@@ -23,7 +23,7 @@
           </v-radio-group>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap">
-          <v-btn @click="isWantToDownload = false" color="#f56c6c" text>CANCEL</v-btn>
+          <v-btn @click="changeDownloadModalStatus(false)" color="#f56c6c" text>CANCEL</v-btn>
           <v-btn @click="downloadEvent" color="#2196f3" text>DOWNLOAD</v-btn>
         </div>
       </v-card>
@@ -150,6 +150,7 @@
                     obj
                   }}</span>
                   <v-text-field
+                    :autofocus="item[i] === multipleSelection[0][columns[0].property]"
                     :label="JSON.stringify(item[i])"
                     class="edit-text-field"
                     dense
@@ -340,7 +341,12 @@
 
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn @click="isWantToDownload = true" class="btn-hover mr-1" icon v-on="on">
+                <v-btn
+                  @click="changeDownloadModalStatus(true)"
+                  class="btn-hover mr-1"
+                  icon
+                  v-on="on"
+                >
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
               </template>
@@ -366,6 +372,7 @@
         </div>
         <div class="selection-row" v-if="multipleSelection.length">
           <v-checkbox
+            :indeterminate="selectionRowCheckboxDeterminate"
             @click.native="toggleAll()"
             class="selection-all-check"
             color="white"
@@ -389,7 +396,7 @@
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.edit">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="handleEdit(multipleSelection)"
+                  @click="isWantToEditRow = true"
                   class="btn-selected-hover mr-1"
                   icon
                   v-on="on"
@@ -874,11 +881,11 @@
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
+              :min-width="150"
+              :width="actionsWidth || 120"
               align="center"
               label="Actions"
-              min-width="30"
               v-if="rowActions && rowActions.length > 2"
-              width="120"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -897,7 +904,7 @@
                 >
                   <v-icon>{{ rowActions[0].icon }}</v-icon>
                 </v-btn>
-                <v-menu offset-y transition="scale-transition" bottom left>
+                <v-menu bottom left offset-y transition="scale-transition">
                   <template v-slot:activator="{ on }">
                     <v-btn class="btn-hover" icon v-on="on">
                       <v-icon>mdi-dots-vertical</v-icon>
@@ -931,8 +938,8 @@
                         <v-list>
                           <v-list-item
                             :key="item"
-                            v-for="item of act.subElements"
                             @click="handleSubMenuItemClick(item)"
+                            v-for="item of act.subElements"
                           >
                             {{ item }}
                           </v-list-item>
@@ -945,11 +952,11 @@
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
+              :min-width="150"
+              :width="actionsWidth || 120"
               align="center"
               label="Actions"
-              min-width="30"
               v-if="rowActions && rowActions.length === 1"
-              width="120"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -963,11 +970,11 @@
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
+              :min-width="150"
+              :width="actionsWidth || 120"
               align="center"
               label="Actions"
-              min-width="30"
               v-if="rowActions && rowActions.length === 2"
-              width="120"
             >
               <template slot-scope="scope">
                 <v-btn
@@ -1036,6 +1043,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
 import VueApexCharts from 'vue-apexcharts'
+import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
@@ -1126,6 +1134,11 @@ export default {
       default: true
     }
   },
+  computed: {
+    ...mapGetters({
+      isWantToDownload: 'common/getDownloadModalStatus' // for using getters
+    })
+  },
   data() {
     return {
       initialData: [],
@@ -1139,7 +1152,6 @@ export default {
       series: [44, 55, 13, 43],
       search: '',
       isSettingsOpened: false,
-      isWantToDownload: false,
       isWantToAddUsers: false,
       isWantToEditRow: false,
       editMode: false,
@@ -1159,7 +1171,10 @@ export default {
         extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
         extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>'
       },
-      clusterChevron: false
+      clusterChevron: false,
+      actionsWidth: 0,
+      init: true,
+      selectionRowCheckboxDeterminate: false
     }
   },
   watch: {
@@ -1188,13 +1203,15 @@ export default {
       }
     },
     multipleSelection(selecteds) {
-      if (this.countRow && this.countRow == selecteds.length) {
+      if (selecteds.length === this.tableData.length) {
         this.selectionCheckbox = true
-      } else if (this.rowCount && this.rowCount == selecteds.length) {
-        this.selectionCheckbox = true
+        this.selectionRowCheckboxDeterminate = false
+      } else if (selecteds.length > 0) {
+        this.selectionRowCheckboxDeterminate = true
       } else {
         this.selectionCheckbox = false
       }
+      console.log('this.selectionCheckbox', this.selectionCheckbox)
     },
     columns: {
       deep: true,
@@ -1212,7 +1229,15 @@ export default {
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
   },
+  updated() {
+    if (this.init) {
+      this.init = false
+      this.calculateWidths()
+    }
+  },
   mounted() {
+    this.init = true
+    window.addEventListener('resize', this.calculateWidths)
     if (window.outerWidth < 1023) {
       this.actionFixed = false
       const leftFixed = this.columns.filter(col => col.fixed === 'left')
@@ -1258,7 +1283,10 @@ export default {
       this.$emit(action, row)
     },
     tableRowClassName(row) {
-      if (this.multipleSelection.some(r => r.id === row.row.id)) {
+      const ans = this.multipleSelection.some(r => JSON.stringify(r) === JSON.stringify(row.row))
+      console.log('ans', ans)
+      if (ans) {
+        console.log('tableRowClassName')
         return 'selected-row'
       }
       return ''
@@ -1269,6 +1297,9 @@ export default {
       } else {
         this.multipleSelection.push(val)
       }
+    },
+    changeDownloadModalStatus(status) {
+      this.$store.dispatch('common/changeDownloadModalStatus', status)
     },
     deleteRow(index, rows) {
       rows.splice(index, 1)
@@ -1403,6 +1434,7 @@ export default {
       // Edit actions should handle here.
       // selections property is an array and has the selected row object data
       if (selections) {
+        this.$refs.elTableRef.toggleRowSelection(selections, true)
         this.isWantToEditRow = true
       } else {
         // Nothing selected
@@ -1445,6 +1477,7 @@ export default {
     closeEditPopup() {
       this.editMode = false
       this.isWantToEditRow = false
+      this.$refs.elTableRef.clearSelection()
       this.multipleSelection = []
     },
     saveEditedOnes() {
@@ -1459,6 +1492,20 @@ export default {
     },
     getChartSummary(property, seperator = '/') {
       return property.join(seperator)
+    },
+    calculateWidths() {
+      if (this.$refs.tableContainer) {
+        const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
+        const columnsTotalWidth = this.getColumnsWidth()
+        const actionsWidth = widthOfContainer - columnsTotalWidth - 61
+        this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
+      }
+    },
+    getColumnsWidth() {
+      return this.columns.reduce((acc, item) => {
+        acc += Number(item.width)
+        return acc
+      }, 0)
     }
   }
 }
@@ -1777,11 +1824,15 @@ export default {
         font-weight: 600;
         line-height: 1.3rem;
         color: #000000;
-        min-height: 21px;
-
+        //min-height: 21px;
+        padding-left: 10px !important;
         .el-checkbox__input.is-indeterminate .el-checkbox__inner {
           background-color: #2196f3;
           border-color: #2196f3 !important;
+        }
+
+        .el-checkbox:first-child {
+          margin-left: -2.5px !important;
         }
 
         .el-checkbox__input.is-checked .el-checkbox__inner {
@@ -2295,6 +2346,13 @@ export default {
   height: 34px;
 }
 
+::v-deep .selection-all-check {
+  margin-left: 6px !important;
+  i {
+    color: white !important;
+  }
+}
+
 ::v-deep .cluster-label {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 12px;
@@ -2310,12 +2368,12 @@ export default {
 }
 
 /*.date-format {
-                text-align: left !important;
-                span {
-                  text-overflow: ellipsis;
-                  white-space: normal;
-                }
-              }*/
+                      text-align: left !important;
+                      span {
+                        text-overflow: ellipsis;
+                        white-space: normal;
+                      }
+                    }*/
 </style>
 <!--
   DataTable COMPONENT
