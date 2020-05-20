@@ -479,6 +479,10 @@ export default {
     if (this.$route.query && !!this.$route.query.invitations) {
       this.subTabSelected()
     }
+    if (this.$route.query && !!this.$route.query.CommunityRequestId) {
+      this.subTabSelected()
+    }
+
     if (this.$route.query && !!this.$route.query.communityID) {
       const comp = this.listCommunities.find(
         item => item.CommunityId === this.$route.query.communityID
