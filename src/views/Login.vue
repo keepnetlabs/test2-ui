@@ -7,7 +7,7 @@
       </v-btn>
     </v-snackbar>
 
-    <v-overlay :value="isLoading>0" z-index="999">
+    <v-overlay :value="isLoading > 0" z-index="999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
       </div>
@@ -25,7 +25,7 @@
               <v-card-title class="d-flex pa-0">
                 <div class="logo-wrapper">
                   <div class="v-responsive">
-                    <img src="../assets/img/logo-kep.png"/>
+                    <img src="../assets/img/logo-kep.png" />
                   </div>
                 </div>
                 <div class="flex-grow-1"></div>
@@ -224,53 +224,57 @@
 </template>
 
 <script>
-  import VueRecaptcha from 'vue-recaptcha'
-  import {mapActions, mapGetters} from 'vuex'
-  import AuthenticationService from '../services/authentication'
-  import AuthenticationStatus from '../model/constants/authenticationStatus'
+import VueRecaptcha from 'vue-recaptcha'
+import { mapActions, mapGetters } from 'vuex'
+import AuthenticationService from '../services/authentication'
+import AuthenticationStatus from '../model/constants/authenticationStatus'
 
-  export default {
-    name: 'Login',
-    components: {VueRecaptcha},
-    data() {
-      return {
-        email: '',
-        password: '',
-        verificationCode: '',
-        resePasswordModel: '',
-        rememberMe: '',
-        show1: false,
-        rules: {
-          required: value => !!value || 'Required.',
-          email: value => {
-            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            return pattern.test(value) || 'Invalid e-mail.'
-          },
-          min: v => v.length >= 8 || 'Minimum 8 characters',
-          max: v => v.length < 254 || 'Email address cannot exceed 254 characters'
+export default {
+  name: 'Login',
+  components: { VueRecaptcha },
+  data() {
+    return {
+      email: '',
+      password: '',
+      verificationCode: '',
+      resePasswordModel: '',
+      rememberMe: '',
+      show1: false,
+      rules: {
+        required: value => !!value || 'Required.',
+        email: value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
         },
-        recaptcha: '6LfA498UAAAAACJkiU-j27rjI3KBL0nl95yVcdj9',
-        validEmail: false,
-        validPassword: false,
-        validReset: false
+        min: v => v.length >= 8 || 'Minimum 8 characters',
+        max: v => v.length < 254 || 'Email address cannot exceed 254 characters'
+      },
+      recaptcha: '6LfA498UAAAAACJkiU-j27rjI3KBL0nl95yVcdj9',
+      validEmail: false,
+      validPassword: false,
+      validReset: false
+    }
+  },
+  created() {
+    if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
+      if (this.$route.query && !!this.$route.query.CommunityRequestId) {
+        this.$router.push(
+          `/threat-sharing?CommunityRequestId=${this.$route.query.CommunityRequestId}`
+        )
+      } else if (this.$route.query && !!this.$route.query.CommunityId) {
+        this.$router.push(`/community/${this.$route.query.CommunityId}`)
+      } else {
+        this.$router.push('/')
       }
-    },
-    created() {
-      if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
-        if (this.$route.query && !!this.$route.query.CommunityRequestId) {
-          this.$router.push(`/threat-sharing?communityID=${this.$route.query.CommunityRequestId}`)
-        } else {
-          this.$router.push('/')
-        }
-      }
-    },
-    mounted() {
-      if (this.$route.query) {
-        // TO-DO
-        // You should do redirect after login in here for users which come from email links
-        // And also you have to dispatch a accept Community invitaion or which parameter came on here.
-      }
-      /*
+    }
+  },
+  mounted() {
+    if (this.$route.query) {
+      // TO-DO
+      // You should do redirect after login in here for users which come from email links
+      // And also you have to dispatch a accept Community invitaion or which parameter came on here.
+    }
+    /*
       setTimeout(() => {
         let labels = document.getElementsByClassName('v-label')
         if (labels && labels.length) {
@@ -279,79 +283,78 @@
         }
       }, 0)
       */
-    },
-    computed: {
-      ...mapGetters({
-        isLoadingFromStore: 'common/getIsLoading',
-        getPageNumber: 'login/getPageNumber',
-        getErrors: 'common/getErrors',
-        getSnackStatus: 'common/getSnackStatus',
-        getColor: 'common/getColor',
-        isErrorActive: 'common/getErrorStatus'
-      }),
-      snackbar: {
-        get() {
-          return this.getSnackStatus
-        },
-        set(val) {
-          this.setSnackStatus(val)
-        }
+  },
+  computed: {
+    ...mapGetters({
+      isLoadingFromStore: 'common/getIsLoading',
+      getPageNumber: 'login/getPageNumber',
+      getErrors: 'common/getErrors',
+      getSnackStatus: 'common/getSnackStatus',
+      getColor: 'common/getColor',
+      isErrorActive: 'common/getErrorStatus'
+    }),
+    snackbar: {
+      get() {
+        return this.getSnackStatus
       },
-      pageNumber: {
-        get() {
-          return this.getPageNumber
-        },
-        set(newValue) {
-          this.setPageNumber(newValue)
-        }
-      },
-      isLoading: {
-        get() {
-          return this.isLoadingFromStore
-        },
-        set() {
-        }
-      },
-      wrongLoginAttempt() {
-        return this.$store.state.login.wrongLoginAttempt
+      set(val) {
+        this.setSnackStatus(val)
       }
     },
+    pageNumber: {
+      get() {
+        return this.getPageNumber
+      },
+      set(newValue) {
+        this.setPageNumber(newValue)
+      }
+    },
+    isLoading: {
+      get() {
+        return this.isLoadingFromStore
+      },
+      set() {}
+    },
+    wrongLoginAttempt() {
+      return this.$store.state.login.wrongLoginAttempt
+    }
+  },
 
-    methods: {
-      ...mapActions({
-        loginAction2: 'login/loginAction',
-        setPageNumber: 'login/setPageNumber',
-        setSnackStatus: 'common/setSnackStatus',
-        resetPassword: 'login/resetPassword',
-        twoStepLogin: 'login/twoStepLogin'
-      }),
-      onTwoStepLogin() {
-        this.twoStepLogin({
-          code: this.verificationCode,
+  methods: {
+    ...mapActions({
+      loginAction2: 'login/loginAction',
+      setPageNumber: 'login/setPageNumber',
+      setSnackStatus: 'common/setSnackStatus',
+      resetPassword: 'login/resetPassword',
+      twoStepLogin: 'login/twoStepLogin'
+    }),
+    onTwoStepLogin() {
+      this.twoStepLogin({
+        code: this.verificationCode,
+        router: this.$router
+      })
+    },
+    onLoginClicked() {
+      if (
+        this.$refs.email.validate() &&
+        this.$refs.password.validate() &&
+        this.wrongLoginAttempt < 3
+      ) {
+        // this.isLoading = true
+        this.$store.dispatch('login/loginAction', {
+          email: this.email,
+          password: this.password,
           router: this.$router
         })
-      },
-      onLoginClicked() {
-        if (
-          this.$refs.email.validate() &&
-          this.$refs.password.validate() &&
-          this.wrongLoginAttempt < 3
-        ) {
-          // this.isLoading = true
-          this.$store.dispatch('login/loginAction', {
-            email: this.email,
-            password: this.password,
-            router: this.$router
-          })
-        } else if (
-          this.$refs.email.validate() &&
-          this.$refs.password.validate &&
-          this.wrongLoginAttempt >= 3
-        ) {
-          //this.isLoading = true
-          if (window.grecaptcha.getResponse() == '') {
-            // Business decided no need for Robot error
-            /*
+      } else if (
+        this.$refs.email.validate() &&
+        this.$refs.password.validate &&
+        this.wrongLoginAttempt >= 3
+      ) {
+        //this.isLoading = true
+        if (window.grecaptcha.getResponse() == '') {
+          // Business decided no need for Robot error
+          /*
               this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
               this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
               this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
@@ -359,363 +362,363 @@
                 root: true
               })
             */
-          } else {
-            this.$store.dispatch('login/loginAction', {
-              email: this.email,
-              password: this.password,
-              router: this.$router
-            })
-            this.$refs.recaptcha.reset()
-          }
+        } else {
+          this.$store.dispatch('login/loginAction', {
+            email: this.email,
+            password: this.password,
+            router: this.$router
+          })
+          this.$refs.recaptcha.reset()
         }
-      },
-      onCaptchaVerified() {
-        this.$store.dispatch('login/loginAction', {
-          email: this.email,
-          password: this.password,
-          router: this.$router
-        })
-      },
-      onCaptchaExpired() {
-        this.$refs.recaptcha.reset()
-      },
-      onResetClick() {
-        if (this.$refs.resetEmail.validate()) {
-          this.resetPassword(this.resePasswordModel)
-        }
+      }
+    },
+    onCaptchaVerified() {
+      this.$store.dispatch('login/loginAction', {
+        email: this.email,
+        password: this.password,
+        router: this.$router
+      })
+    },
+    onCaptchaExpired() {
+      this.$refs.recaptcha.reset()
+    },
+    onResetClick() {
+      if (this.$refs.resetEmail.validate()) {
+        this.resetPassword(this.resePasswordModel)
       }
     }
   }
+}
 </script>
 
 <style scoped lang="scss">
+html,
+body {
+  min-height: 100%;
+  height: 100%;
+}
+
+@media only screen and (max-width: 1025px) {
   html,
   body {
-    min-height: 100%;
-    height: 100%;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+  .row {
+    margin-left: unset !important;
+    margin-right: unset !important;
+  }
+}
+
+.login-error-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 15px;
+  width: 100%;
+}
+
+.login-error-wrapper {
+  max-width: 303px;
+  border-radius: 3px;
+  background-color: rgba(245, 108, 108, 0.2);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: row;
+
+  .login-error-icon {
   }
 
-  @media only screen and (max-width: 1025px) {
-    html,
-    body {
-      max-height: 100vh !important;
-      overflow: hidden !important;
-    }
-    .row {
-      margin-left: unset !important;
-      margin-right: unset !important;
-    }
+  .login-error-message {
+    align-self: center;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
   }
+}
 
-  .login-error-container {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding-bottom: 15px;
-    width: 100%;
-  }
-
-  .login-error-wrapper {
-    max-width: 303px;
-    border-radius: 3px;
-    background-color: rgba(245, 108, 108, 0.2);
-    padding: 22px 16px;
-    display: flex;
-    flex-direction: row;
-
-    .login-error-icon {
-    }
-
-    .login-error-message {
-      align-self: center;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-    }
-  }
-
-  .reset-password-wrapper {
-    ::v-deep
+.reset-password-wrapper {
+  ::v-deep
     .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
     > .v-input__control
     > .v-input__slot {
-      box-shadow: none !important;
-    }
-
-    ::v-deep .v-input {
-      border: solid 1px rgba(0, 0, 0, 0.16);
-      border-radius: 6px;
-      height: 40px;
-      padding-left: 12px;
-      padding-right: 10px;
-    }
-
-    ::v-deep .v-text-field.v-text-field--solo .v-input__control {
-      min-height: 20px !important;
-      padding: 0;
-    }
-
-    ::v-deep .v-text-field input {
-      -webkit-box-flex: 1;
-      -ms-flex: 1 1 auto;
-      flex: 1 1 auto;
-      line-height: 20px;
-      max-width: 100%;
-      min-width: 0px;
-      padding-top: 9px;
-      width: 100%;
-    }
+    box-shadow: none !important;
   }
 
-  .forgot-password {
-    align-items: center;
-    text-decoration: none;
-    color: black;
-    cursor: pointer;
-    font-size: 11px;
-    margin-top: 3px;
+  ::v-deep .v-input {
+    border: solid 1px rgba(0, 0, 0, 0.16);
+    border-radius: 6px;
+    height: 40px;
+    padding-left: 12px;
+    padding-right: 10px;
   }
 
-  .login-remember {
-    ::v-deep .v-input--checkbox {
-      border: none;
-      font-size: 11px;
-      font-weight: normal;
-      font-style: normal;
-      font-stretch: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      text-align: center;
-      padding-top: 0px;
-      margin-top: 0px;
-
-      label.v-label.theme--light {
-        font-size: 11px;
-      }
-
-      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
-        font-size: 20px !important;
-      }
-
-      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
-        font-size: 20px !important;
-      }
-    }
-  }
-
-  ::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
-    border-color: currentColor;
-    border-style: none;
-    border-width: unset;
-    -webkit-transform: scaleX(0);
-    transform: scaleX(0);
+  ::v-deep .v-text-field.v-text-field--solo .v-input__control {
+    min-height: 20px !important;
+    padding: 0;
   }
 
   ::v-deep .v-text-field input {
     -webkit-box-flex: 1;
     -ms-flex: 1 1 auto;
-    color: rgba(0, 0, 0, 0.54);
     flex: 1 1 auto;
     line-height: 20px;
-    padding: 3px 0;
     max-width: 100%;
+    min-width: 0px;
+    padding-top: 9px;
     width: 100%;
   }
+}
 
-  ::v-deep .v-label.v-label--active.theme--light {
-    top: 8px !important;
-  }
+.forgot-password {
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  font-size: 11px;
+  margin-top: 3px;
+}
 
-  ::v-deep .v-messages.theme--light {
-    top: 2px !important;
-  }
-
-  ::v-deep .v-messages.theme--light.error--text {
-    top: -1px !important;
-  }
-
-  ::v-deep .v-messages.error--text {
-    margin-top: 4px !important;
-  }
-
-  ::v-deep .v-input__append-inner {
-    margin-top: 0 !important;
-  }
-
-  ::v-deep .v-text-field .v-label {
-    top: -3px;
-  }
-
-  ::v-deep .v-label.theme--light.error--text {
-    top: -3px;
-  }
-
-  ::v-deep .v-text-field.v-text-field--solo .v-label {
-    top: calc(50% - 6px) !important;
-  }
-
-  ::v-deep .mdi-eye-off-outline::before {
-    color: rgba(0, 0, 0, 0.26);
-  }
-
-  ::v-deep .v-input {
-    height: 40px !important;
-  }
-
-  ::v-deep .v-input .v-label {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 12px;
-    height: 16px;
-    font-weight: 600;
-  }
-
-  ::v-deep .v-input--is-focused {
-    border: 0px;
-  }
-
-  ::v-deep .v-input__slot {
-    margin-bottom: -1px;
-  }
-
-  ::v-deep .v-input__slot:before {
-    border-style: none !important;
-    border-width: 0px !important;
-  }
-
-  .v-input {
-    border: solid 1px rgba(0, 0, 0, 0.16);
-    border-radius: 6px;
-    font-size: 13px;
-    padding-left: 14px;
-    padding-right: 10px;
-  }
-
-  .login-desc {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
+.login-remember {
+  ::v-deep .v-input--checkbox {
+    border: none;
+    font-size: 11px;
     font-weight: normal;
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
     letter-spacing: normal;
     text-align: center;
-    color: rgba(0, 0, 0, 0.54);
-    margin-bottom: 32px;
-  }
+    padding-top: 0px;
+    margin-top: 0px;
 
-  .login-title {
-    margin-top: 88px;
-    margin-bottom: 8px;
+    label.v-label.theme--light {
+      font-size: 11px;
+    }
+
+    i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
+      font-size: 20px !important;
+    }
+
+    i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
+      font-size: 20px !important;
+    }
+  }
+}
+
+::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
+  border-color: currentColor;
+  border-style: none;
+  border-width: unset;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+}
+
+::v-deep .v-text-field input {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 auto;
+  color: rgba(0, 0, 0, 0.54);
+  flex: 1 1 auto;
+  line-height: 20px;
+  padding: 3px 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+::v-deep .v-label.v-label--active.theme--light {
+  top: 8px !important;
+}
+
+::v-deep .v-messages.theme--light {
+  top: 2px !important;
+}
+
+::v-deep .v-messages.theme--light.error--text {
+  top: -1px !important;
+}
+
+::v-deep .v-messages.error--text {
+  margin-top: 4px !important;
+}
+
+::v-deep .v-input__append-inner {
+  margin-top: 0 !important;
+}
+
+::v-deep .v-text-field .v-label {
+  top: -3px;
+}
+
+::v-deep .v-label.theme--light.error--text {
+  top: -3px;
+}
+
+::v-deep .v-text-field.v-text-field--solo .v-label {
+  top: calc(50% - 6px) !important;
+}
+
+::v-deep .mdi-eye-off-outline::before {
+  color: rgba(0, 0, 0, 0.26);
+}
+
+::v-deep .v-input {
+  height: 40px !important;
+}
+
+::v-deep .v-input .v-label {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  height: 16px;
+  font-weight: 600;
+}
+
+::v-deep .v-input--is-focused {
+  border: 0px;
+}
+
+::v-deep .v-input__slot {
+  margin-bottom: -1px;
+}
+
+::v-deep .v-input__slot:before {
+  border-style: none !important;
+  border-width: 0px !important;
+}
+
+.v-input {
+  border: solid 1px rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+  font-size: 13px;
+  padding-left: 14px;
+  padding-right: 10px;
+}
+
+.login-desc {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 20px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.54);
+  margin-bottom: 32px;
+}
+
+.login-title {
+  margin-top: 88px;
+  margin-bottom: 8px;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 36px;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #2196f3;
+}
+
+.v-sheet {
+  border-radius: 20px;
+}
+
+.v-card-login-wrapper {
+  border-radius: 20px !important;
+  padding-top: 24px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 80px;
+}
+
+.background {
+  height: 100%;
+  width: 100%;
+  background-image: url('../assets/img/login-bg.svg') !important;
+  background-position: left top; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover;
+  flex-flow: column !important;
+  position: absolute;
+}
+
+::v-deep .v-input--selection-controls__ripple {
+  margin-right: 0 !important;
+  width: 20px !important;
+  height: 20px !important;
+  left: -5px !important;
+  top: calc(50% - 17px) !important;
+}
+
+::v-deep .remember-me-check {
+  padding-left: 5px;
+
+  label {
+    color: rgba(0, 0, 0, 0.87) !important;
     font-family: 'Open Sans', sans-serif !important;
-    font-size: 36px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: #2196f3;
+    font-weight: 400 !important;
+    font-size: 9px;
+    left: -8px !important;
   }
+}
 
-  .v-sheet {
-    border-radius: 20px;
-  }
+::v-deep .login-btn {
+  height: 36px !important;
+  min-width: 132px !important;
+}
 
-  .v-card-login-wrapper {
-    border-radius: 20px !important;
-    padding-top: 24px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 80px;
-  }
+.captcha-wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 30px;
+  width: 100%;
 
-  .background {
-    height: 100%;
-    width: 100%;
-    background-image: url('../assets/img/login-bg.svg') !important;
-    background-position: left top; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover;
-    flex-flow: column !important;
-    position: absolute;
-  }
-
-  ::v-deep .v-input--selection-controls__ripple {
-    margin-right: 0 !important;
-    width: 20px !important;
-    height: 20px !important;
-    left: -5px !important;
-    top: calc(50% - 17px) !important;
-  }
-
-  ::v-deep .remember-me-check {
-    padding-left: 5px;
-
-    label {
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-family: 'Open Sans', sans-serif !important;
-      font-weight: 400 !important;
-      font-size: 9px;
-      left: -8px !important;
-    }
-  }
-
-  ::v-deep .login-btn {
-    height: 36px !important;
-    min-width: 132px !important;
-  }
-
-  .captcha-wrapper {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding-bottom: 30px;
-    width: 100%;
-
-    > div {
-      max-width: 300px;
-    }
-  }
-
-  .login-user-pass-wrapper > .row > div {
+  > div {
     max-width: 300px;
   }
+}
 
-  ::v-deep input:-webkit-autofill,
-  ::v-deep input:-webkit-autofill:hover,
-  ::v-deep input:-webkit-autofill:focus,
-  ::v-deep input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
-    transition: background-color 5000s ease-in-out 0s;
+.login-user-pass-wrapper > .row > div {
+  max-width: 300px;
+}
+
+::v-deep input:-webkit-autofill,
+::v-deep input:-webkit-autofill:hover,
+::v-deep input:-webkit-autofill:focus,
+::v-deep input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.login-label {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.username-field {
+  padding-left: 8px !important;
+  padding-top: 7px !important;
+
+  .v-input__append-inner {
+    margin-top: 0 !important;
   }
 
-  .login-label {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.2;
+  ::v-deep .v-text-field__details {
+    margin-top: 4px;
   }
+}
 
-  .username-field {
-    padding-left: 8px !important;
-    padding-top: 7px !important;
-
-    .v-input__append-inner {
-      margin-top: 0 !important;
-    }
-
-    ::v-deep .v-text-field__details {
-      margin-top: 4px;
-    }
+@media only screen and (max-width: 769px) {
+  .login-card-wrapper {
+    padding: 10px !important;
+    padding-right: 16px !important;
   }
-
-  @media only screen and (max-width: 769px) {
-    .login-card-wrapper {
-      padding: 10px !important;
-      padding-right: 16px !important;
-    }
-  }
+}
 </style>
