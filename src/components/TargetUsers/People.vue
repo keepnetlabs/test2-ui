@@ -1,5 +1,11 @@
 <template>
   <div class="people">
+    <delete-user-modal
+      :is-show="isWantToShowDeleteUserModal"
+      :selectedRow="selectedRow"
+      @deleteAction="handleDeleteUser"
+      @changeModalStatus="changeDeleteModalStatus"
+    />
     <datatable
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -44,13 +50,17 @@
 
 <script>
 import Datatable from '../../components/DataTable'
+import DeleteUserModal from './DeleteUserModal'
 
 export default {
   name: 'People',
   components: {
+    DeleteUserModal,
     Datatable
   },
   data: () => ({
+    isWantToShowDeleteUserModal: false,
+    selectedRow: {},
     items: [
       { title: 'Click Me1' },
       { title: 'Click Me2' },
@@ -194,6 +204,16 @@ export default {
     },
     handleSyncUser(row) {
       console.log('handleSyncUser', row)
+    },
+    handleDelete(row) {
+      this.changeDeleteModalStatus(true)
+      this.selectedRow = row
+    },
+    changeDeleteModalStatus(status) {
+      this.isWantToShowDeleteUserModal = status
+    },
+    handleDeleteUser(selectedUser) {
+      console.log('selectedUser', selectedUser)
     }
   },
   mounted() {

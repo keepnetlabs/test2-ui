@@ -164,6 +164,9 @@ export default {
   methods: {
     changeTabStatus(status) {
       this.tab = status
+      /*
+      this.$router.replace({ ...this.$route, hash: status === 0 ? '#users' : '#settings' })
+      */
     },
     getPhishingReportSummary() {
       getPhishingReportSummary({
@@ -178,16 +181,52 @@ export default {
           this.phishingReportSummary = data
         })
         .catch(error => {})
+    },
+    getHash(hashValue) {
+      if (hashValue || (this.$route && this.$route.hash)) {
+        const hash = hashValue || this.$route.hash
+        switch (hash) {
+          case '#users':
+            this.tab = 0
+            break
+          case '#settings':
+            this.tab = 1
+            break
+          default:
+            break
+        }
+        return true
+      } else {
+        return false
+      }
     }
   },
   created() {
     this.getPhishingReportSummary()
+  },
+  mounted() {
+    /*
+    if (!this.getHash()) {
+      this.$router.replace({ ...this.$route, hash: '#users' })
+    }
+    */
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
     if (refs && refs.refFirstTime && refs.refFirstTime.showAddInConfiguration) {
       refs.refFirstTime.showAddInConfiguration = false
       next(false)
+    } else {
+      next()
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (this.getHash(to.hash)) {
+      if (to.hash !== from.hash) {
+        next()
+      } else {
+        next(false)
+      }
     } else {
       next()
     }

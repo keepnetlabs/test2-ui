@@ -45,6 +45,7 @@ export default {
             label: 'First Name',
             sortable: true,
             show: true,
+            fixed: true,
             type: 'text',
             width: 175
             //minWidth: 80

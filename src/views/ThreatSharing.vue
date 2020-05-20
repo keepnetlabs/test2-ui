@@ -349,7 +349,10 @@ export default {
         this.dispatchPage()
       }
       window.addEventListener('resize', this.onResize)
-      if (this.$route.query && !!this.$route.query.communityID) {
+      if (this.$route.query && !!this.$route.query.CommunityRequestId) {
+        this.getCommunities(2, true)
+      }
+      if (this.$route.query && !!this.$route.query.invitations) {
         this.getCommunities(2, true)
       }
     })
