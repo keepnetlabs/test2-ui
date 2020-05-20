@@ -25,11 +25,11 @@
                 'hide-step': step === 3 || step === 4 || step === 5
               }"
               class="step-name"
-              >Select Incident</span
+            >Select Incident</span
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-two-container" class="steps">
             <div v-if="step < 3" :class="{ 'active-step': step === 2 }" class="step-number">2</div>
@@ -40,11 +40,11 @@
                 'hide-step': step === 1 || step === 4 || step === 5
               }"
               class="step-name"
-              >General Info</span
+            >General Info</span
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-three-container" class="steps">
             <div v-if="step < 4" :class="{ 'active-step': step === 3 }" class="step-number">3</div>
@@ -55,11 +55,11 @@
                 'hide-step': step === 1 || step === 2 || step === 5
               }"
               class="step-name"
-              >Incident Details</span
+            >Incident Details</span
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-four-container" class="steps">
             <div v-if="step < 5" :class="{ 'active-step': step === 4 }" class="step-number">4</div>
@@ -70,11 +70,11 @@
                 'hide-step': step === 1 || step === 2 || step === 3
               }"
               class="step-name"
-              >Attributes</span
+            >Attributes</span
             >
           </div>
           <div class="steps">
-            <hr />
+            <hr/>
           </div>
           <div id="step-five-container" class="steps">
             <div v-if="step < 6" :class="{ 'active-step': step === 5 }" class="step-number">5</div>
@@ -85,7 +85,7 @@
                 'hide-step': step === 1 || step === 2 || step === 3 || step === 4
               }"
               class="step-name"
-              >Preview</span
+            >Preview</span
             >
           </div>
         </div>
@@ -97,7 +97,7 @@
           <div v-if="!selectedEmail && !uploadRespond.CommunityPostEmails" class="incident-content">
             <div class="input-header">Find Incident</div>
             <div class="input-sub">Search and find emails among reported incidents</div>
-            <input style="display: none;" type="text" name="fakeusernameremembered" />
+            <input style="display: none;" type="text" name="fakeusernameremembered"/>
             <v-autocomplete
               id="select-incident-autocomplete"
               v-model="selectedEmail"
@@ -132,7 +132,7 @@
                   <div class="select-row-inline">
                     <div class="file-type-wrap">
                       <v-icon v-if="item.AttachmentCount != 0" class="email-icon"
-                        >mdi-paperclip
+                      >mdi-paperclip
                       </v-icon>
                       <div
                         v-for="(st, ind) of item.Status"
@@ -169,7 +169,7 @@
                       role="button"
                       tabindex="0"
                       class="v-icon notranslate v-icon--link material-icons theme--light"
-                      >false</i
+                    >false</i
                     >
                   </div>
                 </div>
@@ -199,7 +199,7 @@
               id="post-first-error"
               v-if="selectedEmail || msgEmlFile == null"
               class="select-error"
-              >Please select an incident or upload an email</span
+            >Please select an incident or upload an email</span
             >
           </div>
           <div
@@ -222,7 +222,7 @@
                   :disabled="isEditMode"
                   class="close-incident"
                   @click="closePreview()"
-                  >mdi-close-circle
+                >mdi-close-circle
                 </v-icon>
                 <div class="preview-header pt-0">
                   <h2
@@ -261,7 +261,7 @@
                       "
                     >
                       From: {{ uploadRespond.CommunityPostEmails[0].From }}
-                      <br />
+                      <br/>
                     </span>
                     <span
                       v-else-if="
@@ -270,7 +270,7 @@
                           !el.IsShow
                       "
                       :id="uploadRespond.CommunityPostEmails[0].From"
-                      >From: hidden by owner</span
+                    >From: hidden by owner</span
                     >
                     <div
                       v-for="(el, ind) of shareSettings.receiverInfo"
@@ -327,7 +327,7 @@
                       Date:
                       {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                       {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                      <br />
+                      <br/>
                     </div>
                   </div>
                 </div>
@@ -562,7 +562,7 @@
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                 >
                   <span class="share-setting-text"
-                    >Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}</span
+                  >Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}</span
                   >
                 </h2>
                 <h2
@@ -596,9 +596,9 @@
                     ]"
                   >
                     <span class="share-setting-text"
-                      >From: {{ uploadRespond.CommunityPostEmails[0].From }}</span
+                    >From: {{ uploadRespond.CommunityPostEmails[0].From }}</span
                     >
-                    <br />
+                    <br/>
                   </div>
                   <div
                     v-else-if="
@@ -630,7 +630,7 @@
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   >
                     <span class="share-setting-text"
-                      >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
+                    >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
                     >
                   </div>
                   <div
@@ -664,7 +664,7 @@
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   >
                     <span class="share-setting-text"
-                      >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
+                    >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
                     >
                   </div>
                   <div
@@ -689,7 +689,7 @@
                     Date:
                     {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                     {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                    <br />
+                    <br/>
                   </div>
                 </div>
               </div>
@@ -736,10 +736,10 @@
               <div :class="{ 'minify-part': !filterOpened }" class="filter-header">
                 <div class="select-header" v-if="filterOpened">Select Attributes</div>
                 <v-icon @click="filterOpened = true" :class="{ 'display-none': filterOpened }"
-                  >mdi-arrow-left
+                >mdi-arrow-left
                 </v-icon>
                 <v-icon @click="filterOpened = false" :class="{ 'display-none': !filterOpened }"
-                  >mdi-arrow-right
+                >mdi-arrow-right
                 </v-icon>
               </div>
               <div :class="{ 'minify-part': !filterOpened }" class="filter-part">
@@ -750,7 +750,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/header-all.svg" />
+                    <img src="../../assets/img/filter-icons/header-all.svg"/>
                   </div>
                   <v-switch
                     :id="'attachment-switch-' + s.Id"
@@ -769,7 +769,7 @@
                   v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <img src="../../assets/img/filter-icons/short-text.svg"/>
                   </div>
                   <v-switch :id="'subject-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">Subject</label>
@@ -780,7 +780,7 @@
                           :class="{ 'chevron-down': subChevron }"
                           v-on="on"
                           @click="subChevron = !subChevron"
-                          >mdi-chevron-down
+                        >mdi-chevron-down
                         </v-icon>
                       </v-btn>
                     </template>
@@ -812,7 +812,7 @@
                   v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/user-out.svg" />
+                    <img src="../../assets/img/filter-icons/user-out.svg"/>
                   </div>
                   <v-switch :id="'sender-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">Sender Info</label>
@@ -823,7 +823,7 @@
                           :class="{ 'chevron-down': fromChevron }"
                           v-on="on"
                           @click="fromChevron = !fromChevron"
-                          >mdi-chevron-down
+                        >mdi-chevron-down
                         </v-icon>
                       </v-btn>
                     </template>
@@ -855,7 +855,7 @@
                   v-if="s && s.Id && s.Value"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/user-in.svg" />
+                    <img src="../../assets/img/filter-icons/user-in.svg"/>
                   </div>
                   <v-switch :id="'receiver-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">Receiver Info</label>
@@ -866,7 +866,7 @@
                           :class="{ 'chevron-down': toChevron }"
                           v-on="on"
                           @click="toChevron = !toChevron"
-                          >mdi-chevron-down
+                        >mdi-chevron-down
                         </v-icon>
                       </v-btn>
                     </template>
@@ -903,7 +903,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/link.svg" />
+                    <img src="../../assets/img/filter-icons/link.svg"/>
                   </div>
                   <v-switch
                     :id="'link-switch-' + s.Id"
@@ -921,7 +921,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/link.svg" />
+                    <img src="../../assets/img/filter-icons/link.svg"/>
                   </div>
                   <v-switch
                     :id="'phishing-switch-' + s.Id"
@@ -936,7 +936,7 @@
                           :class="{ 'chevron-down': linkChevron[ind] }"
                           v-on="on"
                           @click="linkChevron[ind] = !linkChevron[ind]"
-                          >mdi-chevron-down
+                        >mdi-chevron-down
                         </v-icon>
                       </v-btn>
                     </template>
@@ -970,7 +970,7 @@
                   class="switch-row"
                 >
                   <div class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/attachment-all.svg" />
+                    <img src="../../assets/img/filter-icons/attachment-all.svg"/>
                   </div>
                   <v-switch
                     :id="'attachment-switch-' + s.Id"
@@ -992,10 +992,10 @@
                   class="switch-row"
                 >
                   <div v-if="s.Type === 'Attachment'" class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/attach-file.svg" />
+                    <img src="../../assets/img/filter-icons/attach-file.svg"/>
                   </div>
                   <div v-else class="img-wrapper">
-                    <img src="../../assets/img/filter-icons/attach-red.svg" />
+                    <img src="../../assets/img/filter-icons/attach-red.svg"/>
                   </div>
                   <v-switch :id="'attach-switch-' + s.Id" v-model="s.IsShow"></v-switch>
                   <label v-if="filterOpened">{{ s.Name }}</label>
@@ -1006,7 +1006,7 @@
                           :class="{ 'chevron-down': attcChevron[ind] }"
                           v-on="on"
                           @click="attcChevron[ind] = !attcChevron[ind]"
-                          >mdi-chevron-down
+                        >mdi-chevron-down
                         </v-icon>
                       </v-btn>
                     </template>
@@ -1032,7 +1032,7 @@
                 </div>
               </div>
               <span v-if="allFiltersClosed()" class="filter-no-selected" id="select-one-attr"
-                >Please select at least 1 attribute</span
+              >Please select at least 1 attribute</span
               >
             </div>
           </div>
@@ -1076,7 +1076,7 @@
                             rounded
                             medium
                             color="blue"
-                            >COLLAPSE
+                          >COLLAPSE
                           </v-btn>
                           <v-btn
                             id="last-preview-details"
@@ -1085,7 +1085,7 @@
                             rounded
                             medium
                             color="blue"
-                            >DETAILS
+                          >DETAILS
                           </v-btn>
                         </template>
                       </v-expansion-panel-header>
@@ -1112,8 +1112,8 @@
                       <a v-else class="pl-1 pr-1">Company Name</a> on
                       <a class="pl-1 pr-1">
                         {{
-                          (postDetail && postDetail.Data && postDetail.Data.CommunityName) ||
-                            communityName
+                        (postDetail && postDetail.Data && postDetail.Data.CommunityName) ||
+                        communityName
                         }}
                       </a>
                     </div>
@@ -1127,7 +1127,7 @@
                       :id="uploadRespond.Description"
                       autoresize
                       :max-lines="3"
-                      >{{ uploadRespond.Description }}
+                    >{{ uploadRespond.Description }}
                     </v-clamp>
                     <v-clamp v-else autoresize :max-lines="3">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -1188,7 +1188,7 @@
                         outlined
                         class="tag-btn ml-1 text-none"
                         id="incident-badge"
-                        >{{ uploadRespond.CommunityPostCategory[0] }}
+                      >{{ uploadRespond.CommunityPostCategory[0] }}
                       </v-btn>
                       <v-btn
                         v-if="
@@ -1203,7 +1203,7 @@
                         outlined
                         class="tag-btn ml-1 text-none"
                         id="incident-badge"
-                        >{{ uploadRespond.CommunityPostCategory[1] }}
+                      >{{ uploadRespond.CommunityPostCategory[1] }}
                       </v-btn>
                       <div style="position: relative;">
                         <v-btn
@@ -1225,7 +1225,7 @@
                           id="post-inc-last-prev-with-tooltip"
                         >
                           <span v-if="shareSettings.attachments && shareSettings.attachments.length"
-                            >+{{ uploadRespond.CommunityPostCategory.length - 1 }}</span
+                          >+{{ uploadRespond.CommunityPostCategory.length - 1 }}</span
                           >
                           <span v-else>+{{ uploadRespond.CommunityPostCategory.length - 2 }}</span>
                         </v-btn>
@@ -1338,9 +1338,9 @@
                           class="detail-black detail-red"
                         >
                           Link: {{ el.Value }}
-                          <br />
+                          <br/>
                           <span style="color: #000 !important;"
-                            >This link has been reported as a phising link</span
+                          >This link has been reported as a phising link</span
                           >
                         </p>
                       </div>
@@ -1473,7 +1473,7 @@
                             :class="[el.IsMalicious ? 'malicious-style' : '']"
                           >
                             From: {{ uploadRespond.CommunityPostEmails[0].From }}
-                            <br />
+                            <br/>
                           </span>
                           <span
                             v-else-if="
@@ -1482,7 +1482,7 @@
                                 !el.IsShow
                             "
                             :id="'hidden-sender' + uploadRespond.CommunityPostEmails[0].From"
-                            >From: hidden by owner</span
+                          >From: hidden by owner</span
                           >
                           <div
                             v-for="(el, ind) of shareSettings.receiverInfo"
@@ -1496,12 +1496,12 @@
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
                             <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
+                            >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
                             >
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert
+                                >mdi-alert
                                 </v-icon>
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1517,12 +1517,12 @@
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
                             <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >To: hidden by owner</span
+                            >To: hidden by owner</span
                             >
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert
+                                >mdi-alert
                                 </v-icon>
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1540,12 +1540,12 @@
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
                             <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
+                            >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
                             >
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert
+                                >mdi-alert
                                 </v-icon>
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1561,12 +1561,12 @@
                             style="padding: 0 2px; border-bottom: 1px solid transparent;"
                           >
                             <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                              >CC: hidden by owner</span
+                            >CC: hidden by owner</span
                             >
                             <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                               <template v-slot:activator="{ on }">
                                 <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                  >mdi-alert
+                                >mdi-alert
                                 </v-icon>
                               </template>
                               <span>This email address has been reported as a threat source</span>
@@ -1576,7 +1576,7 @@
                             Date:
                             {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
                             {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                            <br />
+                            <br/>
                           </div>
                         </div>
                       </div>
@@ -1648,19 +1648,8 @@
                             </div>
                           </div>
                         </div>
-                        <div v-else class="comment-row">
-                          <div class="user-wrapper">
-                            <span class="username">User Name</span>
-                            from
-                            <span class="company-name">Company Name</span>
-                            <p class="the-comment">
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                              eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            </p>
-                          </div>
-                        </div>
-
                         <div id="last-step-comments" v-if="seeComments" class="hidden-comments">
+                          <!-- Post Incident Dummy Comments
                           <div class="comment-row">
                             <div class="user-wrapper">
                               <span class="username">User Name</span>
@@ -1694,14 +1683,15 @@
                               </p>
                             </div>
                           </div>
+                          -->
                         </div>
-                        <div
+                        <!--<div
                           v-if="!seeComments"
                           class="see-all-comments"
                           @click="seeComments = true"
                         >
                           <span>See all 3 comments</span>
-                        </div>
+                        </div>-->
                       </div>
                     </v-tab-item>
                   </v-tabs-items>
@@ -1713,7 +1703,7 @@
       </v-card>
       <div id="post-footer-actions" class="footer-actions">
         <v-btn id="post-cancel-btn" class="cancel-btn" text color="#f56c6c" @click="onCancelClicked"
-          >Cancel
+        >Cancel
         </v-btn>
         <div>
           <v-btn
@@ -1723,7 +1713,7 @@
             text
             color="#2196f3"
             @click="step = step - 1"
-            >Previous
+          >Previous
           </v-btn>
           <v-btn
             v-if="step === 1"
@@ -1734,7 +1724,7 @@
             text
             color="#2196f3"
             @click="onContinue"
-            >Next
+          >Next
           </v-btn>
           <v-btn
             v-if="step === 2"
@@ -1744,7 +1734,7 @@
             text
             color="#2196f3"
             @click="onSecondStep"
-            >Next
+          >Next
           </v-btn>
           <v-btn
             v-if="step === 3"
@@ -1754,7 +1744,7 @@
             text
             color="#2196f3"
             @click="onThirdStep"
-            >Next
+          >Next
           </v-btn>
           <v-btn
             id="post-step-four-next-btn"
@@ -1764,7 +1754,7 @@
             text
             color="#2196f3"
             @click="onBeforeLastStep"
-            >Next
+          >Next
           </v-btn>
           <v-btn
             id="post-step-five-next-btn"
@@ -1773,7 +1763,7 @@
             text
             color="#2196f3"
             @click="onFinish"
-            >Post
+          >Post
           </v-btn>
         </div>
       </div>
@@ -1781,7 +1771,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import VClamp from 'vue-clamp'
 
 export default {
@@ -1975,7 +1965,7 @@ export default {
   watch: {
     step(val) {
       if (val === 5) {
-        const { links, receiverInfo, senderInfo, subject, attachments } = this.shareSettings
+        const {links, receiverInfo, senderInfo, subject, attachments} = this.shareSettings
         let maliciousCount = 0
         links.map(item => {
           item.IsMalicious ? ++maliciousCount : null
@@ -1995,7 +1985,7 @@ export default {
         this.maliciousCount = maliciousCount
       }
     },
-    'shareSettings.allHeader': function(newVal, oldVal) {
+    'shareSettings.allHeader': function (newVal, oldVal) {
       if (newVal && newVal.length) {
         this.allHeader = newVal[0].IsShow
       }
@@ -2011,13 +2001,13 @@ export default {
         this.shareSettings.receiverInfo[0].IsShow = false
       }
     },
-    'shareSettings.allAttachments': function(newVal, oldVal) {
+    'shareSettings.allAttachments': function (newVal, oldVal) {
       if (newVal && newVal.length) {
         this.allAttachments = newVal[0].IsShow
       }
     },
     'shareSettings.subject': {
-      handler: function(newVal, oldWal) {
+      handler: function (newVal, oldWal) {
         if (
           newVal &&
           newVal.length &&
@@ -2038,7 +2028,7 @@ export default {
       deep: true
     },
     'shareSettings.senderInfo': {
-      handler: function(newVal, oldWal) {
+      handler: function (newVal, oldWal) {
         if (
           newVal &&
           newVal.length &&
@@ -2059,7 +2049,7 @@ export default {
       deep: true
     },
     'shareSettings.receiverInfo': {
-      handler: function(newVal, oldWal) {
+      handler: function (newVal, oldWal) {
         if (
           newVal &&
           newVal.length &&
@@ -2082,7 +2072,7 @@ export default {
       deep: true
     },
     'shareSettings.attachments': {
-      handler: function(newVal, oldWal) {
+      handler: function (newVal, oldWal) {
         if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
           this.allAttachments = true
         }
@@ -2093,7 +2083,7 @@ export default {
       deep: true
     },
     'shareSettings.links': {
-      handler: function(newVal, oldWal) {
+      handler: function (newVal, oldWal) {
         if (newVal && newVal.length && newVal.every(item => item.IsShow === true)) {
           this.allLinks = true
         }
@@ -2114,7 +2104,7 @@ export default {
         }
       }
     },
-    'shareSettings.allLinks': function(newVal, oldVal) {
+    'shareSettings.allLinks': function (newVal, oldVal) {
       if (newVal && newVal.length) {
         this.allLinks = newVal[0].IsShow
       }
@@ -2130,7 +2120,7 @@ export default {
         }
       }
     },
-    'uploadRespond.AffectArea': function(newVal, oldVal) {
+    'uploadRespond.AffectArea': function (newVal, oldVal) {
       if (newVal && newVal.length > 5) {
         this.uploadRespond.AffectArea.pop()
       }
@@ -2282,7 +2272,7 @@ export default {
       } else {
         this.step++
         const refThis = this
-        setTimeout(function() {
+        setTimeout(function () {
           refThis.previewHideShow()
         }, 0)
       }
@@ -2291,9 +2281,9 @@ export default {
       this.msgEmlFile = e.target.files || e.dataTransfer.files
       const extensionName = this.msgEmlFile[0].name.slice(-3)
       if (extensionName != 'msg' && extensionName != 'eml') {
-        this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-        this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+        this.$store.commit('common/SET_SNACK_STATUS', true, {root: true})
+        this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+        this.$store.commit('common/SET_ERROR_STATE', true, {root: true})
         this.$store.commit('common/SET_ERROR_MESSAGE', 'Allowed .eml or .msg files only', {
           root: true
         })
@@ -2329,7 +2319,7 @@ export default {
         this.createInc.onPreview = true
         this.step++
         const refThis = this
-        setTimeout(function() {
+        setTimeout(function () {
           refThis.previewHideShow()
         }, 0)
       }
@@ -2366,7 +2356,7 @@ export default {
         this.updateRightCol()
       })
       this.createInc.onPreview = false
-      this.$store.commit('common/SET_IS_LOADING', false, { root: true })
+      this.$store.commit('common/SET_IS_LOADING', false, {root: true})
       this.$emit('closePostIncident')
     },
     updateTags() {
@@ -2430,7 +2420,7 @@ export default {
           )
         }
         if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function() {
+          setTimeout(function () {
             for (let a of ShareSettings.links) {
               var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
               // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
@@ -2536,7 +2526,7 @@ export default {
     },
     validateAffectArea() {
       const refThis = this
-      setTimeout(function() {
+      setTimeout(function () {
         if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
           let i = refThis.uploadRespond.AffectArea.length
           while (i--) {
@@ -3064,7 +3054,7 @@ export default {
     width: 300px;
     background-color: white;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    0 3px 1px -2px rgba(80, 80, 80, 0.12);
     align-items: center;
     display: flex;
     justify-content: flex-start;
@@ -3080,7 +3070,7 @@ export default {
       z-index: 99999;
       border-radius: 12px;
       box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12);
+      0 1px 1px -1px rgba(204, 204, 204, 0.12);
       border: solid 1px #2196f3;
     }
 
@@ -3755,9 +3745,9 @@ export default {
 }
 
 ::v-deep
-  .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-  > .v-input__control
-  > .v-input__slot {
+.affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+> .v-input__control
+> .v-input__slot {
   border: none !important;
 }
 
@@ -4607,7 +4597,7 @@ export default {
 ::v-deep .v-expansion-panel {
   border-radius: 20px !important;
   box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+  0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   background-color: #fff;
   border: unset !important;
 }
@@ -4703,7 +4693,7 @@ button:disabled {
 }
 
 input[type=file], /* FF, IE7+, chrome (except button) */
-  input[type=file]::-webkit-file-upload-button {
+input[type=file]::-webkit-file-upload-button {
   /* chromes and blink button */
   cursor: pointer !important;
 }
