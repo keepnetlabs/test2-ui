@@ -11,7 +11,7 @@
           <v-list-item-content class="pt-0 pb-0">
             <v-list-item-title class="v-card-headline">Delete Community?</v-list-item-title>
             <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-            >{{ selectedCommunName }}
+              >{{ selectedCommunName }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -40,7 +40,7 @@
           <v-list-item-content class="pt-0 pb-0">
             <v-list-item-title class="v-card-headline">Leave Community?</v-list-item-title>
             <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-            >{{ selectedCommunName }}
+              >{{ selectedCommunName }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
@@ -82,7 +82,15 @@
               :href="`#tab-${ind}`"
               class="text-decoration-none"
             >
-              {{ tab }}
+              <template v-if="ind === 2">
+                {{ tab }}
+                <span v-if="invitations.length" class="invitations-count">
+                  {{ invitations.length }}
+                </span>
+              </template>
+              <template v-else>
+                {{ tab }}
+              </template>
             </v-tab>
           </v-tabs>
           <div class="search-wrapper">
@@ -96,12 +104,12 @@
               @input="updateCommunities()"
             ></v-text-field>
             <v-icon class="filter-icon" @click.native="updateCommunities()"
-            >mdi-filter-variant
+              >mdi-filter-variant
             </v-icon>
           </div>
         </template>
         <template v-slot:default="items">
-          <div v-if="yoursOrAll === 'tab-0' || yoursOrAll === 'tab-1'">
+          <div v-if="yoursOrAll === 'tab-0' || yoursOrAll === 'tab-1'" id="tab-0">
             <div v-for="(comp, ind) of items.items" :key="ind" class="threat-sharing-content">
               <div class="ts-header">
                 <div
@@ -270,10 +278,10 @@
                   </span>
                   &bull;
                   <span class="ts-community-industry pl-2" v-if="comp.IsPrivate === true"
-                  >Private</span
+                    >Private</span
                   >
                   <span class="ts-community-industry pl-2" v-else-if="comp.IsPrivate === false"
-                  >Public</span
+                    >Public</span
                   >
                 </div>
                 <div v-if="comp && comp.ModifyDate" class="ts-community-date pt-1">
@@ -360,7 +368,7 @@
               </v-btn>
             </div>
           </div>
-          <div class="empty-communities" v-if="yoursOrAll === 'tab-2'">
+          <div class="empty-communities" v-if="yoursOrAll === 'tab-2'" id="tab-2">
             <div class="empty-communities-inline">
               <span class="no-community">
                 You don't have any invitations from communities
@@ -376,612 +384,642 @@
   </v-card>
 </template>
 <script>
-  import VClamp from 'vue-clamp'
-  import {mapGetters} from 'vuex'
+import VClamp from 'vue-clamp'
+import { mapGetters } from 'vuex'
 
-  export default {
-    components: {
-      VClamp
-    },
-    data: () => ({
-      yoursOrAll: 'tab-1',
-      tabOptions: ['Your Communities', 'All', 'Invitations'],
-      communities: ['keepnet'],
-      search: '',
-      page: 1,
-      itemsPerPageOptions: [5, 10, 20],
-      itemsPerPage: 5,
-      filter: '',
-      filteredBefore: false,
-      filteredValue: '',
-      confirmDialog: false,
-      leaveDialog: false,
-      communityId: '',
-      deleteId: '',
-      creatorOfCommun: '',
-      selectedCommunName: '',
-      selectedSubTab: null,
-      debounce: null,
-      mountedCommunities: [],
-      invitedCommunities: [],
-      selectedCommunPrivacy: null
+export default {
+  components: {
+    VClamp
+  },
+  data: () => ({
+    yoursOrAll: 'tab-1',
+    tabOptions: ['Your Communities', 'All', 'Invitations'],
+    communities: ['keepnet'],
+    search: '',
+    page: 1,
+    itemsPerPageOptions: [5, 10, 20],
+    itemsPerPage: 5,
+    filter: '',
+    filteredBefore: false,
+    filteredValue: '',
+    confirmDialog: false,
+    leaveDialog: false,
+    communityId: '',
+    deleteId: '',
+    creatorOfCommun: '',
+    selectedCommunName: '',
+    selectedSubTab: null,
+    debounce: null,
+    mountedCommunities: [],
+    invitedCommunities: [],
+    selectedCommunPrivacy: null
+  }),
+  computed: {
+    ...mapGetters({
+      communityList: 'threadSharing/communityGetter',
+      myCommunities: 'threadSharing/myCommunitiesGetter',
+      selectedCommunity: 'threadSharing/selectedCommunityGetter',
+      requests: 'threadSharing/requestsGetter',
+      getSelectedCompany: 'dashboard/getSelectedCompany',
+      invitations: 'threadSharing/invitationsGetter'
     }),
-    computed: {
-      ...mapGetters({
-        communityList: 'threadSharing/communityGetter',
-        myCommunities: 'threadSharing/myCommunitiesGetter',
-        selectedCommunity: 'threadSharing/selectedCommunityGetter',
-        requests: 'threadSharing/requestsGetter',
-        getSelectedCompany: 'dashboard/getSelectedCompany',
-        invitations: 'threadSharing/invitationsGetter'
-      }),
-      listCommunities: {
-        get() {
-          if (this.yoursOrAll === 'tab-1') {
-            return this.communityList.Results.sort(function (a, b) {
-              if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
-                return -1
-              }
-              if (a.Name.toLowerCase() > b.Name.toLowerCase()) {
-                return 1
-              }
-              return 0
-            })
-          } else if (this.yoursOrAll === 'tab-0') {
-            return this.myCommunities.sort(function (a, b) {
-              if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
-                return -1
-              }
-              if (a.Name.toLowerCase() > b.Name.toLowerCase()) {
-                return 1
-              }
-              return 0
-            })
-          } else if (this.yoursOrAll === 'tab-2') {
-            return this.invitations
-          }
-        },
-        set(filtered) {
-          this.communityList.Results = filtered
+    listCommunities: {
+      get() {
+        if (this.yoursOrAll === 'tab-1') {
+          return this.communityList.Results.sort(function(a, b) {
+            if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
+              return -1
+            }
+            if (a.Name.toLowerCase() > b.Name.toLowerCase()) {
+              return 1
+            }
+            return 0
+          })
+        } else if (this.yoursOrAll === 'tab-0') {
+          return this.myCommunities.sort(function(a, b) {
+            if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
+              return -1
+            }
+            if (a.Name.toLowerCase() > b.Name.toLowerCase()) {
+              return 1
+            }
+            return 0
+          })
+        } else if (this.yoursOrAll === 'tab-2') {
+          return this.invitations
         }
       },
-      userId() {
-        return localStorage.getItem('userId')
-      },
-      companyId() {
-        return localStorage.getItem('companyId')
+      set(filtered) {
+        this.communityList.Results = filtered
       }
     },
-    watch: {
-      yoursOrAll(val) {
-        if (val && val == 'tab-0') {
-          let myCommuns = []
-          for (let a of this.listCommunities) {
-            let match = this.myCommunities.find(c => c.CommunityId == a.CommunityId)
-            if (match) myCommuns.push(match)
-          }
-          this.listCommunities = myCommuns
+    userId() {
+      return localStorage.getItem('userId')
+    },
+    companyId() {
+      return localStorage.getItem('companyId')
+    }
+  },
+  watch: {
+    yoursOrAll(val) {
+      if (val && val == 'tab-0') {
+        let myCommuns = []
+        for (let a of this.listCommunities) {
+          let match = this.myCommunities.find(c => c.CommunityId == a.CommunityId)
+          if (match) myCommuns.push(match)
         }
+        this.listCommunities = myCommuns
       }
-    },
-    mounted() {
-      this.yoursOrAll = 'tab-1'
-      this.mountedCommunities = this.communityList.Results
-      this.$store.dispatch('threadSharing/getInvitions')
-      if (this.$route.query && !!this.$route.query.communityID) {
-        const comp = this.listCommunities.find(item => item.CommunityId === this.$route.query.communityID)
-        if (comp) {
-          this.goToCommunity(
-            comp.Name,
-            comp.CommunityId,
-            comp.Description,
-            comp.BusinessCategoryText,
-            comp.IsPrivate,
-            comp.CreateUserId,
-            comp.CommunityCompany[0].CompanyId,
-            this.isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
-          )
-        }
+    }
+  },
+  mounted() {
+    this.yoursOrAll = 'tab-1'
+    this.mountedCommunities = this.communityList.Results
+    this.$store.dispatch('threadSharing/getInvitions')
+    if (this.$route.query && !!this.$route.query.invitations) {
+      this.subTabSelected()
+    }
+    if (this.$route.query && !!this.$route.query.communityID) {
+      const comp = this.listCommunities.find(
+        item => item.CommunityId === this.$route.query.communityID
+      )
+      if (comp) {
+        this.goToCommunity(
+          comp.Name,
+          comp.CommunityId,
+          comp.Description,
+          comp.BusinessCategoryText,
+          comp.IsPrivate,
+          comp.CreateUserId,
+          comp.CommunityCompany[0].CompanyId,
+          this.isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
+        )
       }
-    },
-    methods: {
-      updateCommunities() {
-        clearTimeout(this.debounce)
-        const refThis = this
-        this.debounce = setTimeout(function () {
-          if (refThis.filteredValue != refThis.filter) {
-            if (refThis.filter.length) {
-              if (refThis.yoursOrAll === 'tab-1') {
+    }
+  },
+  methods: {
+    updateCommunities() {
+      clearTimeout(this.debounce)
+      const refThis = this
+      this.debounce = setTimeout(function() {
+        if (refThis.filteredValue != refThis.filter) {
+          if (refThis.filter.length) {
+            if (refThis.yoursOrAll === 'tab-1') {
+              refThis.listCommunities = refThis.mountedCommunities.filter(
+                f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
+              )
+            } else if (refThis.yoursOrAll === 'tab-0') {
+              refThis.listCommunities = refThis.myCommunities.filter(
+                f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
+              )
+            }
+            refThis.filteredBefore = true
+            refThis.filteredValue = refThis.filter
+          } else if (refThis.filteredBefore) {
+            if (refThis.yoursOrAll === 'tab-1') {
+              refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
                 refThis.listCommunities = refThis.mountedCommunities.filter(
                   f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
                 )
-              } else if (refThis.yoursOrAll === 'tab-0') {
+              })
+            } else if (refThis.yoursOrAll === 'tab-0') {
+              refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
                 refThis.listCommunities = refThis.myCommunities.filter(
                   f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
                 )
-              }
-              refThis.filteredBefore = true
-              refThis.filteredValue = refThis.filter
-            } else if (refThis.filteredBefore) {
-              if (refThis.yoursOrAll === 'tab-1') {
-                refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
-                  refThis.listCommunities = refThis.mountedCommunities.filter(
-                    f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
-                  )
-                })
-              } else if (refThis.yoursOrAll === 'tab-0') {
-                refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
-                  refThis.listCommunities = refThis.myCommunities.filter(
-                    f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
-                  )
-                })
-              }
-              refThis.filteredBefore = true
-              refThis.filteredValue = refThis.filter
-            } else {
-              refThis.$store.dispatch('threadSharing/getCommunities')
-              refThis.filteredBefore = true
-              refThis.filteredValue = refThis.filter
+              })
             }
+            refThis.filteredBefore = true
+            refThis.filteredValue = refThis.filter
           } else {
-            if (refThis.yoursOrAll === 'tab-1') {
-              return refThis.listCommunities
-            }
+            refThis.$store.dispatch('threadSharing/getCommunities')
+            refThis.filteredBefore = true
+            refThis.filteredValue = refThis.filter
           }
-        }, 300)
-      },
-      openNotificationSettings(id) {
-        this.selectedCommunity.id = id
-        this.$emit('open-notification', id)
-      },
-      createNewCommunity() {
-        this.$emit('create-community')
-      },
-      refreshCommunities() {
-        this.$store.dispatch('threadSharing/getCommunities')
-      },
-      refreshRequests() {
-        this.$store.dispatch('threadSharing/getRequestsCompany', localStorage.getItem('companyId'))
-      },
-      editCommunity(name, communityId, description, category, privacy, creator) {
-        this.$store.dispatch('threadSharing/setSelectedCommunity', {
-          id: communityId,
-          name: name,
-          description: description,
-          industry: category,
-          privacy: privacy
-        })
-        localStorage.setItem('creatorId', creator)
-        this.$emit('edit-community')
-      },
-      goToCommunity(name, communityId, description, category, privacy, creator, communCompId, isOwner) {
-        if (!this.isJoined(communityId) && privacy) {
-          return
-        }
-        localStorage.setItem('companyId', this.getSelectedCompany.companyId)
-        localStorage.setItem('communityName', name)
-        localStorage.setItem('communityDesc', description)
-        localStorage.setItem('communityCat', category)
-        localStorage.setItem('communityPrivacy', privacy)
-        localStorage.setItem('creatorId', creator)
-        localStorage.setItem('communityId', communityId)
-        localStorage.setItem('communityCompanyId', communCompId)
-        localStorage.setItem('isOwner', isOwner)
-        this.$router.push({path: `/Community/${name}`})
-        this.$store.dispatch('threadSharing/setSelectedCommunity', {
-          id: communityId,
-          name: name,
-          description: description,
-          industry: category,
-          privacy: privacy,
-          communityCompanyId: communCompId,
-          isOwner: isOwner
-        })
-      },
-      isJoined(id) {
-        if (this.myCommunities && this.myCommunities.length) {
-          return this.myCommunities.some(cId => cId.CommunityId == id)
-        }
-      },
-      isOwnerOfTheCommunity(communityCompId) {
-        if (this.getSelectedCompany.companyId === communityCompId) {
-          return true
         } else {
-          return false
-        }
-      },
-      subTabSelected(name) {
-        if (name == 'Your Communities') {
-          this.yoursOrAll = 'tab-0'
-          let myCommuns = []
-          for (let a of this.listCommunities) {
-            let match = this.myCommunities.find(c => c.CommunityId == a.CommunityId)
-            if (match) myCommuns.push(match)
+          if (refThis.yoursOrAll === 'tab-1') {
+            return refThis.listCommunities
           }
-          this.listCommunities = myCommuns
-        } else if (name == 'All') {
-          this.yoursOrAll = 'tab-1'
-          this.$store.dispatch('threadSharing/getCommunities')
-        } else {
-          this.yoursOrAll = 'tab-2'
-          return
         }
-      },
-      openLeaveDialog(communityId, creatorOfCommun, name, privacy) {
-        this.leaveDialog = true
-        this.communityId = communityId
-        this.creatorId = creatorOfCommun
-        this.selectedCommunName = name
-        this.selectedCommunPrivacy = privacy
-      },
-      leaveCommunity() {
-        this.$store.dispatch('threadSharing/leaveCommunity', {
-          communityId: this.communityId,
-          creatorId: this.creatorId
-        })
-        this.leaveDialog = false
-      },
-      openConfirmDialog(communityId, deleteId, name) {
-        this.confirmDialog = true
-        this.communityId = communityId
-        this.deleteId = deleteId
-        this.selectedCommunName = name
-      },
-      deleteCommunity() {
-        this.$store.dispatch('threadSharing/deleteCommunity', {
-          communityId: this.communityId,
-          userId: this.deleteId
-        })
-        this.confirmDialog = false
-      },
-      requestJoin(communId, privacy, name) {
-        this.$store
-          .dispatch('threadSharing/joinCommunity', {
-            CommunityId: communId,
-            CompanyId: localStorage.getItem('companyId'),
-            CreateUserId: localStorage.getItem('userId'),
-            IsPrivate: privacy,
-            Name: name
-          })
-          .then(() => {
-            this.refreshRequests()
-            this.refreshCommunities()
-          })
-      },
-      isRequestSent(communId) {
-        return this.requests.some(cId => cId.CommunityId === communId)
-      },
-      cancelInvitation(communId, createUserId, communReqId) {
-        const refuseObj = {
-          CommunityId: communId,
-          InvitedCompanyId: localStorage.getItem('companyId'),
-          CreateUserId: createUserId,
-          CommunityRequestId: communReqId
-        }
-        this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj)
-      },
-      acceptInvitation(communId, createUserId, communReqId) {
-        const refuseObj = {
-          CommunityId: communId,
-          InvitedCompanyId: localStorage.getItem('companyId'),
-          CreateUserId: createUserId,
-          CommunityRequestId: communReqId
-        }
-        this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj)
+      }, 300)
+    },
+    openNotificationSettings(id) {
+      this.selectedCommunity.id = id
+      this.$emit('open-notification', id)
+    },
+    createNewCommunity() {
+      this.$emit('create-community')
+    },
+    refreshCommunities() {
+      this.$store.dispatch('threadSharing/getCommunities')
+    },
+    refreshRequests() {
+      this.$store.dispatch('threadSharing/getRequestsCompany', localStorage.getItem('companyId'))
+    },
+    editCommunity(name, communityId, description, category, privacy, creator) {
+      this.$store.dispatch('threadSharing/setSelectedCommunity', {
+        id: communityId,
+        name: name,
+        description: description,
+        industry: category,
+        privacy: privacy
+      })
+      localStorage.setItem('creatorId', creator)
+      this.$emit('edit-community')
+    },
+    goToCommunity(
+      name,
+      communityId,
+      description,
+      category,
+      privacy,
+      creator,
+      communCompId,
+      isOwner
+    ) {
+      if (!this.isJoined(communityId) && privacy) {
+        return
       }
+      localStorage.setItem('companyId', this.getSelectedCompany.companyId)
+      localStorage.setItem('communityName', name)
+      localStorage.setItem('communityDesc', description)
+      localStorage.setItem('communityCat', category)
+      localStorage.setItem('communityPrivacy', privacy)
+      localStorage.setItem('creatorId', creator)
+      localStorage.setItem('communityId', communityId)
+      localStorage.setItem('communityCompanyId', communCompId)
+      localStorage.setItem('isOwner', isOwner)
+      this.$router.push({ path: `/Community/${communityId}` })
+      this.$store.dispatch('threadSharing/setSelectedCommunity', {
+        id: communityId,
+        name: name,
+        description: description,
+        industry: category,
+        privacy: privacy,
+        communityCompanyId: communCompId,
+        isOwner: isOwner
+      })
+    },
+    isJoined(id) {
+      if (this.myCommunities && this.myCommunities.length) {
+        return this.myCommunities.some(cId => cId.CommunityId == id)
+      }
+    },
+    isOwnerOfTheCommunity(communityCompId) {
+      if (this.getSelectedCompany.companyId === communityCompId) {
+        return true
+      } else {
+        return false
+      }
+    },
+    subTabSelected(name) {
+      if (name == 'Your Communities') {
+        this.yoursOrAll = 'tab-0'
+        let myCommuns = []
+        for (let a of this.listCommunities) {
+          let match = this.myCommunities.find(c => c.CommunityId == a.CommunityId)
+          if (match) myCommuns.push(match)
+        }
+        this.listCommunities = myCommuns
+      } else if (name == 'All') {
+        this.yoursOrAll = 'tab-1'
+        this.$store.dispatch('threadSharing/getCommunities')
+      } else {
+        this.yoursOrAll = 'tab-2'
+        return
+      }
+    },
+    openLeaveDialog(communityId, creatorOfCommun, name, privacy) {
+      this.leaveDialog = true
+      this.communityId = communityId
+      this.creatorId = creatorOfCommun
+      this.selectedCommunName = name
+      this.selectedCommunPrivacy = privacy
+    },
+    leaveCommunity() {
+      this.$store.dispatch('threadSharing/leaveCommunity', {
+        communityId: this.communityId,
+        creatorId: this.creatorId
+      })
+      this.leaveDialog = false
+    },
+    openConfirmDialog(communityId, deleteId, name) {
+      this.confirmDialog = true
+      this.communityId = communityId
+      this.deleteId = deleteId
+      this.selectedCommunName = name
+    },
+    deleteCommunity() {
+      this.$store.dispatch('threadSharing/deleteCommunity', {
+        communityId: this.communityId,
+        userId: this.deleteId
+      })
+      this.confirmDialog = false
+    },
+    requestJoin(communId, privacy, name) {
+      this.$store
+        .dispatch('threadSharing/joinCommunity', {
+          CommunityId: communId,
+          CompanyId: localStorage.getItem('companyId'),
+          CreateUserId: localStorage.getItem('userId'),
+          IsPrivate: privacy,
+          Name: name
+        })
+        .then(() => {
+          this.refreshRequests()
+          this.refreshCommunities()
+        })
+    },
+    isRequestSent(communId) {
+      return this.requests.some(cId => cId.CommunityId === communId)
+    },
+    cancelInvitation(communId, createUserId, communReqId) {
+      const refuseObj = {
+        CommunityId: communId,
+        InvitedCompanyId: localStorage.getItem('companyId'),
+        CreateUserId: createUserId,
+        CommunityRequestId: communReqId
+      }
+      this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj)
+    },
+    acceptInvitation(communId, createUserId, communReqId) {
+      const refuseObj = {
+        CommunityId: communId,
+        InvitedCompanyId: localStorage.getItem('companyId'),
+        CreateUserId: createUserId,
+        CommunityRequestId: communReqId
+      }
+      this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj)
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>
-  ::v-deep .community-selector {
-    .v-tabs-bar {
-      height: 44px !important;
-    }
-  }
-
-  ::v-deep .community-selector .v-slide-group__wrapper {
-    background-color: #f5f7fa !important;
+::v-deep .community-selector {
+  .v-tabs-bar {
     height: 44px !important;
-    padding-left: 0 !important;
-
-    .v-tab {
-      font-weight: 400;
-      font-size: 14px !important;
-      margin-top: 6px;
-      margin-right: 32px !important;
-    }
   }
+}
 
-  ::v-deep .community-selector .v-slide-group__wrapper > div {
-    height: 100%;
-    margin-right: 0 !important;
-  }
+::v-deep .community-selector .v-slide-group__wrapper {
+  background-color: #f5f7fa !important;
+  height: 44px !important;
+  padding-left: 0 !important;
 
   .v-tab {
-    padding: 0 3px !important;
-    font-size: 20px;
     font-weight: 400;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    text-transform: none;
-    color: rgba(0, 0, 0, 0.87);
-    min-width: min-content !important;
-    text-align: left !important;
-  }
-
-  .search-wrapper {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    > div {
-      padding-right: 10px;
-    }
-
-    .filter-icon {
-      color: rgba(0, 0, 0, 0.34) !important;
-      cursor: pointer;
-    }
-  }
-
-  .threat-sharing-content {
-    min-height: 150px;
-    width: 100%;
-    border-radius: 20px;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12);
-    background-color: #ffffff;
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-
-  .ts-header {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-  }
-
-  .ts-title {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 24px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.29;
-    letter-spacing: normal;
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.87);
-    max-height: 70px;
-    max-width: 60%;
-    display: block;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-
-  .ts-body {
-    margin-top: 8px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-
-  .ts-user-comp {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 12px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.58;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-
-    a {
-      text-decoration: none;
-    }
-
-    .ts-user-date {
-      font-weight: bold;
-    }
-  }
-
-  .ts-user-comp-detail {
-    align-items: center;
-    display: flex;
-  }
-
-  .ts-community-industry {
-    font-family: 'Open Sans', sans-serif !important;
-    color: rgba(0, 0, 0, 0.87) !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-  }
-
-  .ts-people-icon {
-    font-size: 16px;
-  }
-
-  .notification-wrapper {
-    background-color: #fff;
-  }
-
-  .v-menu__content {
-    border-radius: 8px !important;
-    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-
-    .v-list-item {
-      padding-left: 29px !important;
-      padding-right: 16px !important;
-    }
-
-    .v-list-item__title {
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
-
-  .v-application--is-ltr .v-list-item__icon:first-child {
-    margin-right: 10px !important;
-  }
-
-  .empty-communities {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    position: relative;
-    min-height: 171px;
-    width: 100%;
-
-    .empty-communities-inline {
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-width: 420px;
-
-      span {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 24px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.29;
-        letter-spacing: normal;
-        color: #000;
-        text-align: center;
-        width: 100%;
-        padding-top: 50px;
-        padding-bottom: 16px;
-      }
-    }
-  }
-
-  .create-com-btn {
-    align-items: center;
-    background-color: #2196f3 !important;
-    color: #fff;
-    display: flex;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    height: 36px !important;
-    text-transform: unset !important;
-  }
-
-  .v-cart-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    margin-right: 24px;
-    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-    border: solid 1px rgba(100, 181, 246, 0.5);
-    background-color: #e3f2fd;
-  }
-
-  .delete-info {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    line-height: normal !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.72) !important;
-  }
-
-  .invite-sub-header {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    line-height: 1.5 !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.87) !important;
+    margin-top: 6px;
+    margin-right: 32px !important;
+  }
+}
+
+::v-deep .community-selector .v-slide-group__wrapper > div {
+  height: 100%;
+  margin-right: 0 !important;
+}
+
+.v-tab {
+  padding: 0 3px !important;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.15;
+  letter-spacing: normal;
+  text-transform: none;
+  color: rgba(0, 0, 0, 0.87);
+  min-width: min-content !important;
+  text-align: left !important;
+}
+
+.search-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  > div {
+    padding-right: 10px;
   }
 
-  .v-card-headline {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.4;
-    letter-spacing: normal;
-    color: #2196f3;
+  .filter-icon {
+    color: rgba(0, 0, 0, 0.34) !important;
+    cursor: pointer;
+  }
+}
+
+.threat-sharing-content {
+  min-height: 150px;
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+    0 3px 1px -2px rgba(80, 80, 80, 0.12);
+  background-color: #ffffff;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.ts-header {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.ts-title {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 24px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.87);
+  max-height: 70px;
+  max-width: 60%;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.ts-body {
+  margin-top: 8px;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.ts-user-comp {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.58;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+
+  a {
+    text-decoration: none;
   }
 
-  .v-card-sub-header {
-    font-family: Helvetica;
-    font-size: 15px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: #000 !important;
+  .ts-user-date {
+    font-weight: bold;
+  }
+}
+
+.ts-user-comp-detail {
+  align-items: center;
+  display: flex;
+}
+
+.ts-community-industry {
+  font-family: 'Open Sans', sans-serif !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.71;
+}
+
+.ts-people-icon {
+  font-size: 16px;
+}
+
+.notification-wrapper {
+  background-color: #fff;
+}
+
+.v-menu__content {
+  border-radius: 8px !important;
+  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+  .v-list-item {
+    padding-left: 29px !important;
+    padding-right: 16px !important;
   }
 
-  .edit-name-textfield,
-  .edit-description,
-  .edit-select {
-    font-size: 13px !important;
-  }
-
-  .delete-dialog-body {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px;
+  .v-list-item__title {
+    font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-    margin-top: 38px;
-    margin-bottom: 24px;
+    color: rgba(0, 0, 0, 0.87);
   }
+}
 
-  .join-button {
-    color: #fff !important;
-    background-color: #2196f3 !important;
-    font-family: 'Open Sans', sans-serif !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    border: none !important;
-  }
+.v-application--is-ltr .v-list-item__icon:first-child {
+  margin-right: 10px !important;
+}
 
-  .invitation-cancel {
-    color: #fff;
-    background-color: #f56c6c;
-  }
+.empty-communities {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  min-height: 171px;
+  width: 100%;
 
-  .invitation-accept {
-    color: #fff;
-    background-color: #2196f3;
-  }
+  .empty-communities-inline {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 420px;
 
-  ::v-deep .text-decoration-none {
-    text-decoration: none !important;
-    text-decoration-line: none !important;
+    span {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 24px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: #000;
+      text-align: center;
+      width: 100%;
+      padding-top: 50px;
+      padding-bottom: 16px;
+    }
   }
+}
+
+.create-com-btn {
+  align-items: center;
+  background-color: #2196f3 !important;
+  color: #fff;
+  display: flex;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.71;
+  letter-spacing: normal;
+  height: 36px !important;
+  text-transform: unset !important;
+}
+
+.v-cart-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  margin-right: 24px;
+  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+  border: solid 1px rgba(100, 181, 246, 0.5);
+  background-color: #e3f2fd;
+}
+
+.delete-info {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: normal !important;
+  font-stretch: normal !important;
+  font-style: normal !important;
+  line-height: normal !important;
+  letter-spacing: normal !important;
+  color: rgba(0, 0, 0, 0.72) !important;
+}
+
+.invite-sub-header {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  font-stretch: normal !important;
+  font-style: normal !important;
+  line-height: 1.5 !important;
+  letter-spacing: normal !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.v-card-headline {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 20px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.4;
+  letter-spacing: normal;
+  color: #2196f3;
+}
+
+.v-card-sub-header {
+  font-family: Helvetica;
+  font-size: 15px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: #000 !important;
+}
+
+.edit-name-textfield,
+.edit-description,
+.edit-select {
+  font-size: 13px !important;
+}
+
+.delete-dialog-body {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 13px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.72);
+  margin-top: 38px;
+  margin-bottom: 24px;
+}
+
+.join-button {
+  color: #fff !important;
+  background-color: #2196f3 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+  border: none !important;
+}
+
+.invitation-cancel {
+  color: #fff;
+  background-color: #f56c6c;
+}
+
+.invitation-accept {
+  color: #fff;
+  background-color: #2196f3;
+}
+
+::v-deep .text-decoration-none {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.invitations-count {
+  align-items: center;
+  background-color: #d32f2f;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  font-size: 12px;
+  line-height: 18px;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: -13px;
+  height: 16px;
+  width: 16px;
+}
 </style>

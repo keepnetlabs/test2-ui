@@ -11,7 +11,7 @@
     </v-dialog>
     <v-overlay :z-index="15" :value="isTourActive"></v-overlay>
     <tour-widget></tour-widget>
-    <v-overlay :value="isLoadingFromStore>0" :z-index="9999999">
+    <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
       </div>
@@ -404,7 +404,13 @@
                 v-if="routerName === 'Analysis Details'"
                 >{{ breadcrumbs[3].text }}</router-link
               >
-
+              <router-link
+                v-if="routerName === 'Target Users'"
+                :to="$route.path"
+                class="bread-last-step breadcrumb-links"
+              >
+                Company
+              </router-link>
               <router-link
                 v-if="routerName === 'Investigations'"
                 :to="$route.path"
@@ -412,12 +418,20 @@
                 >Incident Responder > {{ routerName }}</router-link
               >
               <v-icon
-                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations'  && routerName !=='Phishing Reporter'"
+                v-if="
+                  routerName !== 'Incident Responder' &&
+                    routerName !== 'Investigations' &&
+                    routerName !== 'Phishing Reporter'
+                "
                 style="color: #fff; font-size: 16px;"
                 >mdi-chevron-right</v-icon
               >
               <router-link
-                v-if="routerName !== 'Incident Responder' && routerName !== 'Investigations' && routerName !=='Phishing Reporter'"
+                v-if="
+                  routerName !== 'Incident Responder' &&
+                    routerName !== 'Investigations' &&
+                    routerName !== 'Phishing Reporter'
+                "
                 :to="$route.path"
                 class="bread-last-step breadcrumb-links"
                 >{{ routerName }}</router-link
@@ -1603,7 +1617,6 @@ header {
   text-decoration: none !important;
   color: #fff !important;
   cursor: pointer;
-
 }
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .v-cart-dropdown-list {

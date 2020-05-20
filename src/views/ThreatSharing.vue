@@ -352,6 +352,9 @@ export default {
       if (this.$route.query && !!this.$route.query.communityID) {
         this.getCommunities(2, true)
       }
+      if (this.$route.query && !!this.$route.query.invitations) {
+        this.getCommunities(2, true)
+      }
     })
   },
   beforeDestroy() {
