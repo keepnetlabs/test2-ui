@@ -1211,7 +1211,6 @@ export default {
       } else {
         this.selectionCheckbox = false
       }
-      console.log('this.selectionCheckbox', this.selectionCheckbox)
     },
     columns: {
       deep: true,
@@ -1284,9 +1283,8 @@ export default {
     },
     tableRowClassName(row) {
       const ans = this.multipleSelection.some(r => JSON.stringify(r) === JSON.stringify(row.row))
-      console.log('ans', ans)
+
       if (ans) {
-        console.log('tableRowClassName')
         return 'selected-row'
       }
       return ''

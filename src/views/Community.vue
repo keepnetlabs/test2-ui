@@ -573,6 +573,7 @@ export default {
         this.$router.push('/threat-sharing')
       }
       window.addEventListener('resize', this.onResize)
+      //this.tab = 1
     })
     const compId =
       (this.userGetter.currentCompany && this.userGetter.currentCompany.id) ||

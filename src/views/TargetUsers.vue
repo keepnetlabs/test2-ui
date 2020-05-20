@@ -16,7 +16,7 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <people />
+            <people ref="refPeople" />
           </v-tab-item>
           <v-tab-item>
             <groups />
@@ -37,6 +37,14 @@ export default {
   data() {
     return {
       tab: 0
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.$refs && this.$refs.refPeople && this.$refs.refPeople.isWantToShowDeleteUserModal) {
+      this.$refs.refPeople.changeDeleteModalStatus(false)
+      next(false)
+    } else {
+      next()
     }
   },
   methods: {

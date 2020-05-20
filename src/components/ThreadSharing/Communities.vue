@@ -82,7 +82,15 @@
               :href="`#tab-${ind}`"
               class="text-decoration-none"
             >
-              {{ tab }}
+              <template v-if="ind === 2">
+                {{ tab }}
+                <span v-if="invitations.length" class="invitations-count">
+                  {{ invitations.length }}
+                </span>
+              </template>
+              <template v-else>
+                {{ tab }}
+              </template>
             </v-tab>
           </v-tabs>
           <div class="search-wrapper">
@@ -101,7 +109,7 @@
           </div>
         </template>
         <template v-slot:default="items">
-          <div v-if="yoursOrAll === 'tab-0' || yoursOrAll === 'tab-1'">
+          <div v-if="yoursOrAll === 'tab-0' || yoursOrAll === 'tab-1'" id="tab-0">
             <div v-for="(comp, ind) of items.items" :key="ind" class="threat-sharing-content">
               <div class="ts-header">
                 <div
@@ -360,7 +368,7 @@
               </v-btn>
             </div>
           </div>
-          <div class="empty-communities" v-if="yoursOrAll === 'tab-2'">
+          <div class="empty-communities" v-if="yoursOrAll === 'tab-2'" id="tab-2">
             <div class="empty-communities-inline">
               <span class="no-community">
                 You don't have any invitations from communities
@@ -468,6 +476,9 @@ export default {
     this.yoursOrAll = 'tab-1'
     this.mountedCommunities = this.communityList.Results
     this.$store.dispatch('threadSharing/getInvitions')
+    if (this.$route.query && !!this.$route.query.invitations) {
+      this.subTabSelected()
+    }
     if (this.$route.query && !!this.$route.query.communityID) {
       const comp = this.listCommunities.find(
         item => item.CommunityId === this.$route.query.communityID
@@ -994,5 +1005,21 @@ export default {
 ::v-deep .text-decoration-none {
   text-decoration: none !important;
   text-decoration-line: none !important;
+}
+
+.invitations-count {
+  align-items: center;
+  background-color: #d32f2f;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  font-size: 12px;
+  line-height: 18px;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: -13px;
+  height: 16px;
+  width: 16px;
 }
 </style>
