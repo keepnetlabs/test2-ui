@@ -678,13 +678,16 @@ export default {
       return this.requests.some(cId => cId.CommunityId === communId)
     },
     cancelInvitation(communId, createUserId, communReqId) {
+      
       const refuseObj = {
         CommunityId: communId,
         InvitedCompanyId: localStorage.getItem('companyId'),
         CreateUserId: createUserId,
         CommunityRequestId: communReqId
       }
-      this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj)
+      this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj).then(response => {
+        this.$store.dispatch('threadSharing/getInvitions')
+      })
     },
     acceptInvitation(communId, createUserId, communReqId) {
       const refuseObj = {
@@ -693,7 +696,9 @@ export default {
         CreateUserId: createUserId,
         CommunityRequestId: communReqId
       }
-      this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj)
+      this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj).then(response => {
+        this.$store.dispatch('threadSharing/getInvitions')
+      })
     }
   }
 }
