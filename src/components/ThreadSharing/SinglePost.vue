@@ -673,11 +673,12 @@
               </div>
             </div>
           </div>
-          <div
-            id="single-post-body"
-            class="preview-body"
-            v-html="postDetail.Data.CommunityPostEmails[0].Body"
-          ></div>
+          <div id="single-post-body" class="preview-body">
+            <k-shadow-frame
+              id="sframe"
+              v-bind:content="postDetail.Data.CommunityPostEmails[0].Body"
+            />
+          </div>
           <div
             class="preview-footer"
             v-if="shareSettings.attachments && shareSettings.attachments.length"
@@ -763,7 +764,7 @@
                 v-model="addCommentValue"
                 validate-on-blur
                 :rules="[rules.regex, rules.required]"
-              ></v-text-field>
+              />
               <v-btn
                 :id="'single-post-send-comment' + postDetail.Data.CommunityPostId"
                 :disabled="!isJoined(postDetail.Data.CommunityId) || !regexChar(addCommentValue)"
@@ -842,7 +843,80 @@
 <script>
 import VClamp from 'vue-clamp'
 import { mapGetters } from 'vuex'
+import vueCustomElement from 'vue-custom-element'
+import KShadowFrame from '../KShadowFrame'
 
+Vue.customElement('k-shadow-frame', KShadowFrame, {
+  shadow: true,
+  shadowCss: `
+ @import url('https://fonts.googleapis.com/css?family=Material+Icons');
+ @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
+ @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
+[data-title]:hover:after {
+    opacity: 1;
+    transition: all 0.1s ease 0.5s;
+    visibility: visible;
+}
+[data-title]:after {
+    content: attr(data-title);
+    position: absolute;
+    padding:5px 16px;
+    bottom: -1.6em;
+    left: 100%;
+    white-space: nowrap;
+    opacity: 0;
+    z-index: 99999;
+    visibility: hidden;
+    border-radius: 4px;
+    background: #6d6d6d !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 12px;
+    text-decoration:none;
+}
+[data-title] {
+    position: relative;
+}
+.malicious-style {
+  background-color: #f3e1e5 !important;
+  color: #bb2a45 !important;
+  text-decoration: underline !important;
+}
+
+.malicious-icon {
+  margin: 4px;
+  font-size: 18px !important;
+  color: #bb2a45 !important;
+  caret-color: #bb2a45 !important;
+}
+
+.red-malicious-alert {
+  border: unset !important;
+  border-color: transparent !important;
+  border-bottom-color: transparent !important;
+  border-image: none !important;
+  border-image-width: 0 !important;
+  color: #bb2a45 !important;
+  caret-color: #bb2a45 !important;
+  text-decoration: unset !important;
+  text-decoration-color: transparent !important;
+  font-size: 18px !important;
+  margin-top: -2px;
+  padding-right: 3px;
+  height: 16px !important;
+  overflow: hidden;
+}
+
+.red-malicious-alert::before {
+  border: unset !important;
+}
+
+
+.malicious-style  .red-malicious-alert:not(:first-child) {
+    display: none !important;
+  }
+ `
+})
 export default {
   components: {
     VClamp
@@ -924,10 +998,13 @@ export default {
         if (ShareSettings.links && ShareSettings.links.length) {
           setTimeout(function() {
             for (let a of ShareSettings.links) {
-              var els = document.querySelectorAll('[href="' + a.Value + '"]')
+              var els = document
+                .getElementById('sframe')
+                .shadowRoot.querySelectorAll('[href="' + a.Value + '"]')
               for (var i = 0, l = els.length; i < l; i++) {
                 var el = els[i]
                 el.setAttribute('target', '_blank')
+                el.setAttribute('data-title', 'This link has been reported as a phishing')
                 if (!a.IsShow) {
                   if (!el.hasChildNodes()) {
                     el.innerHTML = 'hidden by owner'
@@ -938,7 +1015,7 @@ export default {
                 }
                 if (a.IsMalicious) {
                   el.classList.add('malicious-style')
-                  var iEl = document.createElement('span')
+                  var iEl = document.createElement('i')
                   iEl.className +=
                     'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
                   el.appendChild(iEl)
