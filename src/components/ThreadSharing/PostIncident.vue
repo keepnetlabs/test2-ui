@@ -4238,7 +4238,7 @@ export default {
 }
 
 .open-comments {
-  min-height: 226px;
+  // post incident (0) min-height: 226px;
   height: auto !important;
   transition: max-height 0.25s ease-in;
   padding-bottom: 24px;
