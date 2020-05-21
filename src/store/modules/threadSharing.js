@@ -367,7 +367,7 @@ const threadSharing = {
           })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           setTimeout(function() {
-            router.push('/community/' + name)
+            router.push('/community/' + id)
           }, 500)
         })
         .catch(() => {

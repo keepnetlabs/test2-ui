@@ -520,7 +520,6 @@ export default {
     this.$store
       .dispatch('threadSharing/getCommunityInfo')
       .then(data => {
-        console.log(data)
         this.$store
           .dispatch('threadSharing/setSelectedCommunity', {
             id: data.CommunityId,
