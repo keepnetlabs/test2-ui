@@ -143,7 +143,7 @@
           }}</a>
           <a v-else class="pl-1 pr-1">Company Name</a> on
           <a :id="post.CommunityName" v-if="post.CommunityName" href="#" class="pl-1">{{
-            post.IsAnonymous ? 'Anonymous' : post.CommunityName
+            post.CommunityName
           }}</a>
           <a v-else class="pl-1 pr-1">Community Name</a>
         </div>

@@ -572,9 +572,10 @@ const threadSharing = {
         communityId = localStorage.getItem('communityId')
         companyId = localStorage.getItem('companyId')
       }
-      await fetchCommunityInfo(communityId, companyId)
+      return await fetchCommunityInfo(communityId, companyId)
         .then(resp => {
           commit('SET_FETCHED_COMMUNITY', resp.data)
+          return resp.data
         })
         .catch(() => {
           commit('common/SET_SNACK_STATUS', true, { root: true })

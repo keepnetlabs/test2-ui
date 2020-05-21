@@ -152,7 +152,7 @@
                                 </v-list-item-content>
                               </v-list-item>
                               <v-list-item
-                                v-if="selectedCommunity && !selectedCommunity.isOwner"
+                                v-if="selectedCommunity && selectedCommunity.isOwner"
                                 @click="removeFromCommunity(member.CompanyId)"
                               >
                                 <v-list-item-icon>
