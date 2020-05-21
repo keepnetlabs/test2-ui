@@ -1141,6 +1141,7 @@ export default {
         this.$store.dispatch('threadSharing/addComment', commentObj)
         this.addCommentValue = ''
         const refThis = this
+        this.post.CommentCount = this.post.CommentCount + 1;
         setTimeout(() => {
           refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
           const yourPostsObj = {
