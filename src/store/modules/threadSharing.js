@@ -174,7 +174,7 @@ const threadSharing = {
     },
     SET_SELECTED_COMMUNITY(
       state,
-      { id, name, description, industry, privacy, communityCompanyId, isOwner }
+      {id, name, description, industry, privacy, communityCompanyId, isOwner}
     ) {
       state.selectedCommunity.id = id
       state.selectedCommunity.name = name
@@ -262,17 +262,17 @@ const threadSharing = {
     }
   },
   actions: {
-    async getCommunities({ commit }, compId) {
+    async getCommunities({commit}, compId) {
       await listCommunities()
         .then(response => {
           const result = response.data
           commit('SET_COMMUNITIES', result)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Error when getting the communities', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Error when getting the communities', {root: true})
         })
       if (!compId) compId = localStorage.getItem('companyId')
       await listCommunitiesByCompany(compId)
@@ -281,51 +281,51 @@ const threadSharing = {
           commit('SET_MY_COMMUNITIES', result)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Error when getting the communities', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Error when getting the communities', {root: true})
         })
     },
-    async getNotifications({ commit }, id) {
+    async getNotifications({commit}, id) {
       await listNotifications(id, localStorage.getItem('companyId'))
         .then(response => {
           const res = response.data
           commit('SET_NOTIFICATIONS', res)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Notifications could not fetch', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Notifications could not fetch', {root: true})
         })
     },
-    async saveNotifications({ commit, dispatch }, obj) {
+    async saveNotifications({commit, dispatch}, obj) {
       await saveNotifications(obj)
         .then(() => {
           commit('SET_NOTIFICATIONS', obj)
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Saved Succesfully', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          dispatch('common/setErrorMessage', 'Saved Succesfully', {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Error when saving the notifications, try again.', {
             root: true
           })
         })
     },
-    async getBusinessCategories({ commit }) {
+    async getBusinessCategories({commit}) {
       await listBusinessCategories().then(resp => {
         commit('SET_BUSINESS_CATEGORIES', resp.data)
       })
     },
     setSelectedCommunity(
       // CommunityInner/NameControlUpdate?Name=${name}&communityId={communityId} endpointi
-      { commit },
-      { id, name, description, industry, privacy, communityCompanyId, isOwner }
+      {commit},
+      {id, name, description, industry, privacy, communityCompanyId, isOwner}
     ) {
       commit('SET_SELECTED_COMMUNITY', {
         id,
@@ -344,7 +344,7 @@ const threadSharing = {
       localStorage.setItem('communityCompanyId', communityCompanyId)
       localStorage.setItem('isOwner', isOwner)
     },
-    async createCommunity({ commit, dispatch }, obj) {
+    async createCommunity({commit, dispatch}, obj) {
       await saveNewCommunity(obj)
         .then(resp => {
           const id = resp.data.Data.CommunityId
@@ -361,25 +361,25 @@ const threadSharing = {
             privacy,
             communityCompanyId
           })
-          dispatch('common/setSnackStatus', true, { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
           dispatch('common/setErrorMessage', `You created a new community “${name}“`, {
             root: true
           })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-          setTimeout(function() {
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
+          setTimeout(function () {
             router.push('/community/' + id)
           }, 500)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Error when creating the community, try again.', {
             root: true
           })
         })
     },
-    async leaveCommunity({ commit, dispatch }, { communityId, creatorId }) {
+    async leaveCommunity({commit, dispatch}, {communityId, creatorId}) {
       const exitObj = {
         CommunityId: communityId,
         ModifyUserId: creatorId,
@@ -391,21 +391,21 @@ const threadSharing = {
       }
       await leaveFromCommun(exitObj)
         .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Succesfully leaved from Community', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          dispatch('common/setErrorMessage', 'Succesfully leaved from Community', {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           dispatch('getCommunities')
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Error when leaving the community, try again.', {
             root: true
           })
         })
     },
-    async deleteCommunity({ commit, dispatch }, { communityId, userId }) {
+    async deleteCommunity({commit, dispatch}, {communityId, userId}) {
       const deleteObj = {
         CommunityId: communityId,
         ModifyUserId: userId,
@@ -413,21 +413,21 @@ const threadSharing = {
       }
       await deleteTheCommun(deleteObj)
         .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Community succesfully deleted.', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          dispatch('common/setErrorMessage', 'Community succesfully deleted.', {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           dispatch('getCommunities')
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Error when deleting the community, try again.', {
             root: true
           })
         })
     },
-    updateCommunity({ commit, dispatch }, obj) {
+    updateCommunity({commit, dispatch}, obj) {
       const updateObj = {
         CommunityId: obj.communityId,
         Name: obj.name,
@@ -463,77 +463,77 @@ const threadSharing = {
           })
           dispatch('getCommunities')
           dispatch('getCommunityInfo')
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Community succesfully updated.', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          dispatch('common/setErrorMessage', 'Community succesfully updated.', {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Community could not updated.', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Community could not updated.', {root: true})
         })
     },
-    async getMembers({ commit, getters }) {
+    async getMembers({commit, getters}) {
       await getCommunityMembers(getters.selectedCommunityGetter.id)
         .then(response => {
           commit('SET_MEMBERS', response.data)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Members could not fetch.', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Members could not fetch.', {root: true})
         })
     },
-    async getMemberRequests({ commit }, communityId) {
+    async getMemberRequests({commit}, communityId) {
       await listMemberRequests(communityId)
         .then(resp => {
           commit('SET_MEMBER_REQUESTS', resp.data)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Members could not fetch from the server', {
             root: true
           })
         })
     },
-    async inviteMembers({ commit }, emailsArr) {
+    async inviteMembers({commit}, emailsArr) {
       await inviteMembersToCommunity(emailsArr)
         .then(resp => {
           if (resp.data.IsSuccess === false) {
             commit('SET_INVITE_RESULTS', resp.data.Data)
-            commit('common/SET_SNACK_STATUS', true, { root: true })
-            commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-            commit('common/SET_ERROR_STATE', true, { root: true })
-            commit('common/SET_ERROR_MESSAGE', 'Members could not invited.', { root: true })
+            commit('common/SET_SNACK_STATUS', true, {root: true})
+            commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+            commit('common/SET_ERROR_STATE', true, {root: true})
+            commit('common/SET_ERROR_MESSAGE', 'Members could not invited.', {root: true})
           } else {
             commit('SET_INVITE_RESULTS', ['success'])
           }
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Members could not invited.', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Members could not invited.', {root: true})
         })
     },
-    async shareWithMails({ commit }, emailsArr) {
+    async shareWithMails({commit}, emailsArr) {
       await shareIncidentsWithMails(emailsArr)
         .then(resp => {
           if (resp.data.IsSuccess === false) {
             commit('SET_SHARE_RESULTS', resp.data.Data)
-            commit('common/SET_SNACK_STATUS', true, { root: true })
-            commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-            commit('common/SET_ERROR_STATE', true, { root: true })
-            commit('common/SET_ERROR_MESSAGE', 'Can not share with all emails.', { root: true })
+            commit('common/SET_SNACK_STATUS', true, {root: true})
+            commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+            commit('common/SET_ERROR_STATE', true, {root: true})
+            commit('common/SET_ERROR_MESSAGE', 'Can not share with all emails.', {root: true})
           } else {
             commit('SET_SHARE_RESULTS', 'delete')
-            commit('common/SET_SNACK_STATUS', true, { root: true })
-            commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-            commit('common/SET_ERROR_STATE', true, { root: true })
+            commit('common/SET_SNACK_STATUS', true, {root: true})
+            commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
+            commit('common/SET_ERROR_STATE', true, {root: true})
             commit(
               'common/SET_ERROR_MESSAGE',
               `The post successfully shared with ${emailsArr.length} users.`,
@@ -544,25 +544,25 @@ const threadSharing = {
           }
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Can not share with all emails.', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Can not share with all emails.', {root: true})
         })
     },
-    async getSharedMailStatus({ commit }, mail) {
+    async getSharedMailStatus({commit}, mail) {
       await checkShareMail(mail)
         .then(resp => {
           commit('SET_SHARE_RESULTS', resp.data)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Error when checking the email', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Error when checking the email', {root: true})
         })
     },
-    async getCommunityInfo({ commit }, param) {
+    async getCommunityInfo({commit}, param) {
       let communityId = null
       let companyId = null
       if (param && param.communityId) {
@@ -578,13 +578,13 @@ const threadSharing = {
           return resp.data
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Community info could not fetch.', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Community info could not fetch.', {root: true})
         })
     },
-    async getSuggestedCommunities({ commit }) {
+    async getSuggestedCommunities({commit}) {
       const id = localStorage.getItem('businessCatId')
       const compId = localStorage.getItem('companyId')
       if (!id || id == 'null') {
@@ -595,22 +595,22 @@ const threadSharing = {
             commit('SET_SUGGESTED_COMMUNITIES', resp.data)
           })
           .catch(() => {
-            commit('common/SET_SNACK_STATUS', true, { root: true })
-            commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-            commit('common/SET_ERROR_STATE', true, { root: true })
+            commit('common/SET_SNACK_STATUS', true, {root: true})
+            commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
+            commit('common/SET_ERROR_STATE', true, {root: true})
             commit('common/SET_ERROR_MESSAGE', 'Suggested Communities could not fetch.', {
               root: true
             })
           })
       }
     },
-    async joinCommunity({ commit, dispatch }, obj) {
+    async joinCommunity({commit, dispatch}, obj) {
       obj.CompanyId = localStorage.getItem('companyId')
       const privacy = obj.IsPrivate
       delete obj.IsPrivate
       await joinTheCommunity(obj)
         .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
           if (privacy) {
             dispatch(
               'common/setErrorMessage',
@@ -620,89 +620,89 @@ const threadSharing = {
               }
             )
           } else {
-            dispatch('common/setErrorMessage', `You joined ”${obj.Name}”`, { root: true })
+            dispatch('common/setErrorMessage', `You joined ”${obj.Name}”`, {root: true})
           }
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           dispatch('getCommunities')
           dispatch('getCommunityInfo')
           dispatch('getSuggestedCommunities')
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
-          commit('common/SET_ERROR_MESSAGE', 'Could not joined the Community.', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
+          commit('common/SET_ERROR_MESSAGE', 'Could not joined the Community.', {root: true})
         })
     },
-    async acceptMemberRequest({ commit, dispatch }, obj) {
+    async acceptMemberRequest({commit, dispatch}, obj) {
       await acceptRequest(obj)
         .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'The request is accepted.', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          dispatch('common/setErrorMessage', 'The request is accepted.', {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
         })
         .catch(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          commit('common/SET_ERROR_STATE', true, { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          commit('common/SET_ERROR_STATE', true, {root: true})
           commit('common/SET_ERROR_MESSAGE', 'You are not authorized for this action.', {
             root: true
           })
         })
     },
-    async declineMemberRequest({ commit, dispatch }, obj) {
+    async declineMemberRequest({commit, dispatch}, obj) {
       await declineRequest(obj)
         .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'The request is declined.', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
+          dispatch('common/setErrorMessage', 'The request is declined.', {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'You are not authorized for this action.', {
             root: true
           })
         })
     },
-    investigationStarted({ commit, dispatch }, payload) {
-      dispatch('common/setSnackStatus', true, { root: true })
+    investigationStarted({commit, dispatch}, payload) {
+      dispatch('common/setSnackStatus', true, {root: true})
       dispatch('common/setErrorMessage', `Investigation has been started for “${payload.title}”.`, {
         root: true
       })
-      commit('common/SET_SNACKBAR_COLOR', '#43a047', { root: true })
+      commit('common/SET_SNACKBAR_COLOR', '#43a047', {root: true})
     },
-    postIncident({ commit, dispatch }, incident) {
-      dispatch('common/setSnackStatus', true, { root: true })
-      dispatch('common/setErrorMessage', 'The Incident posted successfully.', { root: true })
-      commit('common/SET_SNACKBAR_COLOR', '#43a047', { root: true })
+    postIncident({commit, dispatch}, incident) {
+      dispatch('common/setSnackStatus', true, {root: true})
+      dispatch('common/setErrorMessage', 'The Incident posted successfully.', {root: true})
+      commit('common/SET_SNACKBAR_COLOR', '#43a047', {root: true})
       commit('SET_POSTED_INCIDENT', incident)
     },
-    async deleteCompFromCommunity({ commit, dispatch }, obj) {
+    async deleteCompFromCommunity({commit, dispatch}, obj) {
       await deleteCompanyFromCommunities(obj)
         .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
+          dispatch('common/setSnackStatus', true, {root: true})
           dispatch(
             'common/setErrorMessage',
             'The Company successfully removed from your community',
-            { root: true }
+            {root: true}
           )
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'There was an error while removing the Company', {
             root: true
           })
         })
     },
-    async getRequestsCompany({ commit }, id) {
+    async getRequestsCompany({commit}, id) {
       await listRequestsCompany(id)
         .then(resp => {
           commit('SET_REQUESTED_COMPANIES', resp.data)
         })
         .catch(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit(
             'common/SET_ERROR_MESSAGE',
             'There was an error while fetching the Requested Communities',
@@ -712,7 +712,7 @@ const threadSharing = {
           )
         })
     },
-    async postAnIncident({ commit }, postObj) {
+    async postAnIncident({commit}, postObj) {
       if (!postObj) {
         commit('SET_INCIDENT_OBJECT', {})
       } else {
@@ -737,8 +737,8 @@ const threadSharing = {
           })
           .catch(error => {
             commit('SET_INCIDENT_OBJECT', error.response.data)
-            commit('common/SET_SNACK_STATUS', true, { root: true })
-            commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+            commit('common/SET_SNACK_STATUS', true, {root: true})
+            commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
             if (error.response.status === 400) {
               commit('common/SET_ERROR_MESSAGE', 'Unsupported file type!', {
                 root: true
@@ -751,20 +751,20 @@ const threadSharing = {
           })
       }
     },
-    async fetchListedIncidents({ commit }, filter) {
+    async fetchListedIncidents({commit}, filter) {
       await listIncidents(localStorage.getItem('companyId'), filter || '')
         .then(resp => {
           commit('SET_LISTED_INCIDENTS', resp.data)
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async getIncident({ commit }, mailId) {
+    async getIncident({commit}, mailId) {
       await fetchIncident(
         localStorage.getItem('companyId'),
         localStorage.getItem('communityId'),
@@ -775,26 +775,26 @@ const threadSharing = {
           commit('SET_SELECTED_INCIDENT', resp.data.Data)
           commit('SET_INCIDENT_OBJECT', resp.data.Data)
           if (!resp.data || resp.data == null) {
-            commit('common/SET_SNACK_STATUS', true, { root: true })
-            commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+            commit('common/SET_SNACK_STATUS', true, {root: true})
+            commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
             commit('common/SET_ERROR_MESSAGE', "The incident's mail can not found", {
               root: true
             })
           }
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', "The incident's mail can not found", {
             root: true
           })
         })
     },
-    async publishPostIncident({ commit, dispatch, state }, obj) {
+    async publishPostIncident({commit, dispatch, state}, obj) {
       await publishIncident(obj)
         .then(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           if (state.incidentEditMode) {
             commit('common/SET_ERROR_MESSAGE', `Post “${obj.Title}” edited successfully`, {
               root: true
@@ -812,104 +812,104 @@ const threadSharing = {
           commit('SET_INCIDENT_EDIT_STATUS', false)
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async fetchCommunityPosts({ commit }, obj) {
+    async fetchCommunityPosts({commit}, obj) {
       await listCommunityPosts(obj)
         .then(resp => {
           commit('SET_COMMUNITY_POSTS', resp.data)
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async getPostDetail({ commit }, obj) {
+    async getPostDetail({commit}, obj) {
       await fetchPostDetail(obj)
         .then(resp => {
           commit('SET_POST_DETAIL', resp.data)
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async likePost({ commit, dispatch }, obj) {
+    async likePost({commit, dispatch}, obj) {
       await likeThePost(obj)
         .then(() => {
           dispatch('getPostDetail', obj)
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'You liked the post', {
             root: true
           })
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async unlikePost({ dispatch, commit }, obj) {
+    async unlikePost({dispatch, commit}, obj) {
       await unlikeThePost(obj)
         .then(() => {
           dispatch('getPostDetail', obj)
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'You unliked the post', {
             root: true
           })
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async addComment({ dispatch, commit }, obj) {
+    async addComment({dispatch, commit}, obj) {
       await addTheComment(obj)
         .then(() => {
           dispatch('getPostDetail', obj)
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Your comment successfully saved', {
             root: true
           })
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async getTopPosts({ commit }, obj) {
+    async getTopPosts({commit}, obj) {
       await fetchTopPosts(obj).then(resp => {
         commit('SET_TOP_POSTS', resp.data)
       })
     },
-    async getYourPosts({ commit }, obj) {
+    async getYourPosts({commit}, obj) {
       await fetchYourPosts(obj).then(resp => {
         commit('SET_YOUR_POSTS', resp.data)
       })
     },
-    async deleteTheIncident({ dispatch, commit }, obj) {
+    async deleteTheIncident({dispatch, commit}, obj) {
       await deletePost(obj)
         .then(() => {
           const fetchObj = {
@@ -920,75 +920,76 @@ const threadSharing = {
             fetchObj.communId = localStorage.getItem('communityId')
           }
           dispatch('fetchCommunityPosts', fetchObj)
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           commit('common/SET_ERROR_MESSAGE', `You have deleted a post ”${obj.PostName}”`, {
             root: true
           })
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async checkName({ commit }, name) {
+    async checkName({commit}, name) {
       await checkCommunName(name).then(resp => {
         commit('SET_COMMUN_NAME', resp.data)
       })
     },
-    async checkNameForUpdate({ commit }, obj) {
+    async checkNameForUpdate({commit}, obj) {
       await checkCommunNameForUpdate(obj).then(resp => {
         commit('SET_COMMUN_NAME_FOR_UPDATE', resp.data)
       })
     },
-    async getInvitions({ commit, state }, compId) {
-      if (!compId)
+    async getInvitions({commit, state}, compId) {
+      if (!compId) {
         compId =
           state.fetchedCommunity.CommunityCompany[0].CompanyId || localStorage.getItem('companyId')
-      await fetchInvitations(name)
+      }
+      await fetchInvitations(compId)
         .then(resp => {
           commit('SET_INVITATIONS', resp.data.Data)
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async setAcceptInvitation({ commit }, accObj) {
+    async setAcceptInvitation({commit}, accObj) {
       await acceptInvitation(accObj)
         .then(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Invitation accepted', {
             root: true
           })
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })
         })
     },
-    async setRefuseInvitation({ commit }, refuseObj) {
+    async setRefuseInvitation({commit}, refuseObj) {
       await refuseInvitation(refuseObj)
         .then(() => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'green', {root: true})
           commit('common/SET_ERROR_MESSAGE', 'Invitation refused', {
             root: true
           })
         })
         .catch(error => {
-          commit('common/SET_SNACK_STATUS', true, { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
+          commit('common/SET_SNACK_STATUS', true, {root: true})
+          commit('common/SET_SNACKBAR_COLOR', 'red', {root: true})
           commit('common/SET_ERROR_MESSAGE', error.response.data, {
             root: true
           })

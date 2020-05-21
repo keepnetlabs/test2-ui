@@ -1627,8 +1627,8 @@
                         <v-btn
                           id="last-step-comment-opened"
                           :class="{ 'active-act': commentOpened }"
-                          @click="commentOpened = !commentOpened"
                         >
+                          <!-- @click="commentOpened = !commentOpened" -->
                           <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
                           Comments (0)
                         </v-btn>
