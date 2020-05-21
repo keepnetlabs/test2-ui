@@ -25,7 +25,7 @@
               <v-card-title class="d-flex pa-0">
                 <div class="logo-wrapper">
                   <div class="v-responsive">
-                    <img src="../assets/img/logo-kep.png" />
+                    <img src="../assets/img/logo-kep.png"/>
                   </div>
                 </div>
                 <div class="flex-grow-1"></div>
@@ -225,13 +225,13 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha'
-import { mapActions, mapGetters } from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 
 export default {
   name: 'Login',
-  components: { VueRecaptcha },
+  components: {VueRecaptcha},
   data() {
     return {
       email: '',
@@ -313,7 +313,8 @@ export default {
       get() {
         return this.isLoadingFromStore
       },
-      set() {}
+      set() {
+      }
     },
     wrongLoginAttempt() {
       return this.$store.state.login.wrongLoginAttempt
@@ -335,6 +336,8 @@ export default {
       })
     },
     onLoginClicked() {
+      const mainUrl = this.$router.currentRoute;
+      const _this = this;
       if (
         this.$refs.email.validate() &&
         this.$refs.password.validate() &&
@@ -344,7 +347,13 @@ export default {
         this.$store.dispatch('login/loginAction', {
           email: this.email,
           password: this.password,
-          router: this.$router
+          router: this.$router,
+        }).then(() => {
+          setTimeout(() => {
+            if(!!Object.keys(mainUrl.query).length) {
+              _this.$router.push(mainUrl.fullPath)
+            }
+          },500)
         })
       } else if (
         this.$refs.email.validate() &&
@@ -366,7 +375,7 @@ export default {
           this.$store.dispatch('login/loginAction', {
             email: this.email,
             password: this.password,
-            router: this.$router
+            router: this.$router,
           })
           this.$refs.recaptcha.reset()
         }
@@ -442,9 +451,9 @@ body {
 
 .reset-password-wrapper {
   ::v-deep
-    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-    > .v-input__control
-    > .v-input__slot {
+  .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+  > .v-input__control
+  > .v-input__slot {
     box-shadow: none !important;
   }
 
