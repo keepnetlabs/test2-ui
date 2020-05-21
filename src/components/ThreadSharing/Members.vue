@@ -152,7 +152,7 @@
                                 </v-list-item-content>
                               </v-list-item>
                               <v-list-item
-                                v-if="selectedCommunity && !selectedCommunity.isOwner"
+                                v-if="setRemoveFromCommunityVisibility(member)"
                                 @click="removeFromCommunity(member.CompanyId)"
                               >
                                 <v-list-item-icon>
@@ -404,6 +404,9 @@
       }
     },
     methods: {
+      setRemoveFromCommunityVisibility(member){
+        return this.selectedCommunity && this.isOwnerOfTheCommunity() && member.CompanyId !== this.getSelectedCompany.companyId
+      },
       listRequests() {
         this.$store.dispatch(
           'threadSharing/getMemberRequests',
