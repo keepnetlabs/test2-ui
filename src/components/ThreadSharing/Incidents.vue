@@ -467,8 +467,8 @@ export default {
             (this.userGetter.currentCompany && this.userGetter.currentCompany.id) ||
             localStorage.getItem('companyId')
           const emailObj = {
-            CompanyId: postId,
-            CommunityPostId: compId,
+            CompanyId: compId,
+            CommunityPostId: postId,
             Email: mail,
             CreateUserId: postCreatorId
           }
