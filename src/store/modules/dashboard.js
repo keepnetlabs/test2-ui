@@ -305,15 +305,22 @@ const dashboard = {
       })
     },
     logoutUser({ commit }) {
-      AuthenticationService.removeToken()
       commit('common/SET_SNACK_STATUS', false, { root: true })
       commit('common/SET_SNACKBAR_COLOR', '', { root: true })
       commit('common/SET_ERROR_MESSAGE', '', {
         root: true
       })
       commit('common/SET_ERROR_STATE', false, { root: true })
-      router.push('/login')
+
       logoutUser()
+        .then(response => {
+          AuthenticationService.removeToken()
+          router.push('/login')
+        })
+        .catch(error => {
+          AuthenticationService.removeToken()
+          router.push('/login')
+        })
     },
     getMenus({ commit }) {
       getMenus().then(response => {

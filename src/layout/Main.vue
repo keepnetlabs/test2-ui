@@ -874,7 +874,7 @@ export default {
     changeDropdownItem(item) {
       if (item.text == 'Logout') {
         this.logoutUser()
-        this.$router.push('/login')
+        //this.$router.push('/login')
       }
     },
     ...mapActions({

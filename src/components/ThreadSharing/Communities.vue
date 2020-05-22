@@ -678,7 +678,6 @@ export default {
       return this.requests.some(cId => cId.CommunityId === communId)
     },
     cancelInvitation(communId, createUserId, communReqId) {
-      
       const refuseObj = {
         CommunityId: communId,
         InvitedCompanyId: localStorage.getItem('companyId'),

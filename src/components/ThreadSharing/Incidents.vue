@@ -88,7 +88,7 @@
       <postIncident
         @closePostIncident="closePost()"
         :updatePost="postId"
-        :communityName="communityName"
+        :communityName="communityName || incidentsCommunityName"
         :isEditMode="editIncident"
       />
     </v-overlay>
@@ -215,6 +215,9 @@ export default {
     posts: {
       type: Array,
       required: false
+    },
+    incidentsCommunityName: {
+      type: Boolean
     }
   },
   data: () => ({

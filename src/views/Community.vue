@@ -16,58 +16,80 @@
       :value="notificationSettingsOpened"
       :z-index="999"
     >
-      <v-card id="notification-card" light class="confirm-dialog pb-4 pa-6" style="width: 370px;">
-        <v-list-item class="pl-0 pr-0 pb-8 pt-2">
-          <span class="community-notification-header">Community Notification Settings</span>
-        </v-list-item>
+      <v-card id="notification-card" light class="community-notification__container">
+        <div class="community-notification-header">Community Notification Settings</div>
         <v-list-item
           id="notification-general-wrapper"
-          class="community-notification-row pa-0"
+          class="pa-0"
           style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);"
         >
-          Notifications
-          <v-switch
-            id="notification-general-switch"
-            v-model="notifications.IsNotificationsEnabled"
-            color="#2196f3"
-            hide-details
-            class="community-notification-switch mt-0"
-          />
+          <div class="community-notification-row">
+            <div class="community-notification__text">
+              Notifications
+            </div>
+            <div>
+              <v-switch
+                id="notification-general-switch"
+                v-model="notifications.IsNotificationsEnabled"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
         </v-list-item>
-        <v-list-item id="notification-dashboard-wrapper" class="community-notification-row pa-0">
-          Dashboard notifications
-          <v-switch
-            id="notification-dashboard-switch"
-            v-model="notifications.IsDashboardEnabled"
-            color="#2196f3"
-            hide-details
-            class="community-notification-switch mt-0"
-            :disabled="!notifications.IsNotificationsEnabled"
-          />
+        <v-list-item id="notification-dashboard-wrapper" class="pa-0">
+          <div class="community-notification-row">
+            <div class="community-notification__text">
+              Dashboard notifications
+            </div>
+            <div>
+              <v-switch
+                id="notification-dashboard-switch"
+                v-model="notifications.IsDashboardEnabled"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+                :disabled="!notifications.IsNotificationsEnabled"
+              />
+            </div>
+          </div>
         </v-list-item>
         <v-list-item id="notification-email-wrapper" class="community-notification-row pa-0">
-          Email notifications
-          <v-switch
-            id="notification-email-switch"
-            v-model="notifications.IsEmailEnabled"
-            color="#2196f3"
-            hide-details
-            class="community-notification-switch mt-0"
-            :disabled="!notifications.IsNotificationsEnabled"
-          />
+          <div class="community-notification-row">
+            <div class="community-notification__text">
+              Email notifications
+            </div>
+            <div>
+              <v-switch
+                id="notification-email-switch"
+                v-model="notifications.IsEmailEnabled"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+                :disabled="!notifications.IsNotificationsEnabled"
+              />
+            </div>
+          </div>
         </v-list-item>
-        <v-list-item id="notification-whatsapp-wrapper" class="community-notification-row pa-0">
-          SMS notifications
-          <v-switch
-            id="notification-whatsapp-switch"
-            v-model="notifications.IsWhatsappEnabled"
-            color="#2196f3"
-            hide-details
-            class="community-notification-switch mt-0"
-            :disabled="!notifications.IsNotificationsEnabled"
-          />
+        <v-list-item id="notification-whatsapp-wrapper" class="pa-0">
+          <div class="community-notification-row">
+            <div class="community-notification__text">
+              SMS notifications
+            </div>
+            <div>
+              <v-switch
+                id="notification-whatsapp-switch"
+                v-model="notifications.IsWhatsappEnabled"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+                :disabled="!notifications.IsNotificationsEnabled"
+              />
+            </div>
+          </div>
         </v-list-item>
-        <div class="d-flex flex-row flex-wrap justify-end pt-2">
+        <div class="d-flex flex-row flex-wrap justify-end pb-3 pt-5" style="margin-right: -18px">
           <v-btn
             id="notification-cancel-btn"
             text
@@ -287,7 +309,11 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
-              <incidents ref="refIncidents" :posts="postsGetter.Data" />
+              <incidents
+                ref="refIncidents"
+                :posts="postsGetter.Data"
+                :incidentsCommunityName="selectedCommunity.name"
+              />
             </v-tab-item>
             <v-tab-item>
               <members />
@@ -1012,6 +1038,11 @@ export default {
   border-radius: 20px;
 }
 
+.community-notification__container {
+  max-width: 364px !important;
+  padding: 32px 24px 0px 24px !important;
+}
+
 //search Input css
 ::v-deep .v-label--active {
   transform: translateY(-15px) scale(0.75);
@@ -1352,11 +1383,12 @@ export default {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 20px;
   font-weight: 600;
+  padding-bottom: 30px;
   font-stretch: normal;
   font-style: normal;
   line-height: 1.15;
   letter-spacing: normal;
-  color: #000;
+  color: rgba(0, 0, 0, 0.87) !important;
 }
 
 .community-notification-row {
@@ -1369,9 +1401,12 @@ export default {
   font-weight: normal;
   font-stretch: normal;
   font-style: normal;
+  width: 100%;
+  margin-right: 10px;
+
   line-height: 1.5;
   letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87) !important;
 
   .community-notification-switch {
     align-items: center;
@@ -1380,9 +1415,14 @@ export default {
     margin-top: 10px !important;
   }
 }
+::v-deep .v-input--switch__thumb {
+  top: calc(50% - 13px);
+  height: 26.7px;
+  width: 24.8px;
+}
 
-.community-notification-row:first-child {
-  border-bottom: 1px solid gray !important;
+::v-deep .v-input--switch__track {
+  opacity: 0.4;
 }
 
 .v-card-headline {
