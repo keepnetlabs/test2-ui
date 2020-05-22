@@ -220,16 +220,15 @@
         </div>
         <div class="table-header" v-if="filterable || options">
           <div class="table-search" v-if="filterable">
-            <v-icon class="pl-5 pr-6">mdi-magnify</v-icon>
             <v-text-field
               @mouseover.native="hover = true"
               class="filter-field"
               dense
-              label="Not working for now..."
+              label="Search"
               outlined
+              prepend-inner-icon="mdi-magnify"
               v-model="search"
             />
-            <v-icon class="filter-icon pl-2">mdi-filter-variant</v-icon>
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
@@ -483,6 +482,7 @@
             lazy
             ref="elTableRef"
             row-key="id"
+            stle="width:100%"
             v-if="!allHidden"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
@@ -882,7 +882,6 @@
             <el-table-column
               :fixed="actionFixed"
               :min-width="150"
-              :width="actionsWidth || 120"
               align="center"
               label="Actions"
               v-if="rowActions && rowActions.length > 2"
@@ -953,7 +952,6 @@
             <el-table-column
               :fixed="actionFixed"
               :min-width="150"
-              :width="actionsWidth || 120"
               align="center"
               label="Actions"
               v-if="rowActions && rowActions.length === 1"
@@ -971,7 +969,6 @@
             <el-table-column
               :fixed="actionFixed"
               :min-width="150"
-              :width="actionsWidth || 120"
               align="center"
               label="Actions"
               v-if="rowActions && rowActions.length === 2"
@@ -1283,7 +1280,6 @@ export default {
     },
     tableRowClassName(row) {
       const ans = this.multipleSelection.some(r => JSON.stringify(r) === JSON.stringify(row.row))
-
       if (ans) {
         return 'selected-row'
       }
@@ -1492,12 +1488,15 @@ export default {
       return property.join(seperator)
     },
     calculateWidths() {
+      /*
       if (this.$refs.tableContainer) {
         const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
         const columnsTotalWidth = this.getColumnsWidth()
         const actionsWidth = widthOfContainer - columnsTotalWidth - 61
         this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
       }
+
+       */
     },
     getColumnsWidth() {
       return this.columns.reduce((acc, item) => {
@@ -2024,6 +2023,7 @@ export default {
         position: relative;
         width: 100%;
         min-height: 50px;
+        padding-left: 24px;
 
         @media only screen and (max-width: 500px) {
           flex-direction: column;
@@ -2037,7 +2037,7 @@ export default {
           flex-direction: row;
           align-items: center;
           height: 40px;
-          width: 60%;
+          width: 328px;
 
           ::v-deep .v-text-field.v-text-field--enclosed {
             height: 40px !important;
@@ -2055,7 +2055,7 @@ export default {
 
         ::v-deep label {
           font-family: 'Open Sans', sans-serif;
-          font-size: 13px !important;
+          font-size: 13px;
           font-weight: 600;
           font-stretch: normal;
           font-style: normal;
@@ -2243,6 +2243,27 @@ export default {
   line-height: 1.9;
   letter-spacing: normal;
   text-align: center;
+}
+
+.filter-field {
+  border-radius: 8px;
+  //border: solid 1px #dcdfe6;
+
+  ::v-deep .v-label {
+    font-weight: normal !important;
+    font-stretch: normal;
+    font-style: normal;
+    font-size: 16px !important;
+    font-family: 'Open Sans', sans-serif !important;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  ::v-deep .v-icon.v-icon {
+    font-size: 20px;
+    margin-top: 5.2px !important;
+  }
 }
 
 .sub-menu-el {
