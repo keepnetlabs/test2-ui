@@ -21,13 +21,14 @@ import PhishingReporter from '../views/PhishingReporter'
 import Integrations from '../views/Integrations'
 import Playbook from '../views/Playbook'
 import store from '../store'
+
 Vue.use(Router)
 
 const router = new Router({
   mode: 'history',
   linkExactActiveClass: 'active-link',
   scrollBehavior() {
-    return { x: 0, y: 0 }
+    return {x: 0, y: 0}
   },
   routes: [
     {
@@ -57,8 +58,10 @@ const router = new Router({
           name: 'Threat Sharing',
           component: ThreatSharing,
           meta: {
-            isAuthenticated: true
-          }
+            isAuthenticated: true,
+
+          },
+          props: true, params: true
         },
         {
           path: '/community/:name',
@@ -66,7 +69,9 @@ const router = new Router({
           component: Community,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true, params: true
+
         },
         {
           path: '/target-users',
@@ -81,8 +86,11 @@ const router = new Router({
           name: 'Incident Responder',
           component: IncidentResponder,
           meta: {
-            isAuthenticated: true
-          }
+            isAuthenticated: true,
+
+          },
+          props: true, params: true
+
         },
         {
           path: '/phishing-reporter',
@@ -90,39 +98,52 @@ const router = new Router({
           component: PhishingReporter,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true, params: true
+
         },
         {
           path: '/integrations',
           name: 'Integrations',
           component: Integrations,
           meta: {
-            isAuthenticated: true
-          }
+            isAuthenticated: true,
+
+          },
+          props: true, params: true
+
         },
         {
           path: '/playbook',
           name: 'Playbook',
           component: Playbook,
           meta: {
-            isAuthenticated: true
-          }
+            isAuthenticated: true,
+
+          },
+          props: true, params: true
         },
         {
           path: '/investigations',
           name: 'Investigations',
           component: InvestigationComponent,
           meta: {
-            isAuthenticated: true
-          }
+            isAuthenticated: true,
+
+          },
+          props: true, params: true
+
         },
         {
           path: '/investigation-details/:id',
           name: 'Investigation Details',
           component: InvestigationDetailsComponent,
           meta: {
-            isAuthenticated: true
-          }
+            isAuthenticated: true,
+
+          },
+          props: true, params: true
+
         },
         {
           path: '/analysis-details',
@@ -130,7 +151,9 @@ const router = new Router({
           component: AnalysisDetails,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true, params: true
+
         },
         {
           path: '/test',

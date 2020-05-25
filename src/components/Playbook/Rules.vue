@@ -165,6 +165,9 @@ export default {
         priority: 'Very Low'
       }
     ])
+    if (this.$route.query.openPopup) {
+      this.isCreateNewRule = true
+    }
   }
 }
 </script>

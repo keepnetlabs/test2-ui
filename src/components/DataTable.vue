@@ -218,7 +218,7 @@
             </div>
           </div>
         </div>
-        <div class="table-header" v-if="filterable || options">
+        <div class="table-header" v-if="tableData && tableData.length && (filterable || options)" >
           <div class="table-search" v-if="filterable">
             <v-text-field
               @mouseover.native="hover = true"
@@ -301,20 +301,20 @@
                 </v-menu>
 
                 <v-btn
-                  class="btn-hover mr-1"
+                  class="btn-add mr-1"
                   icon
                   v-else-if="addUsers && addUsers.show && addUsers.popUp"
                   v-on="on"
                 >
-                  <v-icon @click="isWantToAddUsers = true">mdi-plus-circle</v-icon>
+                  <v-icon @click="isWantToAddUsers = true">mdi-plus</v-icon>
                 </v-btn>
                 <v-btn
-                  class="btn-hover mr-1"
+                  class="btn-add mr-1"
                   icon
                   v-else-if="addUsers && addUsers.show && addUsers.action"
                   v-on="on"
                 >
-                  <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus-circle</v-icon>
+                  <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus</v-icon>
                 </v-btn>
               </template>
               <span class="tooltip-span">Add</span>
@@ -633,7 +633,7 @@
                     <p class="tooltip-line">{{ chartOptions.labels[index] }} : {{ item }}</p>
                   </template>
                 </v-tooltip>
-                <span v-else>Empty</span>
+                <span v-else>No Data</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -794,7 +794,7 @@
               v-if="col.type === 'status' && col.show"
             >
               <template slot-scope="scope">
-                <v-tooltip bottom opacity="1">
+                <v-tooltip bottom opacity="col.hasTooltip ? 1 : 0">
                   <template v-slot:activator="{ on }">
                     <v-btn
                       :class="[
@@ -834,7 +834,7 @@
                     </v-btn>
                     <span v-else>Empty</span>
                   </template>
-                  <span class="tooltip-span" v-if="col.hasTooltip">{{ scope.row.status }}</span>
+                  <span class="tooltip-span">{{ scope.row.status }}</span>
                 </v-tooltip>
               </template>
             </el-table-column>

@@ -601,7 +601,7 @@
               :countRow="5"
               :pageSizes="pageSizes"
               :defaultSort="'date'"
-              :selectable="true"
+              :selectable="false"
               :filterable="true"
               :options="true"
               :empty="iEmpty"
