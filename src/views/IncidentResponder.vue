@@ -8,26 +8,20 @@
       :z-index="999"
       color="white"
     >
-      <new-investigation @closeAdd="openInvestigationOverlay = false"/>
+      <new-investigation @closeAdd="openInvestigationOverlay = false" />
     </v-overlay>
     <div class="columns-row">
       <div
         class="dashboard-cards phishing-reporter mr-2"
         :class="{
-          'no-data__opacity-blue':
-            isPhishingEmpty(irSummary)
+          'no-data__opacity-blue': isPhishingEmpty(irSummary)
         }"
       >
         <div class="card-header">
           <span class="head">Phishing Reporter</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div
-          class="columns-row__body"
-          v-if="
-            !isPhishingEmpty(irSummary)
-          "
-        >
+        <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
           <div class="card-body">
             <span class="biggest">{{
               (irSummary &&
@@ -39,10 +33,10 @@
           <div class="card-footer">
             of
             {{
-            (irSummary &&
-            irSummary.phishingReporterUserStatusCount &&
-            irSummary.phishingReporterUserStatusCount.totalUserCount) ||
-            0
+              (irSummary &&
+                irSummary.phishingReporterUserStatusCount &&
+                irSummary.phishingReporterUserStatusCount.totalUserCount) ||
+                0
             }}
             users are
           </div>
@@ -52,13 +46,17 @@
           <div class="card-footer no-data-text">
             Add-in isn’t installed at any users’ account, yet
           </div>
-          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-                  @click="emptyPhishingButtonClick">
+          <button
+            class="btn-action btn-playbook btn-playbook__no-data"
+            block
+            rounded
+            @click="emptyPhishingButtonClick"
+          >
             Start Now
           </button>
         </div>
         <div class="bg-image" style="bottom: 10px;">
-          <img src="../assets/img/shape.svg"/>
+          <img src="../assets/img/shape.svg" />
         </div>
       </div>
       <div
@@ -71,12 +69,7 @@
           <span class="head">Incident Analysis</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div
-          class="columns-row__body"
-          v-if="
-            !isNotifiedEmailEmpty(irSummary)
-          "
-        >
+        <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
           <div class="card-body">
             <span class="biggest">{{
               (irSummary &&
@@ -88,10 +81,10 @@
           <div class="card-footer">
             of
             {{
-            (irSummary &&
-            irSummary.notifiedEmailResultCount &&
-            irSummary.notifiedEmailResultCount.maliciousCount) ||
-            0
+              (irSummary &&
+                irSummary.notifiedEmailResultCount &&
+                irSummary.notifiedEmailResultCount.maliciousCount) ||
+                0
             }}
             reported emails
           </div>
@@ -105,12 +98,14 @@
           </button>-->
         </div>
         <div class="bg-image">
-          <img src="../assets/img/ic-warning.svg"/>
+          <img src="../assets/img/ic-warning.svg" />
         </div>
       </div>
       <div
         class="dashboard-cards investigations mr-2"
-        :class="{ 'no-data__opacity-green': investigationListData && !investigationListData.length }"
+        :class="{
+          'no-data__opacity-green': investigationListData && !investigationListData.length
+        }"
       >
         <div class="card-header">
           <span class="head">Investigations</span>
@@ -120,19 +115,19 @@
           <div class="card-body">
             <div class="body-row">
               {{
-              (irSummary &&
-              irSummary.investigationTypeCount &&
-              irSummary.investigationTypeCount.automaticInvestigationCount) ||
-              0
+                (irSummary &&
+                  irSummary.investigationTypeCount &&
+                  irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                  0
               }}
               <span>automated</span>
             </div>
             <div class="body-row">
               {{
-              (irSummary &&
-              irSummary.investigationTypeCount &&
-              irSummary.investigationTypeCount.automaticInvestigationCount) ||
-              0
+                (irSummary &&
+                  irSummary.investigationTypeCount &&
+                  irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                  0
               }}
               <span>manual</span>
             </div>
@@ -141,13 +136,17 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">You haven’t started any investigations, yet</div>
-          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-                  @click="emptyInvestigationButtonClick">
+          <button
+            class="btn-action btn-playbook btn-playbook__no-data"
+            block
+            rounded
+            @click="emptyInvestigationButtonClick"
+          >
             Start Now
           </button>
         </div>
         <div class="bg-image">
-          <img src="../assets/img/ic-check-box.svg"/>
+          <img src="../assets/img/ic-check-box.svg" />
         </div>
       </div>
       <div class="dashboard-cards roi-summary">
@@ -165,7 +164,7 @@
         </div>
         <div class="card-status">Saved</div>
         <div class="bg-image">
-          <img src="../assets/img/ic-insert-chart.svg"/>
+          <img src="../assets/img/ic-insert-chart.svg" />
         </div>
       </div>
     </div>
@@ -178,8 +177,12 @@
               <p>Most triggered rules from Playbook</p>
             </div>
             <div class="action">
-              <v-btn class="btn-action btn-playbook" block rounded
-                     @click="$router.push('/playbook')">
+              <v-btn
+                class="btn-action btn-playbook"
+                block
+                rounded
+                @click="$router.push('/playbook')"
+              >
                 Playbook
                 <v-icon class="pl-2">mdi-arrow-right</v-icon>
               </v-btn>
@@ -274,6 +277,7 @@
           :selectEvent="emails.selectEvent"
           @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
           @irPreview="irPreviewOnClick"
+          @handleInvestigate="handleReportedEmailInvestigate"
         />
       </v-card>
     </div>
@@ -282,9 +286,9 @@
 <script>
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
-import {getTopRules, getRunningInvestigations, searchNotifiedMail} from '../api/incidentResponder'
-import {mapActions, mapGetters} from 'vuex'
-import {COMMON_CONSTANTS} from '../model/constants/commonConstants'
+import { getTopRules, getRunningInvestigations, searchNotifiedMail } from '../api/incidentResponder'
+import { mapActions, mapGetters } from 'vuex'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import AuthenticationService from '../services/authentication'
 
 export default {
@@ -417,10 +421,14 @@ export default {
           width: '300',
           editType: {
             type: 'select',
-            options: [{label: 'NonMalicious', value: 1}, {
-              label: 'Malicious',
-              value: 2
-            }, {label: 'Phishing', value: 3}]
+            options: [
+              { label: 'NonMalicious', value: 1 },
+              {
+                label: 'Malicious',
+                value: 2
+              },
+              { label: 'Phishing', value: 3 }
+            ]
           }
           //minWidth: 80
         },
@@ -470,7 +478,11 @@ export default {
           show: true,
           type: 'status',
           width: '150',
-          dataArray:[{label: '', value:''}, {label: '', value:''}, {label: '', value:''}]
+          dataArray: [
+            { label: '', value: '' },
+            { label: '', value: '' },
+            { label: '', value: '' }
+          ]
           // minWidth: 80
         },
         {
@@ -507,7 +519,7 @@ export default {
         {
           name: 'Investigate',
           icon: 'mdi-magnify',
-          action: ''
+          action: 'handleInvestigate'
         }
       ],
       addMenu: {
@@ -562,7 +574,7 @@ export default {
     getRunningInvestigations()
       .then(response => {
         const {
-          data: {data, status}
+          data: { data, status }
         } = response
         this.investigationListData = data
         this.$refs.refRecentInv.loadWithDataArray(data || [])
@@ -577,7 +589,7 @@ export default {
     getTopRules()
       .then(response => {
         const {
-          data: {data, status}
+          data: { data, status }
         } = response
         this.$refs.refTopRules.loadWithDataArray(data || [])
       })
@@ -598,7 +610,7 @@ export default {
       .then(response => {
         const {
           data: {
-            data: {results},
+            data: { results },
             status
           }
         } = response
@@ -618,25 +630,29 @@ export default {
       getCurrentUser: 'auth/getCurrentUser'
     }),
     onEmptyBtnClicked() {
-      this.$router.push({path: '/investigations', query: {'openPopup': true}})
+      this.$router.push({ path: '/investigations', query: { openPopup: true } })
     },
     onTopRulesEmptyBtnClicked() {
-      this.$router.push({path: '/playbook', query: {'openPopup': true}})
+      this.$router.push({ path: '/playbook', query: { openPopup: true } })
     },
-    onEmptyReportedEmailsBtnClicked(){
-      this.$router.push({path: '/phishing-reporter', hash: '#settings'})
+    onEmptyReportedEmailsBtnClicked() {
+      this.$router.push({ path: '/phishing-reporter', hash: '#settings' })
     },
-    irPreviewOnClick(row){
+    irPreviewOnClick(row) {
       this.$router.push({
-        name: "Incident Responder Details",
-        params: {id: row.resourceId}
-      });
+        name: 'Incident Responder Details',
+        params: { id: row.resourceId }
+      })
     },
     isPhishingEmpty(data) {
       if (data && !data.phishingReporterUserStatusCount) {
         return true
-      } else if (data && data.phishingReporterUserStatusCount && data.phishingReporterUserStatusCount.totalUserCount) {
-        return false;
+      } else if (
+        data &&
+        data.phishingReporterUserStatusCount &&
+        data.phishingReporterUserStatusCount.totalUserCount
+      ) {
+        return false
       } else {
         return true
       }
@@ -644,11 +660,25 @@ export default {
     isNotifiedEmailEmpty(data) {
       if (data && !data.notifiedEmailResultCount) {
         return true
-      } else if (data && data.notifiedEmailResultCount && data.notifiedEmailResultCount.maliciousCount) {
-        return false;
+      } else if (
+        data &&
+        data.notifiedEmailResultCount &&
+        data.notifiedEmailResultCount.maliciousCount
+      ) {
+        return false
       } else {
         return true
       }
+    },
+    handleReportedEmailInvestigate(row) {
+      console.log('row', row)
+      this.$router.push({
+        name: 'Investigations',
+        params: {
+          selectedEmail: row,
+          isSelectedEmail: true
+        }
+      })
     },
     emptyPhishingButtonClick() {
       this.$router.push('/phishing-reporter')
@@ -658,7 +688,7 @@ export default {
     },
     emptyInvestigationButtonClick() {
       this.$router.push('/investigations')
-    },
+    }
   },
 
   beforeRouteLeave(to, from, next) {
@@ -1071,7 +1101,7 @@ export default {
       .table-wrapper {
         border-radius: 12px;
         box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12);
+          0 1px 1px -1px rgba(204, 204, 204, 0.12);
 
         .el-table td {
           padding: 12px 0 !important;

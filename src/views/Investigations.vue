@@ -9,7 +9,11 @@
       :z-index="999"
       color="white"
     >
-      <new-investigation @closeAdd="onAddClose" @refreshDatatable="refreshDatatable"/>
+      <new-investigation
+        @closeAdd="onAddClose"
+        @refreshDatatable="refreshDatatable"
+        ref="refNewInvestigation"
+      />
     </v-overlay>
     <v-overlay fixed :opacity="0.46" :value="isWantToStopInvestigation" :z-index="999">
       <v-card light class="pb-4 pa-6 v-card-container">
@@ -18,15 +22,16 @@
             <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Stop Ongoing Investigation
+            <v-list-item-title class="v-card-headline" ref="refAbc"
+              >Stop Ongoing Investigation
             </v-list-item-title>
-            <v-list-item-subtitle class="v-card-sub-header">Do you want to stop this
-              investigation?
+            <v-list-item-subtitle class="v-card-sub-header"
+              >Do you want to stop this investigation?
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="pl-0 pr-0 pt-4  v-card-content">
-          <div> Once you stopped, you cannot resume this investigation.</div>
+          <div>Once you stopped, you cannot resume this investigation.</div>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <v-btn text color="#f56c6c" @click="isWantToStopInvestigation = false">CANCEL</v-btn>
@@ -62,146 +67,155 @@
   </div>
 </template>
 <script>
-import Datatable from "../components/DataTable";
-import newInvestigation from "../components/Investigation/NewInvestigation";
-import {mapActions, mapGetters} from "vuex";
-import {exportInvestigationList} from '../api/incidentResponder'
+import Datatable from '../components/DataTable'
+import newInvestigation from '../components/Investigation/NewInvestigation'
+import { mapActions, mapGetters } from 'vuex'
+import { exportInvestigationList } from '../api/incidentResponder'
 
 export default {
   components: {
     Datatable,
     newInvestigation
   },
+  props: {
+    selectedEmail: {
+      type: Object
+    },
+    isSelectedEmail: {
+      type: Boolean
+    }
+  },
   data: () => ({
     isWantToAddNewCommunity: false,
     isWantToStopInvestigation: false,
     showDatatable: false,
+    init: true,
     columns: [
       // Should be defined to show the table
       {
-        property: "incident",
-        align: "left",
+        property: 'incident',
+        align: 'left',
         editable: false,
-        label: "Incident",
-        fixed: "left",
+        label: 'Incident',
+        fixed: 'left',
         sortable: true,
         show: true,
-        type: "text",
-        width: 250,
+        type: 'text',
+        width: 250
         //minWidth: 80
       },
       {
-        property: "detected",
-        align: "center",
+        property: 'detected',
+        align: 'center',
         editable: false,
-        label: "Detected",
+        label: 'Detected',
         fixed: false,
         sortable: true,
         show: true,
-        type: "detected",
-        width: 150,
+        type: 'detected',
+        width: 150
         //minWidth: 80
       },
       {
-        property: "source",
-        align: "left",
+        property: 'source',
+        align: 'left',
         editable: false,
-        label: "Source",
+        label: 'Source',
         fixed: false,
         sortable: true,
         show: true,
-        type: "text",
-        width: 250,
+        type: 'text',
+        width: 250
         //minWidth: 80
       },
       {
-        property: "status",
-        align: "center",
+        property: 'status',
+        align: 'center',
         editable: false,
-        label: "Status",
+        label: 'Status',
         fixed: false,
         sortable: true,
         show: true,
-        type: "status",
-        width: 200,
+        type: 'status',
+        width: 200
         //minWidth: 80
       },
       {
-        property: "createDate",
-        align: "left",
+        property: 'createDate',
+        align: 'left',
         editable: false,
-        label: "Create Date",
+        label: 'Create Date',
         fixed: false,
         sortable: true,
         show: true,
-        type: "text",
-        width: 185,
+        type: 'text',
+        width: 185
         //minWidth: 80
       },
       {
-        property: "expireDate",
-        align: "left",
+        property: 'expireDate',
+        align: 'left',
         editable: false,
-        label: "Expiry Date",
+        label: 'Expiry Date',
         fixed: false,
         sortable: true,
         show: true,
-        type: "text",
-        width: 185,
+        type: 'text',
+        width: 185
         //minWidth: 80
       },
       {
-        property: "userStatus",
-        align: "center",
+        property: 'userStatus',
+        align: 'center',
         editable: false,
-        label: "User Status",
+        label: 'User Status',
         fixed: false,
         sortable: false,
         show: true,
-        type: "chart",
-        width: 90,
+        type: 'chart',
+        width: 90
         //minWidth: 35
       },
       {
-        property: "progress",
-        align: "center",
+        property: 'progress',
+        align: 'center',
         editable: false,
-        label: "Progress",
+        label: 'Progress',
         fixed: false,
         sortable: false,
         show: true,
-        type: "progress",
-        width: 90,
+        type: 'progress',
+        width: 90
         // minWidth: 60
       }
     ],
     title: {
-      icon: "mdi-tab-unselected",
-      title: "Investigations",
-      subTitle: ""
+      icon: 'mdi-tab-unselected',
+      title: 'Investigations',
+      subTitle: ''
     },
     pageSizes: [5, 10, 25, 50, 100],
     rowActions: [
       {
-        name: "details",
-        icon: "mdi-text-box-multiple",
-        action: "investigationDetails"
+        name: 'details',
+        icon: 'mdi-text-box-multiple',
+        action: 'investigationDetails'
       },
       {
-        name: "Stop Action",
-        icon: "mdi-stop",
-        action: "stopInvestigationFunc"
+        name: 'Stop Action',
+        icon: 'mdi-stop',
+        action: 'stopInvestigationFunc'
       }
     ],
     addUsers: {
       show: true,
       popUp: false,
-      action: "createCommunityFromMobileInfo"
+      action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: "No investigation has been started, yet",
-      btn: "START A NEW INVESTIGATION",
-      icon: "mdi-plus"
+      message: 'No investigation has been started, yet',
+      btn: 'START A NEW INVESTIGATION',
+      icon: 'mdi-plus'
     },
     selectEvent: {
       clipboard: true,
@@ -211,14 +225,14 @@ export default {
     },
     chartOptions: {
       chart: {
-        type: 'pie',
+        type: 'pie'
       },
       summary: {
         show: true,
-        seperator: "/"
+        seperator: '/'
       },
-      labels: ["Completed Users Count", "Scanned Users Count"],
-      colors: ["#3f51b5", "#00bcd4"],
+      labels: ['Completed Users Count', 'Scanned Users Count'],
+      colors: ['#3f51b5', '#00bcd4'],
       legend: {
         show: false
       },
@@ -233,24 +247,24 @@ export default {
           customScale: 0.65
         }
       },
-      showTooltipLine: true,
+      showTooltipLine: true
     },
     bodyData: {
       // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
       pageSize: 500,
-      orderBy: "startDate",
+      orderBy: 'startDate',
       ascending: false,
       filter: {
-        Condition: "AND",
+        Condition: 'AND',
         FilterGroups: [
           {
-            Condition: "AND",
+            Condition: 'AND',
             FilterItems: [
               {
-                FieldName: "Status",
-                Operator: "Include",
-                Value: "Cancelled,Running,Idle"
+                FieldName: 'Status',
+                Operator: 'Include',
+                Value: 'Cancelled,Running,Idle'
               }
             ],
             FilterGroups: []
@@ -261,45 +275,44 @@ export default {
   }),
   methods: {
     refreshDatatable() {
-      this.showDatatable = false;
+      this.showDatatable = false
       this.$store
-        .dispatch("investigations/getInvestigationList", this.bodyData)
-        .finally(() => (this.showDatatable = true)); //module name than method name
+        .dispatch('investigations/getInvestigationList', this.bodyData)
+        .finally(() => (this.showDatatable = true)) //module name than method name
     },
     onAddClose() {
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true;
+        this.isMobileInfo = true
       }
-      this.isWantToAddNewCommunity = false;
+      this.isWantToAddNewCommunity = false
     },
     createCommunityFromMobileInfo() {
       // open new investigation overlay
-      this.isWantToAddNewCommunity = true;
+      this.isWantToAddNewCommunity = true
     },
     investigationDetails(value) {
-
       this.$router.push({
-        name: "Investigation Details",
-        params: {id: value.row.resourceId}
-      });
+        name: 'Investigation Details',
+        params: { id: value.row.resourceId }
+      })
     },
     exportInvestigationList(exportType) {
       const payload = {
         pageNumber: 0,
         pageSize: 0,
-        orderBy: "ExpireDate",
+        orderBy: 'ExpireDate',
         ascending: true,
         reportAllPages: true,
-        exportType: exportType === "XLS" ? "Excel" : exportType
+        exportType: exportType === 'XLS' ? 'Excel' : exportType
       }
 
       exportInvestigationList(payload).then(response => {
-        const {data} = response
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(data);
-        link.download = `investigations.${exportType.toLocaleLowerCase()}`;
-        link.click();
+        const { data } = response
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(data)
+        link.download = `investigations.${exportType.toLocaleLowerCase()}`
+        link.click()
       })
     },
 
@@ -309,34 +322,44 @@ export default {
     },
     stopInvestigation() {
       const value = this.selectedRow
-      let store = this.$store;
+      let store = this.$store
       this.isWantToStopInvestigation = false
       this.$store
-        .dispatch("investigations/cancelInvestigation", value.row.resourceId)
-        .catch(() => {
-        })
+        .dispatch('investigations/cancelInvestigation', value.row.resourceId)
+        .catch(() => {})
         .then(() => {
-          store.dispatch("investigations/SET_INVESTIGATIONLISTEMPY", []);
-          this.refreshDatatable();
-        });
+          store.dispatch('investigations/SET_INVESTIGATIONLISTEMPY', [])
+          this.refreshDatatable()
+        })
     }
   },
   computed: {
     ...mapGetters({
       // get table data via vuex.
-      tableData: "investigations/investigationListGetter" // for using getters
+      tableData: 'investigations/investigationListGetter' // for using getters
     })
   },
   mounted() {
     // triggered to relevant action at investigations.js
+    if (this.$route.params && this.$route.params.selectedEmail) {
+      this.isWantToAddNewCommunity = true
+    }
+    this.$nextTick(() => {
+      if (this.$route.params && this.$route.params.selectedEmail) {
+        if (this.$refs.refNewInvestigation && this.init) {
+          this.init = false
+          this.$refs.refNewInvestigation.fillForm(this.$route.params.selectedEmail)
+        }
+      }
+    })
     this.$store
-      .dispatch("investigations/getInvestigationList", this.bodyData)
-      .finally(() => (this.showDatatable = true)); //module name than method name
+      .dispatch('investigations/getInvestigationList', this.bodyData)
+      .finally(() => (this.showDatatable = true)) //module name than method name
     if (this.$route.query.openPopup) {
       this.isWantToAddNewCommunity = true
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .investigations {
@@ -346,11 +369,12 @@ export default {
 .v-card-container {
   max-width: 480px;
   border-radius: 12px;
-  box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14), 0 9px 46px 8px rgba(80, 80, 80, 0.12);
+  box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
+    0 9px 46px 8px rgba(80, 80, 80, 0.12);
 }
 
 .v-card-headline {
-  font-family: "Open Sans", sans-serif !important;
+  font-family: 'Open Sans', sans-serif !important;
   font-size: 20px;
   font-weight: 600;
   font-stretch: normal;
@@ -370,7 +394,7 @@ export default {
 }
 
 .v-card-sub-header {
-  font-family: "Open Sans", sans-serif !important;
+  font-family: 'Open Sans', sans-serif !important;
   font-size: 16px;
   font-weight: normal;
   font-stretch: normal;
