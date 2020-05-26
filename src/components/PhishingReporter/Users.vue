@@ -47,7 +47,7 @@ export default {
             show: true,
             fixed: true,
             type: 'text',
-            width: 175
+            width: 150
             //minWidth: 80
           },
           {
@@ -58,7 +58,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 175
+            width: 150
             //minWidth: 80
           },
           {
@@ -81,7 +81,7 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'fiber',
             width: 200
             //minWidth: 80
           },
@@ -165,12 +165,7 @@ export default {
               data: { results }
             }
           } = response
-
-          this.$refs.refUsersList.loadWithDataArray(
-            results.map(item => {
-              return { ...item, status: item.addInStatus }
-            })
-          )
+          this.$refs.refUsersList.loadWithDataArray(results || [])
         })
         .catch(error => {
           /*

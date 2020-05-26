@@ -713,6 +713,36 @@
                 <span v-else>Empty</span>
               </template>
             </el-table-column>
+
+            <el-table-column
+              :align="col.align"
+              :fixed="col.fixed"
+              :key="col.property + ind"
+              :label="col.label"
+              :minWidth="col.minWidth || ''"
+              :prop="col.property"
+              :sortable="col.sortable"
+              :width="col.width || ''"
+              v-for="(col, ind) of columns"
+              v-if="col.type === 'fiber' && col.show"
+            >
+              <template slot-scope="scope">
+                <div class="fiber__container">
+                  <div class="fiber__item">
+                    <template v-if="scope.row.addInStatus === 'Online'">
+                      <img src="../assets/img/fiber-manual-record-online.svg" />
+                    </template>
+                    <template v-else>
+                      <img src="../assets/img/fiber-manual-record-offline.svg" />
+                    </template>
+                  </div>
+                  <div>
+                    {{ scope.row[col.property] }}
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+
             <el-table-column
               :align="col.align"
               :fixed="col.fixed"
@@ -824,13 +854,14 @@
                         scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
                         scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
                         scope.row.status === 'N/A' ? 'btn-none' : '',
+
                         col.fullWidth ? 'full-width' : ''
                       ]"
                       block
                       rounded
                       v-if="scope.row && scope.row[col.property]"
                       v-on="on"
-                      >{{ scope.row.status }}
+                      >{{ scope.row.status || 'Empty' }}
                     </v-btn>
                     <span v-else>Empty</span>
                   </template>
@@ -2384,6 +2415,22 @@ export default {
 
 .full-width {
   width: 100% !important;
+}
+
+.fiber {
+  &__container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: -8px;
+  }
+
+  &__item {
+    > img {
+      margin-top: 7px;
+      margin-right: 3px;
+    }
+  }
 }
 
 /*.date-format {

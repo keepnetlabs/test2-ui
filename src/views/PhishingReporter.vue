@@ -123,7 +123,12 @@
                 <users />
               </v-tab-item>
               <v-tab-item>
-                <first-time ref="refFirstTime" />
+                <component
+                  :is="tabComponent.name"
+                  :ref="tabComponent.ref"
+                  :formData="tabComponent.formData"
+                  @getPhishingReport="getPhishingReport"
+                />
               </v-tab-item>
             </v-tabs-items>
           </v-card>
@@ -137,7 +142,7 @@
 import Settings from '../components/PhishingReporter/Settings/Settings'
 import Users from '../components/PhishingReporter/Users'
 import FirstTime from '../components/PhishingReporter/Settings/FirstTime'
-import { getPhishingReportSummary } from '../api/phishingReporter'
+import { getPhishingReporter, getPhishingReportSummary } from '../api/phishingReporter'
 
 export default {
   name: 'PhishingReporter',
@@ -149,9 +154,13 @@ export default {
   data() {
     return {
       tab: 0,
-      phishingReportSummary: null
+      phishingReportSummary: null,
+      tabComponent: {
+        name: FirstTime,
+        ref: 'refFirstTime',
+        formData: null
+      }
     }
-    l
   },
   computed: {
     getAddOnStatus() {
@@ -163,10 +172,10 @@ export default {
   },
   methods: {
     changeTabStatus(status) {
-      this.tab = status
       /*
       this.$router.replace({ ...this.$route, hash: status === 0 ? '#users' : '#settings' })
       */
+      this.tab = status
     },
     getPhishingReportSummary() {
       getPhishingReportSummary({
@@ -199,17 +208,27 @@ export default {
       } else {
         return false
       }
+    },
+    getPhishingReport() {
+      getPhishingReporter().then(response => {
+        const { data } = response
+
+        if (data.code === 'RESOURCE_RETRIEVED') {
+          this.tabComponent = {
+            name: Settings,
+            ref: 'refSettings',
+            formData: data.data
+          }
+        }
+      })
     }
   },
   created() {
     this.getPhishingReportSummary()
+    this.getPhishingReport()
   },
   mounted() {
-    /*
-    if (!this.getHash()) {
-      this.$router.replace({ ...this.$route, hash: '#users' })
-    }
-    */
+    this.getHash()
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
@@ -274,7 +293,7 @@ export default {
 
 ::v-deep .v-slide-group__content {
   border-bottom: 2px solid #e4e7ed;
-  margin-right: 20px;
+  //margin-right: 20px;
 }
 
 ::v-deep .v-tabs-slider-wrapper {
@@ -285,12 +304,12 @@ export default {
 .pr-card {
   box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
     0 1px 1px -1px rgba(204, 204, 204, 0.12);
-  padding: 10px 5px 18px 24px !important;
+  padding: 10px 24px 18px 24px !important;
   border-radius: 20px;
 }
 
 ::v-deep .v-window {
-  margin-top: 30px;
+  margin-top: 24px;
 }
 
 .investigation-details {
@@ -746,5 +765,8 @@ export default {
     padding-left: 0 !important;
     justify-content: center;
   }
+}
+::v-deep .v-list-item__content > *:not(:last-child) {
+  margin-bottom: 0;
 }
 </style>

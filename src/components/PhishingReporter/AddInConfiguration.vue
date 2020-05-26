@@ -113,6 +113,7 @@
                     :showFooter="false"
                     @getFormValues="getAddinSettingsValues"
                     ref="refAddInSettings"
+                    :inModal="true"
                   />
                 </v-stepper-content>
                 <v-stepper-content :step="2">
@@ -148,6 +149,7 @@
                     :showFooter="false"
                     @getFormValues="getOtherSettingsValues"
                     ref="refOtherSettings"
+                    :inModal="true"
                   />
                 </v-stepper-content>
               </v-stepper-items>
@@ -263,8 +265,8 @@ export default {
       ret = null
     },
     submit() {
+      this.otherSettings = this.$refs.refOtherSettings.submit()
       this.callForCreatePhishingReporter()
-      this.showModal = true
     },
     getEmailSettingsValues(formValues) {
       this.addingSettings = formValues
@@ -277,6 +279,7 @@ export default {
     },
     handleContinue() {
       this.showModal = false
+      this.$emit('getPhishingReport')
     },
     resetValues() {
       this.addingSettings = {}
@@ -284,24 +287,19 @@ export default {
       this.otherSettings = {}
     },
     callForCreatePhishingReporter() {
-      const { file, addInName, brandName, warningLabel, msgBoxTitle } = this.addingSettings
-      const { to, cc, bcc, subject, content } = this.emailSettings
-      const { isOnPremise } = this.otherSettings
       const payload = {
-        file,
-        addInName,
-        brandName,
-        warningLabel,
-        msgBoxTitle,
-        to,
-        cc,
-        bcc,
-        subject,
-        content,
-        isOnPremise
+        ...this.addingSettings,
+        ...this.emailSettings,
+        ...this.otherSettings
       }
-      createPhishingReporter(payload)
-        .then(response => {})
+      const formData = new FormData()
+      Object.keys(payload).map(key => {
+        formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
+      })
+      createPhishingReporter(formData)
+        .then(response => {
+          this.showModal = true
+        })
         .catch(error => {})
     }
   }
@@ -530,7 +528,6 @@ export default {
   }
 
   .v-stepper__label {
-    opacity: 0.5;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 16px;
     font-weight: normal;
@@ -711,10 +708,10 @@ export default {
     border-radius: 12px;
     box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
       0 9px 46px 8px rgba(80, 80, 80, 0.12);
-    @media (max-width: 768px) {
-      height: 100%;
-      overflow-y: auto;
-    }
+    overflow-y: auto;
+    height: 100%;
+    max-height: 550px !important;
+
     @media (min-width: 600px) {
       max-width: 600px !important;
     }
@@ -756,9 +753,7 @@ export default {
 }
 
 ::v-deep .v-list-item {
-  @media (min-width: 768px) {
-    min-height: 100% !important;
-  }
+  min-height: auto !important;
 }
 
 .modal__container {

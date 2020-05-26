@@ -45,19 +45,41 @@
             <div class="items__text items__text--2">
               at
             </div>
-
-            <div class="list__item__textfield">
-              <v-text-field
-                append-icon="mdi-clock-outline"
-                class="list__item__text"
-                dense
-                height="40"
-                outlined
-                placeholder="01:00 PM"
-                required
+            <v-menu
+              ref="menu"
+              v-model="menu2"
+              :close-on-content-click="false"
+              :close-on-click="true"
+              :return-value="formValues.time"
+              value="isOpe"
+              transition="scale-transition"
+              offset-y
+              max-width="210px"
+              min-width="210px"
+            >
+              <template v-slot:activator="{ on }">
+                <div class="list__item__textfield">
+                  <v-text-field
+                    append-icon="mdi-clock-outline"
+                    class="list__item__text"
+                    dense
+                    height="40"
+                    outlined
+                    placeholder="01:00 PM"
+                    required
+                    v-on="on"
+                    v-model="formValues.time2"
+                  ></v-text-field>
+                </div>
+              </template>
+              <v-time-picker
                 v-model="formValues.time"
-              ></v-text-field>
-            </div>
+                full-width
+                ref="refTimePicker"
+                @click:minute="handleTimePickerChange"
+                format="ampm"
+              ></v-time-picker>
+            </v-menu>
 
             <div :class="['items__text items__text-timezone', isInModal && 'timezone-in-modal']">
               Timezone
@@ -114,6 +136,10 @@ export default {
     showHeader: {
       type: Boolean,
       default: true
+    },
+    formData: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -123,7 +149,8 @@ export default {
         interval: '',
         day: '',
         time: '',
-        menu2: false
+        menu2: false,
+        time2: ''
       },
       showTimePicker: false,
       intervalItems: ['Daily', 'Weekly', 'Monthly'],
@@ -135,9 +162,19 @@ export default {
       return this.isInModal && { flexWrap: 'wrap', marginLeft: '16px' }
     }
   },
+  watch: {},
   methods: {
     submit() {
       return this.formValues
+    },
+    handleTimePickerChange(value) {
+      const period = this.$refs.refTimePicker.period
+      this.formValues.time2 = `${
+        period === 'pm'
+          ? Number(this.formValues.time.slice(0, 2)) - 12 + this.formValues.time.slice(2)
+          : this.formValues.time
+      } ${period.toUpperCase()}`
+      //this.$refs.menu.save(this.formValues.time)
     }
   }
 }
@@ -168,8 +205,8 @@ export default {
   &__textfield {
     max-width: 123px;
     @media (max-width: 768px) {
-      max-width: 100% !important;
-      width: 100% !important;
+      max-width: 104% !important;
+      //width: 100% !important;
     }
   }
 

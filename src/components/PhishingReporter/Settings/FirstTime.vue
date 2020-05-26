@@ -9,7 +9,10 @@
       color="white"
       class="first-time__overlay"
     >
-      <add-in-configuration @changeAddInConfigurationStatus="changeAddInConfigurationStatus" />
+      <add-in-configuration
+        @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
+        @getPhishingReport="getReport"
+      />
     </v-overlay>
     <v-container tag="div" id="first-time" fluid>
       <v-list-item>
@@ -92,7 +95,10 @@ export default {
     changeAddInConfigurationStatus(flag = true) {
       this.showAddInConfiguration = flag
     },
-    submit() {}
+    submit() {},
+    getReport() {
+      this.$emit('getPhishingReport')
+    }
   }
 }
 </script>

@@ -1,216 +1,187 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
     <v-form lazy-validation ref="refForm" v-model="isValid">
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
-              <v-text-field
-                :rules="[
-                  v =>
-                    validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
-                ]"
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="add-in-text"
-                outlined
-                placeholder="Suspicious E-Mail Reporter"
-                required
-                v-model="formValues.addInName"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="company-text">Brand Name</label>
-              <v-text-field
-                :rules="[
-                  v => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')
-                ]"
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="company-text"
-                outlined
-                placeholder="Company Name"
-                required
-                v-model="formValues.brandName"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item">
-            <v-list-item-content>
-              <label class="add-in-settings__label">Add-in Logo</label>
-              <div class="add-in-settings__subtitle mt-2">
-                JPEG, PNG or GIF. Recommended size is 60x60px
-              </div>
-              <v-btn @click="onBtnSelectFileClick" class="btn-select-file mt-2" rounded>
-                SELECT FILE
-                <input
-                  :value="formValues.file"
-                  @change="onFileChanged"
-                  accept="image/gif, image/jpeg, image/png"
-                  class="d-none"
-                  ref="uploader"
-                  type="file"
-                />
-              </v-btn>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item mt-4">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
-              <v-text-field
-                :rules="[
-                  v =>
-                    validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
-                ]"
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="alertbox-text"
-                outlined
-                placeholder="Phishing Reporter"
-                required
-                v-model="formValues.msgBoxTitle"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="5" md="12" xl="5">
-          <v-list-group :class="{ 'mb-5': marginStatus }" no-action>
-            <template v-slot:activator>
-              <v-list-item-content @click="handleMarginStatus">
-                <label class="add-in-settings__label" for="alertbox-text">Report Warning</label>
-              </v-list-item-content>
-            </template>
+      <v-list-item class="px-0 list__item">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
+          <v-text-field
+            :rules="[
+              v => validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
+            ]"
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="add-in-text"
+            outlined
+            placeholder="Suspicious E-Mail Reporter"
+            required
+            v-model="formValues.addInName"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
 
-            <v-list-item>
-              <v-list-item-content>
-                <v-checkbox
-                  class="checkbox-text"
-                  color="#2196f3"
-                  label="Show Warning"
-                  v-model="formValues.showWarning"
-                ></v-checkbox>
-                <template v-if="formValues.showWarning">
-                  <transition appear name="fade">
-                    <div class="report-warning__container">
-                      <span class="report-warning__message mt-4">Report Warning Message</span>
-                      <v-text-field
-                        class="add-in-settings__textfield add-in-settings__textfield-report mt-2"
-                        dense
-                        height="40"
-                        id="alertbox-text"
-                        outlined
-                        placeholder="Report this email?"
-                        required
-                        v-model="formValues.reportWarningMessage"
-                      ></v-text-field>
-                    </div>
-                  </transition>
-                </template>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-group>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="reported-text">Reported Message</label>
-              <v-text-field
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="reported-text"
-                outlined
-                placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
-                required
-                v-model="formValues.reportedMessage"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item ">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="delete-text">Delete Warning</label>
-              <v-text-field
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="delete-text"
-                outlined
-                placeholder="Do you wish to delete original email?"
-                required
-                v-model="formValues.deleteText"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="deleted-text">Deleted Message</label>
-              <v-text-field
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="deleted-text"
-                outlined
-                placeholder="The mail has been deleted"
-                required
-                v-model="formValues.deletedMessage"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col lg="4" md="12" xl="4">
-          <v-list-item class="px-0 list__item ">
-            <v-list-item-content>
-              <label class="add-in-settings__label" for="warning-text">Warning Label</label>
-              <v-text-field
-                :rules="[
-                  v => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
-                ]"
-                class="add-in-settings__textfield mt-2"
-                dense
-                height="40"
-                id="alertbox-text"
-                outlined
-                placeholder="Suspicious E-Mail"
-                required
-                v-model="formValues.warningLabel"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-        </v-col>
-      </v-row>
-      <div class="add-in-settings__footer mt-2 mb-2" v-if="showFooter">
+      <v-list-item class="px-0 list__item">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="company-text">Brand Name</label>
+          <v-text-field
+            :rules="[v => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')]"
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="company-text"
+            outlined
+            placeholder="Company Name"
+            required
+            v-model="formValues.brandName"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 list__item">
+        <v-list-item-content>
+          <label class="add-in-settings__label">Add-in Logo</label>
+          <div class="add-in-settings__subtitle ">
+            Recommended size is 60x60px
+          </div>
+          <v-btn @click="onBtnSelectFileClick" class="btn-select-file mt-2" rounded>
+            SELECT FILE
+            <input
+              :value="formValues.file"
+              @change="onFileChanged"
+              accept="image/gif, image/jpeg, image/png"
+              class="d-none"
+              ref="uploader"
+              type="file"
+            />
+          </v-btn>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 list__item mt-6" :class="[inModal ? 'mt-5' : 'mt-6']">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
+          <v-text-field
+            :rules="[
+              v => validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
+            ]"
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="alertbox-text"
+            outlined
+            placeholder="Phishing Reporter"
+            required
+            v-model="formValues.msgBoxTitle"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-group :class="{ 'margin-status': marginStatus }" no-action>
+        <template v-slot:activator>
+          <v-list-item-content>
+            <label class="add-in-settings__label" for="alertbox-text" @click="handleMarginStatus"
+              >Report Warning</label
+            >
+          </v-list-item-content>
+        </template>
+
+        <v-list-item>
+          <v-list-item-content class="show-warning" :class="[inModal ? 'show-warning-margin' : '']">
+            <v-checkbox
+              class="checkbox-text"
+              color="#2196f3"
+              label="Show Warning"
+              v-model="formValues.showWarning"
+            ></v-checkbox>
+            <template v-if="formValues.showWarning">
+              <transition appear name="fade">
+                <div class="report-warning__container">
+                  <span class="report-warning__message mt-4">Report Warning Message</span>
+                  <v-text-field
+                    class="add-in-settings__textfield add-in-settings__textfield-report mt-2"
+                    dense
+                    height="40"
+                    id="alertbox-text"
+                    outlined
+                    placeholder="Report this email?"
+                    required
+                    v-model="formValues.reportWarningMessage"
+                  ></v-text-field>
+                </div>
+              </transition>
+            </template>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-group>
+
+      <v-list-item class="px-0 list__item">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="reported-text">Reported Message</label>
+          <v-text-field
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="reported-text"
+            outlined
+            placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
+            required
+            v-model="formValues.reportedMessage"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="delete-text">Delete Warning</label>
+          <v-text-field
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="delete-text"
+            outlined
+            placeholder="Do you wish to delete original email?"
+            required
+            v-model="formValues.deleteText"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 list__item">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="deleted-text">Deleted Message</label>
+          <v-text-field
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="deleted-text"
+            outlined
+            placeholder="The mail has been deleted"
+            required
+            v-model="formValues.deletedMessage"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="warning-text">Warning Label</label>
+          <v-text-field
+            :rules="[
+              v => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
+            ]"
+            class="add-in-settings__textfield mt-2"
+            dense
+            height="40"
+            id="alertbox-text"
+            outlined
+            placeholder="Suspicious E-Mail"
+            required
+            v-model="formValues.warningLabel"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <div class="add-in-settings__footer mt-4 mb-2" v-if="showFooter">
         <v-btn @click="submit" class="white--text btn-util" color="#2196f3" rounded>
           SAVE CHANGES
         </v-btn>
@@ -239,6 +210,14 @@ export default {
     showFooter: {
       type: Boolean,
       default: true
+    },
+    formData: {
+      type: Object,
+      default: null
+    },
+    inModal: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -270,22 +249,37 @@ export default {
       this.formValues.file = e.target.files
     },
     submit() {
-      return this.$refs.refForm.validate() && this.formValues
+      if (this.$refs.refForm.validate()) {
+        this.$emit('updateForm', this.formValues)
+        return this.formValues
+      } else {
+        return false
+      }
     },
     handleMarginStatus() {
+      console.log('iam clicked')
       this.marginStatus = !this.marginStatus
     }
   },
   created() {
-    this.formValues.brandName = localStorage.getItem('companyName')
-    this.formValues.addInName = 'Suspicious E-Mail Reporter'
-    this.formValues.msgBoxTitle = 'Phishing Reporter'
-    this.formValues.reportWarningMessage = 'Report this email?'
-    this.formValues.deleteText = 'Do you wish to delete original email?'
-    this.formValues.reportedMessage =
-      'Thank you for reporting this email. Our organisation is more secure thanks to you.'
-    this.formValues.deletedMessage = 'The mail has been deleted'
-    this.formValues.warningLabel = 'Suspicious E-Mail'
+    //If has a report
+    if (this.formData) {
+      const { addInName, brandName, warningLabel, msgBoxTitle } = this.formData
+      this.formValues.addInName = addInName
+      this.formValues.brandName = brandName
+      this.formValues.warningLabel = warningLabel
+      this.formValues.msgBoxTitle = msgBoxTitle
+    } else {
+      this.formValues.brandName = localStorage.getItem('companyName')
+      this.formValues.addInName = 'Suspicious E-Mail Reporter'
+      this.formValues.msgBoxTitle = 'Phishing Reporter'
+      this.formValues.reportWarningMessage = 'Report this email?'
+      this.formValues.deleteText = 'Do you wish to delete original email?'
+      this.formValues.reportedMessage =
+        'Thank you for reporting this email. Our organisation is more secure thanks to you.'
+      this.formValues.deletedMessage = 'The mail has been deleted'
+      this.formValues.warningLabel = 'Suspicious E-Mail'
+    }
   }
 }
 </script>
@@ -302,7 +296,7 @@ export default {
       font-style: normal;
       line-height: 1.2;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
+      color: rgba(0, 0, 0, 0.87) !important;
     }
 
     &__subtitle {
@@ -312,7 +306,8 @@ export default {
       font-style: normal;
       line-height: 1.5;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
+      margin-top: 2px;
+      color: rgba(0, 0, 0, 0.87) !important;
     }
 
     &__link {
@@ -395,7 +390,11 @@ export default {
   font-style: normal;
   line-height: 1.5;
   letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.checkbox-text.v-input--selection-controls {
+  margin-top: 0;
 }
 
 .report-warning__container {
@@ -462,11 +461,11 @@ export default {
 }
 
 ::v-deep .v-list-item__content > *:not(:last-child) {
-  margin-bottom: 6px;
+  // margin-bottom: 6px;
 }
 
 ::v-deep .v-list-group__header {
-  max-width: 517px;
+  max-width: 554px;
   padding: 0 !important;
 }
 
@@ -484,5 +483,12 @@ export default {
       overflow: visible;
     }
   }
+}
+.margin-status {
+  margin-top: -7px;
+  margin-bottom: 22px;
+}
+.show-warning.show-warning-margin {
+  padding-top: 18px !important;
 }
 </style>
