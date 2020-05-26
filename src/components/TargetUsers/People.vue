@@ -4,8 +4,15 @@
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
       @deleteAction="handleDeleteUser"
+      v-if="isWantToShowDeleteUserModal"
       @changeModalStatus="changeDeleteModalStatus"
     />
+    <add-users-manually-modal
+      :is-show="isWantToShowAddUsersManuallyModal"
+      v-if="isWantToShowAddUsersManuallyModal"
+      @changeModalStatus="changeAddUsersManuallyModalStatus"
+    />
+
     <datatable
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -51,15 +58,17 @@
 <script>
 import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
-
+import AddUsersManuallyModal from './AddUsersManuallyModal'
 export default {
   name: 'People',
   components: {
     DeleteUserModal,
-    Datatable
+    Datatable,
+    AddUsersManuallyModal
   },
   data: () => ({
     isWantToShowDeleteUserModal: false,
+    isWantToShowAddUsersManuallyModal: false,
     selectedRow: {},
     items: [
       { title: 'Click Me1' },
@@ -191,7 +200,13 @@ export default {
   }),
   methods: {
     handleAddUsers(item) {
-      console.log(item)
+      switch (item) {
+        case this.addUsersItems[0]:
+          this.isWantToShowAddUsersManuallyModal = true
+          break
+        default:
+          break
+      }
     },
     handleAddToGroup(row) {
       console.log('handleAddToGroup', row)
@@ -211,6 +226,9 @@ export default {
     },
     changeDeleteModalStatus(status) {
       this.isWantToShowDeleteUserModal = status
+    },
+    changeAddUsersManuallyModalStatus(status) {
+      this.isWantToShowAddUsersManuallyModal = status
     },
     handleDeleteUser(selectedUser) {
       console.log('selectedUser', selectedUser)
