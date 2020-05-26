@@ -53,7 +53,7 @@
             Add-in isn’t installed at any users’ account, yet
           </div>
           <button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-                  @click="emptyPhishingButtonClick()">
+                  @click="emptyPhishingButtonClick">
             Start Now
           </button>
         </div>
@@ -99,10 +99,10 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">You haven’t analysed any emails, yet</div>
-          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-                  @click="emptyNotifiedEmailButtonClick()">
+          <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
+                  @click="emptyNotifiedEmailButtonClick">
             Start Now
-          </button>
+          </button>-->
         </div>
         <div class="bg-image">
           <img src="../assets/img/ic-warning.svg"/>
@@ -142,7 +142,7 @@
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">You haven’t started any investigations, yet</div>
           <button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-                  @click="emptyInvestigationButtonClick()">
+                  @click="emptyInvestigationButtonClick">
             Start Now
           </button>
         </div>
@@ -272,6 +272,8 @@
           :empty="emails.iEmpty"
           :groupable="true"
           :selectEvent="emails.selectEvent"
+          @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
+          @irPreview="irPreviewOnClick"
         />
       </v-card>
     </div>
@@ -467,7 +469,8 @@ export default {
           sortable: false,
           show: true,
           type: 'status',
-          width: '150'
+          width: '150',
+          dataArray:[{label: '', value:''}, {label: '', value:''}, {label: '', value:''}]
           // minWidth: 80
         },
         {
@@ -494,7 +497,7 @@ export default {
         {
           name: 'Preview',
           icon: 'mdi-eye',
-          action: ''
+          action: 'irPreview'
         },
         {
           name: 'Details',
@@ -619,6 +622,15 @@ export default {
     },
     onTopRulesEmptyBtnClicked() {
       this.$router.push({path: '/playbook', query: {'openPopup': true}})
+    },
+    onEmptyReportedEmailsBtnClicked(){
+      this.$router.push({path: '/phishing-reporter', hash: '#settings'})
+    },
+    irPreviewOnClick(row){
+      this.$router.push({
+        name: "Incident Responder Details",
+        params: {id: row.resourceId}
+      });
     },
     isPhishingEmpty(data) {
       if (data && !data.phishingReporterUserStatusCount) {

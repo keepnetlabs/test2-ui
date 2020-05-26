@@ -8,7 +8,7 @@ import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import AnalysisDetails from '../views/AnalysisDetails'
-import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import EmailDetails from '../components/IncidentResponder/emailDetails'
 //import SharedIncident from '../views/SharedIncident'
 
 import Test from '../views/Test'
@@ -88,6 +88,16 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
 
+          },
+          props: true, params: true
+
+        },
+        {
+          path: '/incident-responder/:id',
+          name: 'Incident Responder Details',
+          component: EmailDetails,
+          meta: {
+            isAuthenticated: true,
           },
           props: true, params: true
 
