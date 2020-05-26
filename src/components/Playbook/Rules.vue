@@ -18,7 +18,7 @@
     />
     <v-overlay :value="this.isCreateNewRule" :z-index="15">
       <div class="overlay">
-        <CreateNewRule/>
+        <CreateNewRule />
       </div>
     </v-overlay>
   </div>
@@ -26,7 +26,8 @@
 
 <script>
 import DataTable from '../DataTable'
-import CreateNewRule from "./CreateNewRule"
+import CreateNewRule from './CreateNewRule'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'Users',
@@ -40,7 +41,7 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'ruleName',
+            property: 'name',
             align: 'left',
             editable: false,
             label: 'Rule Name',
@@ -61,7 +62,7 @@ export default {
             //width: 250,
             minWidth: 100
           },
-          {
+          /*{
             property: 'company',
             align: 'left',
             editable: false,
@@ -72,17 +73,18 @@ export default {
             type: 'text',
             width: 125
             //minWidth: 80
-          },
+          },*/
           {
-            property: 'created',
+            property: 'createDate',
             align: 'left',
             editable: false,
             label: 'Created',
+
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 80,
+            width: 180
             //minWidth: 80
           },
           {
@@ -135,19 +137,44 @@ export default {
           show: true,
           action: 'addAction'
         }
+      },
+      tableCredientials: {
+        pageNumber: 1,
+        pageSize: 3,
+        orderBy: 'Name',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'Status',
+                  Operator: '=',
+                  Value: 'Active'
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
   methods: {
-    handleDelete(row) {
-
-    },
+    ...mapActions({
+      getPlaybookList: 'playbook/getPlaybookList'
+    }),
+    handleDelete(row) {},
     handleAdd() {
-      this.isCreateNewRule = !this.isCreateNewRule;
+      this.isCreateNewRule = !this.isCreateNewRule
     }
   },
   mounted() {
-    this.$refs.refRulesList.loadWithDataArray([
+    this.getPlaybookList(this.tableCredientials)
+    this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
+   /* this.$refs.refRulesList.loadWithDataArray([
       {
         ruleName: 'Ransomware',
         description: 'Rule for ransomware',
@@ -164,17 +191,25 @@ export default {
         status: 'Inactive',
         priority: 'Very Low'
       }
-    ])
-  }
+    ])*/
+  },
+  computed: {
+    ...mapGetters({
+      playbookList: 'playbook/playbookListGetter'
+    }),
+    ...mapState({
+      playbookList: state => state.playbook.playbookList
+    })
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-  .rules {
-    .overlay {
-      background: white;
-      width: 100vw;
-      height: 100vh;
-    }
+.rules {
+  .overlay {
+    background: white;
+    width: 100vw;
+    height: 100vh;
   }
+}
 </style>

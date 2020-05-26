@@ -1,20 +1,20 @@
 <template>
-  <div id="playbook" class="playbook investigation-details">
+  <div class="playbook investigation-details" id="playbook">
     <div class="phishing-reporter">
-      <v-layout id="ts-layout" wrap style="min-height: 79vh;">
+      <v-layout id="ts-layout" style="min-height: 79vh;" wrap>
         <v-col class="p-0" cols="12">
-          <v-card id="pr-card" class="pr-card">
+          <v-card class="pr-card" id="pr-card">
             <v-tabs
-              id="pr-tabs"
-              v-model="tab"
+              active-class="pr-tab-active"
               background-color="transparent"
               color="basil"
-              active-class="pr-tab-active"
+              id="pr-tabs"
+              v-model="tab"
             >
-              <v-tab id="pr-tab-users" class="pr-tab pr-tab-users p-2" @click="changeTabStatus(0)">
+              <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-users p-2" id="pr-tab-users">
                 Rules
               </v-tab>
-              <v-tab id="pr-tab-settings" class="pr-tab p-2" @click="changeTabStatus(1)"
+              <v-tab @click="changeTabStatus(1)" class="pr-tab p-2" id="pr-tab-settings"
                 >Plays
               </v-tab>
             </v-tabs>
@@ -36,6 +36,7 @@
 <script>
 import Rules from '../components/Playbook/Rules'
 
+
 export default {
   name: 'Playbook',
   components: {
@@ -43,18 +44,23 @@ export default {
   },
   data() {
     return {
-      tab: 0
+      tab: 0,
+
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
-    }
+    },
+  },
+
+  mounted() {
+
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .page-wrapper {
   height: 100%;
   position: relative;

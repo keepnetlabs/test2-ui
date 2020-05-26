@@ -8,6 +8,7 @@ import dashboard from './modules/dashboard'
 import threadSharing from './modules/threadSharing'
 import tour from './modules/tour'
 import investigations from './modules/investigations'
+import playbook from './modules/playbook'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     dashboard,
     threadSharing,
     tour,
-    investigations
+    investigations,
+    playbook
   }
 })
