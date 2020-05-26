@@ -8,194 +8,44 @@
             <v-tabs v-model="tab" class="tab-bar">
                 <v-tab id="expansion-details">Details</v-tab>
                 <v-tab id="expansion-preview">Email Preview</v-tab>
+                <v-tab id="expansion-url">URL Analysis</v-tab>
+                <v-tab id="expansion-attachment">Attachment Analysis</v-tab>
             </v-tabs>
 
             <v-tabs-items v-show="postDetail.Data && postDetail.IsSuccess" v-model="tab">
                 <v-tab-item>
-                    <h1
-                            v-if="
-              (shareSettings &&
-                shareSettings.senderInfo &&
-                shareSettings.senderInfo[0] &&
-                shareSettings.senderInfo[0].IsMalicious) ||
-                (shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsMalicious) ||
-                (shareSettings.links && shareSettings.links.some(a => a.IsMalicious)) ||
-                (shareSettings.attachments && shareSettings.attachments.some(a => a.IsMalicious))
-            "
-                            class="detected-items"
-                    >
-                        Detected Items
-                    </h1>
-                    <div class="detail-parts">
-                        <p
-                                v-if="
-                (shareSettings &&
-                  shareSettings.senderInfo &&
-                  shareSettings.senderInfo[0] &&
-                  shareSettings.senderInfo[0].IsShow &&
-                  shareSettings.senderInfo[0].IsMalicious) ||
-                  (shareSettings.receiverInfo &&
-                    shareSettings.receiverInfo[0] &&
-                    shareSettings.receiverInfo[0].IsShow &&
-                    shareSettings.receiverInfo[0].IsMalicious)
-              "
-                                class="detail-black"
-                        >
-                            Header
-                        </p>
-                        <p
-                                v-if="
-                shareSettings &&
-                  shareSettings.senderInfo &&
-                  shareSettings.senderInfo[0] &&
-                  shareSettings.senderInfo[0].IsShow &&
-                  shareSettings.senderInfo[0].IsMalicious
-              "
-                                :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
-                                class="detail-black detail-red"
-                        >
-                            From: {{ postDetail.Data.CommunityPostEmails[0].From }}
-                        </p>
-                        <p
-                                v-if="
-                shareSettings &&
-                  shareSettings.senderInfo &&
-                  shareSettings.senderInfo[0] &&
-                  shareSettings.senderInfo[0].IsShow &&
-                  shareSettings.senderInfo[0].IsMalicious
-              "
-                                class="detail-black"
-                        >
-                            The sender email address has been reported as harmful email sender.
-                        </p>
-                    </div>
-                    <div class="detail-parts">
-                        <p
-                                v-if="
-                shareSettings &&
-                  shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsShow &&
-                  shareSettings.receiverInfo[0].IsMalicious
-              "
-                                :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
-                                class="detail-black detail-red"
-                        >
-                            To: {{ postDetail.Data.CommunityPostEmails[0].From }}
-                        </p>
-                        <p
-                                v-if="
-                shareSettings &&
-                  shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsShow &&
-                  shareSettings.receiverInfo[0].IsMalicious
-              "
-                                class="detail-black"
-                        >
-                            The receiver email address has been reported as harmful email sender.
-                        </p>
-                    </div>
-                    <div
-                            v-if="shareSettings && shareSettings.links && shareSettings.links.length"
-                            class="preview-attch-wrapper detail-parts"
-                    >
-                        <p
-                                v-if="
-                shareSettings &&
-                  shareSettings.links &&
-                  shareSettings.links.some(a => a.IsShow && a.IsMalicious)
-              "
-                                class="detail-black"
-                        >
-                            Body
-                        </p>
-                        <p
-                                v-for="(el, ind) of shareSettings.links"
-                                :key="ind + el.Id"
-                                v-if="el && el.Type == 'Link' && el.IsShow && el.IsMalicious"
-                                :id="'detail-links-' + el.Id"
-                                class="detail-black detail-red"
-                        >
-                            Link: {{ el.Value }} <br/>
-                        </p>
-                        <div
-                                v-for="(att, ind) of shareSettings.attachments"
-                                :key="ind + att.Id"
-                                :id="'detail-malicious-' + att.Id"
-                                v-if="att.IsMalicious"
-                        >
-                            <p class="attach-found-malicious" v-if="ind === 0">
-                                This link<span v-if="shareSettings.links.length > 1">s</span> has been reported as a
-                                phising link
-                            </p>
-                        </div>
-                    </div>
-                    <div
-                            class="details-attchments-wrapper preview-footer"
-                            v-if="shareSettings.attachments && shareSettings.attachments.length"
-                    >
-                        <div
-                                v-for="(att, ind) of shareSettings.attachments"
-                                :key="ind + att.Id"
-                                v-if="att.IsMalicious"
-                                class="preview-attch-wrapper details-attachments"
-                        >
-                            <h2 v-if="ind === 0">Attachments</h2>
-                            <div>
-                                <div :id="'detail-attachs-' + att.Id" class="attachment">
-                                    <div :id="'detail-name-' + att.Id" v-if="att.IsShow" class="file-name max-char">
-                                        {{ att.Name }}
-                                    </div>
-                                    <div :id="'detail-name-' + att.Id" v-if="!att.IsShow" class="file-name max-char">
-                                        hidden by owner
-                                    </div>
-                                </div>
+                    <div class="details-content">
+                        <div class="details-content--item">
+                            <div class="details-content--item--key">
+                                To
+                            </div>
+                            <div class="details-content--item--value">
+                                sedatozdemirtest3@outlook.com
                             </div>
                         </div>
-                        <div
-                                v-for="(att, ind) of shareSettings.attachments"
-                                :key="ind + att.Id"
-                                :id="'detail-malicious-' + att.Id"
-                                v-if="att.IsMalicious"
-                        >
-                            <p class="attach-found-malicious detail-black" v-if="ind === 0">
-                                This file<span v-if="shareSettings.attachments.length > 1">s</span> has been
-                                reported as a malicious
-                            </p>
-                        </div>
-                    </div>
-                    <div class="detail-discovery pb-4">
-                        <div
-                                :id="'detail-discovery-empty'"
-                                v-if="postDetail.Data.DiscoveryAndDetection"
-                                class="disc-header"
-                        >
-                            Discovery and Detection
-                        </div>
-                        <p
-                                :id="'detail-discovery'"
-                                v-if="postDetail.Data.DiscoveryAndDetection"
-                                class="discovery-p"
-                        >
-                            {{ postDetail.Data.DiscoveryAndDetection }}
-                        </p>
-                        <div v-if="postDetail.Data.AffectArea" class="disc-header mb-1">Impact Range</div>
-                        <div :id="'detail-effect-area'" v-if="postDetail.Data.AffectArea" class="impact-row">
-                            <div class="impact-left">Effect area:</div>
-                            <div style="width: max-content; padding-right: 13px;" class="impact-right">
-                                {{ postDetail.Data.AffectArea }}
+                        <div class="details-content--item">
+                            <div class="details-content--item--key">
+                                From
+                            </div>
+                            <div class="details-content--item--value">
+                                ets@securelogout.com
                             </div>
                         </div>
-                        <div
-                                :id="'detail-scope' + postDetail.Data.Scope"
-                                v-if="postDetail.Data.Scope"
-                                class="impact-row"
-                        >
-                            <div class="impact-left">Scope:</div>
-                            <div class="impact-right">{{ postDetail.Data.Scope }}</div>
+                        <div class="details-content--item">
+                            <div class="details-content--item--key">
+                                Subject
+                            </div>
+                            <div class="details-content--item--value">
+                                File Format Exploits
+                            </div>
+                        </div>
+                        <div class="details-content--item">
+                            <div class="details-content--item--key">
+                                Analysis Date
+                            </div>
+                            <div class="details-content--item--value">
+                                7/26/2019 5:22:30 PM
+                            </div>
                         </div>
                     </div>
                 </v-tab-item>
@@ -418,116 +268,170 @@
                             </div>
                         </div>
                     </div>
-                    <div class="preview-buttons">
-                        <v-btn
-                                v-if="!postDetail.Data.UserLiked"
-                                :disabled="!isJoined(postDetail.Data.CommunityId)"
-                                @click="userLikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
-                                :class="{ 'active-act': userLiked }"
-                                :id="'like-btn' + postDetail.Data.CommunityPostId"
-                        >
-                            <v-icon>mdi-thumb-up</v-icon>
-                            Useful {{ postDetail.Data.LikeCount }}
-                        </v-btn>
-                        <v-btn
-                                v-else-if="postDetail.Data.UserLiked"
-                                :disabled="!isJoined(postDetail.Data.CommunityId)"
-                                @click="userUnlikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
-                                color="#2196f3"
-                                :id="'unlike-btn' + postDetail.Data.CommunityPostId"
-                        >
-                            <v-icon class="active-act">mdi-thumb-up</v-icon>
-                            Useful {{ postDetail.Data.LikeCount }}
-                        </v-btn>
-                        <v-btn
-                                :id="'comments-btn' + postDetail.Data.CommunityPostId"
-                                :class="{ 'active-act': commentOpened }"
-                                @click="commentOpened = !commentOpened"
-                        >
-                            <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
-                            Comments ({{ postDetail.Data.CommentCount }})
-                        </v-btn>
+                </v-tab-item>
+                <v-tab-item>
+                    <div>
+                        <datatable
+                                id="urlAnaylsisTable"
+                                :refName="'urlAnaylysisTable'"
+                                :columns="columns"
+                                :table="tableData"
+                                :countRow="5"
+                                :pageSizes="pageSizes"
+                                :defaultSort="'date'"
+                                :selectable="false"
+                                :filterable="true"
+                                :options="true"
+                                :empty="iEmpty"
+                                :selectEvent="selectEvent"
+                                :sizeable="true"
+                        />
                     </div>
-                    <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
-                        <div class="add-comment-row">
-                            <v-text-field
-                                    :id="'single-post-comment-' + postDetail.Data.CommunityPostId"
-                                    class="comment-input"
-                                    label="Write your comment here"
-                                    outlined
-                                    v-model="addCommentValue"
-                                    validate-on-blur
-                                    :rules="[rules.regex, rules.required]"
-                            />
-                            <v-btn
-                                    :id="'single-post-send-comment' + postDetail.Data.CommunityPostId"
-                                    :disabled="!isJoined(postDetail.Data.CommunityId) || !regexChar(addCommentValue)"
-                                    @click="
-                  addPostComment(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)
-                "
-                                    class="send-btn"
-                            >
-                                <v-icon>mdi-send</v-icon>
-                                SEND
-                            </v-btn>
-                        </div>
-                        <div
-                                v-if="
-                !seeComments &&
-                  postDetail.Data.CommunityPostComments &&
-                  postDetail.Data.CommunityPostComments.length
-              "
-                                class="hidden-comments"
-                        >
-                            <div class="comment-row">
-                                <div class="user-wrapper">
-                  <span class="username">{{
-                    postDetail.Data.CommunityPostComments[0].NameSurname
-                  }}</span>
-                                    from
-                                    <span class="company-name">{{
-                    postDetail.Data.CommunityPostComments[0].CompanyName
-                  }}</span>
-                                    <p class="the-comment">
-                                        {{ postDetail.Data.CommunityPostComments[0].Comment }}
+                </v-tab-item>
+                <v-tab-item class="v-expansion-panel-content__wrap wrap-padding">
+                    <div class="ed-title">
+                        <v-tooltip bottom opacity="1">
+                            <template v-slot:activator="{ on }">
+                                <div class="d-flex">
+                                    <p class="mr-6 attachment-name">Attachment Name</p>
+                                    <p class="mr-6 wrf">watermark_master.wcf</p>
+                                    <p class="mr-6 cursor-pointer download">
+                                        <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                                        Download file
                                     </p>
                                 </div>
-                            </div>
-                        </div>
-                        <div
-                                v-if="
-                seeComments &&
-                  postDetail.Data.CommunityPostComments &&
-                  postDetail.Data.CommunityPostComments.length
-              "
-                                class="hidden-comments"
+                            </template>
+                        </v-tooltip>
+                    </div>
+                    <div class="flex-grow-1"></div>
+                    <div class="ed-header-btn-1 collapse-details">
+                        <v-expansion-panel-header
+                                class="pa-0"
+                                style="min-height: 36px;"
+                                disable-icon-rotate
+                                id="email-details-expansion-header"
                         >
-                            <div
-                                    v-for="(com, ind) of postDetail.Data.CommunityPostComments.slice().reverse()"
-                                    :key="ind + com.CommunityPostCommentId"
-                                    class="comment-row"
-                            >
-                                <div class="user-wrapper">
-                                    <span class="username">{{ com.NameSurname }}</span>
-                                    from
-                                    <span class="company-name">{{ com.CompanyName }}</span>
-                                    <p class="the-comment">{{ com.Comment }}</p>
+                            <template v-slot:actions mandatory="true">
+                                <v-btn
+                                        v-if="showFirstCollapse"
+                                        @click.native="showFirstCollapse = false"
+                                        outlined
+                                        rounded
+                                        medium
+                                        color="blue"
+                                >COLLAPSE
+                                </v-btn>
+                                <v-btn
+                                        v-else
+                                        @click.native="showFirstCollapse = true"
+                                        outlined
+                                        rounded
+                                        medium
+                                        color="blue"
+                                >EXPAND
+                                </v-btn>
+                            </template>
+                        </v-expansion-panel-header>
+                    </div>
+                    <v-expansion-panel-content
+                            v-if="showFirstCollapse"
+                            eager
+                            transition="scale-transition"
+                            class="pa-0 no-shadow"
+                    >
+                        <div class="details-content">
+                            <div class="details-content--item mb-4 mt-4">
+                                <div class="details-content--item--key text-right">
+                                    SHA512
+
+                                </div>
+                                <div class="details-content--item--value">
+                                    ad332bacf12da20cdcf84c6ed5dd590a8cb428acd1f636fc1a5c9fb4cf06e584b3b3c2fc97b6e0bab2d27cea60d13cd053ade7e7f2cb0aaa7117d9b1401a37a0
+                                </div>
+                            </div>
+                            <div class="details-content--item mb-4">
+                                <div class="details-content--item--key text-right">
+                                    MD5
+                                </div>
+                                <div class="details-content--item--value">
+                                    1f0e84c265ebe2911565c091afa36df9
+                                </div>
+                            </div>
+                            <div class="details-content--item mb-4">
+                                <div class="details-content--item--key text-right">
+                                    Content Type
+                                </div>
+                                <div class="details-content--item--value">
+                                    application/octet-stream
+                                </div>
+                            </div>
+                            <div class="details-content--item mb-4">
+                                <div class="details-content--item--key text-right">
+                                    VirusTotal
+                                </div>
+                                <div class="details-content--item--value">
+                                    <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
+                                    <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                    </span>
+                                    <a>DETAILS</a>
+                                </div>
+                            </div>
+                            <div class="details-content--item mb-4">
+                                <div class="details-content--item--key text-right">
+                                    Valkyrie
+                                </div>
+                                <div class="details-content--item--value">
+                                    <span class="details-content--item--value--status">Clean</span>
+                                    <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="details-content--item mb-4">
+                                <div class="details-content--item--key text-right">
+                                    Roksit
+                                </div>
+                                <div class="details-content--item--value">
+                                    <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
+                                    <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                    </span>
+                                    <a>DETAILS</a>
+                                </div>
+                            </div>
+                            <div class="details-content--item mb-4">
+                                <div class="details-content--item--key text-right">
+                                    PhishTank
+                                </div>
+                                <div class="details-content--item--value">
+                                    <span class="details-content--item--value--status">Clean</span>
+                                    <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-pound</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="details-content--item">
+                                <div class="details-content--item--key text-right">
+                                    Hybrid Analysis
+                                </div>
+                                <div class="details-content--item--value">
+                                    <span class="details-content--item--value--status" style="color: #b06000">Malicious</span>
+                                    <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div
-                                v-if="
-                !seeComments &&
-                  postDetail.Data.CommunityPostComments &&
-                  postDetail.Data.CommunityPostComments.length > 1
-              "
-                                id="single-post-see-all-comments"
-                                class="see-all-comments"
-                                @click="seeComments = true"
-                        >
-                            <span>See all {{ postDetail.Data.CommunityPostComments.length }} comments</span>
-                        </div>
-                    </div>
+                    </v-expansion-panel-content>
                 </v-tab-item>
             </v-tabs-items>
         </v-expansion-panel-content>
@@ -611,9 +515,13 @@
   }
  `
     })
+    import Datatable from "../../components/DataTable";
+
     export default {
+
         components: {
-            VClamp
+            VClamp,
+            Datatable
         },
         props: {
             post: {
@@ -642,6 +550,7 @@
             })
         },
         data: () => ({
+            showFirstCollapse: false,
             expanded: false,
             commentOpened: false,
             isWantToShareIncident: false,
@@ -666,7 +575,149 @@
             hoverTool: false,
             details: {},
             shareSettings: {},
-            addCommentValue: ''
+            addCommentValue: '',
+            showDatatable: true,
+            columns: [
+                // Should be defined to show the table
+                {
+                    property: "url",
+                    align: "left",
+                    editable: false,
+                    label: "Url",
+                    fixed: "left",
+                    sortable: true,
+                    show: true,
+                    type: "text",
+                    width: 350,
+                    //minWidth: 80
+                },
+                {
+                    property: "status",
+                    align: "center",
+                    editable: false,
+                    label: "Status",
+                    fixed: 'right',
+                    sortable: true,
+                    show: true,
+                    type: "status",
+                    width: 180,
+                    //minWidth: 80
+                },
+                {
+                    property: "Valkyrie",
+                    align: "left",
+                    editable: false,
+                    label: "Valkyrie",
+                    fixed: false,
+                    sortable: true,
+                    show: true,
+                    type: "text",
+                    width: 180,
+                    //minWidth: 80
+                },
+                {
+                    property: "Roksit",
+                    align: "left",
+                    editable: false,
+                    label: "Roksit",
+                    fixed: false,
+                    sortable: true,
+                    show: true,
+                    type: "text",
+                    width: 180,
+                    //minWidth: 80
+                },
+                {
+                    property: "Phishtank",
+                    align: "left",
+                    editable: false,
+                    label: "Phishtank",
+                    fixed: false,
+                    sortable: true,
+                    show: true,
+                    type: "text",
+                    width: 180,
+                    //minWidth: 80
+                },
+                {
+                    property: "UrlVoid",
+                    align: "left",
+                    editable: false,
+                    label: "Url Void",
+                    fixed: false,
+                    sortable: true,
+                    show: true,
+                    type: "text",
+                    width: 180,
+                    //minWidth: 80
+                },
+                {
+                    property: "VirusTotal",
+                    align: "left",
+                    editable: false,
+                    label: "Virus Total",
+                    fixed: false,
+                    sortable: true,
+                    show: true,
+                    type: "text",
+                    width: 180,
+                    //minWidth: 80
+                },
+            ],
+            title: {
+                icon: "mdi-tab-unselected",
+                title: "Investigations",
+                subTitle: ""
+            },
+            pageSizes: [5, 10, 25, 50, 100],
+            iEmpty: {
+                message: "No Data",
+            },
+            selectEvent: {
+                clipboard: true,
+                download: true
+            },
+            tableData: [{
+                url: "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd",
+                status: "Clean",
+                Valkyrie: "Clean",
+                Roksit: "Clean",
+                Phishtank: "Clean",
+                UrlVoid: "Clean",
+                VirusTotal: "Clean",
+            }, {
+                url: "http://www.w3.org/1999/xhtml",
+                status: "Clean",
+                Valkyrie: "Clean",
+                Roksit: "Clean",
+                Phishtank: "Clean",
+                UrlVoid: "Clean",
+                VirusTotal: "Clean",
+            }, {
+                url: "http://webapplayers.com/.../email_templates/styles.css",
+                status: "Clean",
+                Valkyrie: "Clean",
+                Roksit: "Clean",
+                Phishtank: "Clean",
+                UrlVoid: "Clean",
+                VirusTotal: "Clean",
+            }, {
+                url: "https://dashboard.keepnetlabs.com/.../keepnetla...png",
+                status: "Clean",
+                Valkyrie: "Clean",
+                Roksit: "Clean",
+                Phishtank: "Clean",
+                UrlVoid: "Clean",
+                VirusTotal: "Clean",
+            }, {
+                url: "http://zinfaudioplayer221_pls.pl",
+                status: "Phishing",
+                Valkyrie: "Clean",
+                Roksit: "Clean",
+                Phishtank: "Clean",
+                UrlVoid: "Clean",
+                VirusTotal: "Clean",
+            }]
         }),
         watch: {
             postDetail(val) {
@@ -912,7 +963,125 @@
 </script>
 
 <style lang="scss" scoped>
+
+    .v-application p {
+        margin-bottom: 0;
+    }
+
+    .wrap-padding {
+        padding: 28px !important;
+    }
+
+    .collapse-details {
+        position: absolute;
+        top: 19px;
+        right: 24px;
+    }
+
+    .attachment-name {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+    }
+
+    .wrf {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+    }
+
+    .download {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: #2196f3;
+    }
+
+    .details-content {
+        &--item {
+            display: flex;
+
+            &--value {
+                font-family: 'Open Sans', sans-serif !important;
+                font-size: 14px;
+                font-weight: normal;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: 1.5;
+                letter-spacing: normal;
+                color: rgba(0, 0, 0, 0.87);
+
+                a {
+                    font-size: 14px;
+                    font-weight: 600;
+                    font-stretch: normal;
+                    font-style: normal;
+                    line-height: 1.5;
+                    letter-spacing: normal;
+                    color: #2196f3;
+                }
+
+                &--status {
+                    min-width: 80px;
+                    display: inline-block;
+                }
+
+                &--icon {
+                    min-width: 100px;
+                    display: inline-block;
+                    margin-right: 28px;
+                    .v-icon{
+                       font-size: 12px;
+                        object-fit: contain;
+                    }
+                }
+            }
+
+            &--key {
+                height: 24px;
+                font-family: 'Open Sans', sans-serif !important;
+                font-size: 14px;
+                font-weight: 600;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: 1.71;
+                letter-spacing: normal;
+                color: rgba(0, 0, 0, 0.87);
+                min-width: 104px;
+                margin-right: 24px;
+            }
+        }
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
     // Threat sharing Content
+    ::v-deep .v-slide-group__content.v-tabs-bar__content:after {
+        content: '';
+        height: 2px;
+        width: 100%;
+        background-color: #e4e7ed;
+        bottom: 0px;
+        left: 0;
+        position: absolute;
+    }
+
     .single-post {
         margin: 15px !important;
         border-radius: 12px;
@@ -934,6 +1103,10 @@
         margin-top: 24px;
         margin-bottom: 40px;
         display: block;
+    }
+
+    ::v-deep .v-window-item {
+        margin-top: 24px;
     }
 
     .threat-sharing-content {
@@ -1264,8 +1437,9 @@
         width: 100%;
         height: 48px;
         padding: 0;
-        background-color: #f5f7fa;
         border-radius: 0 !important;
+        margin-top: 24px;
+        display: inline-block;
 
         ::v-deep .v-slide-group__wrapper {
             padding-left: 0 !important;
@@ -1280,31 +1454,34 @@
         }
 
         ::v-deep .v-tab {
-            font-family: 'Open Sans', sans-serif !important;
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            text-transform: uppercase;
+            width: auto;
+            height: 27px;
+            font-family: Lato;
+            font-size: 22px;
+            font-weight: 500;
             font-stretch: normal;
             font-style: normal;
-            line-height: 1.71;
-            letter-spacing: normal;
-            text-align: center !important;
-            margin-right: 32px !important;
-            padding: 0 !important;
-            padding-right: 3px !important;
-            min-width: auto !important;
+            line-height: normal;
+            letter-spacing: 0.3px;
+            color: #434343 !important;
+            padding-left: 0px;
+            padding-right: 0px;
+            margin-right: 48px;
+        }
+
+        ::v-deep .v-tab--active {
+            color: #2196f3 !important;
         }
 
         ::v-deep .v-tabs-bar {
-            padding: 0 24px;
             height: 48px !important;
             border-radius: 0 !important;
+            margin-top: 24px;
         }
     }
 
     ::v-deep .v-window {
         border-radius: 20px !important;
-        margin: 0 24px !important;
     }
 
     ::v-deep .v-expansion-panel-content {
@@ -1317,6 +1494,12 @@
         border-radius: 12px;
         background-color: #ffffff;
         box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
+        background-color: #ffffff;
+    }
+
+    ::v-deep .no-shadow .v-expansion-panel-content__wrap {
+        border-radius: 0;
+        box-shadow: none;
         background-color: #ffffff;
     }
 
