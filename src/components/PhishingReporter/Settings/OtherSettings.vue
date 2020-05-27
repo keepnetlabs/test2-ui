@@ -514,6 +514,6 @@ export default {
 }
 
 .enterprise-vault-url.enterprise-vault-url-margin {
-  margin-top: 14px !important;
+  padding-top: 14px !important;
 }
 </style>

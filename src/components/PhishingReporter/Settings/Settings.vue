@@ -76,12 +76,9 @@ export default {
       })
       createPhishingReporter(formData)
         .then(response => {
-          debugger
           this.formData = newFormData
         })
-        .catch(error => {
-          debugger
-        })
+        .catch(error => {})
     }
   }
 }

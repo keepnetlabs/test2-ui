@@ -46,7 +46,7 @@
           <v-btn @click="onBtnSelectFileClick" class="btn-select-file mt-2" rounded>
             SELECT FILE
             <input
-              :value="formValues.file"
+              :value="formValues.hiddenFileUploadValue"
               @change="onFileChanged"
               accept="image/gif, image/jpeg, image/png"
               class="d-none"
@@ -233,7 +233,8 @@ export default {
         reportedMessage: '',
         deleteText: '',
         warningLabel: '',
-        deletedMessage: ''
+        deletedMessage: '',
+        hiddenFileUploadValue: ''
       },
       marginStatus: true,
       validations: {
@@ -246,7 +247,7 @@ export default {
       this.$refs.uploader.click()
     },
     onFileChanged(e) {
-      this.formValues.file = e.target.files
+      this.formValues.file = e.target.files[0]
     },
     submit() {
       if (this.$refs.refForm.validate()) {

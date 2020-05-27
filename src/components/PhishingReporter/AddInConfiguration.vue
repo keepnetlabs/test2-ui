@@ -68,7 +68,7 @@
               Installation and configuration guide
             </a>
             <div @click="handleContinue" class="overlay__footer-text">
-              continue
+              Close
             </div>
           </div>
         </v-list-item>

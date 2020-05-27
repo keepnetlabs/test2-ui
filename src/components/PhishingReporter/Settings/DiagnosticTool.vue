@@ -88,9 +88,11 @@
             <div>
               <v-select
                 :class="[isInModal && 'select-in-modal']"
-                :items="[]"
+                :items="timezones"
                 class="diagnostic-tool__select diagnostic-tool__select--timezone"
                 dense
+                item-text="displayName"
+                item-value="id"
                 height="40"
                 outlined
                 placeholder="GMT +3"
@@ -110,18 +112,21 @@
         <v-icon left>mdi-download</v-icon>
         Download diagnostic tool
       </v-btn>
-      <a
-        class="diagnostic-tool__link"
-        href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-        target="_blank"
-      >
-        Installation and configuration guide
-      </a>
+      <div class="diagnostic-tool__link-container">
+        <a
+          class="diagnostic-tool__link"
+          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          target="_blank"
+        >
+          Installation and configuration guide
+        </a>
+      </div>
     </div>
   </v-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'DiagnosticTool',
   props: {
@@ -158,6 +163,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      timezones: 'common/getTimezones'
+    }),
     getDiagnosticToolFormStyle() {
       return this.isInModal && { flexWrap: 'wrap', marginLeft: '16px' }
     }
@@ -176,6 +184,9 @@ export default {
       } ${period.toUpperCase()}`
       //this.$refs.menu.save(this.formValues.time)
     }
+  },
+  created() {
+    this.$store.dispatch('common/getTimezone')
   }
 }
 </script>
@@ -231,6 +242,10 @@ export default {
     margin-top: 16px !important;
   }
 
+  @media (max-width: 768px) {
+    margin-top: 9px !important;
+  }
+
   ::v-deep .v-label {
     font-family: 'Open Sans', sans-serif !important;
     color: rgba(0, 0, 0, 0.87) !important;
@@ -241,6 +256,15 @@ export default {
     line-height: 1.5;
     letter-spacing: normal;
   }
+}
+
+::v-deep .v-time-picker-title__time .v-picker__title__btn,
+.v-time-picker-title__time span {
+  font-size: 50px;
+}
+
+::v-deep .v-picker__title {
+  padding: 0 16px;
 }
 
 ::v-deep .v-list-item__content {
@@ -300,10 +324,13 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     color: #2196f3;
-    flex-basis: 100%;
     text-align: center;
-    display: flex;
-    justify-content: flex-end;
+
+    &-container {
+      display: flex;
+      justify-content: flex-end;
+      flex-basis: 100%;
+    }
   }
 }
 

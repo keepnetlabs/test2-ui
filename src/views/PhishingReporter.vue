@@ -212,6 +212,7 @@ export default {
     getPhishingReport() {
       getPhishingReporter().then(response => {
         const { data } = response
+
         if (data.code === 'RESOURCE_RETRIEVED') {
           this.tabComponent = {
             name: Settings,
