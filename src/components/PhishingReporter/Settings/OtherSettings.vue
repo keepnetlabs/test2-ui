@@ -313,6 +313,8 @@ export default {
       this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText || ''
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
       this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
+      this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
+      this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isOnPremise = isOnPremise || ''
     } else {
