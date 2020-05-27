@@ -1,5 +1,12 @@
 <template>
-  <v-overlay :opacity="0.46" :value="isShow" :z-index="999" fixed>
+  <v-overlay
+    :opacity="1"
+    :value="isShow"
+    :z-index="999"
+    fixed
+    class="delete-user__overlay"
+    color="rgba(0, 0, 0, 0.23)"
+  >
     <v-card
       class="delete-user"
       light
@@ -73,6 +80,7 @@ export default {
 * {
   font-family: 'Open Sans', sans-serif !important;
 }
+
 .delete-user {
   &__title {
     font-size: 20px;
@@ -118,6 +126,11 @@ export default {
       letter-spacing: normal;
       text-align: center;
     }
+  }
+
+  &__overlay {
+    -webkit-backdrop-filter: blur(3px) !important;
+    backdrop-filter: blur(3px) !important;
   }
 }
 .v-cart-icon-wrapper {

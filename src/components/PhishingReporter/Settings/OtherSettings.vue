@@ -1,29 +1,37 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
     <v-form ref="refForm">
-      <v-list-group
-        no-action
-        :class="{'mb-5':marginStatusOptional}"
-      >
+      <v-list-group no-action :class="{ 'margin-status-optional': marginStatusOptional }">
         <template v-slot:activator>
           <v-list-item-content class="list__item" @click="handleMarginStatusForOptional">
-            <div class="list__item__header"> Optional Features</div>
+            <div class="list__item__header">Optional Features</div>
           </v-list-item-content>
         </template>
         <v-list-item>
-          <v-list-item-content style="padding:12px 0 !important;">
+          <v-list-item-content>
             <div>
-              <v-checkbox v-model="formValues.deleteOriginalMail" class="checkbox-text mt-4"
-                          color="#2196f3"
-                          label="Delete Original Email"></v-checkbox>
+              <v-checkbox
+                v-model="formValues.deleteOriginalMail"
+                class="checkbox-text mt-4"
+                color="#2196f3"
+                label="Delete Original Email"
+              ></v-checkbox>
             </div>
             <div>
-              <v-checkbox v-model="formValues.enableProxy" class="checkbox-text" color="#2196f3"
-                          label="Enable proxy"></v-checkbox>
+              <v-checkbox
+                v-model="formValues.enableProxy"
+                class="checkbox-text"
+                color="#2196f3"
+                label="Enable proxy"
+              ></v-checkbox>
             </div>
             <div>
-              <v-checkbox v-model="formValues.isOnPremise" color="#2196f3" class="checkbox-text"
-                          label="On-premise settings"></v-checkbox>
+              <v-checkbox
+                v-model="formValues.isOnPremise"
+                color="#2196f3"
+                class="checkbox-text"
+                label="On-premise settings"
+              ></v-checkbox>
             </div>
             <div class="site-url__container">
               <span class="site-url__message site-url__message--1">Site URL</span>
@@ -33,7 +41,7 @@
                 dense
                 :disabled="!formValues.isOnPremise"
                 class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-1 mt-2"
-                v-model="formValues.siteURL"
+                v-model="formValues.apiUrl"
                 id="site-url"
                 height="40"
                 color="rgba(0, 0, 0, 0.72)"
@@ -55,7 +63,6 @@
             </div>
           </v-list-item-content>
         </v-list-item>
-
       </v-list-group>
       <v-list-item class="px-0 list__item ">
         <v-list-item-content>
@@ -87,33 +94,110 @@
       </v-list-item>
       <v-list-item class="px-0 list__item ">
         <v-list-item-content>
-          <label class="list__item__header" for="super-tip-text">Super Tip</label>
+          <label class="list__item__header" for="no-internet-connection-message"
+            >No Connection Message</label
+          >
           <v-text-field
-            placeholder="Text under the screen tip"
+            placeholder="No internet connection. Please try again later."
             outlined
             dense
             class="other-settings__textfield mt-2"
-            v-model="formValues.superTip"
+            v-model="formValues.noInternetConnectionMessage"
+            id="no-internet-connection-message"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="list__item__header" for="yes-button-text">Yes Button Text</label>
+          <v-text-field
+            placeholder="Yes"
+            outlined
+            dense
+            class="other-settings__textfield mt-2"
+            v-model="formValues.msgBoxBtnYesText"
+            id="yes-button-text"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="list__item__header" for="no-button-text">No Button Text</label>
+          <v-text-field
+            placeholder="No"
+            outlined
+            dense
+            class="other-settings__textfield mt-2"
+            v-model="formValues.msgBoxBtnNoText"
+            id="no-button-text"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="list__item__header" for="cancel-button-text">Cancel Button Text</label>
+          <v-text-field
+            placeholder="Cancel"
+            outlined
+            dense
+            class="other-settings__textfield mt-2"
+            v-model="formValues.msgBoxBtnCancelText"
+            id="cancel-button-text"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="list__item__header" for="okay-button-text">Okay Button Text</label>
+          <v-text-field
+            placeholder="Okay"
+            outlined
+            dense
+            class="other-settings__textfield mt-2"
+            v-model="formValues.msgBoxBtnOkText"
             id="super-tip-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-group
-        no-action
-        :class="{'mb-5':marginStatusOptional}"
-      >
+      <v-list-item class="px-0 list__item ">
+        <v-list-item-content>
+          <label class="list__item__header" for="email-sending-message"
+            >Email Sending Error Message</label
+          >
+          <v-text-field
+            placeholder="Email cannot be sent"
+            outlined
+            dense
+            class="other-settings__textfield mt-2"
+            v-model="formValues.emailSendingErrorMessage"
+            id="email-sending-message"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-group no-action class="mb-6">
         <template v-slot:activator>
           <v-list-item-content>
             <label class="list__item__header" for="alertbox-text">Enterprise Vault</label>
           </v-list-item-content>
         </template>
         <v-list-item>
-          <v-list-item-content style="padding:12px 0 !important;">
-            <v-checkbox v-model="formValues.enableEnterpriseVault" class="checkbox-text mt-2"
-                        @change="handleEnterpriseVaultChange"
-                        color="#2196f3"
-                        label="Enable enterprise vault"></v-checkbox>
+          <v-list-item-content
+            class="enterprise-vault-url"
+            :class="[inModal ? 'enterprise-vault-url-margin' : '']"
+          >
+            <v-checkbox
+              v-model="formValues.enableEnterpriseVault"
+              class="checkbox-text mt-2"
+              @change="handleEnterpriseVaultChange"
+              color="#2196f3"
+              label="Enable enterprise vault"
+            ></v-checkbox>
             <div class="site-url__container">
               <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
               <v-text-field
@@ -122,8 +206,7 @@
                 :disabled="enterpriseVaultDisabled"
                 dense
                 class="list__item__text  other-settings__textfield list__item__text--special  mt-2"
-                v-model="formValues.enterpriseVault"
-
+                v-model="formValues.enterpriseVaultUrl"
                 height="40"
               ></v-text-field>
             </div>
@@ -152,229 +235,287 @@
 </template>
 
 <script>
-  export default {
-    name: "OtherSettings",
-    props: {
-      showFooter: {
-        type: Boolean,
-        value: true
-      }
+export default {
+  name: 'OtherSettings',
+  props: {
+    showFooter: {
+      type: Boolean,
+      default: true
     },
-    data() {
-      return {
-        formValues: {
-          deleteOriginalMail: true,
-          enableProxy: false,
-          isOnPremise: false,
-          siteURL: "",
-          companyId: "",
-          extraMessage: "",
-          screenTip: "",
-          enableEnterpriseVault: false,
-          enterpriseVault: "",
-          superTip: "",
-        },
-        marginStatusOptional: true,
-        enterpriseVaultDisabled: true
-      }
+    formData: {
+      type: Object,
+      default: null
     },
-    methods: {
-      submit() {
-        return this.$refs.refForm.validate() && this.formValues
+    inModal: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      formValues: {
+        deleteOriginalMail: true,
+        enableProxy: false,
+        isOnPremise: false,
+        apiUrl: '',
+        companyId: '',
+        extraMessage: '',
+        screenTip: '',
+        enableEnterpriseVault: false,
+        enterpriseVaultUrl: '',
+        superTip: '',
+        noInternetConnectionMessage: '',
+        msgBoxBtnYesText: '',
+        msgBoxBtnNoText: '',
+        msgBoxBtnCancelText: '',
+        msgBoxBtnOkText: '',
+        emailSendingErrorMessage: ''
       },
-      handleEnterpriseVaultChange(value) {
-        this.enterpriseVaultDisabled = !value
-      },
-      handleMarginStatusForOptional() {
-
-        this.marginStatusOptional = !this.marginStatusOptional
+      marginStatusOptional: true,
+      enterpriseVaultDisabled: true
+    }
+  },
+  methods: {
+    submit() {
+      if (this.$refs.refForm.validate()) {
+        this.$emit('updateForm', this.formValues)
+        return this.formValues
+      } else {
+        return false
       }
     },
-    created() {
-      this.formValues.companyId = localStorage.getItem("companyId")
+    handleEnterpriseVaultChange(value) {
+      this.enterpriseVaultDisabled = !value
+    },
+    handleMarginStatusForOptional() {
+      this.marginStatusOptional = !this.marginStatusOptional
+    }
+  },
+  created() {
+    if (this.formData) {
+      const {
+        companyId,
+        noInternetConnectionMessage,
+        msgBoxBtnYesText,
+        msgBoxBtnNoText,
+        msgBoxBtnOkText,
+        msgBoxBtnCancelText,
+        emailSendingErrorMessage,
+        enterpriseVaultUrl,
+        apiUrl,
+        isOnPremise
+      } = this.formData
+      this.formValues.companyId = companyId || ''
+      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
+      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText || ''
+      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText || ''
+      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText || ''
+      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText || ''
+      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
+      this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
+      this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
+      this.enterpriseVaultDisabled = !enterpriseVaultUrl
+      this.formValues.apiUrl = apiUrl || ''
+      this.formValues.isOnPremise = isOnPremise || ''
+    } else {
+      this.formValues.companyId = localStorage.getItem('companyId')
+      this.formValues.extraMessage = 'Extra message in the dialog boxes'
+      this.formValues.screenTip = 'Popup tooltip text'
+      this.formValues.noInternetConnectionMessage =
+        'No internet connection. Please try again later.'
+      this.formValues.msgBoxBtnYesText = 'Yes'
+      this.formValues.msgBoxBtnNoText = 'No'
+      this.formValues.msgBoxBtnCancelText = 'Cancel'
+      this.formValues.msgBoxBtnOkText = 'Okay'
+      this.formValues.emailSendingErrorMessage = 'Email cannot be sent'
     }
   }
+}
 </script>
 
 <style scoped lang="scss">
-  .list__item {
-    font-family: "Open Sans", sans-serif !important;
+.list__item {
+  font-family: 'Open Sans', sans-serif !important;
 
-    &__text {
-      font-family: "Open Sans", sans-serif !important;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
-
-      &__special {
-        max-width: 365px !important;
-
-        &-1 {
-          margin-left: 25px;
-          margin-right: 47px;
-        }
-
-        &-2 {
-          margin-top: -9px !important;
-        }
-      }
-    }
-
-
-    &__header {
-      @extend .list__item__text;
-      font-size: 20px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    &__sub-header {
-      @extend .list__item__text;
-      font-size: 14px;
-      font-weight: normal;
-      line-height: 1.5;
-    }
-  }
-
-  .checkbox-text {
-    font-size: 14px;
-    font-weight: normal;
+  &__text {
+    font-family: 'Open Sans', sans-serif !important;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
 
-    ::v-deep .v-label {
-      color: rgba(0, 0, 0, 0.87) !important;
-    }
-  }
+    &__special {
+      max-width: 365px !important;
 
-  .other-settings {
-    &__link {
-      font-family: "Open Sans", sans-serif !important;
-      text-transform: uppercase;
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: #2196f3;
-      flex-basis: 100%;
-      text-align: center;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      @media (max-width: 768px) {
-        margin-top: 10px;
-        justify-content: center;
+      &-1 {
+        margin-left: 25px;
+        margin-right: 47px;
       }
-    }
 
-    &__textfield {
-      max-width: 554px;
-    }
-
-    &__footer {
-      display: flex;
-      justify-content: space-between;
-      @media (max-width: 768px) {
-        flex-direction: column;
+      &-2 {
+        margin-top: -9px !important;
       }
     }
   }
 
-  .site-url__container {
-    margin-left: 32px;
-    display: flex;
-    @media (max-width: 768px) {
-      flex-direction: column;
-      margin-left: 0;
-    }
+  &__header {
+    @extend .list__item__text;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
   }
 
-  .site-url__message {
-    opacity: 0.7;
-    font-family: "Open Sans", sans-serif !important;
+  &__sub-header {
+    @extend .list__item__text;
     font-size: 14px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    display: inline-block;
-    margin-right: 21px;
-
-    &--1 {
-      margin-top: 18px !important;
-      margin-right: 47px;
-    }
-
-    &--2 {
-      margin-top: 10px !important;
-      @media (max-width: 768px) {
-        margin-bottom: 10px;
-      }
-    }
-
-    &--3 {
-      margin-top: 17px !important;
-    }
-
   }
+}
 
-  ::v-deep .v-list-item__content {
-    padding: 0 !important;
+.checkbox-text {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+
+  ::v-deep .v-label {
+    color: rgba(0, 0, 0, 0.87) !important;
   }
+}
 
-  .checkbox-text ::v-deep .v-input__slot {
-    margin-bottom: 0 !important;
-    margin-top: -5px;
-  }
-
-  ::v-deep .v-input--selection-controls {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-
-  ::v-deep .v-input--is-disabled .v-input__slot {
-    background-color: #f2f2f2 !important;
-  }
-
-  ::v-deep .v-list-item__content > *:not(:last-child) {
-    margin-bottom: 6px;
-  }
-
-  .btn-util {
-    font-family: "Open Sans", sans-serif !important;
+.other-settings {
+  &__link {
+    font-family: 'Open Sans', sans-serif !important;
+    text-transform: uppercase;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    text-decoration: none;
     font-stretch: normal;
     font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
+    color: #2196f3;
+    flex-basis: 100%;
     text-align: center;
-    color: #ffffff;
-    max-height: 36px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    @media (max-width: 768px) {
+      margin-top: 10px;
+      justify-content: center;
+    }
   }
 
-  ::v-deep {
-    .v-list-item {
-      padding: 0 !important;
-
-      &--active {
-        border-left: none !important;
-      }
-    }
-
-    .v-list-group__header {
-      max-width: 554px;
-    }
-
+  &__textfield {
+    max-width: 554px;
   }
 
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+}
 
+.site-url__container {
+  margin-left: 32px;
+  display: flex;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    margin-left: 0;
+  }
+}
+
+.site-url__message {
+  opacity: 0.7;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  display: inline-block;
+  margin-right: 21px;
+
+  &--1 {
+    margin-top: 18px !important;
+    margin-right: 47px;
+  }
+
+  &--2 {
+    margin-top: 10px !important;
+    @media (max-width: 768px) {
+      margin-bottom: 10px;
+    }
+  }
+
+  &--3 {
+    margin-top: 17px !important;
+  }
+}
+
+::v-deep .v-list-item__content {
+  padding: 0 !important;
+}
+
+.checkbox-text ::v-deep .v-input__slot {
+  margin-bottom: 0 !important;
+  margin-top: -5px;
+}
+
+::v-deep .v-input--selection-controls {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+::v-deep .v-input--is-disabled .v-input__slot {
+  background-color: #f2f2f2 !important;
+}
+
+::v-deep .v-list-item__content > *:not(:last-child) {
+  //margin-bottom: 6px;
+}
+
+.btn-util {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.71;
+  letter-spacing: normal;
+  text-align: center;
+  color: #ffffff;
+  max-height: 36px;
+}
+
+::v-deep {
+  .v-list-item {
+    padding: 0 !important;
+
+    &--active {
+      border-left: none !important;
+    }
+  }
+
+  .v-list-group__header {
+    max-width: 554px;
+  }
+}
+
+.margin-status-optional {
+  margin-bottom: 22px;
+}
+
+.enterprise-vault-url.enterprise-vault-url-margin {
+  padding-top: 14px !important;
+}
 </style>

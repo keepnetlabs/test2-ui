@@ -218,7 +218,7 @@
             </div>
           </div>
         </div>
-        <div class="table-header" v-if="filterable || options">
+        <div class="table-header" v-if="tableData && tableData.length && (filterable || options)">
           <div class="table-search" v-if="filterable">
             <v-text-field
               @mouseover.native="hover = true"
@@ -301,20 +301,20 @@
                 </v-menu>
 
                 <v-btn
-                  class="btn-hover mr-1"
+                  class="btn-add mr-1"
                   icon
                   v-else-if="addUsers && addUsers.show && addUsers.popUp"
                   v-on="on"
                 >
-                  <v-icon @click="isWantToAddUsers = true">mdi-plus-circle</v-icon>
+                  <v-icon @click="isWantToAddUsers = true">mdi-plus</v-icon>
                 </v-btn>
                 <v-btn
-                  class="btn-hover mr-1"
+                  class="btn-add mr-1"
                   icon
                   v-else-if="addUsers && addUsers.show && addUsers.action"
                   v-on="on"
                 >
-                  <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus-circle</v-icon>
+                  <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus</v-icon>
                 </v-btn>
               </template>
               <span class="tooltip-span">Add</span>
@@ -510,7 +510,7 @@
                 <span v-if="scope.row && scope.row[col.property]">
                   {{ scope.row[col.property] }}
                 </span>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -558,7 +558,7 @@
                     </p>
                   </v-tooltip>
                 </span>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -633,7 +633,7 @@
                     <p class="tooltip-line">{{ chartOptions.labels[index] }} : {{ item }}</p>
                   </template>
                 </v-tooltip>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -683,7 +683,7 @@
                   v-if="scope.row && scope.row[col.property]"
                   >{{ scope.row.detected }}
                 </v-btn>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -710,9 +710,39 @@
                   v-if="scope.row && scope.row[col.property]"
                   >{{ scope.row.userStatus }}
                 </v-btn>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
+
+            <el-table-column
+              :align="col.align"
+              :fixed="col.fixed"
+              :key="col.property + ind"
+              :label="col.label"
+              :minWidth="col.minWidth || ''"
+              :prop="col.property"
+              :sortable="col.sortable"
+              :width="col.width || ''"
+              v-for="(col, ind) of columns"
+              v-if="col.type === 'fiber' && col.show"
+            >
+              <template slot-scope="scope">
+                <div class="fiber__container">
+                  <div class="fiber__item">
+                    <template v-if="scope.row.addInStatus === 'Online'">
+                      <img src="../assets/img/fiber-manual-record-online.svg" />
+                    </template>
+                    <template v-else>
+                      <img src="../assets/img/fiber-manual-record-offline.svg" />
+                    </template>
+                  </div>
+                  <div>
+                    {{ scope.row[col.property] }}
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+
             <el-table-column
               :align="col.align"
               :fixed="col.fixed"
@@ -794,7 +824,7 @@
               v-if="col.type === 'status' && col.show"
             >
               <template slot-scope="scope">
-                <v-tooltip bottom opacity="1">
+                <v-tooltip bottom opacity="col.hasTooltip ? 1 : 0">
                   <template v-slot:activator="{ on }">
                     <v-btn
                       :class="[
@@ -824,17 +854,18 @@
                         scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
                         scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
                         scope.row.status === 'N/A' ? 'btn-none' : '',
+
                         col.fullWidth ? 'full-width' : ''
                       ]"
                       block
                       rounded
                       v-if="scope.row && scope.row[col.property]"
                       v-on="on"
-                      >{{ scope.row.status }}
+                      >{{ scope.row.status || 'Empty' }}
                     </v-btn>
-                    <span v-else>Empty</span>
+                    <span v-else>-</span>
                   </template>
-                  <span class="tooltip-span" v-if="col.hasTooltip">{{ scope.row.status }}</span>
+                  <span class="tooltip-span">{{ scope.row.status || 'Empty' }}</span>
                 </v-tooltip>
               </template>
             </el-table-column>
@@ -873,7 +904,7 @@
                       v-on="on"
                       >{{ scope.row.priority }}
                     </v-btn>
-                    <span v-else>Empty</span>
+                    <span v-else>-</span>
                   </template>
                   <span class="tooltip-span" v-if="col.hasTooltip">{{ scope.row.priority }}</span>
                 </v-tooltip>
@@ -2384,6 +2415,22 @@ export default {
 
 .full-width {
   width: 100% !important;
+}
+
+.fiber {
+  &__container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: -8px;
+  }
+
+  &__item {
+    > img {
+      margin-top: 7px;
+      margin-right: 3px;
+    }
+  }
 }
 
 /*.date-format {

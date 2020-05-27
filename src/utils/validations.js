@@ -3,7 +3,9 @@ export function hasValue(value) {
 }
 
 export function maxLength(value, length, message) {
-  return (value.length < length) || message
+  //length patlamasın diye.
+  value = value !== null && value !== undefined ? value : ''
+  return value.length < length || message
 }
 
 export function mail(value, message) {

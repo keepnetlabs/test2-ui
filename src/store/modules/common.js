@@ -1,3 +1,5 @@
+import { getTimezones } from '../../api/common'
+
 const common = {
   namespaced: true,
   state: {
@@ -7,7 +9,8 @@ const common = {
     snackbarColor: 'red',
     errors: '',
     errorState: false,
-    downloadModalStatus: false
+    downloadModalStatus: false,
+    timezones: []
   },
   getters: {
     getMenuStatus: state => state.menuStatus,
@@ -16,7 +19,8 @@ const common = {
     getColor: state => state.snackbarColor,
     getErrors: state => state.errors,
     getErrorStatus: state => state.errorState,
-    getDownloadModalStatus: state => state.downloadModalStatus
+    getDownloadModalStatus: state => state.downloadModalStatus,
+    getTimezones: state => state.timezones
   },
   mutations: {
     CHANGE_MENU_STATUS(state, payload) {
@@ -39,6 +43,9 @@ const common = {
     },
     SET_DOWNLOAD_MODAL_STATUS(state, payload) {
       state.downloadModalStatus = payload
+    },
+    SET_TIMEZONE(state, payload) {
+      state.timezones = payload
     }
   },
   actions: {
@@ -63,6 +70,11 @@ const common = {
     },
     changeDownloadModalStatus({ commit }, payload) {
       commit('SET_DOWNLOAD_MODAL_STATUS', payload)
+    },
+    getTimezone({ commit }) {
+      getTimezones().then(response => {
+        commit('SET_TIMEZONE', response.data.data)
+      })
     }
   }
 }
