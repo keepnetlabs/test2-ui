@@ -510,7 +510,7 @@
                 <span v-if="scope.row && scope.row[col.property]">
                   {{ scope.row[col.property] }}
                 </span>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -558,7 +558,7 @@
                     </p>
                   </v-tooltip>
                 </span>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -633,7 +633,7 @@
                     <p class="tooltip-line">{{ chartOptions.labels[index] }} : {{ item }}</p>
                   </template>
                 </v-tooltip>
-                <span v-else>No Data</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -683,7 +683,7 @@
                   v-if="scope.row && scope.row[col.property]"
                   >{{ scope.row.detected }}
                 </v-btn>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -710,7 +710,7 @@
                   v-if="scope.row && scope.row[col.property]"
                   >{{ scope.row.userStatus }}
                 </v-btn>
-                <span v-else>Empty</span>
+                <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -832,7 +832,7 @@
                       v-on="on"
                       >{{ scope.row.status }}
                     </v-btn>
-                    <span v-else>Empty</span>
+                    <span v-else>-</span>
                   </template>
                   <span class="tooltip-span">{{ scope.row.status }}</span>
                 </v-tooltip>
@@ -873,7 +873,7 @@
                       v-on="on"
                       >{{ scope.row.priority }}
                     </v-btn>
-                    <span v-else>Empty</span>
+                    <span v-else>-</span>
                   </template>
                   <span class="tooltip-span" v-if="col.hasTooltip">{{ scope.row.priority }}</span>
                 </v-tooltip>

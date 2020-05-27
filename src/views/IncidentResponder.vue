@@ -278,6 +278,7 @@
           @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
           @irPreview="irPreviewOnClick"
           @handleInvestigate="handleReportedEmailInvestigate"
+          @handleDetails="irDetailsOnClick"
         />
       </v-card>
     </div>
@@ -514,7 +515,7 @@ export default {
         {
           name: 'Details',
           icon: 'mdi-text-box-multiple',
-          action: ''
+          action: 'handleDetails'
         },
         {
           name: 'Investigate',
@@ -536,7 +537,6 @@ export default {
       selectEvent: {
         clipboard: true,
         edit: true,
-        delete: true,
         download: true
       },
       chartOptions: {
@@ -618,11 +618,11 @@ export default {
         this.$refs.refReportedEmails.loadWithDataArray(results || [])
       })
       .catch(error => {
-        this.$store.dispatch('common/createSnackBar', {
+        /*this.$store.dispatch('common/createSnackBar', {
           errorState: true,
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the notified emails!'
-        })
+        })*/
       })
   },
   methods: {
@@ -640,7 +640,13 @@ export default {
     },
     irPreviewOnClick(row) {
       this.$router.push({
-        name: 'Incident Responder Details',
+        name: 'Analysis Details',
+        params: { id: row.resourceId }
+      })
+    },
+    irDetailsOnClick(row){
+      this.$router.push({
+        name: 'Analysis Details',
         params: { id: row.resourceId }
       })
     },

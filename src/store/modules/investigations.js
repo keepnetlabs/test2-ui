@@ -159,11 +159,11 @@ const investigations = {
 
         })
         .catch(() => {
-          dispatch('common/createSnackBar', {
+          /*dispatch('common/createSnackBar', {
             errorState: true,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting investigation details'
-          }, {root: true})
+          }, {root: true})*/
         })
     },
     async getInvestigationDetailsListData({commit, dispatch}, obj) {
@@ -194,11 +194,11 @@ const investigations = {
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
         .catch(() => {
-          dispatch('common/createSnackBar', {
+          /*dispatch('common/createSnackBar', {
             errorState: true,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting investigation details'
-          }, {root: true})
+          }, {root: true})*/
         })
     },
     async getStatsAndMenuData({commit, dispatch}, id) {
@@ -228,11 +228,11 @@ const investigations = {
 
         })
         .catch(() => {
-          dispatch('common/createSnackBar', {
+          /*dispatch('common/createSnackBar', {
             errorState: true,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting investigation details'
-          }, {root: true})
+          }, {root: true})*/
         })
     },
     async getIrSummary({commit, dispatch}, obj) {

@@ -15,7 +15,7 @@
             <v-tabs-items v-show="postDetail.Data && postDetail.IsSuccess" v-model="tab">
                 <v-tab-item>
                     <div class="details-content">
-                        <div class="details-content--item">
+                        <div class="details-content--item mb-4">
                             <div class="details-content--item--key">
                                 To
                             </div>
@@ -23,7 +23,7 @@
                                 sedatozdemirtest3@outlook.com
                             </div>
                         </div>
-                        <div class="details-content--item">
+                        <div class="details-content--item mb-4">
                             <div class="details-content--item--key">
                                 From
                             </div>
@@ -31,7 +31,7 @@
                                 ets@securelogout.com
                             </div>
                         </div>
-                        <div class="details-content--item">
+                        <div class="details-content--item mb-4">
                             <div class="details-content--item--key">
                                 Subject
                             </div>
@@ -39,7 +39,7 @@
                                 File Format Exploits
                             </div>
                         </div>
-                        <div class="details-content--item">
+                        <div class="details-content--item mb-4">
                             <div class="details-content--item--key">
                                 Analysis Date
                             </div>
@@ -288,150 +288,298 @@
                         />
                     </div>
                 </v-tab-item>
-                <v-tab-item class="v-expansion-panel-content__wrap wrap-padding">
-                    <div class="ed-title">
-                        <v-tooltip bottom opacity="1">
-                            <template v-slot:activator="{ on }">
-                                <div class="d-flex">
-                                    <p class="mr-6 attachment-name">Attachment Name</p>
-                                    <p class="mr-6 wrf">watermark_master.wcf</p>
-                                    <p class="mr-6 cursor-pointer download">
-                                        <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                                        Download file
-                                    </p>
-                                </div>
-                            </template>
-                        </v-tooltip>
-                    </div>
-                    <div class="flex-grow-1"></div>
-                    <div class="ed-header-btn-1 collapse-details">
-                        <v-expansion-panel-header
-                                class="pa-0"
-                                style="min-height: 36px;"
-                                disable-icon-rotate
-                                id="email-details-expansion-header"
+                <v-tab-item>
+                    <div class="attachment-analysis-item">
+                        <div class="ed-title">
+                            <v-tooltip bottom opacity="1">
+                                <template v-slot:activator="{ on }">
+                                    <div class="d-flex">
+                                        <p class="mr-6 attachment-name">Attachment Name</p>
+                                        <p class="mr-6 wrf">watermark_master.wcf</p>
+                                        <p class="mr-6 cursor-pointer download">
+                                            <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                                            Download file
+                                        </p>
+                                    </div>
+                                </template>
+                            </v-tooltip>
+                        </div>
+                        <div class="flex-grow-1"></div>
+                        <div class="ed-header-btn-1 collapse-details">
+                            <v-expansion-panel-header
+                                    class="pa-0"
+                                    style="min-height: 36px;"
+                                    disable-icon-rotate
+                                    id="email-details-expansion-header"
+                            >
+                                <template v-slot:actions mandatory="true">
+                                    <v-btn
+                                            v-if="showFirstCollapse"
+                                            @click.native="showFirstCollapse = false"
+                                            outlined
+                                            rounded
+                                            medium
+                                            color="blue"
+                                    >COLLAPSE
+                                    </v-btn>
+                                    <v-btn
+                                            v-else
+                                            @click.native="showFirstCollapse = true"
+                                            outlined
+                                            rounded
+                                            medium
+                                            color="blue"
+                                    >EXPAND
+                                    </v-btn>
+                                </template>
+                            </v-expansion-panel-header>
+                        </div>
+                        <v-expansion-panel-content
+                                v-if="showFirstCollapse"
+                                eager
+                                transition="scale-transition"
+                                class="pa-0 no-shadow"
                         >
-                            <template v-slot:actions mandatory="true">
-                                <v-btn
-                                        v-if="showFirstCollapse"
-                                        @click.native="showFirstCollapse = false"
-                                        outlined
-                                        rounded
-                                        medium
-                                        color="blue"
-                                >COLLAPSE
-                                </v-btn>
-                                <v-btn
-                                        v-else
-                                        @click.native="showFirstCollapse = true"
-                                        outlined
-                                        rounded
-                                        medium
-                                        color="blue"
-                                >EXPAND
-                                </v-btn>
-                            </template>
-                        </v-expansion-panel-header>
-                    </div>
-                    <v-expansion-panel-content
-                            v-if="showFirstCollapse"
-                            eager
-                            transition="scale-transition"
-                            class="pa-0 no-shadow"
-                    >
-                        <div class="details-content">
-                            <div class="details-content--item mb-4 mt-4">
-                                <div class="details-content--item--key text-right">
-                                    SHA512
+                            <div class="details-content">
+                                <div class="details-content--item mb-4 mt-4">
+                                    <div class="details-content--item--key text-right">
+                                        SHA512
 
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        ad332bacf12da20cdcf84c6ed5dd590a8cb428acd1f636fc1a5c9fb4cf06e584b3b3c2fc97b6e0bab2d27cea60d13cd053ade7e7f2cb0aaa7117d9b1401a37a0
+                                    </div>
                                 </div>
-                                <div class="details-content--item--value">
-                                    ad332bacf12da20cdcf84c6ed5dd590a8cb428acd1f636fc1a5c9fb4cf06e584b3b3c2fc97b6e0bab2d27cea60d13cd053ade7e7f2cb0aaa7117d9b1401a37a0
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        MD5
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        1f0e84c265ebe2911565c091afa36df9
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="details-content--item mb-4">
-                                <div class="details-content--item--key text-right">
-                                    MD5
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        Content Type
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        application/octet-stream
+                                    </div>
                                 </div>
-                                <div class="details-content--item--value">
-                                    1f0e84c265ebe2911565c091afa36df9
-                                </div>
-                            </div>
-                            <div class="details-content--item mb-4">
-                                <div class="details-content--item--key text-right">
-                                    Content Type
-                                </div>
-                                <div class="details-content--item--value">
-                                    application/octet-stream
-                                </div>
-                            </div>
-                            <div class="details-content--item mb-4">
-                                <div class="details-content--item--key text-right">
-                                    VirusTotal
-                                </div>
-                                <div class="details-content--item--value">
-                                    <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
-                                    <span class="details-content--item--value--icon">
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        VirusTotal
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
+                                        <span class="details-content--item--value--icon">
                                         <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
                                         <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
                                     </span>
-                                    <a>DETAILS</a>
+                                        <a>DETAILS</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="details-content--item mb-4">
-                                <div class="details-content--item--key text-right">
-                                    Valkyrie
-                                </div>
-                                <div class="details-content--item--value">
-                                    <span class="details-content--item--value--status">Clean</span>
-                                    <span class="details-content--item--value--icon">
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        Valkyrie
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status">Clean</span>
+                                        <span class="details-content--item--value--icon">
                                         <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
                                         <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
                                         <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="details-content--item mb-4">
-                                <div class="details-content--item--key text-right">
-                                    Roksit
-                                </div>
-                                <div class="details-content--item--value">
-                                    <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
-                                    <span class="details-content--item--value--icon">
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        Roksit
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
+                                        <span class="details-content--item--value--icon">
                                         <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
                                         <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
                                     </span>
-                                    <a>DETAILS</a>
+                                        <a>DETAILS</a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="details-content--item mb-4">
-                                <div class="details-content--item--key text-right">
-                                    PhishTank
-                                </div>
-                                <div class="details-content--item--value">
-                                    <span class="details-content--item--value--status">Clean</span>
-                                    <span class="details-content--item--value--icon">
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        PhishTank
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status">Clean</span>
+                                        <span class="details-content--item--value--icon">
                                         <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
                                         <v-icon color="#e0e0e0" class="selection-icons">mdi-pound</v-icon>
                                         <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
                                     </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="details-content--item">
-                                <div class="details-content--item--key text-right">
-                                    Hybrid Analysis
-                                </div>
-                                <div class="details-content--item--value">
-                                    <span class="details-content--item--value--status" style="color: #b06000">Malicious</span>
-                                    <span class="details-content--item--value--icon">
+                                <div class="details-content--item">
+                                    <div class="details-content--item--key text-right">
+                                        Hybrid Analysis
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status" style="color: #b06000">Malicious</span>
+                                        <span class="details-content--item--value--icon">
                                         <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
                                         <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
                                         <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
                                     </span>
+                                    </div>
                                 </div>
                             </div>
+                        </v-expansion-panel-content>
+                    </div>
+                    <div class="attachment-analysis-item">
+                        <div class="ed-title">
+                            <v-tooltip bottom opacity="1">
+                                <template v-slot:activator="{ on }">
+                                    <div class="d-flex">
+                                        <p class="mr-6 attachment-name">Attachment Name</p>
+                                        <p class="mr-6 wrf">watermark_master.wcf</p>
+                                        <p class="mr-6 cursor-pointer download">
+                                            <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                                            Download file
+                                        </p>
+                                        <p class="mr-6 cursor-pointer not-found">*This file was not uploaded to any integration</p>
+                                    </div>
+                                </template>
+                            </v-tooltip>
                         </div>
-                    </v-expansion-panel-content>
+                        <div class="flex-grow-1"></div>
+                        <div class="ed-header-btn-1 collapse-details">
+                            <v-expansion-panel-header
+                                    class="pa-0"
+                                    style="min-height: 36px;"
+                                    disable-icon-rotate
+                                    id="email-details-expansion-header"
+                            >
+                                <template v-slot:actions mandatory="true">
+                                    <v-btn
+                                            v-if="showSecondCollapse"
+                                            @click.native="showSecondCollapse = false"
+                                            outlined
+                                            rounded
+                                            medium
+                                            color="blue"
+                                    >COLLAPSE
+                                    </v-btn>
+                                    <v-btn
+                                            v-else
+                                            @click.native="showSecondCollapse = true"
+                                            outlined
+                                            rounded
+                                            medium
+                                            color="blue"
+                                    >EXPAND
+                                    </v-btn>
+                                </template>
+                            </v-expansion-panel-header>
+                        </div>
+                        <v-expansion-panel-content
+                                v-if="showSecondCollapse"
+                                eager
+                                transition="scale-transition"
+                                class="pa-0 no-shadow"
+                        >
+                            <div class="details-content">
+                                <div class="details-content--item mb-4 mt-4">
+                                    <div class="details-content--item--key text-right">
+                                        SHA512
+
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        ad332bacf12da20cdcf84c6ed5dd590a8cb428acd1f636fc1a5c9fb4cf06e584b3b3c2fc97b6e0bab2d27cea60d13cd053ade7e7f2cb0aaa7117d9b1401a37a0
+                                    </div>
+                                </div>
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        MD5
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        1f0e84c265ebe2911565c091afa36df9
+                                    </div>
+                                </div>
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        Content Type
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        application/octet-stream
+                                    </div>
+                                </div>
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        VirusTotal
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
+                                        <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                    </span>
+                                        <a>DETAILS</a>
+                                    </div>
+                                </div>
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        Valkyrie
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status">Clean</span>
+                                        <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                                    </span>
+                                    </div>
+                                </div>
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        Roksit
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status" style="color: rgba(219, 37, 37, 0.87)" >Phishing</span>
+                                        <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                    </span>
+                                        <a>DETAILS</a>
+                                    </div>
+                                </div>
+                                <div class="details-content--item mb-4">
+                                    <div class="details-content--item--key text-right">
+                                        PhishTank
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status">Clean</span>
+                                        <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-pound</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                                    </span>
+                                    </div>
+                                </div>
+                                <div class="details-content--item">
+                                    <div class="details-content--item--key text-right">
+                                        Hybrid Analysis
+                                    </div>
+                                    <div class="details-content--item--value">
+                                        <span class="details-content--item--value--status" style="color: #b06000">Malicious</span>
+                                        <span class="details-content--item--value--icon">
+                                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
+                                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
+                                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </v-expansion-panel-content>
+                    </div>
                 </v-tab-item>
             </v-tabs-items>
         </v-expansion-panel-content>
@@ -551,6 +699,7 @@
         },
         data: () => ({
             showFirstCollapse: false,
+            showSecondCollapse: false,
             expanded: false,
             commentOpened: false,
             isWantToShareIncident: false,
@@ -964,6 +1113,20 @@
 
 <style lang="scss" scoped>
 
+    .mdi-attachment{
+        transform: rotate(90deg);
+    }
+    .attachment-analysis-item {
+        border-radius: 20px;
+        box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12);
+        background-color: #ffffff;
+        padding: 26px;
+        position: relative;
+        &:first-child{
+            margin-bottom: 16px;
+        }
+    }
+
     .v-application p {
         margin-bottom: 0;
     }
@@ -1000,8 +1163,18 @@
         color: rgba(0, 0, 0, 0.87);
     }
 
-    .download {
+    .not-found{
         font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(219, 37, 37, 0.87);
+    }
+
+    .download {
         font-size: 14px;
         font-weight: 600;
         font-stretch: normal;
@@ -1458,7 +1631,7 @@
             height: 27px;
             font-family: Lato;
             font-size: 22px;
-            font-weight: 500;
+            font-weight: 600;
             font-stretch: normal;
             font-style: normal;
             line-height: normal;
@@ -1467,6 +1640,7 @@
             padding-left: 0px;
             padding-right: 0px;
             margin-right: 48px;
+            text-transform: capitalize !important;
         }
 
         ::v-deep .v-tab--active {

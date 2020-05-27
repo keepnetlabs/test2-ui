@@ -93,7 +93,7 @@ const router = new Router({
         },
         {
           path: '/incident-responder/:id',
-          name: 'Incident Responder Details',
+          name: 'Analysis Details',
           component: EmailDetails,
           meta: {
             isAuthenticated: true
