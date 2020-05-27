@@ -8,7 +8,7 @@ import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import AnalysisDetails from '../views/AnalysisDetails'
-import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import EmailDetails from '../components/IncidentResponder/emailDetails'
 //import SharedIncident from '../views/SharedIncident'
 
 import Test from '../views/Test'
@@ -21,6 +21,7 @@ import PhishingReporter from '../views/PhishingReporter'
 import Integrations from '../views/Integrations'
 import Playbook from '../views/Playbook'
 import store from '../store'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -58,7 +59,9 @@ const router = new Router({
           component: ThreatSharing,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/community/:name',
@@ -66,7 +69,9 @@ const router = new Router({
           component: Community,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/target-users',
@@ -82,7 +87,19 @@ const router = new Router({
           component: IncidentResponder,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/incident-responder/:id',
+          name: 'Analysis Details',
+          component: EmailDetails,
+          meta: {
+            isAuthenticated: true
+          },
+          props: true,
+          params: true
         },
         {
           path: '/phishing-reporter',
@@ -90,7 +107,9 @@ const router = new Router({
           component: PhishingReporter,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/integrations',
@@ -98,7 +117,9 @@ const router = new Router({
           component: Integrations,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/playbook',
@@ -106,7 +127,9 @@ const router = new Router({
           component: Playbook,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/investigations',
@@ -114,7 +137,8 @@ const router = new Router({
           component: InvestigationComponent,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true
         },
         {
           path: '/investigation-details/:id',
@@ -122,7 +146,9 @@ const router = new Router({
           component: InvestigationDetailsComponent,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/analysis-details',
@@ -130,7 +156,9 @@ const router = new Router({
           component: AnalysisDetails,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/test',

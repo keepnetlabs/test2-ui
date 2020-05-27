@@ -481,7 +481,8 @@ export default {
     'isEdit',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
-    'investigationDetailsData'
+    'investigationDetailsData',
+  
   ],
   methods: {
     checkCheckboxValidation() {
@@ -897,6 +898,7 @@ export default {
     allowedDates(val) {
       // return val < this.endDate;
     },
+    fillForm(row) {},
     checkIsEdit() {
       if (this.isEdit) {
         let _this = this
@@ -962,7 +964,8 @@ export default {
   created() {
     // when the page is created ( vue life cylce) get target users list via vuex
     this.$store.dispatch('investigations/getTargetUsersList').then(() => this.checkIsEdit()) //module name than method name
-  }
+  },
+  mounted() {}
 }
 </script>
 <style lang="scss" scoped>

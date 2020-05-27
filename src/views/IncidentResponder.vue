@@ -14,24 +14,14 @@
       <div
         class="dashboard-cards phishing-reporter mr-2"
         :class="{
-          'no-data__opacity-blue':
-            (irSummary && !irSummary.phishingReporterUserStatusCount) ||
-            (irSummary.phishingReporterUserStatusCount &&
-              !irSummary.phishingReporterUserStatusCount.totalUserCount)
+          'no-data__opacity-blue': isPhishingEmpty(irSummary)
         }"
       >
         <div class="card-header">
           <span class="head">Phishing Reporter</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div
-          class="columns-row__body"
-          v-if="
-            irSummary &&
-              irSummary.phishingReporterUserStatusCount &&
-              irSummary.phishingReporterUserStatusCount.totalUserCount
-          "
-        >
+        <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
           <div class="card-body">
             <span class="biggest">{{
               (irSummary &&
@@ -56,7 +46,12 @@
           <div class="card-footer no-data-text">
             Add-in isn’t installed at any users’ account, yet
           </div>
-          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded>
+          <button
+            class="btn-action btn-playbook btn-playbook__no-data"
+            block
+            rounded
+            @click="emptyPhishingButtonClick"
+          >
             Start Now
           </button>
         </div>
@@ -67,24 +62,14 @@
       <div
         class="dashboard-cards incident-analysis mr-2"
         :class="{
-          'no-data__opacity-red':
-            (irSummary && !irSummary.notifiedEmailResultCount) ||
-            (irSummary.notifiedEmailResultCount &&
-              !irSummary.notifiedEmailResultCount.maliciousCount)
+          'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
         }"
       >
         <div class="card-header">
           <span class="head">Incident Analysis</span>
           <v-icon color="#fff">mdi-open-in-new</v-icon>
         </div>
-        <div
-          class="columns-row__body"
-          v-if="
-            irSummary &&
-              irSummary.notifiedEmailResultCount &&
-              irSummary.phishingReporterUserStatusCount.totalUserCount
-          "
-        >
+        <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
           <div class="card-body">
             <span class="biggest">{{
               (irSummary &&
@@ -107,9 +92,10 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">You haven’t analysed any emails, yet</div>
-          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded>
+          <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
+                  @click="emptyNotifiedEmailButtonClick">
             Start Now
-          </button>
+          </button>-->
         </div>
         <div class="bg-image">
           <img src="../assets/img/ic-warning.svg" />
@@ -117,7 +103,9 @@
       </div>
       <div
         class="dashboard-cards investigations mr-2"
-        :class="{ 'no-data__opacity-green': !investigationListData.length }"
+        :class="{
+          'no-data__opacity-green': investigationListData && !investigationListData.length
+        }"
       >
         <div class="card-header">
           <span class="head">Investigations</span>
@@ -148,7 +136,12 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">You haven’t started any investigations, yet</div>
-          <button class="btn-action btn-playbook btn-playbook__no-data" block rounded>
+          <button
+            class="btn-action btn-playbook btn-playbook__no-data"
+            block
+            rounded
+            @click="emptyInvestigationButtonClick"
+          >
             Start Now
           </button>
         </div>
@@ -184,7 +177,12 @@
               <p>Most triggered rules from Playbook</p>
             </div>
             <div class="action">
-              <v-btn class="btn-action btn-playbook" block rounded>
+              <v-btn
+                class="btn-action btn-playbook"
+                block
+                rounded
+                @click="$router.push('/playbook')"
+              >
                 Playbook
                 <v-icon class="pl-2">mdi-arrow-right</v-icon>
               </v-btn>
@@ -206,6 +204,7 @@
               :empty="topRules.iEmpty"
               :selectEvent="topRules.selectEvent"
               :border="false"
+              @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
             />
           </div>
         </v-card>
@@ -276,6 +275,10 @@
           :empty="emails.iEmpty"
           :groupable="true"
           :selectEvent="emails.selectEvent"
+          @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
+          @irPreview="irPreviewOnClick"
+          @handleInvestigate="handleReportedEmailInvestigate"
+          @handleDetails="irDetailsOnClick"
         />
       </v-card>
     </div>
@@ -332,7 +335,8 @@ export default {
           sortable: false,
           show: true,
           type: 'status',
-          minWidth: '30'
+          minWidth: '30',
+          hasTooltip: true
         }
       ],
       iEmpty: {
@@ -397,7 +401,7 @@ export default {
       },
       iEmpty: {
         message: "There isn't any investigations, yet",
-        btn: 'Start an Investigation',
+        btn: 'START A NEW INVESTIGATION',
         icon: 'mdi-plus'
       },
       selectEvent: {},
@@ -415,7 +419,18 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: '300'
+          width: '300',
+          editType: {
+            type: 'select',
+            options: [
+              { label: 'NonMalicious', value: 1 },
+              {
+                label: 'Malicious',
+                value: 2
+              },
+              { label: 'Phishing', value: 3 }
+            ]
+          }
           //minWidth: 80
         },
         {
@@ -463,7 +478,12 @@ export default {
           sortable: false,
           show: true,
           type: 'status',
-          width: '150'
+          width: '150',
+          dataArray: [
+            { label: '', value: '' },
+            { label: '', value: '' },
+            { label: '', value: '' }
+          ]
           // minWidth: 80
         },
         {
@@ -490,17 +510,17 @@ export default {
         {
           name: 'Preview',
           icon: 'mdi-eye',
-          action: ''
+          action: 'irPreview'
         },
         {
           name: 'Details',
           icon: 'mdi-text-box-multiple',
-          action: ''
+          action: 'handleDetails'
         },
         {
           name: 'Investigate',
           icon: 'mdi-magnify',
-          action: ''
+          action: 'handleInvestigate'
         }
       ],
       addMenu: {
@@ -511,13 +531,12 @@ export default {
         message: "There isn't any reported mail, yet",
         subMes:
           'Emails that are reported by your users via Keepnet Phishing Reporter add-in analysed and listed here',
-        btn: 'Phishing Reporter Settings',
+        btn: 'PHISHING REPORTER SETTINGS',
         icon: 'mdi-arrow-right'
       },
       selectEvent: {
         clipboard: true,
         edit: true,
-        delete: true,
         download: true
       },
       chartOptions: {
@@ -558,7 +577,7 @@ export default {
           data: { data, status }
         } = response
         this.investigationListData = data
-        this.$refs.refRecentInv.loadWithDataArray(data)
+        this.$refs.refRecentInv.loadWithDataArray(data || [])
       })
       .catch(error => {
         this.$store.dispatch('common/createSnackBar', {
@@ -572,7 +591,7 @@ export default {
         const {
           data: { data, status }
         } = response
-        this.$refs.refTopRules.loadWithDataArray(data)
+        this.$refs.refTopRules.loadWithDataArray(data || [])
       })
       .catch(error => {
         this.$store.dispatch('common/createSnackBar', {
@@ -596,14 +615,14 @@ export default {
           }
         } = response
 
-        this.$refs.refReportedEmails.loadWithDataArray(results)
+        this.$refs.refReportedEmails.loadWithDataArray(results || [])
       })
       .catch(error => {
-        this.$store.dispatch('common/createSnackBar', {
+        /*this.$store.dispatch('common/createSnackBar', {
           errorState: true,
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the notified emails!'
-        })
+        })*/
       })
   },
   methods: {
@@ -611,9 +630,73 @@ export default {
       getCurrentUser: 'auth/getCurrentUser'
     }),
     onEmptyBtnClicked() {
-      this.openInvestigationOverlay = true
+      this.$router.push({ path: '/investigations', query: { openPopup: true } })
+    },
+    onTopRulesEmptyBtnClicked() {
+      this.$router.push({ path: '/playbook', query: { openPopup: true } })
+    },
+    onEmptyReportedEmailsBtnClicked() {
+      this.$router.push({ path: '/phishing-reporter', hash: '#settings' })
+    },
+    irPreviewOnClick(row) {
+      this.$router.push({
+        name: 'Analysis Details',
+        params: { id: row.resourceId }
+      })
+    },
+    irDetailsOnClick(row){
+      this.$router.push({
+        name: 'Analysis Details',
+        params: { id: row.resourceId }
+      })
+    },
+    isPhishingEmpty(data) {
+      if (data && !data.phishingReporterUserStatusCount) {
+        return true
+      } else if (
+        data &&
+        data.phishingReporterUserStatusCount &&
+        data.phishingReporterUserStatusCount.totalUserCount
+      ) {
+        return false
+      } else {
+        return true
+      }
+    },
+    isNotifiedEmailEmpty(data) {
+      if (data && !data.notifiedEmailResultCount) {
+        return true
+      } else if (
+        data &&
+        data.notifiedEmailResultCount &&
+        data.notifiedEmailResultCount.maliciousCount
+      ) {
+        return false
+      } else {
+        return true
+      }
+    },
+    handleReportedEmailInvestigate(row) {
+      console.log('row', row)
+      this.$router.push({
+        name: 'Investigations',
+        params: {
+          selectedEmail: row,
+          isSelectedEmail: true
+        }
+      })
+    },
+    emptyPhishingButtonClick() {
+      this.$router.push('/phishing-reporter')
+    },
+    emptyNotifiedEmailButtonClick() {
+      //this.$router.push('/phishing-reporter')
+    },
+    emptyInvestigationButtonClick() {
+      this.$router.push('/investigations')
     }
   },
+
   beforeRouteLeave(to, from, next) {
     if (this.openInvestigationOverlay) {
       this.openInvestigationOverlay = false
@@ -1066,6 +1149,7 @@ export default {
     font-size: 12px !important;
   }
 }
+
 ::v-deep .newInvestigationOverlay {
   background-color: #fff !important;
   overflow: auto !important;
@@ -1080,6 +1164,7 @@ export default {
     height: auto;
     width: 100%;
   }
+
   .v-overlay__content {
     height: 100%;
     position: absolute;

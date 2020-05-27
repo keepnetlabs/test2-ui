@@ -387,7 +387,7 @@
               </router-link>
               <router-link
                 class="breadcrumb-links"
-                to="/analysis-details"
+                to="/incident-responder"
                 v-if="routerName === 'Analysis Details'"
                 >{{ breadcrumbs[3].text }}</router-link
               >
@@ -398,12 +398,6 @@
               >
                 Investigations
               </router-link>
-              <router-link
-                class="breadcrumb-links"
-                to="/analysis-details"
-                v-if="routerName === 'Analysis Details'"
-                >{{ breadcrumbs[3].text }}</router-link
-              >
               <router-link
                 v-if="routerName === 'Target Users'"
                 :to="$route.path"
@@ -1129,6 +1123,7 @@ export default {
   line-height: normal;
   letter-spacing: normal;
   color: rgba(255, 255, 255, 1);
+  text-align:right;
 
   ::v-deep .v-breadcrumbs__item {
     color: white;
