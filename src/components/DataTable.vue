@@ -218,7 +218,7 @@
             </div>
           </div>
         </div>
-        <div class="table-header" v-if="tableData && tableData.length && (filterable || options)" >
+        <div class="table-header" v-if="tableData && tableData.length && (filterable || options)">
           <div class="table-search" v-if="filterable">
             <v-text-field
               @mouseover.native="hover = true"
@@ -865,7 +865,7 @@
                     </v-btn>
                     <span v-else>-</span>
                   </template>
-                  <span class="tooltip-span">{{ scope.row.status }}</span>
+                  <span class="tooltip-span">{{ scope.row.status || 'Empty' }}</span>
                 </v-tooltip>
               </template>
             </el-table-column>
