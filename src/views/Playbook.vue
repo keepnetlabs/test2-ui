@@ -36,7 +36,6 @@
 <script>
 import Rules from '../components/Playbook/Rules'
 
-
 export default {
   name: 'Playbook',
   components: {
@@ -44,19 +43,16 @@ export default {
   },
   data() {
     return {
-      tab: 0,
-
+      tab: 0
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
-    },
+    }
   },
 
-  mounted() {
-
-  }
+  mounted() {}
 }
 </script>
 
