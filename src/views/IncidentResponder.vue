@@ -205,7 +205,8 @@
               :selectEvent="topRules.selectEvent"
               :border="false"
               @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
-            />
+            >
+            </datatable>
           </div>
         </v-card>
       </div>
@@ -644,7 +645,7 @@ export default {
         params: { id: row.resourceId }
       })
     },
-    irDetailsOnClick(row){
+    irDetailsOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',
         params: { id: row.resourceId }
@@ -1110,7 +1111,7 @@ export default {
           0 1px 1px -1px rgba(204, 204, 204, 0.12);
 
         .el-table td {
-          padding: 12px 0 !important;
+          padding: 12px 0;
         }
 
         .btn-status {

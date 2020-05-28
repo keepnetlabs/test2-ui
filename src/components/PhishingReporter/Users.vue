@@ -137,7 +137,7 @@ export default {
             action: 'deleteAction'
           },
           {
-            name: 'Turn',
+            name: 'Turn On',
             icon: 'mdi-power',
             action: 'turnOn'
           }
