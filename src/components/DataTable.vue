@@ -140,29 +140,90 @@
                 v-show="ind === 0"
               >
                 <div
-                  :key="i"
+                  :key="key"
                   class="row-edit-div"
-                  v-for="(obj, i) in item"
-                  v-show="i !== 'id' && i !== 'children'"
+                  v-for="(value, key) in item"
+                  v-show="key !== 'id' && key !== 'children'"
                 >
-                  <label v-if="i !== 'progress' || !editMode">{{ i }}</label>
-                  <span v-if="!editMode && !Array.isArray(item[i]) && i !== 'progress'">{{
-                    obj
-                  }}</span>
+                  <label
+                    :class="[Array.isArray(item[key]) ? 'mt-n5' : '']"
+                    v-if="key !== 'progress' || !editMode"
+                    >{{ getColumnLabel(key, value) }}</label
+                  >
+                  <span
+                    v-if="!editMode && !Array.isArray(item[key]) && key !== 'progress'"
+                    :class="[getColumnLabelClass(key, value)]"
+                    >{{ value }}</span
+                  >
                   <v-text-field
-                    :autofocus="item[i] === multipleSelection[0][columns[0].property]"
-                    :label="JSON.stringify(item[i])"
+                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
+                    :label="columns[ind].label"
                     class="edit-text-field"
                     dense
                     solo
                     v-if="
-                      !multipleValues(i, item[i]) &&
+                      !multipleValues(key, item[key]) &&
                         editMode &&
-                        !Array.isArray(item[i]) &&
-                        i !== 'progress'
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key !== 'priority' &&
+                        key !== 'status' &&
+                        key !== 'detected'
                     "
-                    v-model="item[i]"
+                    v-model="item[key]"
                   />
+                  <v-select
+                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
+                    class="edit-select"
+                    :items="['Very Low', 'Low', 'Medium', 'High', 'Very High']"
+                    dense
+                    solo
+                    v-if="
+                      !multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key === 'priority' &&
+                        key !== 'status' &&
+                        key !== 'detected'
+                    "
+                    v-model="item[key]"
+                  />
+                  <v-select
+                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
+                    class="edit-select"
+                    :items="editableStatusItems"
+                    dense
+                    solo
+                    v-if="
+                      !multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key !== 'priority' &&
+                        key === 'status' &&
+                        key !== 'detected'
+                    "
+                    v-model="item[key]"
+                  />
+                  <v-select
+                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
+                    class="edit-select"
+                    :items="editableDetectedItems"
+                    dense
+                    solo
+                    v-if="
+                      !multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key !== 'priority' &&
+                        key !== 'status' &&
+                        key === 'detected'
+                    "
+                    v-model="item[key]"
+                  />
+
                   <v-text-field
                     class="edit-text-field"
                     dense
@@ -171,30 +232,21 @@
                     placeholder="Multiple Values"
                     solo
                     v-if="
-                      multipleValues(i, item[i]) &&
+                      multipleValues(key, item[key]) &&
                         editMode &&
-                        !Array.isArray(item[i]) &&
-                        i !== 'progress'
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress'
                     "
                   />
-
-                  <apexchart
-                    :options="chartOptions"
-                    :series="item[i]"
-                    :width="chartOptions.chart.width"
-                    v-else-if="Array.isArray(item[i])"
-                  />
-                  <div style="width: 50px;" v-if="i === 'progress' && !editMode">
-                    <span class="progress-per">{{ item[i] }}%</span>
-                    <v-progress-linear
-                      :value="item[i]"
-                      background-color="#b3d4fc"
-                      color="#2196f3"
-                      height="4"
-                      reactive
-                      rounded
-                      width="100"
+                  <div v-else-if="Array.isArray(item[key])" class="popup__apexchart-container">
+                    <apexchart
+                      :options="chartOptions"
+                      :series="item[key]"
+                      :width="chartOptions.chart.width"
                     />
+                  </div>
+                  <div v-if="key === 'progress' && !editMode">
+                    <span class="progress-per">{{ item[key] }}%</span>
                   </div>
                 </div>
               </div>
@@ -488,13 +540,6 @@
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
               :align="col.align"
-              :class-name="[
-                col.property === 'startDate' ||
-                col.property === 'endDate' ||
-                col.property === 'expireDate'
-                  ? 'date-format'
-                  : ''
-              ]"
               :fixed="col.fixed"
               :key="col.property + ind"
               :label="col.label"
@@ -602,7 +647,7 @@
                       </v-btn>
                       <span v-else>-</span>
                     </template>
-                    <span class="tooltip-span" v-if="col.hasTooltip">{{ scope.row.priority }}</span>
+                    <span class="tooltip-span">{{ scope.row.priority || 'Empty' }}</span>
                   </v-tooltip>
                 </div>
               </template>
@@ -834,6 +879,18 @@ export default {
       type: Array,
       required: true
     },
+    editableStatusItems: {
+      type: Array,
+      default: () => {
+        return ['Active', 'Inactive', 'N/A']
+      }
+    },
+    editableDetectedItems: {
+      type: Array,
+      default: () => {
+        return ['Active', 'Inactive', 'N/A']
+      }
+    },
     rowActionsMinWidth: {
       type: Number,
       default: 60
@@ -1054,6 +1111,18 @@ export default {
         default:
           break
       }
+    },
+    getColumnLabelClass(key, value) {
+      if (key === 'priority' || key === 'status' || key === 'detected') {
+        return 'popup__badge'
+      }
+    },
+    getColumnLabel(key, value) {
+      const answer = this.columns.find(item => {
+        return item['property'] === key
+      })
+
+      return (answer && answer.label) || key
     },
     addButtonFunction(action, row) {
       this.$emit(action, row)
@@ -1408,7 +1477,7 @@ export default {
               align-items: center;
               display: flex;
               flex-direction: row;
-              padding-bottom: 6px;
+              padding-bottom: 7px;
 
               ::v-deep .v-input__slot {
                 box-shadow: unset !important;
@@ -2137,6 +2206,15 @@ export default {
   width: 100% !important;
 }
 
+.edit-select {
+  font-size: 13px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+}
+
 /*.date-format {
                       text-align: left !important;
                       span {
@@ -2153,6 +2231,39 @@ export default {
   &--first {
     padding-right: 40px !important;
   }
+}
+
+.popup {
+  &__badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 25px;
+    padding: 6px 6px 6px 6px;
+    border-radius: 4px;
+    color: white;
+    background: #2196f3;
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.13;
+    font-family: 'Open Sans', sans-serif !important;
+    letter-spacing: normal;
+    text-align: center;
+  }
+
+  &__apexchart-container {
+    height: 80px;
+    width: 80px;
+    padding-top: 6px;
+    margin-left: -23px;
+    margin-top: -20px;
+  }
+}
+
+::v-deep .el-table__fixed-body-wrapper {
+  z-index: 2;
 }
 </style>
 <!--
