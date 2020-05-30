@@ -1,11 +1,39 @@
 <template>
   <v-app>
-    <v-snackbar v-model="snackbar" :color="getColor" bottom left :timeout="3000">
-      {{ getErrors }}
-      <v-btn dark text @click="snackbar = false">
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
-    </v-snackbar>
+    <template v-for="(snackbar, index) in snackbars">
+      <v-snackbar
+        :key="snackbar.message"
+        v-model="snackbar.status"
+        :color="snackbar.color"
+        bottom
+        @input="changeSnackbarStatus($event, snackbar)"
+        :style="getSnackBarStyle(snackbar.message, index)"
+        :timeout="3000"
+      >
+        <div class="snackbar__left-column">
+          <div v-if="snackbar.icon">
+            <v-icon color="#fff" size="20px"> {{ snackbar.icon }}</v-icon>
+          </div>
+          <div class="snackbar__message" :class="[snackbar.icon ? 'ml-4' : '']">
+            {{ snackbar.message }}
+          </div>
+        </div>
+        <div class="snackbar__right-column">
+          <v-icon
+            v-if="!snackbar.action"
+            color="#fff"
+            size="20px"
+            @click="changeSnackbarStatus(false, snackbar)"
+            >mdi-close</v-icon
+          >
+          <router-link class="snackbar__action" v-else :to="snackbar.action.link">
+            <v-btn @click.native="changeSnackbarStatus($event, snackbar)" color="#2196f3" rounded>
+              {{ snackbar.action.label }}
+            </v-btn>
+          </router-link>
+        </div>
+      </v-snackbar>
+    </template>
     <v-dialog v-model="feedbackdialog" :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
@@ -688,7 +716,7 @@ export default {
       getMenuStatus: 'common/getMenuStatus',
       getErrors: 'common/getErrors',
       getColor: 'common/getColor',
-      getSnackStatus: 'common/getSnackStatus',
+      snackbars: 'common/getSnackBars',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
       isSessionExpired: 'dashboard/getIsSessionExpired',
       getTourData: 'tour/getTourData',
@@ -753,14 +781,6 @@ export default {
     },
     getUnreadMessages() {
       return this.notificationList.filter(x => x.isSeen == false).length
-    },
-    snackbar: {
-      get() {
-        return this.getSnackStatus
-      },
-      set() {
-        this.setSnackStatus(false)
-      }
     },
     getFullName() {
       if (this.$store.state.auth.user == undefined) {
@@ -849,9 +869,35 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    changeSnackbarStatus(value, snackbar) {
+      this.$store.dispatch('common/closeSnackBar', snackbar)
+    },
     onNotificationSeen(notification) {
       notification.isSeen = true
       this.notificationSeen(notification)
+    },
+    getSnackBarStyle(message, index) {
+      const messageLength = message.trim().length
+      const styleObj = {}
+      if (index >= 1) {
+        styleObj['bottom'] = `${65 * index}px`
+        if (window.outerWidth <= 580) {
+          styleObj['bottom'] = '102px'
+        }
+      } else {
+        styleObj['bottom'] = '5px'
+      }
+      if (messageLength > 40 && messageLength < 60) {
+        styleObj['width'] = '580px'
+      } else if (messageLength > 60) {
+        styleObj['width'] = '580px'
+      } else {
+        styleObj['width'] = '480px'
+      }
+      if (window.outerWidth <= 580) {
+        styleObj['width'] = '95%'
+      }
+      return styleObj
     },
     getFormattedDate() {
       const date1 = new Date('2019-10-24T08:41:23.927')
@@ -1123,7 +1169,7 @@ export default {
   line-height: normal;
   letter-spacing: normal;
   color: rgba(255, 255, 255, 1);
-  text-align:right;
+  text-align: right;
 
   ::v-deep .v-breadcrumbs__item {
     color: white;
@@ -1755,5 +1801,58 @@ button:disabled {
   top: 56px !important;
   min-width: 300px !important;
   width: 300px !important;
+}
+
+::v-deep .v-snack__wrapper {
+  width: 100%;
+}
+::v-deep .v-snack__content {
+  padding: 12px 16px;
+}
+
+.snackbar {
+  &__left-column {
+    display: flex;
+    align-items: center;
+    flex-basis: 85%;
+  }
+  &__right-column {
+  }
+  &__message {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #ffffff;
+  }
+  &__action {
+    text-decoration: none;
+    color: white;
+    margin-right: 5px;
+    ::v-deep .v-btn__content {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    ::v-deep .v-btn {
+      height: 36px !important;
+    }
+  }
+}
+
+::v-deep .v-snack {
+  @media (max-width: 580px) {
+    width: 95% !important;
+  }
 }
 </style>

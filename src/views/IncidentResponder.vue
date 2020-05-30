@@ -582,7 +582,6 @@ export default {
       })
       .catch(error => {
         this.$store.dispatch('common/createSnackBar', {
-          errorState: true,
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the recent investigations! '
         })
@@ -596,7 +595,6 @@ export default {
       })
       .catch(error => {
         this.$store.dispatch('common/createSnackBar', {
-          errorState: true,
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the top rules!'
         })
