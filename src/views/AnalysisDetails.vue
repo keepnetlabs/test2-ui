@@ -456,7 +456,7 @@ export default {
             0 1px 1px -1px rgba(204, 204, 204, 0.12);
 
           .el-table td {
-            padding: 12px 0 !important;
+            padding: 12px 0;
           }
           .btn-status {
             max-width: 100px !important;

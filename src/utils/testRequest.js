@@ -38,7 +38,6 @@ testService.interceptors.response.use(
       store.dispatch(
         'common/createSnackBar',
         {
-          errorState: true,
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: error.response.data.message || error.response.data.Message
         },

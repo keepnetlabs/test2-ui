@@ -6,6 +6,7 @@ const common = {
     menuStatus: true,
     isLoading: 0,
     snackStatus: false,
+    snackbars: [],
     snackbarColor: 'red',
     errors: '',
     errorState: false,
@@ -16,6 +17,7 @@ const common = {
     getMenuStatus: state => state.menuStatus,
     getIsLoading: state => state.isLoading,
     getSnackStatus: state => state.snackStatus,
+    getSnackBars: state => state.snackbars,
     getColor: state => state.snackbarColor,
     getErrors: state => state.errors,
     getErrorStatus: state => state.errorState,
@@ -46,6 +48,14 @@ const common = {
     },
     SET_TIMEZONE(state, payload) {
       state.timezones = payload
+    },
+    SET_CREATE_SNACKBAR(state, payload) {
+      state.snackbars = [...state.snackbars, payload]
+    },
+    SET_CLOSE_SNACKBAR(state, payload) {
+      state.snackbars = state.snackbars.filter(item => {
+        return JSON.stringify(item) !== JSON.stringify(payload)
+      })
     }
   },
   actions: {
@@ -62,11 +72,23 @@ const common = {
       commit('SET_IS_LOADING', payload)
     },
     createSnackBar({ commit }, payload) {
-      const { errorState, color, message } = payload
+      /* params
+      message --> string,
+      icon --> string,
+      color --> string,
+      action --> object { link, label }
+       */
+      commit('SET_CREATE_SNACKBAR', { ...payload, status: true })
+      /*
       commit('SET_SNACK_STATUS', true)
       commit('SET_SNACKBAR_COLOR', color)
       commit('SET_ERROR_STATE', errorState)
       commit('SET_ERROR_MESSAGE', message)
+
+       */
+    },
+    closeSnackBar({ commit }, payload) {
+      commit('SET_CLOSE_SNACKBAR', payload)
     },
     changeDownloadModalStatus({ commit }, payload) {
       commit('SET_DOWNLOAD_MODAL_STATUS', payload)

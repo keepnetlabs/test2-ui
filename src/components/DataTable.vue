@@ -89,19 +89,17 @@
         <div
           class="settings-popup"
           style="width: 360px"
-          v-show="multipleSelection && multipleSelection.length && isWantToEditRow"
+          v-show="copyOfEditedRows && copyOfEditedRows.length && isWantToEditRow"
         >
           <div
             class="inline-wrapper"
-            v-if="multipleSelection && multipleSelection.length && columns && columns.length"
+            v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
           >
             <div class="settings-header">
               <span class="settings-span" v-if="multipleSelection.length === 1">
-                {{ multipleSelection[0][columns[0].property] }}
+                {{ copyOfEditedRows[0][columns[0].property] }}
               </span>
-              <span class="settings-span" v-else
-                >{{ multipleSelection.length }} Items Selected</span
-              >
+              <span class="settings-span" v-else>{{ copyOfEditedRows.length }} Items Selected</span>
               <div class="edit-actions">
                 <v-btn @click="editMode = true" icon v-if="!editMode">
                   <v-icon class="close-icon">mdi-pencil</v-icon>
@@ -110,7 +108,7 @@
                   <v-icon class="close-icon">mdi-close</v-icon>
                 </v-btn>
                 <v-btn
-                  @click="editMode = false"
+                  @click="cancelEditedOnes"
                   class="pl-1 pr-1"
                   color="#f56c6c"
                   dense
@@ -131,70 +129,115 @@
             </div>
             <div
               class="edit-popup-body"
-              v-if="multipleSelection && multipleSelection.length && columns && columns.length"
+              v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
             >
               <div
                 :key="item[columns[ind].property]"
                 class="items-wrapper"
-                v-for="(item, ind) of multipleSelection"
+                v-for="(item, ind) of copyOfEditedRows"
                 v-show="ind === 0"
               >
                 <div
-                  :key="i"
+                  :key="key"
                   class="row-edit-div"
-                  v-for="(obj, i) in item"
-                  v-show="i !== 'id' && i !== 'children'"
+                  v-for="(value, key) in item"
+                  v-show="key !== 'id' && key !== 'children'"
                 >
-                  <label v-if="i !== 'progress' || !editMode">{{ i }}</label>
-                  <span v-if="!editMode && !Array.isArray(item[i]) && i !== 'progress'">{{
-                    obj
-                  }}</span>
+                  <label
+                    :class="[Array.isArray(item[key]) ? 'mt-n5' : '']"
+                    v-if="key !== 'progress' || !editMode"
+                    >{{ getColumnLabel(key, value) }}</label
+                  >
+                  <span
+                    :class="[getColumnLabelClass(key, value)]"
+                    v-if="!editMode && !Array.isArray(item[key]) && key !== 'progress'"
+                    >{{ value }}</span
+                  >
                   <v-text-field
-                    :autofocus="item[i] === multipleSelection[0][columns[0].property]"
-                    :label="JSON.stringify(item[i])"
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :label="columns[ind].label"
                     class="edit-text-field"
                     dense
                     solo
                     v-if="
-                      !multipleValues(i, item[i]) &&
+                      !multipleValues(key, item[key]) &&
                         editMode &&
-                        !Array.isArray(item[i]) &&
-                        i !== 'progress'
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key !== 'priority' &&
+                        key !== 'status' &&
+                        key !== 'detected'
                     "
-                    v-model="item[i]"
+                    v-model="item[key]"
                   />
+                  <v-select
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :items="editablePriorityItems"
+                    class="edit-select"
+                    dense
+                    solo
+                    v-if="
+                      !multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key === 'priority'
+                    "
+                    v-model="item[key]"
+                  />
+                  <v-select
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :items="editableStatusItems"
+                    class="edit-select"
+                    dense
+                    solo
+                    v-if="
+                      !multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key === 'status'
+                    "
+                    v-model="item[key]"
+                  />
+                  <v-select
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :items="editableDetectedItems"
+                    class="edit-select"
+                    dense
+                    solo
+                    v-if="
+                      !multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key === 'detected'
+                    "
+                    v-model="item[key]"
+                  />
+
                   <v-text-field
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :value="multipleEditModels[key]"
+                    @input="handleMultipleEdits(item, key, $event)"
                     class="edit-text-field"
                     dense
-                    disabled
                     label="Multiple Values"
                     placeholder="Multiple Values"
                     solo
                     v-if="
-                      multipleValues(i, item[i]) &&
+                      multipleValues(key, item[key]) &&
                         editMode &&
-                        !Array.isArray(item[i]) &&
-                        i !== 'progress'
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress'
                     "
                   />
-
-                  <apexchart
-                    :options="chartOptions"
-                    :series="item[i]"
-                    :width="chartOptions.chart.width"
-                    v-else-if="Array.isArray(item[i])"
-                  />
-                  <div style="width: 50px;" v-if="i === 'progress' && !editMode">
-                    <span class="progress-per">{{ item[i] }}%</span>
-                    <v-progress-linear
-                      :value="item[i]"
-                      background-color="#b3d4fc"
-                      color="#2196f3"
-                      height="4"
-                      reactive
-                      rounded
-                      width="100"
+                  <div class="popup__apexchart-container" v-else-if="Array.isArray(item[key])">
+                    <apexchart
+                      :options="chartOptions"
+                      :series="item[key]"
+                      :width="chartOptions.chart.width"
                     />
+                  </div>
+                  <div v-if="key === 'progress' && !editMode">
+                    <span class="progress-per">{{ item[key] }}%</span>
                   </div>
                 </div>
               </div>
@@ -488,15 +531,8 @@
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
               :align="col.align"
-              :class-name="[
-                col.property === 'startDate' ||
-                col.property === 'endDate' ||
-                col.property === 'expireDate'
-                  ? 'date-format'
-                  : ''
-              ]"
               :fixed="col.fixed"
-              :key="'company' + ind"
+              :key="col.property + ind"
               :label="col.label"
               :maxWidth="col.maxWidth || ''"
               :minWidth="col.minWidth || ''"
@@ -504,436 +540,145 @@
               :sortable="col.sortable"
               :width="col.width || ''"
               v-for="(col, ind) of columns"
-              v-if="col.type === 'text' && col.show"
+              v-if="col.show"
             >
               <template slot-scope="scope">
-                <span v-if="scope.row && scope.row[col.property]">
-                  {{ scope.row[col.property] }}
-                </span>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :class-name="[
-                col.property === 'startDate' ||
-                col.property === 'endDate' ||
-                col.property === 'expireDate'
-                  ? 'date-format'
-                  : ''
-              ]"
-              :fixed="col.fixed"
-              :key="'company' + ind"
-              :label="col.label"
-              :maxWidth="col.maxWidth || ''"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'array' && col.show"
-            >
-              <template slot-scope="scope">
-                <span v-if="scope.row && scope.row[col.property]">
-                  <span class="mr-2">
-                    {{ scope.row[col.property][0] }}
-                  </span>
-                  <v-tooltip
-                    bottom
-                    max-width="230"
-                    opacity="1"
-                    v-if="scope.row[col.property].length > 1"
-                  >
+                <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
+                <data-table-array :col="col" :scope="scope" v-if="col.type === 'array'" />
+                <data-table-attachment
+                  :col="col"
+                  :scope="scope"
+                  v-else-if="col.type === 'attachment'"
+                />
+                <data-table-chart
+                  :chartOptions="chartOptions"
+                  :col="col"
+                  :scope="scope"
+                  v-if="col.type === 'chart'"
+                />
+                <data-table-detected :col="col" :scope="scope" v-if="col.type === 'detected'" />
+                <data-table-user-status
+                  :col="col"
+                  :scope="scope"
+                  v-if="col.type === 'userStatus'"
+                />
+                <data-table-fiber :col="col" :scope="scope" v-if="col.type === 'fiber'" />
+                <data-table-progress :col="col" :scope="scope" v-if="col.type === 'progress'" />
+                <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
+                <div v-if="col.type === 'status'">
+                  <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                      <div class="external-data" v-on="on">
-                        +{{ scope.row[col.property].length - 1 }}
-                      </div>
+                      <v-btn
+                        :class="[
+                          'btn-status',
+                          scope.row.status === 'Pending' ? 'btn-pending' : '',
+                          scope.row.status === 'Clean' ? 'btn-pending' : '',
+                          scope.row.status === 'Active' ? 'btn-active' : '',
+                          scope.row.status === 'Inactive' ? 'btn-inactive' : '',
+                          scope.row.status === 'Warning' ? 'btn-warning' : '',
+                          scope.row.status === 'Malicious' ? 'btn-warning' : '',
+                          scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
+                          scope.row.status === 'Phishing' ? 'btn-cancelled' : '',
+                          scope.row.status === 'Idle' ? 'btn-cancelled' : '',
+                          scope.row.status === 'None' ? 'btn-none' : '',
+                          scope.row.status === 'Quedued' ? 'btn-none' : '',
+                          scope.row.status === 'Running' ? 'btn-primary' : '',
+                          scope.row.status === 'Expired' ? 'btn-warning' : '',
+                          scope.row.status === 'Completed' ? 'btn-success' : '',
+                          scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
+                          scope.row.status === 'No Match' ? 'btn-no_match' : '',
+                          scope.row.status === 'Finished' ? 'btn-success' : '',
+                          scope.row.status === 'Offline' ? 'btn-warning' : '',
+                          scope.row.status === 'Online' ? 'btn-success' : '',
+                          scope.row.status === 'Disabled' ? 'btn-cancelled' : '',
+                          scope.row.status === 'Network Error' ? 'btn-cancelled' : '',
+                          scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
+                          scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
+                          scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
+                          scope.row.status === 'N/A' ? 'btn-none' : '',
+                          col.fullWidth ? 'full-width' : ''
+                        ]"
+                        block
+                        rounded
+                        v-if="scope.row && scope.row[col.property]"
+                        v-on="on"
+                        >{{ scope.row.status || 'Empty' }}
+                      </v-btn>
+                      <span v-else>-</span>
                     </template>
-                    <p
-                      :key="index"
-                      class="tooltip-line"
-                      v-for="(item, index) in scope.row[col.property]"
-                    >
-                      <span>{{ item }}</span>
-                    </p>
+                    <span class="tooltip-span">
+                      <slot name="tooltipText">
+                        {{ scope.row.status || 'Empty' }}
+                      </slot>
+                    </span>
                   </v-tooltip>
-                </span>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :class-name="[
-                col.property === 'startDate' ||
-                col.property === 'endDate' ||
-                col.property === 'expireDate'
-                  ? 'date-format'
-                  : ''
-              ]"
-              :fixed="col.fixed"
-              :key="'company' + ind"
-              :label="col.label"
-              :maxWidth="col.maxWidth || ''"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'attachment' && col.show"
-            >
-              <template slot-scope="scope">
-                <span v-if="scope.row && scope.row[col.property] > 0">
-                  <v-icon color="#757575">mdi-paperclip</v-icon>
-                </span>
-                <span v-else />
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'chart' && col.show"
-            >
-              <template slot-scope="scope">
-                <v-tooltip
-                  bottom
-                  opacity="1"
-                  v-if="
-                    scope.row &&
-                      scope.row[col.property] &&
-                      scope.row[col.property].filter(item => item === 0).length !==
-                        scope.row[col.property].length
-                  "
-                >
-                  <template v-slot:activator="{ on }">
-                    <div v-on="on">
-                      <apexchart
-                        :options="chartOptions"
-                        :series="scope.row[col.property]"
-                        :width="chartOptions.chart.width"
-                      />
-                    </div>
-                    <div
-                      class="chart__summary-text"
-                      v-if="chartOptions.summary && chartOptions.summary.show"
-                    >
-                      {{ getChartSummary(scope.row[col.property], chartOptions.summary.seperator) }}
-                    </div>
-                  </template>
-                  <template
-                    v-for="(item, index) in scope.row[col.property]"
-                    v-if="chartOptions.showTooltipLine"
-                  >
-                    <p class="tooltip-line">{{ chartOptions.labels[index] }} : {{ item }}</p>
-                  </template>
-                </v-tooltip>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'detected' && col.show"
-            >
-              <template slot-scope="scope">
-                <v-btn
-                  :class="[
-                    'btn-status',
-                    scope.row.detected === 'Pending' ? 'btn-pending' : '',
-                    scope.row.detected === 'Clean' ? 'btn-pending' : '',
-                    scope.row.detected === 'Active' ? 'btn-active' : '',
-                    scope.row.detected === 'Inactive' ? 'btn-inactive' : '',
-                    scope.row.detected === 'Warning' ? 'btn-warning' : '',
-                    scope.row.detected === 'Malicious' ? 'btn-warning' : '',
-                    scope.row.detected === 'Cancelled' ? 'btn-cancelled' : '',
-                    scope.row.detected === 'Phishing' ? 'btn-cancelled' : '',
-                    scope.row.detected === 'Idle' ? 'btn-cancelled' : '',
-                    scope.row.detected === 'None' ? 'btn-none' : '',
-                    scope.row.detected === 'Quedued' ? 'btn-none' : '',
-                    scope.row.detected === 'Running' ? 'btn-primary' : '',
-                    scope.row.detected === 'Expired' ? 'btn-warning' : '',
-                    scope.row.detected === 'Completed' ? 'btn-success' : '',
-                    scope.row.detected === 'Cancelled' ? 'btn-cancelled' : '',
-                    scope.row.detected === 'No Match' ? 'btn-no_match' : '',
-                    scope.row.detected === 'Finished' ? 'btn-success' : '',
-                    scope.row.detected === 'N/A' ? 'btn-none' : '',
-                    scope.row.detected === 'Offline' ? 'btn-warning' : '',
-                    scope.row.detected === 'Online' ? 'btn-success' : '',
-                    scope.row.detected === 'Disabled' ? 'btn-cancelled' : '',
-                    scope.row.detected === 'Network Error' ? 'btn-cancelled' : '',
-                    scope.row.detected === 'Deactivated' ? 'btn-no_match ' : '',
-                    scope.row.detected === 'User Unavailable' ? 'btn-no_match ' : '',
-                    scope.row.detected === 'Not Installed' ? 'btn-no_match ' : ''
-                  ]"
-                  block
-                  rounded
-                  v-if="scope.row && scope.row[col.property]"
-                  >{{ scope.row.detected }}
-                </v-btn>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'userStatus' && col.show"
-            >
-              <template slot-scope="scope">
-                <v-btn
-                  :class="[
-                    'btn-status',
-                    scope.row.userStatus === 'Online' ? 'btn-online' : '',
-                    scope.row.userStatus === 'Offline' ? 'btn-offline' : ''
-                  ]"
-                  block
-                  rounded
-                  v-if="scope.row && scope.row[col.property]"
-                  >{{ scope.row.userStatus }}
-                </v-btn>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
+                </div>
+                <div v-if="col.type === 'priority'">
+                  <v-tooltip bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        :class="[
+                          'btn-status',
+                          scope.row.priority === 'Active' ? 'btn-active' : '',
+                          scope.row.priority === 'Inactive' ? 'btn-inactive' : '',
+                          scope.row.priority === 'Low' ? 'btn-low' : '',
+                          scope.row.priority === 'Very Low' ? 'btn-very_low' : '',
+                          scope.row.priority === 'High' ? 'btn-high' : '',
+                          scope.row.priority === 'Medium' ? 'btn-active' : '',
+                          scope.row.priority === 'Very High' ? 'btn-very_high' : '',
+                          scope.row.priority === 'N/A' ? 'btn-none' : '',
 
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'fiber' && col.show"
-            >
-              <template slot-scope="scope">
-                <div class="fiber__container">
-                  <div class="fiber__item">
-                    <template v-if="scope.row.addInStatus === 'Online'">
-                      <img src="../assets/img/fiber-manual-record-online.svg" />
+                          col.fullWidth ? 'full-width' : ''
+                        ]"
+                        block
+                        rounded
+                        v-if="scope.row && scope.row[col.property]"
+                        v-on="on"
+                        >{{ scope.row.priority }}
+                      </v-btn>
+                      <span v-else>-</span>
                     </template>
-                    <template v-else>
-                      <img src="../assets/img/fiber-manual-record-offline.svg" />
-                    </template>
-                  </div>
-                  <div>
-                    {{ scope.row[col.property] }}
-                  </div>
+                    <span class="tooltip-span">{{ scope.row.priority || 'Empty' }}</span>
+                  </v-tooltip>
                 </div>
               </template>
             </el-table-column>
 
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'progress' && col.show"
-            >
-              <template slot-scope="scope">
-                <div style="max-width: 80px; margin: 0 auto;" v-if="scope.row">
-                  <span class="progress-per">{{
-                    scope.row.progress == '100' ? 'Completed' : scope.row.progress + '%'
-                  }}</span>
-                  <v-progress-linear
-                    :value="scope.row.progress"
-                    background-color="#b3d4fc"
-                    color="#2196f3"
-                    height="4"
-                    reactive
-                    rounded
-                  />
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'service' && col.show"
-            >
-              <template slot-scope="scope">
-                <span class="service-icon-content" v-if="scope.row && scope.row[col.property]">
-                  <img
-                    alt="outlook"
-                    src="../assets/img/Office.png"
-                    v-if="scope.row[col.property] === 'Outlook'"
-                  />
-                  <img
-                    alt="outlook"
-                    src="../assets/img/Word.png"
-                    v-if="scope.row[col.property] === 'O365'"
-                  />
-                  <img
-                    alt="outlook"
-                    src="../assets/img/Google.png"
-                    v-if="scope.row[col.property] === 'GSuite'"
-                  />
-                  <img
-                    alt="outlook"
-                    src="../assets/img/Exchange.png"
-                    v-if="scope.row[col.property] === 'Exchange'"
-                  />
-                  <span class="ml-2">{{ scope.row[col.property] }}</span>
-                </span>
-                <span v-else />
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'status' && col.show"
-            >
-              <template slot-scope="scope">
-                <v-tooltip bottom opacity="col.hasTooltip ? 1 : 0">
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :class="[
-                        'btn-status',
-                        scope.row.status === 'Pending' ? 'btn-pending' : '',
-                        scope.row.status === 'Clean' ? 'btn-pending' : '',
-                        scope.row.status === 'Active' ? 'btn-active' : '',
-                        scope.row.status === 'Inactive' ? 'btn-inactive' : '',
-                        scope.row.status === 'Warning' ? 'btn-warning' : '',
-                        scope.row.status === 'Malicious' ? 'btn-warning' : '',
-                        scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
-                        scope.row.status === 'Phishing' ? 'btn-cancelled' : '',
-                        scope.row.status === 'Idle' ? 'btn-cancelled' : '',
-                        scope.row.status === 'None' ? 'btn-none' : '',
-                        scope.row.status === 'Quedued' ? 'btn-none' : '',
-                        scope.row.status === 'Running' ? 'btn-primary' : '',
-                        scope.row.status === 'Expired' ? 'btn-warning' : '',
-                        scope.row.status === 'Completed' ? 'btn-success' : '',
-                        scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
-                        scope.row.status === 'No Match' ? 'btn-no_match' : '',
-                        scope.row.status === 'Finished' ? 'btn-success' : '',
-                        scope.row.status === 'Offline' ? 'btn-warning' : '',
-                        scope.row.status === 'Online' ? 'btn-success' : '',
-                        scope.row.status === 'Disabled' ? 'btn-cancelled' : '',
-                        scope.row.status === 'Network Error' ? 'btn-cancelled' : '',
-                        scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
-                        scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
-                        scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
-                        scope.row.status === 'N/A' ? 'btn-none' : '',
-
-                        col.fullWidth ? 'full-width' : ''
-                      ]"
-                      block
-                      rounded
-                      v-if="scope.row && scope.row[col.property]"
-                      v-on="on"
-                      >{{ scope.row.status || 'Empty' }}
-                    </v-btn>
-                    <span v-else>-</span>
-                  </template>
-                  <span class="tooltip-span">{{ scope.row.status || 'Empty' }}</span>
-                </v-tooltip>
-              </template>
-            </el-table-column>
-            <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.sortable"
-              :width="col.width || ''"
-              v-for="(col, ind) of columns"
-              v-if="col.type === 'priority' && col.show"
-            >
-              <template slot-scope="scope">
-                <v-tooltip bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :class="[
-                        'btn-status',
-                        scope.row.priority === 'Active' ? 'btn-active' : '',
-                        scope.row.priority === 'Inactive' ? 'btn-inactive' : '',
-                        scope.row.priority === 'Low' ? 'btn-low' : '',
-                        scope.row.priority === 'Very Low' ? 'btn-very_low' : '',
-                        scope.row.priority === 'High' ? 'btn-high' : '',
-                        scope.row.priority === 'Medium' ? 'btn-active' : '',
-                        scope.row.priority === 'Very High' ? 'btn-very_high' : '',
-                        scope.row.priority === 'N/A' ? 'btn-none' : '',
-
-                        col.fullWidth ? 'full-width' : ''
-                      ]"
-                      block
-                      rounded
-                      v-if="scope.row && scope.row[col.property]"
-                      v-on="on"
-                      >{{ scope.row.priority }}
-                    </v-btn>
-                    <span v-else>-</span>
-                  </template>
-                  <span class="tooltip-span" v-if="col.hasTooltip">{{ scope.row.priority }}</span>
-                </v-tooltip>
-              </template>
-            </el-table-column>
             <el-table-column
               :fixed="actionFixed"
               :min-width="150"
-              align="center"
+              align="right"
+              class-name="actions-container"
               label="Actions"
+              label-class-name="actions-label"
               v-if="rowActions && rowActions.length > 2"
             >
               <template slot-scope="scope">
-                <v-btn
-                  @click="handleEdit(scope.row)"
-                  class="btn-hover"
-                  icon
-                  v-if="rowActions[0].action === 'edit'"
-                >
-                  <v-icon>{{ rowActions[0].icon }}</v-icon>
-                </v-btn>
-                <v-btn
-                  @click="rowAct(rowActions[0].action, scope.row)"
-                  class="btn-hover"
-                  icon
-                  v-else
-                >
-                  <v-icon>{{ rowActions[0].icon }}</v-icon>
-                </v-btn>
+                <template v-if="rowActions[0].action === 'edit'">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                </template>
+                <template v-else>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        @click="rowAct(rowActions[0].action, scope.row)"
+                        class="btn-hover"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span> {{ rowActions[0].name }} </span>
+                  </v-tooltip>
+                </template>
                 <v-menu bottom left offset-y transition="scale-transition">
                   <template v-slot:activator="{ on }">
                     <v-btn class="btn-hover" icon v-on="on">
@@ -983,48 +728,70 @@
             <el-table-column
               :fixed="actionFixed"
               :min-width="150"
-              align="center"
+              align="right"
+              class-name="actions-container--first"
               label="Actions"
+              label-class-name="actions-label"
               v-if="rowActions && rowActions.length === 1"
             >
               <template slot-scope="scope">
-                <v-btn
-                  @click.native="rowAct(rowActions[0].action, scope.row)"
-                  class="btn-hover"
-                  icon
-                >
-                  <v-icon>{{ rowActions[0].icon }}</v-icon>
-                </v-btn>
+                <v-tooltip bottom right>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      @click.native="rowAct(rowActions[0].action, scope.row)"
+                      class="btn-hover"
+                      icon
+                      v-on="on"
+                    >
+                      <v-icon>{{ rowActions[0].icon }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ rowActions[0].name }}</span>
+                </v-tooltip>
               </template>
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
               :min-width="150"
-              align="center"
+              align="right"
+              class-name="actions-container"
               label="Actions"
+              label-class-name="actions-label"
               v-if="rowActions && rowActions.length === 2"
             >
               <template slot-scope="scope">
-                <v-btn
-                  @click.native="rowAct(rowActions[0].action, scope.row)"
-                  class="btn-hover"
-                  icon
-                >
-                  <v-icon>{{ rowActions[0].icon }}</v-icon>
-                </v-btn>
-                <v-btn
-                  :disabled="
-                    scope.row.status === 'Cancelled' ||
-                      scope.row.status === 'Expired' ||
-                      scope.row.status === 'Finished' ||
-                      scope.row.status === 'NoMatch'
-                  "
-                  @click.native="rowAct(rowActions[1].action, scope.row)"
-                  class="btn-hover"
-                  icon
-                >
-                  <v-icon>{{ rowActions[1].icon }}</v-icon>
-                </v-btn>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      @click.native="rowAct(rowActions[0].action, scope.row)"
+                      class="btn-hover"
+                      icon
+                      v-on="on"
+                    >
+                      <v-icon>{{ rowActions[0].icon }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ rowActions[0].name }}</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      :disabled="
+                        scope.row.status === 'Cancelled' ||
+                          scope.row.status === 'Expired' ||
+                          scope.row.status === 'Finished' ||
+                          scope.row.status === 'NoMatch'
+                      "
+                      @click.native="rowAct(rowActions[1].action, scope.row)"
+                      class="btn-hover"
+                      icon
+                      v-on="on"
+                    >
+                      <v-icon>{{ rowActions[1].icon }}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ rowActions[1].name }}</span>
+                </v-tooltip>
               </template>
             </el-table-column>
           </el-table>
@@ -1065,6 +832,15 @@
 </template>
 <script>
 import Vue from 'vue'
+import DataTableText from './DataTableComponents/DataTableText'
+import DataTableArray from './DataTableComponents/DataTableArray'
+import DataTableAttachment from './DataTableComponents/DataTableAttachment'
+import DataTableChart from './DataTableComponents/DataTableChart'
+import DataTableDetected from './DataTableComponents/DataTableDetected'
+import DataTableUserStatus from './DataTableComponents/DataTableUserStatus'
+import DataTableFiber from './DataTableComponents/DataTableFiber'
+import DataTableProgress from './DataTableComponents/DataTableProgress'
+import DataTableService from './DataTableComponents/DataTableService'
 
 window.Vue = Vue
 import ElementUI from 'element-ui'
@@ -1078,12 +854,39 @@ import printJS from 'print-js'
 
 export default {
   components: {
-    apexchart: VueApexCharts
+    apexchart: VueApexCharts,
+    DataTableText,
+    DataTableAttachment,
+    DataTableChart,
+    DataTableArray,
+    DataTableDetected,
+    DataTableUserStatus,
+    DataTableFiber,
+    DataTableProgress,
+    DataTableService
   },
   props: {
     columns: {
       type: Array,
       required: true
+    },
+    editableStatusItems: {
+      type: Array,
+      default: () => {
+        return ['Active', 'Inactive', 'N/A']
+      }
+    },
+    editablePriorityItems: {
+      type: Array,
+      default: () => {
+        return ['Very Low', 'Low', 'Medium', 'High', 'Very High']
+      }
+    },
+    editableDetectedItems: {
+      type: Array,
+      default: () => {
+        return ['Active', 'Inactive', 'N/A']
+      }
     },
     rowActionsMinWidth: {
       type: Number,
@@ -1185,11 +988,13 @@ export default {
       editMode: false,
       firstColFixed: true,
       lastColFixed: true,
+      copyOfEditedRows: [],
       download: {
         xls: false,
         csv: false,
         pdf: false
       },
+      multipleEditModels: [],
       downloadType: 'PDF',
       actionFixed: 'right',
       allHidden: false,
@@ -1306,6 +1111,26 @@ export default {
           break
       }
     },
+    cancelEditedOnes() {
+      this.editMode = false
+      this.multipleEditModels = []
+    },
+    handleMultipleEdits(item, key, value) {
+      item[key] = value
+      this.multipleEditModels[key] = value
+    },
+    getColumnLabelClass(key, value) {
+      if (key === 'priority' || key === 'status' || key === 'detected') {
+        return 'popup__badge'
+      }
+    },
+    getColumnLabel(key, value) {
+      const answer = this.columns.find(item => {
+        return item['property'] === key
+      })
+
+      return (answer && answer.label) || key
+    },
     addButtonFunction(action, row) {
       this.$emit(action, row)
     },
@@ -1319,8 +1144,10 @@ export default {
     handleSelectionChange(val) {
       if (this.currentPage === 1) {
         this.multipleSelection = val
+        this.copyOfEditedRows = JSON.parse(JSON.stringify(val))
       } else {
         this.multipleSelection.push(val)
+        this.copyOfEditedRows.push(JSON.parse(JSON.stringify(val)))
       }
     },
     changeDownloadModalStatus(status) {
@@ -1507,27 +1334,34 @@ export default {
     },
     saveEditedOnes() {
       // After user edited the row and pressed SAVE button
+      this.multipleSelection.map((item, index) => {
+        const keys = Object.keys(item)
+        keys.map(key => {
+          //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
+          item[key] = this.copyOfEditedRows[0][key]
+        })
+      })
+      this.$refs.elTableRef.clearSelection()
       this.editMode = false
       this.isWantToEditRow = false
       this.multipleSelection = []
+      this.multipleEditModels = []
+      this.copyOfEditedRows = []
     },
     loadWithDataArray(data) {
       this.initialData = data
       this.tableData = data.slice(0, this.countRow || this.rowCount)
     },
-    getChartSummary(property, seperator = '/') {
-      return property.join(seperator)
-    },
     calculateWidths() {
       /*
-      if (this.$refs.tableContainer) {
-        const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
-        const columnsTotalWidth = this.getColumnsWidth()
-        const actionsWidth = widthOfContainer - columnsTotalWidth - 61
-        this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
-      }
+        if (this.$refs.tableContainer) {
+          const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
+          const columnsTotalWidth = this.getColumnsWidth()
+          const actionsWidth = widthOfContainer - columnsTotalWidth - 61
+          this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
+        }
 
-       */
+         */
     },
     getColumnsWidth() {
       return this.columns.reduce((acc, item) => {
@@ -1553,13 +1387,6 @@ export default {
   display: flex;
   cursor: default;
   z-index: 10;
-}
-
-.service-icon-content {
-  img {
-    max-width: 16px;
-    max-height: 16px;
-  }
 }
 
 .wrapper {
@@ -1669,7 +1496,7 @@ export default {
               align-items: center;
               display: flex;
               flex-direction: row;
-              padding-bottom: 6px;
+              padding-bottom: 7px;
 
               ::v-deep .v-input__slot {
                 box-shadow: unset !important;
@@ -1812,7 +1639,7 @@ export default {
       }
 
       ::v-deep .el-table td {
-        padding: 2px 0 !important;
+        padding: 12px 0;
         height: 45px !important;
         border: none !important;
       }
@@ -1854,6 +1681,7 @@ export default {
         color: #000000;
         //min-height: 21px;
         padding-left: 10px !important;
+
         .el-checkbox__input.is-indeterminate .el-checkbox__inner {
           background-color: #2196f3;
           border-color: #2196f3 !important;
@@ -1906,11 +1734,6 @@ export default {
         width: 4px;
       }
 
-      ::v-deep .v-progress-linear {
-        margin-bottom: 7px !important;
-        margin-top: 5px !important;
-      }
-
       .progress-per {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 10px;
@@ -1921,6 +1744,11 @@ export default {
         letter-spacing: normal;
         text-align: center;
         color: rgba(0, 0, 0, 0.87);
+      }
+
+      ::v-deep .v-progress-linear {
+        margin-bottom: 7px !important;
+        margin-top: 5px !important;
       }
 
       .btn-status {
@@ -2142,12 +1970,6 @@ export default {
   background: #6d6d6d !important;
 }
 
-::v-deep .tooltip-line {
-  font-size: 12px !important;
-  font-family: 'Open Sans', sans-serif !important;
-  margin-bottom: 3px !important;
-}
-
 ::v-deep .k-grid td.k-state-selected,
 ::v-deep .k-grid tr.k-state-selected > td {
   background-color: rgba(0, 188, 212, 0.05) !important;
@@ -2261,19 +2083,6 @@ export default {
 
 ::v-deep .v-sheet {
   border-radius: unset !important;
-}
-
-.chart__summary-text {
-  margin-top: -18px;
-  margin-left: 2px;
-  font-family: OpenSans;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.9;
-  letter-spacing: normal;
-  text-align: center;
 }
 
 .filter-field {
@@ -2398,6 +2207,7 @@ export default {
 
 ::v-deep .selection-all-check {
   margin-left: 6px !important;
+
   i {
     color: white !important;
   }
@@ -2417,29 +2227,67 @@ export default {
   width: 100% !important;
 }
 
-.fiber {
-  &__container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-left: -8px;
-  }
-
-  &__item {
-    > img {
-      margin-top: 7px;
-      margin-right: 3px;
-    }
-  }
+.edit-select {
+  font-size: 13px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
 }
 
 /*.date-format {
-                      text-align: left !important;
-                      span {
-                        text-overflow: ellipsis;
-                        white-space: normal;
-                      }
-                    }*/
+                        text-align: left !important;
+                        span {
+                          text-overflow: ellipsis;
+                          white-space: normal;
+                        }
+                      }*/
+
+::v-deep .actions-label {
+  padding-right: 49px !important;
+}
+
+::v-deep .actions-container {
+  padding-right: 17.5px !important;
+
+  &--first {
+    padding-right: 40px !important;
+  }
+}
+
+.popup {
+  &__badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 25px;
+    padding: 6px 6px 6px 6px;
+    border-radius: 4px;
+    color: white;
+    background: #2196f3;
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.13;
+    font-family: 'Open Sans', sans-serif !important;
+    letter-spacing: normal;
+    text-align: center;
+  }
+
+  &__apexchart-container {
+    height: 80px;
+    width: 80px;
+    padding-top: 6px;
+    margin-left: -23px;
+    margin-top: -20px;
+  }
+}
+
+::v-deep .el-table__fixed-body-wrapper {
+  z-index: 2;
+}
 </style>
 <!--
   DataTable COMPONENT
