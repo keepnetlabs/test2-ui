@@ -226,9 +226,31 @@
                       multipleValues(key, item[key]) &&
                         editMode &&
                         !Array.isArray(item[key]) &&
-                        key !== 'progress'
+                        key !== 'progress' &&
+                        key !== 'detected' &&
+                        key !== 'status' &&
+                        key !== 'priority'
                     "
                   />
+
+                  <v-select
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :items="getMultipleSelectItems(key)"
+                    class="edit-select"
+                    dense
+                    solo
+                    label="Multiple Values"
+                    placeholder="Multiple Values"
+                    v-if="
+                      multipleValues(key, item[key]) &&
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        (key === 'detected' || key === 'status' || key === 'priority')
+                    "
+                    :value="multipleEditModels[key]"
+                    @input="handleMultipleEdits(item, key, $event)"
+                  />
+
                   <div class="popup__apexchart-container" v-else-if="Array.isArray(item[key])">
                     <apexchart
                       :options="chartOptions"
@@ -640,6 +662,9 @@
                     </template>
                     <span class="tooltip-span">{{ scope.row.priority || 'Empty' }}</span>
                   </v-tooltip>
+                </div>
+                <div v-if="col.type === 'popup'">
+                  <slot name="datatable-column-popup" :col="col" :scope="scope"> </slot>
                 </div>
               </template>
             </el-table-column>
@@ -1111,6 +1136,18 @@ export default {
           break
       }
     },
+    getMultipleSelectItems(key) {
+      switch (key) {
+        case 'priority':
+          return this.editablePriorityItems
+        case 'status':
+          return this.editableStatusItems
+        case 'detected':
+          return this.editableDetectedItems
+        default:
+          return []
+      }
+    },
     cancelEditedOnes() {
       this.editMode = false
       this.multipleEditModels = []
@@ -1373,22 +1410,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.external-data {
-  position: absolute;
-  right: 0px;
-  top: 10px;
-  border-radius: 4px;
-  background-color: #2196f3;
-  color: #ffffff;
-  width: 26px;
-  height: 25px;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  cursor: default;
-  z-index: 10;
-}
-
 .wrapper {
   border-radius: 20px;
   padding-bottom: 24px;
@@ -1850,7 +1871,7 @@ export default {
         position: absolute;
         top: 75px;
         width: 100%;
-        z-index: 9;
+        z-index: 4;
 
         .selection-span {
           font-family: 'Open Sans', sans-serif;
