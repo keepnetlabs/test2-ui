@@ -89,19 +89,17 @@
         <div
           class="settings-popup"
           style="width: 360px"
-          v-show="multipleSelection && multipleSelection.length && isWantToEditRow"
+          v-show="copyOfEditedRows && copyOfEditedRows.length && isWantToEditRow"
         >
           <div
             class="inline-wrapper"
-            v-if="multipleSelection && multipleSelection.length && columns && columns.length"
+            v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
           >
             <div class="settings-header">
               <span class="settings-span" v-if="multipleSelection.length === 1">
-                {{ multipleSelection[0][columns[0].property] }}
+                {{ copyOfEditedRows[0][columns[0].property] }}
               </span>
-              <span class="settings-span" v-else
-                >{{ multipleSelection.length }} Items Selected</span
-              >
+              <span class="settings-span" v-else>{{ copyOfEditedRows.length }} Items Selected</span>
               <div class="edit-actions">
                 <v-btn @click="editMode = true" icon v-if="!editMode">
                   <v-icon class="close-icon">mdi-pencil</v-icon>
@@ -110,7 +108,7 @@
                   <v-icon class="close-icon">mdi-close</v-icon>
                 </v-btn>
                 <v-btn
-                  @click="editMode = false"
+                  @click="cancelEditedOnes"
                   class="pl-1 pr-1"
                   color="#f56c6c"
                   dense
@@ -131,12 +129,12 @@
             </div>
             <div
               class="edit-popup-body"
-              v-if="multipleSelection && multipleSelection.length && columns && columns.length"
+              v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
             >
               <div
                 :key="item[columns[ind].property]"
                 class="items-wrapper"
-                v-for="(item, ind) of multipleSelection"
+                v-for="(item, ind) of copyOfEditedRows"
                 v-show="ind === 0"
               >
                 <div
@@ -151,12 +149,12 @@
                     >{{ getColumnLabel(key, value) }}</label
                   >
                   <span
-                    v-if="!editMode && !Array.isArray(item[key]) && key !== 'progress'"
                     :class="[getColumnLabelClass(key, value)]"
+                    v-if="!editMode && !Array.isArray(item[key]) && key !== 'progress'"
                     >{{ value }}</span
                   >
                   <v-text-field
-                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
                     :label="columns[ind].label"
                     class="edit-text-field"
                     dense
@@ -173,61 +171,54 @@
                     v-model="item[key]"
                   />
                   <v-select
-                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :items="editablePriorityItems"
                     class="edit-select"
-                    :items="['Very Low', 'Low', 'Medium', 'High', 'Very High']"
                     dense
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
                         editMode &&
                         !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key === 'priority' &&
-                        key !== 'status' &&
-                        key !== 'detected'
+                        key === 'priority'
                     "
                     v-model="item[key]"
                   />
                   <v-select
-                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
-                    class="edit-select"
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
                     :items="editableStatusItems"
+                    class="edit-select"
                     dense
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
                         editMode &&
                         !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'priority' &&
-                        key === 'status' &&
-                        key !== 'detected'
+                        key === 'status'
                     "
                     v-model="item[key]"
                   />
                   <v-select
-                    :autofocus="item[key] === multipleSelection[0][columns[0].property]"
-                    class="edit-select"
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
                     :items="editableDetectedItems"
+                    class="edit-select"
                     dense
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
                         editMode &&
                         !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'priority' &&
-                        key !== 'status' &&
                         key === 'detected'
                     "
                     v-model="item[key]"
                   />
 
                   <v-text-field
+                    :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
+                    :value="multipleEditModels[key]"
+                    @input="handleMultipleEdits(item, key, $event)"
                     class="edit-text-field"
                     dense
-                    disabled
                     label="Multiple Values"
                     placeholder="Multiple Values"
                     solo
@@ -238,7 +229,7 @@
                         key !== 'progress'
                     "
                   />
-                  <div v-else-if="Array.isArray(item[key])" class="popup__apexchart-container">
+                  <div class="popup__apexchart-container" v-else-if="Array.isArray(item[key])">
                     <apexchart
                       :options="chartOptions"
                       :series="item[key]"
@@ -552,28 +543,28 @@
               v-if="col.show"
             >
               <template slot-scope="scope">
-                <data-table-text v-if="col.type === 'text'" :scope="scope" :col="col" />
-                <data-table-array v-if="col.type === 'array'" :scope="scope" :col="col" />
+                <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
+                <data-table-array :col="col" :scope="scope" v-if="col.type === 'array'" />
                 <data-table-attachment
-                  v-else-if="col.type === 'attachment'"
-                  :scope="scope"
                   :col="col"
+                  :scope="scope"
+                  v-else-if="col.type === 'attachment'"
                 />
                 <data-table-chart
-                  v-if="col.type === 'chart'"
                   :chartOptions="chartOptions"
-                  :scope="scope"
                   :col="col"
+                  :scope="scope"
+                  v-if="col.type === 'chart'"
                 />
-                <data-table-detected v-if="col.type === 'detected'" :scope="scope" :col="col" />
+                <data-table-detected :col="col" :scope="scope" v-if="col.type === 'detected'" />
                 <data-table-user-status
-                  v-if="col.type === 'userStatus'"
-                  :scope="scope"
                   :col="col"
+                  :scope="scope"
+                  v-if="col.type === 'userStatus'"
                 />
-                <data-table-fiber v-if="col.type === 'fiber'" :scope="scope" :col="col" />
-                <data-table-progress v-if="col.type === 'progress'" :scope="scope" :col="col" />
-                <data-table-service v-if="col.type === 'service'" :scope="scope" :col="col" />
+                <data-table-fiber :col="col" :scope="scope" v-if="col.type === 'fiber'" />
+                <data-table-progress :col="col" :scope="scope" v-if="col.type === 'progress'" />
+                <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
                 <div v-if="col.type === 'status'">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
@@ -657,8 +648,8 @@
               :fixed="actionFixed"
               :min-width="150"
               align="right"
-              label="Actions"
               class-name="actions-container"
+              label="Actions"
               label-class-name="actions-label"
               v-if="rowActions && rowActions.length > 2"
             >
@@ -666,7 +657,7 @@
                 <template v-if="rowActions[0].action === 'edit'">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                      <v-btn v-on="on" @click="handleEdit(scope.row)" class="btn-hover" icon>
+                      <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
                         <v-icon>{{ rowActions[0].icon }}</v-icon>
                       </v-btn>
                     </template>
@@ -677,10 +668,10 @@
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
-                        v-on="on"
                         @click="rowAct(rowActions[0].action, scope.row)"
                         class="btn-hover"
                         icon
+                        v-on="on"
                       >
                         <v-icon>{{ rowActions[0].icon }}</v-icon>
                       </v-btn>
@@ -738,8 +729,8 @@
               :fixed="actionFixed"
               :min-width="150"
               align="right"
-              label="Actions"
               class-name="actions-container--first"
+              label="Actions"
               label-class-name="actions-label"
               v-if="rowActions && rowActions.length === 1"
             >
@@ -747,10 +738,10 @@
                 <v-tooltip bottom right>
                   <template v-slot:activator="{ on }">
                     <v-btn
-                      v-on="on"
                       @click.native="rowAct(rowActions[0].action, scope.row)"
                       class="btn-hover"
                       icon
+                      v-on="on"
                     >
                       <v-icon>{{ rowActions[0].icon }}</v-icon>
                     </v-btn>
@@ -763,19 +754,19 @@
               :fixed="actionFixed"
               :min-width="150"
               align="right"
-              label-class-name="actions-label"
-              label="Actions"
               class-name="actions-container"
+              label="Actions"
+              label-class-name="actions-label"
               v-if="rowActions && rowActions.length === 2"
             >
               <template slot-scope="scope">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
-                      v-on="on"
                       @click.native="rowAct(rowActions[0].action, scope.row)"
                       class="btn-hover"
                       icon
+                      v-on="on"
                     >
                       <v-icon>{{ rowActions[0].icon }}</v-icon>
                     </v-btn>
@@ -785,7 +776,6 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
-                      v-on="on"
                       :disabled="
                         scope.row.status === 'Cancelled' ||
                           scope.row.status === 'Expired' ||
@@ -795,6 +785,7 @@
                       @click.native="rowAct(rowActions[1].action, scope.row)"
                       class="btn-hover"
                       icon
+                      v-on="on"
                     >
                       <v-icon>{{ rowActions[1].icon }}</v-icon>
                     </v-btn>
@@ -883,6 +874,12 @@ export default {
       type: Array,
       default: () => {
         return ['Active', 'Inactive', 'N/A']
+      }
+    },
+    editablePriorityItems: {
+      type: Array,
+      default: () => {
+        return ['Very Low', 'Low', 'Medium', 'High', 'Very High']
       }
     },
     editableDetectedItems: {
@@ -991,11 +988,13 @@ export default {
       editMode: false,
       firstColFixed: true,
       lastColFixed: true,
+      copyOfEditedRows: [],
       download: {
         xls: false,
         csv: false,
         pdf: false
       },
+      multipleEditModels: [],
       downloadType: 'PDF',
       actionFixed: 'right',
       allHidden: false,
@@ -1112,6 +1111,14 @@ export default {
           break
       }
     },
+    cancelEditedOnes() {
+      this.editMode = false
+      this.multipleEditModels = []
+    },
+    handleMultipleEdits(item, key, value) {
+      item[key] = value
+      this.multipleEditModels[key] = value
+    },
     getColumnLabelClass(key, value) {
       if (key === 'priority' || key === 'status' || key === 'detected') {
         return 'popup__badge'
@@ -1137,8 +1144,10 @@ export default {
     handleSelectionChange(val) {
       if (this.currentPage === 1) {
         this.multipleSelection = val
+        this.copyOfEditedRows = JSON.parse(JSON.stringify(val))
       } else {
         this.multipleSelection.push(val)
+        this.copyOfEditedRows.push(JSON.parse(JSON.stringify(val)))
       }
     },
     changeDownloadModalStatus(status) {
@@ -1325,9 +1334,19 @@ export default {
     },
     saveEditedOnes() {
       // After user edited the row and pressed SAVE button
+      this.multipleSelection.map((item, index) => {
+        const keys = Object.keys(item)
+        keys.map(key => {
+          //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
+          item[key] = this.copyOfEditedRows[0][key]
+        })
+      })
+      this.$refs.elTableRef.clearSelection()
       this.editMode = false
       this.isWantToEditRow = false
       this.multipleSelection = []
+      this.multipleEditModels = []
+      this.copyOfEditedRows = []
     },
     loadWithDataArray(data) {
       this.initialData = data
@@ -1335,14 +1354,14 @@ export default {
     },
     calculateWidths() {
       /*
-      if (this.$refs.tableContainer) {
-        const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
-        const columnsTotalWidth = this.getColumnsWidth()
-        const actionsWidth = widthOfContainer - columnsTotalWidth - 61
-        this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
-      }
+        if (this.$refs.tableContainer) {
+          const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
+          const columnsTotalWidth = this.getColumnsWidth()
+          const actionsWidth = widthOfContainer - columnsTotalWidth - 61
+          this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
+        }
 
-       */
+         */
     },
     getColumnsWidth() {
       return this.columns.reduce((acc, item) => {
@@ -1662,6 +1681,7 @@ export default {
         color: #000000;
         //min-height: 21px;
         padding-left: 10px !important;
+
         .el-checkbox__input.is-indeterminate .el-checkbox__inner {
           background-color: #2196f3;
           border-color: #2196f3 !important;
@@ -2187,6 +2207,7 @@ export default {
 
 ::v-deep .selection-all-check {
   margin-left: 6px !important;
+
   i {
     color: white !important;
   }
@@ -2216,18 +2237,20 @@ export default {
 }
 
 /*.date-format {
-                      text-align: left !important;
-                      span {
-                        text-overflow: ellipsis;
-                        white-space: normal;
-                      }
-                    }*/
+                        text-align: left !important;
+                        span {
+                          text-overflow: ellipsis;
+                          white-space: normal;
+                        }
+                      }*/
 
 ::v-deep .actions-label {
   padding-right: 49px !important;
 }
+
 ::v-deep .actions-container {
   padding-right: 17.5px !important;
+
   &--first {
     padding-right: 40px !important;
   }
