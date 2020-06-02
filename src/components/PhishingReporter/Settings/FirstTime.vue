@@ -15,28 +15,28 @@
       />
     </v-overlay>
     <v-container tag="div" id="first-time" fluid>
-      <v-list-item>
+      <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <div class="first-time__header">Phishing Reporter Add-in</div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
+      <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <div class="first-time__sub-header">Available for</div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
+      <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <logos wrapperClasses="first-time__icon-container" hasMidMargin />
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
+      <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <div class="first-time__button-container">
             <v-btn
               @click="changeAddInConfigurationStatus"
               rounded
-              class="white--text btn-util"
+              class="white--text first-time__btn-util"
               color="#2196f3"
             >
               <v-icon left>mdi-plus</v-icon>
@@ -45,7 +45,7 @@
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
+      <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <div class="first-time__guide-container">
             <a
@@ -103,7 +103,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .first-time {
   &__header {
     font-family: 'Open Sans', sans-serif !important;
@@ -119,6 +119,7 @@ export default {
 
     @media (max-width: 768px) {
       margin-top: 0;
+      font-size: 30px;
     }
   }
 
@@ -175,26 +176,52 @@ export default {
     margin-top: 92px;
     display: flex;
     @media (max-width: 768px) {
-      margin-top: 20px;
+      margin-top: 10px;
       justify-content: center;
       flex-direction: column;
       align-items: center;
-      .btn-util:last-child {
+      .first-time__btn-util:last-child {
         margin-top: 8px;
+      }
+    }
+    .v-btn--disabled .v-btn__content {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: right;
+      color: #ffffff !important;
+
+      .mdi-download {
+        color: #ffffff !important;
       }
     }
   }
 
   &__overlay {
   }
-}
 
-::v-deep {
-  & .v-list-item__content {
-    padding: 0 !important;
+  &__list-item {
+    .v-list-item__content {
+      padding: 0 !important;
+    }
   }
 
-  & .v-btn--disabled .v-btn__content {
+  &__overlay {
+    .v-overlay__content {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+    }
+  }
+
+  &__btn-util {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 600;
@@ -204,33 +231,6 @@ export default {
     letter-spacing: normal;
     text-align: right;
     color: #ffffff;
-
-    .mdi-download {
-      color: #ffffff !important;
-    }
-  }
-}
-
-.btn-util {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  text-align: right;
-  color: #ffffff;
-}
-
-::v-deep .first-time__overlay {
-  .v-overlay__content {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    overflow-y: auto;
   }
 }
 </style>

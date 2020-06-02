@@ -1,5 +1,5 @@
 <template>
-  <div id="users">
+  <div id="users" class="users">
     <data-table
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -207,4 +207,10 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.users {
+  .wrapper .card {
+    padding: 0;
+  }
+}
+</style>

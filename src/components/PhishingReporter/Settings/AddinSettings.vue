@@ -1,7 +1,7 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
     <v-form lazy-validation ref="refForm" v-model="isValid">
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
@@ -20,7 +20,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="company-text">Brand Name</label>
           <v-text-field
@@ -37,7 +37,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label">Add-in Logo</label>
           <div class="add-in-settings__subtitle ">
@@ -57,7 +57,10 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 list__item mt-6" :class="[inModal ? 'mt-5' : 'mt-6']">
+      <v-list-item
+        class="px-0 add-in-settings__list-item mt-6"
+        :class="[inModal ? 'mt-5' : 'mt-6']"
+      >
         <v-list-item-content>
           <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
           <v-text-field
@@ -76,7 +79,11 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-group :class="{ 'margin-status': marginStatus }" no-action>
+      <v-list-group
+        :class="{ 'margin-status': marginStatus }"
+        class="add-in-settings__list-group"
+        no-action
+      >
         <template v-slot:activator>
           <v-list-item-content>
             <label class="add-in-settings__label" for="alertbox-text" @click="handleMarginStatus"
@@ -114,7 +121,7 @@
         </v-list-item>
       </v-list-group>
 
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="reported-text">Reported Message</label>
           <v-text-field
@@ -130,7 +137,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="delete-text">Delete Warning</label>
           <v-text-field
@@ -146,7 +153,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="deleted-text">Deleted Message</label>
           <v-text-field
@@ -162,7 +169,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 add-in-settings__list-item ">
         <v-list-item-content>
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
           <v-text-field
@@ -285,7 +292,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .add-in {
   &-settings {
     font-family: 'Open Sans', sans-serif !important;
@@ -340,10 +347,6 @@ export default {
       letter-spacing: normal;
       max-width: 554px !important;
 
-      ::v-deep fieldset:not(focus) {
-        // border: 1px solid #dcdfe6;
-      }
-
       &-report {
         max-width: 365px !important;
       }
@@ -356,17 +359,44 @@ export default {
         flex-direction: column;
       }
     }
+
+    &__list-item {
+      &.v-list-item {
+        padding: 0 !important;
+
+        &--active {
+          border-left: none !important;
+        }
+      }
+      .v-list-item__content {
+        padding: 0 !important;
+      }
+    }
+
+    &__list-group {
+      .v-list-group__header {
+        max-width: 554px;
+        padding: 0 !important;
+        border-left: none !important;
+      }
+      .v-list-group__items {
+        .v-list-item {
+          padding-left: 0 !important;
+          overflow: visible;
+        }
+        .v-list-item__content {
+          padding: 0 !important;
+          overflow: visible;
+        }
+      }
+    }
   }
 }
 
-::v-deep .v-list-item__content {
-  padding: 0 !important;
-}
-
 .btn-select-file {
-  max-width: 111px;
-  max-height: 36px;
-  border-radius: 18px;
+  max-width: 111px !important;
+  max-height: 36px !important;
+  border-radius: 18px !important;
   font-family: 'Open Sans', sans-serif !important;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
   background-color: #2196f3 !important;
@@ -376,26 +406,24 @@ export default {
   line-height: 1.71;
   letter-spacing: normal;
   text-align: center;
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
-.list__item {
-}
-
-.checkbox-text ::v-deep .v-label {
-  font-family: 'Open Sans', sans-serif !important;
-  position: relative;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
-}
-
-.checkbox-text.v-input--selection-controls {
-  margin-top: 0;
+.checkbox-text {
+  .v-label {
+    font-family: 'Open Sans', sans-serif !important;
+    position: relative;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  &.v-input--selection-controls {
+    margin-top: 0;
+  }
 }
 
 .report-warning__container {
@@ -422,20 +450,20 @@ export default {
   margin-right: 21px;
 }
 
-::v-deep .fade-enter-active,
+.fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s !important;
 }
 
-::v-deep .fade-enter-active {
+.fade-enter-active {
   transition: all 0.3s ease;
 }
 
-::v-deep .fade-leave-active {
+.fade-leave-active {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-::v-deep .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
  {
   opacity: 0 !important;
 }
@@ -461,30 +489,6 @@ export default {
   }
 }
 
-::v-deep .v-list-item__content > *:not(:last-child) {
-  // margin-bottom: 6px;
-}
-
-::v-deep .v-list-group__header {
-  max-width: 554px;
-  padding: 0 !important;
-}
-
-::v-deep {
-  .v-list-item {
-    padding: 0 !important;
-
-    &--active {
-      border-left: none !important;
-    }
-  }
-
-  .v-list-group__items {
-    .v-list-item {
-      overflow: visible;
-    }
-  }
-}
 .margin-status {
   margin-top: -7px;
   margin-bottom: 22px;

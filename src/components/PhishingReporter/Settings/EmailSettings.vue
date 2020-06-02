@@ -1,22 +1,23 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
-    <v-list-item class="px-0 list__item" v-if="showHeader">
+    <v-list-item class="px-0 email-settings__list-item" v-if="showHeader">
       <v-list-item-content>
-        <v-list-item-title class="list__item__text list__item__header"
+        <v-list-item-title class="email-settings__list-item--text email-settings__list-item--header"
           >Send Suspicious Emails To
         </v-list-item-title>
-        <v-list-item-subtitle class="list__item__text list__item__sub-header"
+        <v-list-item-subtitle
+          class="email-settings__list-item--text email-settings__list-item--sub-header"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
       <v-list-item
-        class="px-0 list__item mt-4"
+        class="px-0 email-settings__list-item mt-4"
         :class="[!hasError && !formValues.to ? 'mb-2' : '']"
       >
         <v-list-item-content>
-          <label class="list__item__header" for="recipient-email-address"
+          <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
           >
           <v-text-field
@@ -35,14 +36,14 @@
             @blur="hasError = true"
             height="40"
           ></v-text-field>
-          <div v-if="!hasError && !formValues.to" class="required__text">
+          <div v-if="!hasError && !formValues.to" class="email-settings__required__text">
             *Required
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="list__item__header" for="cc">CC</label>
+          <label class="email-settings__list-item--header" for="cc">CC</label>
           <v-text-field
             placeholder="Enter email address"
             outlined
@@ -54,9 +55,9 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="list__item__header" for="bcc">BCC</label>
+          <label class="email-settings__list-item--header" for="bcc">BCC</label>
           <v-text-field
             placeholder="Enter email address"
             outlined
@@ -69,9 +70,9 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="list__item__header" for="email-subject">Email Subject</label>
+          <label class="email-settings__list-item--header" for="email-subject">Email Subject</label>
           <v-text-field
             placeholder="Suspicious Email"
             outlined
@@ -84,9 +85,9 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="list__item__header" for="email-message">Email Message</label>
+          <label class="email-settings__list-item--header" for="email-message">Email Message</label>
           <v-text-field
             placeholder="Enter email address"
             outlined
@@ -102,7 +103,7 @@
       <v-btn
         @click="submit"
         rounded
-        class="white--text btn-util mt-3"
+        class="white--text email-settings__btn-util mt-3"
         color="#2196f3"
         style="margin-bottom: 6px"
         v-if="showFooter"
@@ -179,7 +180,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .email-settings {
   font-family: 'Open Sans', sans-serif !important;
 
@@ -195,67 +196,64 @@ export default {
     letter-spacing: normal;
     max-width: 554px !important;
   }
-}
+  &__list-item {
+    &--text {
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+    }
 
-.list__item {
-  &__text {
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
+    .v-list-item__content {
+      padding: 0 !important;
+    }
+
+    &--header {
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    &--sub-header {
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1.5;
+    }
+  }
+
+  &__btn-util {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 500;
     font-stretch: normal;
     font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    max-height: 36px;
   }
 
-  &__header {
-    @extend .list__item__text;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-
-  &__sub-header {
-    @extend .list__item__text;
-    font-size: 14px;
+  &__required__text {
+    font-family: 'Open Sans', sans-serif !important;
+    margin-top: -36px;
+    z-index: 9;
+    font-size: 9px;
     font-weight: normal;
-    line-height: 1.5;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    margin-left: 10px;
+    letter-spacing: normal;
+    color: #474747 !important;
   }
-}
-
-.v-list-item__content {
-  padding: 5px 0 !important;
-}
-
-.btn-util {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  text-align: center;
-  color: #ffffff;
-  max-height: 36px;
-}
-
-::v-deep .v-list-item__content > *:not(:last-child) {
-  // margin-bottom: 6px;
-}
-
-::v-deep .v-list-item__content {
-  padding: 0 !important;
-}
-
-.required__text {
-  font-family: 'Open Sans', sans-serif !important;
-  margin-top: -36px;
-  z-index: 9;
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  margin-left: 10px;
-  letter-spacing: normal;
-  color: #474747 !important;
 }
 </style>

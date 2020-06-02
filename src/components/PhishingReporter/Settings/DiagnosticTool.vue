@@ -1,20 +1,27 @@
 <template>
   <v-container fill-height fluid tag="div">
     <div class="diagnostic-tool" id="diagnostic-tool">
-      <v-list-item class="px-0 list__item">
+      <v-list-item class="px-0 diagnostic-tool__list-item">
         <v-list-item-content>
-          <div class="list__item__header" v-if="showHeader">Optional Features</div>
+          <div class="diagnostic-tool__list-item-header" v-if="showHeader">Optional Features</div>
           <v-checkbox
-            class="checkbox-text"
+            class="diagnostic-tool__checkbox"
             color="#2196f3"
             label="Check and enable all disabled add-ins automatically"
             v-model="formValues.enableAllAddIns"
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item :class="[isInModal && 'mt-n3', isInModal && 'p-0']">
+      <v-list-item
+        :class="[isInModal && 'mt-n3', isInModal && 'p-0']"
+        class="diagnostic-tool__list-item"
+      >
         <v-list-item-content>
-          <div :style="getDiagnosticToolFormStyle" class="diagnostic-tool__form-container">
+          <div
+            :style="getDiagnosticToolFormStyle"
+            class="diagnostic-tool__form-container"
+            :class="[isInModal && 'mt-2']"
+          >
             <div>
               <v-select
                 :items="intervalItems"
@@ -27,7 +34,7 @@
                 v-model="formValues.interval"
               ></v-select>
             </div>
-            <div class="items__text items__text--1">
+            <div class="diagnostic-tool__text diagnostic-tool__text--1">
               on
             </div>
             <div>
@@ -42,7 +49,7 @@
                 v-model="formValues.day"
               ></v-select>
             </div>
-            <div class="items__text items__text--2">
+            <div class="diagnostic-tool__text diagnostic-tool__text--2">
               at
             </div>
             <v-menu
@@ -51,17 +58,17 @@
               :close-on-content-click="false"
               :close-on-click="true"
               :return-value="formValues.time"
-              value="isOpe"
               transition="scale-transition"
+              bottom
               offset-y
               max-width="210px"
               min-width="210px"
             >
               <template v-slot:activator="{ on }">
-                <div class="list__item__textfield">
+                <div class="diagnostic-tool__textfield">
                   <v-text-field
                     append-icon="mdi-clock-outline"
-                    class="list__item__text"
+                    class="diagnostic-tool__list-item-text"
                     dense
                     height="40"
                     outlined
@@ -81,7 +88,12 @@
               ></v-time-picker>
             </v-menu>
 
-            <div :class="['items__text items__text-timezone', isInModal && 'timezone-in-modal']">
+            <div
+              :class="[
+                'diagnostic-tool__text diagnostic-tool__text--timezone',
+                isInModal && 'timezone-in-modal'
+              ]"
+            >
               Timezone
             </div>
 
@@ -89,7 +101,7 @@
               <v-select
                 :class="[isInModal && 'select-in-modal']"
                 :items="timezones"
-                class="diagnostic-tool__select diagnostic-tool__select--timezone"
+                class="diagnostic-tool__select"
                 dense
                 item-text="displayName"
                 item-value="id"
@@ -105,10 +117,15 @@
       </v-list-item>
     </div>
     <div class="diagnostic-tool__footer" v-if="showFooter">
-      <v-btn @click="submit" class="white--text btn-util btn-save-changes" color="#2196f3" rounded>
+      <v-btn
+        @click="submit"
+        class="white--text diagnostic-tool__btn-util diagnostic-tool__btn-save-changes"
+        color="#2196f3"
+        rounded
+      >
         SAVE CHANGES
       </v-btn>
-      <v-btn class="white--text btn-util ml-3" color="#00bcd4" rounded>
+      <v-btn class="white--text diagnostic-tool__btn-util ml-3" color="#00bcd4" rounded>
         <v-icon left>mdi-download</v-icon>
         Download diagnostic tool
       </v-btn>
@@ -191,106 +208,36 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.list__item {
-  font-family: 'Open Sans', sans-serif !important;
-
-  &__text {
-    font-family: 'Open Sans', sans-serif !important;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    font-stretch: normal;
-    font-style: normal;
-
-    &--special {
-      &-1 {
-        margin-left: 25px;
-      }
-
-      &-2 {
-        margin-top: -8px !important;
-      }
-    }
-  }
-
-  &__textfield {
-    max-width: 123px;
-    @media (max-width: 768px) {
-      max-width: 104% !important;
-      //width: 100% !important;
-    }
-  }
-
-  &__header {
-    @extend .list__item__text;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-
-  &__sub-header {
-    @extend .list__item__text;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.5;
-  }
-}
-
-.checkbox-text {
-  margin-top: 0 !important;
-  @media (min-width: 768px) {
-    margin-top: 16px !important;
-  }
-
-  @media (max-width: 768px) {
-    margin-top: 9px !important;
-  }
-
-  ::v-deep .v-label {
-    font-family: 'Open Sans', sans-serif !important;
-    color: rgba(0, 0, 0, 0.87) !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-  }
-}
-
-::v-deep .v-time-picker-title__time .v-picker__title__btn,
-.v-time-picker-title__time span {
-  font-size: 50px;
-}
-
-::v-deep .v-picker__title {
-  padding: 0 16px;
-}
-
-::v-deep .v-list-item__content {
-  padding: 0 !important;
-  overflow: visible;
-}
-
-::v-deep .v-label {
-  color: rgba(0, 0, 0, 0.87) !important;
-}
-
+<style lang="scss">
 .diagnostic-tool {
   width: 100%;
 
   &__form-container {
     display: flex;
     margin-left: 16px !important;
+    margin-top: -4px;
     @media (max-width: 768px) {
       flex-direction: column;
       margin-left: 0 !important;
     }
   }
 
-  ::v-deep .mdi-clock-outline {
+  .mdi-clock-outline {
     margin-top: 3.5px !important;
     margin-right: -8px;
+  }
+
+  .v-picker__title {
+    padding: 0 16px;
+  }
+
+  .v-time-picker-title__time .v-picker__title__btn,
+  .v-time-picker-title__time span {
+    font-size: 50px;
+  }
+
+  .v-label {
+    color: rgba(0, 0, 0, 0.87) !important;
   }
 
   &__select {
@@ -298,6 +245,31 @@ export default {
     @media (max-width: 768px) {
       max-width: 100% !important;
       width: 100% !important;
+    }
+  }
+
+  &__checkbox {
+    margin-top: 0 !important;
+    @media (min-width: 768px) {
+      margin-top: 16px !important;
+    }
+
+    @media (max-width: 768px) {
+      margin-top: 9px !important;
+    }
+
+    .v-label {
+      font-family: 'Open Sans', sans-serif !important;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+    }
+    .v-input__slot {
+      margin-bottom: 0 !important;
     }
   }
 
@@ -332,67 +304,115 @@ export default {
       flex-basis: 100%;
     }
   }
-}
 
-.items__text {
-  margin: 12px 8px !important;
-  @media (max-width: 768px) {
-    margin: 0 !important;
-  }
-
-  &--1 {
+  &__textfield {
+    max-width: 123px;
     @media (max-width: 768px) {
-      // margin: 10px 18px !important;
+      max-width: 104% !important;
+      //width: 100% !important;
     }
   }
 
-  &--2 {
-    @media (max-width: 768px) {
-      //margin: 12px 18px 18px 0px !important;
+  &__list-item {
+    font-family: 'Open Sans', sans-serif !important;
+
+    &-text {
+      font-family: 'Open Sans', sans-serif !important;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+
+      &--special {
+        &-1 {
+          margin-left: 25px;
+        }
+
+        &-2 {
+          margin-top: -8px !important;
+        }
+      }
+    }
+
+    .v-list-item__content {
+      padding: 0 !important;
+      overflow: visible;
+    }
+    &-header {
+      font-family: 'Open Sans', sans-serif !important;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    &-sub-header {
+      font-family: 'Open Sans', sans-serif !important;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1.5;
     }
   }
 
-  &-timezone {
-    margin-left: 32px !important;
-    margin-right: 16px !important;
+  &__text {
+    margin: 12px 8px !important;
+    @media (max-width: 768px) {
+      margin: 0 !important;
+    }
+
+    &--timezone {
+      margin-left: 32px !important;
+      margin-right: 16px !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      //line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      @media (max-width: 768px) {
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+      }
+    }
+  }
+
+  &__btn-util {
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
-    font-weight: normal;
+    font-weight: 600;
     font-stretch: normal;
     font-style: normal;
-    //line-height: 1.5;
+    line-height: 1.71;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
+    text-align: center;
+    color: #ffffff;
+    max-height: 36px;
+
     @media (max-width: 768px) {
-      margin-left: 0 !important;
-      margin-top: 0 !important;
+      margin: 8px 0;
+    }
+
+    .v-icon {
+      font-size: 19px;
     }
   }
-}
 
-.btn-util {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  text-align: center;
-  color: #ffffff;
-  max-height: 36px;
-
-  @media (max-width: 768px) {
-    margin: 8px 0;
+  &__btn-save-changes {
+    @media (max-width: 768px) {
+      margin-left: 12px !important;
+    }
   }
 
-  .v-icon {
-    font-size: 19px;
-  }
-}
-
-.btn-save-changes {
-  @media (max-width: 768px) {
-    margin-left: 12px !important;
+  .v-list-item__content > *:not(:last-child) {
+    margin-bottom: 0;
   }
 }
 
@@ -410,14 +430,10 @@ export default {
 }
 
 .select-in-modal {
-  margin-top: -15px;
-  margin-left: -44px;
+  margin-top: -15px !important;
+  margin-left: -44px !important;
   @media (max-width: 768px) {
-    margin: 0 !important;
+    margin: 0 !important ;
   }
-}
-
-.at-in-timezone {
-  //margin: 12px 18px 18px 0px !important;
 }
 </style>
