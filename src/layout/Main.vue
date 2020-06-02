@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="main">
     <template v-for="(snackbar, index) in snackbars">
       <v-snackbar
         :key="snackbar.message"
@@ -24,8 +24,8 @@
             color="#fff"
             size="20px"
             @click="changeSnackbarStatus(false, snackbar)"
-            >mdi-close</v-icon
-          >
+            >mdi-close
+          </v-icon>
           <router-link class="snackbar__action" v-else :to="snackbar.action.link">
             <v-btn @click.native="changeSnackbarStatus($event, snackbar)" color="#2196f3" rounded>
               {{ snackbar.action.label }}
@@ -362,24 +362,22 @@
             </div>
           </div>
         </div>
-
         <div class="v-flex flex-column align-center">
           <v-toolbar-title>
             <span v-if="routerName === 'Community'">{{ communityName || $route.params.name }}</span>
             <span v-else>{{ routerName }}</span>
           </v-toolbar-title>
-
           <div class="breadcrumb-wrapper ml-2 pt-1">
             <div class="pr-2">
-              <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'">{{
-                breadcrumbs[0].text
-              }}</router-link>
+              <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'"
+                >{{ breadcrumbs[0].text }}
+              </router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/threat-sharing"
                 v-if="routerName === 'Threat Sharing'"
-                >{{ breadcrumbs[1].text }}</router-link
-              >
+                >{{ breadcrumbs[1].text }}
+              </router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/threat-sharing"
@@ -395,7 +393,8 @@
                 v-if="routerName === 'Incident Responder'"
               >
                 {{ breadcrumbs[3].text }}
-                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>Dashboard
+                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+                Dashboard
               </router-link>
               <router-link
                 class="breadcrumb-links"
@@ -411,14 +410,15 @@
                 v-if="routerName === 'Phishing Reporter'"
               >
                 {{ breadcrumbs[1].text }}
-                <v-icon style="color: #fff; font-size: 16px; ">mdi-chevron-right</v-icon>Playbook
+                <v-icon style="color: #fff; font-size: 16px; ">mdi-chevron-right</v-icon>
+                Playbook
               </router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/incident-responder"
                 v-if="routerName === 'Analysis Details'"
-                >{{ breadcrumbs[3].text }}</router-link
-              >
+                >{{ breadcrumbs[3].text }}
+              </router-link>
               <router-link
                 class="breadcrumb-links"
                 to="/investigations"
@@ -437,8 +437,8 @@
                 v-if="routerName === 'Investigations'"
                 :to="$route.path"
                 class="bread-last-step breadcrumb-links"
-                >Incident Responder > {{ routerName }}</router-link
-              >
+                >Incident Responder > {{ routerName }}
+              </router-link>
               <v-icon
                 v-if="
                   routerName !== 'Incident Responder' &&
@@ -446,8 +446,8 @@
                     routerName !== 'Phishing Reporter'
                 "
                 style="color: #fff; font-size: 16px;"
-                >mdi-chevron-right</v-icon
-              >
+                >mdi-chevron-right
+              </v-icon>
               <router-link
                 v-if="
                   routerName !== 'Incident Responder' &&
@@ -456,8 +456,8 @@
                 "
                 :to="$route.path"
                 class="bread-last-step breadcrumb-links"
-                >{{ routerName }}</router-link
-              >
+                >{{ routerName }}
+              </router-link>
             </div>
           </div>
         </div>
@@ -483,7 +483,6 @@
     </v-content>
   </v-app>
 </template>
-
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import offline from 'v-offline'
@@ -959,8 +958,8 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss">
-.header-container {
+<style lang="scss">
+header.header-container {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -1029,6 +1028,7 @@ export default {
     font-size: 22px !important;
   }
 }
+
 .menu-list-item {
   ::v-deep .v-list-item__title {
     line-height: 1.2rem !important;
@@ -1076,6 +1076,7 @@ export default {
     padding: 0 16px;
   }
 }
+
 // End Footer
 
 // Notification
@@ -1248,16 +1249,17 @@ export default {
   height: 60px;
 }
 
-::v-deep .v-navigation-drawer {
+.v-navigation-drawer {
   min-width: 64px;
 }
-::v-deep .v-navigation-drawer__content {
+
+.v-navigation-drawer__content {
   .v-list-item {
     border-left: 5px solid transparent;
   }
 }
 
-::v-deep .v-list-item--active {
+.v-list-item--active {
   border-left: solid 5px !important;
   border-color: #2196f3 !important;
   color: #2196f3 !important;
@@ -1269,6 +1271,7 @@ export default {
   line-height: normal;
   letter-spacing: normal;
 }
+
 .active-link {
   .menu-item-wrapper {
     background-color: #e3f2fd !important;
@@ -1276,6 +1279,7 @@ export default {
     border-color: unset !important;
   }
 }
+
 .active-link > div {
   border-left: solid 5px !important;
   border-color: #2196f3 !important;
@@ -1293,7 +1297,7 @@ export default {
   padding-top: 0;
   margin-right: 24px;
 
-  ::v-deep .v-input__slot {
+  .v-input__slot {
     background-color: rgba(255, 255, 255, 0.3) !important;
     min-height: 27px !important;
     font-size: 14px;
@@ -1303,7 +1307,8 @@ export default {
     line-height: normal;
     letter-spacing: normal;
   }
-  ::v-deep .v-icon {
+
+  .v-icon {
     font-size: 20px !important;
   }
 }
@@ -1504,6 +1509,7 @@ header {
   position: relative;
   width: 100%;
 }
+
 .placeholder-search {
   color: rgba(255, 255, 255, 0.87);
   font-size: 16px;
@@ -1563,6 +1569,7 @@ header {
     justify-content: space-between !important;
   }
 }
+
 @media only screen and (max-width: 500px) {
   ::v-deep .v-card,
   .v-card__text {
@@ -1600,6 +1607,7 @@ header {
     .v-icon {
       font-size: 19px !important;
     }
+
     .v-card-headline {
       font-size: 19px !important;
     }
@@ -1614,17 +1622,21 @@ header {
   max-height: 60px;
   margin-left: 8px;
 }
+
 .menu-link-default {
   text-decoration: none;
 }
+
 .help-wrapper {
   padding-left: 30px;
 }
+
 .search-notification-wrapper {
   .v-toolbar__content .v-btn.v-btn--icon.v-size--default {
     height: 44px !important;
   }
 }
+
 .notification-bell {
   display: flex;
   align-items: center;
@@ -1633,6 +1645,7 @@ header {
   width: 44px;
   height: 44px;
 }
+
 .manuel-badge {
   width: 18px !important;
   min-width: 18px !important;
@@ -1650,15 +1663,18 @@ header {
     font-size: 11px;
   }
 }
+
 .header-container > ::v-deep .v-toolbar__content {
   padding-bottom: 0 !important;
   padding-top: 4px !important;
 }
+
 .breadcrumb-links {
   text-decoration: none !important;
   color: #fff !important;
   cursor: pointer;
 }
+
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .v-cart-dropdown-list {
     width: 160px !important;
@@ -1668,6 +1684,7 @@ header {
     }
   }
 }
+
 .v-footer {
   align-items: center;
   display: flex;
@@ -1687,6 +1704,7 @@ header {
 
 .footer-item {
   flex: 1;
+
   &__primary {
     order: 1;
     flex-grow: 1;
@@ -1729,6 +1747,7 @@ header {
   > .v-list-item {
   padding-left: 0 !important;
 }
+
 .menu-item-wrapper {
   line-height: 1.2 !important;
   border-radius: 23px;
@@ -1750,6 +1769,7 @@ header {
     color: #1565c0;
   }
 }
+
 .menu-with-item ::v-deep .v-list-item {
   align-items: center;
   display: flex;
@@ -1764,6 +1784,7 @@ header {
     }
   }
 }
+
 .active-menu-parent > ::v-deep .v-list-group__header {
   border-left: solid 5px !important;
   border-color: #2196f3 !important;
@@ -1771,6 +1792,7 @@ header {
   .v-list-item__title {
     color: #2196f3 !important;
   }
+
   .v-list-item__icon > i {
     color: #2196f3 !important;
   }
@@ -1781,13 +1803,16 @@ button:disabled {
   cursor: no-drop !important;
   pointer-events: all !important;
 }
+
 ::v-deep .switch-dialog {
   width: 600px !important;
   border-radius: 20px !important;
 }
+
 ::v-deep .v-application--wrap {
   background-color: #fafafa !important;
 }
+
 .help-menu {
   left: unset !important;
   right: 0 !important;
@@ -1795,6 +1820,7 @@ button:disabled {
   min-width: 200px !important;
   width: 200px !important;
 }
+
 .notification-menu {
   left: unset !important;
   right: 0 !important;
@@ -1806,6 +1832,7 @@ button:disabled {
 ::v-deep .v-snack__wrapper {
   width: 100%;
 }
+
 ::v-deep .v-snack__content {
   padding: 12px 16px;
 }
@@ -1816,8 +1843,10 @@ button:disabled {
     align-items: center;
     flex-basis: 85%;
   }
+
   &__right-column {
   }
+
   &__message {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -1828,10 +1857,12 @@ button:disabled {
     letter-spacing: normal;
     color: #ffffff;
   }
+
   &__action {
     text-decoration: none;
     color: white;
     margin-right: 5px;
+
     ::v-deep .v-btn__content {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;

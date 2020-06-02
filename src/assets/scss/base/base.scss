@@ -1,0 +1,132 @@
+
+
+// Any changes to a default variable must be
+// declared above the initial style import
+$font-size-root: 14px;
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&display=swap');
+
+// Required for modifying core defaults
+@import '~vuetify/src/styles/styles';
+
+// Any component modifications must be imported
+@import '~vuetify/src/components/VBtn/variables';
+
+$fab-icon-sizes: map-merge($fab-icon-sizes, (small: 20));
+$btn-font-sizes: map-merge($btn-font-sizes, (default: 1rem, large: 1rem));
+$btn-sizes: map-merge($btn-sizes, (default: 41, large: 54));
+$btn-letter-spacing: 0;
+$btn-font-weight: 400;
+
+@import '~vuetify/src/components/VNavigationDrawer/VNavigationDrawer';
+
+@import '~vuetify/src/components/VList/variables';
+
+$list-item-title-font-size: 0.929rem;
+$list-item-dense-title-font-size: 0.929rem;
+$list-item-dense-title-font-weight: initial;
+
+// Example of nested object updates
+$headings: map-merge($headings, (
+        'h1': map-merge(
+                        map-get($headings, 'h1'),
+                        (
+                                'size': 3.3125rem,
+                                'line-height': 1.15em
+                        )
+        ),
+        'h2': map-merge(
+                        map-get($headings, 'h2'),
+                        (
+                                'size': 2.25rem,
+                                'line-height': 1.5em
+                        )
+        ),
+        'h3': map-merge(
+                        map-get($headings, 'h3'),
+                        (
+                                'size': 1.5625rem,
+                                'line-height': 1.4em
+                        )
+        ),
+        'h4': map-merge(
+                        map-get($headings, 'h4'),
+                        (
+                                'size': 1.125rem,
+                                'line-height': 1.4em
+                        )
+        ),
+        'h5': map-merge(
+                        map-get($headings, 'h5'),
+                        ('size': 1.0625rem)
+        ),
+        'h6': map-merge(
+                        map-get($headings, 'h6'),
+                        ('size': .75rem)
+        ),
+        'subtitle-2': map-merge(
+                        map-get($headings, 'subtitle-2'),
+                        ('size': 1rem)
+        ),
+        overline: map-merge(
+                        map-get($headings, 'overline'),
+                        ('letter-spacing': 0)
+        )
+));
+.v-autocomplete__content.v-menu__content {
+  border-radius: 12px !important;
+}
+
+.v-menu__content {
+  border-radius: 8px !important;
+  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+  .v-list-item--link:before { // Dropdowns selected ones background
+    background-color: unset !important;
+  }
+}
+
+.v-dialog {
+  border-radius: 12px;
+}
+
+.confirm-dialog {
+  border-radius: 12px !important;
+  box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14), 0 9px 46px 8px rgba(80, 80, 80, 0.12) !important;
+  background-color: #fff !important;
+}
+
+.v-list {
+  .v-item-group.theme--light {
+    .v-list-item:hover {
+      background-color: #f2f2f2;
+      transition: all ease-in-out .2s;
+    }
+  }
+
+  .v-list-item.menu-list-item:hover {
+    background-color: #f2f2f2;
+    transition: all ease-in-out .2s;
+  }
+}
+
+.v-cart-dropdown-list.v-list {
+  .v-list-item:hover {
+    background-color: #f2f2f2;
+    transition: all ease-in-out .2s;
+  }
+}
+
+.v-tooltip__content {
+  border-radius: 4px;
+  background: #6d6d6d !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+  opacity: 1 !important;
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 12px;
+}
+
+@media only screen and (max-width: 500px) {
+  ::v-deep .v-application .pa-6 {
+    padding: 16px !important;
+  }
+}
