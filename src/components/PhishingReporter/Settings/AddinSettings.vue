@@ -95,7 +95,6 @@
         <v-list-item>
           <v-list-item-content class="show-warning" :class="[inModal ? 'show-warning-margin' : '']">
             <v-checkbox
-              class="checkbox-text"
               color="#2196f3"
               label="Show Warning"
               v-model="formValues.showWarning"
@@ -406,23 +405,6 @@ export default {
   letter-spacing: normal;
   text-align: center;
   color: #ffffff !important;
-}
-
-.checkbox-text {
-  .v-label {
-    font-family: 'Open Sans', sans-serif !important;
-    position: relative;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-  &.v-input--selection-controls {
-    margin-top: 0;
-  }
 }
 
 .report-warning__container {

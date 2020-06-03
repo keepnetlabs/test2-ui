@@ -227,15 +227,6 @@ export default {
     margin-right: -8px;
   }
 
-  .v-picker__title {
-    padding: 0 16px;
-  }
-
-  .v-time-picker-title__time .v-picker__title__btn,
-  .v-time-picker-title__time span {
-    font-size: 50px;
-  }
-
   .v-label {
     color: rgba(0, 0, 0, 0.87) !important;
   }
@@ -249,24 +240,11 @@ export default {
   }
 
   &__checkbox {
-    margin-top: 0 !important;
     @media (min-width: 768px) {
       margin-top: 16px !important;
     }
-
     @media (max-width: 768px) {
       margin-top: 9px !important;
-    }
-
-    .v-label {
-      font-family: 'Open Sans', sans-serif !important;
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
-      letter-spacing: normal;
     }
     .v-input__slot {
       margin-bottom: 0 !important;

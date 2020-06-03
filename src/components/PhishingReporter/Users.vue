@@ -211,6 +211,7 @@ export default {
 .users {
   .wrapper .card {
     padding: 0;
+    margin-top: 24px;
   }
 }
 </style>

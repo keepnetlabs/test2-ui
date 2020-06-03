@@ -557,8 +557,4 @@ export default {
 .margin-status-optional {
   margin-bottom: 12px;
 }
-
-.enterprise-vault-url.enterprise-vault-url-margin {
-  //padding-top: 14px !important;
-}
 </style>
