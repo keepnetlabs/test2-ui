@@ -881,7 +881,7 @@ export default {
       if (index >= 1) {
         styleObj['bottom'] = `${65 * index}px`
         if (window.outerWidth <= 580) {
-          styleObj['bottom'] = '102px'
+          styleObj['bottom'] = `${75 * index}px`
         }
       } else {
         styleObj['bottom'] = '5px'

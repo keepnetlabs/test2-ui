@@ -1,10 +1,16 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
     <v-form ref="refForm">
-      <v-list-group no-action :class="{ 'margin-status-optional': marginStatusOptional }">
+      <v-list-group
+        no-action
+        :class="{ 'margin-status-optional': marginStatusOptional }"
+        class="other-settings__list-group"
+      >
         <template v-slot:activator>
-          <v-list-item-content class="list__item" @click="handleMarginStatusForOptional">
-            <div class="list__item__header">Optional Features</div>
+          <v-list-item-content class="other-settings__list-item">
+            <div class="other-settings__list-item-header" @click="handleMarginStatusForOptional">
+              Optional Features
+            </div>
           </v-list-item-content>
         </template>
         <v-list-item>
@@ -12,7 +18,7 @@
             <div>
               <v-checkbox
                 v-model="formValues.deleteOriginalMail"
-                class="checkbox-text mt-4"
+                class="other-settings__checkbox mt-3"
                 color="#2196f3"
                 label="Delete Original Email"
               ></v-checkbox>
@@ -20,7 +26,7 @@
             <div>
               <v-checkbox
                 v-model="formValues.enableProxy"
-                class="checkbox-text"
+                class="other-settings__checkbox"
                 color="#2196f3"
                 label="Enable proxy"
               ></v-checkbox>
@@ -29,18 +35,18 @@
               <v-checkbox
                 v-model="formValues.isOnPremise"
                 color="#2196f3"
-                class="checkbox-text"
+                class="other-settings__checkbox"
                 label="On-premise settings"
               ></v-checkbox>
             </div>
-            <div class="site-url__container">
+            <div class="site-url__container mt-n2">
               <span class="site-url__message site-url__message--1">Site URL</span>
               <v-text-field
                 placeholder="https://dashboard.abc.com/"
                 outlined
                 dense
                 :disabled="!formValues.isOnPremise"
-                class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-1 mt-2"
+                class="other-settings__list-item-text other-settings__textfield other-settings__list-item-text--special other-settings__list-item-text--special--1 mt-2"
                 v-model="formValues.apiUrl"
                 id="site-url"
                 height="40"
@@ -48,13 +54,13 @@
               ></v-text-field>
             </div>
             <div class="site-url__container">
-              <span class="site-url__message site-url__message--2">Company ID</span>
+              <span class="site-url__message">Company ID</span>
               <v-text-field
                 placeholder="Company ID"
                 :disabled="!formValues.isOnPremise"
                 outlined
                 dense
-                class="list__item__text other-settings__textfield list__item__text--special list__item__text--special-2"
+                class="other-settings__list-item-text other-settings__textfield other-settings__list-item-text--special other-settings__list-item-text--special-2"
                 v-model="formValues.companyId"
                 id="company-id"
                 height="40"
@@ -64,9 +70,11 @@
           </v-list-item-content>
         </v-list-item>
       </v-list-group>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="extra-message-text">Extra Message</label>
+          <label class="other-settings__list-item-header" for="extra-message-text"
+            >Extra Message</label
+          >
           <v-text-field
             placeholder="Extra message in the dialog boxes"
             outlined
@@ -78,9 +86,9 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="screen-tip-text">Screen Tip</label>
+          <label class="other-settings__list-item-header" for="screen-tip-text">Screen Tip</label>
           <v-text-field
             placeholder="Popup tooltip text"
             outlined
@@ -92,9 +100,9 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="no-internet-connection-message"
+          <label class="other-settings__list-item-header" for="no-internet-connection-message"
             >No Connection Message</label
           >
           <v-text-field
@@ -108,9 +116,11 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="yes-button-text">Yes Button Text</label>
+          <label class="other-settings__list-item-header" for="yes-button-text"
+            >Yes Button Text</label
+          >
           <v-text-field
             placeholder="Yes"
             outlined
@@ -122,9 +132,11 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="no-button-text">No Button Text</label>
+          <label class="other-settings__list-item-header" for="no-button-text"
+            >No Button Text</label
+          >
           <v-text-field
             placeholder="No"
             outlined
@@ -136,9 +148,11 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="cancel-button-text">Cancel Button Text</label>
+          <label class="other-settings__list-item-header" for="cancel-button-text"
+            >Cancel Button Text</label
+          >
           <v-text-field
             placeholder="Cancel"
             outlined
@@ -150,9 +164,11 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="okay-button-text">Okay Button Text</label>
+          <label class="other-settings__list-item-header" for="okay-button-text"
+            >Okay Button Text</label
+          >
           <v-text-field
             placeholder="Okay"
             outlined
@@ -164,9 +180,9 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 list__item ">
+      <v-list-item class="px-0 other-settings__list-item ">
         <v-list-item-content>
-          <label class="list__item__header" for="email-sending-message"
+          <label class="other-settings__list-item-header" for="email-sending-message"
             >Email Sending Error Message</label
           >
           <v-text-field
@@ -180,10 +196,12 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-group no-action class="mb-6">
+      <v-list-group no-action class="mb-6 other-settings__list-group">
         <template v-slot:activator>
           <v-list-item-content>
-            <label class="list__item__header" for="alertbox-text">Enterprise Vault</label>
+            <label class="other-settings__list-item-header " for="alertbox-text"
+              >Enterprise Vault</label
+            >
           </v-list-item-content>
         </template>
         <v-list-item>
@@ -193,19 +211,19 @@
           >
             <v-checkbox
               v-model="formValues.enableEnterpriseVault"
-              class="checkbox-text mt-2"
+              class="other-settings__checkbox mt-2"
               @change="handleEnterpriseVaultChange"
               color="#2196f3"
               label="Enable enterprise vault"
             ></v-checkbox>
-            <div class="site-url__container">
+            <div class="site-url__container mt-n2">
               <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
               <v-text-field
                 placeholder="www.bc.com"
                 outlined
                 :disabled="enterpriseVaultDisabled"
                 dense
-                class="list__item__text  other-settings__textfield list__item__text--special  mt-2"
+                class="other-settings__list-item-text  other-settings__textfield other-settings__list-item-text--special  mt-2"
                 v-model="formValues.enterpriseVaultUrl"
                 height="40"
               ></v-text-field>
@@ -216,7 +234,12 @@
 
       <div class="other-settings__footer" v-if="showFooter">
         <div class="d-flex justify-center">
-          <v-btn @click="submit" rounded class="white--text btn-util" color="#2196f3">
+          <v-btn
+            @click="submit"
+            rounded
+            class="white--text other-settings__btn-util"
+            color="#2196f3"
+          >
             SAVE CHANGES
           </v-btn>
         </div>
@@ -333,60 +356,10 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.list__item {
-  font-family: 'Open Sans', sans-serif !important;
-
-  &__text {
-    font-family: 'Open Sans', sans-serif !important;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    font-stretch: normal;
-    font-style: normal;
-
-    &__special {
-      max-width: 365px !important;
-
-      &-1 {
-        margin-left: 25px;
-        margin-right: 47px;
-      }
-
-      &-2 {
-        margin-top: -9px !important;
-      }
-    }
-  }
-
-  &__header {
-    @extend .list__item__text;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-
-  &__sub-header {
-    @extend .list__item__text;
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.5;
-  }
-}
-
-.checkbox-text {
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-
-  ::v-deep .v-label {
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-}
-
+<style lang="scss">
 .other-settings {
+  margin-top: -12px;
+
   &__link {
     font-family: 'Open Sans', sans-serif !important;
     text-transform: uppercase;
@@ -409,8 +382,42 @@ export default {
     }
   }
 
+  &__checkbox {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+
+    .v-label {
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+    }
+
+    .v-input__slot {
+      margin-bottom: 0 !important;
+      margin-top: -5px;
+    }
+
+    &.v-input--selection-controls {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+  }
+
   &__textfield {
     max-width: 554px;
+
+    &.v-input--is-disabled .v-input__slot {
+      background-color: #f2f2f2 !important;
+    }
   }
 
   &__footer {
@@ -420,6 +427,91 @@ export default {
     @media (max-width: 768px) {
       flex-direction: column;
     }
+  }
+
+  &__list-item {
+    font-family: 'Open Sans', sans-serif !important;
+
+    .v-list-item__content {
+      padding: 0 !important;
+    }
+
+    .v-list-item {
+      padding: 0 !important;
+
+      &--active {
+        border-left: none !important;
+      }
+    }
+
+    .v-list-group__header {
+      max-width: 554px;
+    }
+
+    &-text {
+      font-family: 'Open Sans', sans-serif !important;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+
+      &--special {
+        max-width: 365px !important;
+
+        &-1 {
+          margin-left: 25px;
+          margin-right: 47px;
+        }
+
+        &-2 {
+          margin-top: -9px !important;
+        }
+      }
+    }
+
+    &-header {
+      font-family: 'Open Sans', sans-serif !important;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-stretch: normal;
+      font-style: normal;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+  }
+
+  &__list-group {
+    .v-list-group__header {
+      padding: 0 !important;
+      border-left: none !important;
+      max-width: 554px;
+    }
+    .v-list-group__items {
+      .v-list-item {
+        padding: 0 !important;
+        overflow: visible;
+      }
+      .v-list-item__content {
+        overflow: visible;
+      }
+    }
+    .v-list-item__content {
+      padding: 0 !important;
+    }
+  }
+
+  &__btn-util {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    max-height: 36px;
   }
 }
 
@@ -462,60 +554,11 @@ export default {
   }
 }
 
-::v-deep .v-list-item__content {
-  padding: 0 !important;
-}
-
-.checkbox-text ::v-deep .v-input__slot {
-  margin-bottom: 0 !important;
-  margin-top: -5px;
-}
-
-::v-deep .v-input--selection-controls {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-::v-deep .v-input--is-disabled .v-input__slot {
-  background-color: #f2f2f2 !important;
-}
-
-::v-deep .v-list-item__content > *:not(:last-child) {
-  //margin-bottom: 6px;
-}
-
-.btn-util {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  text-align: center;
-  color: #ffffff;
-  max-height: 36px;
-}
-
-::v-deep {
-  .v-list-item {
-    padding: 0 !important;
-
-    &--active {
-      border-left: none !important;
-    }
-  }
-
-  .v-list-group__header {
-    max-width: 554px;
-  }
-}
-
 .margin-status-optional {
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 }
 
 .enterprise-vault-url.enterprise-vault-url-margin {
-  padding-top: 14px !important;
+  //padding-top: 14px !important;
 }
 </style>

@@ -103,22 +103,27 @@
     <div class="phishing-reporter">
       <v-layout id="ts-layout" style="min-height: 79vh;" wrap>
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
-          <v-card class="pr-card" id="pr-card">
+          <v-card class="phishing-reporter__card">
             <v-tabs
-              active-class="pr-tab-active"
+              active-class="phishing-reporter__tab-active"
               background-color="transparent"
               color="basil"
-              id="pr-tabs"
               v-model="tab"
+              class="phishing-reporter__tabs"
             >
-              <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-users p-2" id="pr-tab-users">
+              <v-tab
+                @click="changeTabStatus(0)"
+                class="phishing-reporter__tab phishing-reporter__tab--users p-2"
+              >
                 Users
               </v-tab>
-              <v-tab @click="changeTabStatus(1)" class="pr-tab p-2" id="pr-tab-settings"
+              <v-tab
+                @click="changeTabStatus(1)"
+                class="phishing-reporter__tab phishing-reporter__tab--settings p-2"
                 >Settings
               </v-tab>
             </v-tabs>
-            <v-tabs-items v-model="tab">
+            <v-tabs-items v-model="tab" class="phishing-reporter__tabs-items">
               <v-tab-item>
                 <users />
               </v-tab-item>
@@ -212,7 +217,6 @@ export default {
     getPhishingReport() {
       getPhishingReporter().then(response => {
         const { data } = response
-      
         if (data.code === 'RESOURCE_RETRIEVED') {
           this.tabComponent = {
             name: Settings,
@@ -253,65 +257,71 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.page-wrapper {
-  height: 100%;
-  position: relative;
-}
-
+<style lang="scss">
 .phishing-reporter {
-  &__tab-container {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    margin-top: 16px !important;
+  &__tab {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    text-transform: capitalize;
+    color: rgba(0, 0, 0, 0.87) !important;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+
+    &:before {
+      background-color: white;
+    }
+
+    &-container {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-top: 16px !important;
+      .v-card {
+        @media only screen and (max-width: 500px) {
+          padding: 20px !important;
+        }
+      }
+    }
+    &--users {
+      margin-right: 35px !important;
+      min-width: 60px !important;
+    }
+
+    &--settings {
+      min-width: 85px !important;
+    }
+
+    &-active {
+      color: #2196f3 !important;
+    }
+  }
+
+  &__tabs {
+    &-items {
+      margin-top: 8px;
+    }
+    .v-slide-group__content {
+      border-bottom: 2px solid #e4e7ed;
+    }
+
+    .v-tabs-slider-wrapper {
+      bottom: -1px !important;
+      color: #0486fe !important;
+    }
+  }
+
+  &__card {
+    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+      0 1px 1px -1px rgba(204, 204, 204, 0.12) !important;
+    padding: 10px 24px 18px 24px !important;
+    border-radius: 20px !important;
   }
 }
-
-.pr-tab {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: capitalize;
-  color: rgba(0, 0, 0, 0.87) !important;
-
-  &-users {
-    margin-right: 35px !important;
-  }
-
-  &-active {
-    color: #2196f3 !important;
-  }
-}
-
-::v-deep .v-card {
-  padding: 0 !important;
-}
-
-::v-deep .v-slide-group__content {
-  border-bottom: 2px solid #e4e7ed;
-  //margin-right: 20px;
-}
-
-::v-deep .v-tabs-slider-wrapper {
-  bottom: -1px !important;
-  color: #0486fe !important;
-}
-
-.pr-card {
-  box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-    0 1px 1px -1px rgba(204, 204, 204, 0.12);
-  padding: 10px 24px 18px 24px !important;
-  border-radius: 20px;
-}
-
-::v-deep .v-window {
-  margin-top: 24px;
-}
-
 .investigation-details {
   padding: 16px;
   padding-top: 10px;
@@ -754,19 +764,5 @@ export default {
       }
     }
   }
-}
-
-::v-deep .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
-  border-radius: 20px;
-}
-
-::v-deep .v-stepper__header {
-  @media (max-width: 500px) {
-    padding-left: 0 !important;
-    justify-content: center;
-  }
-}
-::v-deep .v-list-item__content > *:not(:last-child) {
-  margin-bottom: 0;
 }
 </style>

@@ -84,18 +84,19 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .settings {
-  margin-right: 20px;
-  margin-top: -20px;
-
   &-tabs {
-    &-container {
-      margin-top: 10px !important;
+    &__container {
+      margin-top: 24px !important;
     }
-    ::v-deep .v-tabs-slider-wrapper {
+    .v-tabs-slider-wrapper {
       bottom: 0 !important;
       color: #0486fe !important;
+    }
+
+    .v-slide-group__wrapper {
+      padding-left: 8px !important;
     }
   }
 
@@ -107,16 +108,13 @@ export default {
     line-height: normal;
     letter-spacing: normal;
     color: #212121 !important;
-
     text-transform: capitalize;
+    margin: 0 24px 0 0 !important;
+    padding: 0 !important;
     &-active {
       color: #2196f3 !important;
       font-weight: 600 !important;
     }
   }
-}
-
-::v-deep .v-slide-group__content {
-  border: none !important;
 }
 </style>
