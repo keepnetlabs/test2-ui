@@ -265,7 +265,6 @@ export default {
       }
     },
     handleMarginStatus() {
-      console.log('iam clicked')
       this.marginStatus = !this.marginStatus
     }
   },
