@@ -41,6 +41,7 @@
     </v-overlay>
     <datatable
       id="investigationList"
+      ref="investigationTable"
       :refName="'investigationTable'"
       :columns="columns"
       :table="tableData"
@@ -61,6 +62,10 @@
       @stopInvestigationFunc="stopInvestigationFunc($event)"
       @investigationDetails="investigationDetails($event)"
       @downloadEvent="exportInvestigationList"
+      @sortChangedEvent="sortChangedEvent($event)"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @searchChangedEvent="searchChangedEvent($event)"
+      :requestParams="bodyData"
       v-if="showDatatable"
       @onEmptyBtnClicked="isWantToAddNewCommunity = true"
     />
@@ -101,7 +106,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 250
+        width: 250,
+        isFilterable: true,
         //minWidth: 80
       },
       {
@@ -113,7 +119,8 @@ export default {
         sortable: true,
         show: true,
         type: 'detected',
-        width: 150
+        width: 150,
+        isFilterable: true,
         //minWidth: 80
       },
       {
@@ -125,7 +132,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 250
+        width: 250,
+        isFilterable: true,
         //minWidth: 80
       },
       {
@@ -137,7 +145,9 @@ export default {
         sortable: true,
         show: true,
         type: 'status',
-        width: 200
+        width: 200,
+        isFilterable: true,
+        filterType: 'test'
         //minWidth: 80
       },
       {
@@ -149,7 +159,9 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185
+        width: 185,
+        isFilterable: true,
+        filterType: 'test'
         //minWidth: 80
       },
       {
@@ -161,7 +173,9 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185
+        width: 185,
+        isFilterable: true,
+        filterType: 'test'
         //minWidth: 80
       },
       {
@@ -185,7 +199,9 @@ export default {
         sortable: false,
         show: true,
         type: 'progress',
-        width: 90
+        width: 90,
+        isFilterable: true,
+        filterType: 'number'
         // minWidth: 60
       }
     ],
@@ -255,25 +271,36 @@ export default {
       pageSize: 500,
       orderBy: 'startDate',
       ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'Status',
-                Operator: 'Include',
-                Value: 'Cancelled,Running,Idle'
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
     }
   }),
   methods: {
+    sortChangedEvent({prop, order}){
+      this.bodyData = {...this.bodyData, orderBy: prop, ascending: order === 'ascending'}
+      const _this = this
+      this.$store
+              .dispatch('investigations/getInvestigationList', this.bodyData)
+              .finally(() => {
+                this.$refs.investigationTable.loadWithDataArray(_this.tableData, this.bodyData)
+              })
+    },
+    paginationChangedEvent({pageSize, pageNumber}){
+      this.bodyData = {...this.bodyData, pageSize: pageSize, pageNumber: pageNumber}
+      const _this = this
+      this.$store
+              .dispatch('investigations/getInvestigationList', this.bodyData)
+              .finally(() => {
+                this.$refs.investigationTable.loadWithDataArray(_this.tableData, _this.bodyData)
+              })
+    },
+    searchChangedEvent({filter}){
+      this.bodyData = {...this.bodyData, filter}
+      const _this = this
+      this.$store
+              .dispatch('investigations/getInvestigationList', this.bodyData)
+              .finally(() => {
+                this.$refs.investigationTable.loadWithDataArray(_this.tableData, _this.bodyData)
+              })
+    },
     refreshDatatable() {
       this.showDatatable = false
       this.$store

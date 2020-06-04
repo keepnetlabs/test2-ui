@@ -74,7 +74,7 @@ export default {
   name: 'SessionExpired',
   data() {
     return {
-      userName: 'okan@keepnetlabs.com',
+      userName: 'test@test.com',
       password: 'gerqI9-xyvbaz-dudwyd',
       verificationCode: '',
       resePasswordModel: '',

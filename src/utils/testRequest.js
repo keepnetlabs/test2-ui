@@ -16,7 +16,8 @@ testService.interceptors.request.use(
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
-      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
+      //config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
+        config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
     }
     return config
   },

@@ -293,6 +293,8 @@
               outlined
               prepend-inner-icon="mdi-magnify"
               v-model="search"
+              ref="searchInput"
+              @keyup="searchChangedEvent"
             />
           </div>
           <div class="table-settings" v-if="options">
@@ -414,7 +416,7 @@
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Download options</span>
+              <span class="tooltip-span">Download Options</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
@@ -468,7 +470,7 @@
                   <v-icon class="selection-icons" color="white">mdi-pencil</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Edit selected rows</span>
+              <span class="tooltip-span">Edit Selected Rows</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.delete">
               <template v-slot:activator="{ on }">
@@ -499,7 +501,7 @@
                   <v-icon class="selection-icons" color="white">mdi-download</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Download selected rows</span>
+              <span class="tooltip-span">Download Selected Rows</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.warning">
               <template v-slot:activator="{ on }">
@@ -549,6 +551,7 @@
             row-key="id"
             stle="width:100%"
             v-if="!allHidden"
+            @sort-change="sortChangedEvent"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
@@ -988,7 +991,11 @@ export default {
     border: {
       type: Boolean,
       default: true
-    }
+    },
+    requestParams:{
+      type: Object,
+      required: true
+    },
   },
   computed: {
     ...mapGetters({
@@ -998,6 +1005,7 @@ export default {
   data() {
     return {
       initialData: [],
+      dataLength: 0,
       tableData: [],
       rowCount: 10,
       totalCount: 100,
@@ -1112,6 +1120,36 @@ export default {
   },
 
   methods: {
+    sortChangedEvent(sortProps){
+      this.$emit('sortChangedEvent', sortProps)
+    },
+
+    paginationChangedEvent(paginationProps){
+      this.$emit('paginationChangedEvent', paginationProps)
+    },
+
+    searchChangedEvent(){
+      const filterItems = this.columns.filter(column => column.isFilterable).reduce((acc, filterItem) => {
+      acc.push({
+        FieldName: filterItem.property,
+        Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
+        Value: this.$refs.searchInput.value
+      });
+      return acc;
+      }, []);
+      const bodyDataFilter = {
+        filter : {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: filterItems,
+            }
+          ]
+        }
+      }
+      this.$emit('searchChangedEvent', bodyDataFilter)
+    },
     addUsersAction(actionName, row) {
       switch (actionName) {
         case 'createCommunityFromMobileInfo':
@@ -1194,7 +1232,9 @@ export default {
       rows.splice(index, 1)
     },
     handleSizeChange(rows) {
-      this.rowCount = rows
+      this.rowCount = rows;
+      this.paginationChangedEvent({pageSize: rows,pageNumber: this.currentPage })
+      /*this.rowCount = rows
       if (this.currentPage === 1) {
         this.tableData = this.initialData.slice(0, rows)
       } else {
@@ -1202,10 +1242,12 @@ export default {
           (this.currentPage - 1) * rows,
           this.currentPage * rows
         )
-      }
+      }*/
     },
     handleCurrentChange(pageNum) {
-      this.currentPage = pageNum
+      this.currentPage = pageNum;
+      this.paginationChangedEvent({pageSize: this.rowCount,pageNumber: pageNum })
+      /*this.currentPage = pageNum
       if (pageNum === 1) {
         this.tableData = this.initialData.slice(0, this.rowCount)
       } else {
@@ -1213,7 +1255,7 @@ export default {
           (pageNum - 1) * this.rowCount,
           pageNum * this.rowCount
         )
-      }
+      }*/
     },
     onEmptyBtnClicked(e) {
       this.$emit('onEmptyBtnClicked', e)
@@ -1385,8 +1427,9 @@ export default {
       this.multipleEditModels = []
       this.copyOfEditedRows = []
     },
-    loadWithDataArray(data) {
-      this.initialData = data
+    loadWithDataArray(data, responseParams) {
+      this.initialData = data;
+      this.dataLength = responseParams && responseParams.totalNumberOfRecords;
       this.tableData = data.slice(0, this.countRow || this.rowCount)
     },
     calculateWidths() {

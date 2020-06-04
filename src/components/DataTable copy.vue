@@ -314,7 +314,7 @@
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Download options</span>
+              <span class="tooltip-span">Download Options</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
@@ -367,7 +367,7 @@
                   <v-icon color="white" class="selection-icons">mdi-pencil</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Edit selected rows</span>
+              <span class="tooltip-span">Edit Selected Rows</span>
             </v-tooltip>
             <v-tooltip v-if="selectEvent && selectEvent.delete" bottom opacity="1">
               <template v-slot:activator="{ on }">
@@ -398,7 +398,7 @@
                   <v-icon color="white" class="selection-icons">mdi-download</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Download selected rows</span>
+              <span class="tooltip-span">Download Selected Rows</span>
             </v-tooltip>
           </div>
         </div>
