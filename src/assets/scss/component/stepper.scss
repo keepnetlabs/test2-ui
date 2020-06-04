@@ -1,0 +1,124 @@
+.k-stepper {
+  box-shadow: none !important;
+  margin: 0 -96px;
+  @media (max-width: 500px) {
+    margin: 0 !important;
+  }
+  margin-top: 24px;
+  &__header {
+    background-color: #f5f7fa !important;
+    padding-left: 75px;
+    justify-content: flex-start !important;
+    box-shadow: none !important;
+    @media (max-width: 768px) {
+      //justify-content: center !important;
+      margin-top: 20px;
+    }
+  }
+
+  &__step {
+    &:first-child {
+      padding-left: 24px !important;
+    }
+    padding: 0 !important;
+    .v-stepper__step__step.primary {
+      font-family: 'Open Sans', sans-serif !important;
+      background-color: #2196f3 !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1;
+      letter-spacing: normal;
+      color: #ffffff;
+    }
+
+    &.v-stepper__step--active {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: #2196f3 !important;
+
+      .v-stepper__label {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 16px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #2196f3 !important;
+        text-shadow: none !important;
+      }
+    }
+
+    &.v-stepper__step--inactive {
+      .v-stepper__step__step {
+        font-family: 'Open Sans', sans-serif !important;
+        border: solid 1.5px #909399 !important;
+        background-color: transparent !important;
+        font-size: 14px !important;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+      }
+
+      .v-stepper__label {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 16px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+      }
+    }
+
+    &.v-stepper__step--complete {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+
+      .primary {
+        background-color: transparent !important;
+
+        .mdi-check {
+          color: #2196f3 !important;
+          font-size: 24px !important;
+        }
+      }
+    }
+  }
+
+  &__divider {
+    flex-basis: 4%;
+    flex-grow: 0;
+    margin: 0 16px !important;
+    border-color: #757575 !important;
+  }
+
+  &__content {
+    padding: 24px 24px 0 100px !important;
+    @media (max-width: 500px) {
+      padding-left: 0 !important;
+      padding-bottom: 40px !important;
+    }
+
+    .v-stepper__wrapper {
+      overflow: visible;
+    }
+  }
+}

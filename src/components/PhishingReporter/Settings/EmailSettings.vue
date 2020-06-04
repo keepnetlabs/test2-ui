@@ -24,12 +24,12 @@
             placeholder="Enter email address"
             outlined
             dense
-            class="email-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.to"
             :rules="[
-              v => validations.required(v, 'Required'),
-              v => validations.mail(v, 'Invalid recipient email address'),
-              v => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.mail(v, 'Invalid recipient email address'),
+              (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
             ]"
             id="recipient-email-address"
             @input="handleEmailAddressChange"
@@ -48,7 +48,7 @@
             placeholder="Enter email address"
             outlined
             dense
-            class="email-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.cc"
             id="cc"
             height="40"
@@ -62,10 +62,10 @@
             placeholder="Enter email address"
             outlined
             dense
-            class="email-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.bcc"
             id="bcc"
-            :rules="[v => validations.maxLength(v, 255, 'It must be maximum 55 characters')]"
+            :rules="[(v) => validations.maxLength(v, 255, 'It must be maximum 55 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -77,10 +77,10 @@
             placeholder="Suspicious Email"
             outlined
             dense
-            class="email-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model.trim="formValues.subject"
             id="email-subject"
-            :rules="[v => validations.maxLength(v, 255, 'It must be maximum 255 characters')]"
+            :rules="[(v) => validations.maxLength(v, 255, 'It must be maximum 255 characters')]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -92,9 +92,9 @@
             placeholder="Enter email address"
             outlined
             dense
-            class="email-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model.trim="formValues.content"
-            :rules="[v => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]"
+            :rules="[(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]"
             id="email-message"
             height="40"
           ></v-text-field>
@@ -105,7 +105,7 @@
         rounded
         class="white--text email-settings__btn-util mt-3"
         color="#2196f3"
-        style="margin-bottom: 6px"
+        style="margin-bottom: 6px;"
         v-if="showFooter"
       >
         SAVE CHANGES
@@ -184,19 +184,8 @@ export default {
 .email-settings {
   font-family: 'Open Sans', sans-serif !important;
 
-  &__textfield {
-    font-family: 'Open Sans', sans-serif !important;
-    border-radius: 8px;
-    background-color: #ffffff;
-    font-size: 13px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    max-width: 554px !important;
-  }
   &__list-item {
+    max-width: 554px;
     &--text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
@@ -254,6 +243,10 @@ export default {
     margin-left: 10px;
     letter-spacing: normal;
     color: #474747 !important;
+  }
+
+  .v-list-item__content > *:not(:last-child) {
+    margin-bottom: 0;
   }
 }
 </style>

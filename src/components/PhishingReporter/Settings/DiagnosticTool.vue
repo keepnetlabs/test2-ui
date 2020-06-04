@@ -5,7 +5,7 @@
         <v-list-item-content>
           <div class="diagnostic-tool__list-item-header" v-if="showHeader">Optional Features</div>
           <v-checkbox
-            class="diagnostic-tool__checkbox"
+            class="diagnostic-tool__checkbox k-checkbox"
             color="#2196f3"
             label="Check and enable all disabled add-ins automatically"
             v-model="formValues.enableAllAddIns"
@@ -83,6 +83,7 @@
                 v-model="formValues.time"
                 full-width
                 ref="refTimePicker"
+                class="k-time-picker"
                 @click:minute="handleTimePickerChange"
                 format="ampm"
               ></v-time-picker>
@@ -258,7 +259,7 @@ export default {
     margin-top: 80px;
     @media (max-width: 768px) {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       margin-top: 0;
     }
   }
@@ -293,7 +294,7 @@ export default {
 
   &__list-item {
     font-family: 'Open Sans', sans-serif !important;
-
+    padding: 0;
     &-text {
       font-family: 'Open Sans', sans-serif !important;
       letter-spacing: normal;
@@ -385,7 +386,6 @@ export default {
 
   &__btn-save-changes {
     @media (max-width: 768px) {
-      margin-left: 12px !important;
     }
   }
 

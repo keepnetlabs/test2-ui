@@ -18,7 +18,7 @@
             <div>
               <v-checkbox
                 v-model="formValues.deleteOriginalMail"
-                class="other-settings__checkbox mt-3"
+                class="other-settings__checkbox k-checkbox mt-3"
                 color="#2196f3"
                 label="Delete Original Email"
               ></v-checkbox>
@@ -26,7 +26,7 @@
             <div>
               <v-checkbox
                 v-model="formValues.enableProxy"
-                class="other-settings__checkbox"
+                class="other-settings__checkbox k-checkbox"
                 color="#2196f3"
                 label="Enable proxy"
               ></v-checkbox>
@@ -35,18 +35,18 @@
               <v-checkbox
                 v-model="formValues.isOnPremise"
                 color="#2196f3"
-                class="other-settings__checkbox"
+                class="other-settings__checkbox k-checkbox"
                 label="On-premise settings"
               ></v-checkbox>
             </div>
-            <div class="site-url__container mt-n2">
+            <div class="site-url__container mt-n3">
               <span class="site-url__message site-url__message--1">Site URL</span>
               <v-text-field
                 placeholder="https://dashboard.abc.com/"
                 outlined
                 dense
                 :disabled="!formValues.isOnPremise"
-                class="other-settings__list-item-text other-settings__textfield other-settings__list-item-text--special other-settings__list-item-text--special--1 mt-2"
+                class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
                 v-model="formValues.apiUrl"
                 id="site-url"
                 height="40"
@@ -60,7 +60,7 @@
                 :disabled="!formValues.isOnPremise"
                 outlined
                 dense
-                class="other-settings__list-item-text other-settings__textfield other-settings__list-item-text--special other-settings__list-item-text--special-2"
+                class="k-textfield site-url__textfield site-url__textfield--2"
                 v-model="formValues.companyId"
                 id="company-id"
                 height="40"
@@ -70,7 +70,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list-group>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="extra-message-text"
             >Extra Message</label
@@ -79,28 +79,28 @@
             placeholder="Extra message in the dialog boxes"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.extraMessage"
             id="extra-message-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="screen-tip-text">Screen Tip</label>
           <v-text-field
             placeholder="Popup tooltip text"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.screenTip"
             id="screen-tip-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="no-internet-connection-message"
             >No Connection Message</label
@@ -109,14 +109,14 @@
             placeholder="No internet connection. Please try again later."
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.noInternetConnectionMessage"
             id="no-internet-connection-message"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="yes-button-text"
             >Yes Button Text</label
@@ -125,14 +125,14 @@
             placeholder="Yes"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnYesText"
             id="yes-button-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="no-button-text"
             >No Button Text</label
@@ -141,14 +141,14 @@
             placeholder="No"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnNoText"
             id="no-button-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="cancel-button-text"
             >Cancel Button Text</label
@@ -157,14 +157,14 @@
             placeholder="Cancel"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnCancelText"
             id="cancel-button-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="okay-button-text"
             >Okay Button Text</label
@@ -173,14 +173,14 @@
             placeholder="Okay"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnOkText"
             id="super-tip-text"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item ">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="email-sending-message"
             >Email Sending Error Message</label
@@ -189,7 +189,7 @@
             placeholder="Email cannot be sent"
             outlined
             dense
-            class="other-settings__textfield mt-2"
+            class="k-textfield mt-2"
             v-model="formValues.emailSendingErrorMessage"
             id="email-sending-message"
             height="40"
@@ -199,7 +199,7 @@
       <v-list-group no-action class="mb-6 other-settings__list-group">
         <template v-slot:activator>
           <v-list-item-content>
-            <label class="other-settings__list-item-header " for="alertbox-text"
+            <label class="other-settings__list-item-header" for="alertbox-text"
               >Enterprise Vault</label
             >
           </v-list-item-content>
@@ -211,19 +211,19 @@
           >
             <v-checkbox
               v-model="formValues.enableEnterpriseVault"
-              class="other-settings__checkbox mt-2"
+              class="other-settings__checkbox k-checkbox mt-2"
               @change="handleEnterpriseVaultChange"
               color="#2196f3"
               label="Enable enterprise vault"
             ></v-checkbox>
-            <div class="site-url__container mt-n2">
+            <div class="site-url__container mt-n3">
               <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
               <v-text-field
                 placeholder="www.bc.com"
                 outlined
                 :disabled="enterpriseVaultDisabled"
                 dense
-                class="other-settings__list-item-text  other-settings__textfield other-settings__list-item-text--special  mt-2"
+                class="k-textfield site-url__textfield site-url__textfield--3 mt-2"
                 v-model="formValues.enterpriseVaultUrl"
                 height="40"
               ></v-text-field>
@@ -383,40 +383,13 @@ export default {
   }
 
   &__checkbox {
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-
-    .v-label {
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
-      letter-spacing: normal;
-    }
-
     .v-input__slot {
       margin-bottom: 0 !important;
       margin-top: -5px;
     }
-
     &.v-input--selection-controls {
       margin-top: 0 !important;
       padding-top: 0 !important;
-    }
-  }
-
-  &__textfield {
-    max-width: 554px;
-
-    &.v-input--is-disabled .v-input__slot {
-      background-color: #f2f2f2 !important;
     }
   }
 
@@ -431,7 +404,7 @@ export default {
 
   &__list-item {
     font-family: 'Open Sans', sans-serif !important;
-
+    max-width: 554px;
     .v-list-item__content {
       padding: 0 !important;
     }
@@ -446,27 +419,6 @@ export default {
 
     .v-list-group__header {
       max-width: 554px;
-    }
-
-    &-text {
-      font-family: 'Open Sans', sans-serif !important;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
-
-      &--special {
-        max-width: 365px !important;
-
-        &-1 {
-          margin-left: 25px;
-          margin-right: 47px;
-        }
-
-        &-2 {
-          margin-top: -9px !important;
-        }
-      }
     }
 
     &-header {
@@ -513,44 +465,62 @@ export default {
     color: #ffffff;
     max-height: 36px;
   }
-}
 
-.site-url__container {
-  margin-left: 32px;
-  display: flex;
-  @media (max-width: 768px) {
-    flex-direction: column;
-    margin-left: 0;
+  .v-list-item__content > *:not(:last-child) {
+    margin-bottom: 0;
   }
 }
 
-.site-url__message {
-  opacity: 0.7;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  display: inline-block;
-  margin-right: 21px;
-
-  &--1 {
-    margin-top: 18px !important;
-    margin-right: 47px;
-  }
-
-  &--2 {
-    margin-top: 10px !important;
+.site-url {
+  &__container {
+    margin-left: 41px;
+    display: flex;
     @media (max-width: 768px) {
-      margin-bottom: 10px;
+      flex-direction: column;
+      margin-left: 0;
     }
   }
 
-  &--3 {
-    margin-top: 17px !important;
+  &__message {
+    opacity: 0.7;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    display: inline-block;
+    margin-right: 21px;
+
+    &--1 {
+      margin-top: 18px !important;
+      margin-right: 47px;
+    }
+
+    &--2 {
+      margin-top: 10px !important;
+      @media (max-width: 768px) {
+        margin-bottom: 10px;
+      }
+    }
+
+    &--3 {
+      margin-top: 17px !important;
+    }
+  }
+
+  &__textfield {
+    max-width: 409px !important;
+    &--1 {
+    }
+    &--2 {
+      margin-top: -9px;
+    }
+
+    &--3 {
+    }
   }
 }
 

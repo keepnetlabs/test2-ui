@@ -96,28 +96,20 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-stepper v-model="step" class="add-in-configuration-stepper">
-              <v-stepper-header class="add-in-configuration-stepper__header">
-                <v-stepper-step
-                  class="add-in-configuration-stepper__step"
-                  :complete="step > 1"
-                  :step="1"
+            <v-stepper v-model="step" class="k-stepper">
+              <v-stepper-header class="k-stepper__header">
+                <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
                   >Add-in Settings</v-stepper-step
                 >
-                <v-divider class="add-in-configuration-stepper__divider" />
-                <v-stepper-step
-                  class="add-in-configuration-stepper__step"
-                  :complete="step > 2"
-                  :step="2"
+                <v-divider class="k-stepper__divider" />
+                <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
                   >Email Settings</v-stepper-step
                 >
-                <v-divider class="add-in-configuration-stepper__divider" />
-                <v-stepper-step class="add-in-configuration-stepper__step" :step="3"
-                  >Other Settings</v-stepper-step
-                >
+                <v-divider class="k-stepper__divider" />
+                <v-stepper-step class="k-stepper__step" :step="3">Other Settings</v-stepper-step>
               </v-stepper-header>
-              <v-stepper-items class="add-in-configuration-stepper__items">
-                <v-stepper-content class="add-in-configuration-stepper__content" :step="1">
+              <v-stepper-items class="k-stepper__items">
+                <v-stepper-content class="k-stepper__content" :step="1">
                   <v-list-item class="pl-0 add-in-configuration__list-item">
                     <v-list-item-content>
                       <v-list-item-title class="add-in-configuration__title">
@@ -135,7 +127,7 @@
                     :inModal="true"
                   />
                 </v-stepper-content>
-                <v-stepper-content class="add-in-configuration-stepper__content" :step="2">
+                <v-stepper-content class="k-stepper__content" :step="2">
                   <v-list-item class="pl-0 add-in-configuration__list-item">
                     <v-list-item-content>
                       <v-list-item-title class="add-in-configuration__title">
@@ -153,7 +145,7 @@
                     ref="refEmailSettings"
                   />
                 </v-stepper-content>
-                <v-stepper-content class="add-in-configuration-stepper__content" :step="3">
+                <v-stepper-content class="k-stepper__content" :step="3">
                   <v-list-item class="pl-0 add-in-configuration__list-item">
                     <v-list-item-content>
                       <v-list-item-title class="add-in-configuration__title">
@@ -328,6 +320,11 @@ export default {
 <style lang="scss">
 .add-in-configuration {
   &__container {
+    .v-sheet.v-card {
+      @media (max-width: 500px) {
+        padding: 0 !important;
+      }
+    }
   }
 
   &__right-col {
@@ -366,6 +363,7 @@ export default {
     padding: 16px 96px !important;
     display: flex;
     justify-content: space-between;
+    z-index: 10;
 
     @media (max-width: 768px) {
       padding-left: 0 !important;
@@ -435,131 +433,14 @@ export default {
     padding-bottom: 100px !important;
   }
 
-  &-stepper {
-    box-shadow: none !important;
-    margin: 0 -96px;
-    @media (max-width: 500px) {
-      margin: 0 !important;
-    }
-    margin-top: 30px;
-    &__header {
-      background-color: #f5f7fa !important;
-      padding-left: 75px;
-      justify-content: flex-start !important;
-      box-shadow: none !important;
-      margin-top: 20px !important;
-      @media (max-width: 768px) {
-        //justify-content: center !important;
-      }
-    }
-
-    &__step {
-      .v-stepper__step__step.primary {
-        font-family: 'Open Sans', sans-serif !important;
-        background-color: #2196f3 !important;
-        font-size: 14px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1;
-        letter-spacing: normal;
-        color: #ffffff;
-      }
-
-      &.v-stepper__step--active {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 16px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: #2196f3 !important;
-
-        .v-stepper__label {
-          font-family: 'Open Sans', sans-serif !important;
-          font-size: 16px;
-          font-weight: normal;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: normal;
-          letter-spacing: normal;
-          color: #2196f3 !important;
-          text-shadow: none !important;
-        }
-      }
-
-      &.v-stepper__step--inactive {
-        .v-stepper__step__step {
-          font-family: 'Open Sans', sans-serif !important;
-          border: solid 1.5px #909399 !important;
-          background-color: transparent !important;
-          font-size: 14px !important;
-          font-weight: 600;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: 1;
-          letter-spacing: normal;
-          color: rgba(0, 0, 0, 0.87) !important;
-        }
-
-        .v-stepper__label {
-          font-family: 'Open Sans', sans-serif !important;
-          font-size: 16px;
-          font-weight: normal;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: normal;
-          letter-spacing: normal;
-          color: rgba(0, 0, 0, 0.87) !important;
-        }
-      }
-
-      &.v-stepper__step--complete {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 16px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87) !important;
-
-        .primary {
-          background-color: transparent !important;
-
-          .mdi-check {
-            color: #2196f3 !important;
-            font-size: 24px !important;
-          }
-        }
-      }
-    }
-
-    &__divider {
-      flex-basis: 4%;
-      flex-grow: 0;
-      margin: 0 16px !important;
-      border-color: #757575 !important;
-    }
-
-    &__content {
-      padding: 24px 24px 0 100px !important;
-      @media (max-width: 500px) {
-        padding-left: 0 !important;
-        padding-bottom: 40px !important;
-      }
-
-      .v-stepper__wrapper {
-        overflow: visible;
-      }
-    }
-  }
   &__items {
   }
 
   &__list-item {
     min-height: auto !important;
+    .v-list-item__content {
+      padding: 0;
+    }
   }
 }
 
@@ -569,9 +450,9 @@ export default {
   font-weight: 600;
   font-stretch: normal;
   font-style: normal;
-  line-height: 1.4;
+  line-height: 1.2;
   letter-spacing: normal;
-  color: #000;
+  color: rgba(0, 0, 0, 0.87) !important;
 }
 
 .v-cart-icon-wrapper {
@@ -582,17 +463,6 @@ export default {
   box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
   border: solid 1px rgba(100, 181, 246, 0.5);
   background-color: #e3f2fd;
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #2196f3;
 }
 
 .btn-util {

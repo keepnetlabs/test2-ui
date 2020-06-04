@@ -42,10 +42,22 @@
         </v-list-item>
         <v-list-item class="check-wrapper pl-0 pr-0">
           <div class="check-row">
-            <v-checkbox color="#2196f3" label="ITEM 1" v-model="download.xls" value="XLS" />
+            <v-checkbox
+              class="k-checkbox"
+              color="#2196f3"
+              label="ITEM 1"
+              v-model="download.xls"
+              value="XLS"
+            />
           </div>
           <div class="check-row">
-            <v-checkbox color="#2196f3" label="ITEM 2" v-model="download.csv" value="CSV" />
+            <v-checkbox
+              class="k-checkbox"
+              color="#2196f3"
+              label="ITEM 2"
+              v-model="download.csv"
+              value="CSV"
+            />
           </div>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap">

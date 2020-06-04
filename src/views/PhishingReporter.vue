@@ -7,7 +7,7 @@
             <div class="investigation-details__container__stats__cards__card-left">
               <div
                 class="investigation-details__container__stats__cards__card-left__icon"
-                style="background-color:#00bcd4"
+                style="background-color: #00bcd4;"
               >
                 <v-icon color="white" left medium>mdi-account</v-icon>
               </div>
@@ -15,7 +15,7 @@
             <div class="investigation-details__container__stats__cards__card-right">
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
-                style="color:#00bcd4"
+                style="color: #00bcd4;"
               >
                 {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
               </h3>
@@ -30,7 +30,7 @@
             <div class="investigation-details__container__stats__cards__card-left">
               <div
                 class="investigation-details__container__stats__cards__card-left__icon"
-                style="background-color:#2196f3"
+                style="background-color: #2196f3;"
               >
                 <v-icon color="white" left medium>mdi-puzzle</v-icon>
               </div>
@@ -38,7 +38,7 @@
             <div class="investigation-details__container__stats__cards__card-right">
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
-                style="color:#2196f3"
+                style="color: #2196f3;"
               >
                 {{ getAddOnStatus }}
               </h3>
@@ -53,7 +53,7 @@
             <div class="investigation-details__container__stats__cards__card-left">
               <div
                 class="investigation-details__container__stats__cards__card-left__icon"
-                style="background-color:#f56c6c;"
+                style="background-color: #f56c6c;"
               >
                 <v-icon color="white" left medium>mdi-account-outline</v-icon>
               </div>
@@ -61,7 +61,7 @@
             <div class="investigation-details__container__stats__cards__card-right">
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
-                style="color:#f56c6c"
+                style="color: #f56c6c;"
               >
                 {{ (phishingReportSummary && phishingReportSummary.offlineUsersCount) || 0 }}
               </h3>
@@ -76,7 +76,7 @@
             <div class="investigation-details__container__stats__cards__card-left">
               <div
                 class="investigation-details__container__stats__cards__card-left__icon"
-                style="background-color:#2196f3"
+                style="background-color: #2196f3;"
               >
                 <img src="../assets/img/account-tree.png" />
               </div>
@@ -84,7 +84,7 @@
             <div class="investigation-details__container__stats__cards__card-right">
               <h3
                 class="investigation-details__container__stats__cards__card-right__title"
-                style="color:#2196f3"
+                style="color: #2196f3;"
               >
                 {{ (phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}
               </h3>
@@ -187,14 +187,14 @@ export default {
         startDate: '09.05.2020',
         endDate: '10.05.2020'
       })
-        .then(response => {
+        .then((response) => {
           const {
             data: { data }
           } = response
 
           this.phishingReportSummary = data
         })
-        .catch(error => {})
+        .catch((error) => {})
     },
     getHash(hashValue) {
       if (hashValue || (this.$route && this.$route.hash)) {
@@ -215,8 +215,9 @@ export default {
       }
     },
     getPhishingReport() {
-      getPhishingReporter().then(response => {
+      getPhishingReporter().then((response) => {
         const { data } = response
+
         if (data.code === 'RESOURCE_RETRIEVED') {
           this.tabComponent = {
             name: Settings,

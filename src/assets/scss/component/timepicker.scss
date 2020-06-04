@@ -1,7 +1,9 @@
-.v-picker__title {
-  padding: 0 16px;
-}
-.v-time-picker-title__time .v-picker__title__btn,
-.v-time-picker-title__time span {
-  font-size: 50px;
+.k-time-picker{
+  .v-picker__title {
+    padding: 0 16px;
+  }
+  .v-time-picker-title__time .v-picker__title__btn,
+  .v-time-picker-title__time span {
+    font-size: 50px;
+  }
 }

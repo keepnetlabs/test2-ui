@@ -1,0 +1,15 @@
+.k-textfield{
+  font-family: 'Open Sans', sans-serif !important;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-size: 13px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+
+  &.v-input--is-disabled .v-input__slot {
+    background-color: #f2f2f2 !important;
+  }
+}

@@ -1,0 +1,31 @@
+.k-sub-tabs{
+  .v-tabs-slider-wrapper {
+    bottom: 0 !important;
+    color: #0486fe !important;
+  }
+
+  .v-slide-group__wrapper {
+    padding-left: 8px !important;
+  }
+ &__tab{
+   font-family: 'Open Sans', sans-serif !important;
+   font-size: 14px;
+   font-stretch: normal;
+   font-style: normal;
+   line-height: normal;
+   letter-spacing: normal;
+   color: #212121 !important;
+   text-transform: capitalize;
+   margin: 0 24px 0 0 !important;
+   padding: 0 !important;
+   &--active{
+     color: #2196f3 !important;
+     font-weight: 600 !important;
+   }
+ }
+
+  &__container{
+    margin-top: 24px !important;
+  }
+
+}

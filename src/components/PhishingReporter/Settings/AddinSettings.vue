@@ -6,9 +6,9 @@
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
             :rules="[
-              v => validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
+              (v) => validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
             ]"
-            class="add-in-settings__textfield mt-2"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="add-in-text"
@@ -24,8 +24,10 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="company-text">Brand Name</label>
           <v-text-field
-            :rules="[v => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')]"
-            class="add-in-settings__textfield mt-2"
+            :rules="[
+              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')
+            ]"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="company-text"
@@ -40,7 +42,7 @@
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label">Add-in Logo</label>
-          <div class="add-in-settings__subtitle ">
+          <div class="add-in-settings__subtitle">
             Recommended size is 60x60px
           </div>
           <v-btn @click="onBtnSelectFileClick" class="btn-select-file mt-2" rounded>
@@ -65,9 +67,9 @@
           <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
           <v-text-field
             :rules="[
-              v => validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
+              (v) => validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
             ]"
-            class="add-in-settings__textfield mt-2"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="alertbox-text"
@@ -97,6 +99,7 @@
             <v-checkbox
               color="#2196f3"
               label="Show Warning"
+              class="k-checkbox"
               v-model="formValues.showWarning"
             ></v-checkbox>
             <template v-if="formValues.showWarning">
@@ -104,7 +107,7 @@
                 <div class="report-warning__container">
                   <span class="report-warning__message mt-4">Report Warning Message</span>
                   <v-text-field
-                    class="add-in-settings__textfield add-in-settings__textfield-report mt-2"
+                    class="k-textfield mt-2 report-warning__textfield"
                     dense
                     height="40"
                     id="alertbox-text"
@@ -124,7 +127,7 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="reported-text">Reported Message</label>
           <v-text-field
-            class="add-in-settings__textfield mt-2"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="reported-text"
@@ -140,7 +143,7 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="delete-text">Delete Warning</label>
           <v-text-field
-            class="add-in-settings__textfield mt-2"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="delete-text"
@@ -156,7 +159,7 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="deleted-text">Deleted Message</label>
           <v-text-field
-            class="add-in-settings__textfield mt-2"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="deleted-text"
@@ -168,14 +171,14 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 add-in-settings__list-item ">
+      <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
           <v-text-field
             :rules="[
-              v => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
+              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
             ]"
-            class="add-in-settings__textfield mt-2"
+            class="k-textfield mt-2"
             dense
             height="40"
             id="alertbox-text"
@@ -333,23 +336,6 @@ export default {
       justify-content: flex-end;
     }
 
-    &__textfield {
-      font-family: 'Open Sans', sans-serif !important;
-      border-radius: 8px;
-      background-color: #ffffff;
-      font-size: 13px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      max-width: 554px !important;
-
-      &-report {
-        max-width: 365px !important;
-      }
-    }
-
     &__footer {
       display: flex;
       align-items: center;
@@ -359,6 +345,7 @@ export default {
     }
 
     &__list-item {
+      max-width: 554px;
       &.v-list-item {
         padding: 0 !important;
 
@@ -388,6 +375,9 @@ export default {
         }
       }
     }
+    .v-list-item__content > *:not(:last-child) {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -407,28 +397,32 @@ export default {
   color: #ffffff !important;
 }
 
-.report-warning__container {
-  margin-top: -20px;
-  margin-left: 32px;
-  display: flex;
-  @media (max-width: 768px) {
-    flex-direction: column;
-    margin-left: 0;
+.report-warning {
+  &__container {
+    margin-top: -20px;
+    margin-left: 32px;
+    display: flex;
+    @media (max-width: 768px) {
+      flex-direction: column;
+      margin-left: 0;
+    }
   }
-}
-
-.report-warning__message {
-  opacity: 0.7;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  display: inline-block;
-  margin-right: 21px;
+  &__message {
+    opacity: 0.7;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    display: inline-block;
+    margin-right: 21px;
+  }
+  &__textfield {
+    max-width: 365px;
+  }
 }
 
 .fade-enter-active,
@@ -444,8 +438,7 @@ export default {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
- {
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0 !important;
 }
 

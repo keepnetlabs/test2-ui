@@ -1,8 +1,10 @@
-.v-input--checkbox {
-  .v-label {
-   @include checkbox-text;
-  }
-  &.v-input--selection-controls {
-    margin-top: 0;
+.k-checkbox{
+  &.v-input--checkbox {
+    .v-label {
+      @include checkbox-text;
+    }
+    &.v-input--selection-controls {
+      margin-top: 0;
+    }
   }
 }
