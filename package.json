@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "format": "prettier-eslint —eslint-config-path ./eslintrc.json --write '**/*.js’"
+    "format": "prettier-eslint —eslint-config-path --write '**/*.js’"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
@@ -83,15 +83,10 @@
           "semi": false,
           "trailingComma": "none",
           "no-unused-vars": false,
-          "vue/no-use-v-if-with-v-for": [
-            "warn",
-            {
-              "allowUsingIterationVar": true
-            }
-          ],
           "vue/require-v-for-key": false
         }
-      ]
+      ],
+      "vue/no-use-v-if-with-v-for": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint"

@@ -263,7 +263,7 @@
                 outlined
                 class="input-select standard-height"
                 v-model="selectedDuration"
-                :rules="[v => !!v || 'Duration is required']"
+                :rules="[(v) => !!v || 'Duration is required']"
                 item-text="durationLabel"
                 item-value="durationValue"
                 label="3 Days"
@@ -279,7 +279,7 @@
                 outlined
                 class="input-select standard-height"
                 v-model="selectedAction"
-                :rules="[v => !!v || 'Action is required']"
+                :rules="[(v) => !!v || 'Action is required']"
                 item-text="actionLabel"
                 item-value="actionValue"
                 label="Delete Email"
@@ -371,15 +371,16 @@ export default {
       menu1: '',
       menu2: '',
       investigationNameRules: {
-        required: v => (v && v.length <= 150) || 'Investigation Name must between 1-150 characters',
-        empty: v => (v && !v.startsWith(' ')) || 'Investigation Name cannot start with space'
+        required: (v) =>
+          (v && v.length <= 150) || 'Investigation Name must between 1-150 characters',
+        empty: (v) => (v && !v.startsWith(' ')) || 'Investigation Name cannot start with space'
       },
       generalRules: {
         ip: {
-          required: v => {
+          required: (v) => {
             return (v && v.length <= 255) || 'IP must between 1 - 255 characters'
           },
-          format: v => {
+          format: (v) => {
             return (
               /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
                 v
@@ -388,80 +389,81 @@ export default {
           }
         },
         from: {
-          required: v => (v && v.length <= 255) || 'From must between 1 - 255 characters',
-          format: v => /\S+@\S+\.\S+/gi.test(v) || 'Invalid from address'
+          required: (v) => (v && v.length <= 255) || 'From must between 1 - 255 characters',
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid from address'
         },
         to: {
-          required: v => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: v => /\S+@\S+\.\S+/gi.test(v) || 'Invalid to address'
+          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid to address'
         },
         cc: {
-          required: v => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: v => /\S+@\S+\.\S+/gi.test(v) || 'Invalid cc address'
+          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid cc address'
         },
         bcc: {
-          required: v => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: v => /\S+@\S+\.\S+/gi.test(v) || 'Invalid bcc address'
+          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid bcc address'
         },
         subject: {
-          required: v => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: v => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
+          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
         },
         from_name: {
-          required: v => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
-          format: v => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
+          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
         },
         url: {
-          required: v => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
-          format: v =>
+          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
+          format: (v) =>
             /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
               v
             ) || 'invalid url'
         },
         keyword: {
-          required: v => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: v => {
+          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          format: (v) => {
             return (v && !v.startsWith(' ')) || 'Cannot start with space'
           } // format ekle
         },
         size: {
-          required: v => false,
-          format: v => false
+          required: (v) => false,
+          format: (v) => false
         },
         name: {
-          required: v => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: v => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         sha512: {
-          required: v => (v && v.length <= 512) || 'It must between 1 - 512 characters',
-          format: v => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => (v && v.length <= 512) || 'It must between 1 - 512 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         md5: {
-          required: v => (v && v.length <= 128) || 'It must between 1 - 128 characters',
-          format: v => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => (v && v.length <= 128) || 'It must between 1 - 128 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         extentions: {
-          required: v => (v && v.length <= 10) || 'It must between 1 - 10 characters',
-          format: v => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => (v && v.length <= 10) || 'It must between 1 - 10 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
       },
       filterSelectRules: {
-        required: v => !!v || 'Filter Select required',
-        format: v => (v && !v.startsWith(' ')) || 'Cannot start with space'
+        required: (v) => !!v || 'Filter Select required',
+        format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
       },
       descriptionRules: {
-        required: v =>
+        required: (v) =>
           (!!v && v.length <= 150) || 'Description required and must between 5-150 characters.',
-        regex: v =>
+        regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       targetUsers: {
-        required: v => (!!v && v.length > 0) || 'Target users required for creating a investigation'
+        required: (v) =>
+          (!!v && v.length > 0) || 'Target users required for creating a investigation'
       },
       checkboxRule: {
-        required: v => this.sources.find(item => item.value)
+        required: (v) => this.sources.find((item) => item.value)
       }
     }
   },
@@ -481,8 +483,7 @@ export default {
     'isEdit',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
-    'investigationDetailsData',
-  
+    'investigationDetailsData'
   ],
   methods: {
     checkCheckboxValidation() {
@@ -579,7 +580,7 @@ export default {
               ) {
                 // in the first array, there is no value at ip value name pair
                 // that's why, we can set the our ip value to the first array element
-                headersData.filter(s => s.ip == null)[0].ip = this.filterList[index].text
+                headersData.filter((s) => s.ip == null)[0].ip = this.filterList[index].text
               } else {
                 // ip value name pair is already exist. Thus, we push new array tp the headersData with all values null except ip.
                 headersData.push({
@@ -598,7 +599,7 @@ export default {
                 !headersData[headersData.length - 1].from &&
                 headersData[headersData.length - 1].from != this.filterList[index].text
               ) {
-                headersData.filter(s => s.from == null)[0].from = this.filterList[index].text
+                headersData.filter((s) => s.from == null)[0].from = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -616,7 +617,7 @@ export default {
                 !headersData[headersData.length - 1].to &&
                 headersData[headersData.length - 1].to != this.filterList[index].text
               ) {
-                headersData.filter(s => s.to == null)[0].to = this.filterList[index].text
+                headersData.filter((s) => s.to == null)[0].to = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -634,7 +635,7 @@ export default {
                 !headersData[headersData.length - 1].cc &&
                 headersData[headersData.length - 1].cc != this.filterList[index].text
               ) {
-                headersData.filter(s => s.cc == null)[0].cc = this.filterList[index].text
+                headersData.filter((s) => s.cc == null)[0].cc = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -652,7 +653,7 @@ export default {
                 !headersData[headersData.length - 1].bcc &&
                 headersData[headersData.length - 1].bcc != this.filterList[index].text
               ) {
-                headersData.filter(s => s.bcc == null)[0].bcc = this.filterList[index].text
+                headersData.filter((s) => s.bcc == null)[0].bcc = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -670,7 +671,9 @@ export default {
                 !headersData[headersData.length - 1].subject &&
                 headersData[headersData.length - 1].subject != this.filterList[index].text
               ) {
-                headersData.filter(s => s.subject == null)[0].subject = this.filterList[index].text
+                headersData.filter((s) => s.subject == null)[0].subject = this.filterList[
+                  index
+                ].text
               } else {
                 headersData.push({
                   ip: null,
@@ -688,7 +691,7 @@ export default {
                 !headersData[headersData.length - 1].senderName &&
                 headersData[headersData.length - 1].senderName != this.filterList[index].text
               ) {
-                headersData.filter(s => s.senderName == null)[0].senderName = this.filterList[
+                headersData.filter((s) => s.senderName == null)[0].senderName = this.filterList[
                   index
                 ].text
               } else {
@@ -708,7 +711,7 @@ export default {
                 !bodyData[bodyData.length - 1].url &&
                 bodyData[bodyData.length - 1].url != this.filterList[index].text
               ) {
-                bodyData.filter(s => s.url == null)[0].url = this.filterList[index].text
+                bodyData.filter((s) => s.url == null)[0].url = this.filterList[index].text
               } else {
                 bodyData.push({
                   url: this.filterList[index].text,
@@ -722,7 +725,7 @@ export default {
                 !bodyData[bodyData.length - 1].keyword &&
                 bodyData[bodyData.length - 1].keyword != this.filterList[index].text
               ) {
-                bodyData.filter(s => s.keyword == null)[0].keyword = this.filterList[index].text
+                bodyData.filter((s) => s.keyword == null)[0].keyword = this.filterList[index].text
               } else {
                 bodyData.push({
                   url: null,
@@ -736,7 +739,7 @@ export default {
                 !attachmentsData[attachmentsData.length - 1].size &&
                 attachmentsData[attachmentsData.length - 1].size != this.filterList[index].text
               ) {
-                attachmentsData.filter(s => s.size == null)[0].size = this.filterList[index].text
+                attachmentsData.filter((s) => s.size == null)[0].size = this.filterList[index].text
               } else {
                 attachmentsData.push({
                   size: this.filterList[index].text,
@@ -752,7 +755,7 @@ export default {
                 !attachmentsData[attachmentsData.length - 1].name &&
                 attachmentsData[attachmentsData.length - 1].name != this.filterList[index].text
               ) {
-                attachmentsData.filter(s => s.name == null)[0].name = this.filterList[index].text
+                attachmentsData.filter((s) => s.name == null)[0].name = this.filterList[index].text
               } else {
                 attachmentsData.push({
                   size: null,
@@ -768,7 +771,7 @@ export default {
                 !attachmentsData[attachmentsData.length - 1].sha512 &&
                 attachmentsData[attachmentsData.length - 1].sha512 != this.filterList[index].text
               ) {
-                attachmentsData.filter(s => s.sha512 == null)[0].sha512 = this.filterList[
+                attachmentsData.filter((s) => s.sha512 == null)[0].sha512 = this.filterList[
                   index
                 ].text
               } else {
@@ -786,7 +789,7 @@ export default {
                 !attachmentsData[attachmentsData.length - 1].md5 &&
                 attachmentsData[attachmentsData.length - 1].md5 != this.filterList[index].text
               ) {
-                attachmentsData.filter(s => s.md5 == null)[0].md5 = this.filterList[index].text
+                attachmentsData.filter((s) => s.md5 == null)[0].md5 = this.filterList[index].text
               } else {
                 attachmentsData.push({
                   size: null,
@@ -803,7 +806,7 @@ export default {
                 attachmentsData[attachmentsData.length - 1].extentions !=
                   this.filterList[index].text
               ) {
-                attachmentsData.filter(s => s.extentions == null)[0].extentions = this.filterList[
+                attachmentsData.filter((s) => s.extentions == null)[0].extentions = this.filterList[
                   index
                 ].text
               } else {
@@ -835,7 +838,7 @@ export default {
           targetUserType: this.targetUserType,
           targetUsers:
             this.targetUserType == 'Groups'
-              ? this.targetUsersValue.map(item => item.groupId)
+              ? this.targetUsersValue.map((item) => item.groupId)
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
           action: this.selectedAction,
@@ -848,7 +851,7 @@ export default {
         this.$store
           .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {})
-          .then(resp => {
+          .then((resp) => {
             this.$emit('closeAdd')
             this.isEdit ? this.$router.push('/investigations') : this.$emit('refreshDatatable')
           })
@@ -910,7 +913,7 @@ export default {
           new Date(this.investigationDetailsData.createTime).getDate()
         this.targetUserType = this.investigationDetailsData.targetUserType
         if (this.investigationDetailsData.targetUserType == 'Groups') {
-          this.targetUsersValue = this.investigationDetailsData.targetUsers.map(item => {
+          this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
             let obj = {
               name: item.targetGroup,
               groupId: item.targetGroupId
@@ -919,13 +922,13 @@ export default {
           })
         } else if (this.investigationDetailsData.targetUserType == 'SpecificUsers') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
-            item => item.targetUser
+            (item) => item.targetUser
           )
         }
-        this.sources = this.sources.map(item => {
+        this.sources = this.sources.map((item) => {
           let data = {
             name: item.name,
-            value: _this.investigationDetailsData.scanTypes.find(source =>
+            value: _this.investigationDetailsData.scanTypes.find((source) =>
               source.scanType == item.name ? true : false
             ),
             label: item.label

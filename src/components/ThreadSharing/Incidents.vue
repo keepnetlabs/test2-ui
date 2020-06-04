@@ -250,10 +250,10 @@ export default {
     postId: null,
     postName: null,
     emailData: {
-      regex: v =>
+      regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/@\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
-      email: v => {
+      email: (v) => {
         if (v.length > 0) {
           let booReturn = true
           const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -274,14 +274,14 @@ export default {
           return true
         }
       },
-      maxFive: v => {
+      maxFive: (v) => {
         if (v.length > 5) {
           return 'Maximum 5 email for each invite'
         } else {
           return true
         }
       },
-      required: v => (v && v.length >= 1) || 'You should type an email to share'
+      required: (v) => (v && v.length >= 1) || 'You should type an email to share'
     },
     emailsForApi: [],
     isMailChanged: false,
@@ -332,7 +332,7 @@ export default {
   watch: {
     postsGetter(arr) {
       if (arr && arr.Data && arr.Data.length) {
-        const propData = arr.Data.sort(function(a, b) {
+        const propData = arr.Data.sort(function (a, b) {
           if (a.Title.toLowerCase() < b.Title.toLowerCase()) {
             return -1
           }
@@ -343,7 +343,7 @@ export default {
         })
         this.postList = propData
       } else if (this.posts && this.posts.Data && this.posts.Data.length) {
-        const postsData = this.posts.Data.sort(function(a, b) {
+        const postsData = this.posts.Data.sort(function (a, b) {
           if (a.Title.toLowerCase() < b.Title.toLowerCase()) {
             return -1
           }
@@ -485,7 +485,7 @@ export default {
     },
     validateEmailArea() {
       const refThis = this
-      setTimeout(function() {
+      setTimeout(function () {
         if (refThis.emailsModel) {
           let i = refThis.emailsModel.length
           while (i--) {
@@ -761,8 +761,7 @@ export default {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
-::v-deep .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
- {
+::v-deep .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0 !important;
 }
 

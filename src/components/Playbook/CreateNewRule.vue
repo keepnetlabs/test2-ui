@@ -149,7 +149,6 @@ export default {
     .v-stepper__content {
       padding: 0 !important;
 
-
       .body {
         display: flex;
         padding-left: 2rem 4rem;

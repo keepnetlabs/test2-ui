@@ -9,4 +9,3 @@ export default {
   props: ['content']
 }
 </script>
-

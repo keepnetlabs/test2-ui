@@ -50,34 +50,34 @@ const dashboard = {
     }
   },
   getters: {
-    isPopupOpened: state => state.popupFeedback,
-    getIsSessionExpired: state => state.isSessionExpired,
-    getOverallMonths: state => state.overallMonths,
-    getNotificationList: state => state.notificationList,
-    getOverallStatsList: state => state.overallStatsList,
-    getMenuList: state => state.menuList,
-    getIsSwitchDialogOpen: state => state.isSwitchDialogOpen,
-    getSwitchAccountDropdown: state => state.switchAccountDropdown,
-    getSelectedCompany: state => state.selectedCompany,
-    getCompanyDropdowns: state => state.dropdownCompanies,
-    getPieChartLabels: state => state.pieChartDataLabels,
-    getFirstCampaignList: state => state.firstCampaignList,
-    getLastFiveCampaignList: state => state.lastFiveCampaignList,
-    getSingleCampaignList: state => state.singleCampaignList,
-    getcompanyName: state => state.companyName
+    isPopupOpened: (state) => state.popupFeedback,
+    getIsSessionExpired: (state) => state.isSessionExpired,
+    getOverallMonths: (state) => state.overallMonths,
+    getNotificationList: (state) => state.notificationList,
+    getOverallStatsList: (state) => state.overallStatsList,
+    getMenuList: (state) => state.menuList,
+    getIsSwitchDialogOpen: (state) => state.isSwitchDialogOpen,
+    getSwitchAccountDropdown: (state) => state.switchAccountDropdown,
+    getSelectedCompany: (state) => state.selectedCompany,
+    getCompanyDropdowns: (state) => state.dropdownCompanies,
+    getPieChartLabels: (state) => state.pieChartDataLabels,
+    getFirstCampaignList: (state) => state.firstCampaignList,
+    getLastFiveCampaignList: (state) => state.lastFiveCampaignList,
+    getSingleCampaignList: (state) => state.singleCampaignList,
+    getcompanyName: (state) => state.companyName
   },
   mutations: {
     SET_PHISHING_CAMPAIGNS(state, payload) {
       payload.sort((x, y) => (x.campaignCount < y.campaignCount ? 1 : -1))
-      state.chartOptionColors = payload.map(x => x.color)
-      state.pieChartDataLabels = payload.map(x => `${x.description} (${x.campaignCount})`)
-      state.pieChartData = payload.map(x => x.campaignCount)
+      state.chartOptionColors = payload.map((x) => x.color)
+      state.pieChartDataLabels = payload.map((x) => `${x.description} (${x.campaignCount})`)
+      state.pieChartData = payload.map((x) => x.campaignCount)
     },
     SET_LAST_FIVE_CAMPAIGNS(state, payload) {
-      state.firstCampaignList = payload.map(x => ({
+      state.firstCampaignList = payload.map((x) => ({
         campaignName: x.name
       }))
-      state.lastFiveCampaignList = payload.map(x => ({
+      state.lastFiveCampaignList = payload.map((x) => ({
         // campaignName: x.Name,
         company: x.companyName,
         behaviour: [
@@ -90,7 +90,7 @@ const dashboard = {
         delivery: '4/4',
         status: x.status
       }))
-      state.singleCampaignList = payload.map(x => ({
+      state.singleCampaignList = payload.map((x) => ({
         campaignName: x.name,
         company: x.companyName,
         behaviour: [
@@ -114,8 +114,9 @@ const dashboard = {
       state.companyInformation.licenceStatus = `${payload.userCount} registered users of ${payload.limits}`
       state.companyInformation.awarenessScore = scoreValue.letter
       const date = new Date(payload.createDate)
-      state.companyInformation.endsAt = `${date.getDate()}.${date.getMonth()}.${date.getFullYear() +
-        1}`
+      state.companyInformation.endsAt = `${date.getDate()}.${date.getMonth()}.${
+        date.getFullYear() + 1
+      }`
     },
     SET_DROPDOWN_COMPANIES(state, payload) {
       state.dropdownCompanies = payload
@@ -226,10 +227,10 @@ const dashboard = {
         active: true,
         childs: []
       })
-      payload.forEach(item => {
+      payload.forEach((item) => {
         let childs = []
         if (item.parents != undefined && item.parents.length > 0) {
-          childs = item.parents.map(child => ({
+          childs = item.parents.map((child) => ({
             id: child.menuId,
             title: child.text,
             icon: null,
@@ -252,25 +253,25 @@ const dashboard = {
     },
     SET_OVERALL_STATS(state, payload) {
       const newOverallStats = []
-      if (payload.phishingSimulatorScore.filter(x => x !== 0).length > 0) {
+      if (payload.phishingSimulatorScore.filter((x) => x !== 0).length > 0) {
         newOverallStats.push({
           name: 'Phishing Simulator Score',
           data: payload.phishingSimulatorScore
         })
       }
-      if (payload.awarenessEducatorScore.filter(x => x !== 0).length > 0) {
+      if (payload.awarenessEducatorScore.filter((x) => x !== 0).length > 0) {
         newOverallStats.push({
           name: 'Awareness Educator',
           data: payload.awarenessEducatorScore
         })
       }
-      if (payload.threatIntelligence.filter(x => x !== 0).length > 0) {
+      if (payload.threatIntelligence.filter((x) => x !== 0).length > 0) {
         newOverallStats.push({
           name: 'Threat Intelligence',
           data: payload.threatIntelligence
         })
       }
-      if (payload.incidentResponder.filter(x => x !== 0).length > 0) {
+      if (payload.incidentResponder.filter((x) => x !== 0).length > 0) {
         newOverallStats.push({
           name: 'Incident Responder',
           data: payload.incidentResponder
@@ -293,13 +294,13 @@ const dashboard = {
       notificationSeen(payload.id).then(() => {})
     },
     getNotifications({ commit }) {
-      getNotifications().then(response => {
+      getNotifications().then((response) => {
         const result = response.data
         commit('SET_NOTIFICATIONS', result)
       })
     },
     getOverallStats({ commit }, payload) {
-      getOverallStats(payload).then(response => {
+      getOverallStats(payload).then((response) => {
         const result = response.data
         commit('SET_OVERALL_STATS', result)
       })
@@ -313,17 +314,17 @@ const dashboard = {
       commit('common/SET_ERROR_STATE', false, { root: true })
 
       logoutUser()
-        .then(response => {
+        .then((response) => {
           AuthenticationService.removeToken()
           router.push('/login')
         })
-        .catch(error => {
+        .catch((error) => {
           AuthenticationService.removeToken()
           router.push('/login')
         })
     },
     getMenus({ commit }) {
-      getMenus().then(response => {
+      getMenus().then((response) => {
         const result = response.data
         commit('SET_MENUS', result)
       })
@@ -343,14 +344,14 @@ const dashboard = {
       })
     },
     getLastFiveCompaignsStats({ commit }) {
-      getLastFiveCompaignsStats().then(response => {
+      getLastFiveCompaignsStats().then((response) => {
         const result = response.data
         commit('SET_LAST_FIVE_CAMPAIGNS', result)
       })
     },
     getPhishingCampaigns({ commit }, payload) {
       getPhishingCampaigns(payload)
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_PHISHING_CAMPAIGNS', result)
         })
@@ -358,7 +359,7 @@ const dashboard = {
     },
     getCompanyInformation({ commit }) {
       getCompanyInformation()
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_COMPANY_INFORMATION', result)
         })
@@ -379,26 +380,26 @@ const dashboard = {
     getDropdownCompanies({ commit }) {
       function getUnique(arr, comp) {
         const unique = arr
-          .map(e => e[comp])
+          .map((e) => e[comp])
 
           // store the keys of the unique objects
           .map((e, i, final) => final.indexOf(e) === i && i)
 
           // eliminate the dead keys & store unique objects
-          .filter(e => arr[e])
-          .map(e => arr[e])
+          .filter((e) => arr[e])
+          .map((e) => arr[e])
 
         return unique
       }
 
-      getDropdownCompanies().then(response => {
+      getDropdownCompanies().then((response) => {
         const result = response.data
         const orderedArr = []
         if (this.state.auth.user && this.state.auth.user.userCompany) {
-          const curCompany = result.find(c => c.companyId === this.state.auth.user.userCompany.id)
+          const curCompany = result.find((c) => c.companyId === this.state.auth.user.userCompany.id)
           orderedArr.push(curCompany)
           const filteredArr = result.filter(
-            comp => comp.companyId !== this.state.auth.user.userCompany.id
+            (comp) => comp.companyId !== this.state.auth.user.userCompany.id
           )
           const orderAccount = [...orderedArr, ...filteredArr]
           commit('SET_DROPDOWN_COMPANIES', getUnique(orderAccount, 'companyId'))

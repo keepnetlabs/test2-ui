@@ -10,8 +10,11 @@
     <v-card
       class="delete-user"
       light
-      style="max-width: 513px; border-radius: 12px !important; padding:32px 24px 0px 24px !important;
-"
+      style="
+        max-width: 513px;
+        border-radius: 12px !important;
+        padding: 32px 24px 0px 24px !important;
+      "
     >
       <v-list-item class="pl-0 pr-0">
         <div class="v-cart-icon-wrapper">
@@ -38,7 +41,7 @@
           @click="handleDelete"
           color="#2196f3"
           class="delete-user__footer-button"
-          style="padding:0"
+          style="padding: 0;"
           text
           >DELETE</v-btn
         >

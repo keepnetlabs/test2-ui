@@ -80,7 +80,7 @@
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item
-                  style="cursor: not-allowed"
+                  style="cursor: not-allowed;"
                   v-if="$route.name == 'Community' && fetchedCommunity.IsPrivate"
                   :id="'share-btn' + post.CommunityPostId"
                 >
@@ -209,7 +209,7 @@
         </div>
         <div :id="'single-post-harmful' + post.CommunityPostId" class="ts-harmful mt-1">
           <v-btn readonly v-if="post.HarmfulItems" text x-small icon color="red">
-            <v-icon style="font-size: 14px">mdi-alert-circle</v-icon>
+            <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
           </v-btn>
           <span class="ts-actions">{{ post.HarmfulItems }} harmful items</span>
         </div>
@@ -248,8 +248,8 @@
           <v-btn
             v-if="
               post.CommunityPostCategory &&
-                post.CommunityPostCategory.length > 1 &&
-                !post.AttachmentCount
+              post.CommunityPostCategory.length > 1 &&
+              !post.AttachmentCount
             "
             text
             small
@@ -265,7 +265,7 @@
                 (post.AttachmentCount &&
                   post.CommunityPostCategory &&
                   post.CommunityPostCategory.length > 1) ||
-                  (post.CommunityPostCategory && post.CommunityPostCategory.length > 2)
+                (post.CommunityPostCategory && post.CommunityPostCategory.length > 2)
               "
               text
               small
@@ -292,8 +292,8 @@
               <div
                 v-else-if="
                   post.AttachmentCount &&
-                    post.CommunityPostCategory &&
-                    post.CommunityPostCategory.length === 1
+                  post.CommunityPostCategory &&
+                  post.CommunityPostCategory.length === 1
                 "
               >
                 <span>{{ post.CommunityPostCategory[1] }}</span>
@@ -324,11 +324,11 @@
                 shareSettings.senderInfo &&
                 shareSettings.senderInfo[0] &&
                 shareSettings.senderInfo[0].IsMalicious) ||
-                (shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsMalicious) ||
-                (shareSettings.links && shareSettings.links.some(a => a.IsMalicious)) ||
-                (shareSettings.attachments && shareSettings.attachments.some(a => a.IsMalicious))
+              (shareSettings.receiverInfo &&
+                shareSettings.receiverInfo[0] &&
+                shareSettings.receiverInfo[0].IsMalicious) ||
+              (shareSettings.links && shareSettings.links.some((a) => a.IsMalicious)) ||
+              (shareSettings.attachments && shareSettings.attachments.some((a) => a.IsMalicious))
             "
             class="detected-items"
           >
@@ -342,10 +342,10 @@
                   shareSettings.senderInfo[0] &&
                   shareSettings.senderInfo[0].IsShow &&
                   shareSettings.senderInfo[0].IsMalicious) ||
-                  (shareSettings.receiverInfo &&
-                    shareSettings.receiverInfo[0] &&
-                    shareSettings.receiverInfo[0].IsShow &&
-                    shareSettings.receiverInfo[0].IsMalicious)
+                (shareSettings.receiverInfo &&
+                  shareSettings.receiverInfo[0] &&
+                  shareSettings.receiverInfo[0].IsShow &&
+                  shareSettings.receiverInfo[0].IsMalicious)
               "
               class="detail-black"
             >
@@ -354,10 +354,10 @@
             <p
               v-if="
                 shareSettings &&
-                  shareSettings.senderInfo &&
-                  shareSettings.senderInfo[0] &&
-                  shareSettings.senderInfo[0].IsShow &&
-                  shareSettings.senderInfo[0].IsMalicious
+                shareSettings.senderInfo &&
+                shareSettings.senderInfo[0] &&
+                shareSettings.senderInfo[0].IsShow &&
+                shareSettings.senderInfo[0].IsMalicious
               "
               :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
               class="detail-black detail-red"
@@ -367,10 +367,10 @@
             <p
               v-if="
                 shareSettings &&
-                  shareSettings.senderInfo &&
-                  shareSettings.senderInfo[0] &&
-                  shareSettings.senderInfo[0].IsShow &&
-                  shareSettings.senderInfo[0].IsMalicious
+                shareSettings.senderInfo &&
+                shareSettings.senderInfo[0] &&
+                shareSettings.senderInfo[0].IsShow &&
+                shareSettings.senderInfo[0].IsMalicious
               "
               class="detail-black"
             >
@@ -381,10 +381,10 @@
             <p
               v-if="
                 shareSettings &&
-                  shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsShow &&
-                  shareSettings.receiverInfo[0].IsMalicious
+                shareSettings.receiverInfo &&
+                shareSettings.receiverInfo[0] &&
+                shareSettings.receiverInfo[0].IsShow &&
+                shareSettings.receiverInfo[0].IsMalicious
               "
               :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
               class="detail-black detail-red"
@@ -394,10 +394,10 @@
             <p
               v-if="
                 shareSettings &&
-                  shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsShow &&
-                  shareSettings.receiverInfo[0].IsMalicious
+                shareSettings.receiverInfo &&
+                shareSettings.receiverInfo[0] &&
+                shareSettings.receiverInfo[0].IsShow &&
+                shareSettings.receiverInfo[0].IsMalicious
               "
               class="detail-black"
             >
@@ -411,8 +411,8 @@
             <p
               v-if="
                 shareSettings &&
-                  shareSettings.links &&
-                  shareSettings.links.some(a => a.IsShow && a.IsMalicious)
+                shareSettings.links &&
+                shareSettings.links.some((a) => a.IsShow && a.IsMalicious)
               "
               class="detail-black"
             >
@@ -513,8 +513,8 @@
               :id="'detail-subject-' + el.Id"
               v-if="
                 postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                  el.IsShow
+                postDetail.Data.CommunityPostEmails[0].Subject.length &&
+                el.IsShow
               "
             >
               <span :class="[el.IsMalicious ? 'malicious-style' : '']"
@@ -532,8 +532,8 @@
               :key="ind + el.Id"
               v-else-if="
                 postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                  !el.IsShow
+                postDetail.Data.CommunityPostEmails[0].Subject.length &&
+                !el.IsShow
               "
               :id="'detail-subject-' + el.Id"
             >
@@ -554,8 +554,8 @@
                 :id="'detail-sender-' + el.Id"
                 v-if="
                   postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].From.length &&
-                    el.IsShow
+                  postDetail.Data.CommunityPostEmails[0].From.length &&
+                  el.IsShow
                 "
               >
                 <span :class="[el.IsMalicious ? 'malicious-style' : '']"
@@ -574,8 +574,8 @@
                 :key="ind + el.Id"
                 v-else-if="
                   postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].From.length &&
-                    !el.IsShow
+                  postDetail.Data.CommunityPostEmails[0].From.length &&
+                  !el.IsShow
                 "
                 :id="'detail-from-' + el.Id"
               >
@@ -595,8 +595,8 @@
                 :id="'detail-to-' + el.Id"
                 v-if="
                   postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].To.length &&
-                    el.IsShow
+                  postDetail.Data.CommunityPostEmails[0].To.length &&
+                  el.IsShow
                 "
               >
                 <span :class="[el.IsMalicious ? 'malicious-style' : '']"
@@ -614,8 +614,8 @@
                 :key="ind + el.Id"
                 v-else-if="
                   postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].To.length &&
-                    !el.IsShow
+                  postDetail.Data.CommunityPostEmails[0].To.length &&
+                  !el.IsShow
                 "
                 :id="'detail-to-' + el.Id"
               >
@@ -632,8 +632,8 @@
                 :key="ind + el.Id"
                 v-if="
                   postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                    el.IsShow
+                  postDetail.Data.CommunityPostEmails[0].Cc.length &&
+                  el.IsShow
                 "
                 :id="'detail-cc-' + el.Id"
               >
@@ -652,8 +652,8 @@
                 :key="ind + el.Id"
                 v-else-if="
                   postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                    !el.IsShow
+                  postDetail.Data.CommunityPostEmails[0].Cc.length &&
+                  !el.IsShow
                 "
                 :id="'detail-cc-' + el.Id"
               >
@@ -701,13 +701,13 @@
                   <v-tooltip v-if="att.IsMalicious" bottom opacity="1" z-index="9999">
                     <template v-slot:activator="{ on }">
                       <div v-on="on" class="attach-icon red-icon">
-                        <v-icon color="white" style="font-size: 20px">mdi-alert</v-icon>
+                        <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
                       </div>
                     </template>
                     <span>This attachment has been reported as a malicious file</span>
                   </v-tooltip>
                   <div v-else class="attach-icon blue-icon">
-                    <v-icon color="white" style="font-size: 20px">mdi-paperclip</v-icon>
+                    <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                   </div>
                   <v-tooltip bottom opacity="1" z-index="9999">
                     <template v-slot:activator="{ on }">
@@ -780,8 +780,8 @@
             <div
               v-if="
                 !seeComments &&
-                  postDetail.Data.CommunityPostComments &&
-                  postDetail.Data.CommunityPostComments.length
+                postDetail.Data.CommunityPostComments &&
+                postDetail.Data.CommunityPostComments.length
               "
               class="hidden-comments"
             >
@@ -803,8 +803,8 @@
             <div
               v-if="
                 seeComments &&
-                  postDetail.Data.CommunityPostComments &&
-                  postDetail.Data.CommunityPostComments.length
+                postDetail.Data.CommunityPostComments &&
+                postDetail.Data.CommunityPostComments.length
               "
               class="hidden-comments"
             >
@@ -824,8 +824,8 @@
             <div
               v-if="
                 !seeComments &&
-                  postDetail.Data.CommunityPostComments &&
-                  postDetail.Data.CommunityPostComments.length > 1
+                postDetail.Data.CommunityPostComments &&
+                postDetail.Data.CommunityPostComments.length > 1
               "
               id="single-post-see-all-comments"
               class="see-all-comments"
@@ -957,9 +957,9 @@ export default {
     showAllTags: false,
     seeComments: false,
     rules: {
-      required: v =>
+      required: (v) =>
         (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
-      regex: v =>
+      regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen'
     },
@@ -984,19 +984,19 @@ export default {
       ) {
         const ShareSettings = {
           senderInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'SenderInfo'
+            (f) => f.Type === 'SenderInfo'
           ),
-          subject: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
+          subject: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Subject'),
           receiverInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'ReceiverInfo'
+            (f) => f.Type === 'ReceiverInfo'
           ),
           attachments: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'Attachment'
+            (f) => f.Type === 'Attachment'
           ),
-          links: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link')
+          links: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Link')
         }
         if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function() {
+          setTimeout(function () {
             for (let a of ShareSettings.links) {
               var els = document
                 .getElementById('sframe')
@@ -1141,7 +1141,7 @@ export default {
         this.$store.dispatch('threadSharing/addComment', commentObj)
         this.addCommentValue = ''
         const refThis = this
-        this.post.CommentCount = this.post.CommentCount + 1;
+        this.post.CommentCount = this.post.CommentCount + 1
         setTimeout(() => {
           refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
           const yourPostsObj = {
@@ -1165,7 +1165,7 @@ export default {
     },
     isJoined(communId) {
       if (this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some(cId => cId.CommunityId === communId)
+        return this.myCommunities.some((cId) => cId.CommunityId === communId)
       } else {
         return false
       }
@@ -1208,7 +1208,7 @@ export default {
       }
     },
     maliciousFound() {
-      return this.shareSettings.attachments.some(at => at.IsMalicious === true)
+      return this.shareSettings.attachments.some((at) => at.IsMalicious === true)
     }
   }
 }

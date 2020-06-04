@@ -22,7 +22,7 @@
     <v-btn
       v-if="
         $route.name == 'Community' &&
-          (isJoined(fetchedCommunity.CommunityId) || isOwnerOfTheCommunity())
+        (isJoined(fetchedCommunity.CommunityId) || isOwnerOfTheCommunity())
       "
       class="create-com-btn"
       @click="postIncident()"
@@ -165,9 +165,9 @@
         class="pb-4"
         v-if="
           $route.name !== 'Community' &&
-            yourPosts.IsSuccess &&
-            yourPosts.Data &&
-            yourPosts.Data.length > 0
+          yourPosts.IsSuccess &&
+          yourPosts.Data &&
+          yourPosts.Data.length > 0
         "
       >
         <div v-for="(post, ind) of yourPosts.Data" :key="ind + Math.floor(Math.random() * 10000)">
@@ -329,7 +329,7 @@ export default {
       requests: 'threadSharing/requestsGetter'
     }),
     ...mapState({
-      companyInformation: state => state.dashboard.companyInformation
+      companyInformation: (state) => state.dashboard.companyInformation
     }),
     communityDescription() {
       return this.selectedCommunity.description || localStorage.getItem('communityDesc')
@@ -402,7 +402,7 @@ export default {
     },
     isJoined(id) {
       if (id && id != null && this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some(cId => cId.CommunityId == id)
+        return this.myCommunities.some((cId) => cId.CommunityId == id)
       }
     },
     leaveCommunity() {
@@ -414,7 +414,7 @@ export default {
       this.closeCommunityInfo()
     },
     isRequestSent(communId) {
-      return this.requests.some(cId => cId.CommunityId == communId)
+      return this.requests.some((cId) => cId.CommunityId == communId)
     },
     refreshCommunities() {
       this.$store.dispatch('threadSharing/getCommunities')

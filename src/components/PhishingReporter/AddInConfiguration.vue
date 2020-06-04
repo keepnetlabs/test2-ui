@@ -11,7 +11,7 @@
       <v-card
         class="overlay__container"
         light
-        style="border-radius: 12px !important; padding:24px 24px 16px 24px !important;"
+        style="border-radius: 12px !important; padding: 24px 24px 16px 24px !important;"
       >
         <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
           <div class="v-btn v-cart-icon-wrapper">
@@ -27,7 +27,7 @@
         <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
           <div class="logos-buttons__container">
             <logos wrapperClasses="mt-10 logos" />
-            <div class="buttons__container ">
+            <div class="buttons__container">
               <v-btn class="white--text btn-util" color="#2196f3" rounded>
                 <v-icon left>mdi-download</v-icon>
                 Download
@@ -36,7 +36,7 @@
                 <v-icon left>mdi-download</v-icon>
                 Download
               </v-btn>
-              <v-btn class="white--text btn-util " color="#2196f3" rounded>
+              <v-btn class="white--text btn-util" color="#2196f3" rounded>
                 <v-icon left>mdi-download</v-icon>
                 Download
               </v-btn>
@@ -304,14 +304,14 @@ export default {
         ...this.otherSettings
       }
       const formData = new FormData()
-      Object.keys(payload).map(key => {
+      Object.keys(payload).map((key) => {
         formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
       })
       createPhishingReporter(formData)
-        .then(response => {
+        .then((response) => {
           this.showModal = true
         })
-        .catch(error => {})
+        .catch((error) => {})
     }
   }
 }

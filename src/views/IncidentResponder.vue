@@ -27,7 +27,7 @@
               (irSummary &&
                 irSummary.phishingReporterUserStatusCount &&
                 irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
-                0
+              0
             }}</span>
           </div>
           <div class="card-footer">
@@ -36,7 +36,7 @@
               (irSummary &&
                 irSummary.phishingReporterUserStatusCount &&
                 irSummary.phishingReporterUserStatusCount.totalUserCount) ||
-                0
+              0
             }}
             users are
           </div>
@@ -75,7 +75,7 @@
               (irSummary &&
                 irSummary.notifiedEmailResultCount &&
                 irSummary.notifiedEmailResultCount.maliciousCount) ||
-                0
+              0
             }}</span>
           </div>
           <div class="card-footer">
@@ -84,7 +84,7 @@
               (irSummary &&
                 irSummary.notifiedEmailResultCount &&
                 irSummary.notifiedEmailResultCount.maliciousCount) ||
-                0
+              0
             }}
             reported emails
           </div>
@@ -118,7 +118,7 @@
                 (irSummary &&
                   irSummary.investigationTypeCount &&
                   irSummary.investigationTypeCount.automaticInvestigationCount) ||
-                  0
+                0
               }}
               <span>automated</span>
             </div>
@@ -127,7 +127,7 @@
                 (irSummary &&
                   irSummary.investigationTypeCount &&
                   irSummary.investigationTypeCount.automaticInvestigationCount) ||
-                  0
+                0
               }}
               <span>manual</span>
             </div>
@@ -573,27 +573,27 @@ export default {
   },
   created() {
     getRunningInvestigations()
-      .then(response => {
+      .then((response) => {
         const {
           data: { data, status }
         } = response
         this.investigationListData = data
         this.$refs.refRecentInv.loadWithDataArray(data || [])
       })
-      .catch(error => {
+      .catch((error) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the recent investigations! '
         })
       })
     getTopRules()
-      .then(response => {
+      .then((response) => {
         const {
           data: { data, status }
         } = response
         this.$refs.refTopRules.loadWithDataArray(data || [])
       })
-      .catch(error => {
+      .catch((error) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the top rules!'
@@ -606,7 +606,7 @@ export default {
       ascending: true
     }
     searchNotifiedMail(payload)
-      .then(response => {
+      .then((response) => {
         const {
           data: {
             data: { results },
@@ -616,7 +616,7 @@ export default {
 
         this.$refs.refReportedEmails.loadWithDataArray(results || [])
       })
-      .catch(error => {
+      .catch((error) => {
         /*this.$store.dispatch('common/createSnackBar', {
           errorState: true,
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,

@@ -1,5 +1,5 @@
 <template>
-  <v-chart id="main" style="width:30px; height:30px;" :options="options" />
+  <v-chart id="main" style="width: 30px; height: 30px;" :options="options" />
 </template>
 
 <script>

@@ -34,14 +34,14 @@ const investigations = {
   },
   getters: {
     // create global getters for the target users list and investigaiton list
-    investigationListGetter: state => state.investigationList,
-    getTargetUsersListGetter: state => state.targetUsersList,
-    statsAndMenuGetter: state => state.getStatsAndMenuData,
-    investigationDetailsDataGetter: state => state.getInvestigationDetailsData,
-    getInvestigationDetailsListGetter: state => state.getInvestigationDetailsListData,
-    getInvestigationDetailsTargetUsersListGetter: state =>
+    investigationListGetter: (state) => state.investigationList,
+    getTargetUsersListGetter: (state) => state.targetUsersList,
+    statsAndMenuGetter: (state) => state.getStatsAndMenuData,
+    investigationDetailsDataGetter: (state) => state.getInvestigationDetailsData,
+    getInvestigationDetailsListGetter: (state) => state.getInvestigationDetailsListData,
+    getInvestigationDetailsTargetUsersListGetter: (state) =>
       state.getInvestigationDetailsTargetUsersListData,
-    irSummaryGetter: state => state.irSummary
+    irSummaryGetter: (state) => state.irSummary
   },
   mutations: {
     SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
@@ -70,7 +70,7 @@ const investigations = {
       let data = payload.data.results
 
       data.userStats = payload.data.results
-      state.investigationList = data.map(item => {
+      state.investigationList = data.map((item) => {
         return { ...item, userStatus: [item.completedUsersCount, item.scannedUsersCount] }
       })
     },
@@ -93,7 +93,7 @@ const investigations = {
       // get investigaiton list via axious
 
       await deleteInvestigationDetailsItem(obj.data, obj.id)
-        .then(response => {
+        .then((response) => {
           dispatch(
             'common/createSnackBar',
             {
@@ -120,7 +120,7 @@ const investigations = {
       // get investigaiton list via axious
 
       await sendInvestigationWarningMessage(obj.data, obj.id)
-        .then(response => {
+        .then((response) => {
           dispatch(
             'common/createSnackBar',
             {
@@ -147,7 +147,7 @@ const investigations = {
       // get investigaiton list via axious
 
       await cancelInvestigation(id)
-        .then(response => {
+        .then((response) => {
           dispatch(
             'common/createSnackBar',
             {
@@ -173,7 +173,7 @@ const investigations = {
     async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
       // get investigaiton details
       await investigationDetailsTargetUsersListFunction(obj.data, obj.id)
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
         })
@@ -188,11 +188,11 @@ const investigations = {
     async getInvestigationDetailsListData({ commit, dispatch }, obj) {
       // get investigaiton details
       await investigationDetailsListFunction(obj.data, obj.id)
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
         })
-        .catch(error => {
+        .catch((error) => {
           const payload = {
             data: {
               pageNumber: 1,
@@ -208,7 +208,7 @@ const investigations = {
     async getInvestigationDetailsData({ commit, dispatch }, id) {
       // get investigaiton details
       await getInvestigationDetailsDataFunction(id)
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
@@ -224,7 +224,7 @@ const investigations = {
       // get investigaiton list via axious
 
       await getStatsAndMenuDataFunction(id)
-        .then(response => {
+        .then((response) => {
           const result = response.data
 
           commit('SET_STATSANDMENUDATA', result)
@@ -244,7 +244,7 @@ const investigations = {
     async getInvestigationList({ commit, dispatch }, obj) {
       // get investigaiton list via axious
       await investigationList(obj)
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_INVESTIGATIONLIST', result)
         })
@@ -260,7 +260,7 @@ const investigations = {
       // get investigaiton list via axious
 
       await irSummary(obj)
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_IRSUMMARY', result)
         })
@@ -281,7 +281,7 @@ const investigations = {
       // get target list via axious
 
       await getTargetUsers()
-        .then(response => {
+        .then((response) => {
           const result = response.data
           commit('SET_TARGETUSERSLIST', result)
         })
@@ -300,7 +300,7 @@ const investigations = {
       // create investigaiton list via axious. obj is a data parameter ( body ).
       // if you want to manipulate the obj, do it before.
       await saveNewInvestigation(obj)
-        .then(resp => {
+        .then((resp) => {
           dispatch(
             'common/createSnackBar',
             {
@@ -310,7 +310,7 @@ const investigations = {
             { root: true }
           )
         })
-        .catch(resp => {
+        .catch((resp) => {
           dispatch(
             'common/createSnackBar',
             {
@@ -323,7 +323,7 @@ const investigations = {
     },
     async getNotifications({ commit, dispatch }, id) {
       await listNotifications(id, localStorage.getItem('companyId'))
-        .then(response => {
+        .then((response) => {
           const res = response.data
           commit('SET_NOTIFICATIONS', res)
         })

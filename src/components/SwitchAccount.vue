@@ -114,7 +114,7 @@ export default {
       this.$store.dispatch('threadSharing/getCommunities', account.companyId)
       localStorage.setItem('companyId', account.companyId)
       localStorage.setItem('companyManager', account.manager)
-      this.$router.go(0); // refresh page after company id changed
+      this.$router.go(0) // refresh page after company id changed
       this.search = ''
     }
   },
@@ -125,7 +125,7 @@ export default {
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen'
     }),
     ...mapState({
-      currentCompany: state => state.dashboard.selectedCompany
+      currentCompany: (state) => state.dashboard.selectedCompany
     }),
     isLoading: {
       get() {

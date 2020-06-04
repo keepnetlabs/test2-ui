@@ -8,15 +8,17 @@ module.exports = {
       }
     }
   },
-  chainWebpack: config => {
-    ;['vue-modules', 'vue', 'normal-modules', 'normal'].forEach(match => {
+
+  chainWebpack: (config) => {
+    ;['vue-modules', 'vue', 'normal-modules', 'normal'].forEach((match) => {
       config.module
         .rule('scss')
         .oneOf(match)
         .use('sass-loader')
-        .tap(opt => Object.assign(opt, { prependData: "@import '~@/assets/scss/main.scss';" }))
+        .tap((opt) => Object.assign(opt, { prependData: "@import '~@/assets/scss/main.scss';" }))
     })
   },
+
   transpileDependencies: [
     'vuetify',
     'vue-tour',
@@ -26,6 +28,5 @@ module.exports = {
     'vue-echarts',
     'vue-clamp',
     'resize-detector'
-  ],
-  lintOnSave: true
+  ]
 }

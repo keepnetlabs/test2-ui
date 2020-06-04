@@ -1,7 +1,7 @@
 <template>
   <div class="investigate-container">
     <div class="investigate-inner">
-      <v-card light class="investigate-card pb-4 pa-6" style="border-radius: 0 !important">
+      <v-card light class="investigate-card pb-4 pa-6" style="border-radius: 0 !important;">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">
@@ -153,7 +153,7 @@
                     class="attachment red-attach"
                   >
                     <div class="attach-icon red-icon">
-                      <v-icon color="white" style="font-size: 20px">mdi-alert</v-icon>
+                      <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
                     </div>
                     <div class="file-name max-char">RG100055176610.doc</div>
                   </div>
@@ -172,7 +172,7 @@
                     class="attachment blue-attach"
                   >
                     <div class="attach-icon blue-icon">
-                      <v-icon color="white" style="font-size: 20px">mdi-paperclip</v-icon>
+                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                     </div>
                     <div class="file-name max-char">RG102342343240055176610.pdf</div>
                   </div>
@@ -399,7 +399,7 @@
                 outlined
                 class="input-select"
                 v-model="selectedDuration"
-                :rules="[v => !!v || 'Duration is required']"
+                :rules="[(v) => !!v || 'Duration is required']"
                 required
               ></v-select>
 
@@ -411,7 +411,7 @@
                 outlined
                 class="input-select"
                 v-model="selectedAction"
-                :rules="[v => !!v || 'Action is required']"
+                :rules="[(v) => !!v || 'Action is required']"
                 required
               ></v-select>
             </div>
@@ -425,7 +425,7 @@
         </v-btn>
         <div v-if="step === 2">
           <v-btn
-            style="border: 1px solid #2196f3 !important; border-radius: 20px"
+            style="border: 1px solid #2196f3 !important; border-radius: 20px;"
             class="mr-4"
             text
             color="#2196f3"
@@ -481,7 +481,7 @@ export default {
     actions: ['Delete email', 'Notify users', 'No action'],
     selectedAction: 'Delete email',
     valid: false,
-    autocomplete: [v => !!v || 'Target is required'],
+    autocomplete: [(v) => !!v || 'Target is required'],
     startDate: new Date().toISOString().substr(0, 10),
     endDate: new Date().toISOString().substr(0, 10),
     filterOpened: true,
@@ -500,56 +500,56 @@ export default {
     })
   },
   watch: {
-    'header.allHeader': function(newVal, oldVal) {
+    'header.allHeader': function (newVal, oldVal) {
       if (newVal === true && newVal != oldVal) {
         this.header.subject = true
         this.header.sender = true
         this.header.receiver = true
       }
     },
-    'header.subject': function(newVal, oldVal) {
+    'header.subject': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.header.allHeader = false
       }
     },
-    'header.sender': function(newVal, oldVal) {
+    'header.sender': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.header.allHeader = false
       }
     },
-    'header.receiver': function(newVal, oldVal) {
+    'header.receiver': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.header.allHeader = false
       }
     },
-    'body.phishingLinks': function(newVal, oldVal) {
+    'body.phishingLinks': function (newVal, oldVal) {
       if (newVal === true && newVal != oldVal) {
         this.body.phishing1 = true
         this.body.phishing2 = true
       }
     },
-    'body.phishing1': function(newVal, oldVal) {
+    'body.phishing1': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.body.phishingLinks = false
       }
     },
-    'body.phishing2': function(newVal, oldVal) {
+    'body.phishing2': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.body.phishingLinks = false
       }
     },
-    'footer.allAttachments': function(newVal, oldVal) {
+    'footer.allAttachments': function (newVal, oldVal) {
       if (newVal === true && newVal != oldVal) {
         this.footer.attachment1 = true
         this.footer.attachment2 = true
       }
     },
-    'footer.attachment1': function(newVal, oldVal) {
+    'footer.attachment1': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.footer.allAttachments = false
       }
     },
-    'footer.attachment2': function(newVal, oldVal) {
+    'footer.attachment2': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.footer.allAttachments = false
       }

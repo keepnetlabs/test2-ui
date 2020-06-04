@@ -9,7 +9,7 @@ const auth = {
     userRoleName: ''
   },
   getters: {
-    userGetter: state => state.user
+    userGetter: (state) => state.user
   },
   mutations: {
     SET_CURRENTUSER(state, payload) {
@@ -20,7 +20,7 @@ const auth = {
   },
   actions: {
     getCurrentUser({ commit, dispatch }) {
-      getCurrentUser().then(response => {
+      getCurrentUser().then((response) => {
         const datas = {
           companyId: response.data.currentCompany.id,
           manager: response.data.currentCompany.name

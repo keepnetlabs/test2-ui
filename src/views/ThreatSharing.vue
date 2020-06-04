@@ -85,7 +85,7 @@
             </div>
           </div>
         </v-list-item>
-        <div class="d-flex flex-row flex-wrap justify-end pb-3 pt-5" style="margin-right: -18px">
+        <div class="d-flex flex-row flex-wrap justify-end pb-3 pt-5" style="margin-right: -18px;">
           <v-btn
             id="notif-cancel-btn"
             text
@@ -312,7 +312,7 @@ export default {
       isMobileVisible: 'threadSharing/mobileVisibilityGetter'
     }),
     ...mapState({
-      companyInformation: state => state.dashboard.companyInformation
+      companyInformation: (state) => state.dashboard.companyInformation
     }),
     isMobile() {
       if (window.outerWidth < 769) {
@@ -330,7 +330,7 @@ export default {
       }
       if (val.length === prev.length) return
 
-      this.model = val.map(v => {
+      this.model = val.map((v) => {
         if (typeof v === 'string' && !v.startsWith(' ')) {
           v = {
             text: v,
@@ -443,8 +443,8 @@ export default {
         if (this.timer) {
           clearTimeout(this.timer)
         }
-        this.timer = setTimeout(function() {
-          refThis.$store.dispatch('threadSharing/getCommunities').finally(res => {
+        this.timer = setTimeout(function () {
+          refThis.$store.dispatch('threadSharing/getCommunities').finally((res) => {
             refThis.isDefault ? (refThis.tab = 1) : ''
           })
         }, 3000)
@@ -528,16 +528,11 @@ export default {
     },
     filter(item, queryText, itemText) {
       if (item.header) return false
-      const hasValue = val => (val != null ? val : '')
+      const hasValue = (val) => (val != null ? val : '')
       const text = hasValue(itemText)
       const query = hasValue(queryText)
 
-      return (
-        text
-          .toString()
-          .toLowerCase()
-          .indexOf(query.toString().toLowerCase()) > -1
-      )
+      return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
     },
     mobileInfoClicked() {
       this.isMobileInfo = true

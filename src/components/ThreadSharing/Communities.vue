@@ -143,8 +143,8 @@
                   <v-btn
                     v-else-if="
                       isRequestSent(comp.CommunityId) &&
-                        !isJoined(comp.CommunityId) &&
-                        comp.IsPrivate
+                      !isJoined(comp.CommunityId) &&
+                      comp.IsPrivate
                     "
                     outlined
                     rounded
@@ -189,7 +189,7 @@
                 <v-menu
                   v-if="
                     isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId) ||
-                      isJoined(comp.CommunityId)
+                    isJoined(comp.CommunityId)
                   "
                   offset-y
                   transition="scale-transition"
@@ -233,7 +233,7 @@
                         <v-list-item
                           v-if="
                             isJoined(comp.CommunityId) &&
-                              !isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
+                            !isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
                           "
                           @click="
                             openLeaveDialog(
@@ -426,7 +426,8 @@ export default {
     listCommunities: {
       get() {
         if (this.yoursOrAll === 'tab-1') {
-          return this.communityList.Results.sort(function(a, b) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          return this.communityList.Results.sort(function (a, b) {
             if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
               return -1
             }
@@ -436,7 +437,8 @@ export default {
             return 0
           })
         } else if (this.yoursOrAll === 'tab-0') {
-          return this.myCommunities.sort(function(a, b) {
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          return this.myCommunities.sort(function (a, b) {
             if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
               return -1
             }
@@ -447,6 +449,8 @@ export default {
           })
         } else if (this.yoursOrAll === 'tab-2') {
           return this.invitations
+        } else {
+          return undefined
         }
       },
       set(filtered) {
@@ -465,7 +469,7 @@ export default {
       if (val && val == 'tab-0') {
         let myCommuns = []
         for (let a of this.listCommunities) {
-          let match = this.myCommunities.find(c => c.CommunityId == a.CommunityId)
+          let match = this.myCommunities.find((c) => c.CommunityId == a.CommunityId)
           if (match) myCommuns.push(match)
         }
         this.listCommunities = myCommuns
@@ -485,7 +489,7 @@ export default {
 
     if (this.$route.query && !!this.$route.query.communityID) {
       const comp = this.listCommunities.find(
-        item => item.CommunityId === this.$route.query.communityID
+        (item) => item.CommunityId === this.$route.query.communityID
       )
       if (comp) {
         this.goToCommunity(
@@ -505,16 +509,16 @@ export default {
     updateCommunities() {
       clearTimeout(this.debounce)
       const refThis = this
-      this.debounce = setTimeout(function() {
+      this.debounce = setTimeout(function () {
         if (refThis.filteredValue != refThis.filter) {
           if (refThis.filter.length) {
             if (refThis.yoursOrAll === 'tab-1') {
               refThis.listCommunities = refThis.mountedCommunities.filter(
-                f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
+                (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
               )
             } else if (refThis.yoursOrAll === 'tab-0') {
               refThis.listCommunities = refThis.myCommunities.filter(
-                f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
+                (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
               )
             }
             refThis.filteredBefore = true
@@ -523,13 +527,13 @@ export default {
             if (refThis.yoursOrAll === 'tab-1') {
               refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
                 refThis.listCommunities = refThis.mountedCommunities.filter(
-                  f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
+                  (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
                 )
               })
             } else if (refThis.yoursOrAll === 'tab-0') {
               refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
                 refThis.listCommunities = refThis.myCommunities.filter(
-                  f => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
+                  (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
                 )
               })
             }
@@ -606,7 +610,7 @@ export default {
     },
     isJoined(id) {
       if (this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some(cId => cId.CommunityId == id)
+        return this.myCommunities.some((cId) => cId.CommunityId == id)
       }
     },
     isOwnerOfTheCommunity(communityCompId) {
@@ -621,7 +625,7 @@ export default {
         this.yoursOrAll = 'tab-0'
         let myCommuns = []
         for (let a of this.listCommunities) {
-          let match = this.myCommunities.find(c => c.CommunityId == a.CommunityId)
+          let match = this.myCommunities.find((c) => c.CommunityId == a.CommunityId)
           if (match) myCommuns.push(match)
         }
         this.listCommunities = myCommuns
@@ -675,7 +679,7 @@ export default {
         })
     },
     isRequestSent(communId) {
-      return this.requests.some(cId => cId.CommunityId === communId)
+      return this.requests.some((cId) => cId.CommunityId === communId)
     },
     cancelInvitation(communId, createUserId, communReqId) {
       const refuseObj = {
@@ -684,7 +688,7 @@ export default {
         CreateUserId: createUserId,
         CommunityRequestId: communReqId
       }
-      this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj).then(response => {
+      this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj).then((response) => {
         this.$store.dispatch('threadSharing/getInvitions')
       })
     },
@@ -695,7 +699,7 @@ export default {
         CreateUserId: createUserId,
         CommunityRequestId: communReqId
       }
-      this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj).then(response => {
+      this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj).then((response) => {
         this.$store.dispatch('threadSharing/getInvitions')
       })
     }

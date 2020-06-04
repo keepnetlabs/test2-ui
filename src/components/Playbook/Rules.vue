@@ -174,7 +174,7 @@ export default {
   mounted() {
     this.getPlaybookList(this.tableCredientials)
     this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
-   /* this.$refs.refRulesList.loadWithDataArray([
+    /* this.$refs.refRulesList.loadWithDataArray([
       {
         ruleName: 'Ransomware',
         description: 'Rule for ransomware',
@@ -198,9 +198,9 @@ export default {
       playbookList: 'playbook/playbookListGetter'
     }),
     ...mapState({
-      playbookList: state => state.playbook.playbookList
+      playbookList: (state) => state.playbook.playbookList
     })
-  },
+  }
 }
 </script>
 

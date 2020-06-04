@@ -14,15 +14,15 @@ const common = {
     timezones: []
   },
   getters: {
-    getMenuStatus: state => state.menuStatus,
-    getIsLoading: state => state.isLoading,
-    getSnackStatus: state => state.snackStatus,
-    getSnackBars: state => state.snackbars,
-    getColor: state => state.snackbarColor,
-    getErrors: state => state.errors,
-    getErrorStatus: state => state.errorState,
-    getDownloadModalStatus: state => state.downloadModalStatus,
-    getTimezones: state => state.timezones
+    getMenuStatus: (state) => state.menuStatus,
+    getIsLoading: (state) => state.isLoading,
+    getSnackStatus: (state) => state.snackStatus,
+    getSnackBars: (state) => state.snackbars,
+    getColor: (state) => state.snackbarColor,
+    getErrors: (state) => state.errors,
+    getErrorStatus: (state) => state.errorState,
+    getDownloadModalStatus: (state) => state.downloadModalStatus,
+    getTimezones: (state) => state.timezones
   },
   mutations: {
     CHANGE_MENU_STATUS(state, payload) {
@@ -53,7 +53,7 @@ const common = {
       state.snackbars = [...state.snackbars, payload]
     },
     SET_CLOSE_SNACKBAR(state, payload) {
-      state.snackbars = state.snackbars.filter(item => {
+      state.snackbars = state.snackbars.filter((item) => {
         return JSON.stringify(item) !== JSON.stringify(payload)
       })
     }
@@ -87,7 +87,7 @@ const common = {
       commit('SET_DOWNLOAD_MODAL_STATUS', payload)
     },
     getTimezone({ commit }) {
-      getTimezones().then(response => {
+      getTimezones().then((response) => {
         commit('SET_TIMEZONE', response.data.data)
       })
     }

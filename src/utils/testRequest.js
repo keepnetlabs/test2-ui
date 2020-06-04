@@ -11,7 +11,7 @@ const testService = axios.create({
 })
 
 testService.interceptors.request.use(
-  config => {
+  (config) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
@@ -20,17 +20,17 @@ testService.interceptors.request.use(
     }
     return config
   },
-  error => {
+  (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
 )
 
 testService.interceptors.response.use(
-  response => {
+  (response) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     return response
   },
-  error => {
+  (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)

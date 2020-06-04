@@ -120,7 +120,7 @@
                       <div class="flex-grow-1"></div>
                       <v-menu offset-y transition="scale-transition">
                         <template v-slot:activator="{ on }">
-                          <v-btn icon color="blue" v-on="on" style="order: 2">
+                          <v-btn icon color="blue" v-on="on" style="order: 2;">
                             <v-icon>mdi-dots-vertical</v-icon>
                           </v-btn>
                         </template>

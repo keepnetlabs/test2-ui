@@ -2,8 +2,8 @@ import axios from 'axios'
 import router from '../router'
 import AuthenticationService from '../services/authentication'
 import store from '../store'
-import {COMMON_CONSTANTS} from "../model/constants/commonConstants";
-import testService from "./testRequest";
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import testService from './testRequest'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_ROOT_API,
@@ -11,24 +11,27 @@ const service = axios.create({
   rejectUnauthorized: false
 })
 
-service.interceptors.request.use(config => {
-  store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
-  if (config.url !== 'account/token') {
-    config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
-    config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
-    config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
+service.interceptors.request.use(
+  (config) => {
+    store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
+    if (config.url !== 'account/token') {
+      config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
+      config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
+      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
+    }
+    return config
+  },
+  (error) => (error) => {
+    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
-  return config
-}, error => (error) => {
-  store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
-})
+)
 
 service.interceptors.response.use(
-  response => {
+  (response) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     return response
   },
-  error => {
+  (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)

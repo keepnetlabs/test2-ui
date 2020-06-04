@@ -30,7 +30,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item class="pl-0 pr-0 pt-4  v-card-content">
+        <v-list-item class="pl-0 pr-0 pt-4 v-card-content">
           <div>Once you stopped, you cannot resume this investigation.</div>
         </v-list-item>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -307,7 +307,7 @@ export default {
         exportType: exportType === 'XLS' ? 'Excel' : exportType
       }
 
-      exportInvestigationList(payload).then(response => {
+      exportInvestigationList(payload).then((response) => {
         const { data } = response
         const link = document.createElement('a')
         link.href = window.URL.createObjectURL(data)

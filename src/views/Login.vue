@@ -19,18 +19,18 @@
         fluid
         class="ml-0 pl-0 pr-0 pt-0 pb-0 mr-0 d-flex align-center justify-center"
       >
-        <v-row align="center" justify="center" style="height: 100%">
+        <v-row align="center" justify="center" style="height: 100%;">
           <v-col class="login-card-wrapper" lg="12" xs="12">
             <v-card max-width="769" class="mx-auto my-auto v-card-login-wrapper">
               <v-card-title class="d-flex pa-0">
                 <div class="logo-wrapper">
                   <div class="v-responsive">
-                    <img src="../assets/img/logo-kep.png"/>
+                    <img src="../assets/img/logo-kep.png" />
                   </div>
                 </div>
                 <div class="flex-grow-1"></div>
                 <a
-                  style="text-decoration: none !important"
+                  style="text-decoration: none !important;"
                   href="https://www.keepnetlabs.com/free-trial/"
                   target="_blank"
                 >
@@ -225,13 +225,13 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha'
-import {mapActions, mapGetters} from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 
 export default {
   name: 'Login',
-  components: {VueRecaptcha},
+  components: { VueRecaptcha },
   data() {
     return {
       email: '',
@@ -241,13 +241,13 @@ export default {
       rememberMe: '',
       show1: false,
       rules: {
-        required: value => !!value || 'Required.',
-        email: value => {
+        required: (value) => !!value || 'Required.',
+        email: (value) => {
           const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
           return pattern.test(value) || 'Invalid e-mail.'
         },
-        min: v => v.length >= 8 || 'Minimum 8 characters',
-        max: v => v.length < 254 || 'Email address cannot exceed 254 characters'
+        min: (v) => v.length >= 8 || 'Minimum 8 characters',
+        max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters'
       },
       recaptcha: '6LfA498UAAAAACJkiU-j27rjI3KBL0nl95yVcdj9',
       validEmail: false,
@@ -313,8 +313,7 @@ export default {
       get() {
         return this.isLoadingFromStore
       },
-      set() {
-      }
+      set() {}
     },
     wrongLoginAttempt() {
       return this.$store.state.login.wrongLoginAttempt
@@ -336,25 +335,27 @@ export default {
       })
     },
     onLoginClicked() {
-      const mainUrl = this.$router.currentRoute;
-      const _this = this;
+      const mainUrl = this.$router.currentRoute
+      const _this = this
       if (
         this.$refs.email.validate() &&
         this.$refs.password.validate() &&
         this.wrongLoginAttempt < 3
       ) {
         // this.isLoading = true
-        this.$store.dispatch('login/loginAction', {
-          email: this.email,
-          password: this.password,
-          router: this.$router,
-        }).then(() => {
-          setTimeout(() => {
-            if(!!Object.keys(mainUrl.query).length) {
-              _this.$router.push(mainUrl.fullPath)
-            }
-          },500)
-        })
+        this.$store
+          .dispatch('login/loginAction', {
+            email: this.email,
+            password: this.password,
+            router: this.$router
+          })
+          .then(() => {
+            setTimeout(() => {
+              if (!!Object.keys(mainUrl.query).length) {
+                _this.$router.push(mainUrl.fullPath)
+              }
+            }, 500)
+          })
       } else if (
         this.$refs.email.validate() &&
         this.$refs.password.validate &&
@@ -375,7 +376,7 @@ export default {
           this.$store.dispatch('login/loginAction', {
             email: this.email,
             password: this.password,
-            router: this.$router,
+            router: this.$router
           })
           this.$refs.recaptcha.reset()
         }
@@ -451,9 +452,9 @@ body {
 
 .reset-password-wrapper {
   ::v-deep
-  .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-  > .v-input__control
-  > .v-input__slot {
+    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+    > .v-input__control
+    > .v-input__slot {
     box-shadow: none !important;
   }
 

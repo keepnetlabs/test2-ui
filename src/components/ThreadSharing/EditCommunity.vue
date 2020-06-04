@@ -91,7 +91,6 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="edit-industry-area pb-4 pa-0">
-
           <v-list-item-content class="pt-0 pb-0">
             <label class="edit-labels">Industry</label>
             <label class="edit-sub-labels">Select an industry category</label>
@@ -145,21 +144,21 @@ export default {
       selectedCategory: '',
       valid: false,
       nameRules: {
-        required: v =>
+        required: (v) =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
-        regex: v =>
+        regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+        empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
       },
       descriptionRules: {
-        required: v =>
+        required: (v) =>
           (!!v && v.length >= 5 && v.length <= 300) ||
           'Description required and must between 5-300 characters.',
-        regex: v =>
+        regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Descriptions cannot start with space'
+        empty: (v) => (v && !v.startsWith(' ')) || 'Descriptions cannot start with space'
       },
       privateToPublic: false,
       mountedPrivacy: null
@@ -221,7 +220,7 @@ export default {
       }, 500)
     },
     getIKEY() {
-      let theIKEY = this.businessCategories.filter(c => c.IDESC == this.selectedCategory)
+      let theIKEY = this.businessCategories.filter((c) => c.IDESC == this.selectedCategory)
       return theIKEY[0].IKEY
     },
     checkCommunName() {
@@ -232,7 +231,6 @@ export default {
         }
         this.$store.dispatch('threadSharing/checkNameForUpdate', obj)
       }
-
     },
     cancelPrivateToPublic() {
       this.privateToPublic = false

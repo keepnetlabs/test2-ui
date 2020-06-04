@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="pa-6">
-      <v-list-item class=" pl-0">
+      <v-list-item class="pl-0">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">
             mdi-wifi-strength-off

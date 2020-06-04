@@ -49,7 +49,7 @@
                 </div>
                 <div class="one-row">
                   <div class="double-col">
-                    <span style="color: #2196f3">Preview Email</span>
+                    <span style="color: #2196f3;">Preview Email</span>
                   </div>
                   <div class="double-col"></div>
                 </div>

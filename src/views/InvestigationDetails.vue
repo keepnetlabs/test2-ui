@@ -333,11 +333,11 @@
                           class="v-list-item-title__value"
                           v-if="
                             investigationDetailsTargetUsersListData &&
-                              investigationDetailsTargetUsersListData.results
+                            investigationDetailsTargetUsersListData.results
                           "
                           >{{
                             investigationDetailsTargetUsersListData &&
-                              investigationDetailsTargetUsersListData.results.length
+                            investigationDetailsTargetUsersListData.results.length
                           }}</span
                         >
                       </v-list-item-title>
@@ -359,15 +359,15 @@
                           class="v-list-item-title__value"
                           v-if="
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Inbox') &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Inbox')
-                                .mailCount
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Inbox') &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Inbox')
+                              .mailCount
                           "
                           >{{
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Inbox') &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Inbox')
-                                .mailCount
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Inbox') &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Inbox')
+                              .mailCount
                           }}</span
                         >
                       </v-list-item-title>
@@ -389,19 +389,19 @@
                           class="v-list-item-title__value"
                           v-if="
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'JunkEmail'
-                              ) &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail')
-                                .mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'JunkEmail'
+                            ) &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'JunkEmail')
+                              .mailCount
                           "
                           >{{
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'JunkEmail'
-                              ) &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'JunkEmail')
-                                .mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'JunkEmail'
+                            ) &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'JunkEmail')
+                              .mailCount
                           }}</span
                         >
                       </v-list-item-title>
@@ -423,15 +423,15 @@
                           class="v-list-item-title__value"
                           v-if="
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Drafts') &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Drafts')
-                                .mailCount
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Drafts') &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Drafts')
+                              .mailCount
                           "
                           >{{
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Drafts') &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'Drafts')
-                                .mailCount
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Drafts') &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'Drafts')
+                              .mailCount
                           }}</span
                         >
                       </v-list-item-title>
@@ -453,19 +453,19 @@
                           class="v-list-item-title__value"
                           v-if="
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'SentItems'
-                              ) &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'SentItems')
-                                .mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'SentItems'
+                            ) &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'SentItems')
+                              .mailCount
                           "
                           >{{
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'SentItems'
-                              ) &&
-                              statsAndMenuData.folders.find(item => item.folderName == 'SentItems')
-                                .mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'SentItems'
+                            ) &&
+                            statsAndMenuData.folders.find((item) => item.folderName == 'SentItems')
+                              .mailCount
                           }}</span
                         >
                       </v-list-item-title>
@@ -487,21 +487,21 @@
                           class="v-list-item-title__value"
                           v-if="
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'DeletedItems'
-                              ) &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'DeletedItems'
-                              ).mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'DeletedItems'
+                            ) &&
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'DeletedItems'
+                            ).mailCount
                           "
                           >{{
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'DeletedItems'
-                              ) &&
-                              statsAndMenuData.folders.find(
-                                item => item.folderName == 'DeletedItems'
-                              ).mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'DeletedItems'
+                            ) &&
+                            statsAndMenuData.folders.find(
+                              (item) => item.folderName == 'DeletedItems'
+                            ).mailCount
                           }}</span
                         >
                       </v-list-item-title>
@@ -523,21 +523,21 @@
                           class="v-list-item-title__value"
                           v-if="
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item && item.folderName && item.folderName == 'Others'
-                              ) &&
-                              statsAndMenuData.folders.find(
-                                item => item && item.folderName && item.folderName == 'Others'
-                              ).mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item && item.folderName && item.folderName == 'Others'
+                            ) &&
+                            statsAndMenuData.folders.find(
+                              (item) => item && item.folderName && item.folderName == 'Others'
+                            ).mailCount
                           "
                           >{{
                             statsAndMenuData.folders &&
-                              statsAndMenuData.folders.find(
-                                item => item && item.folderName && item.folderName == 'Others'
-                              ) &&
-                              statsAndMenuData.folders.find(
-                                item => item && item.folderName && item.folderName == 'Others'
-                              ).mailCount
+                            statsAndMenuData.folders.find(
+                              (item) => item && item.folderName && item.folderName == 'Others'
+                            ) &&
+                            statsAndMenuData.folders.find(
+                              (item) => item && item.folderName && item.folderName == 'Others'
+                            ).mailCount
                           }}</span
                         >
                       </v-list-item-title>
@@ -567,17 +567,17 @@
                             class="v-list-item-title__value"
                             v-if="
                               statsAndMenuData.folders &&
-                                statsAndMenuData.folders.find(
-                                  item => item.folderName == 'Stored'
-                                ) &&
-                                statsAndMenuData.folders.find(item => item.folderName == 'Stored')
-                                  .mailCount
+                              statsAndMenuData.folders.find(
+                                (item) => item.folderName == 'Stored'
+                              ) &&
+                              statsAndMenuData.folders.find((item) => item.folderName == 'Stored')
+                                .mailCount
                             "
                             >{{
                               statsAndMenuData.folders &&
-                                statsAndMenuData.folders.find(item => item.folderName == 'Inbox') &&
-                                statsAndMenuData.folders.find(item => item.folderName == 'Inbox')
-                                  .mailCount
+                              statsAndMenuData.folders.find((item) => item.folderName == 'Inbox') &&
+                              statsAndMenuData.folders.find((item) => item.folderName == 'Inbox')
+                                .mailCount
                             }}</span
                           >
                         </v-list-item-title>
@@ -650,7 +650,7 @@
                 >{{ item.targetUser && `User: ${item.targetUser}`
                 }}{{
                   item.targetGroup &&
-                    `Group:
+                  `Group:
                 ${item.targetGroup}`
                 }}
               </v-chip>
@@ -669,21 +669,26 @@
             <div
               class="investigation-details__container__content--right-menu__filters--list d-flex"
             >
-              <div v-for="item in investigationDetailsData.headers" class="mr-2">
+              <div
+                v-for="(item, index) in investigationDetailsData.headers"
+                :key="index"
+                class="mr-2"
+              >
                 <v-chip
                   class="ma-2"
                   v-for="(value, key) in item"
-                  v-if="value && key != 'resourceId'"
+                  :key="key"
+                  v-if="value && key !== 'resourceId'"
                   >{{ key }}: {{ value }}
                 </v-chip>
               </div>
-              <div v-for="item in investigationDetailsData.bodies">
-                <v-chip class="ma-2" v-for="(value, key) in item" v-if="value"
+              <div v-for="(item, index) in investigationDetailsData.bodies" :key="index">
+                <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
                   >{{ key }}: {{ value }}
                 </v-chip>
               </div>
-              <div v-for="item in investigationDetailsData.attachments">
-                <v-chip class="ma-2" v-for="(value, key) in item" v-if="value"
+              <div v-for="(item, index) in investigationDetailsData.attachments" :key="index">
+                <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
                   >{{ key }}: {{ value }}
                 </v-chip>
               </div>
@@ -725,7 +730,7 @@
               :columns="columnsTargetUsers"
               :table="
                 investigationDetailsTargetUsersListData &&
-                  investigationDetailsTargetUsersListData.results
+                investigationDetailsTargetUsersListData.results
               "
               :countRow="5"
               :pageSizes="pageSizes"
@@ -1304,7 +1309,7 @@ export default {
       let isArray = Array.isArray(this.soloWarningMessageValue)
       let data = []
       isArray
-        ? (data = this.soloWarningMessageValue.map(item => item.resourceId))
+        ? (data = this.soloWarningMessageValue.map((item) => item.resourceId))
         : data.push(this.soloWarningMessageValue.resourceId)
       this.$store
         .dispatch('investigations/sendInvestigationWarningMessage', {
@@ -1329,7 +1334,7 @@ export default {
       let isArray = Array.isArray(this.deleteValue)
       let data = []
       isArray
-        ? (data = this.deleteValue.map(item => item.resourceId))
+        ? (data = this.deleteValue.map((item) => item.resourceId))
         : data.push(this.deleteValue.resourceId)
       this.$store
         .dispatch('investigations/deleteInvestigationDetailsItem', {
@@ -1375,7 +1380,7 @@ export default {
     //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
     const _this = this
     this.refreshDatatable()
-    this.autoRequest = setInterval(function() {
+    this.autoRequest = setInterval(function () {
       if (_this.statsAndMenuData && _this.statsAndMenuData.status == 'Running')
         _this.refreshDatatable()
     }, 15000)

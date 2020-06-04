@@ -311,7 +311,7 @@
               transition="scale-transition"
             >
               <template v-slot:activator="{ on }">
-                <v-btn style="margin-top: -3px" icon color="white" v-on="on">
+                <v-btn style="margin-top: -3px;" icon color="white" v-on="on">
                   <div class="notification-bell">
                     <v-icon style="font-size: 22px;" color="white">mdi-bell</v-icon>
                     <span v-if="getUnreadMessages > 0" class="manuel-badge">
@@ -321,8 +321,7 @@
                 </v-btn>
               </template>
               <div class="notification-wrapper">
-                <div v-for="notification in notificationList">
-                  <!-- eslint-disable-line -->
+                <div v-for="(notification, index) in notificationList" :key="index">
                   <div class="notification-content">
                     <div class="notification-title">{{ notification.content }}</div>
                     <div
@@ -342,7 +341,7 @@
             <div class="help-wrapper pl-2">
               <v-menu content-class="help-menu" fixed transition="scale-transition">
                 <template nudge-right v-slot:activator="{ on }">
-                  <v-btn style="margin-top: -3px" icon color="white" v-on="on">
+                  <v-btn style="margin-top: -3px;" icon color="white" v-on="on">
                     <v-icon style="font-size: 25px; margin-bottom: 2px;">mdi-help-circle</v-icon>
                   </v-btn>
                 </template>
@@ -406,11 +405,11 @@
               <router-link
                 class="breadcrumb-links"
                 to="/threatsharing"
-                style=" display: flex;align-items: center;"
+                style="display: flex; align-items: center;"
                 v-if="routerName === 'Phishing Reporter'"
               >
                 {{ breadcrumbs[1].text }}
-                <v-icon style="color: #fff; font-size: 16px; ">mdi-chevron-right</v-icon>
+                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
                 Playbook
               </router-link>
               <router-link
@@ -442,8 +441,8 @@
               <v-icon
                 v-if="
                   routerName !== 'Incident Responder' &&
-                    routerName !== 'Investigations' &&
-                    routerName !== 'Phishing Reporter'
+                  routerName !== 'Investigations' &&
+                  routerName !== 'Phishing Reporter'
                 "
                 style="color: #fff; font-size: 16px;"
                 >mdi-chevron-right
@@ -451,8 +450,8 @@
               <router-link
                 v-if="
                   routerName !== 'Incident Responder' &&
-                    routerName !== 'Investigations' &&
-                    routerName !== 'Phishing Reporter'
+                  routerName !== 'Investigations' &&
+                  routerName !== 'Phishing Reporter'
                 "
                 :to="$route.path"
                 class="bread-last-step breadcrumb-links"
@@ -779,7 +778,7 @@ export default {
       }
     },
     getUnreadMessages() {
-      return this.notificationList.filter(x => x.isSeen == false).length
+      return this.notificationList.filter((x) => x.isSeen == false).length
     },
     getFullName() {
       if (this.$store.state.auth.user == undefined) {
@@ -812,18 +811,19 @@ export default {
       return 'left : 262px !important;'
     },
     getDrawerPadding() {
-      // eslint-disable-line
       switch (this.$vuetify.breakpoint.name) {
         case 'xs':
           return 'left : 278px;'
         case 'sm':
           return 'left : 278px;'
         case 'md':
-          return 'left : 278px;' // 46
+          return 'left : 278px;'
         case 'lg':
           return 'left : 232px;'
         case 'xl':
           return 'left : 232px;'
+        default:
+          return ''
       }
     },
     isLoading: {

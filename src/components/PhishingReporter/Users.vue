@@ -159,7 +159,7 @@ export default {
         ascending: false
       }
       searchPhishingReporterUser(payload)
-        .then(response => {
+        .then((response) => {
           const {
             data: {
               data: { results }
@@ -167,7 +167,7 @@ export default {
           } = response
           this.$refs.refUsersList.loadWithDataArray(results || [])
         })
-        .catch(error => {
+        .catch((error) => {
           /*
             this.$store.dispatch('common/createSnackBar', {
               errorState: true,
@@ -190,14 +190,14 @@ export default {
         exportType: exportType === 'XLS' ? 'Excel' : exportType
       }
       exportPhishingReporterUserList(payload)
-        .then(response => {
+        .then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
           link.download = `users.${exportType.toLocaleLowerCase()}`
           link.click()
         })
-        .catch(error => {})
+        .catch((error) => {})
     }
   },
 

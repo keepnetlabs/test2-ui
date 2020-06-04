@@ -89,7 +89,7 @@
             </div>
           </div>
         </v-list-item>
-        <div class="d-flex flex-row flex-wrap justify-end pb-3 pt-5" style="margin-right: -18px">
+        <div class="d-flex flex-row flex-wrap justify-end pb-3 pt-5" style="margin-right: -18px;">
           <v-btn
             id="notification-cancel-btn"
             text
@@ -202,7 +202,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item class="pl-0 pr-0 pt-10" style="flex-direction: column">
+        <v-list-item class="pl-0 pr-0 pt-10" style="flex-direction: column;">
           <v-form v-model="validEmail" ref="emails">
             <v-combobox
               id="add-member-combobox"
@@ -391,10 +391,10 @@ export default {
     isMobileInfo: false,
     mails: null,
     emailData: {
-      regex: v =>
+      regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/@\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
-      email: v => {
+      email: (v) => {
         if (v.length > 0) {
           let booReturn = true
           const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -415,14 +415,14 @@ export default {
           return true
         }
       },
-      maxFive: v => {
+      maxFive: (v) => {
         if (v.length > 5) {
           return 'Maximum 5 email for each invite'
         } else {
           return true
         }
       },
-      required: v => (v && v.length >= 1) || 'You should type an email to invite'
+      required: (v) => (v && v.length >= 1) || 'You should type an email to invite'
     },
     validEmail: false,
     emailSearch: null,
@@ -545,7 +545,7 @@ export default {
     this.$store.dispatch('threadSharing/getCommunities')
     this.$store
       .dispatch('threadSharing/getCommunityInfo')
-      .then(data => {
+      .then((data) => {
         this.$store
           .dispatch('threadSharing/setSelectedCommunity', {
             id: data.CommunityId,
@@ -556,7 +556,7 @@ export default {
             communityCompanyId: data.CommunityCompany[0].CompanyId,
             isOwner: data.CommunityCompany[0].CompanyId === this.getSelectedCompany.companyId
           })
-          .then(response => {
+          .then((response) => {
             localStorage.setItem('communityName', data.Name)
             localStorage.setItem('communityDesc', data.Description)
             localStorage.setItem('communityCat', data.BusinessCategoryText)
@@ -580,7 +580,7 @@ export default {
             this.$store.dispatch('threadSharing/getMembers')
           })
       })
-      .catch(error => {
+      .catch((error) => {
         if (
           encodeURI(this.selectedCommunity.id) !=
           window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
@@ -800,27 +800,22 @@ export default {
     },
     filter(item, queryText, itemText) {
       if (item.header) return false
-      const hasValue = val => (val != null ? val : '')
+      const hasValue = (val) => (val != null ? val : '')
       const text = hasValue(itemText)
       const query = hasValue(queryText)
 
-      return (
-        text
-          .toString()
-          .toLowerCase()
-          .indexOf(query.toString().toLowerCase()) > -1
-      )
+      return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
     },
     isJoined() {
       if (this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some(
-          cId => cId.CommunityId == localStorage.getItem('communityId')
+          (cId) => cId.CommunityId == localStorage.getItem('communityId')
         )
       }
     },
     validateEmailArea() {
       const refThis = this
-      setTimeout(function() {
+      setTimeout(function () {
         if (refThis.model) {
           let i = refThis.model.length
           while (i--) {

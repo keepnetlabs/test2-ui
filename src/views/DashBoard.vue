@@ -271,10 +271,10 @@ export default {
       notificationList: 'dashboard/getNotificationList'
     }),
     ...mapState({
-      pieChartData: state => state.dashboard.pieChartData,
-      pieChartDataLabels: state => state.dashboard.pieChartDataLabels,
-      chartOptionColors: state => state.dashboard.chartOptionColors,
-      companyInformation: state => state.dashboard.companyInformation
+      pieChartData: (state) => state.dashboard.pieChartData,
+      pieChartDataLabels: (state) => state.dashboard.pieChartDataLabels,
+      chartOptionColors: (state) => state.dashboard.chartOptionColors,
+      companyInformation: (state) => state.dashboard.companyInformation
     })
   },
   methods: {

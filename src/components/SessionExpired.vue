@@ -83,8 +83,8 @@ export default {
       show1: false,
       isLoading: false,
       rules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 8 || 'Min 8 characters',
+        required: (value) => !!value || 'Required.',
+        min: (v) => v.length >= 8 || 'Min 8 characters',
         emailMatch: () => "The email and password you entered don't match"
       }
     }
@@ -101,7 +101,7 @@ export default {
           password: this.password,
           router: this.$router
         })
-        .then(resp => {
+        .then((resp) => {
           this.$emit('closeSessionExpired')
         })
     }

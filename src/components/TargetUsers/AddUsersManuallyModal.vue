@@ -8,7 +8,7 @@
       fixed
       light
       :dark="false"
-      style="overflow-y: auto"
+      style="overflow-y: auto;"
     >
       <v-container class="add-users-manually" id="add-users-manually">
         <v-card light class="add-users-manually__container">

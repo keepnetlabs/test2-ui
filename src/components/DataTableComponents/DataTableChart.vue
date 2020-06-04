@@ -5,9 +5,9 @@
       opacity="1"
       v-if="
         scope.row &&
-          scope.row[col.property] &&
-          scope.row[col.property].filter(item => item === 0).length !==
-            scope.row[col.property].length
+        scope.row[col.property] &&
+        scope.row[col.property].filter((item) => item === 0).length !==
+          scope.row[col.property].length
       "
     >
       <template v-slot:activator="{ on }">
@@ -22,12 +22,13 @@
           {{ getChartSummary(scope.row[col.property], chartOptions.summary.seperator) }}
         </div>
       </template>
-      <template
+      <div
         v-for="(item, index) in scope.row[col.property]"
+        :key="index"
         v-if="chartOptions.showTooltipLine"
       >
         <p class="datatable-chart__tooltip">{{ chartOptions.labels[index] }} : {{ item }}</p>
-      </template>
+      </div>
     </v-tooltip>
     <span v-else>-</span>
   </div>
