@@ -4,7 +4,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        data: '@import "~@/assets/scss/main.scss"'
+        prependData: '@import "~@/assets/scss/main.scss"'
       }
     }
   },
@@ -14,7 +14,7 @@ module.exports = {
         .rule('scss')
         .oneOf(match)
         .use('sass-loader')
-        .tap(opt => Object.assign(opt, { data: "@import '~@/assets/scss/main.scss';" }))
+        .tap(opt => Object.assign(opt, { prependData: "@import '~@/assets/scss/main.scss';" }))
     })
   },
   transpileDependencies: [
