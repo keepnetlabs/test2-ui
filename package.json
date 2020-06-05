@@ -55,7 +55,7 @@
     "sass": "^1.26.7",
     "sass-loader": "^8.0.2",
     "vue-class-component": "^7.1.0",
-    "vue-cli-plugin-vuetify": "~2.0.5",
+    "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.4.4",
     "webpack": "^4.43.0"

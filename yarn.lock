@@ -10157,7 +10157,7 @@ vue-class-component@^7.1.0:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.2.3.tgz#a5b1abd53513a72ad51098752e2dedd499807cca"
   integrity sha512-oEqYpXKaFN+TaXU+mRLEx8dX0ah85aAJEe61mpdoUrq0Bhe/6sWhyZX1JjMQLhVsHAkncyhedhmCdDVSasUtDw==
 
-vue-cli-plugin-vuetify@~2.0.5:
+vue-cli-plugin-vuetify@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-2.0.5.tgz#09ba78928653fc7e3801ea37e5120f957413dda4"
   integrity sha512-jtxcidjLT5f1H9QLYKLFjo/ZG42ud4pI9bK3WNO5DXyhiMDMTwSZ7b3NcJVRH7tKYbv5/ty0VPdDGlf4w22AMA==
