@@ -177,12 +177,12 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'priority' &&
-                        key !== 'status' &&
-                        key !== 'detected'
+                      editMode &&
+                      !Array.isArray(item[key]) &&
+                      key !== 'progress' &&
+                      key !== 'priority' &&
+                      key !== 'status' &&
+                      key !== 'detected'
                     "
                     v-model="item[key]"
                   />
@@ -194,9 +194,9 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key === 'priority'
+                      editMode &&
+                      !Array.isArray(item[key]) &&
+                      key === 'priority'
                     "
                     v-model="item[key]"
                   />
@@ -208,9 +208,9 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key === 'status'
+                      editMode &&
+                      !Array.isArray(item[key]) &&
+                      key === 'status'
                     "
                     v-model="item[key]"
                   />
@@ -222,9 +222,9 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key === 'detected'
+                      editMode &&
+                      !Array.isArray(item[key]) &&
+                      key === 'detected'
                     "
                     v-model="item[key]"
                   />
@@ -240,12 +240,12 @@
                     solo
                     v-if="
                       multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'detected' &&
-                        key !== 'status' &&
-                        key !== 'priority'
+                      editMode &&
+                      !Array.isArray(item[key]) &&
+                      key !== 'progress' &&
+                      key !== 'detected' &&
+                      key !== 'status' &&
+                      key !== 'priority'
                     "
                   />
 
@@ -259,9 +259,9 @@
                     placeholder="Multiple Values"
                     v-if="
                       multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        (key === 'detected' || key === 'status' || key === 'priority')
+                      editMode &&
+                      !Array.isArray(item[key]) &&
+                      (key === 'detected' || key === 'status' || key === 'priority')
                     "
                     :value="multipleEditModels[key]"
                     @input="handleMultipleEdits(item, key, $event)"
@@ -822,9 +822,9 @@
                     <v-btn
                       :disabled="
                         scope.row.status === 'Cancelled' ||
-                          scope.row.status === 'Expired' ||
-                          scope.row.status === 'Finished' ||
-                          scope.row.status === 'NoMatch'
+                        scope.row.status === 'Expired' ||
+                        scope.row.status === 'Finished' ||
+                        scope.row.status === 'NoMatch'
                       "
                       @click.native="rowAct(rowActions[1].action, scope.row)"
                       class="btn-hover"
@@ -1072,13 +1072,13 @@ export default {
     },
     firstColFixed(val) {
       if (!val) {
-        const fixedCol = this.columns.filter(c => c.fixed === 'left')
+        const fixedCol = this.columns.filter((c) => c.fixed === 'left')
         if (fixedCol && fixedCol.length) {
           fixedCol[0].fixed = false
           this.firstColFixed = false
         }
       } else {
-        const disabledCol = this.columns.filter(c => c.fixed === false)
+        const disabledCol = this.columns.filter((c) => c.fixed === false)
         disabledCol[0].fixed = 'left'
         this.firstColFixed = true
       }
@@ -1103,7 +1103,7 @@ export default {
     columns: {
       deep: true,
       handler(val) {
-        if (!val.some(col => col.show)) this.allHidden = true
+        if (!val.some((col) => col.show)) this.allHidden = true
         else this.allHidden = false
       }
     }
@@ -1127,12 +1127,12 @@ export default {
     window.addEventListener('resize', this.calculateWidths)
     if (window.outerWidth < 1023) {
       this.actionFixed = false
-      const leftFixed = this.columns.filter(col => col.fixed === 'left')
+      const leftFixed = this.columns.filter((col) => col.fixed === 'left')
       if (leftFixed && leftFixed.length) {
         leftFixed[0].fixed = false
         this.firstColFixed = false
       }
-      const rightFixed = this.columns.filter(col => col.fixed === 'right')
+      const rightFixed = this.columns.filter((col) => col.fixed === 'right')
       if (rightFixed && rightFixed.length) {
         rightFixed[0].fixed = false
       }
@@ -1157,7 +1157,7 @@ export default {
     searchChangedEvent() {
       if (this.isServerSide) {
         const filterItems = this.columns
-          .filter(column => column.isFilterable)
+          .filter((column) => column.isFilterable)
           .reduce((acc, filterItem) => {
             acc.push({
               FieldName: filterItem.property,
@@ -1182,7 +1182,7 @@ export default {
         const searchValue = this.search
         this.showfilteredData = !!searchValue.length
         this.filteredData = this.tableData.reduce((acc, item) => {
-          const data = Object.values(item).find(i => {
+          const data = Object.values(item).find((i) => {
             if (
               typeof i === 'string' &&
               i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
@@ -1243,7 +1243,7 @@ export default {
       }
     },
     getColumnLabel(key, value) {
-      const answer = this.columns.find(item => {
+      const answer = this.columns.find((item) => {
         return item['property'] === key
       })
 
@@ -1253,7 +1253,7 @@ export default {
       this.$emit(action, row)
     },
     tableRowClassName(row) {
-      const ans = this.multipleSelection.some(r => JSON.stringify(r) === JSON.stringify(row.row))
+      const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row))
       if (ans) {
         return 'selected-row'
       }
@@ -1462,7 +1462,7 @@ export default {
       // After user edited the row and pressed SAVE button
       this.multipleSelection.map((item, index) => {
         const keys = Object.keys(item)
-        keys.map(key => {
+        keys.map((key) => {
           //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
           item[key] = this.copyOfEditedRows[0][key]
         })
@@ -2099,6 +2099,9 @@ export default {
   margin-left: 2px;
 }
 
+::v-deep .v-sheet {
+  border-radius: unset !important;
+}
 .v-sheet {
   border-radius: 20px !important;
 }
@@ -2191,10 +2194,6 @@ export default {
   line-height: 1.33;
   letter-spacing: normal;
   color: rgba(255, 255, 255, 0.87);
-}
-
-::v-deep .v-sheet {
-  border-radius: unset !important;
 }
 
 .filter-field {

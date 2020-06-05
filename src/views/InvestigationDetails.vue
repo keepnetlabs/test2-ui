@@ -553,8 +553,7 @@
                     class="v-list-item__archived--main"
                     :class="{ 'v-list-item--active': activeMenu == 'stored' }"
                   >
-                    <div class="v-list-item__archived">
-                    </div>
+                    <div class="v-list-item__archived"></div>
                     <div class="v-list-item__archived--link">
                       <v-list-item-icon>
                         <v-icon medium left color="#909399">mdi-clipboard-arrow-down</v-icon>
@@ -1033,10 +1032,10 @@ export default {
       } will be deleted from mailbox`
     },
     calculateProgressData() {
-      let today = moment(new Date()).toDate();
-      let createDate = moment(this.investigationDetailsData.createDate).toDate();
-      let expireDate = moment(this.investigationDetailsData.expireDate).toDate();
-      let startDate = moment(this.investigationDetailsData.startDate).toDate();
+      let today = moment(new Date()).toDate()
+      let createDate = moment(this.investigationDetailsData.createDate).toDate()
+      let expireDate = moment(this.investigationDetailsData.expireDate).toDate()
+      let startDate = moment(this.investigationDetailsData.startDate).toDate()
       let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)
       let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10)
       this.diffDays = diffDays
@@ -1391,7 +1390,7 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .standard-height {
   ::v-deep .v-input__slot {
     //max-height: 40px !important;
