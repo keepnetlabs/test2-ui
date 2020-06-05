@@ -67,12 +67,14 @@ const investigations = {
       state.getStatsAndMenuData = data
     },
     SET_INVESTIGATIONLIST(state, payload) {
-      let data = payload.data.results
+      const pagination = {}
+      let data = payload.data
 
-      data.userStats = payload.data.results
-      state.investigationList = data.map(item => {
+      data.results.userStats = payload.data.results
+      let stateData = data.results.map(item => {
         return { ...item, userStatus: [item.completedUsersCount, item.scannedUsersCount] }
       })
+      state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
     },
     SET_IRSUMMARY(state, payload) {
       let data = payload.data

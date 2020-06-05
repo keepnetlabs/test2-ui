@@ -539,7 +539,7 @@
         >
           <el-table
             :border="border"
-            :data="tableData"
+            :data="showfilteredData ? filteredData : tableData"
             :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
@@ -667,7 +667,7 @@
                   </v-tooltip>
                 </div>
                 <div v-if="col.type === 'popup'">
-                  <slot name="datatable-column-popup" :col="col" :scope="scope"> </slot>
+                  <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
                 </div>
               </template>
             </el-table-column>
@@ -848,7 +848,7 @@
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
           :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
-          :total="initialData.length"
+          :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
           layout="total, sizes, prev, pager, next"
@@ -992,10 +992,14 @@ export default {
       type: Boolean,
       default: true
     },
-    requestParams:{
+    requestParams: {
       type: Object,
-      required: true
+      required: false
     },
+    isServerSide: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     ...mapGetters({
@@ -1004,6 +1008,8 @@ export default {
   },
   data() {
     return {
+      filteredData: [],
+      showfilteredData: false,
       initialData: [],
       dataLength: 0,
       tableData: [],
@@ -1120,35 +1126,56 @@ export default {
   },
 
   methods: {
-    sortChangedEvent(sortProps){
+    handleTableData() {
+      return this.showfilteredData ? this.filteredData : this.tableData
+    },
+
+    sortChangedEvent(sortProps) {
       this.$emit('sortChangedEvent', sortProps)
     },
 
-    paginationChangedEvent(paginationProps){
+    paginationChangedEvent(paginationProps) {
       this.$emit('paginationChangedEvent', paginationProps)
     },
 
-    searchChangedEvent(){
-      const filterItems = this.columns.filter(column => column.isFilterable).reduce((acc, filterItem) => {
-      acc.push({
-        FieldName: filterItem.property,
-        Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
-        Value: this.$refs.searchInput.value
-      });
-      return acc;
-      }, []);
-      const bodyDataFilter = {
-        filter : {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: filterItems,
-            }
-          ]
+    searchChangedEvent() {
+      if (this.isServerSide) {
+        const filterItems = this.columns
+          .filter(column => column.isFilterable)
+          .reduce((acc, filterItem) => {
+            acc.push({
+              FieldName: filterItem.property,
+              Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
+              Value: this.$refs.searchInput.value
+            })
+            return acc
+          }, [])
+        const bodyDataFilter = {
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: filterItems
+              }
+            ]
+          }
         }
+        this.$emit('searchChangedEvent', bodyDataFilter)
+      } else {
+        const searchValue = this.search
+        this.showfilteredData = !!searchValue.length
+        this.filteredData = this.tableData.reduce((acc, item) => {
+          const data = Object.values(item).find(i => {
+            if (
+              typeof i === 'string' &&
+              i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+            )
+              return acc.push(item)
+          })
+          return acc
+        }, [])
       }
-      this.$emit('searchChangedEvent', bodyDataFilter)
     },
     addUsersAction(actionName, row) {
       switch (actionName) {
@@ -1232,30 +1259,34 @@ export default {
       rows.splice(index, 1)
     },
     handleSizeChange(rows) {
-      this.rowCount = rows;
-      this.paginationChangedEvent({pageSize: rows,pageNumber: this.currentPage })
-      /*this.rowCount = rows
-      if (this.currentPage === 1) {
-        this.tableData = this.initialData.slice(0, rows)
+      this.rowCount = rows
+      if (this.isServerSide) {
+        this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {
-        this.tableData = this.initialData.slice(
-          (this.currentPage - 1) * rows,
-          this.currentPage * rows
-        )
-      }*/
+        if (this.currentPage === 1) {
+          this.tableData = this.initialData.slice(0, rows)
+        } else {
+          this.tableData = this.initialData.slice(
+            (this.currentPage - 1) * rows,
+            this.currentPage * rows
+          )
+        }
+      }
     },
     handleCurrentChange(pageNum) {
-      this.currentPage = pageNum;
-      this.paginationChangedEvent({pageSize: this.rowCount,pageNumber: pageNum })
-      /*this.currentPage = pageNum
-      if (pageNum === 1) {
-        this.tableData = this.initialData.slice(0, this.rowCount)
+      this.currentPage = pageNum
+      if (this.isServerSide) {
+        this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
-        this.tableData = this.initialData.slice(
-          (pageNum - 1) * this.rowCount,
-          pageNum * this.rowCount
-        )
-      }*/
+        if (pageNum === 1) {
+          this.tableData = this.initialData.slice(0, this.rowCount)
+        } else {
+          this.tableData = this.initialData.slice(
+            (pageNum - 1) * this.rowCount,
+            pageNum * this.rowCount
+          )
+        }
+      }
     },
     onEmptyBtnClicked(e) {
       this.$emit('onEmptyBtnClicked', e)
@@ -1428,20 +1459,20 @@ export default {
       this.copyOfEditedRows = []
     },
     loadWithDataArray(data, responseParams) {
-      this.initialData = data;
-      this.dataLength = responseParams && responseParams.totalNumberOfRecords;
-      this.tableData = data.slice(0, this.countRow || this.rowCount)
+      this.initialData = data
+      this.dataLength = responseParams && responseParams.totalNumberOfRecords
+      this.tableData = data.slice(0, this.rowCount || this.countRow)
     },
     calculateWidths() {
       /*
-        if (this.$refs.tableContainer) {
-          const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
-          const columnsTotalWidth = this.getColumnsWidth()
-          const actionsWidth = widthOfContainer - columnsTotalWidth - 61
-          this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
-        }
+                                                          if (this.$refs.tableContainer) {
+                                                            const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
+                                                            const columnsTotalWidth = this.getColumnsWidth()
+                                                            const actionsWidth = widthOfContainer - columnsTotalWidth - 61
+                                                            this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
+                                                          }
 
-         */
+                                                           */
     },
     getColumnsWidth() {
       return this.columns.reduce((acc, item) => {
@@ -2301,12 +2332,12 @@ export default {
 }
 
 /*.date-format {
-                        text-align: left !important;
-                        span {
-                          text-overflow: ellipsis;
-                          white-space: normal;
-                        }
-                      }*/
+                                            text-align: left !important;
+                                            span {
+                                              text-overflow: ellipsis;
+                                              white-space: normal;
+                                            }
+                                          }*/
 
 ::v-deep .actions-label {
   padding-right: 49px !important;

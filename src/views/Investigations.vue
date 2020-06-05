@@ -44,7 +44,7 @@
       ref="investigationTable"
       :refName="'investigationTable'"
       :columns="columns"
-      :table="tableData"
+      :table="tableData.data"
       :title="title"
       :countRow="5"
       :pageSizes="pageSizes"
@@ -65,7 +65,9 @@
       @sortChangedEvent="sortChangedEvent($event)"
       @paginationChangedEvent="paginationChangedEvent($event)"
       @searchChangedEvent="searchChangedEvent($event)"
+      :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
+      :isServerSide="false"
       v-if="showDatatable"
       @onEmptyBtnClicked="isWantToAddNewCommunity = true"
     />
@@ -95,6 +97,7 @@ export default {
     isWantToStopInvestigation: false,
     showDatatable: false,
     init: true,
+    investigationListDataLength: 0,
     columns: [
       // Should be defined to show the table
       {
@@ -107,7 +110,7 @@ export default {
         show: true,
         type: 'text',
         width: 250,
-        isFilterable: true,
+        isFilterable: true
         //minWidth: 80
       },
       {
@@ -119,8 +122,7 @@ export default {
         sortable: true,
         show: true,
         type: 'detected',
-        width: 150,
-        isFilterable: true,
+        width: 150
         //minWidth: 80
       },
       {
@@ -132,8 +134,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 250,
-        isFilterable: true,
+        width: 250
         //minWidth: 80
       },
       {
@@ -145,9 +146,7 @@ export default {
         sortable: true,
         show: true,
         type: 'status',
-        width: 200,
-        isFilterable: true,
-        filterType: 'test'
+        width: 200
         //minWidth: 80
       },
       {
@@ -159,9 +158,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185,
-        isFilterable: true,
-        filterType: 'test'
+        width: 185
         //minWidth: 80
       },
       {
@@ -173,9 +170,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185,
-        isFilterable: true,
-        filterType: 'test'
+        width: 185
         //minWidth: 80
       },
       {
@@ -199,9 +194,7 @@ export default {
         sortable: false,
         show: true,
         type: 'progress',
-        width: 90,
-        isFilterable: true,
-        filterType: 'number'
+        width: 90
         // minWidth: 60
       }
     ],
@@ -270,36 +263,35 @@ export default {
       pageNumber: 1,
       pageSize: 500,
       orderBy: 'startDate',
-      ascending: false,
+      ascending: false
     }
   }),
   methods: {
-    sortChangedEvent({prop, order}){
-      this.bodyData = {...this.bodyData, orderBy: prop, ascending: order === 'ascending'}
+    sortChangedEvent({ prop, order }) {
+      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       const _this = this
-      this.$store
-              .dispatch('investigations/getInvestigationList', this.bodyData)
-              .finally(() => {
-                this.$refs.investigationTable.loadWithDataArray(_this.tableData, this.bodyData)
-              })
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, this.bodyData)
+      })
     },
-    paginationChangedEvent({pageSize, pageNumber}){
-      this.bodyData = {...this.bodyData, pageSize: pageSize, pageNumber: pageNumber}
+    paginationChangedEvent({ pageSize, pageNumber }) {
       const _this = this
-      this.$store
-              .dispatch('investigations/getInvestigationList', this.bodyData)
-              .finally(() => {
-                this.$refs.investigationTable.loadWithDataArray(_this.tableData, _this.bodyData)
-              })
+      this.bodyData = {
+        ...this.bodyData,
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
     },
-    searchChangedEvent({filter}){
-      this.bodyData = {...this.bodyData, filter}
+    searchChangedEvent({ filter }) {
+      this.bodyData = { ...this.bodyData, filter }
       const _this = this
-      this.$store
-              .dispatch('investigations/getInvestigationList', this.bodyData)
-              .finally(() => {
-                this.$refs.investigationTable.loadWithDataArray(_this.tableData, _this.bodyData)
-              })
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
     },
     refreshDatatable() {
       this.showDatatable = false
