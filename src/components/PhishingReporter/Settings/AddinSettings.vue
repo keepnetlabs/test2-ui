@@ -10,7 +10,6 @@
             ]"
             class="k-textfield mt-2"
             dense
-            height="40"
             id="add-in-text"
             outlined
             placeholder="Suspicious E-Mail Reporter"
@@ -29,7 +28,6 @@
             ]"
             class="k-textfield mt-2"
             dense
-            height="40"
             id="company-text"
             outlined
             placeholder="Company Name"
@@ -71,7 +69,6 @@
             ]"
             class="k-textfield mt-2"
             dense
-            height="40"
             id="alertbox-text"
             outlined
             placeholder="Phishing Reporter"
@@ -109,7 +106,6 @@
                   <v-text-field
                     class="k-textfield mt-2 report-warning__textfield"
                     dense
-                    height="40"
                     id="alertbox-text"
                     outlined
                     placeholder="Report this email?"
@@ -129,7 +125,6 @@
           <v-text-field
             class="k-textfield mt-2"
             dense
-            height="40"
             id="reported-text"
             outlined
             placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
@@ -145,7 +140,6 @@
           <v-text-field
             class="k-textfield mt-2"
             dense
-            height="40"
             id="delete-text"
             outlined
             placeholder="Do you wish to delete original email?"
@@ -161,7 +155,6 @@
           <v-text-field
             class="k-textfield mt-2"
             dense
-            height="40"
             id="deleted-text"
             outlined
             placeholder="The mail has been deleted"
@@ -180,7 +173,6 @@
             ]"
             class="k-textfield mt-2"
             dense
-            height="40"
             id="alertbox-text"
             outlined
             placeholder="Suspicious E-Mail"

@@ -54,7 +54,7 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .target-users {
   &__container {
     padding: 24px 16px !important;
@@ -67,14 +67,24 @@ export default {
       height: 646px;
     }
   }
+  .v-slide-group__content {
+    border-bottom: 2px solid #e4e7ed;
+    margin-right: 20px;
+  }
+
+  .v-tabs-slider-wrapper {
+    bottom: -1px !important;
+    color: #0486fe !important;
+  }
+
+  .v-tabs-slider {
+    width: 92% !important;
+  }
 }
 
 .pr-tab {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 24px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
   line-height: 1.29;
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.87) !important;
@@ -90,22 +100,6 @@ export default {
 
   &-active {
     color: #2196f3 !important;
-  }
-}
-
-::v-deep {
-  .v-slide-group__content {
-    border-bottom: 2px solid #e4e7ed;
-    margin-right: 20px;
-  }
-
-  .v-tabs-slider-wrapper {
-    bottom: -1px !important;
-    color: #0486fe !important;
-  }
-
-  .v-tabs-slider {
-    width: 92% !important;
   }
 }
 </style>
