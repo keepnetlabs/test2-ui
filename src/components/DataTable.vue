@@ -177,12 +177,12 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                      editMode &&
-                      !Array.isArray(item[key]) &&
-                      key !== 'progress' &&
-                      key !== 'priority' &&
-                      key !== 'status' &&
-                      key !== 'detected'
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key !== 'priority' &&
+                        key !== 'status' &&
+                        key !== 'detected'
                     "
                     v-model="item[key]"
                   />
@@ -194,9 +194,9 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                      editMode &&
-                      !Array.isArray(item[key]) &&
-                      key === 'priority'
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key === 'priority'
                     "
                     v-model="item[key]"
                   />
@@ -208,9 +208,9 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                      editMode &&
-                      !Array.isArray(item[key]) &&
-                      key === 'status'
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key === 'status'
                     "
                     v-model="item[key]"
                   />
@@ -222,9 +222,9 @@
                     solo
                     v-if="
                       !multipleValues(key, item[key]) &&
-                      editMode &&
-                      !Array.isArray(item[key]) &&
-                      key === 'detected'
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key === 'detected'
                     "
                     v-model="item[key]"
                   />
@@ -240,12 +240,12 @@
                     solo
                     v-if="
                       multipleValues(key, item[key]) &&
-                      editMode &&
-                      !Array.isArray(item[key]) &&
-                      key !== 'progress' &&
-                      key !== 'detected' &&
-                      key !== 'status' &&
-                      key !== 'priority'
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        key !== 'progress' &&
+                        key !== 'detected' &&
+                        key !== 'status' &&
+                        key !== 'priority'
                     "
                   />
 
@@ -259,9 +259,9 @@
                     placeholder="Multiple Values"
                     v-if="
                       multipleValues(key, item[key]) &&
-                      editMode &&
-                      !Array.isArray(item[key]) &&
-                      (key === 'detected' || key === 'status' || key === 'priority')
+                        editMode &&
+                        !Array.isArray(item[key]) &&
+                        (key === 'detected' || key === 'status' || key === 'priority')
                     "
                     :value="multipleEditModels[key]"
                     @input="handleMultipleEdits(item, key, $event)"
@@ -309,6 +309,8 @@
               outlined
               prepend-inner-icon="mdi-magnify"
               v-model="search"
+              ref="searchInput"
+              @keyup="searchChangedEvent"
             />
           </div>
           <div class="table-settings" v-if="options">
@@ -430,7 +432,7 @@
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Download options</span>
+              <span class="tooltip-span">Download Options</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
@@ -484,7 +486,7 @@
                   <v-icon class="selection-icons" color="white">mdi-pencil</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Edit selected rows</span>
+              <span class="tooltip-span">Edit Selected Rows</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.delete">
               <template v-slot:activator="{ on }">
@@ -515,7 +517,7 @@
                   <v-icon class="selection-icons" color="white">mdi-download</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Download selected rows</span>
+              <span class="tooltip-span">Download Selected Rows</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.warning">
               <template v-slot:activator="{ on }">
@@ -553,7 +555,7 @@
         >
           <el-table
             :border="border"
-            :data="tableData"
+            :data="showfilteredData ? filteredData : tableData"
             :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
@@ -565,6 +567,7 @@
             row-key="id"
             stle="width:100%"
             v-if="!allHidden"
+            @sort-change="sortChangedEvent"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
@@ -680,7 +683,7 @@
                   </v-tooltip>
                 </div>
                 <div v-if="col.type === 'popup'">
-                  <slot name="datatable-column-popup" :col="col" :scope="scope"> </slot>
+                  <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
                 </div>
               </template>
             </el-table-column>
@@ -819,9 +822,9 @@
                     <v-btn
                       :disabled="
                         scope.row.status === 'Cancelled' ||
-                        scope.row.status === 'Expired' ||
-                        scope.row.status === 'Finished' ||
-                        scope.row.status === 'NoMatch'
+                          scope.row.status === 'Expired' ||
+                          scope.row.status === 'Finished' ||
+                          scope.row.status === 'NoMatch'
                       "
                       @click.native="rowAct(rowActions[1].action, scope.row)"
                       class="btn-hover"
@@ -861,7 +864,7 @@
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
           :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
-          :total="initialData.length"
+          :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
           layout="total, sizes, prev, pager, next"
@@ -1004,6 +1007,14 @@ export default {
     border: {
       type: Boolean,
       default: true
+    },
+    requestParams: {
+      type: Object,
+      required: false
+    },
+    isServerSide: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -1013,7 +1024,10 @@ export default {
   },
   data() {
     return {
+      filteredData: [],
+      showfilteredData: false,
       initialData: [],
+      dataLength: 0,
       tableData: [],
       rowCount: 10,
       totalCount: 100,
@@ -1058,13 +1072,13 @@ export default {
     },
     firstColFixed(val) {
       if (!val) {
-        const fixedCol = this.columns.filter((c) => c.fixed === 'left')
+        const fixedCol = this.columns.filter(c => c.fixed === 'left')
         if (fixedCol && fixedCol.length) {
           fixedCol[0].fixed = false
           this.firstColFixed = false
         }
       } else {
-        const disabledCol = this.columns.filter((c) => c.fixed === false)
+        const disabledCol = this.columns.filter(c => c.fixed === false)
         disabledCol[0].fixed = 'left'
         this.firstColFixed = true
       }
@@ -1089,7 +1103,7 @@ export default {
     columns: {
       deep: true,
       handler(val) {
-        if (!val.some((col) => col.show)) this.allHidden = true
+        if (!val.some(col => col.show)) this.allHidden = true
         else this.allHidden = false
       }
     }
@@ -1113,12 +1127,12 @@ export default {
     window.addEventListener('resize', this.calculateWidths)
     if (window.outerWidth < 1023) {
       this.actionFixed = false
-      const leftFixed = this.columns.filter((col) => col.fixed === 'left')
+      const leftFixed = this.columns.filter(col => col.fixed === 'left')
       if (leftFixed && leftFixed.length) {
         leftFixed[0].fixed = false
         this.firstColFixed = false
       }
-      const rightFixed = this.columns.filter((col) => col.fixed === 'right')
+      const rightFixed = this.columns.filter(col => col.fixed === 'right')
       if (rightFixed && rightFixed.length) {
         rightFixed[0].fixed = false
       }
@@ -1128,6 +1142,57 @@ export default {
   },
 
   methods: {
+    handleTableData() {
+      return this.showfilteredData ? this.filteredData : this.tableData
+    },
+
+    sortChangedEvent(sortProps) {
+      this.$emit('sortChangedEvent', sortProps)
+    },
+
+    paginationChangedEvent(paginationProps) {
+      this.$emit('paginationChangedEvent', paginationProps)
+    },
+
+    searchChangedEvent() {
+      if (this.isServerSide) {
+        const filterItems = this.columns
+          .filter(column => column.isFilterable)
+          .reduce((acc, filterItem) => {
+            acc.push({
+              FieldName: filterItem.property,
+              Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
+              Value: this.$refs.searchInput.value
+            })
+            return acc
+          }, [])
+        const bodyDataFilter = {
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: filterItems
+              }
+            ]
+          }
+        }
+        this.$emit('searchChangedEvent', bodyDataFilter)
+      } else {
+        const searchValue = this.search
+        this.showfilteredData = !!searchValue.length
+        this.filteredData = this.tableData.reduce((acc, item) => {
+          const data = Object.values(item).find(i => {
+            if (
+              typeof i === 'string' &&
+              i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+            )
+              return acc.push(item)
+          })
+          return acc
+        }, [])
+      }
+    },
     addUsersAction(actionName, row) {
       switch (actionName) {
         case 'createCommunityFromMobileInfo':
@@ -1178,7 +1243,7 @@ export default {
       }
     },
     getColumnLabel(key, value) {
-      const answer = this.columns.find((item) => {
+      const answer = this.columns.find(item => {
         return item['property'] === key
       })
 
@@ -1188,7 +1253,7 @@ export default {
       this.$emit(action, row)
     },
     tableRowClassName(row) {
-      const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row))
+      const ans = this.multipleSelection.some(r => JSON.stringify(r) === JSON.stringify(row.row))
       if (ans) {
         return 'selected-row'
       }
@@ -1211,24 +1276,32 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      if (this.currentPage === 1) {
-        this.tableData = this.initialData.slice(0, rows)
+      if (this.isServerSide) {
+        this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {
-        this.tableData = this.initialData.slice(
-          (this.currentPage - 1) * rows,
-          this.currentPage * rows
-        )
+        if (this.currentPage === 1) {
+          this.tableData = this.initialData.slice(0, rows)
+        } else {
+          this.tableData = this.initialData.slice(
+            (this.currentPage - 1) * rows,
+            this.currentPage * rows
+          )
+        }
       }
     },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
-      if (pageNum === 1) {
-        this.tableData = this.initialData.slice(0, this.rowCount)
+      if (this.isServerSide) {
+        this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
-        this.tableData = this.initialData.slice(
-          (pageNum - 1) * this.rowCount,
-          pageNum * this.rowCount
-        )
+        if (pageNum === 1) {
+          this.tableData = this.initialData.slice(0, this.rowCount)
+        } else {
+          this.tableData = this.initialData.slice(
+            (pageNum - 1) * this.rowCount,
+            pageNum * this.rowCount
+          )
+        }
       }
     },
     onEmptyBtnClicked(e) {
@@ -1389,7 +1462,7 @@ export default {
       // After user edited the row and pressed SAVE button
       this.multipleSelection.map((item, index) => {
         const keys = Object.keys(item)
-        keys.map((key) => {
+        keys.map(key => {
           //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
           item[key] = this.copyOfEditedRows[0][key]
         })
@@ -1401,20 +1474,21 @@ export default {
       this.multipleEditModels = []
       this.copyOfEditedRows = []
     },
-    loadWithDataArray(data) {
+    loadWithDataArray(data, responseParams) {
       this.initialData = data
-      this.tableData = data.slice(0, this.countRow || this.rowCount)
+      this.dataLength = responseParams && responseParams.totalNumberOfRecords
+      this.tableData = data.slice(0, this.rowCount || this.countRow)
     },
     calculateWidths() {
       /*
-        if (this.$refs.tableContainer) {
-          const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
-          const columnsTotalWidth = this.getColumnsWidth()
-          const actionsWidth = widthOfContainer - columnsTotalWidth - 61
-          this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
-        }
+                                                          if (this.$refs.tableContainer) {
+                                                            const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
+                                                            const columnsTotalWidth = this.getColumnsWidth()
+                                                            const actionsWidth = widthOfContainer - columnsTotalWidth - 61
+                                                            this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
+                                                          }
 
-         */
+                                                           */
     },
     getColumnsWidth() {
       return this.columns.reduce((acc, item) => {
@@ -1425,7 +1499,908 @@ export default {
   }
 }
 </script>
-<style lang="scss"></style>
+
+<style lang="scss" scoped>
+.wrapper {
+  border-radius: 20px;
+  padding-bottom: 24px;
+  position: relative;
+  height: max-content;
+
+  @media only screen and (max-width: 500px) {
+    padding-bottom: 200px;
+  }
+
+  .card {
+    padding: 24px;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    @media only screen and (max-width: 500px) {
+      padding: 13px 0;
+    }
+
+    .table-wrapper {
+      max-width: 100%;
+      height: auto;
+      position: relative;
+      display: block;
+      font-family: 'Open Sans', sans-serif !important;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+        0 1px 1px -1px rgba(204, 204, 204, 0.12);
+      padding: 16px 0;
+
+      .table-container {
+        width: auto;
+        max-width: 100%;
+
+        #data-table-container {
+          margin-left: 0;
+        }
+      }
+
+      .settings-popup {
+        background-color: #fff;
+        top: 40px;
+        border: 1px solid #2196f3;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+          0 1px 1px -1px rgba(204, 204, 204, 0.12);
+        padding: 24px;
+        position: absolute;
+        right: 0;
+        transition: all 0.2s ease-in-out;
+        overflow: hidden;
+        z-index: 999999;
+        width: 277px;
+
+        .settings-header {
+          align-items: center;
+          display: flex;
+          justify-content: space-between;
+          flex-direction: row;
+          padding-bottom: 19px;
+
+          .settings-span {
+            text-overflow: ellipsis;
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            max-width: 100%;
+            font-size: 20px !important;
+            font-weight: 600 !important;
+          }
+
+          .close-icon {
+            cursor: pointer;
+          }
+
+          span {
+            font-family: 'Open Sans', sans-serif !important;
+            font-size: 24px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.29;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.87);
+          }
+        }
+
+        .edit-actions {
+          max-width: 100%;
+          display: flex;
+          flex-direction: row;
+        }
+
+        .edit-popup-body {
+          width: 100%;
+          position: relative;
+
+          .items-wrapper {
+            > .row-edit-div {
+              width: 100%;
+              align-items: center;
+              display: flex;
+              flex-direction: row;
+              padding-bottom: 7px;
+
+              ::v-deep .v-input__slot {
+                box-shadow: unset !important;
+                border: 1px solid rgba(205, 205, 205, 0.5);
+                border-radius: 8px !important;
+              }
+
+              ::v-deep .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
+                min-height: 32px !important;
+              }
+
+              ::v-deep .v-text-field__details {
+                display: none !important;
+              }
+
+              ::v-deep input {
+                font-size: 13px !important;
+                padding: 6px 0 !important;
+              }
+            }
+
+            label {
+              width: 120px;
+              min-width: 120px;
+              text-transform: capitalize;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: block;
+              overflow: hidden;
+              font-family: 'Open Sans', sans-serif !important;
+              font-size: 12px;
+              font-weight: 600;
+            }
+
+            span {
+              max-width: 100%;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: block;
+              overflow: hidden;
+              font-family: 'Open Sans', sans-serif !important;
+              font-size: 12px;
+            }
+          }
+        }
+
+        .edit-popup-footer {
+          width: 360px;
+          height: 68px;
+          border-radius: 0;
+          background-color: #f1f8fe;
+          margin: -24px;
+          padding: 24px;
+          margin-top: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .edit-footer-date {
+            min-width: 120px;
+            display: flex;
+            flex-direction: row;
+
+            .edit-date-created {
+              display: flex;
+              flex-direction: column;
+              margin-right: 54px;
+
+              label {
+                font-family: 'Open Sans', sans-serif !important;
+                font-size: 12px;
+                font-weight: 600;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: normal;
+                letter-spacing: normal;
+                color: rgba(0, 0, 0, 0.87);
+              }
+
+              span {
+                font-family: 'Open Sans', sans-serif !important;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.87);
+              }
+            }
+          }
+        }
+
+        .sub-header {
+          display: block;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 16px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.75;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+          margin-bottom: 14px;
+        }
+
+        .popup-row {
+          align-items: center;
+          padding-bottom: 10px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+
+          ::v-deep .v-input--selection-controls {
+            margin-top: 0 !important;
+
+            .accent--text {
+              color: #2196f3 !important;
+            }
+
+            .v-input__slot {
+              margin-bottom: 0 !important;
+            }
+
+            .v-messages {
+              display: none !important;
+            }
+          }
+        }
+      }
+
+      ::v-deep .el-table {
+        border-bottom: unset !important;
+        margin: 0 auto;
+        width: 100% !important;
+      }
+
+      ::v-deep .el-table::before {
+        display: none;
+      }
+
+      ::v-deep .el-table tr {
+        height: 45px !important;
+      }
+
+      ::v-deep .el-table td {
+        padding: 12px 0;
+        height: 45px !important;
+        border: none !important;
+      }
+
+      ::v-deep .el-table th {
+        border-bottom: 1px solid #9e9e9e;
+        padding: 5px 0 !important;
+
+        .el-checkbox {
+          z-index: 2;
+        }
+
+        .el-checkbox__inner {
+          margin-bottom: 3px;
+        }
+      }
+
+      ::v-deep .el-table tr:nth-child(even) {
+        background-color: #fafafa;
+      }
+
+      ::v-deep .el-table .hover-row {
+        background-color: #f1f8fe !important;
+      }
+
+      ::v-deep .el-table td > .cell {
+        color: #212121;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        white-space: nowrap !important;
+        width: 100%;
+      }
+
+      ::v-deep .el-table th > .cell {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.3rem;
+        color: #000000;
+        //min-height: 21px;
+        padding-left: 10px !important;
+
+        .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+          background-color: #2196f3;
+          border-color: #2196f3 !important;
+        }
+
+        .el-checkbox:first-child {
+          margin-left: -2.5px !important;
+        }
+
+        .el-checkbox__input.is-checked .el-checkbox__inner {
+          background-color: #2196f3;
+          border-color: #2196f3 !important;
+        }
+
+        .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+          content: '';
+          position: absolute;
+          display: block;
+          background-color: #fff;
+          height: 3px;
+          left: -1.4px;
+          right: 0;
+          top: 5px;
+          width: 16px;
+        }
+      }
+
+      ::v-deep .el-checkbox__input {
+        line-height: 0;
+      }
+
+      ::v-deep .el-checkbox__inner {
+        border: 1.5px solid #757575;
+        border-radius: 3px;
+        height: 16px;
+        width: 16px;
+      }
+
+      ::v-deep .el-checkbox__input.is-checked > .el-checkbox__inner {
+        border: 1.5px solid #2196f3;
+      }
+
+      ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner::after {
+        border: 1.3px solid #fff;
+        border-left: 0;
+        border-top: 0;
+        height: 8px;
+        left: 4px;
+        top: 0px;
+        width: 4px;
+      }
+
+      .progress-per {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 10px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.9;
+        letter-spacing: normal;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      ::v-deep .v-progress-linear {
+        margin-bottom: 7px !important;
+        margin-top: 5px !important;
+      }
+
+      .btn-status {
+        border-radius: 18px !important;
+        box-shadow: unset !important;
+        color: #fff;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        margin-bottom: 3px;
+        margin: 0 auto;
+        text-transform: capitalize;
+        min-width: 96px !important;
+        max-width: 125px !important;
+        height: 32px !important;
+      }
+
+      .btn-pending {
+        background-color: #00bcd4;
+      }
+
+      .btn-active {
+        background-color: #2196f3;
+      }
+
+      .btn-low {
+        background-color: #00bcd4;
+      }
+
+      .btn-very_low {
+        background-color: #757575;
+      }
+
+      .btn-high {
+        background-color: #e6a23c;
+      }
+
+      .btn-very_high {
+        background-color: #f56c6c;
+      }
+
+      .btn-add {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+        background-color: #2196f3;
+        color: white;
+
+        .v-icon {
+          font-size: 18px !important;
+        }
+      }
+
+      .btn-inactive {
+        background-color: #f56c6c;
+      }
+
+      .btn-warning {
+        background-color: #e6a23c;
+      }
+
+      .btn-cancelled,
+      .btn-offline {
+        background-color: #f56c6c;
+      }
+
+      .btn-primary {
+        background-color: #2196f3;
+      }
+
+      .btn-none,
+      .btn-quedued,
+      .btn-online {
+        background-color: #00bcd4;
+      }
+
+      .btn-success {
+        background-color: #43a047;
+      }
+
+      .btn-no_match {
+        background-color: #757575;
+      }
+
+      ::v-deep .selected-row {
+        background-color: #bde0ff !important;
+      }
+
+      .selection-row {
+        align-items: center;
+        background-color: #2196f3;
+        display: flex;
+        height: 47px;
+        padding: 0 12px;
+        position: absolute;
+        top: 75px;
+        width: 100%;
+        z-index: 4;
+
+        .selection-span {
+          font-family: 'Open Sans', sans-serif;
+          font-size: 12px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: #fff;
+          margin-left: 20px;
+        }
+
+        .action-icons {
+          margin-left: 109px;
+
+          .selection-icons {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .table-header {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding-bottom: 20px;
+        position: relative;
+        width: 100%;
+        min-height: 50px;
+        padding-left: 24px;
+
+        @media only screen and (max-width: 500px) {
+          flex-direction: column;
+          .table-search {
+            width: 100% !important;
+          }
+        }
+
+        .table-search {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          height: 40px;
+          width: 328px;
+
+          ::v-deep .v-text-field.v-text-field--enclosed {
+            height: 40px !important;
+          }
+        }
+
+        .table-settings {
+          cursor: pointer;
+
+          @media only screen and (max-width: 500px) {
+            padding-right: 0;
+            padding-top: 13px;
+          }
+        }
+
+        ::v-deep label {
+          font-family: 'Open Sans', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.54);
+        }
+
+        > div {
+          padding-right: 10px;
+        }
+
+        .filter-icon {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .pagination {
+      padding-top: 20px;
+      align-items: center;
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
+    ::v-deep .el-pagination .el-select .el-input {
+      width: 90px;
+
+      .el-input__inner {
+        background-color: #f2f2f2;
+      }
+    }
+
+    ::v-deep .el-select .el-input .el-select__caret {
+      color: rgba(0, 0, 0, 0.87);
+      font-weight: 700;
+    }
+
+    ::v-deep .el-pager {
+      padding-left: 0 !important;
+    }
+
+    ::v-deep .el-pager > li {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px;
+      min-width: 13px;
+    }
+  }
+}
+
+.v-tooltip__content {
+  background: #6d6d6d !important;
+}
+
+::v-deep .k-grid td.k-state-selected,
+::v-deep .k-grid tr.k-state-selected > td {
+  background-color: rgba(0, 188, 212, 0.05) !important;
+}
+
+.v-list-item__subtitle {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.2 !important;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87) !important;
+  margin-left: 2px;
+}
+
+.v-sheet {
+  border-radius: 20px !important;
+}
+
+.v-card-headline {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 24px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.4;
+  letter-spacing: normal;
+  color: #2196f3;
+}
+
+.v-cart-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  margin-right: 24px;
+  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+  border: solid 1px rgba(100, 181, 246, 0.5);
+  background-color: #e3f2fd;
+}
+
+.table-row .wrapper .download-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 420px;
+  min-height: 300px;
+  position: relative;
+  border-radius: 12px !important;
+  padding: 16px !important;
+
+  .check-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    .check-row {
+      padding-left: 70px;
+      width: 100%;
+
+      ::v-deep .v-input--selection-controls.v-input {
+        margin-top: 0 !important;
+      }
+
+      ::v-deep .v-label {
+        font-size: 14px !important;
+      }
+
+      ::v-deep .v-messages {
+        display: none;
+      }
+    }
+
+    .check-row:first-child {
+      padding-top: 27px;
+    }
+
+    .check-row:last-child {
+      padding-bottom: 18px;
+    }
+  }
+
+  .download-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    padding: 0 16px;
+  }
+}
+
+.btn-hover:hover {
+  color: #2196f3;
+}
+
+.btn-selected-hover {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.tooltip-span {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+::v-deep .v-sheet {
+  border-radius: unset !important;
+}
+
+.filter-field {
+  border-radius: 8px;
+  //border: solid 1px #dcdfe6;
+
+  ::v-deep .v-label {
+    font-weight: normal !important;
+    font-stretch: normal;
+    font-style: normal;
+    font-size: 16px !important;
+    font-family: 'Open Sans', sans-serif !important;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  ::v-deep .v-icon.v-icon {
+    font-size: 20px;
+    margin-top: 5.2px !important;
+  }
+}
+
+.sub-menu-el {
+  cursor: pointer;
+}
+
+.sub-element-wrapper {
+  cursor: pointer;
+}
+
+.empty-table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  width: 100%;
+
+  .empty-inline {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 24px;
+      line-height: 1.29;
+      font-weight: 400 !important;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
+      margin-bottom: 0 !important;
+    }
+
+    p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 8px !important;
+    }
+
+    .empty-btn {
+      border-radius: 18px;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+      background-color: #2196f3 !important;
+      color: #fff !important;
+      text-transform: capitalize !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      height: 36px !important;
+    }
+  }
+}
+
+::v-deep .el-table__body,
+.el-table__footer,
+.el-table__header {
+  border-collapse: collapse !important;
+}
+
+.sub-menu-sub {
+  left: unset !important;
+  right: 220px !important;
+}
+
+::v-deep .el-table [class*='el-table__row--level'] .el-table__expand-icon {
+  float: right !important;
+  margin-top: 2px;
+
+  .el-icon-arrow-right:before {
+    font-weight: 900;
+    font-size: 15px;
+  }
+}
+
+.cluster-btn {
+  background-color: #2196f3 !important;
+  color: #fff;
+  width: 60px !important;
+}
+
+.chevron-down {
+  transition: 0.3s all ease-in-out;
+  transform: rotate(180deg);
+}
+
+.header-list-item {
+  border-left: 2px solid white;
+  margin-left: 5px;
+  height: 34px;
+  width: 16px;
+
+  .v-icon {
+    margin-top: 5px;
+    margin-left: -1px;
+  }
+}
+
+.clust-btn {
+  height: 34px;
+}
+
+::v-deep .selection-all-check {
+  margin-left: 6px !important;
+
+  i {
+    color: white !important;
+  }
+}
+
+::v-deep .cluster-label {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cluster-span {
+  padding-right: 8px;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.edit-select {
+  font-size: 13px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+}
+
+/*.date-format {
+                                            text-align: left !important;
+                                            span {
+                                              text-overflow: ellipsis;
+                                              white-space: normal;
+                                            }
+                                          }*/
+
+::v-deep .actions-label {
+  padding-right: 49px !important;
+}
+
+::v-deep .actions-container {
+  padding-right: 17.5px !important;
+
+  &--first {
+    padding-right: 40px !important;
+  }
+}
+
+.popup {
+  &__badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 25px;
+    padding: 6px 6px 6px 6px;
+    border-radius: 4px;
+    color: white;
+    background: #2196f3;
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.13;
+    font-family: 'Open Sans', sans-serif !important;
+    letter-spacing: normal;
+    text-align: center;
+  }
+
+  &__apexchart-container {
+    height: 80px;
+    width: 80px;
+    padding-top: 6px;
+    margin-left: -23px;
+    margin-top: -20px;
+  }
+}
+
+::v-deep .el-table__fixed-body-wrapper {
+  z-index: 2;
+}
+</style>
 <!--
   DataTable COMPONENT
   - Element UI's Table component used

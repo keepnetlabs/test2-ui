@@ -10,7 +10,7 @@
         <v-list-item-content>
           <v-list-item-title class="v-card-headline">Connection Is Lost</v-list-item-title>
           <v-list-item-subtitle class="connection-lost-title"
-            >Keepnet Labs cannot connect to the web</v-list-item-subtitle
+            >Cannot connect to the web</v-list-item-subtitle
           >
         </v-list-item-content>
       </v-list-item>

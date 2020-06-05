@@ -546,6 +546,7 @@
                   <v-list-item>
                     <v-divider></v-divider>
                   </v-list-item>
+                  <p class="v-list-item__archived--title">Archived</p>
                   <v-list-item
                     link
                     @click="menuClick('stored')"
@@ -553,7 +554,6 @@
                     :class="{ 'v-list-item--active': activeMenu == 'stored' }"
                   >
                     <div class="v-list-item__archived">
-                      <p class="v-list-item__archived--title">Archived</p>
                     </div>
                     <div class="v-list-item__archived--link">
                       <v-list-item-icon>
@@ -760,6 +760,7 @@
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapActions, mapGetters } from 'vuex'
+import moment from 'moment'
 
 export default {
   components: {
@@ -1032,10 +1033,10 @@ export default {
       } will be deleted from mailbox`
     },
     calculateProgressData() {
-      let today = new Date()
-      let createDate = new Date(this.investigationDetailsData.createDate)
-      let expireDate = new Date(this.investigationDetailsData.expireDate)
-      let startDate = new Date(this.investigationDetailsData.startDate)
+      let today = moment(new Date()).toDate();
+      let createDate = moment(this.investigationDetailsData.createDate).toDate();
+      let expireDate = moment(this.investigationDetailsData.expireDate).toDate();
+      let startDate = moment(this.investigationDetailsData.startDate).toDate();
       let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)
       let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10)
       this.diffDays = diffDays
@@ -1786,7 +1787,7 @@ export default {
 
                     &--main {
                       flex-flow: column;
-
+                      max-height: 40px;
                       .v-list-item-title__value {
                         top: 22px;
                       }
@@ -1802,6 +1803,9 @@ export default {
                       letter-spacing: normal;
                       color: rgba(0, 0, 0, 0.87);
                       margin-bottom: 0;
+                      background: #fafafa;
+                      padding-left: 16px;
+                      padding-bottom: 5px;
                     }
 
                     &--link {
