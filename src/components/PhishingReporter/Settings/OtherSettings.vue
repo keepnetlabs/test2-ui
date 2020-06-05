@@ -48,9 +48,7 @@
                 :disabled="!formValues.isOnPremise"
                 class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
                 v-model="formValues.apiUrl"
-                id="site-url"
                 height="40"
-                color="rgba(0, 0, 0, 0.72)"
               ></v-text-field>
             </div>
             <div class="site-url__container">
@@ -62,9 +60,7 @@
                 dense
                 class="k-textfield site-url__textfield site-url__textfield--2"
                 v-model="formValues.companyId"
-                id="company-id"
                 height="40"
-                color="rgba(0, 0, 0, 0.72)"
               ></v-text-field>
             </div>
           </v-list-item-content>
@@ -316,6 +312,7 @@ export default {
   },
   created() {
     if (this.formData) {
+      console.log('this.formData', this.formData)
       const {
         companyId,
         noInternetConnectionMessage,
@@ -328,7 +325,7 @@ export default {
         apiUrl,
         isOnPremise
       } = this.formData
-      this.formValues.companyId = companyId || ''
+      this.formValues.companyId = companyId || localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
       this.formValues.msgBoxBtnYesText = msgBoxBtnYesText || ''
       this.formValues.msgBoxBtnNoText = msgBoxBtnNoText || ''
@@ -516,7 +513,7 @@ export default {
     &--1 {
     }
     &--2 {
-      margin-top: -9px;
+      margin-top: -9px !important;
     }
 
     &--3 {

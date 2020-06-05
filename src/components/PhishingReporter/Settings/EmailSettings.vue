@@ -89,7 +89,7 @@
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="email-message">Email Message</label>
           <v-text-field
-            placeholder="Enter email address"
+            placeholder="Please investigate the attached email"
             outlined
             dense
             class="k-textfield mt-2"

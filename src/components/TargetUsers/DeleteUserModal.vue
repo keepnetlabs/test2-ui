@@ -79,12 +79,9 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-* {
-  font-family: 'Open Sans', sans-serif !important;
-}
-
+<style lang="scss">
 .delete-user {
+  font-family: 'Open Sans', sans-serif !important;
   &__title {
     font-size: 20px;
     font-weight: 600;
@@ -135,16 +132,17 @@ export default {
     -webkit-backdrop-filter: blur(3px) !important;
     backdrop-filter: blur(3px) !important;
   }
-}
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-  display: flex;
-  justify-content: center;
+
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+    display: flex;
+    justify-content: center;
+  }
 }
 </style>

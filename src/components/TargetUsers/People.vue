@@ -281,49 +281,35 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-::v-deep {
-  .v-card {
-    margin: 24px 0 0 0 !important;
-    padding: 0 !important;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-      0 1px 1px -1px rgba(204, 204, 204, 0.12) !important;
-    background-color: #ffffff;
+<style lang="scss">
+.people {
+  .k-table__wrapper .card {
+    padding: 0;
+    margin-top: 24px;
   }
 
-  .wrapper .card {
-    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-      0 1px 1px -1px rgba(204, 204, 204, 0.12) !important;
+  .add-users__title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
   }
-
-  .table-wrapper {
-    box-shadow: none !important;
-  }
-}
-
-.btn-add {
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
-  background-color: #2196f3;
-  color: white;
-
-  .v-icon {
-    font-size: 18px !important;
+  .btn-add {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+    background-color: #2196f3;
     color: white;
-  }
-}
 
-.add-users__title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+    .v-icon {
+      font-size: 18px !important;
+      color: white;
+    }
+  }
 }
 </style>

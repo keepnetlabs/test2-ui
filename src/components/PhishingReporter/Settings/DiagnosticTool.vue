@@ -110,7 +110,7 @@
                 outlined
                 placeholder="GMT +3"
                 required
-                v-model="formValues.day"
+                v-model="formValues.timezone"
               ></v-select>
             </div>
           </div>
@@ -172,9 +172,10 @@ export default {
         interval: '',
         day: '',
         time: '',
-        menu2: false,
-        time2: ''
+        time2: '',
+        timezone: ''
       },
+      menu2: false,
       showTimePicker: false,
       intervalItems: ['Daily', 'Weekly', 'Monthly'],
       dayItems: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']

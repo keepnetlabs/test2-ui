@@ -7,6 +7,7 @@
       :z-index="999"
       fixed
       light
+      class="add-users-manually__overlay"
       :dark="false"
       style="overflow-y: auto;"
     >
@@ -209,22 +210,21 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-* {
-  font-family: 'Open Sans', sans-serif !important;
-}
+<style lang="scss">
 .add-users-manually {
-  color: rgba(0, 0, 0, 0.87);
+  font-family: 'Open Sans', sans-serif !important;
   max-width: 100% !important;
   &__container {
     width: 100%;
     height: 100%;
     overflow-y: auto;
-  }
-  ::v-deep &__container.v-card {
-    padding: 32px 158px 157px 158px !important;
-    @media (max-width: 800px) {
-      padding: 32px 32px 80px 32px !important;
+
+    &.v-card {
+      padding: 32px 158px 157px 158px !important;
+      box-shadow: none !important;
+      @media (max-width: 800px) {
+        padding: 32px 32px 80px 32px !important;
+      }
     }
   }
   &__header {
@@ -293,7 +293,7 @@ export default {
     }
 
     &-btn-import-all-users {
-      color: #ffffff;
+      color: #ffffff !important;
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
@@ -309,24 +309,23 @@ export default {
       background-color: #2196f3;
     }
   }
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-::v-deep {
-  .v-overlay__content {
-    width: 100%;
-    height: 100%;
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
   }
-  .v-overlay__scrim {
+
+  &__overlay {
+    .v-overlay__content {
+      width: 100%;
+      height: 100%;
+    }
+    .v-overlay__scrim {
+    }
   }
 }
 </style>
