@@ -1172,6 +1172,13 @@ export default {
   letter-spacing: normal;
   color: rgba(255, 255, 255, 1);
   text-align: right;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  .pr-2{
+    display: flex;
+    align-items: center;
+  }
 
   ::v-deep .v-breadcrumbs__item {
     color: white;

@@ -41,9 +41,10 @@
     </v-overlay>
     <datatable
       id="investigationList"
+      ref="investigationTable"
       :refName="'investigationTable'"
       :columns="columns"
-      :table="tableData"
+      :table="tableData.data"
       :title="title"
       :countRow="5"
       :pageSizes="pageSizes"
@@ -61,6 +62,12 @@
       @stopInvestigationFunc="stopInvestigationFunc($event)"
       @investigationDetails="investigationDetails($event)"
       @downloadEvent="exportInvestigationList"
+      @sortChangedEvent="sortChangedEvent($event)"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @searchChangedEvent="searchChangedEvent($event)"
+      :dataLength="tableData && tableData.totalNumberOfRecords"
+      :requestParams="bodyData"
+      :isServerSide="false"
       v-if="showDatatable"
       @onEmptyBtnClicked="isWantToAddNewCommunity = true"
     />
@@ -90,6 +97,7 @@ export default {
     isWantToStopInvestigation: false,
     showDatatable: false,
     init: true,
+    investigationListDataLength: 0,
     columns: [
       // Should be defined to show the table
       {
@@ -101,7 +109,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 250
+        width: 250,
+        isFilterable: true
         //minWidth: 80
       },
       {
@@ -254,26 +263,36 @@ export default {
       pageNumber: 1,
       pageSize: 500,
       orderBy: 'startDate',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'Status',
-                Operator: 'Include',
-                Value: 'Cancelled,Running,Idle'
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
+      ascending: false
     }
   }),
   methods: {
+    sortChangedEvent({ prop, order }) {
+      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      const _this = this
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, this.bodyData)
+      })
+    },
+    paginationChangedEvent({ pageSize, pageNumber }) {
+      const _this = this
+      this.bodyData = {
+        ...this.bodyData,
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
+    },
+    searchChangedEvent({ filter }) {
+      this.bodyData = { ...this.bodyData, filter }
+      const _this = this
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
+    },
     refreshDatatable() {
       this.showDatatable = false
       this.$store
@@ -361,57 +380,9 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .investigations {
   padding: 16px;
-}
-
-.v-card-container {
-  max-width: 480px;
-  border-radius: 12px;
-  box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
-    0 9px 46px 8px rgba(80, 80, 80, 0.12);
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  color: #2196f3;
-}
-
-.v-card-content {
-  color: rgba(0, 0, 0, 0.72) !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-}
-
-.v-card-sub-header {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 16px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
 }
 
 .newInvestigationOverlay {
