@@ -1147,11 +1147,11 @@ export default {
     },
 
     sortChangedEvent(sortProps) {
-      this.$emit('sortChangedEvent', sortProps)
+      if (this.isServerSide) this.$emit('sortChangedEvent', sortProps)
     },
 
     paginationChangedEvent(paginationProps) {
-      this.$emit('paginationChangedEvent', paginationProps)
+      if (this.isServerSide) this.$emit('paginationChangedEvent', paginationProps)
     },
 
     searchChangedEvent() {
@@ -1181,16 +1181,18 @@ export default {
       } else {
         const searchValue = this.search
         this.showfilteredData = !!searchValue.length
-        this.filteredData = this.tableData.reduce((acc, item) => {
-          const data = Object.values(item).find((i) => {
-            if (
-              typeof i === 'string' &&
-              i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-            )
-              return acc.push(item)
-          })
-          return acc
-        }, [])
+        this.filteredData = this.initialData
+          .reduce((acc, item) => {
+            const data = Object.values(item).find((i) => {
+              if (
+                typeof i === 'string' &&
+                i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+              )
+                return acc.push(item)
+            })
+            return acc
+          }, [])
+          .slice(0, this.rowCount || this.countRow)
       }
     },
     addUsersAction(actionName, row) {
@@ -1500,7 +1502,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .wrapper {
   border-radius: 20px;
   padding-bottom: 24px;

@@ -1390,7 +1390,7 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .standard-height {
   ::v-deep .v-input__slot {
     //max-height: 40px !important;

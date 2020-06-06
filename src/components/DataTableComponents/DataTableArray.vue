@@ -32,4 +32,13 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.external-data {
+  border-radius: 4px;
+  background-color: #2196f3;
+  color: #ffffff;
+  width: 26px;
+  display: inline-block;
+  text-align: center;
+}
+</style>
