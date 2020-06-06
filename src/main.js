@@ -1,5 +1,6 @@
 import 'babel-polyfill'
 //import './plugins/classlist'
+//import './plugins/classlist'
 import Vue from 'vue'
 import VueTour from 'vue-tour'
 import App from './App.vue'
@@ -12,6 +13,7 @@ import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 import 'echarts-gl'
 import VueAnalytics from 'vue-analytics'
+import './assets/scss/main.scss'
 
 Vue.use(VueTour)
 Vue.component('v-chart', ECharts)
