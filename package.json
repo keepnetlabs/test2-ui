@@ -89,7 +89,12 @@
       "vue/no-use-v-if-with-v-for": "off"
     },
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "babel-eslint",
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
     }
   },
   "postcss": {
