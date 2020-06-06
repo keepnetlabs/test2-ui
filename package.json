@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "format": "prettier-eslint —eslint-config-path --write '**/*.js’"
+    "format": "prettier-eslint —eslint-config-path --write '**/*.js’",
+    "storybook:build": "vue-cli-service storybook:build -c config/storybook",
+    "storybook:serve": "vue-cli-service storybook:serve -p 6006 -c config/storybook"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
@@ -36,6 +38,12 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.10.2",
+    "@storybook/addon-actions": ">=5.3.0",
+    "@storybook/addon-docs": ">=5.3.0",
+    "@storybook/addon-knobs": ">=5.3.0",
+    "@storybook/addon-links": ">=5.3.0",
+    "@storybook/addon-notes": ">=5.3.0",
+    "@storybook/vue": ">=5.3.0",
     "@vue/cli-plugin-babel": "~4.4.1",
     "@vue/cli-plugin-eslint": "~4.4.1",
     "@vue/cli-service": "~4.4.1",
@@ -55,7 +63,8 @@
     "sass": "^1.26.7",
     "sass-loader": "^8.0.2",
     "vue-class-component": "^7.1.0",
-    "vue-cli-plugin-vuetify": "~2.0.5",
+    "vue-cli-plugin-storybook": "~1.2.2",
+    "vue-cli-plugin-vuetify": "^2.0.5",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.4.4",
     "webpack": "^4.43.0"
@@ -89,7 +98,12 @@
       "vue/no-use-v-if-with-v-for": "off"
     },
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "babel-eslint",
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
     }
   },
   "postcss": {
