@@ -1175,7 +1175,7 @@ export default {
   display: flex;
   align-items: center;
   flex-direction: row-reverse;
-  .pr-2{
+  .pr-2 {
     display: flex;
     align-items: center;
   }
