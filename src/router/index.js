@@ -9,8 +9,8 @@ import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import AnalysisDetails from '../views/AnalysisDetails'
 import EmailDetails from '../components/IncidentResponder/emailDetails'
+import Workshop from '../views/Workshop.vue'
 //import SharedIncident from '../views/SharedIncident'
-
 import Test from '../views/Test'
 import PermissionTypes from '../model/constants/permissionTypes'
 import AuthenticationService from '../services/authentication'
@@ -166,6 +166,14 @@ const router = new Router({
           component: Test,
           meta: {
             isAuthenticated: false
+          }
+        },
+        {
+          path: '/workshop',
+          name: 'Workshop',
+          component: Workshop,
+          meta: {
+            isAuthenticated: true
           }
         }
       ]
