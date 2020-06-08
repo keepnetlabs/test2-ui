@@ -8,7 +8,10 @@
       </v-row>
       <v-row>
         <v-col cols="12" sm="6" md="3">
-          <v-text-field outlined></v-text-field>
+          <v-text-field hint="www.example.com/page" persistent-hint outlined></v-text-field>
+        </v-col>
+        <v-col cols="12" sm="6" md="3">
+          <v-text-field label="Outlined" outlined></v-text-field>
         </v-col>
 
         <v-col cols="12" sm="6" md="3">

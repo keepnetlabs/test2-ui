@@ -8,7 +8,8 @@
         item-value="companyId"
         single-line
         return-object
-        :menu-props="{ contentClass: 'select-company-dd' }"
+        :menu-props="{ contentClass: 'select-company-dd', offsetY: true }"
+        outlined
       ></v-select>
     </div>
   </div>
@@ -74,16 +75,6 @@ export default {
   background-color: white;
 }
 
-::v-deep .v-list-item {
-  min-height: 40px !important;
-  margin: 0 10px;
-  padding: 3px !important;
-}
-
-::v-deep .v-list-item:first-child {
-  border-bottom: 1px solid rgba(155, 155, 155, 0.7);
-}
-
 .account-dd {
   @media only screen and (max-width: 769px) {
     justify-content: center !important;
@@ -97,9 +88,12 @@ export default {
   margin-top: 0;
   height: 40px;
   border-radius: 8px;
-  border: solid 1px rgba(0, 0, 0, 0.16);
-  background-color: #ffffff;
-  padding-top: 3px;
   width: 400px;
+
+  .v-text-field--outlined {
+    fieldset {
+      border-color: initial;
+    }
+  }
 }
 </style>
