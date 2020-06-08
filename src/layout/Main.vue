@@ -1,39 +1,6 @@
 <template>
   <v-app>
-    <template v-for="(snackbar, index) in snackbars">
-      <v-snackbar
-        :key="snackbar.message"
-        v-model="snackbar.status"
-        :color="snackbar.color"
-        bottom
-        @input="changeSnackbarStatus($event, snackbar)"
-        :style="getSnackBarStyle(snackbar.message, index)"
-        :timeout="3000"
-      >
-        <div class="snackbar__left-column">
-          <div v-if="snackbar.icon">
-            <v-icon color="#fff" size="20px"> {{ snackbar.icon }}</v-icon>
-          </div>
-          <div class="snackbar__message" :class="[snackbar.icon ? 'ml-4' : '']">
-            {{ snackbar.message }}
-          </div>
-        </div>
-        <div class="snackbar__right-column">
-          <v-icon
-            v-if="!snackbar.action"
-            color="#fff"
-            size="20px"
-            @click="changeSnackbarStatus(false, snackbar)"
-            >mdi-close</v-icon
-          >
-          <router-link class="snackbar__action" v-else :to="snackbar.action.link">
-            <v-btn @click.native="changeSnackbarStatus($event, snackbar)" color="#2196f3" rounded>
-              {{ snackbar.action.label }}
-            </v-btn>
-          </router-link>
-        </div>
-      </v-snackbar>
-    </template>
+    <app-snackbar />
     <v-dialog v-model="feedbackdialog" :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
@@ -467,19 +434,7 @@
       <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0">
         <router-view />
       </v-container>
-      <v-footer class="footer d-flex">
-        <div class="footer-item__primary footer-copyright">
-          Copyright Keepnet Labs &copy; {{ new Date().getFullYear() }}
-        </div>
-        <div class="footer-item__secondary footer-links">
-          <a href="#">Privacy Policy</a> &bull; <a href="#">Terms and Conditions</a> &bull;
-        </div>
-        <div class="footer-item__third footer-links">
-          <a href="#">Cookie Policy</a> &bull;
-          <a href="#">EULA</a>
-        </div>
-        <div class="footer-item__fourth footer-designedby">Designed by Keepnet Labs</div>
-      </v-footer>
+      <app-footer />
     </v-content>
   </v-app>
 </template>
@@ -493,18 +448,22 @@ import SessionExpired from '../components/SessionExpired'
 import SwitchAccount from '../components/SwitchAccount'
 import TourWidget from '../components/TourWidget'
 import FeedbackPopup from '../components/FeedbackPopup'
+import AppFooter from './AppFooter'
+import AppSnackbar from './AppSnackbar'
 import AuthenticationService from '../services/authentication'
 
 export default {
   name: 'Main',
   components: {
     FeedbackPopup,
+    AppFooter,
     AccountDropdown,
     ConnectionLost,
     SessionExpired,
     SwitchAccount,
     offline,
-    TourWidget
+    TourWidget,
+    AppSnackbar
   },
   data() {
     return {
@@ -716,7 +675,6 @@ export default {
       getMenuStatus: 'common/getMenuStatus',
       getErrors: 'common/getErrors',
       getColor: 'common/getColor',
-      snackbars: 'common/getSnackBars',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
       isSessionExpired: 'dashboard/getIsSessionExpired',
       getTourData: 'tour/getTourData',
@@ -871,35 +829,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-    changeSnackbarStatus(value, snackbar) {
-      this.$store.dispatch('common/closeSnackBar', snackbar)
-    },
     onNotificationSeen(notification) {
       notification.isSeen = true
       this.notificationSeen(notification)
-    },
-    getSnackBarStyle(message, index) {
-      const messageLength = message.trim().length
-      const styleObj = {}
-      if (index >= 1) {
-        styleObj['bottom'] = `${65 * index}px`
-        if (window.outerWidth <= 580) {
-          styleObj['bottom'] = '102px'
-        }
-      } else {
-        styleObj['bottom'] = '5px'
-      }
-      if (messageLength > 40 && messageLength < 60) {
-        styleObj['width'] = '580px'
-      } else if (messageLength > 60) {
-        styleObj['width'] = '580px'
-      } else {
-        styleObj['width'] = '480px'
-      }
-      if (window.outerWidth <= 580) {
-        styleObj['width'] = '95%'
-      }
-      return styleObj
     },
     getFormattedDate() {
       const date1 = new Date('2019-10-24T08:41:23.927')
@@ -1037,47 +969,6 @@ export default {
   }
 }
 
-.footer-designedby {
-  height: 17px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: 600;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #000000;
-}
-
-.footer-copyright {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: 600;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #000000;
-}
-
-.footer-links {
-  align-items: center;
-  display: flex;
-
-  a {
-    height: 19px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 12px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.58;
-    letter-spacing: normal;
-    color: #000;
-    text-decoration: none;
-    padding: 0 16px;
-  }
-}
 // End Footer
 
 // Notification
@@ -1613,9 +1504,6 @@ header {
       font-size: 19px !important;
     }
   }
-  ::v-deep .v-footer {
-    height: 200px !important;
-  }
 }
 
 .menu-mini-img {
@@ -1674,58 +1562,6 @@ header {
 
     .v-list-item__title {
       margin-top: 10px !important;
-    }
-  }
-}
-.v-footer {
-  align-items: center;
-  display: flex;
-  height: 47px;
-  padding: 0 16px;
-  position: absolute;
-  bottom: -40px;
-  width: 100%;
-}
-
-.footer {
-  flex-wrap: wrap;
-  @media only screen and (max-width: 1025px) {
-    justify-content: center;
-  }
-}
-
-.footer-item {
-  flex: 1;
-  &__primary {
-    order: 1;
-    flex-grow: 1;
-    @media only screen and (max-width: 1025px) {
-      flex-grow: 0;
-      order: 3;
-      padding: 0 25px;
-    }
-  }
-
-  &__secondary {
-    order: 2;
-    @media only screen and (max-width: 1025px) {
-      order: 1;
-    }
-  }
-
-  &__third {
-    order: 3;
-    flex-grow: 1;
-    @media only screen and (max-width: 1025px) {
-      flex-grow: 0;
-      order: 2;
-    }
-  }
-
-  &__fourth {
-    order: 4;
-    @media only screen and (max-width: 1025px) {
-      padding: 0 25px;
     }
   }
 }
@@ -1810,58 +1646,5 @@ button:disabled {
   top: 56px !important;
   min-width: 300px !important;
   width: 300px !important;
-}
-
-::v-deep .v-snack__wrapper {
-  width: 100%;
-}
-::v-deep .v-snack__content {
-  padding: 12px 16px;
-}
-
-.snackbar {
-  &__left-column {
-    display: flex;
-    align-items: center;
-    flex-basis: 85%;
-  }
-  &__right-column {
-  }
-  &__message {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: #ffffff;
-  }
-  &__action {
-    text-decoration: none;
-    color: white;
-    margin-right: 5px;
-    ::v-deep .v-btn__content {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      text-align: center;
-      color: #ffffff;
-    }
-
-    ::v-deep .v-btn {
-      height: 36px !important;
-    }
-  }
-}
-
-::v-deep .v-snack {
-  @media (max-width: 580px) {
-    width: 95% !important;
-  }
 }
 </style>
