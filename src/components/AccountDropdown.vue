@@ -101,40 +101,5 @@ export default {
   background-color: #ffffff;
   padding-top: 3px;
   width: 400px;
-
-  @media only screen and (max-width: 900px) {
-    width: 250px !important;
-    flex-grow: unset !important;
-  }
-  @media only screen and (max-width: 683px) {
-    display: none !important;
-  }
-
-  ::v-deep .v-select__slot {
-    margin-left: 10px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-  }
-
-  ::v-deep .v-text-field > .v-input__control > .v-input__slot:before {
-    border-style: none;
-    border-width: none;
-  }
-
-  ::v-deep .v-input__slot {
-    padding-bottom: 7px !important;
-  }
-  ::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
-    border: unset !important;
-  }
-  ::v-deep .v-text-field .v-input__append-inner {
-    padding-right: 3px;
-  }
 }
 </style>

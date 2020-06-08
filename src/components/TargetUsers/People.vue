@@ -51,6 +51,32 @@
           </v-list>
         </v-menu>
       </template>
+      <template v-slot:datatable-column-popup="{ scope, col }">
+        <div @click="showPopupModal = true" style="cursor: pointer;">
+          {{ scope.row[col.property] }}
+        </div>
+        <v-overlay :opacity="0.46" :value="showPopupModal" :z-index="999" fixed>
+          <v-card class="download-card pb-4 pa-6" light style="max-width: 580px;">
+            <v-list-item>
+              <div class="v-btn v-cart-icon-wrapper">
+                <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
+              </div>
+              <v-list-item-content class="pt-0 pb-0">
+                <v-list-item-title class="v-card-headline"
+                  >I AM POPUP FROM DATATABLE CELL</v-list-item-title
+                >
+                <v-list-item-subtitle class="v-card-sub-header">ROW...</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item :key="item" v-for="item in scope.row" class="check-wrapper pl-0 pr-0">
+              <v-list-item-content> {{ item }}</v-list-item-content>
+            </v-list-item>
+            <div class="d-flex download-buttons flex-row flex-wrap">
+              <v-btn @click="showPopupModal = false" color="#f56c6c" text>CANCEL</v-btn>
+            </div>
+          </v-card>
+        </v-overlay>
+      </template>
     </datatable>
   </div>
 </template>
@@ -70,6 +96,7 @@ export default {
     isWantToShowDeleteUserModal: false,
     isWantToShowAddUsersManuallyModal: false,
     selectedRow: {},
+    showPopupModal: false,
     items: [
       { title: 'Click Me1' },
       { title: 'Click Me2' },
@@ -117,7 +144,7 @@ export default {
           label: 'Job Title',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'popup',
           width: 250
         },
 

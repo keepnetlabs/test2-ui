@@ -206,7 +206,7 @@ export default {
     pageSizes: [5, 10, 25, 50, 100],
     rowActions: [
       {
-        name: 'details',
+        name: 'Details',
         icon: 'mdi-text-box-multiple',
         action: 'investigationDetails'
       },

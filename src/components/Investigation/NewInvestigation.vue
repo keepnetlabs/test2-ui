@@ -976,9 +976,6 @@ export default {
   bottom: 8px !important;
 }
 .target-users-multi {
-  ::v-deep .v-input__control .v-select__slot {
-    margin-bottom: 0px !important;
-  }
   ::v-deep {
     padding: 0px !important;
   }
@@ -1037,30 +1034,6 @@ export default {
       color: rgba(0, 0, 0, 0.54) !important;
     }
   }
-  .v-select__slot {
-    margin-bottom: 3px !important;
-    .v-label {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
-    input {
-      &::placeholder {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 13px !important;
-        font-weight: normal !important;
-        font-stretch: normal !important;
-        font-style: normal !important;
-        line-height: normal !important;
-        letter-spacing: normal !important;
-        color: rgba(0, 0, 0, 0.54) !important;
-      }
-    }
-  }
 }
 
 ::v-deep .v-input__control {
@@ -1079,17 +1052,6 @@ export default {
   }
 }
 
-::v-deep {
-  .v-select__selection {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
 .select-sources {
   display: flex;
   flex-wrap: wrap;
@@ -1150,18 +1112,6 @@ export default {
   ::v-deep .v-input__slot {
     max-height: 40px !important;
     min-height: 40px !important;
-  }
-}
-
-::v-deep .v-select__slot {
-  .v-label {
-    top: 10px !important;
-  }
-  .v-label--active {
-    top: 16px !important;
-  }
-  .v-input__append-inner {
-    margin-top: 9px !important;
   }
 }
 
@@ -2431,12 +2381,6 @@ export default {
   margin-top: 24px !important;
 }
 ::v-deep .v-data-footer__select {
-  .v-select {
-    margin: 0 !important;
-    margin-top: 3px !important;
-    margin-left: 32px !important;
-    height: 30px !important;
-  }
   .v-text-field > .v-input__control > .v-input__slot:after {
     border: none !important;
     display: none !important;
@@ -2449,17 +2393,6 @@ export default {
     margin-top: 3px !important;
     margin-right: 5px !important;
     padding-left: 0 !important;
-  }
-  .v-select__slot {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    height: 27px !important;
-    background-color: #f2f2f2 !important;
-
-    .v-select__selections {
-      margin-left: 10px;
-    }
   }
   .v-input__icon {
     width: 20px !important;

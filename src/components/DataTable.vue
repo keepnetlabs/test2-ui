@@ -132,13 +132,7 @@
                   v-if="editMode"
                   >CANCEL
                 </v-btn>
-                <v-btn
-                  @click="saveEditedOnes()"
-                  class="pl-1 pr-1"
-                  color="#2196f3"
-                  dense
-                  text
-                  v-if="editMode"
+                <v-btn @click="saveEditedOnes()" color="#2196f3" dense text v-if="editMode"
                   >SAVE
                 </v-btn>
               </div>
@@ -161,12 +155,17 @@
                 >
                   <label
                     :class="[Array.isArray(item[key]) ? 'mt-n5' : '']"
-                    v-if="key !== 'progress' || !editMode"
+                    v-if="(key !== 'progress' || !editMode) && key !== 'createDate'"
                     >{{ getColumnLabel(key, value) }}</label
                   >
                   <span
                     :class="[getColumnLabelClass(key, value)]"
-                    v-if="!editMode && !Array.isArray(item[key]) && key !== 'progress'"
+                    v-if="
+                      !editMode &&
+                      !Array.isArray(item[key]) &&
+                      key !== 'progress' &&
+                      key !== 'createDate'
+                    "
                     >{{ value }}</span
                   >
                   <v-text-field
@@ -182,7 +181,8 @@
                       key !== 'progress' &&
                       key !== 'priority' &&
                       key !== 'status' &&
-                      key !== 'detected'
+                      key !== 'detected' &&
+                      key !== 'createDate'
                     "
                     v-model="item[key]"
                   />
@@ -245,7 +245,8 @@
                       key !== 'progress' &&
                       key !== 'detected' &&
                       key !== 'status' &&
-                      key !== 'priority'
+                      key !== 'priority' &&
+                      key !== 'createDate'
                     "
                   />
 
@@ -291,8 +292,8 @@
                   <span>14/12/2018</span>
                 </div>
               </div>
-              <div class="edit-footer-settings">
-                <v-btn disabled icon>
+              <div class="edit-footer-settings" v-show="isPopupDateEditable">
+                <v-btn icon color="#fff" style="text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);">
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </div>
@@ -919,6 +920,10 @@ export default {
       default: () => {
         return ['Active', 'Inactive', 'N/A']
       }
+    },
+    isPopupDateEditable: {
+      type: Boolean,
+      default: true
     },
     editablePriorityItems: {
       type: Array,

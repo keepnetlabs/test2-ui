@@ -1808,8 +1808,12 @@ export default {
                     }
 
                     &--link {
+                      position: absolute;
+                      display: -webkit-box;
+                      display: -ms-flexbox;
                       display: flex;
                       width: 100%;
+                      left: 10px;
                     }
                   }
 
