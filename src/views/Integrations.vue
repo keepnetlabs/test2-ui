@@ -54,7 +54,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .integrations {
   padding: 16px;
   padding-top: 10px;
@@ -63,6 +63,27 @@ export default {
     padding-left: 0 !important;
     padding-right: 0 !important;
     margin-top: 16px !important;
+  }
+
+  .v-slide-group__content {
+    border-bottom: 2px solid #e4e7ed;
+    margin-right: 20px;
+  }
+
+  .v-window__container {
+    margin-top: 24px !important;
+  }
+
+  .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+    background-color: #ffffff;
+    padding: 0;
+  }
+
+  .v-tabs-slider-wrapper {
+    bottom: -1px !important;
+    color: #0486fe !important;
   }
 }
 
@@ -84,30 +105,6 @@ export default {
   &-active {
     color: #2196f3 !important;
   }
-}
-
-::v-deep .v-card {
-  padding: 0 !important;
-}
-
-::v-deep .v-slide-group__content {
-  border-bottom: 2px solid #e4e7ed;
-  margin-right: 20px;
-}
-
-::v-deep .v-window__container {
-  margin-top: 24px !important;
-}
-
-.v-card:not(.v-sheet--tile):not(.v-card--shaped) {
-  border-radius: 20px;
-  box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-  background-color: #ffffff;
-}
-
-::v-deep .v-tabs-slider-wrapper {
-  bottom: -1px !important;
-  color: #0486fe !important;
 }
 
 .pr-card {

@@ -973,7 +973,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .v-text-field__details.checkbox-error {
-  bottom: 8px !important;
+  bottom: 8z !important;
 }
 .target-users-multi {
   ::v-deep {

@@ -1,5 +1,5 @@
 <template>
-  <div id="integrations">
+  <div id="integrations" class="integrations">
     <new-clients :showModal="modalStatus" @closeOverlay="changeModalStatus" />
     <data-table
       id="integrationsClientList"
@@ -15,6 +15,7 @@
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
+      @onEmptyBtnClicked="onEmptyBtnClicked"
       @deleteAction="handleDelete"
       @addAction="changeModalStatus(true)"
       @downloadEvent="exportIntegrationList"
@@ -135,10 +136,13 @@ export default {
     exportIntegrationList() {},
     changeModalStatus(status) {
       this.modalStatus = status
+    },
+    onEmptyBtnClicked() {
+      this.modalStatus = true
     }
   },
   mounted() {
-    this.$refs.refIntegrationsList.loadWithDataArray([
+    this.$refs.integrationsClientList.loadWithDataArray([
       {
         integrationName: 'integrationName',
         description: 'description',
@@ -193,4 +197,4 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss"></style>

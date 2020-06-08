@@ -1,6 +1,12 @@
 <template>
   <div class="new-integration">
-    <v-overlay fixed :opacity="0.46" :value="showModal" :z-index="9999999">
+    <v-overlay
+      fixed
+      :opacity="0.46"
+      :value="showModal"
+      :z-index="9999999"
+      class="new-integration__overlay"
+    >
       <v-card light class="new-integration__container">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
@@ -138,52 +144,35 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #000;
-}
-
-::v-deep .v-overlay__content {
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  position: fixed;
-  left: 0;
-  top: 0;
-  overflow-y: auto;
-  padding-bottom: 68px !important;
-}
-
+<style lang="scss">
 .new-integration {
   &__container {
     padding: 24px 0 0 96px !important;
     border-radius: 0 !important;
+    box-shadow: none !important;
+
+    &.v-card {
+      padding: 24px 0 0 96px !important;
+    }
+  }
+
+  &__overlay {
+    .v-overlay__content {
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+      padding-bottom: 68px !important;
+    }
   }
 
   &__title {
     font-family: 'Open Sans', sans-serif !important;
     opacity: 0.9;
     font-size: 24px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.29;
     margin-top: 31px !important;
     letter-spacing: normal;
@@ -320,30 +309,13 @@ export default {
       opacity: 0.8;
     }
   }
+
+  .v-list-item__content {
+    padding: 0 !important;
+  }
 }
 
-::v-deep .theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+.theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background-color: transparent;
-}
-
-::v-deep .new-integration__container.v-card {
-  padding: 24px 0 0 96px !important;
-}
-
-::v-deep .v-list-item__content {
-  padding: 0 !important;
-}
-
-::v-deep .v-input--selection-controls .v-input__slot > .v-label,
-.v-input--selection-controls .v-radio > .v-label {
-  font-family: 'Open Sans', sans-serif !important;
-  left: 31px !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
 }
 </style>
