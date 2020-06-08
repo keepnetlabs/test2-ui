@@ -1,5 +1,5 @@
 <template>
-  <v-card flat color="basil">
+  <v-card id="component-incidents" flat color="basil">
     <v-overlay
       id="share-incident-overlay"
       fixed
@@ -138,7 +138,6 @@
               @mouseover.native="hover = true"
               label="Filter by attributes or keywords"
               outlined
-              dense
               class="filter-field pt-6"
               v-model="search"
               id="incidents-search-textfield"
@@ -559,78 +558,49 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.search-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+<style lang="scss">
+#component-incidents {
+  .search-wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-  > div {
-    padding-right: 10px;
+    > div {
+      padding-right: 10px;
+    }
+
+    .filter-icon {
+      color: rgba(0, 0, 0, 0.34) !important;
+      cursor: pointer;
+    }
   }
 
-  .filter-icon {
-    color: rgba(0, 0, 0, 0.34) !important;
-    cursor: pointer;
+  .v-tab {
+    padding: 0 3px !important;
+    font-size: 20px;
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    text-transform: none;
+    color: rgba(0, 0, 0, 0.87);
+    min-width: min-content !important;
+    text-align: left !important;
   }
-}
 
-.v-tab {
-  padding: 0 3px !important;
-  font-size: 20px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
-  min-width: min-content !important;
-  text-align: left !important;
-}
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
 
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.delete-info {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-}
-
-.invite-sub-header {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-::v-deep .invite-input > .v-input__control > .v-input__slot {
-  align-items: center;
-  border-radius: 8px;
-  border: solid 1px rgba(0, 0, 0, 0.16);
-  background-color: #fff;
-  box-shadow: unset !important;
-  display: flex;
-
-  .v-label {
+  .delete-info {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
     font-weight: normal;
@@ -638,75 +608,214 @@ export default {
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-    display: flex;
-    align-items: center;
+    color: rgba(0, 0, 0, 0.72);
   }
 
-  .invite-chip {
-    border-radius: 18px !important;
-
-    > span > span {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center;
-      color: #000000;
-    }
-  }
-
-  .mdi-menu-down {
-    display: none !important;
-  }
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #2196f3;
-}
-
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
-
-.share-inline-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-
-  .share-combo-label {
-    width: 100%;
-    text-align: left;
-    margin-bottom: 8px;
-    font-family: Helvetica;
-    font-size: 16px;
+  .invite-sub-header {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: normal;
+    line-height: 1.5;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
 
-  .v-input {
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #000 !important;
+  }
+
+  .share-inline-wrapper {
+    display: flex;
+    flex-direction: column;
     width: 100%;
+
+    .share-combo-label {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 8px;
+      font-family: Helvetica;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+
+  .v-overlay__scrim {
+    border-radius: 0 !important;
+  }
+
+  .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
+    border-radius: 12px !important;
+  }
+
+  .v-overlay__content {
+    border-radius: 12px !important;
+    box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
+      0 9px 46px 8px rgba(201, 113, 113, 0.12) !important;
+  }
+
+  .send-incident {
+    margin-right: -18px;
+  }
+
+  .investigate-overlay,
+  .post-incident-overlay {
+    .v-overlay__content {
+      width: 100%;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: scroll;
+    }
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.5s !important;
+  }
+
+  .fade-enter-active {
+    transition: all 0.3s ease;
+  }
+
+  .fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0 !important;
+  }
+
+  .empty-communities {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    min-height: 171px;
+    width: 100%;
+
+    .empty-communities-inline {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 420px;
+
+      span {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 24px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.29;
+        letter-spacing: normal;
+        color: #000;
+        text-align: center;
+        width: 100%;
+        padding-top: 50px;
+        padding-bottom: 16px;
+      }
+    }
+  }
+
+  .post-inc-btn {
+    align-items: center;
+    background-color: #2196f3 !important;
+    color: #fff;
+    display: flex;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    height: 36px !important;
+    text-transform: unset !important;
+  }
+
+  .v-expansion-panel {
+    border-radius: 20px !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    background-color: #fff;
+    border: unset !important;
+  }
+
+  .v-expansion-panel::before {
+    box-shadow: unset !important;
+  }
+
+  .v-expansion-panel::after {
+    border: unset !important;
+  }
+
+  .v-expansion-panel-header {
+    box-shadow: unset !important;
+    border: unset !important;
+  }
+
+  .v-window {
+    border-radius: 20px !important;
+    margin: 0 24px !important;
+  }
+
+  .v-expansion-panel-content {
+    border-radius: 20px !important;
+    font-family: 'Open Sans', sans-serif !important;
+  }
+
+  .v-expansion-panel-content__wrap {
+    padding: 0 !important;
+  }
+
+  .create-com-btn {
+    background-color: #2196f3 !important;
+    color: #fff;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    height: 36px !important;
+    text-transform: capitalize !important;
+    padding-bottom: 10px;
+    width: 193px !important;
+    max-width: 193px !important;
+  }
+
+  .v-form {
+    width: 100%;
+  }
+
+  .delete-dialog-body {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
     font-weight: normal;
@@ -714,171 +823,9 @@ export default {
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
+    color: rgba(0, 0, 0, 0.72);
+    margin-top: 38px;
+    margin-bottom: 4px;
   }
-}
-
-::v-deep .v-overlay__scrim {
-  border-radius: 0 !important;
-}
-
-::v-deep .v-card:not(.v-sheet--tile):not(.v-card--shaped) {
-  border-radius: 12px !important;
-}
-
-::v-deep .v-overlay__content {
-  border-radius: 12px !important;
-  box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
-    0 9px 46px 8px rgba(201, 113, 113, 0.12) !important;
-}
-
-.send-incident {
-  margin-right: -18px;
-}
-
-::v-deep .investigate-overlay,
-::v-deep .post-incident-overlay {
-  .v-overlay__content {
-    width: 100%;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    overflow-y: scroll;
-  }
-}
-
-::v-deep .fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s !important;
-}
-
-::v-deep .fade-enter-active {
-  transition: all 0.3s ease;
-}
-
-::v-deep .fade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-::v-deep .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0 !important;
-}
-
-.empty-communities {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  position: relative;
-  min-height: 171px;
-  width: 100%;
-
-  .empty-communities-inline {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 420px;
-
-    span {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 24px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.29;
-      letter-spacing: normal;
-      color: #000;
-      text-align: center;
-      width: 100%;
-      padding-top: 50px;
-      padding-bottom: 16px;
-    }
-  }
-}
-
-.post-inc-btn {
-  align-items: center;
-  background-color: #2196f3 !important;
-  color: #fff;
-  display: flex;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  height: 36px !important;
-  text-transform: unset !important;
-}
-
-::v-deep .v-expansion-panel {
-  border-radius: 20px !important;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
-  background-color: #fff;
-  border: unset !important;
-}
-
-::v-deep .v-expansion-panel::before {
-  box-shadow: unset !important;
-}
-
-::v-deep .v-expansion-panel::after {
-  border: unset !important;
-}
-
-::v-deep .v-expansion-panel-header {
-  box-shadow: unset !important;
-  border: unset !important;
-}
-
-::v-deep .v-window {
-  border-radius: 20px !important;
-  margin: 0 24px !important;
-}
-
-::v-deep .v-expansion-panel-content {
-  border-radius: 20px !important;
-  font-family: 'Open Sans', sans-serif !important;
-}
-
-::v-deep .v-expansion-panel-content__wrap {
-  padding: 0 !important;
-}
-
-.create-com-btn {
-  background-color: #2196f3 !important;
-  color: #fff;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  height: 36px !important;
-  text-transform: capitalize !important;
-  padding-bottom: 10px;
-  width: 193px !important;
-  max-width: 193px !important;
-}
-
-::v-deep .v-form {
-  width: 100%;
-}
-
-.delete-dialog-body {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-  margin-top: 38px;
-  margin-bottom: 4px;
 }
 </style>
