@@ -2,6 +2,7 @@
   <div class="d-flex flex-row flex-wrap align-content-start flex-lg-grow-0 account-dd">
     <div v-if="companyDD && companyDD.length > 0" class="account-wrapper flex-grow-1">
       <v-select
+        class="flat-white"
         v-model="selectedCompany"
         :items="getDropdown"
         item-text="manager"
@@ -92,7 +93,7 @@ export default {
 
   .v-text-field--outlined {
     fieldset {
-      border-color: initial;
+      border-color: white;
     }
   }
 }

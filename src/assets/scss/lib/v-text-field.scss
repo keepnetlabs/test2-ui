@@ -1,8 +1,14 @@
 .v-text-field {
   &--outlined > .v-input__control > .v-input__slot {
     min-height: 40px;
-    background-color: white;
+    background-color: #fff;
     border-radius: 8px;
+  }
+  &--outlined:not(.v-input--is-focused):not(.v-input--has-state).flat-white
+  > .v-input__control
+  > .v-input__slot
+  fieldset {
+    border-color: #fff;
   }
   &--enclosed .v-input__append-inner {
     margin-top: initial !important;
@@ -39,4 +45,5 @@
       padding-bottom: 0;
     }
   }
+
 }
