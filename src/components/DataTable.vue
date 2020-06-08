@@ -2118,7 +2118,7 @@ export default {
   border-radius: unset !important;
 }
 .v-sheet {
-  border-radius: 20px !important;
+  // border-radius: 20px !important;
 }
 
 .v-card-headline {

@@ -1,1 +1,42 @@
-.v-text-field {}
+.v-text-field {
+  &--outlined > .v-input__control > .v-input__slot {
+    min-height: 40px;
+    background-color: white;
+    border-radius: 8px;
+  }
+  &--enclosed .v-input__append-inner {
+    margin-top: initial !important;
+  }
+  & .v-input__prepend-inner,
+  & .v-input__append-inner {
+    align-self: center;
+    margin: initial;
+  }
+  &--outlined.v-input--is-focused fieldset,
+  &--outlined.v-input--has-state fieldset {
+    border: 1px solid currentColor;
+  }
+  &--outlined fieldset {
+    border-radius: 8px;
+    top: 0;
+  }
+  &--outlined legend {
+    display: none;
+  }
+  &--outlined .v-label {
+    top: initial;
+    font-size: 13px;
+  }
+  &--outlined .v-label {
+    top: initial;
+    font-size: 13px;
+  }
+  &--outlined .v-label.v-label--active {
+    font-size: 9px;
+    transform: translateY(-24px);
+    bottom: -3px;
+    & + input {
+      padding-bottom: 0;
+    }
+  }
+}
