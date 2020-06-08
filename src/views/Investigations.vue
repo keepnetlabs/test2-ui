@@ -383,21 +383,20 @@ export default {
 <style lang="scss">
 .investigations {
   padding: 16px;
-}
+  .newInvestigationOverlay {
+    background-color: #fff !important;
+    overflow: auto !important;
+    height: 100% !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    display: block !important;
+    justify-content: center !important;
+    align-items: center !important;
 
-.newInvestigationOverlay {
-  background-color: #fff !important;
-  overflow: auto !important;
-  height: 100% !important;
-  max-width: 100vw !important;
-  width: 100% !important;
-  display: block !important;
-  justify-content: center !important;
-  align-items: center !important;
-
-  > ::v-deep .v-overlay__content {
-    height: auto;
-    width: 100%;
+    > ::v-deep .v-overlay__content {
+      height: auto;
+      width: 100%;
+    }
   }
 }
 </style>

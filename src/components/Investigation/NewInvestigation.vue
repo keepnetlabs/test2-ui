@@ -1,297 +1,303 @@
 <template>
-  <div class="new-investigation-container">
-    <div class="new-investigation-inner">
-      <v-card flat light class="pa-6" style="width: 600px;">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">mdi-magnify</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline"
-              >New Investigation {{ data }}</v-list-item-title
-            >
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="pl-0 pr-0 pt-4 pb-4">
-          <v-list-item-content class="pt-4 pb-0">
-            <v-list-item-title class="v-card-headline">Start New Investigation</v-list-item-title>
-            <v-list-item-title class="v-card-sub-header"
-              >Select filters and date options to start an investigation</v-list-item-title
-            >
-          </v-list-item-content>
-        </v-list-item>
-        <v-form ref="form" v-model="valid" lazy-validation>
-          <v-list-item class="edit-name-area pt-1 0 pa-0 investigation-name">
-            <v-list-item-content class>
-              <label class="pb-3 edit-labels">Investigation Name</label>
-              <v-text-field
-                placeholder="Manual Investigation - 09.09.2019  16:25"
-                outlined
-                class="edit-name-textfield edit-select standard-height"
-                v-model="investgationName"
-                :rules="[investigationNameRules.required, investigationNameRules.empty]"
-                required
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0 target-users">
-            <v-list-item-content class>
-              <label class="edit-labels">Target Users</label>
-              <label class="edit-sub-labels"
-                >Select departments, groups or users to investigate</label
+  <div id="new-investigation-wrapper">
+    <div class="new-investigation-container">
+      <div class="new-investigation-inner">
+        <v-card flat light class="pa-6" style="width: 600px;">
+          <v-list-item class="pl-0 pr-0">
+            <div class="v-btn v-cart-icon-wrapper">
+              <v-icon medium left color="blue" class="ml-2">mdi-magnify</v-icon>
+            </div>
+            <v-list-item-content class="pt-0 pb-0">
+              <v-list-item-title class="v-card-headline"
+                >New Investigation {{ data }}</v-list-item-title
               >
-              <div class="target-users__radio-group">
-                <v-radio-group
-                  v-model="targetUserType"
-                  :mandatory="false"
-                  @change="targetUsersValue = []"
-                  row
-                >
-                  <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
-                  <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
-                  <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
-                </v-radio-group>
-              </div>
-              <div class="target-users__input-area">
-                <v-combobox
-                  :items="[]"
-                  :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
-                  outlined
-                  class="edit-select standard-height"
-                  item-text="name"
-                  multiple
-                  dense
-                  persistent-hint
-                  small-chips
-                  :return-object="false"
-                  @change="targetUsersListChange"
-                  v-if="targetUserType == 'AllUsers'"
-                  :disabled="targetUserType == 'AllUsers'"
-                  required
-                ></v-combobox>
-                <v-combobox
-                  :items="targetUsersList"
-                  :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
-                  outlined
-                  class="edit-select target-users-multi"
-                  v-model="targetUsersValue"
-                  :rules="[targetUsers.required]"
-                  item-text="name"
-                  :input-value="groupId"
-                  multiple
-                  dense
-                  persistent-hint
-                  small-chips
-                  :return-object="true"
-                  @change="targetUsersListChange"
-                  v-if="targetUserType == 'Groups'"
-                  required
-                ></v-combobox>
-                <v-combobox
-                  :items="[]"
-                  v-if="targetUserType == 'SpecificUsers'"
-                  label="Enter Email Addresses"
-                  item-text="name"
-                  multiple
-                  dense
-                  persistent-hint
-                  small-chips
-                  :return-object="false"
-                  :rules="[targetUsers.required]"
-                  required
-                  outlined
-                  class="edit-name-textfield edit-select target-users__specific-user-input target-users-multi"
-                  v-model="targetUsersValue"
-                ></v-combobox>
-              </div>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class="filter-container">
-              <label class="edit-labels">Filters</label>
-              <label class="edit-sub-labels">Define filters for the investigation</label>
-              <div class="filter-item" v-for="(list, index) in filterList" :key="index">
-                <div class="filter-item__selectbox">
-                  <v-select
-                    :items="filterListOption"
-                    v-model="list.option"
-                    label="Select the target users"
+          <v-list-item class="pl-0 pr-0 pt-4 pb-4">
+            <v-list-item-content class="pt-4 pb-0">
+              <v-list-item-title class="v-card-headline">Start New Investigation</v-list-item-title>
+              <v-list-item-title class="v-card-sub-header"
+                >Select filters and date options to start an investigation</v-list-item-title
+              >
+            </v-list-item-content>
+          </v-list-item>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-list-item class="edit-name-area pt-1 0 pa-0 investigation-name">
+              <v-list-item-content class>
+                <label class="pb-3 edit-labels">Investigation Name</label>
+                <v-text-field
+                  placeholder="Manual Investigation - 09.09.2019  16:25"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model="investgationName"
+                  :rules="[investigationNameRules.required, investigationNameRules.empty]"
+                  required
+                  height="40"
+                ></v-text-field>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="edit-industry-area pb-4 pa-0 target-users">
+              <v-list-item-content class>
+                <label class="edit-labels">Target Users</label>
+                <label class="edit-sub-labels"
+                  >Select departments, groups or users to investigate</label
+                >
+                <div class="target-users__radio-group">
+                  <v-radio-group
+                    v-model="targetUserType"
+                    :mandatory="false"
+                    @change="targetUsersValue = []"
+                    row
+                  >
+                    <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
+                    <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
+                    <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
+                  </v-radio-group>
+                </div>
+                <div class="target-users__input-area">
+                  <v-combobox
+                    :items="[]"
+                    :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
                     class="edit-select standard-height"
+                    item-text="name"
+                    multiple
+                    dense
+                    persistent-hint
+                    small-chips
+                    :return-object="false"
+                    @change="targetUsersListChange"
+                    v-if="targetUserType == 'AllUsers'"
+                    :disabled="targetUserType == 'AllUsers'"
                     required
-                    :rules="[filterSelectRules.required]"
-                  ></v-select>
-                </div>
-                <div class="filter-item__input">
-                  <v-text-field
-                    :placeholder="
-                      placeholders[list.option]
-                        ? placeholders[list.option]
-                        : 'Select filter for investigation'
-                    "
+                  ></v-combobox>
+                  <v-combobox
+                    :items="targetUsersList"
+                    :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
-                    class="edit-name-textfield edit-select standard-height"
-                    :rules="[
-                      list.option && generalRules[list.option].required,
-                      list.option && generalRules[list.option].format
-                    ]"
-                    v-model="list.text"
+                    class="edit-select target-users-multi"
+                    v-model="targetUsersValue"
+                    :rules="[targetUsers.required]"
+                    item-text="name"
+                    :input-value="groupId"
+                    multiple
+                    dense
+                    persistent-hint
+                    small-chips
+                    :return-object="true"
+                    @change="targetUsersListChange"
+                    v-if="targetUserType == 'Groups'"
                     required
-                  ></v-text-field>
+                  ></v-combobox>
+                  <v-combobox
+                    :items="[]"
+                    v-if="targetUserType == 'SpecificUsers'"
+                    label="Enter Email Addresses"
+                    item-text="name"
+                    multiple
+                    dense
+                    persistent-hint
+                    small-chips
+                    :return-object="false"
+                    :rules="[targetUsers.required]"
+                    required
+                    outlined
+                    class="edit-name-textfield edit-select target-users__specific-user-input target-users-multi"
+                    v-model="targetUsersValue"
+                  ></v-combobox>
                 </div>
-                <div class="filter-item__delete-button">
-                  <v-icon
-                    medium
-                    left
-                    class="ml-2"
-                    v-if="filterList.length > 1"
-                    @click="filterList.splice(index, 1)"
-                    >mdi-close</v-icon
-                  >
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="edit-industry-area pb-4 pa-0">
+              <v-list-item-content class="filter-container">
+                <label class="edit-labels">Filters</label>
+                <label class="edit-sub-labels">Define filters for the investigation</label>
+                <div class="filter-item" v-for="(list, index) in filterList" :key="index">
+                  <div class="filter-item__selectbox">
+                    <v-select
+                      :items="filterListOption"
+                      v-model="list.option"
+                      label="Select the target users"
+                      outlined
+                      class="edit-select standard-height"
+                      required
+                      :rules="[filterSelectRules.required]"
+                    ></v-select>
+                  </div>
+                  <div class="filter-item__input">
+                    <v-text-field
+                      :placeholder="
+                        placeholders[list.option]
+                          ? placeholders[list.option]
+                          : 'Select filter for investigation'
+                      "
+                      outlined
+                      class="edit-name-textfield edit-select standard-height"
+                      :rules="[
+                        list.option && generalRules[list.option].required,
+                        list.option && generalRules[list.option].format
+                      ]"
+                      v-model="list.text"
+                      required
+                    ></v-text-field>
+                  </div>
+                  <div class="filter-item__delete-button">
+                    <v-icon
+                      medium
+                      left
+                      class="ml-2"
+                      v-if="filterList.length > 1"
+                      @click="filterList.splice(index, 1)"
+                      >mdi-close</v-icon
+                    >
+                  </div>
                 </div>
-              </div>
-              <button class="filter-item__button" type="button" @click="addNewFilterListOption()">
-                <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD FILTER
-              </button>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class>
-              <label class="edit-labels">Email Date Range</label>
-              <label class="edit-sub-labels">Select range of emails’ sending date</label>
-              <div class="date-row">
-                <v-col class="date-col pa-0" cols="12" md="6">
-                  <v-icon class="date-icon">mdi-calendar-range</v-icon>
-                  <v-menu
-                    ref="menu1"
-                    v-model="menu1"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
+                <button class="filter-item__button" type="button" @click="addNewFilterListOption()">
+                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD FILTER
+                </button>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="edit-industry-area pb-4 pa-0">
+              <v-list-item-content class>
+                <label class="edit-labels">Email Date Range</label>
+                <label class="edit-sub-labels">Select range of emails’ sending date</label>
+                <div class="date-row">
+                  <v-col class="date-col pa-0" cols="12" md="6">
+                    <v-icon class="date-icon">mdi-calendar-range</v-icon>
+                    <v-menu
+                      ref="menu1"
+                      v-model="menu1"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="startDate"
+                          class="date-picker first-date standard-height"
+                          label="Start Date"
+                          solo
+                          v-on="on"
+                          required
+                          readonly
+                          :rules="[datePickerRule]"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
                         v-model="startDate"
-                        class="date-picker first-date standard-height"
-                        label="Start Date"
-                        solo
-                        v-on="on"
-                        required
-                        readonly
+                        no-title
+                        @input="menu1 = false"
+                        :min="minDate()"
+                        :max="maxDate()"
                         :rules="[datePickerRule]"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="startDate"
-                      no-title
-                      @input="menu1 = false"
-                      :min="minDate()"
-                      :max="maxDate()"
-                      :rules="[datePickerRule]"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
-                <v-col class="date-col pa-0" cols="12" md="6">
-                  <span class="date-to">To</span>
-                  <v-menu
-                    v-model="menu2"
-                    :close-on-content-click="false"
-                    transition="scale-transition"
-                    offset-y
-                    max-width="290px"
-                    min-width="290px"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col class="date-col pa-0" cols="12" md="6">
+                    <span class="date-to">To</span>
+                    <v-menu
+                      v-model="menu2"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="endDate"
+                          class="date-picker sec-date standard-height"
+                          label="End Date"
+                          solo
+                          v-on="on"
+                          readonly
+                          :rules="[datePickerRule]"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
                         v-model="endDate"
-                        class="date-picker sec-date standard-height"
-                        label="End Date"
-                        solo
-                        v-on="on"
-                        readonly
+                        no-title
+                        @input="menu2 = false"
+                        :min="minDate()"
+                        :max="maxDate()"
                         :rules="[datePickerRule]"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="endDate"
-                      no-title
-                      @input="menu2 = false"
-                      :min="minDate()"
-                      :max="maxDate()"
-                      :rules="[datePickerRule]"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-industry-area pb-0 pa-0">
-            <v-list-item-content class>
-              <label class="edit-labels">Select Sources</label>
-              <label class="edit-sub-labels"
-                >Select sources to investigate with conditions above</label
-              >
-              <div class="select-sources flex">
-                <v-checkbox
-                  class="v-input--checkbox"
-                  v-model="item.value"
-                  :label="item.label"
-                  v-for="(item, index) in sources"
-                  @change="checkCheckboxValidation()"
-                  :key="index"
-                ></v-checkbox>
-                <div class="v-text-field__details checkbox-error" v-if="checkboxError">
-                  <div class="v-messages theme--light error--text" role="alert">
-                    <div class="v-messages__wrapper">
-                      <div class="v-messages__message">Source Select required</div>
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                </div>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="edit-industry-area pb-0 pa-0">
+              <v-list-item-content class>
+                <label class="edit-labels">Select Sources</label>
+                <label class="edit-sub-labels"
+                  >Select sources to investigate with conditions above</label
+                >
+                <div class="select-sources flex">
+                  <v-checkbox
+                    class="v-input--checkbox"
+                    v-model="item.value"
+                    :label="item.label"
+                    v-for="(item, index) in sources"
+                    @change="checkCheckboxValidation()"
+                    :key="index"
+                  ></v-checkbox>
+                  <div class="v-text-field__details checkbox-error" v-if="checkboxError">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message">Source Select required</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
+              </v-list-item-content>
+            </v-list-item>
 
-          <v-list-item class="edit-industry-area pb-4 pa-0">
-            <v-list-item-content class>
-              <label class="edit-labels">Duration</label>
-              <label class="edit-sub-labels">Select how many days the investigation will run</label>
-              <v-select
-                :items="durations"
-                outlined
-                class="input-select standard-height"
-                v-model="selectedDuration"
-                :rules="[(v) => !!v || 'Duration is required']"
-                item-text="durationLabel"
-                item-value="durationValue"
-                label="3 Days"
-              ></v-select>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="edit-industry-area pa-0">
-            <v-list-item-content class>
-              <label class="edit-labels">Action</label>
-              <label class="edit-sub-labels">Select action to be executed if email is found</label>
-              <v-select
-                :items="actions"
-                outlined
-                class="input-select standard-height"
-                v-model="selectedAction"
-                :rules="[(v) => !!v || 'Action is required']"
-                item-text="actionLabel"
-                item-value="actionValue"
-                label="Delete Email"
-              ></v-select>
-            </v-list-item-content>
-          </v-list-item>
-        </v-form>
-      </v-card>
-    </div>
-    <div class="footer-actions">
-      <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
-      <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">Save</v-btn>
+            <v-list-item class="edit-industry-area pb-4 pa-0">
+              <v-list-item-content class>
+                <label class="edit-labels">Duration</label>
+                <label class="edit-sub-labels"
+                  >Select how many days the investigation will run</label
+                >
+                <v-select
+                  :items="durations"
+                  outlined
+                  class="input-select standard-height"
+                  v-model="selectedDuration"
+                  :rules="[(v) => !!v || 'Duration is required']"
+                  item-text="durationLabel"
+                  item-value="durationValue"
+                  label="3 Days"
+                ></v-select>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="edit-industry-area pa-0">
+              <v-list-item-content class>
+                <label class="edit-labels">Action</label>
+                <label class="edit-sub-labels"
+                  >Select action to be executed if email is found</label
+                >
+                <v-select
+                  :items="actions"
+                  outlined
+                  class="input-select standard-height"
+                  v-model="selectedAction"
+                  :rules="[(v) => !!v || 'Action is required']"
+                  item-text="actionLabel"
+                  item-value="actionValue"
+                  label="Delete Email"
+                ></v-select>
+              </v-list-item-content>
+            </v-list-item>
+          </v-form>
+        </v-card>
+      </div>
+      <div class="footer-actions">
+        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
+        <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">Save</v-btn>
+      </div>
     </div>
   </div>
 </template>
@@ -971,31 +977,1003 @@ export default {
   mounted() {}
 }
 </script>
-<style lang="scss" scoped>
-.v-text-field__details.checkbox-error {
-  bottom: 8z !important;
-}
-.target-users-multi {
-  ::v-deep {
-    padding: 0px !important;
-  }
-}
-.target-users {
-  &__radio-group {
-    padding: 0px !important;
-    margin: 0 !important;
-    ::v-deep .v-input--selection-controls {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
+<style lang="scss">
+#new-investigation-wrapper {
+  .v-text-field__details.checkbox-error {
+    bottom: 0 !important;
+
+    .error--text {
+      font-size: 9px;
     }
-    ::v-deep .v-input__slot {
+  }
+
+  .target-users {
+    &__radio-group {
+      padding: 0px !important;
+      margin: 0 !important;
+
+      .v-input--selection-controls {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+
+      .v-input__slot {
+        margin-bottom: 0 !important;
+      }
+
+      .v-messages.theme--light {
+      }
+
+      .v-input--selection-controls.v-input .v-label {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87);
+      }
+    }
+
+    &__specific-user-input {
+      .v-input__append-inner {
+        display: none !important;
+      }
+    }
+  }
+
+  .investigation-name {
+    .v-list-item__content {
+      padding-bottom: 0 !important;
+    }
+
+    .v-text-field__details {
+      margin-bottom: 0px !important;
+    }
+  }
+
+  .v-input__control {
+    input {
+      &::placeholder {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        line-height: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
+    }
+  }
+
+  .v-input__control {
+    border-radius: 8px !important;
+  }
+
+  .v-text-field__slot {
+    label {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+
+  .select-sources {
+    display: flex;
+    flex-wrap: wrap;
+
+    .v-input--checkbox {
+      border: none;
+      font-size: 11px;
+      font-weight: normal;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      padding-top: 0px;
+      margin-top: 0px;
+
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+
+      label.v-label.theme--light {
+        font-size: 11px;
+        color: rgba(0, 0, 0, 0.72) !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
+        font-size: 20px !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
+        font-size: 20px !important;
+      }
+    }
+
+    .v-application {
+      color: #2196f3 !important;
+    }
+
+    .accent--text {
+      color: #2196f3 !important;
+    }
+  }
+
+  .v-input--checkbox {
+    .v-input__slot {
+      input {
+        z-index: 9;
+      }
+    }
+
+    .v-label {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 13px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.72);
+    }
+  }
+
+  .standard-height {
+    .v-input__slot {
+      max-height: 40px !important;
+      min-height: 40px !important;
+    }
+  }
+
+  .v-autocomplete {
+    .v-label {
+      top: 10px !important;
+    }
+
+    .v-label--active {
+      top: 8px !important;
+    }
+  }
+
+  .v-text-field--outlined {
+    .v-input__slot {
+      margin-bottom: 2px !important;
+    }
+  }
+
+  .new-investigation-container {
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .filter-container {
+    .v-input__slot {
       margin-bottom: 0 !important;
     }
-    .v-messages.theme--light {
-      display: none !important;
+
+    .v-text-field__details {
+      bottom: -25px !important;
     }
-    ::v-deep .v-input--selection-controls.v-input .v-label {
-      font-family: 'Open Sans', sans-serif;
+
+    .filter-item {
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+      position: relative;
+
+      &:not(:first-of-type) {
+        margin-top: 30px;
+      }
+
+      &:hover {
+        .filter-item__delete-button {
+          display: flex;
+        }
+      }
+
+      &__selectbox {
+        width: 80%;
+        margin-right: 5%;
+        max-height: 40px;
+      }
+
+      &__input {
+        width: 100%;
+        max-height: 40px;
+      }
+
+      &__button {
+        margin-top: 25px;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: #2196f3 !important;
+        align-items: center;
+        display: flex;
+
+        &:focus,
+        &:focus-within {
+          outline: 0 !important;
+        }
+      }
+
+      &__delete-button {
+        width: 44px;
+        height: 40px;
+        color: #757575;
+        position: absolute;
+        right: -40px;
+        top: 0px;
+        justify-content: center;
+        display: none;
+      }
+    }
+  }
+
+  .new-investigation-inner {
+    width: 100%;
+    height: 100%;
+    padding: 0 8vw;
+    position: relative;
+    display: flex;
+    overflow: visible;
+  }
+
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #000 !important;
+  }
+
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
+  }
+
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
+
+  .edit-labels {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 0 !important;
+    padding-bottom: 3px;
+  }
+
+  .edit-sub-labels {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 0 !important;
+    padding-bottom: 14px;
+  }
+
+  .edit-privacy-buttons {
+    align-items: center;
+    display: flex;
+    width: 168px;
+
+    button {
+      border-radius: 18px !important;
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 400 !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: 1.71 !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      padding: 0 16px !important;
+    }
+
+    .public-btn {
+      border: 1px solid #757575;
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      height: 36px;
+      margin-left: 4px;
+    }
+
+    .private-btn {
+      border: 1px solid #757575;
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      height: 36px;
+      margin-left: 9px;
+    }
+  }
+
+  .edit-privacy-bottom-label {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    color: #909399;
+    padding-top: 8px;
+    margin: 0 !important;
+  }
+
+  .theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+    background-color: unset;
+  }
+
+  .v-btn:not(.v-btn--text):not(.v-btn--outlined).v-btn--active:before {
+    opacity: 1;
+  }
+
+  .v-btn-toggle > .v-btn.v-btn--active,
+  .v-btn-toggle > .v-btn.v-btn--active::before {
+    color: #fff;
+  }
+
+  .btnActive {
+    height: 36px;
+    border-radius: 18px;
+    border: solid 1px #757575;
+  }
+
+  .btnActive,
+  .btnActive:active,
+  .btnActive:hover,
+  .btnActive:focus {
+    border: unset !important;
+    outline: 0 !important;
+  }
+
+  .btnActive,
+  .btnActive::before {
+    border: unset !important;
+    border-color: unset !important;
+    color: #fff;
+    background-color: #2196f3 !important;
+    box-shadow: 0 2px 5px 0 #2196f3 !important;
+  }
+
+  .private-btn.v-btn.v-btn--active {
+    border-left: transparent !important;
+  }
+
+  .v-btn-toggle--group > .v-btn.v-btn {
+    border-color: #757575;
+    border-left: 1px solid #757575 !important;
+  }
+
+  .v-btn:before {
+    top: -1px !important;
+    left: -1px !important;
+  }
+
+  .footer-actions {
+    align-items: center;
+    bottom: 0;
+    background-color: #f5f7fa;
+    display: flex;
+    left: 0;
+    position: fixed;
+    justify-content: space-between;
+    padding: 0 10vw;
+    height: 68px;
+    width: 100%;
+    z-index: 9999;
+
+    .cancel-btn {
+      background-color: transparent !important;
+      border-radius: 18px !important;
+      border: solid 1px #f56c6c !important;
+      color: #f56c6c !important;
+    }
+
+    .create-btn {
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+      background-color: #2196f3 !important;
+      color: #fff !important;
+    }
+  }
+
+  .error-border {
+    fieldset {
+      border: 2px solid #ff5252 !important;
+    }
+  }
+
+  .edit-industry-area {
+    .v-list-item__content {
+      overflow: visible;
+
+      &:first-of-type {
+        padding-bottom: 0 !important;
+      }
+    }
+
+    .v-text-field__details {
+      position: absolute;
+      left: 0;
+      bottom: -22px;
+    }
+
+    &:last-child {
+      .v-list-item__content {
+        margin-bottom: 100px;
+      }
+    }
+  }
+
+  .date-row {
+    max-width: 430px !important;
+    display: flex;
+    flex-direction: row;
+
+    @media only screen and (max-width: 1025px) {
+      width: 100%;
+      max-width: 100% !important;
+    }
+  }
+
+  .date-picker {
+    font-family: 'Open Sans', sans-serif !important;
+
+    .v-input__slot {
+      box-shadow: unset !important;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      border-radius: 4px;
+      text-align: center;
+
+      input {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.54);
+        padding-left: 50px !important;
+        padding-top: 8px !important;
+      }
+
+      label {
+        padding-top: 0 !important;
+      }
+    }
+
+    .v-input__slot::after,
+    .v-input__slot::before {
+      display: none;
+    }
+  }
+
+  .date-col {
+    position: relative;
+
+    @media only screen and (max-width: 1025px) {
+      width: 35% !important;
+      max-width: 35% !important;
+      padding: 0 !important;
+    }
+  }
+
+  .date-icon {
+    top: 12px;
+    left: 25px;
+    position: absolute;
+    font-size: 18px !important;
+    z-index: 99;
+  }
+
+  .date-to {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+    z-index: 13;
+  }
+
+  .underlined-warn {
+    border-bottom: 1px solid #f56c6c;
+    color: inherit;
+
+    .icon {
+      color: #f56c6c !important;
+      font-size: 24px !important;
+      text-decoration: none !important;
+      margin-left: 20px;
+      margin-bottom: 7px;
+    }
+  }
+
+  .post-wrapper {
+    max-width: 696px;
+  }
+
+  .select-error {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 9px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #d0021b;
+    margin-left: 8px;
+    margin-top: 17px;
+  }
+
+  .select-row-wrap {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 24px;
+
+    .select-row-inline {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 40%;
+
+      .file-type-wrap {
+        display: flex;
+      }
+    }
+  }
+
+  .email-name {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .email-icon {
+    font-size: 19px !important;
+    padding-right: 24px;
+  }
+
+  .email-type {
+    height: 25px;
+    border-radius: 4px;
+    background-color: #f56c6c;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 6px;
+  }
+
+  .email-time {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #000 !important;
+  }
+
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
+  }
+
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
+
+  .preview-header {
+    margin-top: 32px;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 16px;
+      width: max-content;
+    }
+
+    .header-info {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 43px;
+      border-bottom: 1px solid #b3d4fc;
+    }
+  }
+
+  .preview-body {
+    margin-top: 24px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom: 1px solid #b3d4fc;
+    position: relative;
+    padding-bottom: 24px;
+    min-height: auto;
+    overflow: auto;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
+    }
+
+    .company-img {
+      display: flex;
+      position: absolute;
+      right: 0;
+      top: 20px;
+      width: 84px;
+      height: 84px;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+
+  .first-date {
+    .v-input__slot {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      border-right: none !important;
+
+      label {
+        padding-left: 65px !important;
+      }
+    }
+  }
+
+  .sec-date {
+    .v-input__slot {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-left: none !important;
+
+      label {
+        padding-left: 60px !important;
+      }
+    }
+  }
+
+  .date-picker {
+    font-family: 'Open Sans', sans-serif !important;
+
+    .v-input__slot {
+      box-shadow: unset !important;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      border-radius: 4px;
+      text-align: center;
+
+      input {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.54);
+        padding-left: 50px !important;
+        padding-top: 8px !important;
+      }
+
+      label {
+        padding-top: 0 !important;
+      }
+    }
+
+    .v-input__slot::after,
+    .v-input__slot::before {
+      display: none;
+    }
+  }
+
+  .date-col {
+    position: relative;
+  }
+
+  .date-icon {
+    top: 12px;
+    left: 25px;
+    position: absolute;
+    font-size: 18px !important;
+    z-index: 99;
+  }
+
+  .date-to {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+    z-index: 13;
+  }
+
+  .max-char {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    max-width: 100%;
+  }
+
+  .text-selected {
+    border-radius: 1px !important;
+    background-color: #d1e9fc !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    width: max-content;
+  }
+
+  .clean-link {
+    padding: 0 2px !important;
+    border-radius: 1px !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: #2196f3 !important;
+  }
+
+  .selected-link {
+    background-color: #d1e9fc !important;
+  }
+
+  .phishing-link {
+    background-color: #f3e1e5 !important;
+    border-bottom: 1px solid #bb2a45 !important;
+    color: #bb2a45 !important;
+    width: max-content;
+  }
+
+  .clean-attach {
+    background-color: #f1f8fe;
+    border: 1px solid transparent !important;
+  }
+
+  .malicious-attach {
+    background-color: #f3e1e5;
+    border: 1px solid transparent !important;
+  }
+
+  .v-input > .v-input__control > .v-text-field__details {
+    // error messages.
+  }
+
+  .v-application input {
+    border-radius: 8px !important;
+    border: solid 1px rgba(0, 0, 0, 0.16) !important;
+  }
+
+  .required {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 9px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #474747;
+    margin-left: 6px;
+    margin-top: -2px;
+  }
+
+  .close-incident {
+    position: absolute;
+    right: -13px;
+    top: 13px;
+  }
+
+  .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+    > .v-input__control
+    > .v-input__slot {
+    border: none !important;
+  }
+
+  .row-with-icon {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .icon-btn {
+    margin-top: unset;
+    margin-left: -5px;
+    height: 25px !important;
+    width: 25px !important;
+  }
+
+  .step-name {
+    width: max-content;
+  }
+
+  .filter-header {
+    align-items: center;
+    display: none;
+    justify-content: space-between;
+    padding-top: 24px;
+    width: 240px;
+    transition: all 0.3s ease-in-out;
+
+    .select-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      transition: all 0.3s ease-in-out;
+    }
+
+    i {
+      margin-top: 3px;
+      font-size: 27px;
+    }
+  }
+
+  .minify-filter {
+    width: 120px !important;
+  }
+
+  .minify-part,
+  .minify-switch {
+    padding-left: 10px;
+    width: 100% !important;
+  }
+
+  // Email Preview css
+  .preview-header {
+    margin-top: 24px;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 16px;
+      width: 100%;
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-height: 80px;
+    }
+
+    .header-info {
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -1005,606 +1983,217 @@ export default {
       color: rgba(0, 0, 0, 0.87);
     }
   }
-  &__specific-user-input {
-    ::v-deep .v-input__append-inner {
-      display: none !important;
-    }
-  }
-}
 
-.investigation-name {
-  ::v-deep .v-list-item__content {
-    padding-bottom: 0 !important;
-  }
-  ::v-deep .v-text-field__details {
-    margin-bottom: 0px !important;
-  }
-}
-
-::v-deep .v-input__control {
-  input {
-    &::placeholder {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
-  }
-}
-
-::v-deep .v-input__control {
-  border-radius: 8px !important;
-}
-
-::v-deep .v-text-field__slot {
-  label {
+  .preview-body {
+    margin-top: 24px;
     font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.54) !important;
-  }
-}
-
-.select-sources {
-  display: flex;
-  flex-wrap: wrap;
-  .v-input--checkbox {
-    border: none;
-    font-size: 11px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    padding-top: 0px;
-    margin-top: 0px;
-    &:not(:last-child) {
-      margin-right: 15px;
-    }
-
-    label.v-label.theme--light {
-      font-size: 11px;
-      color: rgba(0, 0, 0, 0.72) !important;
-    }
-
-    i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
-      font-size: 20px !important;
-    }
-
-    i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
-      font-size: 20px !important;
-    }
-  }
-  ::v-deep .v-application {
-    color: #2196f3 !important;
-  }
-  ::v-deep .accent--text {
-    color: #2196f3 !important;
-  }
-}
-::v-deep .v-input--checkbox {
-  .v-input__slot {
-    input {
-      z-index: 9;
-    }
-  }
-  .v-label {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: normal;
+    line-height: 1.5;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72);
-  }
-}
-
-.standard-height {
-  ::v-deep .v-input__slot {
-    max-height: 40px !important;
-    min-height: 40px !important;
-  }
-}
-
-::v-deep .v-autocomplete {
-  .v-label {
-    top: 10px !important;
-  }
-  .v-label--active {
-    top: 8px !important;
-  }
-}
-::v-deep .v-text-field--outlined {
-  .v-input__slot {
-    margin-bottom: 2px !important;
-  }
-}
-.new-investigation-container {
-  height: 100%;
-  overflow: auto;
-  width: 100%;
-}
-.filter-container {
-  ::v-deep .v-input__slot {
-    margin-bottom: 0 !important;
-  }
-  ::v-deep .v-text-field__details {
-    bottom: -25px !important;
-  }
-  .filter-item {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom: 1px solid #b3d4fc;
     position: relative;
-    &:not(:first-of-type) {
-      margin-top: 30px;
-    }
-    &:hover {
-      .filter-item__delete-button {
-        display: flex;
+    padding-bottom: 24px;
+    min-height: auto;
+    max-height: 500px;
+    overflow: auto;
+
+    .company-img {
+      display: flex;
+      position: absolute;
+      right: 0;
+      top: 20px;
+      width: 84px;
+      height: 84px;
+
+      img {
+        width: 100%;
+        height: auto;
       }
     }
-    &__selectbox {
-      width: 80%;
-      margin-right: 5%;
-      max-height: 40px;
+  }
+
+  .bodyExpanded {
+    height: 100% !important;
+    max-height: 100% !important;
+    padding-bottom: 56px;
+  }
+
+  .preview-footer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 16px;
     }
-    &__input {
-      width: 100%;
-      max-height: 40px;
+
+    .attachment-wrapper {
+      display: flex;
+      flex-direction: row;
+
+      .attachment {
+        width: 182px;
+        height: 32px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin-right: 16px;
+
+        .attach-icon {
+          min-width: 40px;
+          height: 32px;
+          align-items: center;
+          display: flex;
+          justify-content: center;
+        }
+
+        .red-icon {
+          background-color: #bb2a45 !important;
+        }
+
+        .blue-icon {
+          background-color: #2196f3 !important;
+        }
+
+        span {
+          width: 100%;
+          text-align: center;
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+        }
+      }
+
+      .red-attach {
+        background-color: #f3e1e5;
+      }
+
+      .blue-attach {
+        background-color: #f1f8fe;
+      }
     }
-    &__button {
-      margin-top: 25px;
-      font-family: 'Open Sans', sans-serif;
+  }
+
+  .preview-buttons {
+    margin-top: 24px;
+    padding-bottom: 13px;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid #b3d4fc;
+    padding-top: 24px;
+
+    .v-btn {
+      border-radius: 18px !important;
+      border: solid 1px #909399;
+      box-shadow: unset !important;
+      background-color: #fff !important;
+      margin-right: 16px;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      color: #2196f3 !important;
-      align-items: center;
       display: flex;
-      &:focus,
-      &:focus-within {
-        outline: 0 !important;
+      align-items: center;
+      justify-content: center;
+      color: rgba(0, 0, 0, 0.87);
+      padding-left: 16px !important;
+
+      .v-icon {
+        color: #909399;
+        font-size: 19px !important;
+        margin-right: 8px;
+        margin-top: 1px;
+        border: unset !important;
       }
     }
-    &__delete-button {
-      width: 44px;
-      height: 40px;
-      color: #757575;
-      position: absolute;
-      right: -40px;
-      top: 0px;
-      justify-content: center;
-      display: none;
+
+    .active-act {
+      color: #2196f3 !important;
+      border: solid 1px #2196f3 !important;
     }
   }
-}
-.new-investigation-inner {
-  width: 100%;
-  height: 100%;
-  padding: 0 8vw;
-  position: relative;
-  display: flex;
-  overflow: visible;
-}
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
 
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
+  .preview-border {
+    border-top: 1px solid #b3d4fc;
+    padding-top: 24px;
+  }
 
-.edit-labels {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 0 !important;
-  padding-bottom: 3px;
-}
-.edit-sub-labels {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 0 !important;
-  padding-bottom: 14px;
-}
-.edit-privacy-buttons {
-  align-items: center;
-  display: flex;
-  width: 168px;
+  // Details css
+  .detail-parts:first-child {
+    margin-top: 24px !important;
+  }
 
-  button {
-    border-radius: 18px !important;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px !important;
-    font-weight: 400 !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    line-height: 1.71 !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-    padding: 0 16px !important;
-  }
-  .public-btn {
-    border: 1px solid #757575;
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    height: 36px;
-    margin-left: 4px;
-  }
-  .private-btn {
-    border: 1px solid #757575;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-    height: 36px;
-    margin-left: 9px;
-  }
-}
-.edit-privacy-bottom-label {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1;
-  letter-spacing: normal;
-  color: #909399;
-  padding-top: 8px;
-  margin: 0 !important;
-}
-.theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-  background-color: unset;
-}
-.v-btn:not(.v-btn--text):not(.v-btn--outlined).v-btn--active:before {
-  opacity: 1;
-}
-.v-btn-toggle > .v-btn.v-btn--active,
-.v-btn-toggle > .v-btn.v-btn--active::before {
-  color: #fff;
-}
-.btnActive {
-  height: 36px;
-  border-radius: 18px;
-  border: solid 1px #757575;
-}
-.btnActive,
-.btnActive:active,
-.btnActive:hover,
-.btnActive:focus {
-  border: unset !important;
-  outline: 0 !important;
-}
-.btnActive,
-.btnActive::before {
-  border: unset !important;
-  border-color: unset !important;
-  color: #fff;
-  background-color: #2196f3 !important;
-  box-shadow: 0 2px 5px 0 #2196f3 !important;
-}
-.private-btn.v-btn.v-btn--active {
-  border-left: transparent !important;
-}
-.v-btn-toggle--group > .v-btn.v-btn {
-  border-color: #757575;
-  border-left: 1px solid #757575 !important;
-}
-.v-btn:before {
-  top: -1px !important;
-  left: -1px !important;
-}
-.footer-actions {
-  align-items: center;
-  bottom: 0;
-  background-color: #f5f7fa;
-  display: flex;
-  left: 0;
-  position: fixed;
-  justify-content: space-between;
-  padding: 0 10vw;
-  height: 68px;
-  width: 100%;
-  z-index: 9999;
+  .detail-parts {
+    margin-top: 16px;
 
-  .cancel-btn {
-    background-color: transparent !important;
-    border-radius: 18px !important;
-    border: solid 1px #f56c6c !important;
-    color: #f56c6c !important;
-  }
-  .create-btn {
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    background-color: #2196f3 !important;
-    color: #fff !important;
-  }
-}
-.error-border {
-  ::v-deep fieldset {
-    border: 2px solid #ff5252 !important;
-  }
-}
-.edit-industry-area {
-  ::v-deep .v-list-item__content {
-    overflow: visible;
-    &:first-of-type {
-      padding-bottom: 0 !important;
-    }
-  }
-  ::v-deep .v-text-field__details {
-    position: absolute;
-    left: 0;
-    bottom: -22px;
-  }
-  &:last-child {
-    .v-list-item__content {
-      margin-bottom: 100px;
-    }
-  }
-}
-.date-row {
-  max-width: 430px !important;
-  display: flex;
-  flex-direction: row;
-
-  @media only screen and (max-width: 1025px) {
-    width: 100%;
-    max-width: 100% !important;
-  }
-}
-.date-picker {
-  font-family: 'Open Sans', sans-serif !important;
-  ::v-deep .v-input__slot {
-    box-shadow: unset !important;
-    border: 1px solid rgba(0, 0, 0, 0.24);
-    border-radius: 4px;
-    text-align: center;
-    input {
+    .detail-black {
       font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 4px !important;
+    }
+
+    .detail-red {
+      color: rgba(219, 37, 37, 0.87) !important;
+    }
+  }
+
+  .detail-discovery {
+    margin-top: 24px;
+
+    .disc-header {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding-bottom: 8px;
+    }
+
+    .discovery-p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
-      line-height: normal;
+      line-height: 1.5;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.54);
-      padding-left: 50px !important;
-      padding-top: 8px !important;
-    }
-    label {
-      padding-top: 0 !important;
+      color: rgba(0, 0, 0, 0.87);
     }
   }
-  ::v-deep .v-input__slot::after,
-  ::v-deep .v-input__slot::before {
-    display: none;
-  }
-}
-.date-col {
-  position: relative;
 
-  @media only screen and (max-width: 1025px) {
-    width: 35% !important;
-    max-width: 35% !important;
-    padding: 0 !important;
-  }
-}
-.date-icon {
-  top: 12px;
-  left: 25px;
-  position: absolute;
-  font-size: 18px !important;
-  z-index: 99;
-}
-.date-to {
-  position: absolute;
-  left: 0;
-  top: 10px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-  z-index: 13;
-}
-
-.underlined-warn {
-  border-bottom: 1px solid #f56c6c;
-  color: inherit;
-
-  .icon {
-    color: #f56c6c !important;
-    font-size: 24px !important;
-    text-decoration: none !important;
-    margin-left: 20px;
-    margin-bottom: 7px;
-  }
-}
-.post-wrapper {
-  max-width: 696px;
-}
-.select-error {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #d0021b;
-  margin-left: 8px;
-  margin-top: 17px;
-}
-.select-row-wrap {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0 24px;
-
-  .select-row-inline {
-    align-items: center;
+  .impact-row {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 40%;
-
-    .file-type-wrap {
-      display: flex;
-    }
-  }
-}
-.email-name {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.email-icon {
-  font-size: 19px !important;
-  padding-right: 24px;
-}
-.email-type {
-  height: 25px;
-  border-radius: 4px;
-  background-color: #f56c6c;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: center;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 6px;
-}
-.email-time {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.preview-header {
-  margin-top: 32px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 16px;
-    width: max-content;
-  }
-
-  .header-info {
+    padding-bottom: 8px;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
@@ -1613,594 +2202,170 @@ export default {
     line-height: 1.5;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 43px;
+
+    .impact-left {
+      min-width: 100px;
+      font-weight: 600 !important;
+    }
+
+    .impact-right {
+      margin-top: 2px;
+      max-width: 80%;
+    }
+  }
+
+  .border-padding {
+    padding-bottom: 8px;
     border-bottom: 1px solid #b3d4fc;
   }
-}
-.preview-body {
-  margin-top: 24px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #b3d4fc;
-  position: relative;
-  padding-bottom: 24px;
-  min-height: auto;
-  overflow: auto;
 
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
-  }
-
-  .company-img {
-    display: flex;
-    position: absolute;
-    right: 0;
-    top: 20px;
-    width: 84px;
-    height: 84px;
-
-    img {
-      width: 100%;
-      height: auto;
+  .member-company-body {
+    .v-slide-group__content {
+      border-bottom: unset !important;
     }
   }
-}
-.first-date {
-  ::v-deep .v-input__slot {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    border-right: none !important;
 
-    label {
-      padding-left: 65px !important;
-    }
-  }
-}
-.sec-date {
-  ::v-deep .v-input__slot {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-    border-left: none !important;
-
-    label {
-      padding-left: 60px !important;
-    }
-  }
-}
-.date-picker {
-  font-family: 'Open Sans', sans-serif !important;
-  ::v-deep .v-input__slot {
-    box-shadow: unset !important;
-    border: 1px solid rgba(0, 0, 0, 0.24);
-    border-radius: 4px;
-    text-align: center;
-
-    input {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.54);
-      padding-left: 50px !important;
-      padding-top: 8px !important;
-    }
-    label {
-      padding-top: 0 !important;
-    }
-  }
-  ::v-deep .v-input__slot::after,
-  ::v-deep .v-input__slot::before {
-    display: none;
-  }
-}
-.date-col {
-  position: relative;
-}
-.date-icon {
-  top: 12px;
-  left: 25px;
-  position: absolute;
-  font-size: 18px !important;
-  z-index: 99;
-}
-.date-to {
-  position: absolute;
-  left: 0;
-  top: 10px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-  z-index: 13;
-}
-.max-char {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  display: block;
-  max-width: 100%;
-}
-.text-selected {
-  border-radius: 1px !important;
-  background-color: #d1e9fc !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  width: max-content;
-}
-.clean-link {
-  padding: 0 2px !important;
-  border-radius: 1px !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: #2196f3 !important;
-}
-.selected-link {
-  background-color: #d1e9fc !important;
-}
-.phishing-link {
-  background-color: #f3e1e5 !important;
-  border-bottom: 1px solid #bb2a45 !important;
-  color: #bb2a45 !important;
-  width: max-content;
-}
-.clean-attach {
-  background-color: #f1f8fe;
-  border: 1px solid transparent !important;
-}
-.malicious-attach {
-  background-color: #f3e1e5;
-  border: 1px solid transparent !important;
-}
-::v-deep .v-input > .v-input__control > .v-text-field__details {
-  // error messages.
-}
-::v-deep .v-application input {
-  border-radius: 8px !important;
-  border: solid 1px rgba(0, 0, 0, 0.16) !important;
-}
-.required {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 9px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #474747;
-  margin-left: 6px;
-  margin-top: -2px;
-}
-.close-incident {
-  position: absolute;
-  right: -13px;
-  top: 13px;
-}
-::v-deep
-  .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-  > .v-input__control
-  > .v-input__slot {
-  border: none !important;
-}
-.row-with-icon {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
-.icon-btn {
-  margin-top: unset;
-  margin-left: -5px;
-  height: 25px !important;
-  width: 25px !important;
-}
-.step-name {
-  width: max-content;
-}
-.filter-header {
-  align-items: center;
-  display: none;
-  justify-content: space-between;
-  padding-top: 24px;
-  width: 240px;
-  transition: all 0.3s ease-in-out;
-
-  .select-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    transition: all 0.3s ease-in-out;
-  }
-
-  i {
-    margin-top: 3px;
-    font-size: 27px;
-  }
-}
-.minify-filter {
-  width: 120px !important;
-}
-.minify-part,
-.minify-switch {
-  padding-left: 10px;
-  width: 100% !important;
-}
-
-// Email Preview css
-.preview-header {
-  margin-top: 24px;
-
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 16px;
+  .expand-contaniner {
     width: 100%;
-    display: block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    max-height: 80px;
-  }
-
-  .header-info {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.preview-body {
-  margin-top: 24px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #b3d4fc;
-  position: relative;
-  padding-bottom: 24px;
-  min-height: auto;
-  max-height: 500px;
-  overflow: auto;
-
-  .company-img {
-    display: flex;
+    height: 50px;
     position: absolute;
-    right: 0;
-    top: 20px;
-    width: 84px;
-    height: 84px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    bottom: 0;
+    background-image: linear-gradient(to bottom, transparent, #fff 50%);
 
-    img {
-      width: 100%;
-      height: auto;
+    button,
+    .v-btn:not(.v-btn--round).v-size--default {
+      width: auto !important;
+      height: 24px !important;
+      border-radius: 12px !important;
+      background-color: #409eff !important;
+      box-shadow: unset !important;
+      color: #fff;
+      text-transform: capitalize !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      padding-left: 13px !important;
+
+      i {
+        width: 18px !important;
+      }
     }
   }
-}
-.bodyExpanded {
-  height: 100% !important;
-  max-height: 100% !important;
-  padding-bottom: 56px;
-}
-.preview-footer {
-  display: flex;
-  flex-direction: column;
-  margin-top: 24px;
 
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 16px;
+  .opacityExpanded {
+    background-image: none !important;
   }
-  .attachment-wrapper {
-    display: flex;
-    flex-direction: row;
 
-    .attachment {
-      width: 182px;
-      height: 32px;
-      align-items: center;
+  .preview-comments {
+    height: 0;
+    opacity: 0;
+    transition: max-height 0.25s ease-in;
+    overflow: hidden;
+
+    .comment-row {
       display: flex;
       flex-direction: row;
-      margin-right: 16px;
+      padding-top: 6px;
 
-      .attach-icon {
-        min-width: 40px;
-        height: 32px;
-        align-items: center;
-        display: flex;
-        justify-content: center;
+      .comment-input {
+        margin-top: 3px;
+        margin-right: 16px;
+
+        .v-input__slot {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 13px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.54);
+          padding-left: 24px !important;
+          max-height: 70px;
+          min-height: 40px;
+
+          textarea {
+            max-height: 70px;
+            overflow: auto;
+            margin-bottom: 5px;
+            margin-top: 2px;
+            margin-right: 2px;
+          }
+
+          label {
+            top: 10px;
+          }
+
+          fieldset {
+            padding-left: 18px !important;
+          }
+        }
       }
-      .red-icon {
-        background-color: #bb2a45 !important;
-      }
-      .blue-icon {
+
+      .send-btn {
+        border-radius: 18px !important;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
         background-color: #2196f3 !important;
+        color: #fff !important;
+        height: 36px !important;
+        margin-top: 5px;
+
+        i {
+          font-size: 18px !important;
+          padding-right: 8px;
+        }
       }
-      span {
-        width: 100%;
-        text-align: center;
+    }
+
+    .comment-row {
+      border-radius: 4px;
+      background-color: #f5f7fa;
+      display: flex;
+      padding: 16px;
+      margin-bottom: 8px;
+
+      .user-wrapper {
+        .username,
+        .company-name {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 14px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: #2196f3;
+          padding-right: 4px;
+          cursor: pointer;
+        }
+
+        .company-name {
+          padding-left: 4px;
+        }
+      }
+
+      .the-comment {
+        margin-bottom: 0 !important;
+        padding-top: 8px !important;
         font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
         font-style: normal;
-        line-height: 1.58;
+        line-height: 1.5;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
       }
     }
-    .red-attach {
-      background-color: #f3e1e5;
-    }
-    .blue-attach {
-      background-color: #f1f8fe;
-    }
-  }
-}
-.preview-buttons {
-  margin-top: 24px;
-  padding-bottom: 13px;
-  display: flex;
-  flex-direction: row;
-  border-top: 1px solid #b3d4fc;
-  padding-top: 24px;
 
-  ::v-deep .v-btn {
-    border-radius: 18px !important;
-    border: solid 1px #909399;
-    box-shadow: unset !important;
-    background-color: #fff !important;
-    margin-right: 16px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(0, 0, 0, 0.87);
-    padding-left: 16px !important;
+    .see-all-comments {
+      padding-top: 16px;
+      padding-bottom: 24px;
 
-    .v-icon {
-      color: #909399;
-      font-size: 19px !important;
-      margin-right: 8px;
-      margin-top: 1px;
-      border: unset !important;
-    }
-  }
-  .active-act {
-    color: #2196f3 !important;
-    border: solid 1px #2196f3 !important;
-  }
-}
-.preview-border {
-  border-top: 1px solid #b3d4fc;
-  padding-top: 24px;
-}
-
-// Details css
-.detail-parts:first-child {
-  margin-top: 24px !important;
-}
-.detail-parts {
-  margin-top: 16px;
-
-  .detail-black {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 4px !important;
-  }
-  .detail-red {
-    color: rgba(219, 37, 37, 0.87) !important;
-  }
-}
-.detail-discovery {
-  margin-top: 24px;
-
-  .disc-header {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-bottom: 8px;
-  }
-  .discovery-p {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
-.impact-row {
-  display: flex;
-  flex-direction: row;
-  padding-bottom: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  .impact-left {
-    min-width: 100px;
-    font-weight: 600 !important;
-  }
-  .impact-right {
-    margin-top: 2px;
-    max-width: 80%;
-  }
-}
-.border-padding {
-  padding-bottom: 8px;
-  border-bottom: 1px solid #b3d4fc;
-}
-.member-company-body {
-  ::v-deep .v-slide-group__content {
-    border-bottom: unset !important;
-  }
-}
-.expand-contaniner {
-  width: 100%;
-  height: 50px;
-  position: absolute;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  bottom: 0;
-  background-image: linear-gradient(to bottom, transparent, #fff 50%);
-
-  button,
-  .v-btn:not(.v-btn--round).v-size--default {
-    width: auto !important;
-    height: 24px !important;
-    border-radius: 12px !important;
-    background-color: #409eff !important;
-    box-shadow: unset !important;
-    color: #fff;
-    text-transform: capitalize !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    padding-left: 13px !important;
-
-    i {
-      width: 18px !important;
-    }
-  }
-}
-.opacityExpanded {
-  background-image: none !important;
-}
-.preview-comments {
-  height: 0;
-  opacity: 0;
-  transition: max-height 0.25s ease-in;
-  overflow: hidden;
-
-  .comment-row {
-    display: flex;
-    flex-direction: row;
-    padding-top: 6px;
-
-    .comment-input {
-      margin-top: 3px;
-      margin-right: 16px;
-
-      ::v-deep .v-input__slot {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 13px;
-        font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.54);
-        padding-left: 24px !important;
-        max-height: 70px;
-        min-height: 40px;
-
-        textarea {
-          max-height: 70px;
-          overflow: auto;
-          margin-bottom: 5px;
-          margin-top: 2px;
-          margin-right: 2px;
-        }
-        label {
-          top: 10px;
-        }
-        fieldset {
-          padding-left: 18px !important;
-        }
-      }
-    }
-    .send-btn {
-      border-radius: 18px !important;
-      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-      height: 36px !important;
-      margin-top: 5px;
-
-      i {
-        font-size: 18px !important;
-        padding-right: 8px;
-      }
-    }
-  }
-  .comment-row {
-    border-radius: 4px;
-    background-color: #f5f7fa;
-    display: flex;
-    padding: 16px;
-    margin-bottom: 8px;
-
-    .user-wrapper {
-      .username,
-      .company-name {
+      span {
+        text-decoration: none;
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: 600;
@@ -2209,320 +2374,338 @@ export default {
         line-height: normal;
         letter-spacing: normal;
         color: #2196f3;
-        padding-right: 4px;
         cursor: pointer;
       }
-      .company-name {
-        padding-left: 4px;
-      }
     }
-    .the-comment {
-      margin-bottom: 0 !important;
-      padding-top: 8px !important;
+  }
+
+  .open-comments {
+    min-height: 226px;
+    height: auto !important;
+    transition: max-height 0.25s ease-in;
+    padding-bottom: 24px;
+    opacity: 1;
+    z-index: -5;
+  }
+
+  .add-comment {
+    background-color: #fff !important;
+    height: 60px;
+    padding: 0 !important;
+  }
+
+  .unselected-warn {
+    border-bottom: 1px solid #bb2a45;
+    color: #bb2a45;
+    padding: 0 2px !important;
+  }
+
+  .hide-buttons {
+    opacity: 0;
+    padding: 0 !important;
+    height: 20px !important;
+  }
+
+  .display-none {
+    display: none !important;
+  }
+
+  .tooltip-wrapper {
+    max-width: 250px;
+    width: 130px;
+    height: 50px;
+    border-radius: 4px;
+    background-color: #6d6d6d;
+    position: absolute;
+    top: -55px;
+    left: -35px;
+    border-radius: 4px;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+    padding: 8px;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 34px;
+    }
+
+    span {
+      color: rgba(255, 255, 255, 0.87) !important;
+      font-size: 12px !important;
+      line-height: 1.33 !important;
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 400;
+    }
+
+    span:nth-child(2) {
+      padding-top: 4px;
+    }
+  }
+
+  // Threat sharing Content
+  .threat-sharing-content {
+    min-height: 200px;
+    width: 100%;
+    padding: 24px !important;
+    background-color: #ffffff;
+    border-radius: 20px !important;
+
+    @media only screen and (max-width: 500px) {
+      padding: 16px !important;
+    }
+  }
+
+  .ts-header {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
+  .ts-header-btn-1 {
+    display: flex;
+  }
+
+  .ts-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    max-width: 79%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  // Threat sharing Content End
+
+  .notification-wrapper {
+    background-color: #fff;
+    padding: 0;
+  }
+
+  .v-menu__content {
+    border-radius: 8px !important;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+    .v-list-item {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+
+    .v-list-item__title {
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: var(--black-87);
+    }
+  }
+
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 10px !important;
+  }
+
+  .ts-user-comp-detail {
+    align-items: center;
+    display: flex;
+    margin-top: 8px;
+  }
+
+  .v-btn--contained {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+  }
+
+  .v-data-footer {
+    margin-top: 24px !important;
+  }
+
+  .v-data-footer__select {
+    .v-text-field > .v-input__control > .v-input__slot:after {
+      border: none !important;
+      display: none !important;
+    }
+
+    .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+      border: none !important;
+    }
+
+    .v-input__append-inner {
+      margin-left: 0 !important;
+      margin-top: 3px !important;
+      margin-right: 5px !important;
+      padding-left: 0 !important;
+    }
+
+    .v-input__icon {
+      width: 20px !important;
+      min-width: 20px !important;
+      height: 20px !important;
+    }
+  }
+
+  .v-btn:not(.v-btn--round).v-size--default,
+  .v-btn--icon.v-size--default {
+    height: 36px !important;
+  }
+
+  .v-btn--icon.v-size--default {
+    margin-left: 4px;
+    width: 36px !important;
+  }
+
+  .ts-tags {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    max-width: max-content;
+
+    > .tag-btn,
+    > div > .tag-btn {
+      border-radius: 18px;
+      border: solid 1.5px #c0c4cc;
+      background-color: #fff;
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.5;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center;
+      color: #000000;
+      height: 32px !important;
+    }
+  }
+
+  .ts-footer {
+    align-items: center;
+    display: flex;
+    margin-top: 22px;
+    margin-left: 0;
+    margin-right: 0;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .ts-like {
+    margin-right: 10px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+      margin-left: 4px;
+    }
+  }
+
+  .ts-message {
+    margin-right: 40px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+      margin-left: 4px;
+    }
+  }
+
+  .ts-harmful {
+    margin-right: 15px;
+    align-items: center;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
+
+  .ts-success {
+    display: flex;
+    align-items: center;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
+
+  .ts-body {
+    margin-top: 10px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .ts-user-comp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+
+    a {
+      text-decoration: none;
+    }
+
+    .ts-user-date {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.58;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
   }
-  .see-all-comments {
-    padding-top: 16px;
-    padding-bottom: 24px;
 
-    span {
-      text-decoration: none;
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: #2196f3;
-      cursor: pointer;
-    }
-  }
-}
-.open-comments {
-  min-height: 226px;
-  height: auto !important;
-  transition: max-height 0.25s ease-in;
-  padding-bottom: 24px;
-  opacity: 1;
-  z-index: -5;
-}
-.add-comment {
-  background-color: #fff !important;
-  height: 60px;
-  padding: 0 !important;
-}
-.unselected-warn {
-  border-bottom: 1px solid #bb2a45;
-  color: #bb2a45;
-  padding: 0 2px !important;
-}
-.hide-buttons {
-  opacity: 0;
-  padding: 0 !important;
-  height: 20px !important;
-}
-.display-none {
-  display: none !important;
-}
-.tooltip-wrapper {
-  max-width: 250px;
-  width: 130px;
-  height: 50px;
-  border-radius: 4px;
-  background-color: #6d6d6d;
-  position: absolute;
-  top: -55px;
-  left: -35px;
-  border-radius: 4px;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-  padding: 8px;
-
-  > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 34px;
-  }
-  span {
-    color: rgba(255, 255, 255, 0.87) !important;
-    font-size: 12px !important;
-    line-height: 1.33 !important;
+  .ts-action-counter {
     font-family: 'Open Sans', sans-serif !important;
-    font-weight: 400;
-  }
-  span:nth-child(2) {
-    padding-top: 4px;
-  }
-}
-
-// Threat sharing Content
-.threat-sharing-content {
-  min-height: 200px;
-  width: 100%;
-  padding: 24px !important;
-  background-color: #ffffff;
-  border-radius: 20px !important;
-
-  @media only screen and (max-width: 500px) {
-    padding: 16px !important;
-  }
-}
-.ts-header {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
-.ts-header-btn-1 {
-  display: flex;
-}
-.ts-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  max-width: 79%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-}
-// Threat sharing Content End
-
-.notification-wrapper {
-  background-color: #fff;
-  padding: 0;
-}
-.v-menu__content {
-  border-radius: 8px !important;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-
-  .v-list-item {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
-  }
-  .v-list-item__title {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: normal;
+    line-height: 1.33;
     letter-spacing: normal;
-    color: var(--black-87);
-  }
-}
-
-.v-application--is-ltr .v-list-item__icon:first-child {
-  margin-right: 10px !important;
-}
-.ts-user-comp-detail {
-  align-items: center;
-  display: flex;
-  margin-top: 8px;
-}
-::v-deep .v-btn--contained {
-  border-radius: 18px !important;
-  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-}
-::v-deep .v-data-footer {
-  margin-top: 24px !important;
-}
-::v-deep .v-data-footer__select {
-  .v-text-field > .v-input__control > .v-input__slot:after {
-    border: none !important;
-    display: none !important;
-  }
-  .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
-    border: none !important;
-  }
-  .v-input__append-inner {
-    margin-left: 0 !important;
-    margin-top: 3px !important;
-    margin-right: 5px !important;
-    padding-left: 0 !important;
-  }
-  .v-input__icon {
-    width: 20px !important;
-    min-width: 20px !important;
-    height: 20px !important;
-  }
-}
-::v-deep .v-btn:not(.v-btn--round).v-size--default,
-::v-deep .v-btn--icon.v-size--default {
-  height: 36px !important;
-}
-::v-deep .v-btn--icon.v-size--default {
-  margin-left: 4px;
-  width: 36px !important;
-}
-
-.ts-tags {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  max-width: max-content;
-
-  > .tag-btn,
-  > div > .tag-btn {
-    border-radius: 18px;
-    border: solid 1.5px #c0c4cc;
-    background-color: #fff;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center;
-    color: #000000;
-    height: 32px !important;
-  }
-}
-.ts-footer {
-  align-items: center;
-  display: flex;
-  margin-top: 22px;
-  margin-left: 0;
-  margin-right: 0;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: bold;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.ts-like {
-  margin-right: 10px;
-  align-items: center;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-    margin-left: 4px;
-  }
-}
-.ts-message {
-  margin-right: 40px;
-  align-items: center;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-    margin-left: 4px;
-  }
-}
-.ts-harmful {
-  margin-right: 15px;
-  align-items: center;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-.ts-success {
-  display: flex;
-  align-items: center;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-.ts-body {
-  margin-top: 10px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.ts-user-comp {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  a {
-    text-decoration: none;
+    color: #4a4a4a;
   }
 
-  .ts-user-date {
+  .ts-actions {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: normal;
@@ -2531,183 +2714,185 @@ export default {
     line-height: 1.58;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    margin-left: 3px;
   }
-}
-.ts-action-counter {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-  color: #4a4a4a;
-}
-.ts-actions {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  margin-left: 3px;
-}
-::v-deep .v-expansion-panel {
-  border-radius: 20px !important;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
-  background-color: #fff;
-  border: unset !important;
-}
-::v-deep .v-expansion-panel::before {
-  box-shadow: unset !important;
-}
-::v-deep .v-expansion-panel-header {
-  box-shadow: unset !important;
-  border: unset !important;
-}
 
-.tab-bar {
-  width: 100%;
-  height: 48px;
-  padding: 0;
-  background-color: #f5f7fa;
-  border-radius: 0 !important;
+  .v-expansion-panel {
+    border-radius: 20px !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    background-color: #fff;
+    border: unset !important;
+  }
 
-  ::v-deep .v-slide-group__wrapper {
-    padding-left: 0 !important;
+  .v-expansion-panel::before {
+    box-shadow: unset !important;
   }
-  ::v-deep .v-slide-group__content {
-    margin-right: 0 !important;
+
+  .v-expansion-panel-header {
+    box-shadow: unset !important;
+    border: unset !important;
   }
-  ::v-deep .v-tab--active {
-    color: #2196f3 !important;
-  }
-  ::v-deep .v-tab {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    text-align: center !important;
-    margin-right: 32px !important;
-    padding: 0 !important;
-    padding-right: 3px !important;
-    min-width: auto !important;
-  }
-  ::v-deep .v-tabs-bar {
-    padding: 0 24px;
-    height: 48px !important;
+
+  .tab-bar {
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    background-color: #f5f7fa;
     border-radius: 0 !important;
-  }
-}
-::v-deep .v-window {
-  border-radius: 20px !important;
-  margin: 0 24px !important;
-}
-::v-deep .v-expansion-panel-content {
-  border-radius: 20px !important;
-  font-family: 'Open Sans', sans-serif !important;
-}
-::v-deep .v-expansion-panel-content__wrap {
-  padding: 0 !important;
-}
-::v-deep .title-field {
-  .v-text-field__details {
-    margin-bottom: 0 !important;
-  }
-}
-::v-deep .v-text-field.v-text-field--enclosed .v-text-field__details {
-  margin-bottom: 8px;
-}
-.disabled-cursor,
-button:disabled {
-  cursor: no-drop !important;
-  pointer-events: all !important;
-}
-.file-name {
-  padding-left: 7px;
-}
-#upload-file-input {
-  opacity: 0;
-  position: absolute;
-}
 
-input[type=file], /* FF, IE7+, chrome (except button) */
-input[type=file]::-webkit-file-upload-button {
-  /* chromes and blink button */
-  cursor: pointer !important;
-}
-@media only screen and (max-width: 1025px) {
-  .hide-step {
-    display: none !important;
-  }
-  .filter-header {
-    display: flex;
-  }
-}
-.display-none {
-  display: none !important;
-}
+    .v-slide-group__wrapper {
+      padding-left: 0 !important;
+    }
 
-#share-settings-links {
-  display: block;
-}
-.chevron-down {
-  transition: 0.3s all ease-in-out;
-  transform: rotate(180deg);
+    .v-slide-group__content {
+      margin-right: 0 !important;
+    }
 
-  i {
-    text-decoration: none !important;
-  }
-}
-.mal-list-wrapper {
-  .mal-list-row {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
+    .v-tab--active {
+      color: #2196f3 !important;
+    }
 
-    .mal-icon-wrapper {
-      height: 35px;
-      width: 35px;
-      padding-top: 5px;
+    .v-tab {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center !important;
+      margin-right: 32px !important;
+      padding: 0 !important;
+      padding-right: 3px !important;
+      min-width: auto !important;
+    }
+
+    .v-tabs-bar {
+      padding: 0 24px;
+      height: 48px !important;
+      border-radius: 0 !important;
     }
   }
-}
-.mal-list-wrapper:hover,
-.mal-list-wrapper:active,
-.mal-list-wrapper:focus {
-  background-color: #f2f2f2;
-  transition: all 0.2s ease-in-out;
-}
-::v-deep .malicious-style {
-  border-color: #bb2a45 !important;
-  background-color: #f3e1e5 !important;
-  color: #bb2a45 !important;
 
-  .share-setting-text {
-    text-decoration: none !important;
-    text-decoration-color: transparent !important;
-    text-decoration-style: unset !important;
-    border: none !important;
-    border-bottom: transparent !important;
-    border-bottom-color: transparent !important;
-    border-image: none !important;
-    border-image-width: 0 !important;
+  .v-window {
+    border-radius: 20px !important;
+    margin: 0 24px !important;
   }
-}
-::v-deep .v-btn--icon.v-size--default.chevron-btn-menu {
-  height: 20px !important;
-  width: 20px !important;
 
-  i {
+  .v-expansion-panel-content {
+    border-radius: 20px !important;
+    font-family: 'Open Sans', sans-serif !important;
+  }
+
+  .v-expansion-panel-content__wrap {
+    padding: 0 !important;
+  }
+
+  .title-field {
+    .v-text-field__details {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  .v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 8px;
+  }
+
+  .disabled-cursor,
+  button:disabled {
+    cursor: no-drop !important;
+    pointer-events: all !important;
+  }
+
+  .file-name {
+    padding-left: 7px;
+  }
+
+  #upload-file-input {
+    opacity: 0;
+    position: absolute;
+  }
+
+  input[type=file], /* FF, IE7+, chrome (except button) */
+    input[type=file]::-webkit-file-upload-button {
+    /* chromes and blink button */
+    cursor: pointer !important;
+  }
+
+  @media only screen and (max-width: 1025px) {
+    .hide-step {
+      display: none !important;
+    }
+    .filter-header {
+      display: flex;
+    }
+  }
+
+  .display-none {
+    display: none !important;
+  }
+
+  #share-settings-links {
+    display: block;
+  }
+
+  .chevron-down {
+    transition: 0.3s all ease-in-out;
+    transform: rotate(180deg);
+
+    i {
+      text-decoration: none !important;
+    }
+  }
+
+  .mal-list-wrapper {
+    .mal-list-row {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+
+      .mal-icon-wrapper {
+        height: 35px;
+        width: 35px;
+        padding-top: 5px;
+      }
+    }
+  }
+
+  .mal-list-wrapper:hover,
+  .mal-list-wrapper:active,
+  .mal-list-wrapper:focus {
+    background-color: #f2f2f2;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .malicious-style {
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
+    color: #bb2a45 !important;
+
+    .share-setting-text {
+      text-decoration: none !important;
+      text-decoration-color: transparent !important;
+      text-decoration-style: unset !important;
+      border: none !important;
+      border-bottom: transparent !important;
+      border-bottom-color: transparent !important;
+      border-image: none !important;
+      border-image-width: 0 !important;
+    }
+  }
+
+  .v-btn--icon.v-size--default.chevron-btn-menu {
     height: 20px !important;
     width: 20px !important;
+
+    i {
+      height: 20px !important;
+      width: 20px !important;
+    }
   }
 }
 </style>
