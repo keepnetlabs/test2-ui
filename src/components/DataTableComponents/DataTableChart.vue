@@ -67,9 +67,6 @@ export default {
     margin-left: 2px;
     font-size: 12px;
     font-family: 'Open Sans', sans-serif !important;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.9;
     letter-spacing: normal;
     text-align: center;

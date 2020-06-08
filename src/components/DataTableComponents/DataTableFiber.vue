@@ -8,9 +8,9 @@
         <img src="../../assets/img/fiber-manual-record-offline.svg" />
       </template>
     </div>
-    <div v-if="scope.row && scope.row[col.property]">
+    <span v-if="scope.row && scope.row[col.property]">
       {{ scope.row[col.property] }}
-    </div>
+    </span>
     <span v-else>-</span>
   </div>
 </template>

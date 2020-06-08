@@ -103,9 +103,9 @@
             .items-wrapper {
               > .row-edit-div {
                 width: 100%;
-                align-items: center;
+                position: relative;
                 display: flex;
-                flex-direction: row;
+                flex-direction: column;
                 padding-bottom: 7px;
 
                 .v-input__slot {
@@ -156,13 +156,13 @@
           .edit-popup-footer {
             border-radius: 0;
             background-color: #f1f8fe;
-            margin: -24px;
-            padding: 24px;
+            margin: 0 -16px;
+            margin-bottom: -23px;
+            padding: 17.5px;
             margin-top: 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-
             .edit-footer-date {
               min-width: 120px;
               display: flex;
@@ -715,7 +715,7 @@
 
        .v-icon.v-icon {
         font-size: 20px;
-        margin-top: 5.2px !important;
+         margin-top: -4px !important;
       }
     }
 
@@ -819,8 +819,8 @@
     }
 
     .selection-all-check {
-      margin-left: 6px !important;
-      margin-top:16px !important;
+      margin-left: 5px !important;
+      margin-top: 9px !important;
 
       i {
         color: white !important;

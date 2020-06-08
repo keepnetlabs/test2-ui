@@ -52,9 +52,9 @@
         </v-menu>
       </template>
       <template v-slot:datatable-column-popup="{ scope, col }">
-        <div @click="showPopupModal = true" style="cursor: pointer;">
+        <span @click="showPopupModal = true" style="cursor: pointer;">
           {{ scope.row[col.property] }}
-        </div>
+        </span>
         <v-overlay :opacity="0.46" :value="showPopupModal" :z-index="999" fixed>
           <v-card class="download-card pb-4 pa-6" light style="max-width: 580px;">
             <v-list-item>
@@ -135,7 +135,8 @@ export default {
           label: 'Department',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'link',
+          href: '/phishing-reporter',
           width: 200
         },
         {
