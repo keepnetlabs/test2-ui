@@ -701,7 +701,6 @@
               :table="investigationDetailsListData && investigationDetailsListData.results"
               :countRow="5"
               :pageSizes="pageSizes"
-              :defaultSort="'date'"
               :selectable="true"
               :filterable="true"
               :options="true"
@@ -1390,164 +1389,8 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.standard-height {
-  ::v-deep .v-input__slot {
-    //max-height: 40px !important;
-    min-height: 40px !important;
-  }
-}
-
-::v-deep .v-list-item--disabled {
-  opacity: 0.5 !important;
-}
-
-::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
-  border-color: currentColor;
-  border-style: none;
-  border-width: unset;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
-}
-
-::v-deep .v-input__control {
-  input {
-    &::placeholder {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      line-height: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
-  }
-
-  .v-select__slot {
-    margin-bottom: 3px !important;
-
-    .v-label {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
-    }
-
-    input {
-      &::placeholder {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 13px !important;
-        font-weight: normal !important;
-        font-stretch: normal !important;
-        font-style: normal !important;
-        line-height: normal !important;
-        letter-spacing: normal !important;
-        color: rgba(0, 0, 0, 0.54) !important;
-      }
-    }
-  }
-}
-
-.text-selected {
-  border-radius: 1px !important;
-  background-color: #d1e9fc !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  width: max-content;
-}
-
-.clean-link {
-  padding: 0 2px !important;
-  border-radius: 1px !important;
-  border-bottom: 1px solid #2196f3 !important;
-  color: #2196f3 !important;
-}
-
-.selected-link {
-  background-color: #d1e9fc !important;
-}
-
-.phishing-link {
-  background-color: #f3e1e5 !important;
-  border-bottom: 1px solid #bb2a45 !important;
-  color: #bb2a45 !important;
-  width: max-content;
-}
-
-::v-deep .v-application input {
-  border-radius: 8px !important;
-  border: solid 1px rgba(0, 0, 0, 0.16) !important;
-}
-
-::v-deep .v-text-field > .v-input__control > .v-input__slot {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.54) !important;
-}
-
-::v-deep .v-select__slot {
-  .v-label {
-    top: 10px !important;
-  }
-
-  .v-label--active {
-    top: 16px !important;
-  }
-
-  .v-input__append-inner {
-    margin-top: 9px !important;
-  }
-}
-
-::v-deep .v-autocomplete {
-  .v-label {
-    top: 10px !important;
-  }
-
-  .v-label--active {
-    top: 8px !important;
-  }
-}
-
-::v-deep .v-text-field--outlined {
-  .v-input__slot {
-    margin-bottom: 2px !important;
-  }
-}
-
-::v-deep .v-text-field__slot {
-  label {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.54) !important;
-  }
-}
-
-::v-deep .v-input__slot {
-  //max-height: 40px !important;
-  min-height: 40px !important;
-}
-
-::v-deep .v-text-field--outlined {
-  .v-input__slot {
-    margin-bottom: 2px !important;
-  }
-}
-
-::v-deep .investigation-details__alerts {
+<style lang="scss">
+.investigation-details__alerts {
   &-sub-title {
     font-size: 16px;
     font-weight: normal;
@@ -1599,6 +1442,155 @@ export default {
 .investigation-details {
   padding: 16px;
   padding-top: 10px;
+
+  .v-list-item--disabled {
+    opacity: 0.5 !important;
+  }
+
+  .v-text-field > .v-input__control > .v-input__slot:after {
+    border-color: currentColor;
+    border-style: none;
+    border-width: unset;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+  }
+
+  .v-input__control {
+    input {
+      &::placeholder {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        line-height: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
+    }
+
+    .v-select__slot {
+      margin-bottom: 3px !important;
+
+      .v-label {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
+
+      input {
+        &::placeholder {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 13px !important;
+          font-weight: normal !important;
+          font-stretch: normal !important;
+          font-style: normal !important;
+          line-height: normal !important;
+          letter-spacing: normal !important;
+          color: rgba(0, 0, 0, 0.54) !important;
+        }
+      }
+    }
+  }
+
+  .text-selected {
+    border-radius: 1px !important;
+    background-color: #d1e9fc !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    width: max-content;
+  }
+
+  .clean-link {
+    padding: 0 2px !important;
+    border-radius: 1px !important;
+    border-bottom: 1px solid #2196f3 !important;
+    color: #2196f3 !important;
+  }
+
+  .selected-link {
+    background-color: #d1e9fc !important;
+  }
+
+  .phishing-link {
+    background-color: #f3e1e5 !important;
+    border-bottom: 1px solid #bb2a45 !important;
+    color: #bb2a45 !important;
+    width: max-content;
+  }
+
+  .v-application input {
+    border-radius: 8px !important;
+    border: solid 1px rgba(0, 0, 0, 0.16) !important;
+  }
+
+  .v-text-field > .v-input__control > .v-input__slot {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+
+  .v-select__slot {
+    .v-label {
+      top: 10px !important;
+    }
+
+    .v-label--active {
+      top: 16px !important;
+    }
+
+    .v-input__append-inner {
+      margin-top: 9px !important;
+    }
+  }
+
+  .v-autocomplete {
+    .v-label {
+      top: 10px !important;
+    }
+
+    .v-label--active {
+      top: 8px !important;
+    }
+  }
+
+  .v-text-field--outlined {
+    .v-input__slot {
+      margin-bottom: 2px !important;
+    }
+  }
+
+  .v-text-field__slot {
+    label {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+
+  .v-input__slot {
+    //max-height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .v-text-field--outlined {
+    .v-input__slot {
+      margin-bottom: 2px !important;
+    }
+  }
 
   &__container {
     &__stats {
@@ -1661,11 +1653,8 @@ export default {
 
           &-right {
             &__title {
-              font-family: 'Open Sans', sans-serif;
               font-size: 20px;
               font-weight: 600;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.15;
               letter-spacing: normal;
               color: #2196f3;
@@ -1674,12 +1663,7 @@ export default {
 
             &__stats {
               margin-bottom: 0 !important;
-              font-family: 'Open Sans', sans-serif;
               font-size: 16px;
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
-              line-height: normal;
               letter-spacing: normal;
               color: rgba(0, 0, 0, 0.87);
               max-width: 250px;
@@ -1705,23 +1689,15 @@ export default {
           flex-flow: column;
 
           &--labels {
-            font-family: 'Open Sans', sans-serif;
             font-size: 12px;
             font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
             letter-spacing: normal;
             color: rgba(0, 0, 0, 0.87);
             margin-bottom: 4px;
           }
 
           &--progress {
-            font-family: 'Open Sans', sans-serif;
             font-size: 10px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
             line-height: 1.9;
             letter-spacing: normal;
             text-align: center;
@@ -1741,11 +1717,7 @@ export default {
 
           &--left-date {
             opacity: 0.64;
-            font-family: 'Open Sans', sans-serif;
             font-size: 10px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
             line-height: 1.9;
             letter-spacing: normal;
             color: rgba(0, 0, 0, 0.87);
@@ -1761,7 +1733,7 @@ export default {
               width: 100% !important;
               align-items: center;
 
-              ::v-deep &__content {
+              &__content {
                 width: 100% !important;
 
                 .v-list {
@@ -1793,12 +1765,8 @@ export default {
                     }
 
                     &--title {
-                      font-family: 'Open Sans', sans-serif;
                       font-size: 12px;
                       font-weight: 600;
-                      font-stretch: normal;
-                      font-style: normal;
-                      line-height: normal;
                       letter-spacing: normal;
                       color: rgba(0, 0, 0, 0.87);
                       margin-bottom: 0;
@@ -1818,12 +1786,8 @@ export default {
                   }
 
                   position: relative;
-                  font-family: 'Open Sans', sans-serif;
+
                   font-size: 14px;
-                  font-weight: normal;
-                  font-stretch: normal;
-                  font-style: normal;
-                  line-height: normal;
                   letter-spacing: normal;
                   color: #212121;
                   background: #fafafa;
@@ -1869,7 +1833,7 @@ export default {
       &--right-menu {
         width: calc(100% - 220px);
 
-        ::v-deep .card.v-card.v-sheet.theme--light {
+        .card.v-card.v-sheet.theme--light {
           padding: 0 !important;
           border-radius: 0 !important;
           -webkit-box-shadow: none !important;
@@ -1890,11 +1854,8 @@ export default {
             }
 
             &--text-header {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
               font-weight: 600;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.5;
               letter-spacing: normal;
               color: rgba(0, 0, 0, 0.87);
@@ -1902,10 +1863,7 @@ export default {
             }
 
             &--text-content {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
-              font-weight: normal;
-              font-stretch: normal;
               font-style: normal;
               line-height: 1.5;
               letter-spacing: normal;
@@ -1919,11 +1877,8 @@ export default {
 
               button {
                 border-radius: 18px;
-                font-family: 'Open Sans', sans-serif;
                 font-size: 14px;
                 font-weight: 600;
-                font-stretch: normal;
-                font-style: normal;
                 line-height: 1.71;
                 letter-spacing: normal;
                 color: #2196f3;
@@ -1936,23 +1891,15 @@ export default {
           &--header {
             margin-top: 25px;
             margin-bottom: 0;
-            font-family: 'Open Sans', sans-serif;
             font-size: 12px;
             font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
             letter-spacing: normal;
             color: rgba(0, 0, 0, 0.87);
           }
 
           &--list {
             .v-chip {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.71;
               letter-spacing: normal;
               text-align: center;
@@ -1971,23 +1918,15 @@ export default {
           &--header {
             margin-top: 25px;
             margin-bottom: 0;
-            font-family: 'Open Sans', sans-serif;
             font-size: 12px;
             font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
             letter-spacing: normal;
             color: rgba(0, 0, 0, 0.87);
           }
 
           &--list {
             .v-chip {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.71;
               letter-spacing: normal;
               text-align: center;
@@ -2014,7 +1953,7 @@ export default {
   justify-content: center !important;
   align-items: center !important;
 
-  > ::v-deep .v-overlay__content {
+  > .v-overlay__content {
     height: auto;
     width: 100%;
   }
