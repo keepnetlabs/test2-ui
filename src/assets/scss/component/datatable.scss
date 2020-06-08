@@ -279,7 +279,16 @@
           font-size: 14px;
           white-space: nowrap !important;
           width: 100%;
+
+
         }
+
+        .cell > div {
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+
 
          .el-table th > .cell {
           font-family: 'Open Sans', sans-serif !important;
@@ -288,7 +297,7 @@
           line-height: 1.3rem;
           color: #000000;
           //min-height: 21px;
-          padding-left: 10px !important;
+          padding-left: 8px !important;
 
           .el-checkbox__input.is-indeterminate .el-checkbox__inner {
             background-color: #2196f3;
@@ -370,6 +379,7 @@
           font-style: normal;
           line-height: 1.71;
           margin-bottom: 3px;
+          letter-spacing: normal;
           margin: 0 auto;
           text-transform: capitalize;
           min-width: 96px !important;

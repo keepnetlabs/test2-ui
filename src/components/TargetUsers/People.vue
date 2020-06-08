@@ -115,7 +115,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 200
+          width: 200,
+          showHeaderTooltip: true
         },
         {
           property: 'lastName',

@@ -53,24 +53,6 @@ export default {
 </script>
 
 <style>
-.btn-status {
-  border-radius: 18px !important;
-  box-shadow: unset !important;
-  color: #fff !important;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  margin-bottom: 3px !important;
-  margin: 0 auto !important;
-  text-transform: capitalize;
-  min-width: 96px !important;
-  max-width: 125px !important;
-  height: 32px !important;
-}
-
 .btn-pending {
   background-color: #00bcd4 !important;
 }

@@ -687,6 +687,14 @@
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
                 </div>
               </template>
+              <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on">{{ column.label }}</span>
+                  </template>
+                  <span>{{ column.label }}</span>
+                </v-tooltip>
+              </template>
             </el-table-column>
 
             <el-table-column
