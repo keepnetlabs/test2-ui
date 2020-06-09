@@ -1,6 +1,6 @@
-.k-table{
+.k-table {
   &__wrapper {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     border-radius: 20px;
     padding-bottom: 24px;
     position: relative;
@@ -28,10 +28,11 @@
         height: auto;
         position: relative;
         display: block;
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         border-radius: 12px;
-        box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-        0 1px 1px -1px rgba(204, 204, 204, 0.12);
+        box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
+          0 1px 1px 0 rgba(243, 243, 243, 0.14),
+          0 1px 1px -1px rgba(204, 204, 204, 0.12);
         padding: 16px 0;
 
         .table-container {
@@ -48,15 +49,15 @@
           top: 40px;
           border: 1px solid #2196f3;
           border-radius: 12px;
-          box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-          0 1px 1px -1px rgba(204, 204, 204, 0.12);
+          box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
+            0 1px 1px 0 rgba(243, 243, 243, 0.14),
+            0 1px 1px -1px rgba(204, 204, 204, 0.12);
           padding: 28px 16px 16px 16px;
           position: absolute;
           right: 0;
           transition: all 0.2s ease-in-out;
           overflow: hidden;
           z-index: 99;
-
 
           .settings-header {
             align-items: center;
@@ -80,7 +81,7 @@
             }
 
             span {
-              font-family: 'Open Sans', sans-serif !important;
+              font-family: "Open Sans", sans-serif !important;
               font-size: 14px;
               font-weight: 600;
               line-height: 1.71;
@@ -114,15 +115,16 @@
                   border-radius: 8px !important;
                 }
 
-                 .v-text-field.v-text-field--solo.v-input--dense > .v-input__control {
+                .v-text-field.v-text-field--solo.v-input--dense
+                  > .v-input__control {
                   min-height: 32px !important;
                 }
 
-                 .v-text-field__details {
+                .v-text-field__details {
                   display: none !important;
                 }
 
-                 input {
+                input {
                   font-size: 13px !important;
                   padding: 6px 0 !important;
                 }
@@ -136,7 +138,7 @@
                 white-space: nowrap;
                 display: block;
                 overflow: hidden;
-                font-family: 'Open Sans', sans-serif !important;
+                font-family: "Open Sans", sans-serif !important;
                 font-size: 12px;
                 font-weight: 600;
               }
@@ -147,7 +149,7 @@
                 white-space: nowrap;
                 display: block;
                 overflow: hidden;
-                font-family: 'Open Sans', sans-serif !important;
+                font-family: "Open Sans", sans-serif !important;
                 font-size: 12px;
               }
             }
@@ -174,7 +176,7 @@
                 margin-right: 54px;
 
                 label {
-                  font-family: 'Open Sans', sans-serif !important;
+                  font-family: "Open Sans", sans-serif !important;
                   font-size: 12px;
                   font-weight: 600;
                   font-stretch: normal;
@@ -185,7 +187,7 @@
                 }
 
                 span {
-                  font-family: 'Open Sans', sans-serif !important;
+                  font-family: "Open Sans", sans-serif !important;
                   font-size: 14px;
                   color: rgba(0, 0, 0, 0.87);
                 }
@@ -195,7 +197,7 @@
 
           .sub-header {
             display: block;
-            font-family: 'Open Sans', sans-serif !important;
+            font-family: "Open Sans", sans-serif !important;
             font-size: 16px;
             font-weight: normal;
             font-stretch: normal;
@@ -214,7 +216,7 @@
             justify-content: space-between;
             width: 100%;
 
-             .v-input--selection-controls {
+            .v-input--selection-controls {
               margin-top: 0 !important;
 
               .accent--text {
@@ -232,27 +234,27 @@
           }
         }
 
-         .el-table {
+        .el-table {
           border-bottom: unset !important;
           margin: 0 auto;
           width: 100% !important;
         }
 
-         .el-table::before {
+        .el-table::before {
           display: none;
         }
 
-         .el-table tr {
+        .el-table tr {
           height: 45px !important;
         }
 
-         .el-table td {
+        .el-table td {
           padding: 12px 0;
           height: 45px !important;
           border: none !important;
         }
 
-         .el-table th {
+        .el-table th {
           border-bottom: 1px solid #9e9e9e;
           padding: 5px 0 !important;
 
@@ -265,22 +267,20 @@
           }
         }
 
-         .el-table tr:nth-child(even) {
+        .el-table tr:nth-child(even) {
           background-color: #fafafa;
         }
 
-         .el-table .hover-row {
+        .el-table .hover-row {
           background-color: #f1f8fe !important;
         }
 
-         .el-table td > .cell {
+        .el-table td > .cell {
           color: #212121;
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 14px;
           white-space: nowrap !important;
           width: 100%;
-
-
         }
 
         .cell > div {
@@ -288,10 +288,8 @@
           overflow: hidden;
         }
 
-
-
-         .el-table th > .cell {
-          font-family: 'Open Sans', sans-serif !important;
+        .el-table th > .cell {
+          font-family: "Open Sans", sans-serif !important;
           font-size: 12px;
           font-weight: 600;
           line-height: 1.3rem;
@@ -314,7 +312,7 @@
           }
 
           .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
-            content: '';
+            content: "";
             position: absolute;
             display: block;
             background-color: #fff;
@@ -326,22 +324,22 @@
           }
         }
 
-         .el-checkbox__input {
+        .el-checkbox__input {
           line-height: 0;
         }
 
-         .el-checkbox__inner {
+        .el-checkbox__inner {
           border: 1.5px solid #757575;
           border-radius: 3px;
           height: 16px;
           width: 16px;
         }
 
-         .el-checkbox__input.is-checked > .el-checkbox__inner {
+        .el-checkbox__input.is-checked > .el-checkbox__inner {
           border: 1.5px solid #2196f3;
         }
 
-         .el-checkbox__input.is-checked .el-checkbox__inner::after {
+        .el-checkbox__input.is-checked .el-checkbox__inner::after {
           border: 1.3px solid #fff;
           border-left: 0;
           border-top: 0;
@@ -352,7 +350,7 @@
         }
 
         .progress-per {
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 10px;
           font-weight: normal;
           font-stretch: normal;
@@ -363,7 +361,7 @@
           color: rgba(0, 0, 0, 0.87);
         }
 
-         .v-progress-linear {
+        .v-progress-linear {
           margin-bottom: 7px !important;
           margin-top: 5px !important;
         }
@@ -372,7 +370,7 @@
           border-radius: 18px !important;
           box-shadow: unset !important;
           color: #fff;
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 14px !important;
           font-weight: 600;
           font-stretch: normal;
@@ -455,7 +453,7 @@
           background-color: #757575;
         }
 
-         .selected-row {
+        .selected-row {
           background-color: #bde0ff !important;
         }
 
@@ -471,7 +469,7 @@
           z-index: 4;
 
           .selection-span {
-            font-family: 'Open Sans', sans-serif;
+            font-family: "Open Sans", sans-serif;
             font-size: 12px;
             font-weight: 600;
             font-stretch: normal;
@@ -516,7 +514,7 @@
             height: 40px;
             width: 328px;
 
-             .v-text-field.v-text-field--enclosed {
+            .v-text-field.v-text-field--enclosed {
               height: 40px !important;
             }
           }
@@ -530,8 +528,8 @@
             }
           }
 
-           label {
-            font-family: 'Open Sans', sans-serif;
+          label {
+            font-family: "Open Sans", sans-serif;
             font-size: 13px;
             font-weight: 600;
             font-stretch: normal;
@@ -559,7 +557,7 @@
         width: 100%;
       }
 
-       .el-pagination .el-select .el-input {
+      .el-pagination .el-select .el-input {
         width: 90px;
 
         .el-input__inner {
@@ -567,17 +565,17 @@
         }
       }
 
-       .el-select .el-input .el-select__caret {
+      .el-select .el-input .el-select__caret {
         color: rgba(0, 0, 0, 0.87);
         font-weight: 700;
       }
 
-       .el-pager {
+      .el-pager {
         padding-left: 0 !important;
       }
 
-       .el-pager > li {
-        font-family: 'Open Sans', sans-serif;
+      .el-pager > li {
+        font-family: "Open Sans", sans-serif;
         font-size: 12px;
         min-width: 13px;
       }
@@ -591,9 +589,8 @@
       background-color: rgba(0, 188, 212, 0.05) !important;
     }
 
-
     .v-list-item__subtitle {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-style: normal;
@@ -605,7 +602,7 @@
     }
 
     .v-card-headline {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 24px;
       font-weight: normal;
       font-style: normal;
@@ -642,15 +639,15 @@
           padding-left: 70px;
           width: 100%;
 
-           .v-input--selection-controls.v-input {
+          .v-input--selection-controls.v-input {
             margin-top: 0 !important;
           }
 
-           .v-label {
+          .v-label {
             font-size: 14px !important;
           }
 
-           .v-messages {
+          .v-messages {
             display: none;
           }
         }
@@ -684,7 +681,7 @@
     }
 
     .tooltip-span {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 12px;
       font-weight: normal;
       font-stretch: normal;
@@ -702,20 +699,8 @@
       border-radius: 8px;
       //border: solid 1px #dcdfe6;
 
-       .v-label {
-        font-weight: normal !important;
-        font-stretch: normal;
-        font-style: normal;
-        font-size: 16px !important;
-        font-family: 'Open Sans', sans-serif !important;
-        line-height: normal;
-        letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87) !important;
-      }
-
-       .v-icon.v-icon {
+      .v-icon.v-icon {
         font-size: 20px;
-         margin-top: -4px !important;
       }
     }
 
@@ -741,7 +726,7 @@
         justify-content: center;
 
         h2 {
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 24px;
           line-height: 1.29;
           font-weight: 400 !important;
@@ -751,7 +736,7 @@
         }
 
         p {
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 16px;
           color: rgba(0, 0, 0, 0.87);
           margin-bottom: 8px !important;
@@ -781,7 +766,7 @@
       right: 220px !important;
     }
 
-    .el-table [class*='el-table__row--level'] .el-table__expand-icon {
+    .el-table [class*="el-table__row--level"] .el-table__expand-icon {
       float: right !important;
       margin-top: 2px;
 
@@ -828,7 +813,7 @@
     }
 
     .cluster-label {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 12px;
       font-weight: 600;
     }
@@ -849,7 +834,6 @@
       line-height: normal;
       letter-spacing: normal;
     }
-
 
     .actions-label {
       padding-right: 49px !important;
@@ -878,7 +862,7 @@
         font-stretch: normal;
         font-style: normal;
         line-height: 1.13;
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         letter-spacing: normal;
         text-align: center;
       }
@@ -892,20 +876,18 @@
       }
     }
 
-    .el-table__fixed{
-      &-body-wrapper{
+    .el-table__fixed {
+      &-body-wrapper {
         z-index: 2;
       }
-      &-right{
-        &::before{
+      &-right {
+        &::before {
           height: 0;
         }
       }
-      &::before{
+      &::before {
         height: 0;
       }
     }
-
   }
-
 }

@@ -317,8 +317,7 @@
             <v-text-field
               @mouseover.native="hover = true"
               class="filter-field"
-              dense
-              label="Search"
+              placeholder="Search"
               outlined
               prepend-inner-icon="mdi-magnify"
               v-model="search"

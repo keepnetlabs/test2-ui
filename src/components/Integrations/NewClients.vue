@@ -35,7 +35,6 @@
             <v-text-field
               placeholder="Enter Name"
               outlined
-              dense
               class="new-integration__textfield mt-2"
               v-model="formValues.integrationName"
               required
@@ -52,7 +51,6 @@
             <v-text-field
               placeholder="Enter Customer ID  "
               outlined
-              dense
               class="new-integration__textfield mt-2"
               v-model="formValues.description"
               required
@@ -73,7 +71,6 @@
               <v-text-field
                 placeholder="Enter API Key"
                 outlined
-                dense
                 class="new-integration__textfield new-integration__api-key__textfield mt-2"
                 v-model="apiKeys[index]"
                 required

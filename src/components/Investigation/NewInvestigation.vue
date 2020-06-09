@@ -32,7 +32,6 @@
                   v-model="investgationName"
                   :rules="[investigationNameRules.required, investigationNameRules.empty]"
                   required
-                  height="40"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -979,14 +978,6 @@ export default {
 </script>
 <style lang="scss">
 #new-investigation-wrapper {
-  .v-text-field__details.checkbox-error {
-    bottom: 0 !important;
-
-    .error--text {
-      font-size: 9px;
-    }
-  }
-
   .target-users {
     &__radio-group {
       padding: 0px !important;
@@ -1030,37 +1021,6 @@ export default {
 
     .v-text-field__details {
       margin-bottom: 0px !important;
-    }
-  }
-
-  .v-input__control {
-    input {
-      &::placeholder {
-        font-family: 'Open Sans', sans-serif !important;
-        font-size: 13px !important;
-        font-weight: normal !important;
-        font-stretch: normal !important;
-        font-style: normal !important;
-        line-height: normal !important;
-        letter-spacing: normal !important;
-        color: rgba(0, 0, 0, 0.54) !important;
-      }
-    }
-  }
-
-  .v-input__control {
-    border-radius: 8px !important;
-  }
-
-  .v-text-field__slot {
-    label {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: normal !important;
-      font-stretch: normal !important;
-      font-style: normal !important;
-      letter-spacing: normal !important;
-      color: rgba(0, 0, 0, 0.54) !important;
     }
   }
 
@@ -1140,12 +1100,6 @@ export default {
 
     .v-label--active {
       top: 8px !important;
-    }
-  }
-
-  .v-text-field--outlined {
-    .v-input__slot {
-      margin-bottom: 2px !important;
     }
   }
 

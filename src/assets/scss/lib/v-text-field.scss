@@ -2,6 +2,16 @@
   .v-text-field {
     input {
       font-size: 13px;
+      &::placeholder {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 13px !important;
+        font-weight: normal !important;
+        font-stretch: normal !important;
+        font-style: normal !important;
+        line-height: normal !important;
+        letter-spacing: normal !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+      }
     }
     &--outlined > .v-input__control > .v-input__slot {
       min-height: 40px;

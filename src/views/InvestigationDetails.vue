@@ -156,7 +156,6 @@
               class="edit-name-textfield edit-select standard-height"
               v-model="notifyMessageWithDelete"
               required
-              height="40"
             ></v-text-field>
           </v-list-item>
           <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
