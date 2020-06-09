@@ -1637,7 +1637,6 @@ export default {
 
 .tab-bar {
   width: 100%;
-  height: 48px;
   padding: 0;
   border-radius: 0 !important;
   margin-top: 24px;
