@@ -1,5 +1,5 @@
 <template>
-  <div id="single-wrapper">
+  <div class="single-wrapper">
     <div class="single-post">
       <span class="single-post-header">Email Details - File Format Exploit</span>
       <v-expansion-panel-content eager class="expand-body member-company-body pa-0">
@@ -1141,6 +1141,76 @@ export default {
 </script>
 
 <style lang="scss">
+.single-wrapper {
+  .single-post {
+    margin: 15px !important;
+    border-radius: 12px;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
+    background-color: #ffffff;
+    padding: 24px;
+  }
+
+  .single-post-header {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.6;
+    letter-spacing: normal;
+    color: #2196f3;
+    margin-top: 24px;
+    margin-bottom: 40px;
+    display: block;
+  }
+  .tab-bar {
+    width: 100%;
+    padding: 0;
+    border-radius: 0 !important;
+    margin-top: 24px;
+    display: inline-block;
+
+    .v-slide-group__wrapper {
+      padding-left: 0 !important;
+    }
+
+    .v-slide-group__content {
+      margin-right: 0 !important;
+    }
+
+    .v-tab--active {
+      color: #2196f3 !important;
+    }
+
+    .v-tab {
+      width: auto;
+      height: 27px;
+      font-family: Lato;
+      font-size: 22px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: 0.3px;
+      color: #434343 !important;
+      padding-left: 0px;
+      padding-right: 0px;
+      margin-right: 48px;
+      text-transform: capitalize !important;
+    }
+
+    .v-tab--active {
+      color: #2196f3 !important;
+    }
+
+    .v-tabs-bar {
+      height: 48px !important;
+      border-radius: 0 !important;
+      margin-top: 24px;
+    }
+  }
+}
 .mdi-attachment {
   transform: rotate(90deg);
 }
@@ -1283,30 +1353,6 @@ export default {
   left: 0;
   position: absolute;
 }
-
-.single-post {
-  margin: 15px !important;
-  border-radius: 12px;
-  border-radius: 12px;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
-  background-color: #ffffff;
-  padding: 24px;
-}
-
-.single-post-header {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.6;
-  letter-spacing: normal;
-  color: #2196f3;
-  margin-top: 24px;
-  margin-bottom: 40px;
-  display: block;
-}
-
 .v-window-item {
   margin-top: 24px;
 }
@@ -1633,53 +1679,6 @@ export default {
 .v-expansion-panel-header {
   box-shadow: unset !important;
   border: unset !important;
-}
-
-.tab-bar {
-  width: 100%;
-  padding: 0;
-  border-radius: 0 !important;
-  margin-top: 24px;
-  display: inline-block;
-
-  .v-slide-group__wrapper {
-    padding-left: 0 !important;
-  }
-
-  .v-slide-group__content {
-    margin-right: 0 !important;
-  }
-
-  .v-tab--active {
-    color: #2196f3 !important;
-  }
-
-  .v-tab {
-    width: auto;
-    height: 27px;
-    font-family: Lato;
-    font-size: 22px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: 0.3px;
-    color: #434343 !important;
-    padding-left: 0px;
-    padding-right: 0px;
-    margin-right: 48px;
-    text-transform: capitalize !important;
-  }
-
-  .v-tab--active {
-    color: #2196f3 !important;
-  }
-
-  .v-tabs-bar {
-    height: 48px !important;
-    border-radius: 0 !important;
-    margin-top: 24px;
-  }
 }
 
 .v-window {
