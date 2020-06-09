@@ -15,30 +15,20 @@
         ref="refNewInvestigation"
       />
     </v-overlay>
-    <v-overlay fixed :opacity="0.46" :value="isWantToStopInvestigation" :z-index="999">
-      <v-card light class="pb-4 pa-6 v-card-container">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline" ref="refAbc"
-              >Stop Ongoing Investigation
-            </v-list-item-title>
-            <v-list-item-subtitle class="v-card-sub-header"
-              >Do you want to stop this investigation?
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="pl-0 pr-0 pt-4 v-card-content">
-          <div>Once you stopped, you cannot resume this investigation.</div>
-        </v-list-item>
+    <app-dialog
+      :status="isWantToStopInvestigation"
+      icon="mdi-alert"
+      title="Stop Ongoing Investigation"
+      subtitle="Do you want to stop this investigation?"
+      body="Once you stopped, you cannot resume this investigation."
+    >
+      <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <v-btn text color="#f56c6c" @click="isWantToStopInvestigation = false">CANCEL</v-btn>
           <v-btn text color="#2196f3" @click="stopInvestigation">CONFIRM</v-btn>
         </div>
-      </v-card>
-    </v-overlay>
+      </template>
+    </app-dialog>
     <datatable
       id="investigationList"
       ref="investigationTable"
@@ -76,13 +66,15 @@
 <script>
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
+import AppDialog from '../components/AppDialog'
 import { mapActions, mapGetters } from 'vuex'
 import { exportInvestigationList } from '../api/incidentResponder'
 
 export default {
   components: {
     Datatable,
-    newInvestigation
+    newInvestigation,
+    AppDialog
   },
   props: {
     selectedEmail: {

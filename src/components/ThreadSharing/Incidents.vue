@@ -92,37 +92,23 @@
         :isEditMode="editIncident"
       />
     </v-overlay>
-    <v-dialog v-model="deleteIncidentModal" max-width="444" :opacity="0.23">
-      <v-card light class="confirm-dialog pb-4 pa-6" style="width: 444px;">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">
-              mdi-delete
-            </v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Delete Incident?</v-list-item-title>
-            <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-              >{{ postName }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <div class="delete-dialog-body">
-          <span class="delete-info">
-            This post will be deleted
-          </span>
-        </div>
-        <v-card-actions class="pa-0 pt-4">
-          <v-spacer></v-spacer>
-          <v-btn text color="#2196f3" class="pa-0" @click="deleteIncidentModal = false">
-            CANCEL
-          </v-btn>
-          <v-btn text color="#f56c6c" class="pa-0" @click="deleteTheIncident()">
-            DELETE
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <app-dialog
+      :status="deleteIncidentModal"
+      icon="mdi-delete"
+      title="Delete Incident?"
+      :subtitle="postName"
+      body="This post will be deleted"
+    >
+      <template v-slot:app-dialog-footer>
+        <v-spacer></v-spacer>
+        <v-btn text color="#2196f3" class="pa-0" @click="deleteIncidentModal = false">
+          CANCEL
+        </v-btn>
+        <v-btn text color="#f56c6c" class="pa-0" @click="deleteTheIncident()">
+          DELETE
+        </v-btn>
+      </template>
+    </app-dialog>
     <v-card-text id="incidents-component-card" class="pt-0">
       <v-data-iterator
         :items="postList"
@@ -203,9 +189,11 @@ import { mapGetters } from 'vuex'
 import Investigate from '../ThreadSharing/Investigate'
 import PostIncident from '../ThreadSharing/PostIncident'
 import SinglePost from '../ThreadSharing/SinglePost'
+import AppDialog from '../AppDialog'
 
 export default {
   components: {
+    AppDialog,
     Investigate,
     PostIncident,
     SinglePost
