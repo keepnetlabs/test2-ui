@@ -1,69 +1,47 @@
 <template>
   <v-card flat color="basil">
-    <v-dialog v-model="confirmDialog" max-width="444" :opacity="0.23">
-      <v-card light class="confirm-dialog pb-4 pa-6" style="width: 444px;">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">
-              mdi-delete
-            </v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Delete Community?</v-list-item-title>
-            <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-              >{{ selectedCommunName }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <div class="delete-dialog-body">
-          All incidents and data will be lost
-        </div>
-        <v-card-actions class="pa-0">
-          <v-spacer></v-spacer>
-          <v-btn text color="#2196f3" class="pa-0" @click="confirmDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn text color="#f56c6c" class="pa-0" @click="deleteCommunity()">
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="leaveDialog" max-width="444" :opacity="0.23">
-      <v-card light class="confirm-dialog pb-4 pa-6" style="width: 444px;">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">
-              mdi-exit-to-app
-            </v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Leave Community?</v-list-item-title>
-            <v-list-item-subtitle class="invite-sub-header v-card-sub-header"
-              >{{ selectedCommunName }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <div class="delete-dialog-body">
-          <span v-if="selectedCommunPrivacy" class="delete-info">
-            You are leaving "{{ selectedCommunName }}". You won’t be able to access this community
-          </span>
-          <span v-else class="delete-info">
-            You are leaving "{{ selectedCommunName }}". You won’t be able to post incidents to this
-            community
-          </span>
-        </div>
-        <v-card-actions class="pa-0 pt-4">
-          <v-spacer></v-spacer>
-          <v-btn text color="#2196f3" class="pa-0" @click="leaveDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn text color="#f56c6c" class="pa-0" @click="leaveCommunity()">
-            Leave
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <app-dialog
+      :status="confirmDialog"
+      icon="mdi-delete"
+      title="Delete Community?"
+      :subtitle="selectedCommunName"
+      body="All incidents and data will be lost"
+    >
+      <template v-slot:app-dialog-footer>
+        <v-spacer></v-spacer>
+        <v-btn text color="#2196f3" class="pa-0" @click="confirmDialog = false">
+          Cancel
+        </v-btn>
+        <v-btn text color="#f56c6c" class="pa-0" @click="deleteCommunity()">
+          Delete
+        </v-btn>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="leaveDialog"
+      icon="mdi-exit-to-app"
+      title="Leave Community?"
+      :subtitle="selectedCommunName"
+    >
+      <template v-slot:app-dialog-body>
+        <span v-if="selectedCommunPrivacy" class="delete-info">
+          You are leaving "{{ selectedCommunName }}". You won’t be able to access this community
+        </span>
+        <span v-else class="delete-info">
+          You are leaving "{{ selectedCommunName }}". You won’t be able to post incidents to this
+          community
+        </span>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <v-spacer></v-spacer>
+        <v-btn text color="#2196f3" class="pa-0" @click="leaveDialog = false">
+          Cancel
+        </v-btn>
+        <v-btn text color="#f56c6c" class="pa-0" @click="leaveCommunity()">
+          Leave
+        </v-btn>
+      </template>
+    </app-dialog>
     <v-card-text class="pt-2">
       <v-data-iterator
         :items="listCommunities"
@@ -385,11 +363,13 @@
 </template>
 <script>
 import VClamp from 'vue-clamp'
+import AppDialog from '../AppDialog'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    VClamp
+    VClamp,
+    AppDialog
   },
   data: () => ({
     yoursOrAll: 'tab-1',

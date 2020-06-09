@@ -38,7 +38,6 @@ export default {
     display: flex;
     height: 47px;
     position: absolute;
-    bottom: -40px;
     width: 100%;
     @media (max-width: 719px) {
       height: 144px !important;
