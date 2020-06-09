@@ -862,7 +862,6 @@ export default {
     letter-spacing: normal;
     height: 36px !important;
     text-transform: capitalize !important;
-    padding-bottom: 10px;
   }
 
   .ts-community-industry {
