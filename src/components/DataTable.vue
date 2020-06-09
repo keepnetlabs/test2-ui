@@ -1,5 +1,5 @@
 <template>
-  <div class="k-table__wrapper">
+  <div :class="{ 'k-table__wrapper': setDatatableUI }">
     <v-overlay :opacity="0.46" :value="isWantToDownload" :z-index="999" fixed>
       <v-card
         class="pb-4 pa-6"
@@ -578,7 +578,7 @@
             lazy
             ref="elTableRef"
             row-key="id"
-            stle="width:100%"
+            style="width: 100%;"
             v-if="!allHidden"
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
@@ -1055,6 +1055,7 @@ export default {
   },
   data() {
     return {
+      setDatatableUI: false,
       filteredData: [],
       showfilteredData: false,
       initialData: [],
@@ -1149,6 +1150,12 @@ export default {
     }
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
+    const browser = navigator.userAgent.toLowerCase()
+    if (browser.indexOf('safari') != -1) {
+      if (browser.indexOf('chrome') > -1) {
+        this.setDatatableUI = true
+      }
+    }
   },
   updated() {
     if (this.init) {
@@ -1173,6 +1180,10 @@ export default {
       this.lastColFixed = false
       this.actionFixed = false
     }
+    const _this = this
+    setTimeout(function () {
+      _this.setDatatableUI = true
+    }, 1)
   },
 
   methods: {

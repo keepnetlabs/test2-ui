@@ -1791,7 +1791,7 @@ export default {
                   letter-spacing: normal;
                   color: #212121;
                   background: #fafafa;
-                  margin-bottom: 0;
+                  margin-bottom: 0 !important;
 
                   &--active {
                     i {
