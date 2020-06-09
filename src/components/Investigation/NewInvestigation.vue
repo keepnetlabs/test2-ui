@@ -1,5 +1,5 @@
 <template>
-  <div id="new-investigation-wrapper">
+  <div class="new-investigation-wrapper">
     <div class="new-investigation-container">
       <div class="new-investigation-inner">
         <v-card flat light class="pa-6" style="width: 600px;">
@@ -977,7 +977,7 @@ export default {
 }
 </script>
 <style lang="scss">
-#new-investigation-wrapper {
+.new-investigation-wrapper {
   .target-users {
     &__radio-group {
       padding: 0px !important;
