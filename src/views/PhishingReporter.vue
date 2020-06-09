@@ -261,11 +261,8 @@ export default {
 <style lang="scss">
 .phishing-reporter {
   &__tab {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.15;
     letter-spacing: normal;
     text-transform: capitalize;
@@ -305,6 +302,9 @@ export default {
   &__tabs {
     &-items {
       margin-top: 8px;
+      .v-window-item {
+        margin-top: 0;
+      }
     }
     .v-slide-group__content {
       border-bottom: 2px solid #e4e7ed;
@@ -313,6 +313,9 @@ export default {
     .v-tabs-slider-wrapper {
       bottom: -1px !important;
       color: #0486fe !important;
+    }
+    .v-slide-group__content.v-tabs-bar__content:after {
+      display: none;
     }
   }
 
