@@ -35,7 +35,8 @@
             {{
               (irSummary &&
                 irSummary.phishingReporterUserStatusCount &&
-                irSummary.phishingReporterUserStatusCount.totalUserCount) ||
+                irSummary.phishingReporterUserStatusCount.onlineUsersCount +
+                  irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
               0
             }}
             users are
@@ -126,7 +127,7 @@
               {{
                 (irSummary &&
                   irSummary.investigationTypeCount &&
-                  irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                  irSummary.investigationTypeCount.manualInvestigationCount) ||
                 0
               }}
               <span>manual</span>
@@ -653,9 +654,10 @@ export default {
       if (data && !data.phishingReporterUserStatusCount) {
         return true
       } else if (
-        data &&
-        data.phishingReporterUserStatusCount &&
-        data.phishingReporterUserStatusCount.totalUserCount
+        (data &&
+          data.phishingReporterUserStatusCount &&
+          data.phishingReporterUserStatusCount.onlineUsersCount) ||
+        data.phishingReporterUserStatusCount.offlineUsersCount
       ) {
         return false
       } else {
@@ -676,7 +678,6 @@ export default {
       }
     },
     handleReportedEmailInvestigate(row) {
-      console.log('row', row)
       this.$router.push({
         name: 'Investigations',
         params: {
