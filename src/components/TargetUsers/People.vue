@@ -30,6 +30,7 @@
       @submenuItemClick="handleSubMenuItemClick"
       @syncUser="handleSyncUser"
       @delete="handleDelete"
+      :setClassName="setCellClassName"
       ref="refDataTable"
     >
       <template v-slot:addUsers>
@@ -51,32 +52,6 @@
           </v-list>
         </v-menu>
       </template>
-      <template v-slot:datatable-column-popup="{ scope, col }">
-        <span @click="showPopupModal = true" style="cursor: pointer;">
-          {{ scope.row[col.property] }}
-        </span>
-        <v-overlay :opacity="0.46" :value="showPopupModal" :z-index="999" fixed>
-          <v-card class="download-card pb-4 pa-6" light style="max-width: 580px;">
-            <v-list-item>
-              <div class="v-btn v-cart-icon-wrapper">
-                <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline"
-                  >I AM POPUP FROM DATATABLE CELL</v-list-item-title
-                >
-                <v-list-item-subtitle class="v-card-sub-header">ROW...</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item :key="item" v-for="item in scope.row" class="check-wrapper pl-0 pr-0">
-              <v-list-item-content> {{ item }}</v-list-item-content>
-            </v-list-item>
-            <div class="d-flex download-buttons flex-row flex-wrap">
-              <v-btn @click="showPopupModal = false" color="#f56c6c" text>CANCEL</v-btn>
-            </div>
-          </v-card>
-        </v-overlay>
-      </template>
     </datatable>
   </div>
 </template>
@@ -94,6 +69,7 @@ export default {
   },
   data: () => ({
     isWantToShowDeleteUserModal: false,
+    selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
     selectedRow: {},
     showPopupModal: false,
@@ -129,14 +105,23 @@ export default {
           width: 200
         },
         {
+          property: 'email',
+          align: 'left',
+          editable: false,
+          label: 'Email',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 250
+        },
+        {
           property: 'department',
           align: 'left',
           editable: false,
           label: 'Department',
           sortable: true,
           show: true,
-          type: 'link',
-          href: '/phishing-reporter',
+          type: 'text',
           width: 200
         },
         {
@@ -146,19 +131,8 @@ export default {
           label: 'Job Title',
           sortable: true,
           show: true,
-          type: 'popup',
-          width: 250
-        },
-
-        {
-          property: 'date',
-          align: 'left',
-          editable: false,
-          label: 'Date Added',
-          sortable: true,
-          show: true,
           type: 'text',
-          width: 150
+          width: 250
         },
         {
           property: 'priority',
@@ -170,6 +144,16 @@ export default {
           type: 'priority',
           width: 125,
           fullWidth: true
+        },
+        {
+          property: 'date',
+          align: 'left',
+          editable: false,
+          label: 'Date Added',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 150
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -237,6 +221,11 @@ export default {
           break
       }
     },
+    setCellClassName(obj) {
+      if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
+        return 'clock-wise'
+      }
+    },
     handleAddToGroup(row) {
       console.log('handleAddToGroup', row)
     },
@@ -246,8 +235,52 @@ export default {
     handleSubMenuItemClick(exportType) {
       console.log('handleSubMenuItemClick', exportType)
     },
-    handleSyncUser(row) {
-      console.log('handleSyncUser', row)
+    handleSyncUser(scope) {
+      this.selectedSyncIndex = scope.$index
+      this.tableOptions.rowActions = [
+        {
+          name: 'Sync User',
+          icon: 'mdi-sync',
+          action: 'syncUser'
+        }
+      ]
+      setTimeout(() => {
+        this.tableOptions.rowActions = [
+          {
+            name: 'Edit this row',
+            icon: 'mdi-pencil',
+            action: 'edit',
+            isNotShow: true
+          },
+          {
+            name: 'Add to a group',
+            icon: 'mdi-account-multiple-plus',
+            action: 'addToGroup'
+          },
+          {
+            name: 'Create a group with user',
+            icon: 'mdi-account-multiple',
+            action: 'createGroupWithUser'
+          },
+          {
+            name: 'Download',
+            icon: 'mdi-download',
+            action: 'download',
+            subElements: ['PDF', 'CSV', 'XLS']
+          },
+          {
+            name: 'Sync User',
+            icon: 'mdi-sync',
+            action: 'syncUser'
+          },
+          {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'delete'
+          }
+        ]
+        this.selectedSyncIndex = null
+      }, 5000)
     },
     handleDelete(row) {
       this.changeDeleteModalStatus(true)
@@ -269,6 +302,7 @@ export default {
         firstName: 'Gurkan',
         lastName: 'Ugurlu',
         department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
         title: 'Frontend Developer',
         date: '17.05.2020',
         priority: 'Medium'
@@ -277,6 +311,7 @@ export default {
         firstName: 'Gurkan',
         lastName: 'Ugurlu',
         department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
         title: 'Frontend Developer',
         date: '17.05.2020',
         priority: 'Low'
@@ -285,6 +320,7 @@ export default {
         firstName: 'Gurkan',
         lastName: 'Ugurlu',
         department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
         title: 'Frontend Developer',
         date: '17.05.2020',
         priority: 'High'
@@ -293,6 +329,7 @@ export default {
         firstName: 'Gurkan',
         lastName: 'Ugurlu',
         department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
         title: 'Frontend Developer',
         date: '17.05.2020',
         priority: 'Very Low'
@@ -301,6 +338,7 @@ export default {
         firstName: 'Gurkan',
         lastName: 'Ugurlu',
         department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
         title: 'Frontend Developer',
         date: '17.05.2020',
         priority: 'Very High'
@@ -339,6 +377,26 @@ export default {
       font-size: 18px !important;
       color: white;
     }
+  }
+}
+.clock-wise {
+  .cell {
+    * {
+      visibility: visible !important;
+    }
+  }
+  i {
+    animation: antiClockwiseSpin 1s infinite ease-in;
+    animation-delay: 0s;
+    color: #2196f3 !important;
+  }
+}
+@keyframes antiClockwiseSpin {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
   }
 }
 </style>

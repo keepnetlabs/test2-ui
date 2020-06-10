@@ -581,6 +581,7 @@
             v-if="!allHidden"
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
+            :cell-class-name="setCellClass"
             @sort-change="sortChangedEvent"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
@@ -680,7 +681,7 @@
                           scope.row.priority === 'Low' ? 'btn-low' : '',
                           scope.row.priority === 'Very Low' ? 'btn-very_low' : '',
                           scope.row.priority === 'High' ? 'btn-high' : '',
-                          scope.row.priority === 'Medium' ? 'btn-active' : '',
+                          scope.row.priority === 'Medium' ? 'btn-medium' : '',
                           scope.row.priority === 'Very High' ? 'btn-very_high' : '',
                           scope.row.priority === 'N/A' ? 'btn-none' : '',
 
@@ -735,7 +736,7 @@
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
-                        @click="rowAct(rowActions[0].action, scope.row)"
+                        @click="rowAct(rowActions[0].action, scope.row, scope)"
                         class="btn-hover"
                         icon
                         v-on="on"
@@ -746,10 +747,19 @@
                     <span> {{ rowActions[0].name }} </span>
                   </v-tooltip>
                 </template>
-                <v-menu bottom left offset-y transition="scale-transition">
+                <v-menu
+                  bottom
+                  left
+                  offset-y
+                  transition="scale-transition"
+                  :value="isRowActionsMenuOpen[scope.$index]"
+                  :return-value="isRowActionsMenuOpen[scope.$index]"
+                >
                   <template v-slot:activator="{ on }">
                     <v-btn class="btn-hover" icon v-on="on">
-                      <v-icon>mdi-dots-vertical</v-icon>
+                      <v-icon @click.native="selectedMenuIndex = scope.$index"
+                        >mdi-dots-vertical</v-icon
+                      >
                     </v-btn>
                   </template>
                   <v-list class="v-cart-dropdown-list">
@@ -759,7 +769,7 @@
                       v-for="(act, ind) of rowActions"
                       v-if="!act.subElements && !act.isNotShow"
                     >
-                      <v-list-item-title @click="rowAct(act.action, scope.row)">
+                      <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
                         <v-icon class="pr-3">{{ act.icon }}</v-icon>
                         <span>{{ act.name }}</span>
                       </v-list-item-title>
@@ -805,12 +815,12 @@
                 <v-tooltip bottom right>
                   <template v-slot:activator="{ on }">
                     <v-btn
-                      @click.native="rowAct(rowActions[0].action, scope.row)"
+                      @click.native="rowAct(rowActions[0].action, scope.row, scope)"
                       class="btn-hover"
                       icon
                       v-on="on"
                     >
-                      <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      <v-icon :class="rowActions[0].className">{{ rowActions[0].icon }}</v-icon>
                     </v-btn>
                   </template>
                   <span>{{ rowActions[0].name }}</span>
@@ -891,7 +901,6 @@
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
           layout="total, sizes, prev, pager, next"
-          style="font-family: 'Open Sans', sans-serif !important;"
         />
       </div>
     </v-card>
@@ -939,6 +948,10 @@ export default {
     columns: {
       type: Array,
       required: true
+    },
+    setClassName: {
+      type: Function,
+      default: () => {}
     },
     editableStatusItems: {
       type: Array,
@@ -1071,12 +1084,14 @@ export default {
       isSettingsOpened: false,
       isWantToAddUsers: false,
       isWantToEditRow: false,
+      selectedMenuIndex: null,
       editMode: false,
       firstColFixed: true,
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed: true,
       copyOfEditedRows: [],
+      isRowActionsMenuOpen: [],
       download: {
         xls: false,
         csv: false,
@@ -1103,6 +1118,9 @@ export default {
     tableData(data) {
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
+    },
+    isRowActionsMenuOpen(val) {
+      console.log('val', val)
     },
     firstColFixed(val) {
       if (!val) {
@@ -1188,6 +1206,12 @@ export default {
   methods: {
     handleTableData() {
       return this.showfilteredData ? this.filteredData : this.tableData
+    },
+    setCellClass(obj) {
+      /*
+      const classNames = this.setClassName(obj)
+      return classNames
+      */
     },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
@@ -1381,7 +1405,7 @@ export default {
     toggleAll() {
       this.$refs.elTableRef.toggleAllSelection()
     },
-    rowAct(action, row, multiSelection, tableData) {
+    rowAct(action, row, scope, tableData) {
       switch (action) {
         case 'details':
           this.$router.push('/analysis-details')
@@ -1411,6 +1435,9 @@ export default {
           )
           break
         case 'delete':
+        case 'syncUser':
+          this.$emit('syncUser', scope)
+          break
         default:
           this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
           return false

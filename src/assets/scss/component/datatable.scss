@@ -270,6 +270,14 @@
 
         .el-table .hover-row {
           background-color: #f1f8fe !important;
+          /*
+          .actions-container,.actions-container--first{
+            .cell * {
+              visibility: visible;
+            }
+          }
+
+           */
         }
 
         .el-table td > .cell {
@@ -366,20 +374,18 @@
         .btn-status {
           border-radius: 18px !important;
           box-shadow: unset !important;
-          color: #fff;
-          font-family: "Open Sans", sans-serif !important;
-          font-size: 14px !important;
-          font-weight: 600;
-          font-stretch: normal;
-          font-style: normal;
-          line-height: 1.71;
-          margin-bottom: 3px;
-          letter-spacing: normal;
           margin: 0 auto;
-          text-transform: capitalize;
           min-width: 96px !important;
           max-width: 125px !important;
           height: 32px !important;
+          .v-btn__content{
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            letter-spacing: normal;
+            text-align: center;
+            text-transform: capitalize;
+            color: #ffffff;
+          }
         }
 
         .btn-pending {
@@ -387,7 +393,7 @@
         }
 
         .btn-active {
-          background-color: #2196f3;
+          background-color: #00bcd4 !important;
         }
 
         .btn-low {
@@ -425,6 +431,10 @@
 
         .btn-warning {
           background-color: #e6a23c;
+        }
+
+        .btn-medium{
+          background-color: #2196f3 !important;
         }
 
         .btn-cancelled,
@@ -838,10 +848,36 @@
 
     .actions-container {
       padding-right: 17.5px !important;
+      /*
+      &.actions-label{
+        visibility: visible;
+      }
+      .cell *{
+        visibility: hidden;
+      }
+
+       */
 
       &--first {
         padding-right: 40px !important;
+        /*
+        &.actions-label{
+          visibility: visible;
+        }
+        .cell *{
+          visibility: hidden;
+        }
+
+         */
       }
+    }
+
+    .show-action-cell{
+      /*
+      .cell *{
+        visibility: visible;
+      }
+      */
     }
 
     .popup {

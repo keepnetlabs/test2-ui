@@ -325,8 +325,9 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '30'
+          type: 'link',
+          minWidth: '30',
+          emptyText: 'No Match'
         },
         {
           property: 'status',
@@ -367,7 +368,9 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
+          type: 'link',
+          href: '/investigation-details',
+          hrefKey: 'resourceId',
           minWidth: '40'
         },
         {
@@ -579,6 +582,7 @@ export default {
           data: { data, status }
         } = response
         this.investigationListData = data
+        console.log(this.investigationListData)
         this.$refs.refRecentInv.loadWithDataArray(data || [])
       })
       .catch((error) => {
@@ -1171,5 +1175,8 @@ export default {
     left: 0;
     width: 100%;
   }
+}
+.table.investigations {
+  padding: 0 !important;
 }
 </style>

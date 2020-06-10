@@ -1,5 +1,11 @@
 <template>
-  <v-dialog v-model="status" class="k-dialog" :opacity="0.23" :width="dialogWidth">
+  <v-dialog
+    v-model="status"
+    class="k-dialog"
+    :opacity="0.23"
+    :width="dialogWidth"
+    :class="className"
+  >
     <v-card light class="k-dialog__card">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-cart-icon-wrapper">
@@ -51,6 +57,9 @@ export default {
     size: {
       type: String,
       default: 'small'
+    },
+    className: {
+      type: String
     }
   },
   computed: {

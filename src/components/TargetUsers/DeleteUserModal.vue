@@ -4,6 +4,7 @@
     icon="mdi-delete"
     title="Delete User?"
     subtitle="The user will be deleted permanently"
+    className="delete-user__backdrop-filter"
   >
     <template v-slot:app-dialog-body>
       {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain
@@ -62,8 +63,6 @@ export default {
 
 <style lang="scss">
 .delete-user {
-  font-family: 'Open Sans', sans-serif !important;
-
   &__footer {
     display: flex;
     justify-content: flex-end;
@@ -71,12 +70,12 @@ export default {
     &-button {
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      text-align: center;
     }
   }
+}
+.v-dialog__content {
+  backdrop-filter: blur(3px);
 }
 </style>
