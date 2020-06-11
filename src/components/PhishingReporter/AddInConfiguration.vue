@@ -212,6 +212,7 @@ import OtherSettings from './Settings/OtherSettings'
 import Logos from './Logos'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import { createPhishingReporter } from '../../api/phishingReporter'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'AddInConfiguration',
@@ -309,7 +310,14 @@ export default {
       })
       createPhishingReporter(formData)
         .then((response) => {
-          this.showModal = true
+          if (response && response.data && response.data.status === 'FAILED') {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+            })
+          } else {
+            this.showModal = true
+          }
         })
         .catch((error) => {})
     }

@@ -45,7 +45,7 @@ export default {
             label: 'First Name',
             sortable: true,
             show: true,
-            fixed: true,
+            fixed: 'left',
             type: 'text',
             width: 150
             //minWidth: 80
@@ -125,10 +125,7 @@ export default {
           }
         ],
         empty: {
-          message: 'No users are showing',
-          subMes: 'Add Users',
-          btn: 'Add Users',
-          icon: 'mdi-account-plus'
+          message: 'You do not have any users, yet'
         },
         rowActions: [
           {

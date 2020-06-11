@@ -1,71 +1,71 @@
 <template>
-  <v-container fluid id="other-settings" class="other-settings">
+  <v-container fluid id="other-settings" class="other-settings mt-n3">
     <v-form ref="refForm">
-      <v-list-group
-        no-action
-        :class="{ 'margin-status-optional': marginStatusOptional }"
-        class="other-settings__list-group"
-      >
-        <template v-slot:activator>
-          <v-list-item-content class="other-settings__list-item">
-            <div class="other-settings__list-item-header" @click="handleMarginStatusForOptional">
-              Optional Features
-            </div>
-          </v-list-item-content>
-        </template>
-        <v-list-item>
-          <v-list-item-content>
-            <div>
-              <v-checkbox
-                v-model="formValues.deleteOriginalMail"
-                class="other-settings__checkbox k-checkbox mt-3"
-                color="#2196f3"
-                label="Delete Original Email"
-              ></v-checkbox>
-            </div>
-            <div>
-              <v-checkbox
-                v-model="formValues.enableProxy"
-                class="other-settings__checkbox k-checkbox"
-                color="#2196f3"
-                label="Enable proxy"
-              ></v-checkbox>
-            </div>
-            <div>
-              <v-checkbox
-                v-model="formValues.isOnPremise"
-                color="#2196f3"
-                class="other-settings__checkbox k-checkbox"
-                label="On-premise settings"
-              ></v-checkbox>
-            </div>
-            <div class="site-url__container mt-n3">
-              <span class="site-url__message site-url__message--1">Site URL</span>
-              <v-text-field
-                placeholder="https://dashboard.abc.com/"
-                outlined
-                dense
-                :disabled="!formValues.isOnPremise"
-                class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
-                v-model="formValues.apiUrl"
-                height="40"
-              ></v-text-field>
-            </div>
-            <div class="site-url__container">
-              <span class="site-url__message">Company ID</span>
-              <v-text-field
-                placeholder="Company ID"
-                :disabled="!formValues.isOnPremise"
-                outlined
-                dense
-                class="k-textfield site-url__textfield site-url__textfield--2"
-                v-model="formValues.companyId"
-                height="40"
-              ></v-text-field>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-group>
+      <v-list-item class="px-0 other-settings__list-item mt-0">
+        <v-list-item-content>
+          <div class="other-settings__list-item-header" @click="handleMarginStatusForOptional">
+            Optional Features
+          </div>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content>
+          <div>
+            <v-checkbox
+              v-model="formValues.deleteOriginalMail"
+              class="other-settings__checkbox k-checkbox mt-3"
+              color="#2196f3"
+              label="Delete Original Email"
+            ></v-checkbox>
+          </div>
+          <div>
+            <v-checkbox
+              v-model="formValues.enableProxy"
+              class="other-settings__checkbox k-checkbox"
+              color="#2196f3"
+              label="Enable proxy"
+            ></v-checkbox>
+          </div>
+          <div>
+            <v-checkbox
+              v-model="formValues.isOnPremise"
+              color="#2196f3"
+              class="other-settings__checkbox k-checkbox"
+              label="On-premise settings"
+            ></v-checkbox>
+          </div>
+          <template v-if="formValues.isOnPremise">
+            <transition appear name="fade">
+              <div>
+                <div class="site-url__container mt-n3">
+                  <span class="site-url__message site-url__message--1">Site URL</span>
+                  <v-text-field
+                    placeholder="https://dashboard.abc.com/"
+                    outlined
+                    dense
+                    :disabled="!formValues.isOnPremise"
+                    class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
+                    v-model="formValues.apiUrl"
+                    height="40"
+                  ></v-text-field>
+                </div>
+                <div class="site-url__container">
+                  <span class="site-url__message">Company ID</span>
+                  <v-text-field
+                    placeholder="Company ID"
+                    :disabled="!formValues.isOnPremise"
+                    outlined
+                    dense
+                    class="k-textfield site-url__textfield site-url__textfield--2"
+                    v-model="formValues.companyId"
+                    height="40"
+                  ></v-text-field>
+                </div>
+              </div>
+            </transition>
+          </template>
+        </v-list-item-content>
+      </v-list-item>
       <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="extra-message-text"
@@ -192,41 +192,43 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-group no-action class="mb-6 other-settings__list-group">
-        <template v-slot:activator>
-          <v-list-item-content>
-            <label class="other-settings__list-item-header" for="alertbox-text"
-              >Enterprise Vault</label
-            >
-          </v-list-item-content>
-        </template>
-        <v-list-item>
-          <v-list-item-content
-            class="enterprise-vault-url"
-            :class="[inModal ? 'enterprise-vault-url-margin' : '']"
+      <v-list-item class="px-0 other-settings__list-item mt-n4">
+        <v-list-item-content>
+          <label class="other-settings__list-item-header" for="alertbox-text"
+            >Enterprise Vault</label
           >
-            <v-checkbox
-              v-model="formValues.enableEnterpriseVault"
-              class="other-settings__checkbox k-checkbox mt-2"
-              @change="handleEnterpriseVaultChange"
-              color="#2196f3"
-              label="Enable enterprise vault"
-            ></v-checkbox>
-            <div class="site-url__container mt-n3">
-              <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
-              <v-text-field
-                placeholder="www.bc.com"
-                outlined
-                :disabled="enterpriseVaultDisabled"
-                dense
-                class="k-textfield site-url__textfield site-url__textfield--3 mt-2"
-                v-model="formValues.enterpriseVaultUrl"
-                height="40"
-              ></v-text-field>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-group>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content
+          class="enterprise-vault-url"
+          :class="[inModal ? 'enterprise-vault-url-margin' : '']"
+        >
+          <v-checkbox
+            v-model="formValues.enableEnterpriseVault"
+            class="other-settings__checkbox k-checkbox mt-2"
+            @change="handleEnterpriseVaultChange"
+            color="#2196f3"
+            label="Enable enterprise vault"
+          ></v-checkbox>
+          <template v-if="formValues.enableEnterpriseVault">
+            <transition appear name="fade">
+              <div class="site-url__container mt-n3">
+                <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
+                <v-text-field
+                  placeholder="www.bc.com"
+                  outlined
+                  :disabled="enterpriseVaultDisabled"
+                  dense
+                  class="k-textfield site-url__textfield site-url__textfield--3 mt-2"
+                  v-model="formValues.enterpriseVaultUrl"
+                  height="40"
+                ></v-text-field>
+              </div>
+            </transition>
+          </template>
+        </v-list-item-content>
+      </v-list-item>
 
       <div class="other-settings__footer" v-if="showFooter">
         <div class="d-flex justify-center">
@@ -358,18 +360,14 @@ export default {
   margin-top: -12px;
 
   &__link {
-    font-family: 'Open Sans', sans-serif !important;
     text-transform: uppercase;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
     color: #2196f3;
     flex-basis: 100%;
-    text-align: center;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -400,10 +398,12 @@ export default {
   }
 
   &__list-item {
-    font-family: 'Open Sans', sans-serif !important;
+    margin-top: -4px;
     max-width: 554px;
+    overflow: visible;
     .v-list-item__content {
       padding: 0 !important;
+      overflow: visible;
     }
 
     .v-list-item {
@@ -419,11 +419,8 @@ export default {
     }
 
     &-header {
-      font-family: 'Open Sans', sans-serif !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
       font-size: 20px;
       font-weight: 600;
       line-height: 1.2;
@@ -451,14 +448,10 @@ export default {
   }
 
   &__btn-util {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 500;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
-    text-align: center;
     color: #ffffff;
     max-height: 36px;
   }
@@ -480,11 +473,7 @@ export default {
 
   &__message {
     opacity: 0.7;
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.5;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);

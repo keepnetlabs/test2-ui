@@ -658,10 +658,10 @@ export default {
       if (data && !data.phishingReporterUserStatusCount) {
         return true
       } else if (
-        (data &&
-          data.phishingReporterUserStatusCount &&
-          data.phishingReporterUserStatusCount.onlineUsersCount) ||
-        data.phishingReporterUserStatusCount.offlineUsersCount
+        data &&
+        data.phishingReporterUserStatusCount &&
+        (data.phishingReporterUserStatusCount.onlineUsersCount ||
+          data.phishingReporterUserStatusCount.offlineUsersCount)
       ) {
         return false
       } else {

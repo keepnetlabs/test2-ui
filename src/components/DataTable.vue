@@ -88,27 +88,26 @@
       <div class="table-wrapper">
         <div class="settings-popup" v-show="isSettingsOpened">
           <div class="settings-header">
-            <span>Table Settings</span>
+            <span class="settings-span">Table Settings</span>
             <v-icon @click="isSettingsOpened = false" class="close-icon">mdi-close</v-icon>
           </div>
           <div class="sub-header">Show / Hide Columns</div>
           <div :key="ind" class="popup-row" v-for="(col, ind) of columns" v-if="ind != 0">
             {{ col.label }}
-            <v-switch v-model="col.show" />
+            <v-switch v-model="col.show" color="#2196f3" />
           </div>
-          <div class="sub-header">Freeze Columns</div>
+          <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
           <div class="popup-row">
             First Column
-            <v-switch v-model="firstColFixed" />
+            <v-switch v-model="firstColFixed" color="#2196f3" />
           </div>
           <div class="popup-row">
             Last Column
-            <v-switch v-model="lastColFixed" />
+            <v-switch v-model="lastColFixed" color="#2196f3" />
           </div>
         </div>
         <div
-          class="settings-popup"
-          style="width: 360px;"
+          class="settings-popup edit-popup"
           v-show="copyOfEditedRows && copyOfEditedRows.length && isWantToEditRow"
         >
           <div
@@ -1434,7 +1433,6 @@ export default {
             this.multipleSelection.length > 0 ? this.multipleSelection : row
           )
           break
-        case 'delete':
         case 'syncUser':
           this.$emit('syncUser', scope)
           break

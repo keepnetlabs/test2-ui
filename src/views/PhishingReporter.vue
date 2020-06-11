@@ -96,8 +96,19 @@
         </div>
       </div>
       <div class="phishing-reporter__header__container__panel">
-        <div class="phishing-reporter__header__container__panel-text">Last 24h</div>
-        <v-icon>mdi-chevron-down</v-icon>
+        <v-menu bottom offset-y>
+          <template v-slot:activator="{ on }">
+            <div v-on="on" class="phishing-reporter__header__container__panel-right-col">
+              <div class="phishing-reporter__header__container__panel-text">{{ selectedDate }}</div>
+              <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
+            </div>
+          </template>
+          <v-list>
+            <v-list-item @click="handleListItemClick(item)" :key="item" v-for="item in listItems">
+              <v-list-item-title>{{ item }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </div>
     <div class="phishing-reporter">
@@ -164,14 +175,18 @@ export default {
         name: FirstTime,
         ref: 'refFirstTime',
         formData: null
-      }
+      },
+      selectedDate: 'Last 24h',
+      listItems: ['Last 24h', 'Last 7 days', 'Last 30 days', 'This month', 'Last month']
     }
   },
   computed: {
     getAddOnStatus() {
       return (
         this.phishingReportSummary &&
-        `${this.phishingReportSummary.onlineUsersCount} of ${this.phishingReportSummary.totalUsersCount}`
+        `${this.phishingReportSummary.onlineUsersCount || 0} of ${
+          this.phishingReportSummary.totalUsersCount || 0
+        }`
       )
     }
   },
@@ -182,10 +197,16 @@ export default {
       */
       this.tab = status
     },
+    handleListItemClick(date) {
+      this.selectedDate = date
+      this.getPhishingReportSummary()
+    },
     getPhishingReportSummary() {
+      const dateObj = this.getDates()
+      console.log('dateObj', dateObj)
       getPhishingReportSummary({
-        startDate: '09.05.2020',
-        endDate: '10.05.2020'
+        startDate: dateObj.startDate,
+        endDate: dateObj.endDate
       })
         .then((response) => {
           const {
@@ -194,7 +215,9 @@ export default {
 
           this.phishingReportSummary = data
         })
-        .catch((error) => {})
+        .catch((error) => {
+          this.phishingReportSummary = {}
+        })
     },
     getHash(hashValue) {
       if (hashValue || (this.$route && this.$route.hash)) {
@@ -212,6 +235,48 @@ export default {
         return true
       } else {
         return false
+      }
+    },
+    getDates() {
+      const dateObj = { startDate: '', endDate: '' }
+      const today = new Date()
+      const day = today.getDate()
+      const month = today.getMonth() + 1
+      const year = today.getFullYear()
+      switch (this.selectedDate) {
+        case this.listItems[0]:
+          return {
+            startDate: `${new Date(new Date().setDate(day - 1)).getDate()}.${month}.${year}`,
+            endDate: `${day}.${month}.${year}`
+          }
+        case this.listItems[1]:
+          return {
+            startDate: `${new Date(new Date().setDate(day - 7)).getDate()}.${month}.${year}`,
+            endDate: `${day}.${month}.${year}`
+          }
+        case this.listItems[2]:
+          const last30DayDate = new Date(new Date().setDate(day - 30))
+          return {
+            endDate: `${day}.${month}.${year}`,
+            startDate: `${last30DayDate.getDate()}.${
+              last30DayDate.getMonth() + 1
+            }.${last30DayDate.getFullYear()}`
+          }
+        case this.listItems[3]:
+          return {
+            startDate: `01.${month}.${year}`,
+            endDate: `${day}.${month}.${year}`
+          }
+        case this.listItems[4]:
+          const lastMonthDate = new Date(new Date().setMonth(month - 1))
+          return {
+            startDate: `01.${lastMonthDate.getMonth()}.${lastMonthDate.getFullYear()}`,
+            endDate: `${new Date(
+              lastMonthDate.getFullYear(),
+              lastMonthDate.getMonth(),
+              0
+            ).getDate()}.${lastMonthDate.getMonth()}.${lastMonthDate.getFullYear()}`
+          }
       }
     },
     getPhishingReport() {
@@ -346,13 +411,16 @@ export default {
       padding: 14px 0 27px 0;
       align-items: center;
 
+      &-right-col {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding-left: 10px;
+      }
       &-text {
         font-family: 'Open Sans', sans-serif;
         font-size: 14px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
         letter-spacing: normal;
         color: #000000;
       }

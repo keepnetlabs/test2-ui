@@ -1,12 +1,11 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
-    <v-list-item class="px-0 email-settings__list-item" v-if="showHeader">
+    <v-list-item class="px-0 email-settings__list-item mt-n1" v-if="showHeader">
       <v-list-item-content>
-        <v-list-item-title class="email-settings__list-item--text email-settings__list-item--header"
+        <v-list-item-title class="email-settings__list-item--text email-settings__header"
           >Send Suspicious Emails To
         </v-list-item-title>
-        <v-list-item-subtitle
-          class="email-settings__list-item--text email-settings__list-item--sub-header"
+        <v-list-item-subtitle class="email-settings__list-item--text email-settings__sub-header"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -50,6 +49,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.cc"
+            :rules="[
+              (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
+              (v) => validations.mail(v, 'Invalid  email address')
+            ]"
             id="cc"
             height="40"
           ></v-text-field>
@@ -65,7 +68,10 @@
             class="k-textfield mt-2"
             v-model="formValues.bcc"
             id="bcc"
-            :rules="[(v) => validations.maxLength(v, 255, 'It must be maximum 55 characters')]"
+            :rules="[
+              (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
+              (v) => validations.mail(v, 'Invalid  email address')
+            ]"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -182,17 +188,13 @@ export default {
 
 <style lang="scss">
 .email-settings {
-  font-family: 'Open Sans', sans-serif !important;
-
   &__list-item {
     max-width: 554px;
+    margin-top: -4px;
     &--text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
     }
-
     .v-list-item__content {
       padding: 0 !important;
     }
@@ -200,8 +202,6 @@ export default {
     &--header {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
       font-size: 20px;
       font-weight: 600;
       line-height: 1.2;
@@ -210,16 +210,26 @@ export default {
     &--sub-header {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
       font-size: 14px;
       font-weight: normal;
       line-height: 1.5;
     }
   }
 
+  &__header {
+    font-size: 24px;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  &__sub-header {
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
   &__btn-util {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 500;
     font-stretch: normal;

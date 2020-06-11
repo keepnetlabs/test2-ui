@@ -49,12 +49,18 @@
           box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
             0 1px 1px 0 rgba(243, 243, 243, 0.14),
             0 1px 1px -1px rgba(204, 204, 204, 0.12);
-          padding: 28px 16px 16px 16px;
+          padding: 18px 24px 16px 24px;
           position: absolute;
           right: 0;
+          width: 277px;
           transition: all 0.2s ease-in-out;
           overflow: hidden;
           z-index: 99;
+
+          &.edit-popup{
+            padding: 18px 16px 16px 16px;
+            width: 360px;
+          }
 
           .settings-header {
             align-items: center;
@@ -207,11 +213,15 @@
 
           .popup-row {
             align-items: center;
-            padding-bottom: 10px;
+            padding-bottom: 4px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             width: 100%;
+            line-height: 1.5;
+            letter-spacing: normal;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.87) !important;
 
             .v-input--selection-controls {
               margin-top: 0 !important;

@@ -1,7 +1,7 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
     <v-form lazy-validation ref="refForm" v-model="isValid">
-      <v-list-item class="px-0 add-in-settings__list-item">
+      <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
@@ -78,46 +78,37 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-group
-        :class="{ 'margin-status': marginStatus }"
-        class="add-in-settings__list-group"
-        no-action
-      >
-        <template v-slot:activator>
-          <v-list-item-content>
-            <label class="add-in-settings__label" for="alertbox-text" @click="handleMarginStatus"
-              >Report Warning</label
-            >
-          </v-list-item-content>
-        </template>
-
-        <v-list-item>
-          <v-list-item-content class="show-warning" :class="[inModal ? 'show-warning-margin' : '']">
-            <v-checkbox
-              color="#2196f3"
-              label="Show Warning"
-              class="k-checkbox"
-              v-model="formValues.showWarning"
-            ></v-checkbox>
-            <template v-if="formValues.showWarning">
-              <transition appear name="fade">
-                <div class="report-warning__container">
-                  <span class="report-warning__message mt-4">Report Warning Message</span>
-                  <v-text-field
-                    class="k-textfield mt-2 report-warning__textfield"
-                    dense
-                    id="alertbox-text"
-                    outlined
-                    placeholder="Report this email?"
-                    required
-                    v-model="formValues.reportWarningMessage"
-                  ></v-text-field>
-                </div>
-              </transition>
-            </template>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-group>
+      <v-list-item class="px-0 mt-n4 add-in-settings__list-item">
+        <v-list-item-content>
+          <label class="add-in-settings__label" for="alertbox-text">Report Warning</label>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 add-in-settings__list-item">
+        <v-list-item-content class="show-warning" :class="[inModal ? 'show-warning-margin' : '']">
+          <v-checkbox
+            color="#2196f3"
+            label="Show Warning"
+            class="k-checkbox"
+            v-model="formValues.showWarning"
+          ></v-checkbox>
+          <template v-if="formValues.showWarning">
+            <transition appear name="fade">
+              <div class="report-warning__container">
+                <span class="report-warning__message mt-4">Report Warning Message</span>
+                <v-text-field
+                  class="k-textfield mt-2 report-warning__textfield"
+                  dense
+                  id="alertbox-text"
+                  outlined
+                  placeholder="Report this email?"
+                  required
+                  v-model="formValues.reportWarningMessage"
+                ></v-text-field>
+              </div>
+            </transition>
+          </template>
+        </v-list-item-content>
+      </v-list-item>
 
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
@@ -338,6 +329,7 @@ export default {
 
     &__list-item {
       max-width: 554px;
+      margin-top: -4px;
       &.v-list-item {
         padding: 0 !important;
 
@@ -438,11 +430,8 @@ export default {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
   font-weight: 500;
-  font-stretch: normal;
-  font-style: normal;
   line-height: 1.71;
   letter-spacing: normal;
-  text-align: center;
   color: #ffffff;
   max-height: 36px;
 
@@ -459,7 +448,7 @@ export default {
   margin-top: -7px;
   margin-bottom: 22px;
 }
-.show-warning.show-warning-margin {
-  padding-top: 18px !important;
+.show-warning {
+  overflow: visible;
 }
 </style>

@@ -97,7 +97,6 @@ export default {
   &__right-column {
   }
   &__message {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     line-height: 1.5;
@@ -109,7 +108,6 @@ export default {
     color: white;
     margin-right: 5px;
     .v-btn__content {
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       letter-spacing: normal;

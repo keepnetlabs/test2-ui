@@ -6,15 +6,19 @@
           active-class="pr-tab-active"
           background-color="transparent"
           color="basil"
-          id="pr-tabs"
+          class="target-users__tabs"
           v-model="tab"
         >
-          <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-people p-2" id="pr-tab-people">
+          <v-tab
+            @click="changeTabStatus(0)"
+            class="target-users__tab target-users__tab--people p-2"
+            id="pr-tab-people"
+          >
             People
           </v-tab>
-          <v-tab @click="changeTabStatus(1)" class="pr-tab p-2" id="pr-tab-groups">Groups</v-tab>
+          <v-tab @click="changeTabStatus(1)" class="target-users__tab p-2">Groups</v-tab>
         </v-tabs>
-        <v-tabs-items v-model="tab">
+        <v-tabs-items v-model="tab" class="target-users__tabs-items">
           <v-tab-item>
             <people ref="refPeople" />
           </v-tab-item>
@@ -67,39 +71,45 @@ export default {
       height: 646px;
     }
   }
-  .v-slide-group__content {
-    border-bottom: 2px solid #e4e7ed;
-    margin-right: 20px;
+
+  &__tabs {
+    .v-slide-group__content {
+      border-bottom: 2px solid #e4e7ed;
+    }
+
+    .v-tabs-slider-wrapper {
+      bottom: -1px !important;
+      color: #0486fe !important;
+    }
+    .v-slide-group__content.v-tabs-bar__content:after {
+      display: none;
+    }
+    .v-tabs-slider {
+      width: 79%;
+    }
   }
+  &__tab {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: normal;
+    text-transform: capitalize;
+    color: rgba(0, 0, 0, 0.87) !important;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
 
-  .v-tabs-slider-wrapper {
-    bottom: -1px !important;
-    color: #0486fe !important;
-  }
+    &:before {
+      background-color: white;
+    }
 
-  .v-tabs-slider {
-    width: 92% !important;
-  }
-}
+    &--people {
+      margin-right: 25px !important;
+    }
 
-.pr-tab {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
-  text-transform: capitalize;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  display: flex;
-  justify-content: flex-start;
-
-  &-people {
-    margin-right: 35px !important;
-  }
-
-  &-active {
-    color: #2196f3 !important;
+    &-active {
+      color: #2196f3 !important;
+    }
   }
 }
 </style>

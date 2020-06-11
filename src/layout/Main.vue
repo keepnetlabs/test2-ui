@@ -191,15 +191,6 @@
           </v-list-item>
           <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
             <v-list-item-content class="menu-item-content">
-              <router-link to="/phishing-reporter" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Phishing Reporter</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
-            <v-list-item-content class="menu-item-content">
               <router-link to="/integrations" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Integrations</span>
@@ -217,6 +208,14 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
+        <router-link to="/phishing-reporter" class="menu-link-default">
+          <v-list-item class="menu-list-item">
+            <v-list-item-icon>
+              <v-icon>mdi-account-voice</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Phishing Reporter</v-list-item-title>
+          </v-list-item>
+        </router-link>
         <!--
         <div v-for="(item, index) in menuList" :key="index">
           <v-list-group

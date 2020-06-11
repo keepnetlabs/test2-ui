@@ -99,7 +99,7 @@
             </div>
 
             <div>
-              <v-select
+              <v-autocomplete
                 :class="[isInModal && 'select-in-modal']"
                 :items="timezones"
                 class="diagnostic-tool__select"
@@ -111,7 +111,8 @@
                 placeholder="GMT +3"
                 required
                 v-model="formValues.timezone"
-              ></v-select>
+                :menu-props="{ bottom: true, offsetY: true }"
+              ></v-autocomplete>
             </div>
           </div>
         </v-list-item-content>
