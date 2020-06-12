@@ -23,7 +23,9 @@
       />
       <span class="ml-2">{{ scope.row[col.property] }}</span>
     </span>
-    <span v-else />
+    <span v-else>
+      {{ getEmptyText }}
+    </span>
   </div>
 </template>
 
@@ -36,6 +38,11 @@ export default {
     },
     col: {
       type: Object
+    }
+  },
+  computed: {
+    getEmptyText() {
+      return this.col['emptyText'] || ''
     }
   }
 }

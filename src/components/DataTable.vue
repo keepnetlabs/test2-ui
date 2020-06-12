@@ -232,7 +232,6 @@
                       "
                       v-model="item[key]"
                     />
-
                     <v-text-field
                       :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
                       :value="multipleEditModels[key]"
@@ -253,7 +252,6 @@
                         key !== 'createDate'
                       "
                     />
-
                     <v-select
                       :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
                       :items="getMultipleSelectItems(key)"
@@ -272,12 +270,22 @@
                       @input="handleMultipleEdits(item, key, $event)"
                     />
 
-                    <div class="popup__apexchart-container" v-else-if="Array.isArray(item[key])">
-                      <apexchart
-                        :options="chartOptions"
-                        :series="item[key]"
-                        :width="chartOptions.chart.width"
-                      />
+                    <div
+                      class="popup__apexchart-container"
+                      v-else-if="
+                        columns.find((a) => {
+                          return a.type === 'chart' && a.property === key
+                        })
+                      "
+                    >
+                      <template v-if="Array.isArray(item[key]) && item[key].length > 1">
+                        <apexchart
+                          :options="chartOptions"
+                          :series="item[key]"
+                          :width="chartOptions.chart.width"
+                        />
+                      </template>
+                      <div v-else class="datatable-chart__empty"></div>
                     </div>
                     <div v-if="key === 'progress' && !editMode">
                       <span class="progress-per">{{ item[key] }}%</span>
@@ -624,46 +632,16 @@
                 <div v-if="col.type === 'status'">
                   <v-tooltip bottom v-if="scope.row && scope.row['status']">
                     <template v-slot:activator="{ on }">
-                      <v-btn
-                        :class="[
-                          'btn-status',
-                          scope.row.status === 'Pending' ? 'btn-pending' : '',
-                          scope.row.status === 'Clean' ? 'btn-pending' : '',
-                          scope.row.status === 'Active' ? 'btn-active' : '',
-                          scope.row.status === 'Inactive' ? 'btn-inactive' : '',
-                          scope.row.status === 'Warning' ? 'btn-warning' : '',
-                          scope.row.status === 'Malicious' ? 'btn-warning' : '',
-                          scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
-                          scope.row.status === 'Phishing' ? 'btn-cancelled' : '',
-                          scope.row.status === 'Idle' ? 'btn-cancelled' : '',
-                          scope.row.status === 'None' ? 'btn-none' : '',
-                          scope.row.status === 'Quedued' ? 'btn-none' : '',
-                          scope.row.status === 'Running' ? 'btn-primary' : '',
-                          scope.row.status === 'Expired' ? 'btn-warning' : '',
-                          scope.row.status === 'Completed' ? 'btn-success' : '',
-                          scope.row.status === 'Cancelled' ? 'btn-cancelled' : '',
-                          scope.row.status === 'No Match' ? 'btn-no_match' : '',
-                          scope.row.status === 'Finished' ? 'btn-success' : '',
-                          scope.row.status === 'Offline' ? 'btn-warning' : '',
-                          scope.row.status === 'Online' ? 'btn-success' : '',
-                          scope.row.status === 'Disabled' ? 'btn-cancelled' : '',
-                          scope.row.status === 'Network Error' ? 'btn-cancelled' : '',
-                          scope.row.status === 'Deactivated' ? 'btn-no_match ' : '',
-                          scope.row.status === 'User Unavailable' ? 'btn-no_match ' : '',
-                          scope.row.status === 'Not Installed' ? 'btn-no_match ' : '',
-                          scope.row.status === 'N/A' ? 'btn-none' : '',
-                          col.fullWidth ? 'full-width' : ''
-                        ]"
-                        rounded
-                        v-if="scope.row && scope.row[col.property]"
-                        v-on="on"
-                        >{{ scope.row.status || 'Empty' }}
-                      </v-btn>
-                      <span v-else>-</span>
+                      <badge
+                        :color="getBtnStatusColor(scope.row[col.property])"
+                        :listeners="on"
+                        :full-width="col.fullWidth"
+                        :text="scope.row.status"
+                      />
                     </template>
                     <span class="tooltip-span">
-                      <slot name="tooltipText">
-                        {{ scope.row.status || 'Empty' }}
+                      <slot name="status-tooltip-text" :scope="scope" :col="col">
+                        {{ scope.row.status }}
                       </slot>
                     </span>
                   </v-tooltip>
@@ -674,24 +652,12 @@
                 <div v-if="col.type === 'priority'">
                   <v-tooltip bottom opacity="1" v-if="scope.row && scope.row['priority']">
                     <template v-slot:activator="{ on }">
-                      <v-btn
-                        :class="[
-                          'btn-status',
-                          scope.row.priority === 'Active' ? 'btn-active' : '',
-                          scope.row.priority === 'Inactive' ? 'btn-inactive' : '',
-                          scope.row.priority === 'Low' ? 'btn-low' : '',
-                          scope.row.priority === 'Very Low' ? 'btn-very_low' : '',
-                          scope.row.priority === 'High' ? 'btn-high' : '',
-                          scope.row.priority === 'Medium' ? 'btn-medium' : '',
-                          scope.row.priority === 'Very High' ? 'btn-very_high' : '',
-                          scope.row.priority === 'N/A' ? 'btn-none' : '',
-
-                          col.fullWidth ? 'full-width' : ''
-                        ]"
-                        rounded
-                        v-on="on"
-                        >{{ scope.row.priority }}
-                      </v-btn>
+                      <badge
+                        :color="getBtnPriorityColor(scope.row[col.property])"
+                        :listeners="on"
+                        :full-width="col.fullWidth"
+                        :text="scope.row.status"
+                      />
                     </template>
                     <span class="tooltip-span">{{ scope.row.priority }}</span>
                   </v-tooltip>
@@ -921,6 +887,7 @@ import DataTableProgress from './DataTableComponents/DataTableProgress'
 import DataTableService from './DataTableComponents/DataTableService'
 import DataTableLink from './DataTableComponents/DataTableLink'
 import DataTableTooltip from './DataTableComponents/DataTableTooltip'
+import Badge from './Badge'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -930,9 +897,9 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-
 export default {
   components: {
+    Badge,
     apexchart: VueApexCharts,
     DataTableText,
     DataTableAttachment,
@@ -1217,6 +1184,80 @@ export default {
       const classNames = this.setClassName(obj)
       return classNames
       */
+    },
+    getBtnStatusColor(type) {
+      switch (type.toLowerCase()) {
+        case 'pending':
+          return '#00bcd4'
+        case 'clean':
+          return '#00bcd4'
+        case 'active':
+          return '#00bcd4'
+        case 'inactive':
+          return '#f56c6c'
+        case 'warning':
+          return '#e6a23c'
+        case 'malicious':
+          return '#e6a23c'
+        case 'offline':
+          return '#e6a23c'
+        case 'expired':
+          return '#e6a23c'
+        case 'cancelled':
+          return '#f56c6c'
+        case 'phishing':
+          return '#f56c6c'
+        case 'idle':
+          return '#f56c6c'
+        case 'disabled':
+          return '#f56c6c'
+        case 'network error':
+          return '#f56c6c'
+        case 'quedued':
+          return '#00bcd4'
+        case 'none':
+          return '#00bcd4'
+        case 'running':
+          return '#2196f3'
+        case 'completed':
+          return '#43a047'
+        case 'finished':
+          return '#43a047'
+        case 'online':
+          return '#43a047'
+        case 'deactivated':
+          return '#757575'
+        case 'not installed':
+          return '#757575'
+        case 'user unavailable':
+          return '#757575'
+        case 'n/a':
+          return '#00bcd4'
+        default:
+          break
+      }
+    },
+    getBtnPriorityColor(type) {
+      switch (type.toLowerCase()) {
+        case 'active':
+          return '#00bcd4'
+        case 'inactive':
+          return '#f56c6c'
+        case 'low':
+          return '#00bcd4'
+        case 'very low':
+          return '#757575'
+        case 'medium':
+          return '#2196f3'
+        case 'high':
+          return '#e6a23c'
+        case 'very high':
+          return '#f56c6c'
+        case 'n/a':
+          return '#00bcd4'
+        default:
+          break
+      }
     },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)

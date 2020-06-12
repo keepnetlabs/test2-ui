@@ -1,17 +1,12 @@
 <template>
   <div>
-    <v-btn
-      :class="[
-        'btn-status',
-        scope.row.userStatus === 'Online' ? 'btn-online' : '',
-        scope.row.userStatus === 'Offline' ? 'btn-offline' : ''
-      ]"
-      block
-      rounded
+    <badge
+      :color="getBtnUserStatusColor(scope.row[col.property])"
+      :full-width="col.fullWidth"
+      :text="scope.row[col.property]"
       v-if="scope.row && scope.row[col.property]"
-      >{{ scope.row.userStatus }}
-    </v-btn>
-    <span v-else>-</span>
+    />
+    <span v-else></span>
   </div>
 </template>
 
@@ -26,7 +21,18 @@ export default {
       type: Object
     }
   },
-  created() {}
+  methods: {
+    getBtnUserStatusColor(type) {
+      switch (type.toLowerCase()) {
+        case 'online':
+          return '#00bcd4'
+        case 'offline':
+          return '#f56c6c'
+        default:
+          break
+      }
+    }
+  }
 }
 </script>
 
