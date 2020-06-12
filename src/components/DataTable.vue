@@ -153,7 +153,7 @@
                 <div
                   :key="key"
                   class="row-edit-div"
-                  v-for="(value, key, indexOfObject) in item"
+                  v-for="(value, key) in item"
                   v-show="key !== 'id' && key !== 'children'"
                 >
                   <div style="display: flex; align-items: center;">
@@ -291,28 +291,43 @@
                       <span class="progress-per">{{ item[key] }}%</span>
                     </div>
                   </div>
-                  <div
-                    class="edit-popup-footer"
-                    v-if="
-                      (indexOfObject === Object.keys(item).length - 1 && item['createDate']) ||
-                      item['lastUpdate']
-                    "
-                  >
-                    <div class="edit-footer-date">
-                      <div class="edit-date-created" v-if="key === 'createDate'">
-                        <label>Date Created</label>
-                        <span>{{ item[key] }}</span>
-                      </div>
-                      <div class="edit-date-created" v-if="key === 'lastUpdate'">
-                        <label>Last update</label>
-                        <span>{{ item[key] }}</span>
-                      </div>
+                </div>
+                <slot
+                  name="data-table-edit-popup-body"
+                  :selectedRows="copyOfEditedRows"
+                  v-if="editMode"
+                >
+                  asasasa
+                </slot>
+                <div class="edit-popup-footer" v-if="hasEditPopupFooter()">
+                  <div class="edit-footer-date">
+                    <div
+                      class="edit-date-created"
+                      v-if="copyOfEditedRows[0]['createDate'] !== undefined"
+                    >
+                      <label>Date Created</label>
+                      <span>{{
+                        multipleValues('createDate')
+                          ? 'Multiple Values'
+                          : copyOfEditedRows[0]['createDate']
+                      }}</span>
                     </div>
-                    <div class="edit-footer-settings" v-show="isPopupDateEditable">
-                      <v-btn icon color="#fff" style="text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);">
-                        <v-icon>mdi-cog</v-icon>
-                      </v-btn>
+                    <div
+                      class="edit-date-created"
+                      v-if="copyOfEditedRows[0]['lastUpdate'] !== undefined"
+                    >
+                      <label>Last update</label>
+                      <span>{{
+                        multipleValues('lastUpdate')
+                          ? 'Multiple Values'
+                          : copyOfEditedRows[0]['lastUpdate']
+                      }}</span>
                     </div>
+                  </div>
+                  <div class="edit-footer-settings" v-show="isPopupDateEditable">
+                    <v-btn icon color="#fff" style="text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);">
+                      <v-icon>mdi-cog</v-icon>
+                    </v-btn>
                   </div>
                 </div>
               </div>
@@ -1258,6 +1273,11 @@ export default {
         default:
           break
       }
+    },
+    hasEditPopupFooter() {
+      return this.copyOfEditedRows.some((item) => {
+        return item['createDate'] || item['lastUpdate']
+      })
     },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
