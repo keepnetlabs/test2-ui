@@ -257,7 +257,7 @@
         <div class="header">
           <div class="title">
             <h2>Reported Emails</h2>
-            <p>
+            <p class="mb-8">
               Suspicious emails reported by users via Phishing Reporter and their analyze results
             </p>
           </div>
@@ -484,6 +484,7 @@ export default {
           show: true,
           type: 'status',
           width: '150',
+          fullWidth: true,
           dataArray: [
             { label: '', value: '' },
             { label: '', value: '' },

@@ -311,7 +311,7 @@
             </div>
           </div>
         </div>
-        <div class="table-header" v-if="tableData && tableData.length && (filterable || options)">
+        <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
               @mouseover.native="hover = true"
@@ -622,7 +622,7 @@
                 <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
                 <data-table-link :col="col" :scope="scope" v-if="col.type === 'link'" />
                 <div v-if="col.type === 'status'">
-                  <v-tooltip bottom>
+                  <v-tooltip bottom v-if="scope.row && scope.row['status']">
                     <template v-slot:activator="{ on }">
                       <v-btn
                         :class="[
@@ -654,7 +654,6 @@
                           scope.row.status === 'N/A' ? 'btn-none' : '',
                           col.fullWidth ? 'full-width' : ''
                         ]"
-                        block
                         rounded
                         v-if="scope.row && scope.row[col.property]"
                         v-on="on"
@@ -668,9 +667,12 @@
                       </slot>
                     </span>
                   </v-tooltip>
+                  <span v-else>
+                    {{ col.emptyText || '' }}
+                  </span>
                 </div>
                 <div v-if="col.type === 'priority'">
-                  <v-tooltip bottom opacity="1">
+                  <v-tooltip bottom opacity="1" v-if="scope.row && scope.row['priority']">
                     <template v-slot:activator="{ on }">
                       <v-btn
                         :class="[
@@ -686,16 +688,16 @@
 
                           col.fullWidth ? 'full-width' : ''
                         ]"
-                        block
                         rounded
-                        v-if="scope.row && scope.row[col.property]"
                         v-on="on"
                         >{{ scope.row.priority }}
                       </v-btn>
-                      <span v-else>-</span>
                     </template>
-                    <span class="tooltip-span">{{ scope.row.priority || 'Empty' }}</span>
+                    <span class="tooltip-span">{{ scope.row.priority }}</span>
                   </v-tooltip>
+                  <span v-else>
+                    {{ col.emptyText || '' }}
+                  </span>
                 </div>
                 <div v-if="col.type === 'popup'">
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
@@ -891,7 +893,7 @@
           </div>
         </div>
       </div>
-      <div class="pagination block" v-if="pageSizes.length">
+      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0">
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
@@ -900,7 +902,8 @@
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
           layout="total, sizes, prev, pager, next"
-        />
+        >
+        </el-pagination>
       </div>
     </v-card>
   </div>
@@ -1062,7 +1065,10 @@ export default {
   computed: {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
-    })
+    }),
+    getTableHeaderClass() {
+      return this.tableData.length === 0 && 'table-header-disable'
+    }
   },
   data() {
     return {
@@ -1221,7 +1227,10 @@ export default {
     hasOverflowTooltip(row, column, cell) {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
-      const span = cell.querySelector('span') || cell.querySelector('div')
+      const span =
+        cell.querySelector('span') ||
+        cell.querySelector('.datatable-chart__empty') ||
+        cell.querySelector('div')
       const spanWidth = span.getBoundingClientRect().width + 15
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true

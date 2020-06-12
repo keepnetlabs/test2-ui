@@ -13,7 +13,7 @@
         </p>
       </v-tooltip>
     </span>
-    <span v-else>-</span>
+    <span v-else>{{ getEmptyText }}</span>
   </div>
 </template>
 
@@ -27,6 +27,11 @@ export default {
     },
     col: {
       type: Object
+    }
+  },
+  computed: {
+    getEmptyText() {
+      return this.col['emptyText'] || ''
     }
   }
 }

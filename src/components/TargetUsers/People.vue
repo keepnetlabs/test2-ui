@@ -101,7 +101,7 @@ export default {
           label: 'Last Name',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'status',
           width: 200
         },
         {
@@ -111,7 +111,7 @@ export default {
           label: 'Email',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'priority',
           width: 250
         },
         {
@@ -121,7 +121,7 @@ export default {
           label: 'Department',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'chart',
           width: 200
         },
         {
@@ -146,13 +146,13 @@ export default {
           fullWidth: true
         },
         {
-          property: 'date',
+          property: 'progress',
           align: 'left',
           editable: false,
           label: 'Date Added',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'progress',
           width: 150
         }
       ],
@@ -299,13 +299,544 @@ export default {
   mounted() {
     this.$refs.refDataTable.loadWithDataArray([
       {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
         firstName: 'Gurkan',
         lastName: 'Ugurlu',
         department: 'Computer',
         email: 'gurkan.ugurlu@keepnetlabs.com',
         title: 'Frontend Developer',
         date: '17.05.2020',
-        priority: 'Medium'
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'High'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very Low'
+      },
+      {
+        firstName: 'Gurkan',
+        lastName: 'Ugurlu',
+        department: 'Computer',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        title: 'Frontend Developer',
+        date: '17.05.2020',
+        priority: 'Very High'
+      },
+      {
+        firstName: '',
+        lastName: '',
+        department: '',
+        email: '',
+        title: '',
+        date: '',
+        priority: ''
       },
       {
         firstName: 'Gurkan',
@@ -350,17 +881,10 @@ export default {
 
 <style lang="scss">
 .people {
-  .k-table__wrapper .card {
-    padding: 0;
-    margin-top: 24px;
-  }
-
+  padding-top: 24px;
   .add-users__title {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: normal;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;

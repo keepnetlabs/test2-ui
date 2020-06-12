@@ -245,7 +245,7 @@ export default {
       },
       plotOptions: {
         pie: {
-          customScale: 0.65
+          customScale: 0.75
         }
       },
       showTooltipLine: true
@@ -375,6 +375,9 @@ export default {
 <style lang="scss">
 .investigations {
   padding: 16px;
+  .k-table__wrapper .card {
+    padding: 24px;
+  }
   .newInvestigationOverlay {
     background-color: #fff !important;
     overflow: auto !important;

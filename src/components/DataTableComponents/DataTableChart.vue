@@ -6,6 +6,7 @@
       v-if="
         scope.row &&
         scope.row[col.property] &&
+        scope.row[col.property].constructor.name === 'Array' &&
         scope.row[col.property].filter((item) => item === 0).length !==
           scope.row[col.property].length
       "
@@ -30,7 +31,7 @@
         <p class="datatable-chart__tooltip">{{ chartOptions.labels[index] }} : {{ item }}</p>
       </div>
     </v-tooltip>
-    <span v-else>-</span>
+    <div v-else class="datatable-chart__empty"></div>
   </div>
 </template>
 
@@ -75,6 +76,24 @@ export default {
     font-size: 12px !important;
     font-family: 'Open Sans', sans-serif !important;
     margin-bottom: 3px !important;
+  }
+  &__empty {
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    height: 32px;
+    width: 32px;
+    margin: 0 auto;
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 1.5px;
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: rotateY(-10deg);
+      left: 50%;
+    }
   }
 }
 </style>

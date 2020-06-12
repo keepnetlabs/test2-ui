@@ -1,16 +1,27 @@
 <template>
-  <div class="datatable-progress" style="max-width: 80px; margin: 0 auto;" v-if="scope.row">
-    <span class="datatable-progress__per">{{
-      scope.row.progress == '100' ? 'Completed' : scope.row.progress + '%'
-    }}</span>
-    <v-progress-linear
-      :value="scope.row.progress"
-      background-color="#b3d4fc"
-      color="#2196f3"
-      height="4"
-      reactive
-      rounded
-    />
+  <div class="datatable-progress" style="max-width: 80px; margin: 0 auto;">
+    <template v-if="scope.row && parseInt(scope.row.progress) >= 0">
+      <span class="datatable-progress__per">{{
+        scope.row.progress === 100 ? 'Completed' : scope.row.progress + '%'
+      }}</span>
+      <v-progress-linear
+        :value="scope.row.progress"
+        background-color="#b3d4fc"
+        color="#2196f3"
+        height="4"
+        reactive
+        rounded
+      />
+    </template>
+    <span v-else>
+      <v-progress-linear
+        :value="0"
+        background-color="#e0e0e0"
+        color="#2196f3"
+        height="4"
+        reactive
+        rounded
+    /></span>
   </div>
 </template>
 

@@ -206,9 +206,6 @@ export default {
 
 <style lang="scss">
 .users {
-  .k-table__wrapper .card {
-    padding: 0;
-    margin-top: 24px;
-  }
+  padding-top: 16px;
 }
 </style>

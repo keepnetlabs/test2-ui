@@ -29,7 +29,6 @@
         scope.row.detected === 'User Unavailable' ? 'btn-no_match ' : '',
         scope.row.detected === 'Not Installed' ? 'btn-no_match ' : ''
       ]"
-      block
       rounded
       v-if="scope.row && scope.row[col.property]"
       >{{ scope.row.detected }}
@@ -52,7 +51,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .btn-pending {
   background-color: #00bcd4 !important;
 }
