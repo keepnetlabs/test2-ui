@@ -560,11 +560,25 @@
             color:#2196f3 !important;
           }
         }
+
+        @media (max-width: 480px){
+          white-space: wrap;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          width:100%;
+        }
         &__total{
           margin-right: 32px;
+          @media (max-width: 480px){
+            margin-right: 0 ;
+          }
         }
         &__sizes{
           margin-right: 32px;
+          @media (max-width: 480px){
+            margin-right: 0 ;
+          }
         }
       }
 
@@ -940,5 +954,14 @@
         height: 0;
       }
     }
+  }
+
+  &__link{
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: #0097fa !important;
+    text-decoration: none;
   }
 }

@@ -315,7 +315,8 @@ export default {
           if (response && response.data && response.data.status === 'FAILED') {
             this.$store.dispatch('common/createSnackBar', {
               message: response.data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert'
             })
           } else {
             this.showModal = true

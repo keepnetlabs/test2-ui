@@ -1,5 +1,22 @@
 <template>
   <div id="users" class="users">
+    <app-dialog
+      :status="isWantToDelete"
+      v-if="isWantToDelete"
+      icon="mdi-alert"
+      title="Delete User"
+      subtitle="Do you want to delete this user?"
+    >
+      <template v-slot:app-dialog-body> {{ getUserName }} will be deleted ! </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"
+            >CANCEL</v-btn
+          >
+          <v-btn class="users__button" text color="#2196f3" @click="deleteUser">DELETE</v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <data-table
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -27,12 +44,14 @@ import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList
 } from '../../api/phishingReporter'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+
+import AppDialog from '../AppDialog'
 
 export default {
   name: 'Users',
   components: {
-    DataTable
+    DataTable,
+    AppDialog
   },
   data() {
     return {
@@ -140,12 +159,22 @@ export default {
           }
         ],
         pageSizes: [5, 10, 25, 50, 100]
-      }
+      },
+      isWantToDelete: false,
+      selectedRow: null
+    }
+  },
+  computed: {
+    getUserName() {
+      return this.selectedRow && (this.selectedRow.firstName || this.selectedRow.lastName)
+        ? `${this.selectedRow.firstName} ${this.selectedRow.lastName}`
+        : 'This user'
     }
   },
   methods: {
     handleDelete(row) {
-      //TODO DELETE ACTION
+      this.selectedRow = row
+      this.isWantToDelete = true
     },
     handleAdd(row) {},
     callForPhishingReporterUser() {
@@ -179,7 +208,6 @@ export default {
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {
-        debugger
         const payload = {
           pageNumber,
           pageSize: 10,
@@ -198,6 +226,9 @@ export default {
           })
           .catch((error) => {})
       })
+    },
+    deleteUser() {
+      this.isWantToDelete = false
     }
   },
 
@@ -210,5 +241,11 @@ export default {
 <style lang="scss">
 .users {
   padding-top: 16px;
+  &__button {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+  }
 }
 </style>

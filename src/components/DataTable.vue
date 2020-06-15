@@ -164,7 +164,9 @@
                     <router-link
                       v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
                       :to="`${col.href}/${copyOfEditedRows[0][col.hrefKey]}`"
-                    ></router-link>
+                      class="k-table__link"
+                      >{{ copyOfEditedRows[0][col.property] }}</router-link
+                    >
                     <div
                       class="popup__apexchart-container"
                       style="display: flex; align-items: center;"
@@ -766,7 +768,7 @@
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
-                  <span>{{ column.label }}</span>
+                  <span>{{ col.headerTooltip }}</span>
                 </v-tooltip>
               </template>
             </el-table-column>
@@ -1731,12 +1733,9 @@ export default {
       // After user edited the row and pressed SAVE button
 
       if (this.multipleSelection.length === 1) {
-        debugger
         this.multipleSelection.map((item, index) => {
-          debugger
           const keys = Object.keys(item)
           keys.map((key) => {
-            debugger
             //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
             item[key] = this.copyOfEditedRows[0][key]
           })

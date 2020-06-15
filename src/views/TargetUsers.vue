@@ -16,7 +16,8 @@
           >
             People
           </v-tab>
-          <v-tab @click="changeTabStatus(1)" class="target-users__tab p-2">Groups</v-tab>
+          <v-tab @click="changeTabStatus(1)" class="target-users__tab p-2 mr-8">Groups</v-tab>
+          <v-tab @click="changeTabStatus(1)" class="target-users__tab p-2">Smart Groups</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" class="target-users__tabs-items">
           <v-tab-item>
@@ -24,6 +25,9 @@
           </v-tab-item>
           <v-tab-item>
             <groups />
+          </v-tab-item>
+          <v-tab-item>
+            <smart-groups />
           </v-tab-item>
         </v-tabs-items>
       </v-card>
@@ -33,8 +37,10 @@
 <script>
 import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
+import SmartGroups from '../components/TargetUsers/SmartGroups'
 export default {
   components: {
+    SmartGroups,
     People,
     Groups
   },
@@ -68,7 +74,6 @@ export default {
         0 1px 1px -1px rgba(204, 204, 204, 0.12);
       padding: 15px 5px 18px 24px !important;
       border-radius: 20px !important;
-      height: 646px;
     }
   }
 
@@ -85,7 +90,7 @@ export default {
       display: none;
     }
     .v-tabs-slider {
-      width: 79%;
+      width: 100%;
     }
   }
   &__tab {
@@ -98,13 +103,14 @@ export default {
     padding: 0;
     display: flex;
     justify-content: flex-start;
+    min-width: 60px;
 
     &:before {
       background-color: white;
     }
 
     &--people {
-      margin-right: 25px !important;
+      margin-right: 32px !important;
     }
 
     &-active {
