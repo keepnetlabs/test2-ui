@@ -125,6 +125,7 @@
                     @getFormValues="getAddinSettingsValues"
                     ref="refAddInSettings"
                     :inModal="true"
+                    :showHeader="false"
                   />
                 </v-stepper-content>
                 <v-stepper-content class="k-stepper__content" :step="2">
@@ -133,7 +134,7 @@
                       <v-list-item-title class="add-in-configuration__title">
                         Email Settings
                       </v-list-item-title>
-                      <v-list-item-subtitle class="add-in-configuration__subtitle mb-2">
+                      <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
                         Reported emails will be sent to specified recipients
                       </v-list-item-subtitle>
                     </v-list-item-content>
@@ -161,6 +162,7 @@
                     @getFormValues="getOtherSettingsValues"
                     ref="refOtherSettings"
                     :inModal="true"
+                    :show-header="false"
                   />
                 </v-stepper-content>
               </v-stepper-items>
@@ -448,6 +450,9 @@ export default {
     min-height: auto !important;
     .v-list-item__content {
       padding: 0;
+    }
+    .v-card-headline {
+      white-space: normal;
     }
   }
 }

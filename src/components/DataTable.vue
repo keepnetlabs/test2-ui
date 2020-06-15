@@ -1731,9 +1731,12 @@ export default {
       // After user edited the row and pressed SAVE button
 
       if (this.multipleSelection.length === 1) {
+        debugger
         this.multipleSelection.map((item, index) => {
+          debugger
           const keys = Object.keys(item)
           keys.map((key) => {
+            debugger
             //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
             item[key] = this.copyOfEditedRows[0][key]
           })

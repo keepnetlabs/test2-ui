@@ -89,7 +89,7 @@ export default {
       content: '';
       position: absolute;
       height: 16px;
-      width: 1.5px;
+      width: 1px;
       background-color: rgba(255, 255, 255, 0.3);
       transform: rotateY(-10deg);
       left: 50%;

@@ -417,7 +417,6 @@ export default {
       columns: [
         {
           property: 'subject',
-          isEditable: true,
           align: 'left',
           editable: false,
           label: 'Subject',
@@ -426,17 +425,8 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          editType: {
-            type: 'select',
-            options: [
-              { label: 'NonMalicious', value: 1 },
-              {
-                label: 'Malicious',
-                value: 2
-              },
-              { label: 'Phishing', value: 3 }
-            ]
-          }
+          isEditable: true,
+          editComponent: 'textfield'
           //minWidth: 80
         },
         {
@@ -449,21 +439,22 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          editType: 'text',
-          isEditable: true
+          isEditable: true,
+          editComponent: 'textfield'
           //minWidth: 100
         },
         {
           property: 'source',
           align: 'left',
           editable: false,
-          isEditable: true,
           label: 'Source',
           fixed: false,
           sortable: true,
           show: true,
           type: 'text',
-          width: '150'
+          width: '150',
+          isEditable: true,
+          editComponent: 'textfield'
           //minWidth: 80
         },
         {
@@ -476,6 +467,7 @@ export default {
           sortable: false,
           show: true,
           type: 'text',
+          editComponent: 'textfield',
           width: '150'
           //minWidth: 80
         },
@@ -491,11 +483,8 @@ export default {
           type: 'status',
           width: '150',
           fullWidth: true,
-          dataArray: [
-            { label: '', value: '' },
-            { label: '', value: '' },
-            { label: '', value: '' }
-          ]
+          editComponent: 'select',
+          editComponentItems: ['Active', 'Inactive', 'N/A']
           // minWidth: 80
         },
         {
@@ -506,8 +495,8 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          //minWidth: 80
+          type: 'date',
+          editComponent: 'datepicker',
           width: '230'
         }
       ],
