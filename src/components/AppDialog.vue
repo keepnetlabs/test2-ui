@@ -4,7 +4,7 @@
     class="k-dialog"
     :opacity="0.23"
     :width="dialogWidth"
-    :class="className"
+    :content-class="className"
   >
     <v-card light class="k-dialog__card">
       <v-list-item class="pl-0 pr-0">
@@ -70,7 +70,7 @@ export default {
           retValue = '480'
           break
         case 'big':
-          retValue = '600'
+          retValue = '580'
           break
         default:
           break

@@ -2,4 +2,13 @@
   &__content.theme--light.menuable__content__active {
     border-radius: 8px;
   }
+  &__content{
+    background: #fff !important;
+    .v-list-item{
+      &__title{
+        font-size: 14px;
+      }
+    }
+  }
+
 }

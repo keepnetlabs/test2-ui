@@ -3,7 +3,7 @@
     rounded
     :color="color"
     v-on="listeners"
-    :class="['k-badge', fullWidth ? 'full-width' : '']"
+    :class="['k-badge', fullWidth ? 'full-width' : '', getBadgeSize]"
   >
     {{ text }}
   </v-btn>
@@ -24,6 +24,25 @@ export default {
     fullWidth: {
       type: Boolean,
       default: true
+    },
+    size: {
+      type: String,
+      default: 'medium'
+    }
+  },
+  computed: {
+    getBadgeSize() {
+      let retValue = ''
+      switch (this.size) {
+        case 'medium':
+          retValue = 'k-badge__sizes--medium'
+          break
+        case 'small':
+          retValue = 'k-badge__sizes--small'
+        default:
+          break
+      }
+      return retValue
     }
   }
 }
@@ -31,16 +50,6 @@ export default {
 
 <style lang="scss">
 .k-badge {
-  &.v-btn {
-    border-radius: 18px !important;
-    margin: 0 auto;
-    max-width: 90px;
-    height: 34px !important;
-    box-shadow: none !important;
-  }
-  &.v-btn:not(.v-btn--round).v-size--default {
-    min-width: 90px;
-  }
   .v-btn__content {
     font-size: 12px !important;
     font-weight: 600 !important;
@@ -48,6 +57,32 @@ export default {
     text-align: center;
     text-transform: capitalize;
     color: #ffffff;
+  }
+  &__sizes {
+    &--medium {
+      &.v-btn {
+        border-radius: 18px !important;
+        margin: 0 auto;
+        max-width: 90px;
+        height: 34px !important;
+        box-shadow: none !important;
+      }
+      &.v-btn:not(.v-btn--round).v-size--default {
+        min-width: 90px;
+      }
+    }
+    &--small {
+      &.v-btn {
+        border-radius: 4px !important;
+        max-width: 60px;
+        height: 24px !important;
+        box-shadow: none !important;
+      }
+      &.v-btn:not(.v-btn--round).v-size--default {
+        min-width: 60px;
+        padding: 0;
+      }
+    }
   }
 }
 .full-width {

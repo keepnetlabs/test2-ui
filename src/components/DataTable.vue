@@ -1,37 +1,12 @@
 <template>
   <div :class="{ 'k-table__wrapper': setDatatableUI }">
-    <v-overlay :opacity="0.46" :value="isWantToDownload" :z-index="999" fixed>
-      <v-card
-        class="pb-4 pa-6"
-        light
-        style="
-          max-width: 580px;
-          border-radius: 12px !important;
-          padding: 24px 24px 16px 24px !important;
-        "
-      >
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Download Current Page</v-list-item-title>
-            <v-list-item-subtitle class="v-card-sub-header">Select file type</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="check-wrapper pl-0 pr-0">
-          <v-radio-group class="ml-3" row v-model="downloadType">
-            <v-radio color="#2196f3" label="XLS" value="XLS" />
-            <v-radio color="#2196f3" label="CSV" value="CSV" />
-            <v-radio color="#2196f3" label="PDF" value="PDF" />
-          </v-radio-group>
-        </v-list-item>
-        <div class="d-flex download-buttons flex-row flex-wrap">
-          <v-btn @click="changeDownloadModalStatus(false)" color="#f56c6c" text>CANCEL</v-btn>
-          <v-btn @click="downloadEvent" color="#2196f3" text>DOWNLOAD</v-btn>
-        </div>
-      </v-card>
-    </v-overlay>
+    <download-modal
+      :isShow="isWantToDownload"
+      @downloadEvent="downloadEvent"
+      @changeDownloadModalStatus="changeDownloadModalStatus"
+      v-if="options"
+      :title="downloadModalTitle"
+    />
     <data-table-tooltip
       v-if="showOverFlowTooltip"
       :tooltipStyle="overFlowTooltipStyle"
@@ -144,152 +119,244 @@
               class="edit-popup-body"
               v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
             >
-              <div
-                :key="item[columns[ind].property]"
-                class="items-wrapper"
-                v-for="(item, ind) of copyOfEditedRows"
-                v-show="ind === 0"
-              >
-                <div
-                  :key="key"
-                  class="row-edit-div"
-                  v-for="(value, key) in item"
-                  v-show="key !== 'id' && key !== 'children'"
-                >
+              <div class="items-wrapper">
+                <div :key="col.label" class="row-edit-div" v-for="col in columns" v-if="col.show">
                   <div style="display: flex; align-items: center;">
-                    <label
-                      :class="[Array.isArray(item[key]) ? 'mt-n5' : '']"
-                      v-if="(key !== 'progress' || !editMode) && key !== 'createDate'"
-                      >{{ getColumnLabel(key, value) }}</label
-                    >
+                    <label v-if="col.property !== 'createDate' && col.property !== 'lastUpdate'">
+                      {{ col.label }}
+                    </label>
                     <span
-                      :class="[getColumnLabelClass(key, value)]"
                       v-if="
-                        !editMode &&
-                        !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'createDate'
+                        (!editMode || !col.isEditable) &&
+                        multipleValues(col.property) &&
+                        col.property !== 'createDate' &&
+                        col.property !== 'lastUpdate'
                       "
-                      >{{ value }}</span
+                      :class="[multipleValues(col.property) ? 'font-italic' : '']"
                     >
-                    <v-text-field
-                      :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
-                      :label="columns[ind].label"
-                      class="edit-text-field"
-                      dense
-                      solo
-                      v-if="
-                        !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'priority' &&
-                        key !== 'status' &&
-                        key !== 'detected' &&
-                        key !== 'createDate'
+                      Multiple Values
+                    </span>
+                    <span
+                      v-else-if="
+                        (!editMode || !col.isEditable) &&
+                        col.type === 'text' &&
+                        col.property !== 'createDate' &&
+                        col.property !== 'lastUpdate'
                       "
-                      v-model="item[key]"
-                    />
-                    <v-select
-                      :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
-                      :items="editablePriorityItems"
-                      class="edit-select"
-                      dense
-                      solo
-                      v-if="
-                        !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key === 'priority'
+                    >
+                      {{ copyOfEditedRows[0][col.property] }}
+                    </span>
+                    <badge
+                      v-else-if="
+                        ((!editMode || !col.isEditable) && (col.type === 'status' ||
+                        col.type === 'detected'))
                       "
-                      v-model="item[key]"
+                      size="small"
+                      :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
+                      :text="copyOfEditedRows[0][col.property]"
                     />
-                    <v-select
-                      :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
-                      :items="editableStatusItems"
-                      class="edit-select"
-                      dense
-                      solo
-                      v-if="
-                        !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key === 'status'
-                      "
-                      v-model="item[key]"
+                    <badge
+                      v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
+                      size="small"
+                      :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"
+                      :text="copyOfEditedRows[0][col.property]"
                     />
-                    <v-select
-                      :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
-                      :items="editableDetectedItems"
-                      class="edit-select"
-                      dense
-                      solo
-                      v-if="
-                        !multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key === 'detected'
-                      "
-                      v-model="item[key]"
-                    />
-                    <v-text-field
-                      :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
-                      :value="multipleEditModels[key]"
-                      @input="handleMultipleEdits(item, key, $event)"
-                      class="edit-text-field"
-                      dense
-                      label="Multiple Values"
-                      placeholder="Multiple Values"
-                      solo
-                      v-if="
-                        multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        key !== 'progress' &&
-                        key !== 'detected' &&
-                        key !== 'status' &&
-                        key !== 'priority' &&
-                        key !== 'createDate'
-                      "
-                    />
-                    <v-select
-                      :autofocus="item[key] === copyOfEditedRows[0][columns[0].property]"
-                      :items="getMultipleSelectItems(key)"
-                      class="edit-select"
-                      dense
-                      solo
-                      label="Multiple Values"
-                      placeholder="Multiple Values"
-                      v-if="
-                        multipleValues(key, item[key]) &&
-                        editMode &&
-                        !Array.isArray(item[key]) &&
-                        (key === 'detected' || key === 'status' || key === 'priority')
-                      "
-                      :value="multipleEditModels[key]"
-                      @input="handleMultipleEdits(item, key, $event)"
-                    />
-
+                    <router-link
+                      v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
+                      :to="`${col.href}/${copyOfEditedRows[0][col.hrefKey]}`"
+                    ></router-link>
                     <div
                       class="popup__apexchart-container"
-                      v-else-if="
-                        columns.find((a) => {
-                          return a.type === 'chart' && a.property === key
-                        })
-                      "
+                      style="display: flex; align-items: center;"
+                      :class="[
+                        Array.isArray(copyOfEditedRows[0][col.property]) &&
+                        JSON.stringify(copyOfEditedRows[0][col.property]) !== JSON.stringify([0, 0])
+                          ? 'popup__apexchart-container--1'
+                          : ''
+                      ]"
+                      v-else-if="col.type === 'chart'"
                     >
-                      <template v-if="Array.isArray(item[key]) && item[key].length > 1">
+                      <template
+                        v-if="
+                          Array.isArray(copyOfEditedRows[0][col.property]) &&
+                          JSON.stringify(copyOfEditedRows[0][col.property]) !==
+                            JSON.stringify([0, 0])
+                        "
+                      >
                         <apexchart
                           :options="chartOptions"
-                          :series="item[key]"
+                          :series="copyOfEditedRows[0][col.property]"
                           :width="chartOptions.chart.width"
                         />
                       </template>
                       <div v-else class="datatable-chart__empty"></div>
                     </div>
-                    <div v-if="key === 'progress' && !editMode">
-                      <span class="progress-per">{{ item[key] }}%</span>
-                    </div>
+                    <span v-else-if="col.type === 'progress'" style="margin-left: 2px;">
+                      {{ copyOfEditedRows[0][col.property] }}%
+                    </span>
+                    <v-menu
+                      ref="menu1"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                      v-else-if=" (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'datepicker')"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="copyOfEditedRows[0][col.property]"
+                          label="Start Date"
+                          class="edit-text-field"
+                          dense
+                          solo
+                          append-icon="mdi-calendar-range"
+                          v-on="on"
+                          readonly
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        :value="copyOfEditedRows[0][col.property]"
+                        @input="handleEditPopupDatePickerChange($event, col.property)"
+                        no-title
+                      ></v-date-picker>
+                    </v-menu>
+                    <v-text-field
+                      class="edit-text-field"
+                      dense
+                      solo
+                      v-bind="col.editComponentProps"
+                      v-if="
+                        (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'textfield')
+                      "
+                      :value="copyOfEditedRows[0][col.property]"
+                      @input="handleEditPopupTextFieldChange($event, col.property)"
+                    />
+                    <v-select
+                      :items="col.editComponentItems"
+                      class="edit-select"
+                      dense
+                      solo
+                      v-bind="col.editComponentProps"
+                      v-if="
+                        !multipleValues(col.property) &&
+                        editMode &&
+                        col.isEditable &&
+                        col.editComponent === 'select'
+                      "
+                      :value="copyOfEditedRows[0][col.property]"
+                      @input="handleEditPopupSelectChange($event, col.property)"
+                    />
+                    <v-text-field
+                      :autofocus="!multipleEditDisables[col.property]"
+                      :value="multipleEditModels[col.property]"
+                      @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                      class="edit-text-field"
+                      dense
+                      label="Multiple Values"
+                      placeholder="Multiple Values"
+                      solo
+                      :readonly="!multipleEditDisables[col.property]"
+                      v-if="
+                        multipleValues(col.property) &&
+                        editMode &&
+                        col.type !== 'chart' &&
+                        col.type !== 'progress' &&
+                        col.type !== 'date' &&
+                        col.property !== 'createDate' &&
+                        col.editComponent === 'textfield' &&
+                        col.isEditable
+                      "
+                    >
+                      <template v-slot:append>
+                        <v-btn
+                          text
+                          @click.native="handleEditClick(col.property)"
+                          class="edit-popup__edit-component"
+                        >
+                          EDIT
+                        </v-btn>
+                      </template>
+                    </v-text-field>
+
+                    <v-menu
+                      ref="menu1"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                      v-if="
+                        multipleValues(col.property) &&
+                        editMode &&
+                        col.type !== 'chart' &&
+                        col.type !== 'progress' &&
+                        col.type !== 'date' &&
+                        col.property !== 'createDate' &&
+                        col.editComponent === 'datepicker' &&
+                        col.isEditable
+                      "
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="multipleEditModels[col.property]"
+                          label="Start Date"
+                          class="edit-text-field"
+                          dense
+                          solo
+                          append-icon="mdi-calendar-range"
+                          v-on="on"
+                          :readonly="!multipleEditDisables[col.property]"
+                          :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                        >
+                          <template v-slot:append>
+                            <v-btn
+                              text
+                              @click.native="handleEditClick(col.property)"
+                              class="edit-popup__edit-component"
+                            >
+                              EDIT
+                            </v-btn>
+                          </template>
+                        </v-text-field>
+                      </template>
+                      <v-date-picker
+                        :value="multipleEditModels[col.property]"
+                        @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                        no-title
+                      ></v-date-picker>
+                    </v-menu>
+
+                    <v-select
+                      :items="col.editComponentItems"
+                      class="edit-select"
+                      dense
+                      solo
+                      :readonly="!multipleEditDisables[col.property]"
+                      :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                      v-if="
+                        multipleValues(col.property) &&
+                        editMode &&
+                        col.type !== 'chart' &&
+                        col.type !== 'progress' &&
+                        col.type !== 'date' &&
+                        col.property !== 'createDate' &&
+                        col.editComponent === 'select' &&
+                        col.isEditable
+                      "
+                      :value="multipleEditModels[col.property]"
+                      @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                    >
+                      <template v-slot:append v-if="!multipleEditDisables[col.property]">
+                        <v-btn
+                          text
+                          @click.native="handleEditClick(col.property)"
+                          class="edit-popup__edit-component"
+                        >
+                          EDIT
+                        </v-btn>
+                      </template>
+                    </v-select>
                   </div>
                 </div>
                 <slot
@@ -297,7 +364,6 @@
                   :selectedRows="copyOfEditedRows"
                   v-if="editMode"
                 >
-                  asasasa
                 </slot>
                 <div class="edit-popup-footer" v-if="hasEditPopupFooter()">
                   <div class="edit-footer-date">
@@ -454,20 +520,31 @@
                 }}</span>
               </v-tooltip>
             </slot>
-
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click="changeDownloadModalStatus(true)"
-                  class="btn-hover mr-1"
-                  icon
-                  v-on="on"
-                >
-                  <v-icon>mdi-download</v-icon>
-                </v-btn>
+            <v-menu bottom left offset-y>
+              <template v-slot:activator="{ on: menu, attrs }">
+                <v-tooltip bottom opacity="1">
+                  <template v-slot:activator="{ on: tooltip }">
+                    <v-btn
+                      class="btn-hover mr-1"
+                      icon
+                      v-bind="attrs"
+                      v-on="{ ...tooltip, ...menu }"
+                    >
+                      <v-icon>mdi-download</v-icon>
+                    </v-btn>
+                  </template>
+                  <span class="tooltip-span">Download Options</span>
+                </v-tooltip>
               </template>
-              <span class="tooltip-span">Download Options</span>
-            </v-tooltip>
+              <v-list-item
+                v-for="(item, index) in downloadButtonOptions"
+                :key="index"
+                @click="handleDownloadButtonClick(item)"
+              >
+                <v-list-item-title>{{ item }}</v-list-item-title>
+              </v-list-item>
+            </v-menu>
+
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn class="btn-hover mr-1" icon v-on="on">
@@ -671,7 +748,7 @@
                         :color="getBtnPriorityColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.status"
+                        :text="scope.row.priority"
                       />
                     </template>
                     <span class="tooltip-span">{{ scope.row.priority }}</span>
@@ -902,7 +979,9 @@ import DataTableProgress from './DataTableComponents/DataTableProgress'
 import DataTableService from './DataTableComponents/DataTableService'
 import DataTableLink from './DataTableComponents/DataTableLink'
 import DataTableTooltip from './DataTableComponents/DataTableTooltip'
+import DownloadModal from './DataTableComponents/DownloadModal'
 import Badge from './Badge'
+
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -926,7 +1005,8 @@ export default {
     DataTableProgress,
     DataTableService,
     DataTableLink,
-    DataTableTooltip
+    DataTableTooltip,
+    DownloadModal
   },
   props: {
     columns: {
@@ -1065,12 +1145,15 @@ export default {
       currentPage: 1,
       multipleSelection: [],
       selectionCheckbox: false,
+      editedPopupProperties: [],
       selectionAll: false,
       series: [44, 55, 13, 43],
       search: '',
+      downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToAddUsers: false,
       isWantToEditRow: false,
+      multipleEditDisables: [],
       selectedMenuIndex: null,
       editMode: false,
       firstColFixed: true,
@@ -1086,7 +1169,6 @@ export default {
       },
       showOverFlowTooltip: false,
       multipleEditModels: [],
-      downloadType: 'PDF',
       actionFixed: 'right',
       allHidden: false,
       printObj: {
@@ -1098,6 +1180,7 @@ export default {
       clusterChevron: false,
       actionsWidth: 0,
       init: true,
+      downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate: false
     }
   },
@@ -1106,9 +1189,7 @@ export default {
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
-    isRowActionsMenuOpen(val) {
-      console.log('val', val)
-    },
+    isRowActionsMenuOpen(val) {},
     firstColFixed(val) {
       if (!val) {
         const fixedCol = this.columns.filter((c) => c.fixed === 'left')
@@ -1194,14 +1275,39 @@ export default {
     handleTableData() {
       return this.showfilteredData ? this.filteredData : this.tableData
     },
+    handleEditPopupTextFieldChange(value, props) {
+      this.copyOfEditedRows.map((item) => {
+        item[props] = value
+      })
+    },
+    handleEditPopupDatePickerChange(value, props) {
+      this.menu1 = false
+      this.copyOfEditedRows.map((item) => {
+        item[props] = value
+      })
+    },
+    handleEditPopupSelectChange(value, props) {
+      this.copyOfEditedRows.map((item) => {
+        item[props] = value
+      })
+    },
+    handleDownloadButtonClick(item) {
+      this.downloadModalTitle = item
+      this.changeDownloadModalStatus(true)
+    },
     setCellClass(obj) {
       /*
       const classNames = this.setClassName(obj)
       return classNames
       */
     },
+    handleEditClick(prop) {
+      this.multipleEditDisables[prop] = true
+      this.editedPopupProperties.push(prop)
+      this.$forceUpdate()
+    },
     getBtnStatusColor(type) {
-      switch (type.toLowerCase()) {
+      switch (type && type.toLowerCase()) {
         case 'pending':
           return '#00bcd4'
         case 'clean':
@@ -1249,7 +1355,7 @@ export default {
         case 'n/a':
           return '#00bcd4'
         default:
-          break
+          return '#00bcd4'
       }
     },
     getBtnPriorityColor(type) {
@@ -1390,6 +1496,8 @@ export default {
     cancelEditedOnes() {
       this.editMode = false
       this.multipleEditModels = []
+      this.editedPopupProperties = []
+      this.multipleEditDisables = []
     },
     handleMultipleEdits(item, key, value) {
       item[key] = value
@@ -1418,13 +1526,8 @@ export default {
       return ''
     },
     handleSelectionChange(val) {
-      if (this.currentPage === 1) {
-        this.multipleSelection = val
-        this.copyOfEditedRows = JSON.parse(JSON.stringify(val))
-      } else {
-        this.multipleSelection.push(val)
-        this.copyOfEditedRows.push(JSON.parse(JSON.stringify(val)))
-      }
+      this.multipleSelection = val
+      this.copyOfEditedRows = JSON.parse(JSON.stringify(val))
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
@@ -1465,8 +1568,12 @@ export default {
     onEmptyBtnClicked(e) {
       this.$emit('onEmptyBtnClicked', e)
     },
-    downloadEvent(e) {
-      this.$emit('downloadEvent', this.downloadType)
+    downloadEvent(downloadTypes) {
+      this.$emit('downloadEvent', {
+        exportTypes: downloadTypes,
+        pageNumber: this.currentPage,
+        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1] ? true : false
+      })
     },
     handleSubMenuItemClick(item) {
       this.$emit('submenuItemClick', item)
@@ -1569,6 +1676,7 @@ export default {
       if (typeof selections === 'object' && !this.multipleSelection.length) {
         this.multipleSelection.push(selections)
       }
+
       // Edit actions should handle here.
       // selections property is an array and has the selected row object data
       if (selections) {
@@ -1617,19 +1725,44 @@ export default {
       this.isWantToEditRow = false
       this.$refs.elTableRef.clearSelection()
       this.multipleSelection = []
+      this.multipleEditDisables = []
     },
     saveEditedOnes() {
       // After user edited the row and pressed SAVE button
-      this.multipleSelection.map((item, index) => {
-        const keys = Object.keys(item)
-        keys.map((key) => {
-          //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
-          item[key] = this.copyOfEditedRows[0][key]
+
+      if (this.multipleSelection.length === 1) {
+        this.multipleSelection.map((item, index) => {
+          const keys = Object.keys(item)
+          keys.map((key) => {
+            //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
+            item[key] = this.copyOfEditedRows[0][key]
+          })
         })
-      })
+      } else {
+        this.editedPopupProperties.map((key) => {
+          this.multipleSelection.map((item, index) => {
+            item[key] = this.copyOfEditedRows[0][key]
+          })
+        })
+
+        this.multipleSelection.map((item, index) => {
+          const keys = Object.keys(item)
+          keys.map((key) => {
+            const keyIndex = this.editedPopupProperties.findIndex((k) => {
+              return k === key
+            })
+            if (keyIndex === -1) {
+              item[key] = this.copyOfEditedRows[index][key]
+            }
+          })
+        })
+      }
+
       this.$refs.elTableRef.clearSelection()
       this.editMode = false
       this.isWantToEditRow = false
+      this.multipleEditDisables = []
+      this.editedPopupProperties = []
       this.multipleSelection = []
       this.multipleEditModels = []
       this.copyOfEditedRows = []

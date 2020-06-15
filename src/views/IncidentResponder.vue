@@ -417,6 +417,7 @@ export default {
       columns: [
         {
           property: 'subject',
+          isEditable: true,
           align: 'left',
           editable: false,
           label: 'Subject',
@@ -447,13 +448,16 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: '300'
+          width: '300',
+          editType: 'text',
+          isEditable: true
           //minWidth: 100
         },
         {
           property: 'source',
           align: 'left',
           editable: false,
+          isEditable: true,
           label: 'Source',
           fixed: false,
           sortable: true,
@@ -464,6 +468,7 @@ export default {
         },
         {
           property: 'priority',
+          isEditable: true,
           align: 'left',
           editable: false,
           label: 'Priority',
@@ -476,6 +481,7 @@ export default {
         },
         {
           property: 'status',
+          isEditable: true,
           align: 'center',
           editable: false,
           label: 'Status',

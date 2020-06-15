@@ -111,6 +111,7 @@
                 flex-direction: column;
                 padding-bottom: 7px;
 
+
                 .v-input__slot {
                   box-shadow: unset !important;
                   border: 1px solid rgba(205, 205, 205, 0.5);
@@ -164,6 +165,7 @@
             display: flex;
             margin-bottom: -16px;
             padding: 17px;
+            margin-top:9px;
             align-items: center;
             justify-content: space-between;
             .edit-footer-date {
@@ -238,6 +240,19 @@
           }
         }
 
+        .edit-popup{
+          &__edit-component{
+            font-size: 12px;
+            font-weight: normal;
+            line-height: 1.58;
+            letter-spacing: normal;
+            color:#2196f3 !important;
+            margin-right: -16px;
+            &:hover{
+              background-color: transparent;
+            }
+          }
+        }
         .el-table {
           border-bottom: unset !important;
           margin: 0 auto;
@@ -902,11 +917,13 @@
       }
 
       &__apexchart-container {
-        height: 80px;
-        width: 80px;
-        padding-top: 6px;
-        margin-left: -23px;
-        margin-top: -20px;
+        height: auto;
+        width: 70px;
+        margin-left: -20px;
+        &--1{
+          margin-top:-11px;
+          margin-bottom: -11px;
+        }
       }
     }
 

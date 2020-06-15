@@ -177,24 +177,27 @@ export default {
     callForTurnOn(row) {
       console.log('row', row)
     },
-    exportPhishingReporterUserList(exportType) {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'LastSeen',
-        ascending: false,
-        reportAllPages: true,
-        exportType: exportType === 'XLS' ? 'Excel' : exportType
-      }
-      exportPhishingReporterUserList(payload)
-        .then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `users.${exportType.toLocaleLowerCase()}`
-          link.click()
-        })
-        .catch((error) => {})
+    exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber }) {
+      exportTypes.map((exportType) => {
+        debugger
+        const payload = {
+          pageNumber,
+          pageSize: 10,
+          orderBy: 'LastSeen',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportPhishingReporterUserList(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `users.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
     }
   },
 

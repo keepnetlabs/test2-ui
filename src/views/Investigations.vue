@@ -39,7 +39,7 @@
       :countRow="5"
       :pageSizes="pageSizes"
       :defaultSort="'date'"
-      :selectable="false"
+      :selectable="true"
       :filterable="true"
       :options="true"
       :rowActions="rowActions"
@@ -60,7 +60,8 @@
       :isServerSide="false"
       v-if="showDatatable"
       @onEmptyBtnClicked="isWantToAddNewCommunity = true"
-    />
+    >
+    </datatable>
   </div>
 </template>
 <script>
@@ -102,7 +103,8 @@ export default {
         show: true,
         type: 'text',
         width: 250,
-        isFilterable: true
+        isFilterable: true,
+        editComponent: 'textfield'
         //minWidth: 80
       },
       {
@@ -138,6 +140,7 @@ export default {
         sortable: true,
         show: true,
         type: 'status',
+        isEditable: true,
         width: 200
         //minWidth: 80
       },
@@ -308,22 +311,24 @@ export default {
         params: { id: value.row.resourceId }
       })
     },
-    exportInvestigationList(exportType) {
-      const payload = {
-        pageNumber: 0,
-        pageSize: 0,
-        orderBy: 'ExpireDate',
-        ascending: true,
-        reportAllPages: true,
-        exportType: exportType === 'XLS' ? 'Excel' : exportType
-      }
+    exportInvestigationList({ exportTypes, reportAllPages, pageNumber }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber,
+          pageSize: 5,
+          orderBy: 'ExpireDate',
+          ascending: true,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
 
-      exportInvestigationList(payload).then((response) => {
-        const { data } = response
-        const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(data)
-        link.download = `investigations.${exportType.toLocaleLowerCase()}`
-        link.click()
+        exportInvestigationList(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `investigations.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
       })
     },
 

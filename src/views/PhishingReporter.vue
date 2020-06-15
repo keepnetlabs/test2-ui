@@ -96,7 +96,7 @@
         </div>
       </div>
       <div class="phishing-reporter__header__container__panel">
-        <v-menu bottom offset-y>
+        <v-menu bottom offset-y min-width="133">
           <template v-slot:activator="{ on }">
             <div v-on="on" class="phishing-reporter__header__container__panel-right-col">
               <div class="phishing-reporter__header__container__panel-text">{{ selectedDate }}</div>
@@ -246,36 +246,36 @@ export default {
       switch (this.selectedDate) {
         case this.listItems[0]:
           return {
-            startDate: `${new Date(new Date().setDate(day - 1)).getDate()}.${month}.${year}`,
-            endDate: `${day}.${month}.${year}`
+            startDate: `${year}-${month}-${new Date(new Date().setDate(day - 1)).getDate()}`,
+            endDate: `${year}-${month}-${day}`
           }
         case this.listItems[1]:
           return {
-            startDate: `${new Date(new Date().setDate(day - 7)).getDate()}.${month}.${year}`,
-            endDate: `${day}.${month}.${year}`
+            startDate: `${year}-${month}-${new Date(new Date().setDate(day - 7)).getDate()}`,
+            endDate: `${year}-${month}-${day}`
           }
         case this.listItems[2]:
           const last30DayDate = new Date(new Date().setDate(day - 30))
           return {
-            endDate: `${day}.${month}.${year}`,
-            startDate: `${last30DayDate.getDate()}.${
+            endDate: `${year}-${month}-${day}`,
+            startDate: `${last30DayDate.getFullYear()}-${
               last30DayDate.getMonth() + 1
-            }.${last30DayDate.getFullYear()}`
+            }-${last30DayDate.getDate()}`
           }
         case this.listItems[3]:
           return {
-            startDate: `01.${month}.${year}`,
-            endDate: `${day}.${month}.${year}`
+            startDate: `${year}-${month}-01`,
+            endDate: `${year}-${month}-${day}`
           }
         case this.listItems[4]:
           const lastMonthDate = new Date(new Date().setMonth(month - 1))
           return {
-            startDate: `01.${lastMonthDate.getMonth()}.${lastMonthDate.getFullYear()}`,
-            endDate: `${new Date(
+            startDate: `${lastMonthDate.getFullYear()}-${lastMonthDate.getMonth()}-01`,
+            endDate: `${lastMonthDate.getFullYear()}-${lastMonthDate.getMonth()}-${new Date(
               lastMonthDate.getFullYear(),
               lastMonthDate.getMonth(),
               0
-            ).getDate()}.${lastMonthDate.getMonth()}.${lastMonthDate.getFullYear()}`
+            ).getDate()}`
           }
       }
     },
