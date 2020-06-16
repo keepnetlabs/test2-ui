@@ -1142,9 +1142,6 @@ export default {
 
 <style lang="scss">
 .single-wrapper {
-  .v-application p {
-    margin-bottom: 0 !important;
-  }
   .single-post {
     margin: 15px !important;
     border-radius: 12px;
@@ -1223,6 +1220,9 @@ export default {
     position: relative;
     &:first-child {
       margin-bottom: 16px;
+    }
+    p {
+      margin-bottom: 0 !important;
     }
   }
 

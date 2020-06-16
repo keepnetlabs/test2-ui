@@ -323,7 +323,9 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
+          type: 'link',
+          href: '/playbook',
+          hrefKey: 'resourceId',
           minWidth: '40'
         },
         {
