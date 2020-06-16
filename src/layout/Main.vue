@@ -659,7 +659,7 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: 'Keepnet Labs',
+          text: localStorage.getItem('companyName'),
           disabled: true,
           exact: false,
           href: '/'

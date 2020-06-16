@@ -18,6 +18,12 @@
       @deleteAction="handleDelete"
       @addAction="changeModalStatus(true)"
       @downloadEvent="exportIntegrationList"
+      @sortChangedEvent="sortChangedEvent($event)"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @searchChangedEvent="searchChangedEvent($event)"
+      :dataLength="tableData && tableData.totalNumberOfRecords"
+      :requestParams="bodyData"
+      :isServerSide="true"
     />
   </div>
 </template>
@@ -25,6 +31,8 @@
 <script>
 import DataTable from '../DataTable'
 import NewIntegration from './NewIntegration'
+import { getIntegrationList } from '../../api/integrations'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'Integrations',
@@ -34,10 +42,11 @@ export default {
   },
   data() {
     return {
+      tableData: [],
       tableOptions: {
         columns: [
           {
-            property: 'integrationName',
+            property: 'name',
             align: 'left',
             editable: false,
             label: 'Integration Name',
@@ -45,7 +54,7 @@ export default {
             show: true,
             type: 'text',
             fixed: true,
-            width: 175
+            width: 250
             //minWidth: 80
           },
           {
@@ -56,19 +65,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 175
-            //minWidth: 80
-          },
-          {
-            property: 'company',
-            align: 'left',
-            editable: false,
-            label: 'Company',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 300
+            width: 350
             //minWidth: 80
           },
           {
@@ -85,7 +82,7 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'created',
+            property: 'createDate',
             align: 'left',
             editable: false,
             label: 'Created',
@@ -121,16 +118,47 @@ export default {
           btn: 'Add Integrations',
           icon: 'mdi-account-plus'
         },
-
         addButton: {
           show: true,
           action: 'addAction'
         }
       },
-      modalStatus: false
+      modalStatus: false,
+      bodyData: {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'createDate',
+        ascending: false
+      }
     }
   },
   methods: {
+    sortChangedEvent({ prop, order }) {
+      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      const _this = this
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, this.bodyData)
+      })
+    },
+    paginationChangedEvent({ pageSize, pageNumber }) {
+      const _this = this
+      this.bodyData = {
+        ...this.bodyData,
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
+    },
+    searchChangedEvent({ filter }) {
+      this.bodyData = { ...this.bodyData, filter }
+      const _this = this
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
+    },
     handleDelete() {},
     handleAdd() {},
     exportIntegrationList() {},
@@ -139,57 +167,23 @@ export default {
     }
   },
   mounted() {
-    this.$refs.refIntegrationsList.loadWithDataArray([
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      },
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      },
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      },
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      },
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      },
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      },
-      {
-        integrationName: 'integrationName',
-        description: 'description',
-        company: 'company',
-        status: 'Active',
-        created: 'created'
-      }
-    ])
+    getIntegrationList(this.bodyData)
+      .then((response) => {
+        const {
+          data: { data, status }
+        } = response
+        this.tableData = data.results || []
+        this.bodyData.pageNumber = data.pageNumber
+        this.bodyData.pageSize = data.pageSize
+        this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
+        this.$refs.refIntegrationsList.loadWithDataArray(data.results || [])
+      })
+      .catch((error) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: 'Error when getting the Investigations!'
+        })
+      })
   }
 }
 </script>
