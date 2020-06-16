@@ -2,7 +2,6 @@
   <div id="users" class="users">
     <app-dialog
       :status="isWantToDelete"
-      v-if="isWantToDelete"
       icon="mdi-alert"
       title="Delete User"
       subtitle="Do you want to delete this user?"
@@ -163,18 +162,6 @@ export default {
           message: 'You do not have any users, yet'
         },
         rowActions: [
-          {
-            name: 'Edit this row',
-            icon: 'mdi-pencil',
-            action: 'edit',
-            isNotShow: true
-          },
-          {
-            name: 'Edit this row',
-            icon: 'mdi-pencil',
-            action: 'edit',
-            isNotShow: true
-          },
           {
             name: 'Delete',
             icon: 'mdi-delete',
