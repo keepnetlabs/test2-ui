@@ -1142,6 +1142,9 @@ export default {
 
 <style lang="scss">
 .single-wrapper {
+  .v-application p {
+    margin-bottom: 0 !important;
+  }
   .single-post {
     margin: 15px !important;
     border-radius: 12px;
@@ -1160,7 +1163,6 @@ export default {
     line-height: 1.6;
     letter-spacing: normal;
     color: #2196f3;
-    margin-top: 24px;
     margin-bottom: 40px;
     display: block;
   }
@@ -1173,6 +1175,7 @@ export default {
 
     .v-slide-group__wrapper {
       padding-left: 0 !important;
+      height: 55px;
     }
 
     .v-slide-group__content {
@@ -1185,8 +1188,7 @@ export default {
 
     .v-tab {
       width: auto;
-      height: 27px;
-      font-family: Lato;
+      height: 53px;
       font-size: 22px;
       font-weight: 600;
       font-stretch: normal;
@@ -1207,7 +1209,6 @@ export default {
     .v-tabs-bar {
       height: 48px !important;
       border-radius: 0 !important;
-      margin-top: 24px;
     }
   }
   .mdi-attachment {
@@ -1732,7 +1733,7 @@ export default {
   }
 
   .preview-body {
-    margin-top: 24px;
+    margin-top: 4px;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;

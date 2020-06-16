@@ -291,7 +291,7 @@ const investigations = {
             'common/createSnackBar',
             {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting the communities'
+              message: 'Error when getting the user groups'
             },
             { root: true }
           )

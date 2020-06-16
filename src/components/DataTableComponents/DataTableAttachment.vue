@@ -1,7 +1,7 @@
 <template>
   <div>
     <span v-if="scope.row && scope.row[col.property] > 0">
-      <v-icon color="#757575">mdi-paperclip</v-icon>
+      <v-icon color="#43a047">mdi-check</v-icon>
     </span>
     <span v-else />
   </div>

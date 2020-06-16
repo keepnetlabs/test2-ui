@@ -6,7 +6,6 @@
     position: relative;
     height: max-content;
 
-
     .card {
       border-radius: 12px !important;
       box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
@@ -29,7 +28,7 @@
         box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
           0 1px 1px 0 rgba(243, 243, 243, 0.14),
           0 1px 1px -1px rgba(204, 204, 204, 0.12);
-        padding: 16px 0;
+        padding-top: 16px;
 
         .table-container {
           width: auto;
@@ -263,18 +262,26 @@
           display: none;
         }
 
+        thead tr {
+          border: none !important;
+        }
+
         .el-table tr {
-          height: 45px !important;
+          height: 48px !important;
+          border-top: #b3d4fc 1px solid;
+          border-bottom: #b3d4fc 1px solid;
+          &:first-child{
+            border-top: #9e9e9e 1px solid;
+          }
         }
 
         .el-table td {
-          padding: 12px 0;
-          height: 45px !important;
+          padding: 0;
+          height: 48px !important;
           border: none !important;
         }
 
         .el-table th {
-          border-bottom: 1px solid #9e9e9e;
           padding: 5px 0 !important;
 
           .el-checkbox {
@@ -938,6 +945,16 @@
       }
       &::before {
         height: 0;
+      }
+    }
+  }
+}
+.el-table {
+  &__action-buttons{
+    .v-list-item{
+      &:hover{
+        background: #f2f2f2;
+        cursor: pointer;
       }
     }
   }

@@ -682,6 +682,7 @@
             @cell-mouse-leave="cellLeave"
             :cell-class-name="setCellClass"
             @sort-change="sortChangedEvent"
+            :show-header="showHeader"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
@@ -821,7 +822,7 @@
                       >
                     </v-btn>
                   </template>
-                  <v-list class="v-cart-dropdown-list">
+                  <v-list class="v-cart-dropdown-list el-table__action-buttons">
                     <v-list-item
                       :key="ind"
                       class="sub-menu-el"
@@ -1122,6 +1123,10 @@ export default {
     isServerSide: {
       type: Boolean,
       default: false
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
