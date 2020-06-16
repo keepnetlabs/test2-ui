@@ -1,5 +1,15 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
+    <v-list-item class="pl-0 add-in-settings__list-item" v-if="showHeader">
+      <v-list-item-content>
+        <v-list-item-title class="add-in-settings__title">
+          Add-in Settings
+        </v-list-item-title>
+        <v-list-item-subtitle class="add-in-settings__subtitle mb-6">
+          General add-in settings
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
     <v-form lazy-validation ref="refForm" v-model="isValid">
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
@@ -210,6 +220,10 @@ export default {
     inModal: {
       type: Boolean,
       default: false
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -279,23 +293,23 @@ export default {
 <style lang="scss">
 .add-in {
   &-settings {
-    font-family: 'Open Sans', sans-serif !important;
-
     &__label {
       font-size: 20px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+    }
+
+    &__title {
+      font-size: 24px;
+      line-height: 1.29;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
     }
 
     &__subtitle {
       font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.5;
       letter-spacing: normal;
       margin-top: 2px;

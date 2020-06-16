@@ -8,7 +8,7 @@
         bottom
         @input="changeSnackbarStatus($event, snackbar)"
         :style="getSnackBarStyle(snackbar.message, index)"
-        :timeout="3000"
+        :timeout="0"
       >
         <div class="snackbar__left-column">
           <div v-if="snackbar.icon">
@@ -27,7 +27,12 @@
             >mdi-close</v-icon
           >
           <router-link class="snackbar__action" v-else :to="snackbar.action.link">
-            <v-btn @click.native="changeSnackbarStatus($event, snackbar)" color="#2196f3" rounded>
+            <v-btn
+              :text="snackbar.action.linkType === 'text'"
+              @click.native="changeSnackbarStatus($event, snackbar)"
+              color="#2196f3"
+              rounded
+            >
               {{ snackbar.action.label }}
             </v-btn>
           </router-link>

@@ -1,5 +1,21 @@
 <template>
   <div id="users" class="users">
+    <app-dialog
+      :status="isWantToDelete"
+      icon="mdi-alert"
+      title="Delete User"
+      subtitle="Do you want to delete this user?"
+    >
+      <template v-slot:app-dialog-body> {{ getUserName }} will be deleted ! </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"
+            >CANCEL</v-btn
+          >
+          <v-btn class="users__button" text color="#2196f3" @click="deleteUser">DELETE</v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <data-table
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -13,6 +29,7 @@
       :selectable="true"
       :sizeable="true"
       @deleteAction="handleDelete"
+      @handleEdit="handleEdit"
       @downloadEvent="exportPhishingReporterUserList"
       id="usersList"
       ref="refUsersList"
@@ -27,12 +44,14 @@ import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList
 } from '../../api/phishingReporter'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+
+import AppDialog from '../AppDialog'
 
 export default {
   name: 'Users',
   components: {
-    DataTable
+    DataTable,
+    AppDialog
   },
   data() {
     return {
@@ -47,7 +66,9 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
-            width: 150
+            width: 150,
+            isEditable: true,
+            editComponent: 'textfield'
             //minWidth: 80
           },
           {
@@ -58,7 +79,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150
+            width: 150,
+            isEditable: true,
+            editComponent: 'textfield'
             //minWidth: 80
           },
           {
@@ -70,7 +93,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 300
+            width: 300,
+            isEditable: true,
+            editComponent: 'textfield'
             //minWidth: 80
           },
           {
@@ -82,6 +107,9 @@ export default {
             sortable: true,
             show: true,
             type: 'fiber',
+            isEditable: true,
+            editComponent: 'textfield',
+
             width: 200
             //minWidth: 80
           },
@@ -94,6 +122,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            isEditable: true,
+            editComponent: 'textfield',
             width: 220
             //minWidth: 80
           },
@@ -106,6 +136,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            isEditable: true,
+            editComponent: 'textfield',
             width: 140
             //minWidth: 80
           },
@@ -119,6 +151,8 @@ export default {
             show: true,
             type: 'status',
             width: 160,
+            isEditable: true,
+            editComponent: 'textfield',
             hasTooltip: true,
             //minWidth: 80,
             fullWidth: true
@@ -140,12 +174,25 @@ export default {
           }
         ],
         pageSizes: [5, 10, 25, 50, 100]
-      }
+      },
+      isWantToDelete: false,
+      selectedRow: null
+    }
+  },
+  computed: {
+    getUserName() {
+      return this.selectedRow && (this.selectedRow.firstName || this.selectedRow.lastName)
+        ? `${this.selectedRow.firstName} ${this.selectedRow.lastName}`
+        : 'This user'
     }
   },
   methods: {
     handleDelete(row) {
-      //TODO DELETE ACTION
+      this.selectedRow = row
+      this.isWantToDelete = true
+    },
+    handleEdit(rows) {
+      console.log('rows', rows)
     },
     handleAdd(row) {},
     callForPhishingReporterUser() {
@@ -179,7 +226,6 @@ export default {
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {
-        debugger
         const payload = {
           pageNumber,
           pageSize: 10,
@@ -198,6 +244,9 @@ export default {
           })
           .catch((error) => {})
       })
+    },
+    deleteUser() {
+      this.isWantToDelete = false
     }
   },
 
@@ -210,5 +259,11 @@ export default {
 <style lang="scss">
 .users {
   padding-top: 16px;
+  &__button {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+  }
 }
 </style>

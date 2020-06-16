@@ -1,9 +1,19 @@
 <template>
   <v-container fill-height fluid tag="div">
+    <v-list-item class="pl-0 other-settings__list-item" v-if="showHeader">
+      <v-list-item-content>
+        <v-list-item-title class="diagnostic-tool__title">
+          Diagnostic Tool
+        </v-list-item-title>
+        <v-list-item-subtitle class="diagnostic-tool__sub-title mb-6">
+          Helper tool for checking status of add-in and diagnose problems
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
     <div class="diagnostic-tool" id="diagnostic-tool">
       <v-list-item class="px-0 diagnostic-tool__list-item">
         <v-list-item-content>
-          <div class="diagnostic-tool__list-item-header" v-if="showHeader">Optional Features</div>
+          <div class="diagnostic-tool__list-item-header" v-if="!isInModal">Optional Features</div>
           <v-checkbox
             class="diagnostic-tool__checkbox k-checkbox"
             color="#2196f3"
@@ -231,6 +241,21 @@ export default {
   }
 
   .v-label {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__title {
+    font-size: 24px;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__sub-title {
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: normal;
+    margin-top: 2px;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 

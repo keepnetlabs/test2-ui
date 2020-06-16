@@ -5,14 +5,15 @@
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
           >Send Suspicious Emails To
         </v-list-item-title>
-        <v-list-item-subtitle class="email-settings__list-item--text email-settings__sub-header"
+        <v-list-item-subtitle
+          class="email-settings__list-item--text email-settings__sub-header mb-6"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
       <v-list-item
-        class="px-0 email-settings__list-item mt-4"
+        class="px-0 email-settings__list-item"
         :class="[!hasError && !formValues.to ? 'mb-2' : '']"
       >
         <v-list-item-content>

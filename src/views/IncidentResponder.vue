@@ -289,7 +289,35 @@
             @irPreview="irPreviewOnClick"
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
-          />
+            @handleEdit="handleEdit"
+          >
+            <template v-slot:data-table-edit-popup-body>
+              <div class="row-edit-div" style="order: 59;">
+                <div>
+                  <label>
+                    Notes
+                  </label>
+                  <v-text-field
+                    dense
+                    solo
+                    v-model="notes"
+                    placeholder="Write Notes For This Incident"
+                  />
+                </div>
+              </div>
+
+              <div class="row-edit-div" style="order: 60;">
+                <v-checkbox
+                  v-model="isNotifyMail"
+                  color="#2196f3"
+                  label="Notify Reporting User Aborting this Update"
+                />
+              </div>
+              <div class="row-edit-div mt-n2" style="order: 70;">
+                <v-checkbox v-model="isCustomMessage" color="#2196f3" label="Add Custom Message" />
+              </div>
+            </template>
+          </datatable>
         </v-card>
       </div>
     </div>
@@ -312,6 +340,9 @@ export default {
   data: () => ({
     openInvestigationOverlay: false,
     investigationListData: [],
+    notes: '',
+    isNotifyMail: true,
+    isCustomMessage: false,
     topRules: {
       table: [],
       columns: [
@@ -428,7 +459,6 @@ export default {
       columns: [
         {
           property: 'subject',
-          isEditable: true,
           align: 'left',
           editable: false,
           label: 'Subject',
@@ -437,27 +467,18 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          editType: {
-            type: 'select',
-            options: [
-              { label: 'NonMalicious', value: 1 },
-              {
-                label: 'Malicious',
-                value: 2
-              },
-              { label: 'Phishing', value: 3 }
-            ]
-          }
+          isEditable: false
           //minWidth: 80
         },
         {
           property: 'attachmentCount',
           align: 'center',
-          editable: false,
           label: 'File',
+          hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
+          isEditable: false,
           type: 'attachment',
           width: 80
         },
@@ -471,21 +492,20 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          editType: 'text',
-          isEditable: true
+          isEditable: false
           //minWidth: 100
         },
         {
           property: 'resultTag',
           align: 'left',
           editable: false,
-          isEditable: true,
           label: 'Source',
           fixed: false,
           sortable: true,
           show: true,
           type: 'text',
-          width: '150'
+          width: '150',
+          isEditable: false
           //minWidth: 80
         },
         {
@@ -498,6 +518,8 @@ export default {
           sortable: false,
           show: true,
           type: 'text',
+          editComponent: 'select',
+          editComponentItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High', 'N/A'],
           width: '150'
           //minWidth: 80
         },
@@ -513,11 +535,8 @@ export default {
           type: 'status',
           width: '150',
           fullWidth: true,
-          dataArray: [
-            { label: '', value: '' },
-            { label: '', value: '' },
-            { label: '', value: '' }
-          ]
+          editComponent: 'select',
+          editComponentItems: ['Open', 'Malicious', 'Phishing', 'Clean']
           // minWidth: 80
         },
         {
@@ -529,7 +548,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          //minWidth: 80
+          editComponent: 'datepicker',
           width: '230'
         }
       ],
@@ -647,7 +666,6 @@ export default {
             status
           }
         } = response
-
         this.$refs.refReportedEmails.loadWithDataArray(results || [])
       })
       .catch((error) => {
@@ -677,6 +695,7 @@ export default {
         params: { id: row.resourceId }
       })
     },
+    handleEdit(selectedRow) {},
     irDetailsOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',

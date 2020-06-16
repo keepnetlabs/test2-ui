@@ -1,14 +1,24 @@
 <template>
-  <v-container fluid id="other-settings" class="other-settings mt-n3">
+  <v-container fluid id="other-settings" class="other-settings">
+    <v-list-item class="pl-0 other-settings__list-item" v-if="showHeader">
+      <v-list-item-content>
+        <v-list-item-title class="other-settings__title">
+          Other Settings
+        </v-list-item-title>
+        <v-list-item-subtitle class="other-settings__sub-title mb-6">
+          Extra settings
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
     <v-form ref="refForm">
-      <v-list-item class="px-0 other-settings__list-item mt-0">
+      <v-list-item class="px-0 other-settings__list-item mt-n4">
         <v-list-item-content>
-          <div class="other-settings__list-item-header" @click="handleMarginStatusForOptional">
+          <div class="other-settings__list-item-header">
             Optional Features
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
+      <v-list-item class="px-0 other-settings__list-item" :class="[inModal ? 'mb-3' : '']">
         <v-list-item-content>
           <div>
             <v-checkbox
@@ -270,6 +280,10 @@ export default {
     inModal: {
       type: Boolean,
       default: false
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -292,7 +306,6 @@ export default {
         msgBoxBtnOkText: '',
         emailSendingErrorMessage: ''
       },
-      marginStatusOptional: true,
       enterpriseVaultDisabled: true
     }
   },
@@ -307,14 +320,10 @@ export default {
     },
     handleEnterpriseVaultChange(value) {
       this.enterpriseVaultDisabled = !value
-    },
-    handleMarginStatusForOptional() {
-      this.marginStatusOptional = !this.marginStatusOptional
     }
   },
   created() {
     if (this.formData) {
-      console.log('this.formData', this.formData)
       const {
         companyId,
         noInternetConnectionMessage,
@@ -325,7 +334,9 @@ export default {
         emailSendingErrorMessage,
         enterpriseVaultUrl,
         apiUrl,
-        isOnPremise
+        isOnPremise,
+        deleteOriginalMail,
+        enableProxy
       } = this.formData
       this.formValues.companyId = companyId || localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
@@ -339,6 +350,8 @@ export default {
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isOnPremise = isOnPremise || ''
+      this.formValues.deleteOriginalMail = deleteOriginalMail || ''
+      this.formValues.enableProxy = enableProxy || ''
     } else {
       this.formValues.companyId = localStorage.getItem('companyId')
       this.formValues.extraMessage = 'Extra message in the dialog boxes'
@@ -357,8 +370,6 @@ export default {
 
 <style lang="scss">
 .other-settings {
-  margin-top: -12px;
-
   &__link {
     text-transform: uppercase;
     font-size: 14px;
@@ -375,6 +386,20 @@ export default {
       margin-top: 10px;
       justify-content: center;
     }
+  }
+
+  &__title {
+    font-size: 24px;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  &__sub-title {
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: normal;
+    margin-top: 2px;
+    color: rgba(0, 0, 0, 0.87) !important;
   }
 
   &__checkbox {
