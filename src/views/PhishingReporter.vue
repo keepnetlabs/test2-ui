@@ -269,6 +269,7 @@ export default {
           }
         case this.listItems[4]:
           const lastMonthDate = new Date(new Date().setMonth(month - 1))
+
           return {
             startDate: `${lastMonthDate.getFullYear()}-${lastMonthDate.getMonth()}-01`,
             endDate: `${lastMonthDate.getFullYear()}-${lastMonthDate.getMonth()}-${new Date(
@@ -282,7 +283,6 @@ export default {
     getPhishingReport() {
       getPhishingReporter().then((response) => {
         const { data } = response
-
         if (data.code === 'RESOURCE_RETRIEVED') {
           this.tabComponent = {
             name: Settings,

@@ -1,31 +1,35 @@
 <template>
   <v-dialog
-    v-model="status"
+    :value="status"
     class="k-dialog"
     :opacity="0.23"
     :width="dialogWidth"
     :content-class="className"
+    @input="changeStatus"
+    @click:outside="changeStatus(false)"
   >
     <v-card light class="k-dialog__card">
-      <v-list-item class="pl-0 pr-0">
-        <div class="v-btn v-cart-icon-wrapper">
-          <v-icon medium left :color="iconColor" class="ml-2">
-            {{ icon }}
-          </v-icon>
+      <v-form lazy-validation ref="refDialogForm">
+        <v-list-item class="pl-0 pr-0">
+          <div class="v-btn v-cart-icon-wrapper">
+            <v-icon medium left :color="iconColor" class="ml-2">
+              {{ icon }}
+            </v-icon>
+          </div>
+          <v-list-item-content class="pt-0 pb-0">
+            <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
+            <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }} </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <div class="k-dialog__body">
+          <slot name="app-dialog-body">
+            {{ body }}
+          </slot>
         </div>
-        <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
-          <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }} </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-      <div class="k-dialog__body">
-        <slot name="app-dialog-body">
-          {{ body }}
-        </slot>
-      </div>
-      <v-card-actions class="pa-0 k-dialog__footer">
-        <slot name="app-dialog-footer"> </slot>
-      </v-card-actions>
+        <v-card-actions class="pa-0 k-dialog__footer">
+          <slot name="app-dialog-footer"> </slot>
+        </v-card-actions>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
@@ -76,6 +80,11 @@ export default {
           break
       }
       return retValue
+    }
+  },
+  methods: {
+    changeStatus(value) {
+      this.$emit('changeStatus', value)
     }
   }
 }

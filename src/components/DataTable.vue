@@ -120,9 +120,20 @@
               v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
             >
               <div class="items-wrapper">
-                <div :key="col.label" class="row-edit-div" v-for="col in columns" v-if="col.show">
-                  <div style="display: flex; align-items: center;">
-                    <label v-if="col.property !== 'createDate' && col.property !== 'lastUpdate'">
+                <div
+                  :key="col.label"
+                  class="row-edit-div"
+                  :style="{ order: index * 10 }"
+                  v-for="(col, index) in columns"
+                  v-if="
+                    col.show &&
+                    !col.hideLabel &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdate'
+                  "
+                >
+                  <div>
+                    <label>
                       {{ col.label }}
                     </label>
                     <span
@@ -367,7 +378,7 @@
                   v-if="editMode"
                 >
                 </slot>
-                <div class="edit-popup-footer" v-if="hasEditPopupFooter()">
+                <div class="edit-popup-footer" style="order: 55555;" v-if="hasEditPopupFooter()">
                   <div class="edit-footer-date">
                     <div
                       class="edit-date-created"

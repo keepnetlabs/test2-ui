@@ -1,5 +1,16 @@
 <template>
   <div class="target-users-groups">
+    <create-new-user-group-modal
+      :status="showNewUserGroupModal"
+      @changeNewUserGroupStatus="changeNewUserGroupStatus"
+      @handleSave="callForCreateNewUserGroup"
+    />
+    <delete-group-modal
+      :status="showDeleteGroupModal"
+      @changeDeleteGroupModalStatus="changeDeleteGroupModalStatus"
+      @handleDelete="callForDeleteGroup"
+      :selected-row="selectedRow"
+    />
     <datatable
       :columns="tableOptions.columns"
       :countRow="5"
@@ -14,6 +25,7 @@
       ref="refGroupsTable"
       @syncWithLDAP="handleSyncWithLDAP"
       @handleEdit="handleEdit"
+      @delete="handleDelete"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -40,11 +52,16 @@
 
 <script>
 import DataTable from '../DataTable'
-import { getTargetGroups } from '../../api/targetUsers'
+import { getTargetGroups, createTargetGroup } from '../../api/targetUsers'
+import CreateNewUserGroupModal from './CreateNewUserGroupModal'
+import DeleteGroupModal from './DeleteGroupModal'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'Groups',
   components: {
+    DeleteGroupModal,
+    CreateNewUserGroupModal,
     datatable: DataTable
   },
   data() {
@@ -133,15 +150,18 @@ export default {
           }
         ]
       },
-      addGroupsItems: ['Create User Group', 'Create Smart Group']
+      addGroupsItems: ['Create User Group', 'Create Smart Group'],
+      showNewUserGroupModal: false,
+      showDeleteGroupModal: false,
+      selectedRow: {}
     }
   },
   methods: {
     handleSyncWithLDAP(row) {},
     handleAddGroups(item) {
-      console.log('item', item)
       switch (item) {
         case this.addGroupsItems[0]:
+          this.changeNewUserGroupStatus(true)
           break
         case this.addGroupsItems[1]:
           break
@@ -149,15 +169,49 @@ export default {
           break
       }
     },
+    callForCreateNewUserGroup(group) {
+      createTargetGroup(group)
+        .then((response) => {
+          this.changeNewUserGroupStatus(false)
+          this.$store.dispatch('common/createSnackBar', {
+            message: `New group named ${group.name} created`,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            action: {
+              link: '/',
+              label: 'VIEW',
+              linkType: 'text'
+            }
+          })
+          this.callForTargetGroups()
+        })
+        .catch((error) => {
+          //this.showNewUserGroupModal = false
+        })
+    },
+    changeNewUserGroupStatus(status) {
+      this.showNewUserGroupModal = status
+    },
+    changeDeleteGroupModalStatus(status) {
+      this.showDeleteGroupModal = status
+    },
     handleEdit(rows) {
       console.log('rows', rows)
+    },
+    callForTargetGroups() {
+      getTargetGroups().then((response) => {
+        const { data } = response.data
+        this.$refs.refGroupsTable.loadWithDataArray(data)
+      })
+    },
+    callForDeleteGroup() {
+      //TODO
+    },
+    handleDelete(selectedRow) {
+      this.selectedRow = selectedRow
     }
   },
   created() {
-    getTargetGroups().then((response) => {
-      const { data } = response.data
-      this.$refs.refGroupsTable.loadWithDataArray(data)
-    })
+    this.callForTargetGroups()
   }
 }
 </script>

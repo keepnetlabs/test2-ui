@@ -324,7 +324,6 @@ export default {
   },
   created() {
     if (this.formData) {
-      console.log('this.formData', this.formData)
       const {
         companyId,
         noInternetConnectionMessage,
@@ -335,7 +334,9 @@ export default {
         emailSendingErrorMessage,
         enterpriseVaultUrl,
         apiUrl,
-        isOnPremise
+        isOnPremise,
+        deleteOriginalMail,
+        enableProxy
       } = this.formData
       this.formValues.companyId = companyId || localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
@@ -349,6 +350,8 @@ export default {
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isOnPremise = isOnPremise || ''
+      this.formValues.deleteOriginalMail = deleteOriginalMail || ''
+      this.formValues.enableProxy = enableProxy || ''
     } else {
       this.formValues.companyId = localStorage.getItem('companyId')
       this.formValues.extraMessage = 'Extra message in the dialog boxes'

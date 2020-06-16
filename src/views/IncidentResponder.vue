@@ -289,7 +289,35 @@
             @irPreview="irPreviewOnClick"
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
-          />
+            @handleEdit="handleEdit"
+          >
+            <template v-slot:data-table-edit-popup-body>
+              <div class="row-edit-div" style="order: 59;">
+                <div>
+                  <label>
+                    Notes
+                  </label>
+                  <v-text-field
+                    dense
+                    solo
+                    v-model="notes"
+                    placeholder="Write Notes For This Incident"
+                  />
+                </div>
+              </div>
+
+              <div class="row-edit-div" style="order: 60;">
+                <v-checkbox
+                  v-model="isNotifyMail"
+                  color="#2196f3"
+                  label="Notify Reporting User Aborting this Update"
+                />
+              </div>
+              <div class="row-edit-div mt-n2" style="order: 70;">
+                <v-checkbox v-model="isCustomMessage" color="#2196f3" label="Add Custom Message" />
+              </div>
+            </template>
+          </datatable>
         </v-card>
       </div>
     </div>
@@ -312,6 +340,9 @@ export default {
   data: () => ({
     openInvestigationOverlay: false,
     investigationListData: [],
+    notes: '',
+    isNotifyMail: true,
+    isCustomMessage: false,
     topRules: {
       table: [],
       columns: [
@@ -434,18 +465,18 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          isEditable: true,
-          editComponent: 'textfield'
+          isEditable: false
           //minWidth: 80
         },
         {
           property: 'attachmentCount',
           align: 'center',
-          editable: false,
           label: 'File',
+          hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
+          isEditable: false,
           type: 'attachment',
           width: 80
         },
@@ -459,8 +490,7 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          isEditable: true,
-          editComponent: 'textfield'
+          isEditable: false
           //minWidth: 100
         },
         {
@@ -473,8 +503,7 @@ export default {
           show: true,
           type: 'text',
           width: '150',
-          isEditable: true,
-          editComponent: 'textfield'
+          isEditable: false
           //minWidth: 80
         },
         {
@@ -487,7 +516,8 @@ export default {
           sortable: false,
           show: true,
           type: 'text',
-          editComponent: 'textfield',
+          editComponent: 'select',
+          editComponentItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High', 'N/A'],
           width: '150'
           //minWidth: 80
         },
@@ -504,7 +534,7 @@ export default {
           width: '150',
           fullWidth: true,
           editComponent: 'select',
-          editComponentItems: ['Active', 'Inactive', 'N/A']
+          editComponentItems: ['Open', 'Malicious', 'Phishing', 'Clean']
           // minWidth: 80
         },
         {
@@ -515,7 +545,7 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
-          type: 'date',
+          type: 'text',
           editComponent: 'datepicker',
           width: '230'
         }
@@ -634,7 +664,6 @@ export default {
             status
           }
         } = response
-
         this.$refs.refReportedEmails.loadWithDataArray(results || [])
       })
       .catch((error) => {
@@ -664,6 +693,7 @@ export default {
         params: { id: row.resourceId }
       })
     },
+    handleEdit(selectedRow) {},
     irDetailsOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',

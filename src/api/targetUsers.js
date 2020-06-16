@@ -25,7 +25,7 @@ export function getTargetGroup(id) {
 }
 
 export function createTargetGroup(payload) {
-  return testRequest.post('/target-users', payload)
+  return testRequest.post('/target-groups', payload)
 }
 
 export function updateTargetGroup(payload) {
