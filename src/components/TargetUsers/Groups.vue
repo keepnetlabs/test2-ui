@@ -13,6 +13,7 @@
       :selectable="true"
       ref="refGroupsTable"
       @syncWithLDAP="handleSyncWithLDAP"
+      @handleEdit="handleEdit"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -147,6 +148,9 @@ export default {
         default:
           break
       }
+    },
+    handleEdit(rows) {
+      console.log('rows', rows)
     }
   },
   created() {

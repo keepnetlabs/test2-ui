@@ -1015,6 +1015,10 @@ export default {
       type: Array,
       required: true
     },
+    isEditableRuntime: {
+      type: Boolean,
+      default: false
+    },
     setClassName: {
       type: Function,
       default: () => {}
@@ -1731,35 +1735,37 @@ export default {
     },
     saveEditedOnes() {
       // After user edited the row and pressed SAVE button
-
-      if (this.multipleSelection.length === 1) {
-        this.multipleSelection.map((item, index) => {
-          const keys = Object.keys(item)
-          keys.map((key) => {
-            //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
-            item[key] = this.copyOfEditedRows[0][key]
-          })
-        })
-      } else {
-        this.editedPopupProperties.map((key) => {
+      if (this.isEditableRuntime) {
+        if (this.multipleSelection.length === 1) {
           this.multipleSelection.map((item, index) => {
-            item[key] = this.copyOfEditedRows[0][key]
-          })
-        })
-
-        this.multipleSelection.map((item, index) => {
-          const keys = Object.keys(item)
-          keys.map((key) => {
-            const keyIndex = this.editedPopupProperties.findIndex((k) => {
-              return k === key
+            const keys = Object.keys(item)
+            keys.map((key) => {
+              //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
+              item[key] = this.copyOfEditedRows[0][key]
             })
-            if (keyIndex === -1) {
-              item[key] = this.copyOfEditedRows[index][key]
-            }
           })
-        })
+        } else {
+          this.editedPopupProperties.map((key) => {
+            this.multipleSelection.map((item, index) => {
+              item[key] = this.copyOfEditedRows[0][key]
+            })
+          })
+
+          this.multipleSelection.map((item, index) => {
+            const keys = Object.keys(item)
+            keys.map((key) => {
+              const keyIndex = this.editedPopupProperties.findIndex((k) => {
+                return k === key
+              })
+              if (keyIndex === -1) {
+                item[key] = this.copyOfEditedRows[index][key]
+              }
+            })
+          })
+        }
       }
 
+      this.$emit('handleEdit', this.copyOfEditedRows)
       this.$refs.elTableRef.clearSelection()
       this.editMode = false
       this.isWantToEditRow = false

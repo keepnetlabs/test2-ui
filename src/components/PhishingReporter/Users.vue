@@ -30,6 +30,7 @@
       :selectable="true"
       :sizeable="true"
       @deleteAction="handleDelete"
+      @handleEdit="handleEdit"
       @downloadEvent="exportPhishingReporterUserList"
       id="usersList"
       ref="refUsersList"
@@ -66,7 +67,9 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
-            width: 150
+            width: 150,
+            isEditable: true,
+            editComponent: 'textfield'
             //minWidth: 80
           },
           {
@@ -77,7 +80,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150
+            width: 150,
+            isEditable: true,
+            editComponent: 'textfield'
             //minWidth: 80
           },
           {
@@ -89,7 +94,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 300
+            width: 300,
+            isEditable: true,
+            editComponent: 'textfield'
             //minWidth: 80
           },
           {
@@ -101,6 +108,9 @@ export default {
             sortable: true,
             show: true,
             type: 'fiber',
+            isEditable: true,
+            editComponent: 'textfield',
+
             width: 200
             //minWidth: 80
           },
@@ -113,6 +123,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            isEditable: true,
+            editComponent: 'textfield',
             width: 220
             //minWidth: 80
           },
@@ -125,6 +137,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            isEditable: true,
+            editComponent: 'textfield',
             width: 140
             //minWidth: 80
           },
@@ -138,6 +152,8 @@ export default {
             show: true,
             type: 'status',
             width: 160,
+            isEditable: true,
+            editComponent: 'textfield',
             hasTooltip: true,
             //minWidth: 80,
             fullWidth: true
@@ -147,6 +163,18 @@ export default {
           message: 'You do not have any users, yet'
         },
         rowActions: [
+          {
+            name: 'Edit this row',
+            icon: 'mdi-pencil',
+            action: 'edit',
+            isNotShow: true
+          },
+          {
+            name: 'Edit this row',
+            icon: 'mdi-pencil',
+            action: 'edit',
+            isNotShow: true
+          },
           {
             name: 'Delete',
             icon: 'mdi-delete',
@@ -175,6 +203,9 @@ export default {
     handleDelete(row) {
       this.selectedRow = row
       this.isWantToDelete = true
+    },
+    handleEdit(rows) {
+      console.log('rows', rows)
     },
     handleAdd(row) {},
     callForPhishingReporterUser() {
