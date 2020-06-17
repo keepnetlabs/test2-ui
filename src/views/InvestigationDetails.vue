@@ -1411,6 +1411,7 @@ export default {
 </script>
 <style lang="scss">
 .investigation-details-wrapper {
+  //min-height: 80vh;
   .investigation-details__alerts {
     &-sub-title {
       font-size: 16px;

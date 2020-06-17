@@ -1,67 +1,69 @@
 <template>
   <div class="investigations">
-    <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
-    <v-overlay
-      id="add-new-community-overlay"
-      :value="isWantToAddNewCommunity"
-      :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
-      :opacity="1"
-      :z-index="999"
-      color="white"
-    >
-      <new-investigation
-        @closeAdd="onAddClose"
-        @refreshDatatable="refreshDatatable"
-        ref="refNewInvestigation"
-      />
-    </v-overlay>
-    <app-dialog
-      :status="isWantToStopInvestigation"
-      icon="mdi-alert"
-      title="Stop Ongoing Investigation"
-      subtitle="Do you want to stop this investigation?"
-      body="Once you stopped, you cannot resume this investigation."
-    >
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn text color="#f56c6c" @click="isWantToStopInvestigation = false">CANCEL</v-btn>
-          <v-btn text color="#2196f3" @click="stopInvestigation">CONFIRM</v-btn>
-        </div>
-      </template>
-    </app-dialog>
-    <datatable
-      id="investigationList"
-      ref="investigationTable"
-      :refName="'investigationTable'"
-      :columns="columns"
-      :table="tableData.data"
-      :title="title"
-      :countRow="5"
-      :pageSizes="pageSizes"
-      :defaultSort="'date'"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :rowActions="rowActions"
-      :addUsers="addUsers"
-      :empty="iEmpty"
-      :selectEvent="selectEvent"
-      :chartOptions="chartOptions"
-      :sizeable="true"
-      @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
-      @stopInvestigationFunc="stopInvestigationFunc($event)"
-      @investigationDetails="investigationDetails($event)"
-      @downloadEvent="exportInvestigationList"
-      @sortChangedEvent="sortChangedEvent($event)"
-      @paginationChangedEvent="paginationChangedEvent($event)"
-      @searchChangedEvent="searchChangedEvent($event)"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
-      :isServerSide="false"
-      v-if="showDatatable"
-      @onEmptyBtnClicked="isWantToAddNewCommunity = true"
-    >
-    </datatable>
+    <div class="investigations__container">
+      <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
+      <v-overlay
+        id="add-new-community-overlay"
+        :value="isWantToAddNewCommunity"
+        :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
+        :opacity="1"
+        :z-index="999"
+        color="white"
+      >
+        <new-investigation
+          @closeAdd="onAddClose"
+          @refreshDatatable="refreshDatatable"
+          ref="refNewInvestigation"
+        />
+      </v-overlay>
+      <app-dialog
+        :status="isWantToStopInvestigation"
+        icon="mdi-alert"
+        title="Stop Ongoing Investigation"
+        subtitle="Do you want to stop this investigation?"
+        body="Once you stopped, you cannot resume this investigation."
+      >
+        <template v-slot:app-dialog-footer>
+          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+            <v-btn text color="#f56c6c" @click="isWantToStopInvestigation = false">CANCEL</v-btn>
+            <v-btn text color="#2196f3" @click="stopInvestigation">CONFIRM</v-btn>
+          </div>
+        </template>
+      </app-dialog>
+      <datatable
+        id="investigationList"
+        ref="investigationTable"
+        :refName="'investigationTable'"
+        :columns="columns"
+        :table="tableData.data"
+        :title="title"
+        :countRow="5"
+        :pageSizes="pageSizes"
+        :defaultSort="'date'"
+        :selectable="true"
+        :filterable="true"
+        :options="true"
+        :rowActions="rowActions"
+        :addUsers="addUsers"
+        :empty="iEmpty"
+        :selectEvent="selectEvent"
+        :chartOptions="chartOptions"
+        :sizeable="true"
+        @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
+        @stopInvestigationFunc="stopInvestigationFunc($event)"
+        @investigationDetails="investigationDetails($event)"
+        @downloadEvent="exportInvestigationList"
+        @sortChangedEvent="sortChangedEvent($event)"
+        @paginationChangedEvent="paginationChangedEvent($event)"
+        @searchChangedEvent="searchChangedEvent($event)"
+        :dataLength="tableData && tableData.totalNumberOfRecords"
+        :requestParams="bodyData"
+        :isServerSide="false"
+        v-if="showDatatable"
+        @onEmptyBtnClicked="isWantToAddNewCommunity = true"
+      >
+      </datatable>
+    </div>
   </div>
 </template>
 <script>
@@ -379,9 +381,13 @@ export default {
 </script>
 <style lang="scss">
 .investigations {
-  padding: 16px;
+  padding: 13px 16px 16px 16px;
+  &__container {
+    min-height: 80vh;
+  }
   .k-table__wrapper .card {
     padding: 24px;
+    border-radius: 20px !important;
   }
   .newInvestigationOverlay {
     background-color: #fff !important;
