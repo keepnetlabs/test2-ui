@@ -89,9 +89,6 @@ export default {
     margin: 0;
   }
 }
-.v-snack__content {
-  padding: 12px 16px;
-}
 
 .snackbar {
   &__left-column {
@@ -129,6 +126,20 @@ export default {
 .v-snack {
   @media (max-width: 580px) {
     width: 95% !important;
+  }
+  &__content {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 12px 16px;
+    overflow: hidden;
+    width: 100%;
   }
 }
 </style>

@@ -22,7 +22,7 @@
         <v-list-item-content>
           <div>
             <v-checkbox
-              v-model="formValues.deleteOriginalMail"
+              v-model="formValues.isDeleteEmailBeforeAnalysis"
               class="other-settings__checkbox k-checkbox mt-3"
               color="#2196f3"
               label="Delete Original Email"
@@ -76,36 +76,7 @@
           </template>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="extra-message-text"
-            >Extra Message</label
-          >
-          <v-text-field
-            placeholder="Extra message in the dialog boxes"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.extraMessage"
-            id="extra-message-text"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="screen-tip-text">Screen Tip</label>
-          <v-text-field
-            placeholder="Popup tooltip text"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.screenTip"
-            id="screen-tip-text"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
+
       <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="no-internet-connection-message"
@@ -289,13 +260,11 @@ export default {
   data() {
     return {
       formValues: {
-        deleteOriginalMail: true,
+        isDeleteEmailBeforeAnalysis: false,
         enableProxy: false,
         isOnPremise: false,
         apiUrl: '',
         companyId: '',
-        extraMessage: '',
-        screenTip: '',
         enableEnterpriseVault: false,
         enterpriseVaultUrl: '',
         superTip: '',
@@ -335,7 +304,7 @@ export default {
         enterpriseVaultUrl,
         apiUrl,
         isOnPremise,
-        deleteOriginalMail,
+        isDeleteEmailBeforeAnalysis,
         enableProxy
       } = this.formData
       this.formValues.companyId = companyId || localStorage.getItem('companyId')
@@ -350,12 +319,10 @@ export default {
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isOnPremise = isOnPremise || ''
-      this.formValues.deleteOriginalMail = deleteOriginalMail || ''
+      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
       this.formValues.enableProxy = enableProxy || ''
     } else {
       this.formValues.companyId = localStorage.getItem('companyId')
-      this.formValues.extraMessage = 'Extra message in the dialog boxes'
-      this.formValues.screenTip = 'Popup tooltip text'
       this.formValues.noInternetConnectionMessage =
         'No internet connection. Please try again later.'
       this.formValues.msgBoxBtnYesText = 'Yes'
@@ -363,6 +330,7 @@ export default {
       this.formValues.msgBoxBtnCancelText = 'Cancel'
       this.formValues.msgBoxBtnOkText = 'Okay'
       this.formValues.emailSendingErrorMessage = 'Email cannot be sent'
+      this.formValues.isDeleteEmailBeforeAnalysis = false
     }
   }
 }

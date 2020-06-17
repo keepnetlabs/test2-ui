@@ -304,7 +304,8 @@ export default {
       const payload = {
         ...this.addingSettings,
         ...this.emailSettings,
-        ...this.otherSettings
+        ...this.otherSettings,
+        isProcessAttachmentOnTheFly: true
       }
       const formData = new FormData()
       Object.keys(payload).map((key) => {
@@ -322,7 +323,12 @@ export default {
             this.showModal = true
           }
         })
-        .catch((error) => {})
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+          })
+        })
     }
   }
 }

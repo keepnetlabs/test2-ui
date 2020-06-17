@@ -112,7 +112,7 @@
       </div>
     </div>
     <div class="phishing-reporter">
-      <v-layout id="ts-layout" style="min-height: 79vh;" wrap>
+      <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card class="phishing-reporter__card">
             <v-tabs background-color="transparent" color="basil" v-model="tab" class="k-tabs">
@@ -267,16 +267,24 @@ export default {
       }
     },
     getPhishingReport() {
-      getPhishingReporter().then((response) => {
-        const { data } = response
-        if (data.code === 'RESOURCE_RETRIEVED') {
-          this.tabComponent = {
-            name: Settings,
-            ref: 'refSettings',
-            formData: data.data
+      getPhishingReporter()
+        .then((response) => {
+          const { data } = response
+          if (data.code === 'RESOURCE_RETRIEVED') {
+            this.tabComponent = {
+              name: Settings,
+              ref: 'refSettings',
+              formData: data.data
+            }
           }
-        }
-      })
+        })
+        .catch((error) => {
+          this.tabComponent = {
+            name: FirstTime,
+            ref: 'refFirstTime',
+            formData: null
+          }
+        })
     }
   },
   created() {

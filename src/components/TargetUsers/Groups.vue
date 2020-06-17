@@ -28,23 +28,19 @@
       @delete="handleDelete"
     >
       <template v-slot:addUsers>
-        <v-menu :offset-y="true" bottom left>
-          <template v-slot:activator="{ on: menu }">
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">{{ 'Add Groups' }}</span>
-            </v-tooltip>
+        <v-tooltip bottom opacity="1">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              class="btn-add mr-1"
+              icon
+              v-on="{ ...tooltip }"
+              @click.native="showNewUserGroupModal = true"
+            >
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
           </template>
-          <v-list>
-            <v-list-item :key="item" @click="handleAddGroups(item)" v-for="item in addGroupsItems">
-              <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          <span class="tooltip-span">{{ 'Add Groups' }}</span>
+        </v-tooltip>
       </template>
     </datatable>
   </div>
@@ -54,6 +50,7 @@
 import DataTable from '../DataTable'
 import { getTargetGroups, createTargetGroup } from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
+
 import DeleteGroupModal from './DeleteGroupModal'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
@@ -83,7 +80,7 @@ export default {
             type: 'link',
             href: '/target-groups',
             hrefKey: 'resourceId',
-            minWidth: 33,
+            width: 300,
             isEditable: true,
             editComponent: 'textfield'
           },
@@ -98,7 +95,7 @@ export default {
             isEditable: true,
             editComponent: 'select',
             editComponentItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
-            minWidth: 33
+            width: 300
           },
           {
             property: 'createDate',
@@ -109,7 +106,7 @@ export default {
             show: true,
             type: 'text',
             isEditable: true,
-            minWidth: 33
+            width: 300
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
@@ -200,6 +197,7 @@ export default {
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
+        console.log('data', data)
         this.$refs.refGroupsTable.loadWithDataArray(data)
       })
     },
