@@ -6,18 +6,14 @@
           active-class="pr-tab-active"
           background-color="transparent"
           color="basil"
-          class="target-users__tabs"
+          class="k-tabs"
           v-model="tab"
         >
-          <v-tab
-            @click="changeTabStatus(0)"
-            class="target-users__tab target-users__tab--people p-2"
-            id="pr-tab-people"
-          >
+          <v-tab @click="changeTabStatus(0)" class="k-tab p-2" id="pr-tab-people">
             People
           </v-tab>
-          <v-tab @click="changeTabStatus(1)" class="target-users__tab p-2 mr-8">Groups</v-tab>
-          <v-tab @click="changeTabStatus(1)" class="target-users__tab p-2">Smart Groups</v-tab>
+          <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Groups</v-tab>
+          <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Smart Groups</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" class="target-users__tabs-items">
           <v-tab-item>
@@ -74,47 +70,6 @@ export default {
         0 1px 1px -1px rgba(204, 204, 204, 0.12);
       padding: 15px 5px 18px 24px !important;
       border-radius: 20px !important;
-    }
-  }
-
-  &__tabs {
-    .v-slide-group__content {
-      border-bottom: 2px solid #e4e7ed;
-    }
-
-    .v-tabs-slider-wrapper {
-      bottom: -1px !important;
-      color: #0486fe !important;
-    }
-    .v-slide-group__content.v-tabs-bar__content:after {
-      display: none;
-    }
-    .v-tabs-slider {
-      width: 100%;
-    }
-  }
-  &__tab {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: normal;
-    text-transform: capitalize;
-    color: rgba(0, 0, 0, 0.87) !important;
-    padding: 0;
-    display: flex;
-    justify-content: flex-start;
-    min-width: 60px;
-
-    &:before {
-      background-color: white;
-    }
-
-    &--people {
-      margin-right: 32px !important;
-    }
-
-    &-active {
-      color: #2196f3 !important;
     }
   }
 }

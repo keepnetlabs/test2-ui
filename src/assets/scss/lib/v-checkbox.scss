@@ -1,0 +1,18 @@
+.v-input--checkbox {
+  .v-label {
+    font-size: 14px;
+    line-height: 21px;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  &.v-input--selection-controls {
+    margin-top: 0;
+  }
+  .mdi-checkbox-marked{
+    color: #2196F3;
+    caret-color:#2196F3 ;
+  }
+  .mdi-checkbox-blank-outline{
+    color: #757575;
+  }
+}
+

@@ -75,7 +75,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            fixed: true,
+            fixed: 'left',
             width: 250
             //minWidth: 80
           },

@@ -1,6 +1,5 @@
 .k-table {
   &__wrapper {
-    font-family: "Open Sans", sans-serif !important;
     border-radius: 20px;
     padding-bottom: 24px;
     position: relative;
@@ -23,7 +22,6 @@
         height: auto;
         position: relative;
         display: block;
-        font-family: "Open Sans", sans-serif !important;
         border-radius: 12px;
         box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
           0 1px 1px 0 rgba(243, 243, 243, 0.14),
@@ -82,7 +80,6 @@
             }
 
             span {
-              font-family: "Open Sans", sans-serif !important;
               font-size: 14px;
               font-weight: 600;
               line-height: 1.71;
@@ -150,7 +147,6 @@
                 white-space: nowrap;
                 display: block;
                 overflow: hidden;
-                font-family: "Open Sans", sans-serif !important;
                 font-size: 12px;
                 font-weight: 600;
               }
@@ -161,7 +157,6 @@
                 white-space: nowrap;
                 display: block;
                 overflow: hidden;
-                font-family: "Open Sans", sans-serif !important;
                 font-size: 12px;
               }
             }

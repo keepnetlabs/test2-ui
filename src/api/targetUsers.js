@@ -1,5 +1,4 @@
 import testRequest from '../utils/testRequest'
-const API_URL = 'ir/dashboard'
 
 export function getTargetUser() {
   return testRequest.get(`/target-users/3Bn9x3bneKj2`)

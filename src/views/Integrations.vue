@@ -8,12 +8,12 @@
             v-model="tab"
             background-color="transparent"
             color="basil"
-            active-class="pr-tab-active"
+            class="k-tabs"
           >
-            <v-tab id="pr-tab-users" class="pr-tab pr-tab-users p-2" @click="changeTabStatus(0)">
+            <v-tab id="pr-tab-users" class="k-tab p-2" @click="changeTabStatus(0)">
               Integrations
             </v-tab>
-            <v-tab id="pr-tab-settings" class="pr-tab p-2" @click="changeTabStatus(1)"
+            <v-tab id="pr-tab-settings" class="k-tab p-2" @click="changeTabStatus(1)"
               >Clients
             </v-tab>
           </v-tabs>
