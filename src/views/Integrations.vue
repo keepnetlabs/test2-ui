@@ -56,13 +56,12 @@ export default {
 
 <style lang="scss">
 .integrations {
-  padding: 16px;
-  padding-top: 10px;
+  padding: 0 16px 16px 16px;
 
   &__tab-container {
     padding-left: 0 !important;
     padding-right: 0 !important;
-    margin-top: 16px !important;
+    padding-top: 8px !important;
   }
 
   .v-slide-group__content {
