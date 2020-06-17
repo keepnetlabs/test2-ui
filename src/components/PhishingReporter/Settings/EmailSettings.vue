@@ -95,16 +95,15 @@
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="email-message">Email Message</label>
-          <v-text-field
+          <v-textarea
             placeholder="Please investigate the attached email"
             outlined
             dense
-            class="k-textfield mt-2"
+            class="mt-2"
             v-model.trim="formValues.content"
             :rules="[(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]"
             id="email-message"
-            height="40"
-          ></v-text-field>
+          ></v-textarea>
         </v-list-item-content>
       </v-list-item>
       <v-btn

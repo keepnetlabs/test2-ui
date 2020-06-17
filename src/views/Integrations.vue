@@ -1,6 +1,6 @@
 <template>
   <div class="integrations" id="integrations">
-    <v-layout id="ts-layout" wrap style="min-height: 79vh;">
+    <v-layout id="ts-layout" wrap style="min-height: 80vh;">
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card">
           <v-tabs

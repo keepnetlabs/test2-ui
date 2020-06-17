@@ -99,9 +99,9 @@
             color="#2196f3"
             label="Show Warning"
             class="k-checkbox"
-            v-model="formValues.showWarning"
+            v-model="formValues.isConfirmationBeforeAnalysis"
           ></v-checkbox>
-          <template v-if="formValues.showWarning">
+          <template v-if="formValues.isConfirmationBeforeAnalysis">
             <transition appear name="fade">
               <div class="report-warning__container">
                 <span class="report-warning__message mt-4">Report Warning Message</span>
@@ -112,7 +112,7 @@
                   outlined
                   placeholder="Report this email?"
                   required
-                  v-model="formValues.reportWarningMessage"
+                  v-model="formValues.analysisConfirmationMessage"
                 ></v-text-field>
               </div>
             </transition>
@@ -130,7 +130,7 @@
             outlined
             placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
             required
-            v-model="formValues.reportedMessage"
+            v-model="formValues.analysisThankYouMessage"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -145,22 +145,7 @@
             outlined
             placeholder="Do you wish to delete original email?"
             required
-            v-model="formValues.deleteText"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 add-in-settings__list-item">
-        <v-list-item-content>
-          <label class="add-in-settings__label" for="deleted-text">Deleted Message</label>
-          <v-text-field
-            class="k-textfield mt-2"
-            dense
-            id="deleted-text"
-            outlined
-            placeholder="The mail has been deleted"
-            required
-            v-model="formValues.deletedMessage"
+            v-model="formValues.analysisEmailDeleteMessage"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -234,12 +219,11 @@ export default {
         brandName: '',
         file: '',
         msgBoxTitle: '',
-        showWarning: true,
-        reportWarningMessage: '',
-        reportedMessage: '',
-        deleteText: '',
+        isConfirmationBeforeAnalysis: false,
+        analysisConfirmationMessage: '',
+        analysisThankYouMessage: '',
+        analysisEmailDeleteMessage: '',
         warningLabel: '',
-        deletedMessage: '',
         hiddenFileUploadValue: ''
       },
       marginStatus: true,
@@ -262,28 +246,38 @@ export default {
       } else {
         return false
       }
-    },
-    handleMarginStatus() {
-      this.marginStatus = !this.marginStatus
     }
   },
   created() {
     //If has a report
     if (this.formData) {
-      const { addInName, brandName, warningLabel, msgBoxTitle } = this.formData
+      const {
+        addInName,
+        brandName,
+        warningLabel,
+        msgBoxTitle,
+        isConfirmationBeforeAnalysis,
+        analysisConfirmationMessage,
+        analysisThankYouMessage,
+        analysisEmailDeleteMessage
+      } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
       this.formValues.warningLabel = warningLabel
       this.formValues.msgBoxTitle = msgBoxTitle
+      this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
+      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
+      this.formValues.analysisThankYouMessage = analysisThankYouMessage
+      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
     } else {
       this.formValues.brandName = localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
       this.formValues.msgBoxTitle = 'Phishing Reporter'
-      this.formValues.reportWarningMessage = 'Report this email?'
-      this.formValues.deleteText = 'Do you wish to delete original email?'
-      this.formValues.reportedMessage =
+      this.formValues.analysisConfirmationMessage = 'Report this email?'
+      this.formValues.isConfirmationBeforeAnalysis = true
+      this.formValues.analysisEmailDeleteMessage = 'Do you wish to delete original email?'
+      this.formValues.analysisThankYouMessage =
         'Thank you for reporting this email. Our organisation is more secure thanks to you.'
-      this.formValues.deletedMessage = 'The mail has been deleted'
       this.formValues.warningLabel = 'Suspicious E-Mail'
     }
   }

@@ -38,6 +38,7 @@ import DiagnosticTool from './DiagnosticTool'
 import EmailSettings from './EmailSettings'
 import OtherSettings from './OtherSettings'
 import { createPhishingReporter } from '../../../api/phishingReporter'
+import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 
 export default {
   name: 'Settings',
@@ -76,9 +77,15 @@ export default {
       })
       createPhishingReporter(formData)
         .then((response) => {
-          this.formData = newFormData
+          this.$emit('getPhishingReport')
         })
-        .catch((error) => {})
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+          })
+          this.$emit('getPhishingReport')
+        })
     }
   }
 }

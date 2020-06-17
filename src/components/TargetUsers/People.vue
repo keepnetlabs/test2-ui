@@ -12,7 +12,10 @@
       v-if="isWantToShowAddUsersManuallyModal"
       @changeModalStatus="changeAddUsersManuallyModalStatus"
     />
-
+    <add-user-modal
+      :status="isWantToShowAddUsersModal"
+      @closeAddUserModal="isWantToShowAddUsersModal = false"
+    />
     <datatable
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -32,6 +35,7 @@
       @delete="handleDelete"
       :setClassName="setCellClassName"
       ref="refDataTable"
+      @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -60,18 +64,21 @@
 import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
+import AddUserModal from './AddUserModal'
 export default {
   name: 'People',
   components: {
     DeleteUserModal,
     Datatable,
-    AddUsersManuallyModal
+    AddUsersManuallyModal,
+    AddUserModal
   },
   data: () => ({
     isWantToShowDeleteUserModal: false,
     selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
     selectedRow: {},
+    isWantToShowAddUsersModal: false,
     showPopupModal: false,
     items: [
       { title: 'Click Me1' },

@@ -40,11 +40,11 @@
       <v-list-item class="new-user-group__list-item mt-n2">
         <v-list-item-content>
           <v-radio-group v-model="priority" row>
-            <v-radio value="Very Low" label="Very Low" color="primary"></v-radio>
+            <v-radio value="VeryLow" label="Very Low" color="primary"></v-radio>
             <v-radio value="Low" label="Low" color="primary"></v-radio>
             <v-radio value="Medium" label="Medium" color="primary"></v-radio>
             <v-radio value="High" label="High" color="primary"></v-radio>
-            <v-radio value="Very High" label="Very High" color="primary"></v-radio>
+            <v-radio value="VeryHigh" label="Very High" color="primary"></v-radio>
           </v-radio-group>
         </v-list-item-content>
       </v-list-item>

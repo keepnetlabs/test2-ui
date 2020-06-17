@@ -1,0 +1,231 @@
+<template>
+  <v-overlay :value="status" :opacity="1" :z-index="999" color="white" class="add-user-overlay">
+    <v-card light class="add-user-overlay__container">
+      <v-form lazy-validation ref="refForm">
+        <v-list-item class="add-user-overlay__list-item">
+          <div class="v-btn v-cart-icon-wrapper">
+            <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
+          </div>
+          <v-list-item-content>
+            <v-list-item-title class="v-card-headline">Add New User </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item mt-8">
+          <v-list-item-content>
+            <v-list-item-title class="add-user-overlay__main-title">
+              Add New User Manually
+            </v-list-item-title>
+            <v-list-item-subtitle class="add-user-overlay__main-sub-title"
+              >Define user properties
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item
+          class="add-user-overlay__list-item mt-6"
+          :class="[!hasFirstNameError && !formValues.firstName ? 'mb-2' : '']"
+        >
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="firstName">First Name</label>
+            <v-text-field
+              placeholder="Enter first name"
+              outlined
+              dense
+              v-model="formValues.firstName"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              id="firstName"
+              @blur="hasFirstNameError = true"
+              height="40"
+            ></v-text-field>
+            <div
+              v-if="!hasFirstNameError && !formValues.firstName"
+              class="email-settings__required__text"
+            >
+              *Required
+            </div>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          class="add-user-overlay__list-item"
+          :class="[!hasLastNameError && !formValues.lastName ? 'mb-2' : '']"
+        >
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="lastName">Last Name</label>
+            <v-text-field
+              placeholder="Enter last name"
+              outlined
+              dense
+              v-model="formValues.lastName"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              id="lastName"
+              height="40"
+              @blur="hasLastNameError = true"
+            ></v-text-field>
+            <div
+              v-if="!hasLastNameError && !formValues.lastName"
+              class="email-settings__required__text"
+            >
+              *Required
+            </div>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          class="add-user-overlay__list-item"
+          :class="[!hasEmailError && !formValues.email ? 'mb-2' : '']"
+        >
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="firstName">Email</label>
+            <v-text-field
+              placeholder="Enter email address"
+              outlined
+              dense
+              v-model="formValues.email"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              id="firstName"
+              height="40"
+              @blur="hasEmailError = true"
+            ></v-text-field>
+            <div v-if="!hasEmailError && !formValues.email" class="email-settings__required__text">
+              *Required
+            </div>
+          </v-list-item-content>
+        </v-list-item>
+      </v-form>
+    </v-card>
+    <div class="add-user-overlay__footer">
+      <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
+        CANCEL
+      </v-btn>
+      <div class="new-integration__footer__right-col">
+        <v-btn class="add-user-overlay__footer-btn-save" color="#2196f3" rounded @click="submit">
+          SAVE
+        </v-btn>
+      </div>
+    </div>
+  </v-overlay>
+</template>
+
+<script>
+import { required } from '../../utils/validations'
+
+export default {
+  name: 'AddUserModal',
+  props: {
+    status: {
+      type: Boolean
+    }
+  },
+  data() {
+    return {
+      formValues: {
+        firstName: '',
+        lastName: '',
+        email: ''
+      },
+      validations: {
+        required
+      },
+      hasFirstNameError: false,
+      hasLastNameError: false,
+      hasEmailError: false
+    }
+  },
+  methods: {
+    closeOverlay() {
+      this.$emit('closeAddUserModal')
+    },
+    submit() {}
+  }
+}
+</script>
+
+<style lang="scss">
+.add-user-overlay {
+  .v-overlay__content {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    padding-bottom: 68px !important;
+  }
+
+  &__list-item {
+    padding: 0 !important;
+    &:not(:first-child) {
+    }
+    .v-list-item__content {
+      padding: 0;
+      max-width: 554px;
+    }
+  }
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    padding: 32px 96px 0 96px;
+  }
+
+  &__footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f5f7fa;
+    padding: 16px 96px !important;
+    display: flex;
+    justify-content: space-between;
+
+    &-btn-cancel {
+      color: #f56c6c !important;
+      border: 1px solid #f56c6c !important;
+      box-shadow: none !important;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+      width: 86px;
+      height: 36px !important;
+    }
+
+    &-btn-save {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+      width: 72px;
+      height: 36px !important;
+      border-radius: 18px;
+      background-color: #2196f3;
+    }
+  }
+
+  &__main-title {
+    font-size: 24px;
+    font-weight: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__main-sub-title {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__label {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: normal;
+    margin-bottom: 8px;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+}
+</style>
