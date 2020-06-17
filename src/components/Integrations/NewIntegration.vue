@@ -2,179 +2,273 @@
   <div class="new-integration">
     <v-overlay
       fixed
+      :value="showConfirmModal"
+      :z-index="999"
+      class="new-integration__confirm-modal"
+      :style="showConfirmModal ? 'background-color:white' : ''"
+    >
+      <v-card light class="new-integration__confirm-modal__container">
+        <h2 class="new-integration__confirm-modal__header">
+          Are you sure to upload files to this service?
+        </h2>
+        <p class="new-integration__confirm-modal__content">
+          Files may carry sensitive information about your company
+        </p>
+        <div class="new-integration__confirm-modal__footer">
+          <button
+            class="new-integration__confirm-modal__btn-continue mr-3"
+            color="#2196f3"
+            rounded
+            @click="showConfirmModal = false"
+          >
+            YES, CONTINUE
+          </button>
+          <button
+            class="new-integration__confirm-modal__btn-cancel"
+            rounded
+            @click="cancelClickOnConfirmModal"
+          >
+            CANCEL
+          </button>
+        </div>
+      </v-card>
+    </v-overlay>
+    <v-overlay
+      fixed
       :opacity="0.46"
       :value="showModal"
-      :z-index="9999999"
+      :z-index="99"
       class="new-integration__overlay"
     >
       <v-card light class="new-integration__container">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">
-              mdi-plus
-            </v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">New Integration</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <div class="new-integration__container__content">
+          <v-list-item class="pl-0 pr-0">
+            <div class="v-btn v-cart-icon-wrapper">
+              <v-icon medium left color="blue" class="ml-2">
+                mdi-plus
+              </v-icon>
+            </div>
+            <v-list-item-content class="pt-0 pb-0">
+              <v-list-item-title class="v-card-headline">New Integration</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
 
-        <v-list-item class="pl-0 pr-0">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__title">
-              Add New Integration
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-integration__subtitle">
-              Add new integration to your Incident Responder
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0 mt-8">
-          <v-list-item-content>
-            <label class="new-integration__label" for="integration-name">Integration Name</label>
-            <v-text-field
-              placeholder="Enter Name"
-              outlined
-              dense
-              class="new-integration__textfield mt-2"
-              v-model="formValues.integrationName"
-              required
-              id="integration-name"
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <label class="new-integration__label" for="description">Description</label>
-            <v-text-field
-              placeholder="Enter description"
-              outlined
-              dense
-              class="new-integration__textfield mt-2"
-              v-model="formValues.description"
-              required
-              id="description"
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <label class="new-integration__label" for="integration-type">Integration Type</label>
-            <v-select
-              :items="[]"
-              v-model="formValues.integrationType"
-              outlined
-              class="new-integration__select"
-              required
-              dense
-              placeholder="Select integration type"
-              height="40"
-            ></v-select>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <label class="new-integration__label" for="api-url">API URL</label>
-            <v-text-field
-              placeholder="Enter API URL"
-              outlined
-              dense
-              class="new-integration__textfield mt-2"
-              v-model="formValues.integrationType"
-              required
-              id="api-url"
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__label">
-              API Key
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-integration__api-key__subtitle">
-              Enter API Key generated by the provider
-            </v-list-item-subtitle>
-            <div v-for="(item, index) in apiKeys.length" :key="index">
+          <v-list-item class="pl-0 pr-0">
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__title">
+                Add New Integration
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__subtitle">
+                Add new integration to your Incident Responder
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0 mt-8">
+            <v-list-item-content>
+              <label class="new-integration__label" for="integration-name">Integration Name</label>
               <v-text-field
-                placeholder="Enter API Key"
+                placeholder="Enter Name"
                 outlined
                 dense
-                class="new-integration__textfield new-integration__api-key__textfield mt-2"
-                v-model="apiKeys[index]"
+                class="new-integration__textfield mt-2"
+                v-model="formValues.name"
                 required
-                @input="handleApiKeyChange"
+                id="integration-name"
                 height="40"
               ></v-text-field>
-            </div>
-            <div></div>
-            <div class="new-integration__api-key__footer">
-              <div class="new-integration__api-key__footer-left-side" @click="addApiKey">
-                <v-icon color="#2196f3" style="cursor: pointer !important;">mdi-plus</v-icon>
-                <div class="ml-2 new-integration__api-key__text">ADD API KEY</div>
-              </div>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content>
+              <label class="new-integration__label" for="description">Description</label>
+              <v-text-field
+                placeholder="Enter description"
+                outlined
+                dense
+                class="new-integration__textfield mt-2"
+                v-model="formValues.description"
+                required
+                id="description"
+                height="40"
+              ></v-text-field>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content>
+              <label class="new-integration__label" for="integration-type">Integration Type</label>
+              <v-select
+                :items="integrationTypes"
+                v-model="formValues.analysisEngineTypeResourceId"
+                outlined
+                class="new-integration__select"
+                required
+                dense
+                label="Select integration type"
+                item-text="name"
+                item-value="value"
+                height="40"
+              ></v-select>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content>
+              <label class="new-integration__label" for="api-url">API URL</label>
+              <v-text-field
+                placeholder="Enter API URL"
+                outlined
+                dense
+                class="new-integration__textfield mt-2"
+                v-model="formValues.apiUrl"
+                required
+                @input="handleApiKeyChange"
+                id="api-url"
+                height="40"
+              ></v-text-field>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__label">
+                API Key
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__api-key__subtitle">
+                Enter API Key generated by the provider
+              </v-list-item-subtitle>
               <div
-                class="new-integration__api-key__text"
-                :disabled="isTestConnectionDisabled"
-                :class="{ 'new-integration__api-key__test-text': isTestConnectionDisabled }"
+                v-for="(item, index) in formValues.apiKeys.length"
+                :key="index"
+                class="position-relative new-integration__api-keys"
               >
-                TEST CONNECTION
+                <div class="max-width__form">
+                  <v-text-field
+                    placeholder="Enter API Key"
+                    outlined
+                    dense
+                    class="new-integration__textfield new-integration__api-key__textfield mt-2"
+                    v-model="formValues.apiKeys[index]"
+                    required
+                    @input="handleApiKeyChange"
+                    height="40"
+                  ></v-text-field>
+                  <div class="new-integration__api-keys__delete">
+                    <v-icon
+                      medium
+                      left
+                      class="ml-2"
+                      v-if="formValues.apiKeys.length > 1"
+                      @click="formValues.apiKeys.splice(index, 1)"
+                      >mdi-close</v-icon
+                    >
+                  </div>
+                </div>
               </div>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0 mt-3">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__label">
-              Tags
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-integration__api-key__subtitle">
-              Use enter key to use tags
-            </v-list-item-subtitle>
-            <v-text-field
-              placeholder="Enter tag"
-              outlined
+              <div></div>
+              <div class="new-integration__api-key__footer">
+                <div class="new-integration__api-key__footer-left-side" @click="addApiKey">
+                  <v-icon color="#2196f3" style="cursor: pointer !important;">mdi-plus</v-icon>
+                  <div class="ml-2 new-integration__api-key__text">ADD API KEY</div>
+                </div>
+                <div
+                  class="new-integration__api-key__text"
+                  :disabled="isTestConnectionDisabled"
+                  :class="{ 'new-integration__api-key__test-text': isTestConnectionDisabled }"
+                >
+                  TEST CONNECTION
+                </div>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0 mt-3">
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__label">
+                Tags
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__api-key__subtitle">
+                Use enter key to use tags
+              </v-list-item-subtitle>
+              <v-text-field
+                placeholder="Enter tag"
+                outlined
+                dense
+                class="new-integration__textfield mt-2"
+                v-model="formValues.tag"
+                required
+                height="40"
+              ></v-text-field>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content class="pl-3">
+              <v-switch v-model="formValues.isActive" color="#2196f3" label="Active" />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content class="pl-3">
+              <v-switch v-model="formValues.isSendUrl" label="Send URL" />
+            </v-list-item-content>
+          </v-list-item>
+          <div
+            class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
+            v-if="formValues.isSendUrl"
+          >
+            <v-checkbox
+              class="black--text"
               dense
-              class="new-integration__textfield mt-2"
-              v-model="formValues.tag"
-              required
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <v-switch v-model="formValues.isActive" color="#2196f3" label="Active" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <v-switch v-model="formValues.isSendUrl" label="Send URL" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <v-switch v-model="formValues.isSendFileHash" label="Send file hash" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <v-switch
-              v-model="formValues.isUploadExecutableFiles"
-              label="Upload executables files"
-            />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="px-0">
-          <v-list-item-content>
-            <v-switch v-model="formValues.isUploadOtherFiles" label="Upload other files" />
-          </v-list-item-content>
-        </v-list-item>
-        <div style="max-width: 554px;" class="mb-8 mt-n4 new-integration__api-key__subtitle">
-          Uploading the originally attached files to integrated services may lead sensitive
-          information to be compromised
+              v-model="formValues.isHideUrlParameter"
+              color="#2196f3"
+              :label="`Hide URL Parameters`"
+            ></v-checkbox>
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on: tooltip }">
+                <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
+              </template>
+              <span class="tooltip-span">{{ 'Add Users' }}</span>
+            </v-tooltip>
+          </div>
+          <v-list-item class="px-0">
+            <v-list-item-content class="pl-3">
+              <v-switch v-model="formValues.isSendFileHash" label="Send file hash" />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content class="pl-3">
+              <v-switch
+                v-model="formValues.isUploadExecutableFile"
+                label="Upload executables files"
+              />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0">
+            <v-list-item-content class="pl-3">
+              <v-switch v-model="formValues.isUploadOtherFileType" label="Upload other files" />
+            </v-list-item-content>
+          </v-list-item>
+          <div class="mb-8 new-integration__api-key__subtitle__upload-subtitle">
+            Uploading the originally attached files to integrated services may lead sensitive
+            information to be compromised
+          </div>
+          <div
+            class="mb-8 new-integration__api-key__subtitle__upload-subtitle"
+            v-if="formValues.isUploadOtherFileType"
+          >
+            <div class="d-flex align-center">
+              <span class="mb-7 mr-4 type-text">File Types</span>
+              <v-select
+                :items="uploadFileTypes"
+                v-model="formValues.uploadFileTypes"
+                outlined
+                class="new-integration__select"
+                required
+                dense
+                label="Select integration type"
+                height="40"
+                item-text="name"
+                item-value="resourceId"
+                multiple
+                @blur="showConfirmModal = true"
+              ></v-select>
+            </div>
+          </div>
         </div>
       </v-card>
       <div class="new-integration__footer">
@@ -192,57 +286,173 @@
 </template>
 
 <script>
+import {
+  getIntegrationTypes,
+  getFileTypes,
+  createIntegration,
+  getIntegrationDetails,
+  updateIntegration
+} from '../../api/integrations'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+
 export default {
   name: 'NewIntegration',
   props: {
     showModal: {
       type: Boolean,
       default: false
+    },
+    integrationId: {
+      type: String
     }
   },
   data() {
     return {
       formValues: {
-        integrationName: '',
-        description: '',
-        integrationType: '',
-        tag: '',
+        description: null,
+        analysisEngineTypeResourceId: null,
+        tag: null,
         isActive: true,
         isSendUrl: false,
         isSendFileHash: true,
-        isUploadExecutableFiles: true,
-        isUploadOtherFiles: false
+        isUploadExecutableFile: true,
+        isUploadOtherFileType: false,
+        apiKeys: [''],
+        isHideUrlParameter: false,
+        uploadFileTypes: [],
+        name: null,
+        apiUrl: null
       },
+      integrationTypes: [],
+      uploadFileTypes: [],
       isTestConnectionDisabled: true,
-      apiKeys: ['']
+      showConfirmModal: false
     }
   },
+  created() {
+    if (this.integrationId) this.updateVModel(this.integrationId)
+    getIntegrationTypes()
+      .then((response) => {
+        const {
+          data: { data, status }
+        } = response
+        this.integrationTypes = data || [{ name: 'Dummy', value: 'FHwc3ydEm17E' }]
+      })
+      .catch((error) => {
+        this.integrationTypes = [{ name: 'Dummy', value: 'FHwc3ydEm17E' }]
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: 'Error when getting integrations type!'
+        })
+      })
+    getFileTypes()
+      .then((response) => {
+        const {
+          data: { data, status }
+        } = response
+        this.uploadFileTypes = data
+      })
+      .catch((error) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: 'Error when getting file types! '
+        })
+      })
+  },
   methods: {
-    submit() {},
+    submit() {
+      debugger
+      const data = this.formValues
+      createIntegration(data)
+        .then((response) => {
+          this.showModal = false
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            errorState: true,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when creating new integration!'
+          })
+        })
+      this.fromValues
+    },
     closeOverlay() {
       this.$emit('closeOverlay', false)
     },
     addApiKey() {
-      this.apiKeys.push('')
+      this.formValues.apiKeys.push('')
     },
     handleApiKeyChange() {
+      if (!this.formValues.apiUrl) return true
       this.isTestConnectionDisabled = true
-      this.apiKeys.map((item) => {
+      this.formValues.apiKeys.map((item) => {
         if (item.length > 0) {
           this.isTestConnectionDisabled = false
         }
       })
+    },
+    cancelClickOnConfirmModal() {
+      this.formValues.uploadFileTypes = []
+      this.formValues.isUploadOtherFileType = false
+      this.showConfirmModal = false
+    },
+    updateIntegration() {
+      updateIntegration()
+        .then((response) => {})
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when updating the integration!'
+          })
+        })
+    },
+    updateVModel(id) {
+      getIntegrationDetails(id)
+        .then((response) => {
+          debugger
+          this.formValues = { ...this.formValues, response }
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting integration details!'
+          })
+        })
     }
   }
 }
 </script>
 
 <style lang="scss">
+.position-relative {
+  position: relative;
+}
+.max-width__form {
+  position: relative;
+  max-width: 554px !important;
+}
 .new-integration {
   &__container {
     padding: 24px 0 0 96px !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+  }
+  &__api-keys {
+    &:hover {
+      .new-integration__api-keys__delete {
+        display: flex;
+      }
+    }
+    &__delete {
+      width: 44px;
+      height: 40px;
+      color: #757575;
+      position: absolute;
+      right: -40px;
+      top: 0px;
+      justify-content: center;
+      display: none;
+    }
   }
 
   &__overlay {
@@ -355,6 +565,9 @@ export default {
       line-height: 1.5;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
+      &__upload-subtitle {
+        margin-left: 60px;
+      }
     }
 
     &__textfield {
@@ -405,8 +618,92 @@ export default {
   &.v-card {
     padding: 24px 0 0 96px !important;
   }
+
+  .v-input--switch {
+    .v-label {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+
+  .type-text {
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
   .v-list-item__content {
     padding: 0 !important;
+  }
+  .v-input--checkbox {
+    .v-messages {
+      display: none;
+    }
+  }
+  .checkbox-tooltip {
+    .mdi-help-circle {
+      position: absolute;
+      top: 3px;
+      left: 180px;
+    }
+  }
+}
+.new-integration__confirm-modal {
+  .v-overlay__scrim {
+    opacity: 0 !important;
+    background-color: white !important;
+  }
+  &__header {
+    padding: 32px 24px;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+  &__content {
+    font-size: 13px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.54);
+    padding: 8px 24px;
+  }
+  &__footer {
+    padding: 16px 24px;
+    text-align: right;
+  }
+  &__btn-continue {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+  &__btn-cancel {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #f56c6c;
   }
 }
 </style>

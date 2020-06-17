@@ -285,6 +285,7 @@
             :empty="emails.iEmpty"
             :groupable="true"
             :selectEvent="emails.selectEvent"
+            @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
             @handleInvestigate="handleReportedEmailInvestigate"
@@ -324,12 +325,13 @@
   </div>
 </template>
 <script>
+import { exportReportedEmails } from '../api/integrations'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import { getTopRules, getRunningInvestigations, searchNotifiedMail } from '../api/incidentResponder'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
-import AuthenticationService from '../services/authentication'
+import { exportPhishingReporterUserList } from '../api/phishingReporter'
 
 export default {
   components: {
@@ -496,28 +498,15 @@ export default {
           //minWidth: 100
         },
         {
-          property: 'resultTag',
-          align: 'left',
-          editable: false,
-          label: 'Source',
-          fixed: false,
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: '150',
-          isEditable: false
-          //minWidth: 80
-        },
-        {
           property: 'result',
-          isEditable: true,
           align: 'left',
           editable: false,
-          label: 'Priority',
+          label: 'Result',
           fixed: false,
           sortable: false,
           show: true,
           type: 'text',
+          isEditable: false,
           editComponent: 'select',
           editComponentItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High', 'N/A'],
           width: '150'
@@ -630,7 +619,6 @@ export default {
           data: { data, status }
         } = response
         this.investigationListData = data
-        console.log(this.investigationListData)
         this.$refs.refRecentInv.loadWithDataArray(data || [])
       })
       .catch((error) => {
@@ -666,7 +654,11 @@ export default {
             status
           }
         } = response
-        this.$refs.refReportedEmails.loadWithDataArray(results || [])
+        const tableData = results.map((item) => {
+          const result = { ...item, result: item.resultTag + `,${item.result}` }
+          return result
+        })
+        this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
       .catch((error) => {
         /*this.$store.dispatch('common/createSnackBar', {
@@ -746,6 +738,28 @@ export default {
     },
     emptyInvestigationButtonClick() {
       this.$router.push('/investigations')
+    },
+
+    exportReportedListEmails({ exportTypes, reportAllPages, pageNumber }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: 1,
+          pageSize: 3,
+          orderBy: 'Name',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportReportedEmails(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `users.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
     }
   },
 

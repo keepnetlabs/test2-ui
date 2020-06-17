@@ -1,6 +1,18 @@
 <template>
   <div id="integrations">
-    <new-integration :showModal="modalStatus" @closeOverlay="changeModalStatus" />
+    <v-overlay
+      id="add-new-community-overlay"
+      :value="modalStatus"
+      :opacity="1"
+      :z-index="999"
+      color="white"
+    >
+      <new-integration
+        :showModal="modalStatus"
+        @closeOverlay="changeModalStatus"
+        :integrationId="integrationId"
+      />
+    </v-overlay>
     <data-table
       id="integrationsList"
       ref="refIntegrationsList"
@@ -16,6 +28,8 @@
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
       @deleteAction="handleDelete"
+      @handleEdit="handleEdit"
+      @disable="handleDisable"
       @addAction="changeModalStatus(true)"
       @downloadEvent="exportIntegrationList"
       @sortChangedEvent="sortChangedEvent($event)"
@@ -31,7 +45,14 @@
 <script>
 import DataTable from '../DataTable'
 import NewIntegration from './NewIntegration'
-import { getIntegrationList } from '../../api/integrations'
+import {
+  deleteIntegration,
+  disableIntegration,
+  exportReportedEmails,
+  getIntegrationList,
+  getIntegrationDetails,
+  updateIntegration
+} from '../../api/integrations'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
@@ -42,6 +63,7 @@ export default {
   },
   data() {
     return {
+      integrationId: null,
       tableData: [],
       tableOptions: {
         columns: [
@@ -98,7 +120,7 @@ export default {
           {
             name: 'Edit',
             icon: 'mdi-pencil',
-            action: 'edit'
+            action: 'handleEdit'
           },
           {
             name: 'Disable',
@@ -159,31 +181,89 @@ export default {
         this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, _this.bodyData)
       })
     },
-    handleDelete() {},
+    handleDelete(row) {
+      deleteIntegration(row.resourceId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Integration has been deleted successfully!'
+          })
+          this.getDatatableList()
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting the Investigations!'
+          })
+        })
+    },
+    handleEdit(row) {
+      this.integrationId = row.resourceId
+      this.modalStatus = true
+    },
+    handleDisable(row) {
+      disableIntegration(row.resourceId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Integration has been disabled successfully!'
+          })
+          this.getDatatableList()
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting the Investigations!'
+          })
+        })
+    },
     handleAdd() {},
-    exportIntegrationList() {},
     changeModalStatus(status) {
       this.modalStatus = status
+    },
+    exportIntegrationList({ exportTypes, reportAllPages, pageNumber }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: 1,
+          pageSize: 3,
+          orderBy: 'Name',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportReportedEmails(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `users.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
+    },
+    getDatatableList() {
+      getIntegrationList(this.bodyData)
+        .then((response) => {
+          const {
+            data: { data, status }
+          } = response
+          this.tableData = data.results || []
+          this.bodyData.pageNumber = data.pageNumber
+          this.bodyData.pageSize = data.pageSize
+          this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
+          this.$refs.refIntegrationsList.loadWithDataArray(data.results || [])
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting the integrations!'
+          })
+        })
     }
   },
   mounted() {
-    getIntegrationList(this.bodyData)
-      .then((response) => {
-        const {
-          data: { data, status }
-        } = response
-        this.tableData = data.results || []
-        this.bodyData.pageNumber = data.pageNumber
-        this.bodyData.pageSize = data.pageSize
-        this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-        this.$refs.refIntegrationsList.loadWithDataArray(data.results || [])
-      })
-      .catch((error) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting the Investigations!'
-        })
-      })
+    this.getDatatableList()
   }
 }
 </script>

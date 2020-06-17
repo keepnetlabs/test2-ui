@@ -6,7 +6,7 @@ export function investigationList(obj) {
 }
 
 export function getTargetUsers() {
-  return testRequest.get(`groups`)
+  return testRequest.get(`target-groups`)
 }
 
 export function saveNewInvestigation(obj) {
