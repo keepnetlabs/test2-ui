@@ -5,6 +5,7 @@
       icon="mdi-alert"
       title="Delete User"
       subtitle="Do you want to delete this user?"
+      @changeStatus="isWantToDelete = false"
     >
       <template v-slot:app-dialog-body> {{ getUserName }} will be deleted ! </template>
       <template v-slot:app-dialog-footer>
@@ -191,9 +192,7 @@ export default {
       this.selectedRow = row
       this.isWantToDelete = true
     },
-    handleEdit(rows) {
-      console.log('rows', rows)
-    },
+    handleEdit(rows) {},
     handleAdd(row) {},
     callForPhishingReporterUser() {
       const payload = {

@@ -115,24 +115,11 @@
       <v-layout id="ts-layout" style="min-height: 79vh;" wrap>
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card class="phishing-reporter__card">
-            <v-tabs
-              active-class="phishing-reporter__tab-active"
-              background-color="transparent"
-              color="basil"
-              v-model="tab"
-              class="phishing-reporter__tabs"
-            >
-              <v-tab
-                @click="changeTabStatus(0)"
-                class="phishing-reporter__tab phishing-reporter__tab--users p-2"
-              >
+            <v-tabs background-color="transparent" color="basil" v-model="tab" class="k-tabs">
+              <v-tab @click="changeTabStatus(0)" class="k-tab p-2">
                 Users
               </v-tab>
-              <v-tab
-                @click="changeTabStatus(1)"
-                class="phishing-reporter__tab phishing-reporter__tab--settings p-2"
-                >Settings
-              </v-tab>
+              <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Settings </v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab" class="phishing-reporter__tabs-items">
               <v-tab-item>
@@ -203,7 +190,6 @@ export default {
     },
     getPhishingReportSummary() {
       const dateObj = this.getDates()
-      console.log('dateObj', dateObj)
       getPhishingReportSummary({
         startDate: dateObj.startDate,
         endDate: dateObj.endDate
@@ -326,20 +312,6 @@ export default {
 <style lang="scss">
 .phishing-reporter {
   &__tab {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.15;
-    letter-spacing: normal;
-    text-transform: capitalize;
-    color: rgba(0, 0, 0, 0.87) !important;
-    padding: 0;
-    display: flex;
-    justify-content: flex-start;
-
-    &:before {
-      background-color: white;
-    }
-
     &-container {
       padding-left: 0 !important;
       padding-right: 0 !important;
@@ -350,18 +322,6 @@ export default {
         }
       }
     }
-    &--users {
-      margin-right: 35px !important;
-      min-width: 60px !important;
-    }
-
-    &--settings {
-      min-width: 85px !important;
-    }
-
-    &-active {
-      color: #2196f3 !important;
-    }
   }
 
   &__tabs {
@@ -370,17 +330,6 @@ export default {
       .v-window-item {
         margin-top: 0;
       }
-    }
-    .v-slide-group__content {
-      border-bottom: 2px solid #e4e7ed;
-    }
-
-    .v-tabs-slider-wrapper {
-      bottom: -1px !important;
-      color: #0486fe !important;
-    }
-    .v-slide-group__content.v-tabs-bar__content:after {
-      display: none;
     }
   }
 
