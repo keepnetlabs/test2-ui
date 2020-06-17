@@ -910,7 +910,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'userStatus'
+        type: 'status'
       },
       {
         property: 'duration',

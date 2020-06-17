@@ -4,7 +4,7 @@
       id="add-new-community-overlay"
       :value="modalStatus"
       :opacity="1"
-      :z-index="999"
+      :z-index="99"
       color="white"
     >
       <new-integration
@@ -142,7 +142,8 @@ export default {
         },
         addButton: {
           show: true,
-          action: 'addAction'
+          action: 'addAction',
+          tooltip: 'Add Integration'
         }
       },
       modalStatus: false,
@@ -193,13 +194,13 @@ export default {
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the Investigations!'
+            message: 'Error when deleting integration!'
           })
         })
     },
     handleEdit(row) {
-      this.integrationId = row.resourceId
       this.modalStatus = true
+      this.integrationId = row.resourceId
     },
     handleDisable(row) {
       disableIntegration(row.resourceId)
@@ -213,13 +214,15 @@ export default {
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the Investigations!'
+            message: 'Error when disable integration!'
           })
         })
     },
     handleAdd() {},
-    changeModalStatus(status) {
+    changeModalStatus(status, restart) {
+      this.integrationId = null
       this.modalStatus = status
+      if (restart) this.getDatatableList()
     },
     exportIntegrationList({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {

@@ -25,7 +25,7 @@ export function disableIntegration(id) {
 }
 
 export function deleteIntegration(id) {
-  return testRequest.delete(`${API_URL}/id`)
+  return testRequest.delete(`${API_URL}/${id}`)
 }
 
 export function getIntegrationDetails(id) {

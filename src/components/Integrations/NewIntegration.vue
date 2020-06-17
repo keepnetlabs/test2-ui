@@ -3,7 +3,7 @@
     <v-overlay
       fixed
       :value="showConfirmModal"
-      :z-index="999"
+      :z-index="99"
       class="new-integration__confirm-modal"
       :style="showConfirmModal ? 'background-color:white' : ''"
     >
@@ -37,7 +37,7 @@
       fixed
       :opacity="0.46"
       :value="showModal"
-      :z-index="99"
+      :z-index="98"
       class="new-integration__overlay"
     >
       <v-card light class="new-integration__container">
@@ -49,17 +49,19 @@
               </v-icon>
             </div>
             <v-list-item-content class="pt-0 pb-0">
-              <v-list-item-title class="v-card-headline">New Integration</v-list-item-title>
+              <v-list-item-title class="v-card-headline">{{
+                this.integrationId ? 'Edit Integration' : 'New Integration'
+              }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
 
           <v-list-item class="pl-0 pr-0">
             <v-list-item-content>
               <v-list-item-title class="new-integration__title">
-                Add New Integration
+                {{ this.integrationId ? 'Edit Integration' : 'Add New Integration' }}
               </v-list-item-title>
               <v-list-item-subtitle class="new-integration__subtitle">
-                Add new integration to your Incident Responder
+                Add new integration to your Integrations
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -105,7 +107,7 @@
                 dense
                 label="Select integration type"
                 item-text="name"
-                item-value="value"
+                item-value="resourceId"
                 height="40"
               ></v-select>
             </v-list-item-content>
@@ -336,10 +338,10 @@ export default {
         const {
           data: { data, status }
         } = response
-        this.integrationTypes = data || [{ name: 'Dummy', value: 'FHwc3ydEm17E' }]
+        this.integrationTypes = data
+        console.log(this.integrationTypes)
       })
       .catch((error) => {
-        this.integrationTypes = [{ name: 'Dummy', value: 'FHwc3ydEm17E' }]
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting integrations type!'
@@ -361,11 +363,16 @@ export default {
   },
   methods: {
     submit() {
-      debugger
       const data = this.formValues
       createIntegration(data)
         .then((response) => {
-          this.showModal = false
+          this.closeOverlay()
+          this.showConfirmModal = false
+          this.$store.dispatch('common/createSnackBar', {
+            errorState: false,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Integration created successfuly!'
+          })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -377,7 +384,7 @@ export default {
       this.fromValues
     },
     closeOverlay() {
-      this.$emit('closeOverlay', false)
+      this.$emit('closeOverlay', false, true)
     },
     addApiKey() {
       this.formValues.apiKeys.push('')
@@ -409,8 +416,9 @@ export default {
     updateVModel(id) {
       getIntegrationDetails(id)
         .then((response) => {
-          debugger
-          this.formValues = { ...this.formValues, response }
+          const integrationData = response['data'].data
+          this.formValues = integrationData
+          console.log(this.formValues)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -418,7 +426,28 @@ export default {
             message: 'Error when getting integration details!'
           })
         })
+    },
+    resetValues() {
+      this.formValues = {
+        description: null,
+        analysisEngineTypeResourceId: null,
+        tag: null,
+        isActive: true,
+        isSendUrl: false,
+        isSendFileHash: true,
+        isUploadExecutableFile: true,
+        isUploadOtherFileType: false,
+        apiKeys: [''],
+        isHideUrlParameter: false,
+        uploadFileTypes: [],
+        name: null,
+        apiUrl: null
+      }
     }
+  },
+  destroyed() {
+    this.integrationId = null
+    this.resetValues()
   }
 }
 </script>
