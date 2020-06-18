@@ -90,18 +90,62 @@
             </div>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="department">Department</label>
+            <v-text-field
+              placeholder="Enter department name"
+              outlined
+              dense
+              v-model="formValues.department"
+              id="department"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="jobTitle">Job Title</label>
+            <v-text-field
+              placeholder="Enter job title"
+              outlined
+              dense
+              v-model="formValues.email"
+              id="department"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="priority">Priority</label>
+            <v-select
+              :items="priorityItems"
+              outlined
+              dense
+              v-model="formValues.priority"
+              id="department"
+              height="40"
+            ></v-select>
+          </v-list-item-content>
+        </v-list-item>
+        <div class="add-user-overlay__footer">
+          <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
+            CANCEL
+          </v-btn>
+          <div class="new-integration__footer__right-col">
+            <v-btn
+              class="add-user-overlay__footer-btn-save white--text"
+              color="#2196f3"
+              rounded
+              @click="submit"
+            >
+              SAVE
+            </v-btn>
+          </div>
+        </div>
       </v-form>
     </v-card>
-    <div class="add-user-overlay__footer">
-      <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
-        CANCEL
-      </v-btn>
-      <div class="new-integration__footer__right-col">
-        <v-btn class="add-user-overlay__footer-btn-save" color="#2196f3" rounded @click="submit">
-          SAVE
-        </v-btn>
-      </div>
-    </div>
   </v-overlay>
 </template>
 
@@ -120,8 +164,11 @@ export default {
       formValues: {
         firstName: '',
         lastName: '',
-        email: ''
+        email: '',
+        department: '',
+        priority: 'Medium'
       },
+      priorityItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
       validations: {
         required
       },
@@ -163,9 +210,8 @@ export default {
   }
 
   &__container {
-    width: 100%;
-    height: 100%;
     padding: 32px 96px 0 96px;
+    box-shadow: none;
   }
 
   &__footer {
