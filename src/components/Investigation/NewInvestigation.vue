@@ -35,13 +35,13 @@
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item class="edit-industry-area pb-4 pa-0 target-users">
+            <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
               <v-list-item-content class>
                 <label class="edit-labels">Target Users</label>
                 <label class="edit-sub-labels"
                   >Select departments, groups or users to investigate</label
                 >
-                <div class="target-users__radio-group">
+                <div class="target-users-select__radio-group">
                   <v-radio-group
                     v-model="targetUserType"
                     :mandatory="false"
@@ -53,7 +53,7 @@
                     <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
                   </v-radio-group>
                 </div>
-                <div class="target-users__input-area">
+                <div class="target-users-select__input-area">
                   <v-combobox
                     :items="[]"
                     :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
@@ -74,7 +74,7 @@
                     :items="targetUsersList"
                     :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
-                    class="edit-select target-users-multi"
+                    class="edit-select target-users-select-multi"
                     v-model="targetUsersValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
@@ -101,7 +101,7 @@
                     :rules="[targetUsers.required]"
                     required
                     outlined
-                    class="edit-name-textfield edit-select target-users__specific-user-input target-users-multi"
+                    class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
                     v-model="targetUsersValue"
                   ></v-combobox>
                 </div>
@@ -116,7 +116,7 @@
                     <v-select
                       :items="filterListOption"
                       v-model="list.option"
-                      label="Select the target users"
+                      label="Select filter"
                       outlined
                       class="edit-select standard-height"
                       required
@@ -978,7 +978,7 @@ export default {
 </script>
 <style lang="scss">
 .new-investigation-wrapper {
-  .target-users {
+  .target-users-select {
     &__radio-group {
       padding: 0px !important;
       margin: 0 !important;

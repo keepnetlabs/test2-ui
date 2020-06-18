@@ -364,24 +364,43 @@ export default {
   methods: {
     submit() {
       const data = this.formValues
-      createIntegration(data)
-        .then((response) => {
-          this.closeOverlay()
-          this.showConfirmModal = false
-          this.$store.dispatch('common/createSnackBar', {
-            errorState: false,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration created successfuly!'
+      if (this.integrationId) {
+        updateIntegration(this.integrationId, data)
+          .then((response) => {
+            this.closeOverlay()
+            this.showConfirmModal = false
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: false,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Integration updated successfuly!'
+            })
           })
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            errorState: true,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when creating new integration!'
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when updating integration!'
+            })
           })
-        })
-      this.fromValues
+      } else {
+        createIntegration(data)
+          .then((response) => {
+            this.closeOverlay()
+            this.showConfirmModal = false
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: false,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Integration created successfuly!'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when creating new integration!'
+            })
+          })
+      }
     },
     closeOverlay() {
       this.$emit('closeOverlay', false, true)

@@ -37,7 +37,7 @@
       @searchChangedEvent="searchChangedEvent($event)"
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
-      :isServerSide="true"
+      :isServerSide="false"
     />
   </div>
 </template>
@@ -107,7 +107,7 @@ export default {
             property: 'createDate',
             align: 'left',
             editable: false,
-            label: 'Created',
+            label: 'Date Created',
             fixed: false,
             sortable: true,
             show: true,
@@ -158,29 +158,20 @@ export default {
   methods: {
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
-      const _this = this
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, this.bodyData)
-      })
+      this.getDatatableList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
-      const _this = this
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
         pageNumber: pageNumber,
         totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, _this.bodyData)
-      })
+      this.getDatatableList()
     },
     searchChangedEvent({ filter }) {
       this.bodyData = { ...this.bodyData, filter }
-      const _this = this
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.refIntegrationsList.loadWithDataArray(_this.tableData.data, _this.bodyData)
-      })
+      this.getDatatableList()
     },
     handleDelete(row) {
       deleteIntegration(row.resourceId)
@@ -255,7 +246,8 @@ export default {
           this.bodyData.pageNumber = data.pageNumber
           this.bodyData.pageSize = data.pageSize
           this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-          this.$refs.refIntegrationsList.loadWithDataArray(data.results || [])
+          console.log(this.tableData.totalNumberOfRecords)
+          this.$refs.refIntegrationsList.loadWithDataArray(data.results || [], this.bodyData)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

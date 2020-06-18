@@ -18,7 +18,7 @@
                   To
                 </div>
                 <div class="details-content--item--value">
-                  sedatozdemirtest3@outlook.com
+                  {{ mailDetails.to.toString() }}
                 </div>
               </div>
               <div class="details-content--item mb-4">
@@ -26,7 +26,7 @@
                   From
                 </div>
                 <div class="details-content--item--value">
-                  ets@securelogout.com
+                  {{ mailDetails.from }}
                 </div>
               </div>
               <div class="details-content--item mb-4">
@@ -34,17 +34,17 @@
                   Subject
                 </div>
                 <div class="details-content--item--value">
-                  File Format Exploits
+                  {{ mailDetails.subject }}
                 </div>
               </div>
-              <div class="details-content--item mb-4">
+              <!--<div class="details-content--item mb-4">
                 <div class="details-content--item--key">
                   Analysis Date
                 </div>
                 <div class="details-content--item--value">
                   7/26/2019 5:22:30 PM
                 </div>
-              </div>
+              </div>-->
             </div>
           </v-tab-item>
           <v-tab-item>
@@ -689,6 +689,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  `
 })
 import Datatable from '../../components/DataTable'
+import { getNotifiedEmail } from '../../api/notifiedEmail'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   components: {
@@ -721,6 +723,7 @@ export default {
     })
   },
   data: () => ({
+    mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: false,
     expanded: false,
@@ -987,6 +990,17 @@ export default {
         communPostId: 'cf519747-7b6e-4060-a170-fe7f1f82d992'
       }
       this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
+
+      getNotifiedEmail(this.$attrs.id)
+        .then((response) => {
+          this.mailDetails = response.data.data
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when gettin details!'
+          })
+        })
 
       if (this.toggle && this.toggle.length < 1) {
         let arr = []

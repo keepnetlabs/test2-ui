@@ -232,7 +232,7 @@
                   rounded
                   @click.native="$router.push('/investigations')"
                 >
-                  All Investigations
+                  Investigations
                   <v-icon class="pl-2">mdi-arrow-right</v-icon>
                 </v-btn>
               </div>
@@ -532,7 +532,7 @@ export default {
           property: 'createDate',
           align: 'left',
           editable: false,
-          label: 'Created',
+          label: 'Created Date',
           fixed: false,
           sortable: true,
           show: true,
@@ -550,7 +550,7 @@ export default {
           isNotShow: true
         },
         {
-          name: 'Preview',
+          name: 'Preview Email',
           icon: 'mdi-eye',
           action: 'irPreview'
         },
@@ -1011,24 +1011,24 @@ export default {
 
             h2 {
               font-family: 'Open Sans', sans-serif;
-              font-size: 24px;
-              font-weight: normal;
+              font-size: 20px;
+              font-weight: 600;
               font-stretch: normal;
               font-style: normal;
-              line-height: 1.6;
+              line-height: 1.15;
               letter-spacing: normal;
               color: #2196f3;
             }
 
             p {
-              font-family: 'Open Sans', sans-serif;
-              font-size: 14px;
+              font-family: 'Open Sans', sans-serif !important;
+              font-size: 16px;
               font-weight: normal;
               font-stretch: normal;
               font-style: normal;
-              line-height: 1.5;
+              line-height: normal;
               letter-spacing: normal;
-              color: rgba(0, 0, 0, 0.7);
+              color: rgba(0, 0, 0, 0.87);
             }
           }
 
@@ -1038,20 +1038,22 @@ export default {
             max-width: 35%;
 
             .btn-action {
-              background-color: #2196f3 !important;
-              color: #fff;
-              font-family: 'Open Sans', sans-serif !important;
               font-size: 14px;
-              font-weight: 400;
+              font-weight: 600;
               font-stretch: normal;
               font-style: normal;
               line-height: 1.71;
               letter-spacing: normal;
+              color: #2196f3;
+              background-color: #ffffff !important;
+              font-family: 'Open Sans', sans-serif !important;
               padding: 0 !important;
               height: 36px !important;
               border-radius: 18px;
-              box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+              box-shadow: none !important;
               max-width: 100%;
+              border-radius: 18px;
+              border: solid 1px #2196f3;
 
               i {
                 font-size: 19px !important;
@@ -1126,24 +1128,24 @@ export default {
 
           h2 {
             font-family: 'Open Sans', sans-serif;
-            font-size: 24px;
-            font-weight: normal;
+            font-size: 20px;
+            font-weight: 600;
             font-stretch: normal;
             font-style: normal;
-            line-height: 1.6;
+            line-height: 1.15;
             letter-spacing: normal;
             color: #2196f3;
           }
 
           p {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 14px;
+            font-family: 'Open Sans', sans-serif !important;
+            font-size: 16px;
             font-weight: normal;
             font-stretch: normal;
             font-style: normal;
-            line-height: 1.5;
+            line-height: normal;
             letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.7);
+            color: rgba(0, 0, 0, 0.87);
           }
         }
 
