@@ -129,6 +129,30 @@
             ></v-select>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="addUserGroup">Add To User Groups</label>
+            <v-text-field
+              placeholder="Type to search user groups"
+              outlined
+              dense
+              v-model="formValues.customFields"
+              id="addUserGroup"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="isActive">Active</label>
+            <v-switch
+              id="isActive"
+              v-model="formValues.isActive"
+              color="#2196f3"
+              :label="formValues.isActive ? 'Yes' : 'No'"
+            />
+          </v-list-item-content>
+        </v-list-item>
         <div class="add-user-overlay__footer">
           <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
             CANCEL
@@ -151,6 +175,7 @@
 
 <script>
 import { required } from '../../utils/validations'
+import { createTargetUser } from '../../api/targetUsers'
 
 export default {
   name: 'AddUserModal',
@@ -166,7 +191,9 @@ export default {
         lastName: '',
         email: '',
         department: '',
-        priority: 'Medium'
+        priority: 'Medium',
+        customFields: '',
+        isActive: true
       },
       priorityItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
       validations: {
@@ -181,7 +208,15 @@ export default {
     closeOverlay() {
       this.$emit('closeAddUserModal')
     },
-    submit() {}
+    submit() {
+      const payload = {
+        ...this.formValues
+      }
+      /*
+      callForCreateTargetUser()
+
+       */
+    }
   }
 }
 </script>
@@ -201,6 +236,7 @@ export default {
 
   &__list-item {
     padding: 0 !important;
+    margin-top: -4px;
     &:not(:first-child) {
     }
     .v-list-item__content {
@@ -270,8 +306,18 @@ export default {
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: normal;
-    margin-bottom: 8px;
+    margin-bottom: 8px !important;
     color: rgba(0, 0, 0, 0.87) !important;
+  }
+  .v-input--switch {
+    margin-top: 0;
+    label {
+      font-size: 16px;
+      font-weight: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      margin-left: 8px;
+    }
   }
 }
 </style>

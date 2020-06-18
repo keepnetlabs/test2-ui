@@ -28,7 +28,7 @@ export function createTargetGroup(payload) {
 }
 
 export function updateTargetGroup(payload) {
-  return testRequest.put('/target-groups/djZZejbRbh6l')
+  return testRequest.put(`/target-groups/${payload.resourceId}`, payload)
 }
 
 export function deleteTargetGroup(payload) {

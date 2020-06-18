@@ -26,7 +26,12 @@
             @click="changeSnackbarStatus(false, snackbar)"
             >mdi-close</v-icon
           >
-          <router-link class="snackbar__action" v-else :to="snackbar.action.link">
+          <router-link
+            class="snackbar__action"
+            :class="[snackbar.action.linkType === 'text' ? 'mr-n1' : '']"
+            v-else
+            :to="snackbar.action.link"
+          >
             <v-btn
               :text="snackbar.action.linkType === 'text'"
               @click.native="changeSnackbarStatus($event, snackbar)"
@@ -64,7 +69,7 @@ export default {
           styleObj['bottom'] = `${75 * index}px`
         }
       } else {
-        styleObj['bottom'] = '5px'
+        styleObj['bottom'] = '10px'
       }
       if (messageLength > 40 && messageLength < 60) {
         styleObj['width'] = '580px'
@@ -137,7 +142,7 @@ export default {
     -webkit-box-pack: justify;
     -ms-flex-pack: justify;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 0 16px;
     overflow: hidden;
     width: 100%;
   }

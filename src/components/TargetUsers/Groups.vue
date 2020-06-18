@@ -48,7 +48,7 @@
 
 <script>
 import DataTable from '../DataTable'
-import { getTargetGroups, createTargetGroup } from '../../api/targetUsers'
+import { getTargetGroups, createTargetGroup, updateTargetGroup } from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 
 import DeleteGroupModal from './DeleteGroupModal'
@@ -94,7 +94,7 @@ export default {
             type: 'priority',
             isEditable: true,
             editComponent: 'select',
-            editComponentItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
+            editComponentItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh'],
             width: 300
           },
           {
@@ -173,6 +173,7 @@ export default {
           this.$store.dispatch('common/createSnackBar', {
             message: `New group named ${group.name} created`,
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-information',
             action: {
               link: '/',
               label: 'VIEW',
@@ -192,17 +193,31 @@ export default {
       this.showDeleteGroupModal = status
     },
     handleEdit(rows) {
-      console.log('rows', rows)
+      rows.map((item) => {
+        this.callForUpdateTargetGroup(item)
+      })
     },
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
-        console.log('data', data)
+
         this.$refs.refGroupsTable.loadWithDataArray(data)
       })
     },
     callForDeleteGroup() {
       //TODO
+    },
+    callForUpdateTargetGroup(payload) {
+      updateTargetGroup(payload)
+        .then((response) => {
+          this.callForTargetGroups()
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+          })
+        })
     },
     handleDelete(selectedRow) {
       this.selectedRow = selectedRow

@@ -15,6 +15,7 @@
     <add-user-modal
       :status="isWantToShowAddUsersModal"
       @closeAddUserModal="isWantToShowAddUsersModal = false"
+      v-if="isWantToShowAddUsersModal"
     />
     <datatable
       :addButton="tableOptions.addButton"
