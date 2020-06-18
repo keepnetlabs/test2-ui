@@ -72,7 +72,7 @@ import newInvestigation from '../components/Investigation/NewInvestigation'
 import AppDialog from '../components/AppDialog'
 import { mapActions, mapGetters } from 'vuex'
 import { exportInvestigationList } from '../api/incidentResponder'
-
+import { getStoreValue } from '../model/constants/commonConstants'
 export default {
   components: {
     Datatable,
@@ -99,7 +99,7 @@ export default {
         property: 'incident',
         align: 'left',
         editable: false,
-        label: 'Incident',
+        label: getStoreValue('incident'),
         fixed: 'left',
         sortable: true,
         show: true,
@@ -113,7 +113,7 @@ export default {
         property: 'detected',
         align: 'center',
         editable: false,
-        label: 'Detected',
+        label: getStoreValue('detected'),
         fixed: false,
         sortable: true,
         show: true,
@@ -125,7 +125,7 @@ export default {
         property: 'source',
         align: 'left',
         editable: false,
-        label: 'Source',
+        label: getStoreValue('source'),
         fixed: false,
         sortable: true,
         show: true,
@@ -137,7 +137,7 @@ export default {
         property: 'status',
         align: 'center',
         editable: false,
-        label: 'Status',
+        label: getStoreValue('status'),
         fixed: false,
         sortable: true,
         show: true,
@@ -150,7 +150,7 @@ export default {
         property: 'createDate',
         align: 'left',
         editable: false,
-        label: 'Create Date',
+        label: getStoreValue('createDate'),
         fixed: false,
         sortable: true,
         show: true,
@@ -162,7 +162,7 @@ export default {
         property: 'expireDate',
         align: 'left',
         editable: false,
-        label: 'Expiry Date',
+        label: getStoreValue('expireDate'),
         fixed: false,
         sortable: true,
         show: true,
@@ -174,7 +174,7 @@ export default {
         property: 'userStatus',
         align: 'center',
         editable: false,
-        label: 'User Status',
+        label: getStoreValue('userStatus'),
         fixed: false,
         sortable: false,
         show: true,
@@ -186,7 +186,7 @@ export default {
         property: 'progress',
         align: 'center',
         editable: false,
-        label: 'Progress',
+        label: getStoreValue('progress'),
         fixed: false,
         sortable: false,
         show: true,

@@ -265,7 +265,7 @@ export default {
         isOnPremise: false,
         apiUrl: '',
         companyId: '',
-        enableEnterpriseVault: false,
+        enableEnterpriseVault: null,
         enterpriseVaultUrl: '',
         superTip: '',
         noInternetConnectionMessage: '',
@@ -325,6 +325,7 @@ export default {
       this.formValues.companyId = localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage =
         'No internet connection. Please try again later.'
+      this.formValues.enableEnterpriseVault = false
       this.formValues.msgBoxBtnYesText = 'Yes'
       this.formValues.msgBoxBtnNoText = 'No'
       this.formValues.msgBoxBtnCancelText = 'Cancel'

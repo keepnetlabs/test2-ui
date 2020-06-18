@@ -1,11 +1,15 @@
 import testRequest from '../utils/testRequest'
 
-export function getTargetUser() {
-  return testRequest.get(`/target-users/3Bn9x3bneKj2`)
+export function getTargetUsers() {
+  return testRequest.get(`/target-users`)
 }
 
-export function deleteTargetUser() {
-  return testRequest.delete('/target-users/TfyY9gBlA851')
+export function getTargetUser(resourceId) {
+  return testRequest.get(`/target-users/${resourceId}`)
+}
+
+export function deleteTargetUser(resourceId) {
+  return testRequest.delete(`/target-users/${resourceId}`)
 }
 
 export function updateTargetUser(payload) {

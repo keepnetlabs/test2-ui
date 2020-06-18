@@ -41,6 +41,7 @@
 
 <script>
 import DataTable from '../DataTable'
+import { getStoreValue } from '../../model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList
@@ -62,7 +63,7 @@ export default {
             property: 'firstName',
             align: 'left',
             editable: false,
-            label: 'First Name',
+            label: getStoreValue('firstName'),
             sortable: true,
             show: true,
             fixed: 'left',
@@ -76,7 +77,7 @@ export default {
             property: 'lastName',
             align: 'left',
             editable: false,
-            label: 'Last Name',
+            label: getStoreValue('lastName'),
             sortable: true,
             show: true,
             type: 'text',
@@ -89,7 +90,7 @@ export default {
             property: 'email',
             align: 'left',
             editable: false,
-            label: 'E-mail',
+            label: getStoreValue('email'),
             fixed: false,
             sortable: true,
             show: true,
@@ -103,7 +104,7 @@ export default {
             property: 'hostName',
             align: 'left',
             editable: false,
-            label: 'Device Name',
+            label: getStoreValue('hostName'),
             fixed: false,
             sortable: true,
             show: true,
@@ -118,7 +119,7 @@ export default {
             property: 'lastSeen',
             align: 'left',
             editable: false,
-            label: 'Last Seen',
+            label: getStoreValue('lastSeen'),
             fixed: false,
             sortable: true,
             show: true,
@@ -132,7 +133,7 @@ export default {
             property: 'addInVersion',
             align: 'center',
             editable: false,
-            label: 'Version',
+            label: getStoreValue('addInVersion'),
             fixed: false,
             sortable: true,
             show: true,
@@ -143,10 +144,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'addInStatus',
+            property: 'status',
             align: 'center',
             editable: false,
-            label: 'Status',
+            label: getStoreValue('status'),
             fixed: false,
             sortable: true,
             show: true,
@@ -208,6 +209,7 @@ export default {
               data: { results }
             }
           } = response
+          console.log('results', results)
           this.$refs.refUsersList.loadWithDataArray(results || [])
         })
         .catch((error) => {

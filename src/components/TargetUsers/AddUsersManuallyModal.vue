@@ -78,6 +78,7 @@
 
 <script>
 import DataTable from '../../components/DataTable'
+import { getStoreValue } from '../../model/constants/commonConstants'
 export default {
   name: 'AddUsersManuallyModal',
   components: {
@@ -97,7 +98,7 @@ export default {
             property: 'firstName',
             align: 'left',
             editable: false,
-            label: 'First Name',
+            label: getStoreValue('firstName'),
             sortable: true,
             show: true,
             fixed: true,

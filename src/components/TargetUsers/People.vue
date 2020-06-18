@@ -17,6 +17,11 @@
       @closeAddUserModal="isWantToShowAddUsersModal = false"
       v-if="isWantToShowAddUsersModal"
     />
+    <import-users-from-file-modal
+      :status="isWantToShowImportUsersFromFileModal"
+      @closeImportUsersFromFileModal="isWantToShowImportUsersFromFileModal = false"
+      v-if="isWantToShowImportUsersFromFileModal"
+    />
     <datatable
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -66,9 +71,14 @@ import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
+import ImportUsersFromFileModal from './ImportUsersFromFileModal'
+import { deleteTargetUser } from '../../api/targetUsers'
+import { getStoreValue } from '../../model/constants/commonConstants'
+
 export default {
   name: 'People',
   components: {
+    ImportUsersFromFileModal,
     DeleteUserModal,
     Datatable,
     AddUsersManuallyModal,
@@ -81,6 +91,7 @@ export default {
     selectedRow: {},
     isWantToShowAddUsersModal: false,
     showPopupModal: false,
+    isWantToShowImportUsersFromFileModal: false,
     items: [
       { title: 'Click Me1' },
       { title: 'Click Me2' },
@@ -94,7 +105,7 @@ export default {
           property: 'firstName',
           align: 'left',
           editable: false,
-          label: 'First Name',
+          label: getStoreValue('firstName'),
           fixed: 'left',
           sortable: true,
           show: true,
@@ -106,7 +117,7 @@ export default {
           property: 'lastName',
           align: 'left',
           editable: false,
-          label: 'Last Name',
+          label: getStoreValue('lastName'),
           sortable: true,
           show: true,
           type: 'status',
@@ -116,7 +127,7 @@ export default {
           property: 'email',
           align: 'left',
           editable: false,
-          label: 'Email',
+          label: getStoreValue('email'),
           sortable: true,
           show: true,
           type: 'priority',
@@ -126,7 +137,7 @@ export default {
           property: 'department',
           align: 'left',
           editable: false,
-          label: 'Department',
+          label: getStoreValue('department'),
           sortable: true,
           show: true,
           type: 'chart',
@@ -146,7 +157,7 @@ export default {
           property: 'priority',
           align: 'center',
           editable: false,
-          label: 'Priority',
+          label: getStoreValue('priority'),
           sortable: true,
           show: true,
           type: 'priority',
@@ -300,7 +311,15 @@ export default {
     changeAddUsersManuallyModalStatus(status) {
       this.isWantToShowAddUsersManuallyModal = status
     },
-    handleDeleteUser(selectedUser) {}
+    handleDeleteUser(selectedUser) {
+      deleteTargetUser(selectedUser.resourceId)
+        .then((response) => {
+          debugger
+        })
+        .catch((error) => {
+          debugger
+        })
+    }
   }
 }
 </script>

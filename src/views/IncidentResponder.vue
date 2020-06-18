@@ -330,7 +330,7 @@ import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import { getTopRules, getRunningInvestigations, searchNotifiedMail } from '../api/incidentResponder'
 import { mapActions, mapGetters } from 'vuex'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue } from '../model/constants/commonConstants'
 import { exportPhishingReporterUserList } from '../api/phishingReporter'
 
 export default {
@@ -421,7 +421,7 @@ export default {
           property: 'progress',
           align: 'center',
           editable: false,
-          label: 'Progress',
+          label: getStoreValue('progress'),
           fixed: false,
           sortable: false,
           show: true,
@@ -432,7 +432,7 @@ export default {
           property: 'priority',
           align: 'center',
           editable: false,
-          label: 'Priority',
+          label: getStoreValue('priority'),
           fixed: false,
           sortable: false,
           show: true,
@@ -463,7 +463,7 @@ export default {
           property: 'subject',
           align: 'left',
           editable: false,
-          label: 'Subject',
+          label: getStoreValue('subject'),
           fixed: 'left',
           sortable: true,
           show: true,
@@ -475,7 +475,7 @@ export default {
         {
           property: 'attachmentCount',
           align: 'center',
-          label: 'File',
+          label: getStoreValue('attachmentCount'),
           hideLabel: true,
           fixed: false,
           sortable: true,
@@ -488,7 +488,7 @@ export default {
           property: 'reportedBy',
           align: 'left',
           editable: false,
-          label: 'Reported by',
+          label: getStoreValue('reportedBy'),
           fixed: false,
           sortable: true,
           show: true,
@@ -501,7 +501,7 @@ export default {
           property: 'result',
           align: 'left',
           editable: false,
-          label: 'Result',
+          label: getStoreValue('result'),
           fixed: false,
           sortable: false,
           show: true,
@@ -517,7 +517,7 @@ export default {
           isEditable: true,
           align: 'center',
           editable: false,
-          label: 'Status',
+          label: getStoreValue('Status'),
           fixed: false,
           sortable: false,
           show: true,
@@ -532,7 +532,7 @@ export default {
           property: 'createDate',
           align: 'left',
           editable: false,
-          label: 'Created Date',
+          label: getStoreValue('createDate'),
           fixed: false,
           sortable: true,
           show: true,

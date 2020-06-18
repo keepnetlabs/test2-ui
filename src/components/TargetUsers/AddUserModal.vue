@@ -132,14 +132,19 @@
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content>
             <label class="add-user-overlay__label" for="addUserGroup">Add To User Groups</label>
-            <v-text-field
+            <v-autocomplete
               placeholder="Type to search user groups"
               outlined
               dense
+              chips
+              multiple
+              deletable-chips
+              :items="autoCompleteItems"
               v-model="formValues.customFields"
               id="addUserGroup"
-              height="40"
-            ></v-text-field>
+              item-text="name"
+              item-value="resourceId"
+            ></v-autocomplete>
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="add-user-overlay__list-item">
@@ -175,7 +180,8 @@
 
 <script>
 import { required } from '../../utils/validations'
-import { createTargetUser } from '../../api/targetUsers'
+import { createTargetUser, getTargetGroups } from '../../api/targetUsers'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'AddUserModal',
@@ -192,10 +198,11 @@ export default {
         email: '',
         department: '',
         priority: 'Medium',
-        customFields: '',
+        customFields: [],
         isActive: true
       },
-      priorityItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
+      autoCompleteItems: [],
+      priorityItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh'],
       validations: {
         required
       },
@@ -209,14 +216,51 @@ export default {
       this.$emit('closeAddUserModal')
     },
     submit() {
-      const payload = {
-        ...this.formValues
-      }
       /*
-      callForCreateTargetUser()
-
+      this.callForCreateTargetUser()7
        */
+    },
+    getCustomFields() {
+      return this.formValues.customFields.map((resourceId) => {
+        const object = this.autoCompleteItems.find((item) => {
+          return item.resourceId === resourceId
+        })
+        if (object) {
+          return {
+            resourceId,
+            value: object.name
+          }
+        }
+        return null
+      })
+    },
+    callForCreateTargetUser() {
+      const payload = {
+        ...this.formValues,
+        customFields: this.getCustomFields()
+      }
+
+      createTargetUser(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: '1 user added to Users List ',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+          this.$emit('closeAddUserModal')
+        })
+        .catch((error) => {})
+    },
+    callForTargetGroups() {
+      getTargetGroups().then((response) => {
+        const { data } = response.data
+        console.log('data', data)
+        this.autoCompleteItems = data
+      })
     }
+  },
+  created() {
+    this.callForTargetGroups()
   }
 }
 </script>
@@ -237,11 +281,10 @@ export default {
   &__list-item {
     padding: 0 !important;
     margin-top: -4px;
-    &:not(:first-child) {
-    }
     .v-list-item__content {
       padding: 0;
       max-width: 554px;
+      overflow: visible;
     }
   }
 
@@ -259,6 +302,7 @@ export default {
     padding: 16px 96px !important;
     display: flex;
     justify-content: space-between;
+    z-index: 9;
 
     &-btn-cancel {
       color: #f56c6c !important;
