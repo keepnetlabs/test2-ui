@@ -45,3 +45,21 @@
 }
 }
 
+.v-tab {
+  font-size: 16px !important;
+  font-weight: normal !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  letter-spacing: normal !important;
+  text-transform: capitalize !important;
+  font-stretch: normal !important;;
+  font-style: normal !important;;
+  line-height: normal !important;;
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+  min-width: fit-content;
+
+  &:not(:last-child) {
+    margin-right: 35px;
+  }
+}

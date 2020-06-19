@@ -456,18 +456,6 @@ export default {
 
     .v-tab {
       width: auto;
-      height: 53px;
-      font-size: 22px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: 0.3px;
-      color: #434343 !important;
-      padding-left: 0px;
-      padding-right: 0px;
-      margin-right: 48px;
-      text-transform: capitalize !important;
     }
 
     .v-tab--active {
