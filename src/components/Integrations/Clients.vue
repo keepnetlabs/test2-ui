@@ -26,6 +26,7 @@
 <script>
 import DataTable from '../DataTable'
 import NewClients from './NewClients'
+import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 
 export default {
   name: 'Integrations',
@@ -38,7 +39,7 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'integrationName',
+            property: PROPERTY_STORE.INTEGRATIONNAME,
             align: 'left',
             editable: false,
             label: 'Integration Name',
@@ -49,10 +50,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'description',
+            property: PROPERTY_STORE.DESCRIPTION,
             align: 'left',
             editable: false,
-            label: 'Description',
+            label: getStoreValue(PROPERTY_STORE.DESCRIPTION),
             sortable: true,
             show: true,
             type: 'text',
@@ -60,10 +61,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'company',
+            property: PROPERTY_STORE.COMPANY,
             align: 'left',
             editable: false,
-            label: 'Company',
+            label: getStoreValue(PROPERTY_STORE.COMPANY),
             fixed: false,
             sortable: true,
             show: true,
@@ -72,10 +73,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'status',
+            property: PROPERTY_STORE.STATUS,
             align: 'center',
             editable: false,
-            label: 'Status',
+            label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
@@ -88,7 +89,7 @@ export default {
             property: 'created',
             align: 'left',
             editable: false,
-            label: 'Created',
+            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
             fixed: false,
             sortable: true,
             show: true,

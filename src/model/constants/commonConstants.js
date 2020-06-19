@@ -2,11 +2,13 @@ export const COMMON_CONSTANTS = {
   DISABLELOADER: -1,
   ENABLELOADER: 1,
   ERRORSNACKBARCOLOR: 'red',
-  SUCCESSSNACKBARCOLOR: 'green'
+  SUCCESSSNACKBARCOLOR: 'green',
+  UPPERCASE: 'uppercase',
+  LOWERCASE: 'lowercase'
 }
 
-const STORE = {
-  CREATEDATE: 'Create Date',
+const LABEL_STORE = {
+  CREATEDATE: 'Date Created',
   FIRSTNAME: 'First Name',
   LASTNAME: 'Last Name',
   EMAIL: 'E-Mail',
@@ -29,10 +31,47 @@ const STORE = {
   FROM: 'From',
   TO: 'To',
   SCANTYPE: 'Service',
-  DURATION: 'Duration'
+  DURATION: 'Duration',
+  DESCRIPTION: 'Description',
+  COMPANY: 'Company',
+  DELIVERY: 'Delivery'
 }
 
-export function getStoreValue(key) {
+export const PROPERTY_STORE = {
+  NAME: 'name',
+  PRIORITY: 'priority',
+  CREATEDATE: 'createDate',
+  FIRSTNAME: 'firstName',
+  LASTNAME: 'lastName',
+  EMAIL: 'email',
+  DEPARTMENT: 'department',
+  TITLE: 'title',
+  DESCRIPTION: 'description',
+  STATUS: 'status',
+  INTEGRATIONNAME: 'integrationName',
+  COMPANY: 'company',
+  SUBJECT: 'subject',
+  ATTACHMENTCOUNT: 'attachmentCount',
+  REPORTEDBY: 'reportedBy',
+  RESULT: 'result',
+  HOSTNAME: 'hostName',
+  LASTSEEN: 'lastSeen',
+  ADDINVERSION: 'addInVersion',
+  DELIVERY: 'delivery'
+}
+
+export function getStoreValue(key, type) {
   key = key.trim().toUpperCase()
-  return STORE[key]
+  let value = LABEL_STORE[key]
+  switch (type) {
+    case COMMON_CONSTANTS.UPPERCASE:
+      value = value.toUpperCase()
+      break
+    case COMMON_CONSTANTS.LOWERCASE:
+      value = value.toLowerCase()
+      break
+    default:
+      break
+  }
+  return value
 }

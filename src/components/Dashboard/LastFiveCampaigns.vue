@@ -23,6 +23,7 @@
 
 <script>
 import Datatable from '../DataTable'
+import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 
 export default {
   components: {
@@ -60,10 +61,10 @@ export default {
         width: 480
       },
       {
-        property: 'company',
+        property: PROPERTY_STORE.COMPANY,
         align: 'left',
         editable: false,
-        label: 'Company',
+        label: getStoreValue(PROPERTY_STORE.COMPANY),
         fixed: false,
         sortable: true,
         show: true,
@@ -82,10 +83,10 @@ export default {
         width: 100
       },
       {
-        property: 'delivery',
+        property: PROPERTY_STORE.DELIVERY,
         align: 'right',
         editable: false,
-        label: 'Delivery',
+        label: getStoreValue(PROPERTY_STORE.DELIVERY),
         fixed: false,
         sortable: false,
         show: true,
@@ -93,10 +94,10 @@ export default {
         width: 110
       },
       {
-        property: 'status',
+        property: PROPERTY_STORE.STATUS,
         align: 'right',
         editable: false,
-        label: 'Status',
+        label: getStoreValue(PROPERTY_STORE.STATUS),
         fixed: false,
         sortable: false,
         show: true,

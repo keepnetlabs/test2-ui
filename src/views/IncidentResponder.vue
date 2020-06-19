@@ -330,7 +330,7 @@ import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import { getTopRules, getRunningInvestigations, searchNotifiedMail } from '../api/incidentResponder'
 import { mapActions, mapGetters } from 'vuex'
-import { COMMON_CONSTANTS, getStoreValue } from '../model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import { exportPhishingReporterUserList } from '../api/phishingReporter'
 
 export default {
@@ -460,10 +460,10 @@ export default {
       table: [],
       columns: [
         {
-          property: 'subject',
+          property: PROPERTY_STORE.SUBJECT,
           align: 'left',
           editable: false,
-          label: getStoreValue('subject'),
+          label: getStoreValue(PROPERTY_STORE.SUBJECT),
           fixed: 'left',
           sortable: true,
           show: true,
@@ -473,9 +473,9 @@ export default {
           //minWidth: 80
         },
         {
-          property: 'attachmentCount',
+          property: PROPERTY_STORE.ATTACHMENTCOUNT,
           align: 'center',
-          label: getStoreValue('attachmentCount'),
+          label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
           hideLabel: true,
           fixed: false,
           sortable: true,
@@ -485,10 +485,10 @@ export default {
           width: 80
         },
         {
-          property: 'reportedBy',
+          property: PROPERTY_STORE.REPORTEDBY,
           align: 'left',
           editable: false,
-          label: getStoreValue('reportedBy'),
+          label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
           fixed: false,
           sortable: true,
           show: true,
@@ -498,10 +498,10 @@ export default {
           //minWidth: 100
         },
         {
-          property: 'result',
+          property: PROPERTY_STORE.RESULT,
           align: 'left',
           editable: false,
-          label: getStoreValue('result'),
+          label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
@@ -513,11 +513,11 @@ export default {
           //minWidth: 80
         },
         {
-          property: 'status',
+          property: PROPERTY_STORE.STATUS,
           isEditable: true,
           align: 'center',
           editable: false,
-          label: getStoreValue('Status'),
+          label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
           sortable: false,
           show: true,
@@ -529,10 +529,10 @@ export default {
           // minWidth: 80
         },
         {
-          property: 'createDate',
+          property: PROPERTY_STORE.CREATEDATE,
           align: 'left',
           editable: false,
-          label: getStoreValue('createDate'),
+          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
           fixed: false,
           sortable: true,
           show: true,
@@ -797,11 +797,8 @@ export default {
       &__no-data {
         border-radius: 18px;
         background-color: #ffffff;
-        font-family: 'Open Sans', sans-serif;
         font-size: 14px;
         font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
         line-height: 1.71;
         letter-spacing: normal;
         color: #2196f3;
@@ -849,11 +846,8 @@ export default {
 
         .head {
           color: #fff;
-          font-family: 'Open Sans', sans-serif;
           font-size: 20px;
           font-weight: 600;
-          font-stretch: normal;
-          font-style: normal;
           line-height: 1.15;
           letter-spacing: normal;
         }
@@ -864,11 +858,8 @@ export default {
       }
 
       .card-body {
-        font-family: 'Open Sans', sans-serif;
         font-size: 48px;
         font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
         line-height: 1.13;
         letter-spacing: normal;
         color: #fff;
@@ -892,22 +883,15 @@ export default {
       }
 
       .card-footer {
-        font-family: 'Open Sans', sans-serif;
         font-size: 20px;
         font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
         line-height: 1.25;
         letter-spacing: normal;
         color: #fff;
         padding-bottom: 16px;
 
         &.no-data-text {
-          font-family: 'Open Sans', sans-serif;
           font-size: 20px;
-          font-weight: normal;
-          font-stretch: normal;
-          font-style: normal;
           line-height: 1.25;
           letter-spacing: normal;
           color: #ffffff;
@@ -917,11 +901,8 @@ export default {
       }
 
       .card-status {
-        font-family: 'Open Sans', sans-serif;
         font-size: 20px;
         font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
         line-height: 1.15;
         letter-spacing: normal;
         color: #fff;

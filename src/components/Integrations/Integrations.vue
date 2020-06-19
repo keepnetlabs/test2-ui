@@ -53,7 +53,11 @@ import {
   getIntegrationDetails,
   updateIntegration
 } from '../../api/integrations'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
 
 export default {
   name: 'Integrations',
@@ -68,7 +72,7 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'name',
+            property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
             label: 'Integration Name',
@@ -80,10 +84,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'description',
+            property: PROPERTY_STORE.DESCRIPTION,
             align: 'left',
             editable: false,
-            label: 'Description',
+            label: getStoreValue(PROPERTY_STORE.DESCRIPTION),
             sortable: true,
             show: true,
             type: 'text',
@@ -91,10 +95,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'status',
+            property: PROPERTY_STORE.STATUS,
             align: 'center',
             editable: false,
-            label: 'Status',
+            label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
@@ -104,10 +108,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'createDate',
+            property: PROPERTY_STORE.CREATEDATE,
             align: 'left',
             editable: false,
-            label: 'Date Created',
+            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
             fixed: false,
             sortable: true,
             show: true,

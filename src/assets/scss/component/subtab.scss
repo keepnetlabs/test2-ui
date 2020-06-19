@@ -7,8 +7,8 @@
   .v-slide-group__wrapper {
     padding-left: 8px !important;
   }
- &__tab{
-   font-size: 14px;
+&__tab.v-tab{
+   font-size: 14px !important;
    line-height: normal;
    letter-spacing: normal;
    color: #212121 !important;

@@ -52,7 +52,11 @@ import { getTargetGroups, createTargetGroup, updateTargetGroup } from '../../api
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 
 import DeleteGroupModal from './DeleteGroupModal'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
 
 export default {
   name: 'Groups',
@@ -70,7 +74,7 @@ export default {
             show: false
           },
           {
-            property: 'name',
+            property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
             label: 'Group Name',
@@ -85,10 +89,10 @@ export default {
             editComponent: 'textfield'
           },
           {
-            property: 'priority',
+            property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
-            label: 'Priority',
+            label: getStoreValue(PROPERTY_STORE.PRIORITY),
             sortable: true,
             show: true,
             type: 'priority',
@@ -98,10 +102,10 @@ export default {
             width: 300
           },
           {
-            property: 'createDate',
+            property: PROPERTY_STORE.CREATEDATE,
             align: 'left',
             editable: false,
-            label: 'Create Date',
+            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
             sortable: true,
             show: true,
             type: 'text',
@@ -200,7 +204,7 @@ export default {
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
-
+        console.log('data', data)
         this.$refs.refGroupsTable.loadWithDataArray(data)
       })
     },

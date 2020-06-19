@@ -41,7 +41,7 @@
 
 <script>
 import DataTable from '../DataTable'
-import { getStoreValue } from '../../model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList
@@ -60,10 +60,10 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'firstName',
+            property: PROPERTY_STORE.FIRSTNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue('firstName'),
+            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
             sortable: true,
             show: true,
             fixed: 'left',
@@ -74,10 +74,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'lastName',
+            property: PROPERTY_STORE.LASTNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue('lastName'),
+            label: getStoreValue(PROPERTY_STORE.LASTNAME),
             sortable: true,
             show: true,
             type: 'text',
@@ -87,10 +87,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'email',
+            property: PROPERTY_STORE.EMAIL,
             align: 'left',
             editable: false,
-            label: getStoreValue('email'),
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
             fixed: false,
             sortable: true,
             show: true,
@@ -101,10 +101,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'hostName',
+            property: PROPERTY_STORE.HOSTNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue('hostName'),
+            label: getStoreValue(PROPERTY_STORE.HOSTNAME),
             fixed: false,
             sortable: true,
             show: true,
@@ -116,10 +116,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'lastSeen',
+            property: PROPERTY_STORE.LASTSEEN,
             align: 'left',
             editable: false,
-            label: getStoreValue('lastSeen'),
+            label: getStoreValue(PROPERTY_STORE.LASTSEEN),
             fixed: false,
             sortable: true,
             show: true,
@@ -130,10 +130,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'addInVersion',
+            property: PROPERTY_STORE.ADDINVERSION,
             align: 'center',
             editable: false,
-            label: getStoreValue('addInVersion'),
+            label: getStoreValue(PROPERTY_STORE.ADDINVERSION),
             fixed: false,
             sortable: true,
             show: true,
@@ -144,10 +144,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'status',
+            property: PROPERTY_STORE.STATUS,
             align: 'center',
             editable: false,
-            label: getStoreValue('status'),
+            label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,

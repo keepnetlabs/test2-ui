@@ -28,6 +28,7 @@
 import DataTable from '../DataTable'
 import CreateNewRule from './CreateNewRule'
 import { mapActions, mapGetters, mapState } from 'vuex'
+import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 
 export default {
   name: 'Users',
@@ -41,7 +42,7 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'name',
+            property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
             label: 'Rule Name',
@@ -52,10 +53,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'description',
+            property: PROPERTY_STORE.DESCRIPTION,
             align: 'left',
             editable: false,
-            label: 'Description',
+            label: getStoreValue(PROPERTY_STORE.DESCRIPTION),
             sortable: true,
             show: true,
             type: 'text',
@@ -75,10 +76,10 @@ export default {
             //minWidth: 80
           },*/
           {
-            property: 'createDate',
+            property: PROPERTY_STORE.CREATEDATE,
             align: 'left',
             editable: false,
-            label: 'Created',
+            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
 
             fixed: false,
             sortable: true,
@@ -88,10 +89,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'status',
+            property: PROPERTY_STORE.STATUS,
             align: 'left',
             editable: false,
-            label: 'Status',
+            label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
@@ -101,10 +102,10 @@ export default {
             //minWidth: 80
           },
           {
-            property: 'priority',
+            property: PROPERTY_STORE.PRIORITY,
             align: 'left',
             editable: false,
-            label: 'Priority',
+            label: getStoreValue(PROPERTY_STORE.PRIORITY),
             fixed: false,
             sortable: true,
             show: true,

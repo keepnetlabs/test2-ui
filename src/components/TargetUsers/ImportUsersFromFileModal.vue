@@ -48,7 +48,52 @@
               </v-list-item>
             </div>
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2"> </v-stepper-content>
+          <v-stepper-content class="k-stepper__content" :step="2">
+            <div class="upload-file-stepper">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="import-users-file__title">
+                    Map Fields</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="import-users-file__sub-title"
+                    >Match field names from your file to the system fields to import users
+                    information correctly</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item class="map-fields__list-item map-fields__list-item--1">
+                <p class="map-fields__title mr-7">Select Group</p>
+                <v-select
+                  class="map-fields__select"
+                  :items="[]"
+                  outlined
+                  v-model="formValues.group"
+                  label="Delete Email"
+                ></v-select>
+              </v-list-item>
+              <v-list-item class="map-fields__list-item map-fields__list-item--2">
+                <p class="map-fields__title" style="margin-right: 34px;">Select Sheet</p>
+                <v-select
+                  class="map-fields__select"
+                  :items="[]"
+                  outlined
+                  v-model="formValues.sheet"
+                  label="Sheet 1"
+                ></v-select>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="map-fields__title" style="font-size: 20px;">
+                    Mapping</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="import-users-file__sub-title"
+                    >Match field names with column header from your sheet to map
+                    information</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+            </div>
+          </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3"> </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -94,7 +139,11 @@ export default {
   name: 'ImportUsersFromFileModal',
   data() {
     return {
-      step: 1
+      step: 1,
+      formValues: {
+        sheet: '',
+        group: ''
+      }
     }
   },
   props: {
@@ -156,30 +205,21 @@ export default {
     &-btn-cancel {
       color: #f56c6c !important;
       border: 1px solid #f56c6c !important;
-
       box-shadow: none !important;
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      text-align: center;
       width: 86px;
       height: 36px !important;
     }
 
     &-btn-next {
       color: #ffffff !important;
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      text-align: center;
       width: 72px;
       height: 36px !important;
       border-radius: 18px;
@@ -192,14 +232,10 @@ export default {
       height: 36px !important;
       border-radius: 18px;
       border: solid 1px #00bcd4;
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      text-align: center;
       color: #00bcd4 !important;
       box-shadow: none !important;
     }
@@ -214,9 +250,30 @@ export default {
   &__sub-title {
     font-size: 14px;
     font-weight: normal;
-    line-height: 1.5;
+    line-height: 1.3;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+  }
+}
+.map-fields {
+  &__list-item {
+    &--1 {
+      margin-top: 24px;
+    }
+    &--2 {
+    }
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+    margin-top: -2px;
+  }
+
+  &__select {
+    max-width: 205px;
   }
 }
 </style>

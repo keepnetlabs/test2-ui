@@ -40,7 +40,7 @@
       @syncUser="handleSyncUser"
       @delete="handleDelete"
       :setClassName="setCellClassName"
-      ref="refDataTable"
+      ref="refPeopleTable"
       @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
     >
       <template v-slot:addUsers>
@@ -72,8 +72,8 @@ import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
 import ImportUsersFromFileModal from './ImportUsersFromFileModal'
-import { deleteTargetUser } from '../../api/targetUsers'
-import { getStoreValue } from '../../model/constants/commonConstants'
+import { deleteTargetUser, getTargetUsers } from '../../api/targetUsers'
+import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 
 export default {
   name: 'People',
@@ -102,10 +102,10 @@ export default {
       columns: [
         // Should be defined to show the table
         {
-          property: 'firstName',
+          property: PROPERTY_STORE.FIRSTNAME,
           align: 'left',
           editable: false,
-          label: getStoreValue('firstName'),
+          label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
           fixed: 'left',
           sortable: true,
           show: true,
@@ -114,37 +114,37 @@ export default {
           showHeaderTooltip: true
         },
         {
-          property: 'lastName',
+          property: PROPERTY_STORE.LASTNAME,
           align: 'left',
           editable: false,
-          label: getStoreValue('lastName'),
+          label: getStoreValue(PROPERTY_STORE.LASTNAME),
           sortable: true,
           show: true,
           type: 'status',
           width: 200
         },
         {
-          property: 'email',
+          property: PROPERTY_STORE.EMAIL,
           align: 'left',
           editable: false,
-          label: getStoreValue('email'),
+          label: getStoreValue(PROPERTY_STORE.EMAIL),
           sortable: true,
           show: true,
           type: 'priority',
           width: 250
         },
         {
-          property: 'department',
+          property: PROPERTY_STORE.DEPARTMENT,
           align: 'left',
           editable: false,
-          label: getStoreValue('department'),
+          label: getStoreValue(PROPERTY_STORE.DEPARTMENT),
           sortable: true,
           show: true,
           type: 'chart',
           width: 200
         },
         {
-          property: 'title',
+          property: PROPERTY_STORE.TITLE,
           align: 'left',
           editable: false,
           label: 'Job Title',
@@ -154,10 +154,10 @@ export default {
           width: 250
         },
         {
-          property: 'priority',
+          property: PROPERTY_STORE.PRIORITY,
           align: 'center',
           editable: false,
-          label: getStoreValue('priority'),
+          label: getStoreValue(PROPERTY_STORE.PRIORITY),
           sortable: true,
           show: true,
           type: 'priority',
@@ -319,7 +319,19 @@ export default {
         .catch((error) => {
           debugger
         })
+    },
+    callForTargetUsers() {
+      getTargetUsers()
+        .then((response) => {
+          const { data } = response.data
+          console.log('data', data)
+          this.$refs.refPeopleTable.loadWithDataArray(data || [])
+        })
+        .catch((error) => {})
     }
+  },
+  created() {
+    this.callForTargetUsers()
   }
 }
 </script>
