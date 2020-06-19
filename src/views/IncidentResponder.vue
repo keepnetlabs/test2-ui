@@ -1009,6 +1009,8 @@ export default {
           .title {
             width: 65%;
 
+            margin-bottom: 24px;
+
             h2 {
               font-family: 'Open Sans', sans-serif;
               font-size: 20px;
