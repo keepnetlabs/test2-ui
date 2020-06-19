@@ -337,9 +337,12 @@
 
           <div class="breadcrumb-wrapper ml-2 pt-1">
             <div class="pr-2">
-              <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'">{{
-                breadcrumbs[0].text
-              }}</router-link>
+              <router-link class="breadcrumb-links" to="/">
+                {{ $store.state.dashboard.selectedCompany.manager || 'Company' }}
+                <v-icon style="color: #fff; font-size: 16px;" v-if="routerName !== 'Dashboard'"
+                  >mdi-chevron-right</v-icon
+                >
+              </router-link>
 
               <router-link
                 class="breadcrumb-links"
@@ -659,7 +662,7 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: localStorage.getItem('companyName'),
+          text: 'Dashboard',
           disabled: true,
           exact: false,
           href: '/'
@@ -705,6 +708,9 @@ export default {
       notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading'
     }),
+    companyName() {
+      return localStorage.getItem('companyName')
+    },
     communityName() {
       return (
         this.$store.state.threadSharing.selectedCommunity.name ||
