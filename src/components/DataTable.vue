@@ -237,7 +237,7 @@
                     <v-text-field
                       class="edit-text-field"
                       dense
-                      solo
+                      outlined
                       v-bind="col.editComponentProps"
                       v-if="
                         (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'textfield')
@@ -245,11 +245,23 @@
                       :value="copyOfEditedRows[0][col.property]"
                       @input="handleEditPopupTextFieldChange($event, col.property)"
                     />
+                    <v-textarea
+                      outlined
+                      dense
+                      :value="copyOfEditedRows[0][col.property]"
+                      @input="handleEditPopupTextFieldChange($event, col.property)"
+                      v-if="
+                        (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'textarea')
+                      "
+                      rows="2"
+                      row-height="20"
+                      id="email-message"
+                    ></v-textarea>
                     <v-select
                       :items="col.editComponentItems"
                       class="edit-select"
                       dense
-                      solo
+                      outlined
                       v-bind="col.editComponentProps"
                       v-if="
                         !multipleValues(col.property) &&
@@ -268,7 +280,7 @@
                       dense
                       label="Multiple Values"
                       placeholder="Multiple Values"
-                      solo
+                      outlined
                       :readonly="!multipleEditDisables[col.property]"
                       v-if="
                         multipleValues(col.property) &&
@@ -316,7 +328,7 @@
                           label="Start Date"
                           class="edit-text-field"
                           dense
-                          solo
+                          outlined
                           append-icon="mdi-calendar-range"
                           v-on="on"
                           :readonly="!multipleEditDisables[col.property]"

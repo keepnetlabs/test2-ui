@@ -113,30 +113,13 @@
                   display: flex;
                   align-items: center;
                 }
-                .v-input--checkbox{
-                  .v-input__slot{
-                    border: none !important;
-                  }
-                }
-                .v-input__slot {
-                  box-shadow: unset !important;
-                  border: 1px solid rgba(205, 205, 205, 0.5);
-                  border-radius: 8px !important;
-                }
 
-                .v-text-field.v-text-field--solo.v-input--dense
-                  > .v-input__control {
-                  min-height: 32px !important;
-                }
+
 
                 .v-text-field__details {
                   display: none !important;
                 }
 
-                input {
-                  font-size: 13px !important;
-                  padding: 6px 0 !important;
-                }
               }
 
               label {

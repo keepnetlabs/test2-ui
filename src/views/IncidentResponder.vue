@@ -300,7 +300,7 @@
                   </label>
                   <v-text-field
                     dense
-                    solo
+                    outlined
                     v-model="notes"
                     placeholder="Write Notes For This Incident"
                   />
@@ -524,7 +524,7 @@ export default {
           type: 'status',
           width: '150',
           fullWidth: true,
-          editComponent: 'select',
+          editComponent: 'textarea',
           editComponentItems: ['Open', 'Malicious', 'Phishing', 'Clean']
           // minWidth: 80
         },
