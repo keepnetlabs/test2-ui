@@ -13,7 +13,7 @@ export function deleteTargetUser(resourceId) {
 }
 
 export function updateTargetUser(payload) {
-  return testRequest.put('/target-users/djZZejbRbh6l', payload)
+  return testRequest.put(`/target-users/${payload.resourceId}`, payload)
 }
 
 export function createTargetUser(payload) {

@@ -14,7 +14,7 @@
     />
     <add-user-modal
       :status="isWantToShowAddUsersModal"
-      @closeAddUserModal="isWantToShowAddUsersModal = false"
+      @closeAddUserModal="closeAddUserModal"
       v-if="isWantToShowAddUsersModal"
     />
     <import-users-from-file-modal
@@ -73,7 +73,11 @@ import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
 import ImportUsersFromFileModal from './ImportUsersFromFileModal'
 import { deleteTargetUser, getTargetUsers } from '../../api/targetUsers'
-import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
 
 export default {
   name: 'People',
@@ -91,7 +95,7 @@ export default {
     selectedRow: {},
     isWantToShowAddUsersModal: false,
     showPopupModal: false,
-    isWantToShowImportUsersFromFileModal: true,
+    isWantToShowImportUsersFromFileModal: false,
     items: [
       { title: 'Click Me1' },
       { title: 'Click Me2' },
@@ -305,6 +309,9 @@ export default {
       this.changeDeleteModalStatus(true)
       this.selectedRow = row
     },
+    closeAddUserModal() {
+      this.isWantToShowAddUsersModal = false
+    },
     changeDeleteModalStatus(status) {
       this.isWantToShowDeleteUserModal = status
     },
@@ -313,12 +320,8 @@ export default {
     },
     handleDeleteUser(selectedUser) {
       deleteTargetUser(selectedUser.resourceId)
-        .then((response) => {
-          debugger
-        })
-        .catch((error) => {
-          debugger
-        })
+        .then((response) => {})
+        .catch((error) => {})
     },
     callForTargetUsers() {
       getTargetUsers()
@@ -331,7 +334,10 @@ export default {
     }
   },
   created() {
+    /*
     this.callForTargetUsers()
+
+     */
   }
 }
 </script>

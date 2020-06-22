@@ -208,7 +208,6 @@ export default {
       this.showDeleteGroupModal = status
     },
     handleEdit(rows) {
-      debugger
       rows.map((item) => {
         this.callForUpdateTargetGroup(item)
       })

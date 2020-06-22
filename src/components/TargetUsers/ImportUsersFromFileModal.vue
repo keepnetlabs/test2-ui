@@ -1,21 +1,6 @@
 <template>
-  <v-overlay
-    fixed
-    :opacity="1"
-    :value="status"
-    :z-index="999"
-    color="white"
-    class="import-users-file__overlay"
-  >
-    <div class="import-users-file__container">
-      <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-        <div class="v-btn v-cart-icon-wrapper">
-          <v-icon class="ml-2" color="blue" left medium>mdi-file-excel</v-icon>
-        </div>
-        <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="v-card-headline">Import Users From a File </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+  <app-modal :status="status" icon-name="mdi-file-excel" title="Import Users From a File">
+    <template v-slot:overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -97,8 +82,8 @@
           <v-stepper-content class="k-stepper__content" :step="3"> </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
-    </div>
-    <div class="import-users-file__footer">
+    </template>
+    <template v-slot:overlay-footer>
       <v-btn @click="closeOverlay" class="import-users-file__footer-btn-cancel" rounded>
         CANCEL
       </v-btn>
@@ -130,13 +115,17 @@
           SAVE
         </v-btn>
       </div>
-    </div>
-  </v-overlay>
+    </template>
+  </app-modal>
 </template>
 
 <script>
+import AppModal from '../AppModal'
 export default {
   name: 'ImportUsersFromFileModal',
+  components: {
+    AppModal
+  },
   data() {
     return {
       step: 1,

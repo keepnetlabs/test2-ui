@@ -1456,7 +1456,6 @@ export default {
   ::v-deep .v-list-item__title {
     align-items: center;
     display: flex;
-    font-family: 'Open Sans', sans-serif !important;
 
     i {
       padding-right: 16px;
@@ -1505,7 +1504,7 @@ export default {
   @media only screen and (max-width: 500px) {
     ::v-deep .v-card,
     .v-card__text {
-      padding: 8px !important;
+      // padding: 8px !important;
     }
     .v-application .app-container {
       padding-bottom: 100px !important;

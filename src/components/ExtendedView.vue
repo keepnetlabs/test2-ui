@@ -429,7 +429,6 @@ export default {
       this.multipleEditDisables = []
     },
     saveEditedOnes() {
-      debugger
       if (this.$refs.refForm.validate()) {
         if (this.isEditableRuntime) {
           if (this.value.length === 1) {

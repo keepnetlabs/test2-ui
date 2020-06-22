@@ -1,7 +1,27 @@
 <template>
-  <v-overlay :value="status" :opacity="1" :z-index="999" color="white" class="k-overlay">
+  <v-overlay
+    :value="status"
+    :opacity="1"
+    v-if="status"
+    :z-index="999"
+    color="white"
+    class="k-overlay"
+    :class="className"
+  >
     <v-card light class="k-overlay__container">
       <v-form lazy-validation>
+        <slot name="overlay-header">
+          <v-list-item class="k-overlay__list-item">
+            <div class="v-btn v-cart-icon-wrapper">
+              <v-icon class="ml-2" color="blue" left medium>{{ iconName }}</v-icon>
+            </div>
+            <v-list-item-content>
+              <v-list-item-title class="v-card-headline k-overlay__title">{{
+                title
+              }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </slot>
         <slot name="overlay-body"> </slot>
         <div class="k-overlay__footer">
           <slot name="overlay-footer">
@@ -24,26 +44,47 @@
 </template>
 
 <script>
+/*
+**** props ****
+status --> modal status
+iconName--> Header icon (must start with mdi)
+title --> Title
+className --> ClassName for overlay
+
+**** slots ****
+overlay-header
+overlay-body
+overlay-footer
+
+ */
 export default {
   name: 'AppModal',
   props: {
     status: {
       type: Boolean,
       default: false
+    },
+    iconName: {
+      type: String
+    },
+    title: {
+      type: String
+    },
+    className: {
+      type: String
     }
   },
   methods: {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
-    submit() {},
-    created() {
-      debugger
-      document.querySelector('html').style.overflowY = 'hidden'
-    },
-    beforeDestroy() {
-      document.querySelector('html').style.overflowY = ''
-    }
+    submit() {}
+  },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    document.querySelector('html').style.overflowY = ''
   }
 }
 </script>
@@ -60,8 +101,22 @@ export default {
     overflow-y: auto;
   }
   &__container {
-    padding: 32px 96px 68px 96px;
+    padding: 32px 96px 68px 96px !important;
+    @media (max-width: 500px) {
+      padding: 10px 24px 68px 24px !important;
+    }
     box-shadow: none;
+  }
+  &__title {
+    white-space: normal;
+  }
+
+  .v-list-item {
+    padding: 0;
+    &__content {
+      padding: 0;
+      overflow: visible;
+    }
   }
 
   &__footer {
@@ -73,6 +128,9 @@ export default {
     padding: 16px 96px !important;
     display: flex;
     justify-content: space-between;
+    @media (max-width: 500px) {
+      padding: 16px 24px !important;
+    }
     z-index: 9;
   }
 }

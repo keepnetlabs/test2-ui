@@ -35,6 +35,22 @@
 </template>
 
 <script>
+/*
+  **** props *****
+ status --> Modal Status
+ icon --> Title Icon
+ iconColor --> Icon color
+ title --> Title
+ subTitle --> Subtitle
+ body--> Body (string)
+ size --> Size (big,small)
+ className --> ClassName for Dialog
+
+  **** Slots ****
+  app-dialog-body
+  app-dialog-footer
+
+   */
 export default {
   name: 'AppDialog',
   props: {

@@ -1,190 +1,187 @@
 <template>
-  <v-overlay :value="status" :opacity="1" :z-index="999" color="white" class="add-user-overlay">
-    <v-card light class="add-user-overlay__container">
-      <v-form lazy-validation ref="refForm">
-        <v-list-item class="add-user-overlay__list-item">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
+  <app-modal
+    :status="status"
+    @closeOverlay="status = false"
+    icon-name="mdi-account-plus"
+    title="Add New User"
+    className="add-user-overlay"
+  >
+    <template v-slot:overlay-body>
+      <v-list-item class="add-user-overlay__list-item mt-8">
+        <v-list-item-content>
+          <v-list-item-title class="add-user-overlay__main-title">
+            Add New User Manually
+          </v-list-item-title>
+          <v-list-item-subtitle class="add-user-overlay__main-sub-title"
+            >Define user properties
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item
+        class="add-user-overlay__list-item mt-6"
+        :class="[!hasFirstNameError && !formValues.firstName ? 'mb-2' : '']"
+      >
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="firstName">First Name</label>
+          <v-text-field
+            placeholder="Enter first name"
+            outlined
+            dense
+            v-model="formValues.firstName"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            id="firstName"
+            @blur="hasFirstNameError = true"
+            height="40"
+          ></v-text-field>
+          <div
+            v-if="!hasFirstNameError && !formValues.firstName"
+            class="email-settings__required__text"
+          >
+            *Required
           </div>
-          <v-list-item-content>
-            <v-list-item-title class="v-card-headline">Add New User </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item mt-8">
-          <v-list-item-content>
-            <v-list-item-title class="add-user-overlay__main-title">
-              Add New User Manually
-            </v-list-item-title>
-            <v-list-item-subtitle class="add-user-overlay__main-sub-title"
-              >Define user properties
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item
-          class="add-user-overlay__list-item mt-6"
-          :class="[!hasFirstNameError && !formValues.firstName ? 'mb-2' : '']"
-        >
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="firstName">First Name</label>
-            <v-text-field
-              placeholder="Enter first name"
-              outlined
-              dense
-              v-model="formValues.firstName"
-              :rules="[(v) => validations.required(v, 'Required')]"
-              id="firstName"
-              @blur="hasFirstNameError = true"
-              height="40"
-            ></v-text-field>
-            <div
-              v-if="!hasFirstNameError && !formValues.firstName"
-              class="email-settings__required__text"
-            >
-              *Required
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          class="add-user-overlay__list-item"
-          :class="[!hasLastNameError && !formValues.lastName ? 'mb-2' : '']"
-        >
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="lastName">Last Name</label>
-            <v-text-field
-              placeholder="Enter last name"
-              outlined
-              dense
-              v-model="formValues.lastName"
-              :rules="[(v) => validations.required(v, 'Required')]"
-              id="lastName"
-              height="40"
-              @blur="hasLastNameError = true"
-            ></v-text-field>
-            <div
-              v-if="!hasLastNameError && !formValues.lastName"
-              class="email-settings__required__text"
-            >
-              *Required
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item
-          class="add-user-overlay__list-item"
-          :class="[!hasEmailError && !formValues.email ? 'mb-2' : '']"
-        >
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="firstName">Email</label>
-            <v-text-field
-              placeholder="Enter email address"
-              outlined
-              dense
-              v-model="formValues.email"
-              :rules="[(v) => validations.required(v, 'Required')]"
-              id="firstName"
-              height="40"
-              @blur="hasEmailError = true"
-            ></v-text-field>
-            <div v-if="!hasEmailError && !formValues.email" class="email-settings__required__text">
-              *Required
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="department">Department</label>
-            <v-text-field
-              placeholder="Enter department name"
-              outlined
-              dense
-              v-model="formValues.department"
-              id="department"
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="jobTitle">Job Title</label>
-            <v-text-field
-              placeholder="Enter job title"
-              outlined
-              dense
-              v-model="formValues.email"
-              id="department"
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="priority">Priority</label>
-            <v-select
-              :items="priorityItems"
-              outlined
-              dense
-              v-model="formValues.priority"
-              id="department"
-              height="40"
-            ></v-select>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="addUserGroup">Add To User Groups</label>
-            <v-autocomplete
-              placeholder="Type to search user groups"
-              outlined
-              dense
-              chips
-              multiple
-              deletable-chips
-              :items="autoCompleteItems"
-              v-model="formValues.customFields"
-              id="addUserGroup"
-              item-text="name"
-              item-value="resourceId"
-            ></v-autocomplete>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="isActive">Active</label>
-            <v-switch
-              id="isActive"
-              v-model="formValues.isActive"
-              color="#2196f3"
-              :label="formValues.isActive ? 'Yes' : 'No'"
-            />
-          </v-list-item-content>
-        </v-list-item>
-        <div class="add-user-overlay__footer">
-          <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
-            CANCEL
-          </v-btn>
-          <div class="new-integration__footer__right-col">
-            <v-btn
-              class="add-user-overlay__footer-btn-save white--text"
-              color="#2196f3"
-              rounded
-              @click="submit"
-            >
-              SAVE
-            </v-btn>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item
+        class="add-user-overlay__list-item"
+        :class="[!hasLastNameError && !formValues.lastName ? 'mb-2' : '']"
+      >
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="lastName">Last Name</label>
+          <v-text-field
+            placeholder="Enter last name"
+            outlined
+            dense
+            v-model="formValues.lastName"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            id="lastName"
+            height="40"
+            @blur="hasLastNameError = true"
+          ></v-text-field>
+          <div
+            v-if="!hasLastNameError && !formValues.lastName"
+            class="email-settings__required__text"
+          >
+            *Required
           </div>
-        </div>
-      </v-form>
-    </v-card>
-  </v-overlay>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item
+        class="add-user-overlay__list-item"
+        :class="[!hasEmailError && !formValues.email ? 'mb-2' : '']"
+      >
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="email">Email</label>
+          <v-text-field
+            placeholder="Enter email address"
+            outlined
+            dense
+            v-model="formValues.email"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.mail(v, 'Invalid email address')
+            ]"
+            id="email"
+            height="40"
+            @blur="hasEmailError = true"
+          ></v-text-field>
+          <div v-if="!hasEmailError && !formValues.email" class="email-settings__required__text">
+            *Required
+          </div>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="department">Department</label>
+          <v-text-field
+            placeholder="Enter department name"
+            outlined
+            dense
+            v-model="formValues.department"
+            id="department"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="jobTitle">Job Title</label>
+          <v-text-field
+            placeholder="Enter job title"
+            outlined
+            dense
+            v-model="formValues.jobTitle"
+            id="department"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="priority">Priority</label>
+          <v-select
+            :items="priorityItems"
+            outlined
+            dense
+            v-model="formValues.priority"
+            id="department"
+            height="40"
+          ></v-select>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="addUserGroup">Add To User Groups</label>
+          <v-autocomplete
+            placeholder="Type to search user groups"
+            outlined
+            dense
+            chips
+            multiple
+            deletable-chips
+            :items="autoCompleteItems"
+            v-model="formValues.customFields"
+            id="addUserGroup"
+            item-text="name"
+            item-value="resourceId"
+          ></v-autocomplete>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="isActive">Active</label>
+          <v-switch
+            id="isActive"
+            v-model="formValues.isActive"
+            color="#2196f3"
+            :label="formValues.isActive ? 'Yes' : 'No'"
+          />
+        </v-list-item-content>
+      </v-list-item>
+    </template>
+    <template v-slot:overlay-footer>
+      <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
+        CANCEL
+      </v-btn>
+      <v-btn
+        class="add-user-overlay__footer-btn-save white--text"
+        color="#2196f3"
+        rounded
+        @click="submit"
+      >
+        SAVE
+      </v-btn>
+    </template>
+  </app-modal>
 </template>
 
 <script>
-import { required } from '../../utils/validations'
+import { required, mail } from '../../utils/validations'
 import { createTargetUser, getTargetGroups } from '../../api/targetUsers'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-
+import AppModal from '../AppModal'
 export default {
   name: 'AddUserModal',
+  components: { AppModal },
   props: {
     status: {
       type: Boolean
@@ -198,13 +195,15 @@ export default {
         email: '',
         department: '',
         priority: 'Medium',
+        jobTitle: '',
         customFields: [],
         isActive: true
       },
       autoCompleteItems: [],
       priorityItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh'],
       validations: {
-        required
+        required,
+        mail
       },
       hasFirstNameError: false,
       hasLastNameError: false,
@@ -216,9 +215,7 @@ export default {
       this.$emit('closeAddUserModal')
     },
     submit() {
-      /*
-      this.callForCreateTargetUser()7
-       */
+      this.callForCreateTargetUser()
     },
     getCustomFields() {
       return this.formValues.customFields.map((resourceId) => {
@@ -241,12 +238,19 @@ export default {
       }
 
       createTargetUser(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: '1 user added to Users List ',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
+        .then(({ data }) => {
+          if (data.status === 'FAILED') {
+            this.$store.dispatch('common/createSnackBar', {
+              message: data.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+            })
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: '1 user added to Users List ',
+              icon: 'mdi-check-circle',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
+          }
           this.$emit('closeAddUserModal')
         })
         .catch((error) => {})
@@ -361,6 +365,9 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
       margin-left: 8px;
+    }
+    .v-messages {
+      display: none;
     }
   }
 }
