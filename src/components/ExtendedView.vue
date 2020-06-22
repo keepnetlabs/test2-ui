@@ -350,6 +350,25 @@
 </template>
 
 <script>
+/*
+  **** props ****
+  options:[] --> Array
+  example
+  [{property --> string
+   show --> boolean
+   hideLabel --> boolean
+   label --> string
+   type --> string (text,date,status,priority,detected,progress,chart)
+   isEditable --> boolean
+   editOptions --> object {component:"textfield,select,textarea,datepicker", props:{} dynamic props}
+   }
+   isEditableRuntime --> Boolean
+   chartOptions --> Object
+   titleKey --> Header title key
+   isPopupDateEditable --> For footer
+   value --> value of the component
+  ]
+   */
 import Badge from './Badge'
 import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
 export default {
