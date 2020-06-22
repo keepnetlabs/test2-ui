@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="session-expired">
     <v-card class="pb-5">
       <v-list-item>
         <v-list-item-content class="d-flex flex-wrap flex-row mt-10 pt-10">
@@ -18,6 +18,7 @@
                 color="#2196f3"
                 v-model="userName"
                 style="color: black;"
+                outlined
                 label="Username"
               ></v-text-field>
             </v-col>
@@ -34,6 +35,7 @@
                 hint="At least 8 characters"
                 v-model="password"
                 class="input-group--focused black--text"
+                outlined
                 @click:append="show1 = !show1"
               ></v-text-field>
             </v-col>
@@ -109,292 +111,202 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-::v-deep .v-input--selection-controls__input {
-  height: 19px !important;
-  width: 19px !important;
-}
-::v-deep .v-input--selection-controls__ripple {
-  height: 17px !important;
-  width: 17px !important;
-  left: -3px !important;
-  top: calc(50% - 13px) !important;
-  margin: 5px !important;
-}
-::v-deep .v-icon.v-icon {
-  line-height: 0 !important;
-  text-indent: -1px !important;
-  border-radius: 5px !important;
-  font-size: 19px !important;
-}
-::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
-  border-color: currentColor;
-  border-style: none;
-  border-width: unset;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
-}
-
-::v-deep .v-text-field input {
-  -webkit-box-flex: 1;
-  -ms-flex: 1 1 auto;
-  color: rgba(0, 0, 0, 0.54);
-  flex: 1 1 auto;
-  line-height: 20px;
-  padding: 3px 0;
-  max-width: 100%;
-  width: 100%;
-}
-::v-deep .v-label.v-label--active.theme--dark {
-  top: 4px !important;
-}
-
-::v-deep .v-messages.theme--dark {
-  top: 2px !important;
-}
-
-::v-deep .v-messages.theme--dark.error--text {
-  top: -1px !important;
-}
-
-::v-deep .v-messages.error--text {
-  margin-top: 4px !important;
-}
-
-::v-deep .v-input__append-inner {
-  margin-top: -5px;
-}
-
-::v-deep .v-text-field .v-label {
-  top: -6px;
-}
-
-::v-deep .v-label.theme--dark.error--text {
-  top: -6px;
-}
-
-::v-deep .v-text-field.v-text-field--solo .v-label {
-  top: calc(50% - 6px) !important;
-}
-
-::v-deep .mdi-eye-off-outline::before {
-  color: rgba(0, 0, 0, 0.26);
-}
-
-::v-deep .v-input .v-label {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
-  height: 16px;
-  font-weight: 400;
-}
-.login-user-pass-wrapper {
-  margin-bottom: -29px;
-}
-.click-here {
-  text-decoration: none;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 16px;
-  color: #0097fa;
-}
-.full-line {
-  border-bottom: 2px solid #757575;
-  opacity: 0.45;
-  margin-left: 16px;
-  margin-right: 16px;
-  width: 20%;
-}
-.v-list-item__subtitle {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.2 !important;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
-  margin-left: 2px;
-}
-
-::v-deep .v-list-item__title {
-  justify-content: center;
-}
-.v-sheet {
-  border-radius: 20px !important;
-  background-color: white;
-}
-
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 36px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  text-align: center;
-  color: #2196f3;
-}
-
-.v-card-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.6;
-  letter-spacing: normal;
-  text-align: center;
-  color: rgba(0, 0, 0, 0.54) !important;
-}
-
-///LOGIN
-.theme--dark.v-input:not(.v-input--is-disabled) input,
-.theme--dark.v-input:not(.v-input--is-disabled) textarea {
-  color: rgba(0, 0, 0, 0.54) !important;
-}
-
-.reset-password-wrapper {
-  ::v-deep
-    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-    > .v-input__control
-    > .v-input__slot {
-    box-shadow: none !important;
+<style lang="scss">
+.session-expired {
+  .login-user-pass-wrapper {
+    margin-bottom: -29px;
+  }
+  .click-here {
+    text-decoration: none;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 16px;
+    color: #0097fa;
+  }
+  .full-line {
+    border-bottom: 2px solid #757575;
+    opacity: 0.45;
+    margin-left: 16px;
+    margin-right: 16px;
+    width: 20%;
   }
 
-  ::v-deep .v-input {
-    // border: solid 1px rgba(0, 0, 0, 0.16);
+  .v-sheet {
+    border-radius: 20px !important;
+    background-color: white;
+  }
+
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 36px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-align: center;
+    color: #2196f3;
+  }
+
+  .v-card-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.6;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+
+  ///LOGIN
+  .theme--dark.v-input:not(.v-input--is-disabled) input,
+  .theme--dark.v-input:not(.v-input--is-disabled) textarea {
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+
+  .reset-password-wrapper {
+    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
+      > .v-input__control
+      > .v-input__slot {
+      box-shadow: none !important;
+    }
+
+    .v-input {
+      // border: solid 1px rgba(0, 0, 0, 0.16);
+      border-radius: 6px;
+      height: 43px;
+      padding-left: 12px;
+      padding-right: 10px;
+    }
+
+    .v-text-field.v-text-field--solo .v-input__control {
+      min-height: 20px !important;
+      padding: 0;
+    }
+  }
+
+  .forgot-password {
+    align-items: center;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.87) !important;
+    cursor: pointer;
+    padding-top: 4px;
+  }
+
+  .login-remember {
+    .v-input--checkbox {
+      border: none;
+      font-size: 11px;
+      font-weight: normal;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      padding-top: 0px;
+      margin-top: 0px;
+
+      label.v-label.theme--light {
+        font-size: 11px;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
+        font-size: 20px !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
+        font-size: 20px !important;
+      }
+    }
+  }
+
+  .v-text-field > .v-input__control > .v-input__slot:after {
+    border-color: currentColor;
+    border-style: none;
+    border-width: unset;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+  }
+
+  .v-input .v-label {
+    height: 21px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  .v-input--is-focused {
+    border: 0px;
+  }
+
+  .v-input__slot {
+    margin-bottom: -1px;
+  }
+
+  .v-input__slot:before {
+    border-style: none !important;
+    border-width: 0px !important;
+  }
+
+  .v-input {
+    border: solid 1px rgba(0, 0, 0, 0.16);
     border-radius: 6px;
-    height: 43px;
-    padding-left: 12px;
+    font-size: 13px;
+    height: 40px;
+    padding-left: 14px;
     padding-right: 10px;
   }
 
-  ::v-deep .v-text-field.v-text-field--solo .v-input__control {
-    min-height: 20px !important;
-    padding: 0;
-  }
-}
-
-.forgot-password {
-  align-items: center;
-  text-decoration: none;
-  color: rgba(0, 0, 0, 0.87) !important;
-  cursor: pointer;
-  padding-top: 4px;
-}
-
-.login-remember {
-  .v-input--checkbox {
-    border: none;
-    font-size: 11px;
+  .login-desc {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
     font-weight: normal;
     font-style: normal;
     font-stretch: normal;
     line-height: normal;
     letter-spacing: normal;
     text-align: center;
-    padding-top: 0px;
-    margin-top: 0px;
-
-    label.v-label.theme--light {
-      font-size: 11px;
-    }
-
-    i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
-      font-size: 20px !important;
-    }
-
-    i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
-      font-size: 20px !important;
-    }
+    color: rgba(0, 0, 0, 0.54);
+    margin-bottom: 64px;
   }
-}
 
-::v-deep .v-text-field > .v-input__control > .v-input__slot:after {
-  border-color: currentColor;
-  border-style: none;
-  border-width: unset;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
-}
+  .login-title {
+    margin-top: 131px;
+    margin-bottom: 8px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 36px;
+    font-weight: 100;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #2196f3;
+  }
+  .v-input--selection-controls__input {
+    border: #2196f3 2px solid;
+    border-radius: 5px;
+  }
+  .v-icon.v-icon {
+    text-indent: -2px !important;
+  }
+  .v-input--selection-controls__ripple:before {
+    left: -3px !important;
+    right: 2px !important;
+  }
 
-::v-deep .v-input .v-label {
-  height: 21px;
-  line-height: 28px;
-  color: rgba(0, 0, 0, 0.87) !important;
-}
+  .v-sheet {
+    border-radius: 20px;
+  }
 
-::v-deep .v-input--is-focused {
-  border: 0px;
-}
-
-::v-deep .v-input__slot {
-  margin-bottom: -1px;
-}
-
-::v-deep .v-input__slot:before {
-  border-style: none !important;
-  border-width: 0px !important;
-}
-
-.v-input {
-  border: solid 1px rgba(0, 0, 0, 0.16);
-  border-radius: 6px;
-  font-size: 13px;
-  height: 40px;
-  padding-left: 14px;
-  padding-right: 10px;
-}
-
-.login-desc {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: center;
-  color: rgba(0, 0, 0, 0.54);
-  margin-bottom: 64px;
-}
-
-.login-title {
-  margin-top: 131px;
-  margin-bottom: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 36px;
-  font-weight: 100;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: center;
-  color: #2196f3;
-}
-::v-deep .v-input--selection-controls__input {
-  border: #2196f3 2px solid;
-  border-radius: 5px;
-}
-::v-deep .v-icon.v-icon {
-  text-indent: -2px !important;
-}
-::v-deep .v-input--selection-controls__ripple:before {
-  left: -3px !important;
-  right: 2px !important;
-}
-
-.v-sheet {
-  border-radius: 20px;
-}
-
-.v-card-login-wrapper {
-  padding-top: 24px;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-bottom: 80px;
-}
-::v-deep .theme--dark.v-input:not(.v-input--is-disabled) input {
-  color: black !important;
+  .v-card-login-wrapper {
+    padding-top: 24px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 80px;
+  }
+  .theme--dark.v-input:not(.v-input--is-disabled) input {
+    color: black !important;
+  }
 }
 </style>
