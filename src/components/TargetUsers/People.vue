@@ -91,7 +91,7 @@ export default {
     selectedRow: {},
     isWantToShowAddUsersModal: false,
     showPopupModal: false,
-    isWantToShowImportUsersFromFileModal: false,
+    isWantToShowImportUsersFromFileModal: true,
     items: [
       { title: 'Click Me1' },
       { title: 'Click Me2' },

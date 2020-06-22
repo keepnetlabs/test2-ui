@@ -26,6 +26,7 @@
       @syncWithLDAP="handleSyncWithLDAP"
       @handleEdit="handleEdit"
       @delete="handleDelete"
+      titleKey="name"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -57,6 +58,7 @@ import {
   getStoreValue,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
+import { required } from '../../utils/validations'
 
 export default {
   name: 'Groups',
@@ -86,7 +88,12 @@ export default {
             hrefKey: 'resourceId',
             width: 300,
             isEditable: true,
-            editComponent: 'textfield'
+            editOptions: {
+              component: 'textfield',
+              props: {
+                rules: [(v) => required(v, 'Required')]
+              }
+            }
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -97,8 +104,12 @@ export default {
             show: true,
             type: 'priority',
             isEditable: true,
-            editComponent: 'select',
-            editComponentItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh'],
+            editOptions: {
+              component: 'select',
+              props: {
+                items: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh']
+              }
+            },
             width: 300
           },
           {
@@ -197,6 +208,7 @@ export default {
       this.showDeleteGroupModal = status
     },
     handleEdit(rows) {
+      debugger
       rows.map((item) => {
         this.callForUpdateTargetGroup(item)
       })

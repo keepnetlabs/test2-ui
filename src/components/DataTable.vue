@@ -81,350 +81,14 @@
             <v-switch v-model="lastColFixed" color="#2196f3" />
           </div>
         </div>
-        <div
-          class="settings-popup edit-popup"
-          v-show="copyOfEditedRows && copyOfEditedRows.length && isWantToEditRow"
-        >
-          <div
-            class="inline-wrapper"
-            v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
-          >
-            <div class="settings-header">
-              <span class="settings-span" v-if="multipleSelection.length === 1">
-                {{ copyOfEditedRows[0][columns[0].property] }}
-              </span>
-              <span class="settings-span" v-else>{{ copyOfEditedRows.length }} Items Selected</span>
-              <div class="edit-actions">
-                <v-btn @click="editMode = true" icon v-if="!editMode">
-                  <v-icon class="close-icon">mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn @click="closeEditPopup()" icon v-if="!editMode">
-                  <v-icon class="close-icon">mdi-close</v-icon>
-                </v-btn>
-                <v-btn
-                  @click="cancelEditedOnes"
-                  class="pl-1 pr-1"
-                  color="#f56c6c"
-                  dense
-                  text
-                  v-if="editMode"
-                  >CANCEL
-                </v-btn>
-                <v-btn @click="saveEditedOnes()" color="#2196f3" dense text v-if="editMode"
-                  >SAVE
-                </v-btn>
-              </div>
-            </div>
-            <div
-              class="edit-popup-body"
-              v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
-            >
-              <div class="items-wrapper">
-                <div
-                  :key="col.label"
-                  class="row-edit-div"
-                  :style="{ order: index * 10 }"
-                  v-for="(col, index) in columns"
-                  v-if="
-                    col.show &&
-                    !col.hideLabel &&
-                    col.property !== 'createDate' &&
-                    col.property !== 'lastUpdate'
-                  "
-                >
-                  <div>
-                    <label>
-                      {{ col.label }}
-                    </label>
-                    <span
-                      v-if="
-                        (!editMode || !col.isEditable) &&
-                        multipleValues(col.property) &&
-                        col.property !== 'createDate' &&
-                        col.property !== 'lastUpdate'
-                      "
-                      :class="[multipleValues(col.property) ? 'font-italic' : '']"
-                    >
-                      Multiple Values
-                    </span>
-                    <span
-                      v-else-if="
-                        (!editMode || !col.isEditable) &&
-                        col.type === 'text' &&
-                        col.property !== 'createDate' &&
-                        col.property !== 'lastUpdate'
-                      "
-                    >
-                      {{ copyOfEditedRows[0][col.property] }}
-                    </span>
-                    <badge
-                      v-else-if="
-                        ((!editMode || !col.isEditable) && (col.type === 'status' ||
-                        col.type === 'detected'))
-                      "
-                      size="small"
-                      :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
-                      :text="copyOfEditedRows[0][col.property]"
-                    />
-                    <badge
-                      v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
-                      size="small"
-                      :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"
-                      :text="copyOfEditedRows[0][col.property]"
-                    />
-                    <router-link
-                      v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
-                      :to="`${col.href}/${copyOfEditedRows[0][col.hrefKey]}`"
-                      class="k-table__link"
-                      >{{ copyOfEditedRows[0][col.property] }}</router-link
-                    >
-                    <div
-                      class="popup__apexchart-container"
-                      style="display: flex; align-items: center;"
-                      :class="[
-                        Array.isArray(copyOfEditedRows[0][col.property]) &&
-                        JSON.stringify(copyOfEditedRows[0][col.property]) !== JSON.stringify([0, 0])
-                          ? 'popup__apexchart-container--1'
-                          : ''
-                      ]"
-                      v-else-if="col.type === 'chart'"
-                    >
-                      <template
-                        v-if="
-                          Array.isArray(copyOfEditedRows[0][col.property]) &&
-                          JSON.stringify(copyOfEditedRows[0][col.property]) !==
-                            JSON.stringify([0, 0])
-                        "
-                      >
-                        <apexchart
-                          :options="chartOptions"
-                          :series="copyOfEditedRows[0][col.property]"
-                          :width="chartOptions.chart.width"
-                        />
-                      </template>
-                      <div v-else class="datatable-chart__empty"></div>
-                    </div>
-                    <span v-else-if="col.type === 'progress'" style="margin-left: 2px;">
-                      {{ copyOfEditedRows[0][col.property] }}%
-                    </span>
-                    <v-menu
-                      ref="menu1"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      max-width="290px"
-                      min-width="290px"
-                      v-else-if=" (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'datepicker')"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="copyOfEditedRows[0][col.property]"
-                          label="Start Date"
-                          class="edit-text-field"
-                          dense
-                          solo
-                          append-icon="mdi-calendar-range"
-                          v-on="on"
-                          readonly
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        :value="copyOfEditedRows[0][col.property]"
-                        @input="handleEditPopupDatePickerChange($event, col.property)"
-                        no-title
-                      ></v-date-picker>
-                    </v-menu>
-                    <v-text-field
-                      class="edit-text-field"
-                      dense
-                      outlined
-                      v-bind="col.editComponentProps"
-                      v-if="
-                        (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'textfield')
-                      "
-                      :value="copyOfEditedRows[0][col.property]"
-                      @input="handleEditPopupTextFieldChange($event, col.property)"
-                    />
-                    <v-textarea
-                      outlined
-                      dense
-                      :value="copyOfEditedRows[0][col.property]"
-                      @input="handleEditPopupTextFieldChange($event, col.property)"
-                      v-if="
-                        (!multipleValues(col.property) && editMode && col.isEditable && col.editComponent === 'textarea')
-                      "
-                      rows="2"
-                      row-height="20"
-                      id="email-message"
-                    ></v-textarea>
-                    <v-select
-                      :items="col.editComponentItems"
-                      class="edit-select"
-                      dense
-                      outlined
-                      v-bind="col.editComponentProps"
-                      v-if="
-                        !multipleValues(col.property) &&
-                        editMode &&
-                        col.isEditable &&
-                        col.editComponent === 'select'
-                      "
-                      :value="copyOfEditedRows[0][col.property]"
-                      @input="handleEditPopupSelectChange($event, col.property)"
-                    />
-                    <v-text-field
-                      :autofocus="!multipleEditDisables[col.property]"
-                      :value="multipleEditModels[col.property]"
-                      @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
-                      class="edit-text-field"
-                      dense
-                      label="Multiple Values"
-                      placeholder="Multiple Values"
-                      outlined
-                      :readonly="!multipleEditDisables[col.property]"
-                      v-if="
-                        multipleValues(col.property) &&
-                        editMode &&
-                        col.type !== 'chart' &&
-                        col.type !== 'progress' &&
-                        col.type !== 'date' &&
-                        col.property !== 'createDate' &&
-                        col.editComponent === 'textfield' &&
-                        col.isEditable
-                      "
-                    >
-                      <template v-slot:append>
-                        <v-btn
-                          text
-                          @click.native="handleEditClick(col.property)"
-                          class="edit-popup__edit-component"
-                        >
-                          EDIT
-                        </v-btn>
-                      </template>
-                    </v-text-field>
-
-                    <v-menu
-                      ref="menu1"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      max-width="290px"
-                      min-width="290px"
-                      v-if="
-                        multipleValues(col.property) &&
-                        editMode &&
-                        col.type !== 'chart' &&
-                        col.type !== 'progress' &&
-                        col.type !== 'date' &&
-                        col.property !== 'createDate' &&
-                        col.editComponent === 'datepicker' &&
-                        col.isEditable
-                      "
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="multipleEditModels[col.property]"
-                          label="Start Date"
-                          class="edit-text-field"
-                          dense
-                          outlined
-                          append-icon="mdi-calendar-range"
-                          v-on="on"
-                          :readonly="!multipleEditDisables[col.property]"
-                          :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
-                        >
-                          <template v-slot:append>
-                            <v-btn
-                              text
-                              @click.native="handleEditClick(col.property)"
-                              class="edit-popup__edit-component"
-                            >
-                              EDIT
-                            </v-btn>
-                          </template>
-                        </v-text-field>
-                      </template>
-                      <v-date-picker
-                        :value="multipleEditModels[col.property]"
-                        @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
-                        no-title
-                      ></v-date-picker>
-                    </v-menu>
-
-                    <v-select
-                      :items="col.editComponentItems"
-                      class="edit-select"
-                      dense
-                      solo
-                      :readonly="!multipleEditDisables[col.property]"
-                      :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
-                      v-if="
-                        multipleValues(col.property) &&
-                        editMode &&
-                        col.type !== 'chart' &&
-                        col.type !== 'progress' &&
-                        col.type !== 'date' &&
-                        col.property !== 'createDate' &&
-                        col.editComponent === 'select' &&
-                        col.isEditable
-                      "
-                      :value="multipleEditModels[col.property]"
-                      @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
-                    >
-                      <template v-slot:append v-if="!multipleEditDisables[col.property]">
-                        <v-btn
-                          text
-                          @click.native="handleEditClick(col.property)"
-                          class="edit-popup__edit-component"
-                        >
-                          EDIT
-                        </v-btn>
-                      </template>
-                    </v-select>
-                  </div>
-                </div>
-                <slot
-                  name="data-table-edit-popup-body"
-                  :selectedRows="copyOfEditedRows"
-                  v-if="editMode"
-                >
-                </slot>
-                <div class="edit-popup-footer" style="order: 55555;" v-if="hasEditPopupFooter()">
-                  <div class="edit-footer-date">
-                    <div
-                      class="edit-date-created"
-                      v-if="copyOfEditedRows[0]['createDate'] !== undefined"
-                    >
-                      <label>Date Created</label>
-                      <span>{{
-                        multipleValues('createDate')
-                          ? 'Multiple Values'
-                          : copyOfEditedRows[0]['createDate']
-                      }}</span>
-                    </div>
-                    <div
-                      class="edit-date-created"
-                      v-if="copyOfEditedRows[0]['lastUpdate'] !== undefined"
-                    >
-                      <label>Last update</label>
-                      <span>{{
-                        multipleValues('lastUpdate')
-                          ? 'Multiple Values'
-                          : copyOfEditedRows[0]['lastUpdate']
-                      }}</span>
-                    </div>
-                  </div>
-                  <div class="edit-footer-settings" v-show="isPopupDateEditable">
-                    <v-btn icon color="#fff" style="text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);">
-                      <v-icon>mdi-cog</v-icon>
-                    </v-btn>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <extended-view
+          v-if="isWantToEditRow"
+          :value="multipleSelection"
+          :options="columns"
+          :titleKey="titleKey"
+          @handleEdit="$emit('handleEdit', $event)"
+          @closeEditPopup="isWantToEditRow = false"
+        />
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -1007,7 +671,7 @@ import DataTableLink from './DataTableComponents/DataTableLink'
 import DataTableTooltip from './DataTableComponents/DataTableTooltip'
 import DownloadModal from './DataTableComponents/DownloadModal'
 import Badge from './Badge'
-
+import ExtendedView from './ExtendedView'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -1020,7 +684,6 @@ import printJS from 'print-js'
 export default {
   components: {
     Badge,
-    apexchart: VueApexCharts,
     DataTableText,
     DataTableAttachment,
     DataTableChart,
@@ -1032,12 +695,17 @@ export default {
     DataTableService,
     DataTableLink,
     DataTableTooltip,
-    DownloadModal
+    DownloadModal,
+    ExtendedView
   },
   props: {
     columns: {
       type: Array,
       required: true
+    },
+    titleKey: {
+      type: String,
+      default: 'name'
     },
     isEditableRuntime: {
       type: Boolean,
@@ -1308,22 +976,6 @@ export default {
   methods: {
     handleTableData() {
       return this.showfilteredData ? this.filteredData : this.tableData
-    },
-    handleEditPopupTextFieldChange(value, props) {
-      this.copyOfEditedRows.map((item) => {
-        item[props] = value
-      })
-    },
-    handleEditPopupDatePickerChange(value, props) {
-      this.menu1 = false
-      this.copyOfEditedRows.map((item) => {
-        item[props] = value
-      })
-    },
-    handleEditPopupSelectChange(value, props) {
-      this.copyOfEditedRows.map((item) => {
-        item[props] = value
-      })
     },
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item

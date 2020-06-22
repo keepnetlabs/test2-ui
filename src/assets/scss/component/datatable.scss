@@ -53,10 +53,7 @@
           overflow: hidden;
           z-index: 99;
 
-          &.edit-popup{
-            padding: 18px 16px 16px 16px;
-            width: 360px;
-          }
+
 
           .settings-header {
             align-items: center;
@@ -87,102 +84,6 @@
             }
           }
 
-          .edit-actions {
-            max-width: 100%;
-            display: flex;
-            flex-direction: row;
-            margin-left: 24px;
-            margin-right: -9px;
-          }
-
-          .edit-popup-body {
-            width: 100%;
-            position: relative;
-
-            .items-wrapper {
-              display: flex;
-              flex-direction: column;
-              > .row-edit-div {
-                width: 100%;
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                padding-bottom: 7px;
-
-                > div {
-                  display: flex;
-                  align-items: center;
-                }
-
-
-
-                .v-text-field__details {
-                  display: none !important;
-                }
-
-              }
-
-              label {
-                width: 120px;
-                min-width: 120px;
-                text-transform: capitalize;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                display: block;
-                overflow: hidden;
-                font-size: 12px;
-                font-weight: 600;
-              }
-
-              span {
-                max-width: 100%;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                display: block;
-                overflow: hidden;
-                font-size: 12px;
-              }
-            }
-          }
-
-          .edit-popup-footer {
-            border-radius: 0;
-            background-color: #f1f8fe;
-            margin: 0 -16px;
-            display: flex;
-            margin-bottom: -16px;
-            padding: 17px;
-            margin-top:9px;
-            align-items: center;
-            justify-content: space-between;
-            .edit-footer-date {
-              display: flex;
-              flex-direction: row;
-
-              .edit-date-created {
-                display: flex;
-                flex-direction: column;
-                margin-right: 54px;
-
-                label {
-                  font-family: "Open Sans", sans-serif !important;
-                  font-size: 12px;
-                  font-weight: 600;
-                  font-stretch: normal;
-                  font-style: normal;
-                  line-height: normal;
-                  letter-spacing: normal;
-                  color: rgba(0, 0, 0, 0.87);
-                }
-
-                span {
-                  font-family: "Open Sans", sans-serif !important;
-                  font-size: 14px;
-                  color: rgba(0, 0, 0, 0.87);
-                }
-              }
-            }
-          }
 
           .sub-header {
             display: block;
@@ -227,19 +128,6 @@
           }
         }
 
-        .edit-popup{
-          &__edit-component{
-            font-size: 12px;
-            font-weight: normal;
-            line-height: 1.58;
-            letter-spacing: normal;
-            color:#2196f3 !important;
-            margin-right: -16px;
-            &:hover{
-              background-color: transparent;
-            }
-          }
-        }
         .el-table {
           border-bottom: unset !important;
           margin: 0 auto;
@@ -863,14 +751,6 @@
       min-width: 0 !important;
     }
 
-    .edit-select {
-      font-size: 13px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-    }
 
     .actions-label {
       padding-right: 49px !important;

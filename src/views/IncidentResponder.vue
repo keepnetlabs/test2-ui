@@ -291,6 +291,7 @@
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
             @handleEdit="handleEdit"
+            titleKey="reportedBy"
           >
             <template v-slot:data-table-edit-popup-body>
               <div class="row-edit-div" style="order: 59;">
@@ -332,6 +333,7 @@ import { getTopRules, getRunningInvestigations, searchNotifiedMail } from '../ap
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import { exportPhishingReporterUserList } from '../api/phishingReporter'
+import { required } from '../utils/validations'
 
 export default {
   components: {
@@ -469,7 +471,11 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          isEditable: false
+          isEditable: true,
+          editOptions: {
+            component: 'checkbox',
+            checkboxLabel: 'I am checkbox label'
+          }
           //minWidth: 80
         },
         {
@@ -507,8 +513,13 @@ export default {
           show: true,
           type: 'text',
           isEditable: false,
-          editComponent: 'select',
-          editComponentItems: ['Very Low', 'Low', 'Medium', 'High', 'Very High', 'N/A'],
+          editOptions: {
+            component: 'select',
+            props: {
+              items: ['Very Low', 'Low', 'Medium', 'High', 'Very High', 'N/A'],
+              rules: [(v) => required(v, 'Required')]
+            }
+          },
           width: '150'
           //minWidth: 80
         },
@@ -524,8 +535,13 @@ export default {
           type: 'status',
           width: '150',
           fullWidth: true,
-          editComponent: 'textarea',
-          editComponentItems: ['Open', 'Malicious', 'Phishing', 'Clean']
+          editOptions: {
+            component: 'textfield',
+            props: {
+              rules: [(v) => required(v, 'Required')],
+              items: ['Open', 'Malicious', 'Phishing', 'Clean']
+            }
+          }
           // minWidth: 80
         },
         {
@@ -537,7 +553,9 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          editComponent: 'datepicker',
+          editOptions: {
+            component: 'datepicker'
+          },
           width: '230'
         }
       ],
