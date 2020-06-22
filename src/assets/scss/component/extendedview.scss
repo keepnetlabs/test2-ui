@@ -1,6 +1,36 @@
 .edit-popup{
     padding: 18px 16px 16px 16px !important;
     width: 360px !important;
+
+  &__header{
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-bottom: 19px;
+
+    .settings-span {
+      text-overflow: ellipsis;
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 100%;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+    }
+
+    .close-icon {
+      cursor: pointer;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+    }
+  }
+
   &__body {
     width: 100%;
     position: relative;
@@ -18,6 +48,12 @@
         > div {
           display: flex;
           align-items: center;
+
+          .v-input--checkbox.v-input--indeterminate{
+            .v-icon{
+              color:#2196f3 ;
+            }
+          }
         }
 
 

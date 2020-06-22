@@ -87,7 +87,7 @@
           :options="columns"
           :titleKey="titleKey"
           @handleEdit="$emit('handleEdit', $event)"
-          @closeEditPopup="isWantToEditRow = false"
+          @closeEditPopup="closeEditPopup"
         />
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
@@ -681,6 +681,7 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
+import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
 export default {
   components: {
     Badge,
@@ -724,18 +725,6 @@ export default {
     isPopupDateEditable: {
       type: Boolean,
       default: true
-    },
-    editablePriorityItems: {
-      type: Array,
-      default: () => {
-        return ['Very Low', 'Low', 'Medium', 'High', 'Very High']
-      }
-    },
-    editableDetectedItems: {
-      type: Array,
-      default: () => {
-        return ['Active', 'Inactive', 'N/A']
-      }
     },
     rowActionsMinWidth: {
       type: Number,
@@ -847,7 +836,6 @@ export default {
       currentPage: 1,
       multipleSelection: [],
       selectionCheckbox: false,
-      editedPopupProperties: [],
       selectionAll: false,
       series: [44, 55, 13, 43],
       search: '',
@@ -855,14 +843,11 @@ export default {
       isSettingsOpened: false,
       isWantToAddUsers: false,
       isWantToEditRow: false,
-      multipleEditDisables: [],
       selectedMenuIndex: null,
-      editMode: false,
       firstColFixed: true,
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed: true,
-      copyOfEditedRows: [],
       isRowActionsMenuOpen: [],
       download: {
         xls: false,
@@ -870,7 +855,6 @@ export default {
         pdf: false
       },
       showOverFlowTooltip: false,
-      multipleEditModels: [],
       actionFixed: 'right',
       allHidden: false,
       printObj: {
@@ -977,6 +961,7 @@ export default {
     handleTableData() {
       return this.showfilteredData ? this.filteredData : this.tableData
     },
+
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
@@ -987,89 +972,17 @@ export default {
       return classNames
       */
     },
-    handleEditClick(prop) {
-      this.multipleEditDisables[prop] = true
-      this.editedPopupProperties.push(prop)
-      this.$forceUpdate()
+    closeEditPopup() {
+      this.isWantToEditRow = false
+      this.$refs.elTableRef.clearSelection()
+      this.multipleSelection = []
     },
+
     getBtnStatusColor(type) {
-      switch (type && type.toLowerCase()) {
-        case 'pending':
-          return '#00bcd4'
-        case 'clean':
-          return '#00bcd4'
-        case 'active':
-          return '#00bcd4'
-        case 'inactive':
-          return '#f56c6c'
-        case 'warning':
-          return '#e6a23c'
-        case 'malicious':
-          return '#e6a23c'
-        case 'offline':
-          return '#e6a23c'
-        case 'expired':
-          return '#e6a23c'
-        case 'cancelled':
-          return '#f56c6c'
-        case 'phishing':
-          return '#f56c6c'
-        case 'idle':
-          return '#f56c6c'
-        case 'disabled':
-          return '#f56c6c'
-        case 'network error':
-          return '#f56c6c'
-        case 'quedued':
-          return '#00bcd4'
-        case 'none':
-          return '#00bcd4'
-        case 'running':
-          return '#2196f3'
-        case 'completed':
-          return '#43a047'
-        case 'finished':
-          return '#43a047'
-        case 'online':
-          return '#43a047'
-        case 'deactivated':
-          return '#757575'
-        case 'not installed':
-          return '#757575'
-        case 'user unavailable':
-          return '#757575'
-        case 'n/a':
-          return '#00bcd4'
-        default:
-          return '#00bcd4'
-      }
+      return getBtnStatusColor(type)
     },
     getBtnPriorityColor(type) {
-      switch (type.toLowerCase()) {
-        case 'active':
-          return '#00bcd4'
-        case 'inactive':
-          return '#f56c6c'
-        case 'low':
-          return '#00bcd4'
-        case 'very low':
-          return '#757575'
-        case 'medium':
-          return '#2196f3'
-        case 'high':
-          return '#e6a23c'
-        case 'very high':
-          return '#f56c6c'
-        case 'n/a':
-          return '#00bcd4'
-        default:
-          break
-      }
-    },
-    hasEditPopupFooter() {
-      return this.copyOfEditedRows.some((item) => {
-        return item['createDate'] || item['lastUpdate']
-      })
+      return getBtnPriorityColor(type)
     },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
@@ -1167,28 +1080,6 @@ export default {
           break
       }
     },
-    getMultipleSelectItems(key) {
-      switch (key) {
-        case 'priority':
-          return this.editablePriorityItems
-        case 'status':
-          return this.editableStatusItems
-        case 'detected':
-          return this.editableDetectedItems
-        default:
-          return []
-      }
-    },
-    cancelEditedOnes() {
-      this.editMode = false
-      this.multipleEditModels = []
-      this.editedPopupProperties = []
-      this.multipleEditDisables = []
-    },
-    handleMultipleEdits(item, key, value) {
-      item[key] = value
-      this.multipleEditModels[key] = value
-    },
     getColumnLabelClass(key, value) {
       if (key === 'priority' || key === 'status' || key === 'detected') {
         return 'popup__badge'
@@ -1213,7 +1104,9 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
-      this.copyOfEditedRows = JSON.parse(JSON.stringify(val))
+      if (this.multipleSelection.length === 0) {
+        this.isWantToEditRow = false
+      }
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
@@ -1392,90 +1285,10 @@ export default {
     handleDownload(selections) {
       // You should handle the Download row action in here
     },
-    multipleValues(key, val) {
-      // This method controls whether selected items has same value or not
-      if (this.multipleSelection && this.multipleSelection.length > 1) {
-        const refThis = this
-        for (let a = 0; a < this.multipleSelection.length - 1; a++) {
-          let el = this.multipleSelection[a]
-          if (el[key] === refThis.multipleSelection[a + 1][key]) {
-            return false
-          } else {
-            return true
-          }
-        }
-      }
-    },
-    closeEditPopup() {
-      this.editMode = false
-      this.isWantToEditRow = false
-      this.$refs.elTableRef.clearSelection()
-      this.multipleSelection = []
-      this.multipleEditDisables = []
-    },
-    saveEditedOnes() {
-      // After user edited the row and pressed SAVE button
-      if (this.isEditableRuntime) {
-        if (this.multipleSelection.length === 1) {
-          this.multipleSelection.map((item, index) => {
-            const keys = Object.keys(item)
-            keys.map((key) => {
-              //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
-              item[key] = this.copyOfEditedRows[0][key]
-            })
-          })
-        } else {
-          this.editedPopupProperties.map((key) => {
-            this.multipleSelection.map((item, index) => {
-              item[key] = this.copyOfEditedRows[0][key]
-            })
-          })
-
-          this.multipleSelection.map((item, index) => {
-            const keys = Object.keys(item)
-            keys.map((key) => {
-              const keyIndex = this.editedPopupProperties.findIndex((k) => {
-                return k === key
-              })
-              if (keyIndex === -1) {
-                item[key] = this.copyOfEditedRows[index][key]
-              }
-            })
-          })
-        }
-      }
-
-      this.$emit('handleEdit', this.copyOfEditedRows)
-      this.$refs.elTableRef.clearSelection()
-      this.editMode = false
-      this.isWantToEditRow = false
-      this.multipleEditDisables = []
-      this.editedPopupProperties = []
-      this.multipleSelection = []
-      this.multipleEditModels = []
-      this.copyOfEditedRows = []
-    },
     loadWithDataArray(data, responseParams) {
       this.initialData = data
       this.dataLength = responseParams && responseParams.totalNumberOfRecords
       this.tableData = data.slice(0, this.rowCount || this.countRow)
-    },
-    calculateWidths() {
-      /*
-                                                          if (this.$refs.tableContainer) {
-                                                            const widthOfContainer = this.$refs.tableContainer.getBoundingClientRect().width
-                                                            const columnsTotalWidth = this.getColumnsWidth()
-                                                            const actionsWidth = widthOfContainer - columnsTotalWidth - 61
-                                                            this.actionsWidth = actionsWidth < 200 ? 200 : actionsWidth
-                                                          }
-
-                                                           */
-    },
-    getColumnsWidth() {
-      return this.columns.reduce((acc, item) => {
-        acc += Number(item.width)
-        return acc
-      }, 0)
     }
   }
 }

@@ -536,7 +536,7 @@ export default {
           width: '150',
           fullWidth: true,
           editOptions: {
-            component: 'textfield',
+            component: 'select',
             props: {
               rules: [(v) => required(v, 'Required')],
               items: ['Open', 'Malicious', 'Phishing', 'Clean']

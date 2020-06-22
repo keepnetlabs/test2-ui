@@ -1,24 +1,24 @@
 <template>
   <v-dialog
-    :value="status"
-    class="k-dialog"
-    :opacity="0.23"
-    :width="dialogWidth"
     :content-class="className"
-    @input="changeStatus"
+    :opacity="0.23"
+    :value="status"
+    :width="dialogWidth"
     @click:outside="changeStatus(false)"
+    @input="changeStatus"
+    class="k-dialog"
   >
-    <v-card light class="k-dialog__card">
+    <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left :color="iconColor" class="ml-2">
+            <v-icon :color="iconColor" class="ml-2" left medium>
               {{ icon }}
             </v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
             <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
-            <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }} </v-list-item-subtitle>
+            <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <div class="k-dialog__body">
@@ -27,7 +27,7 @@
           </slot>
         </div>
         <v-card-actions class="pa-0 k-dialog__footer">
-          <slot name="app-dialog-footer"> </slot>
+          <slot name="app-dialog-footer"></slot>
         </v-card-actions>
       </v-form>
     </v-card>
@@ -36,21 +36,21 @@
 
 <script>
 /*
-  **** props *****
- status --> Modal Status
- icon --> Title Icon
- iconColor --> Icon color
- title --> Title
- subTitle --> Subtitle
- body--> Body (string)
- size --> Size (big,small)
- className --> ClassName for Dialog
+    **** props *****
+   status --> Modal Status
+   icon --> Title Icon
+   iconColor --> Icon color
+   title --> Title
+   subTitle --> Subtitle
+   body--> Body (string)
+   size --> Size (big,small)
+   className --> ClassName for Dialog
 
-  **** Slots ****
-  app-dialog-body
-  app-dialog-footer
+    **** Slots ****
+    app-dialog-body
+    app-dialog-footer
 
-   */
+     */
 export default {
   name: 'AppDialog',
   props: {
@@ -114,6 +114,7 @@ export default {
     box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
       0 9px 46px 8px rgba(80, 80, 80, 0.12);
   }
+
   &__title {
     font-size: 20px;
     font-weight: 600;
@@ -121,12 +122,14 @@ export default {
     letter-spacing: normal;
     color: #2196f3 !important;
   }
+
   &__sub-title {
     margin-top: 2px;
     font-size: 16px;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
   }
+
   &__body {
     padding-top: 34px;
     font-size: 13px;
@@ -134,6 +137,7 @@ export default {
     color: rgba(0, 0, 0, 0.72) !important;
     padding-bottom: 17px;
   }
+
   &__footer {
     > * {
       width: 100%;
