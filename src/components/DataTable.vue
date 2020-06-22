@@ -931,12 +931,10 @@ export default {
   updated() {
     if (this.init) {
       this.init = false
-      this.calculateWidths()
     }
   },
   mounted() {
     this.init = true
-    window.addEventListener('resize', this.calculateWidths)
     if (window.outerWidth < 1023) {
       this.actionFixed = false
       const leftFixed = this.columns.filter((col) => col.fixed === 'left')

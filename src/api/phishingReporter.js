@@ -16,6 +16,10 @@ export function getPhishingReporterImg() {
   return testRequest.get('/phishing-reporter/img')
 }
 
+export function deletePhishingReporterUser(id) {
+  return testRequest.delete(`/phishing-reporter-users/${id}`)
+}
+
 export function searchPhishingReporterUser(payload) {
   return testRequest.post('/phishing-reporter/search', payload)
 }

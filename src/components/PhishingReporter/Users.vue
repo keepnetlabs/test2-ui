@@ -44,7 +44,8 @@ import DataTable from '../DataTable'
 import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
-  exportPhishingReporterUserList
+  exportPhishingReporterUserList,
+  deletePhishingReporterUser
 } from '../../api/phishingReporter'
 
 import AppDialog from '../AppDialog'
@@ -247,6 +248,7 @@ export default {
       })
     },
     deleteUser() {
+      debugger
       this.isWantToDelete = false
     }
   },
