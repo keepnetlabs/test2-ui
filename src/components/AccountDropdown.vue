@@ -1,18 +1,16 @@
 <template>
-  <div class="d-flex flex-row flex-wrap align-content-start flex-lg-grow-0 account-dd">
-    <div v-if="companyDD && companyDD.length > 0" class="account-wrapper flex-grow-1">
-      <v-select
-        class="flat-white"
-        v-model="selectedCompany"
-        :items="getDropdown"
-        item-text="manager"
-        item-value="companyId"
-        single-line
-        return-object
-        :menu-props="{ contentClass: 'select-company-dd', offsetY: true }"
-        outlined
-      ></v-select>
-    </div>
+  <div v-if="companyDD && companyDD.length > 0" class="account-select d-none d-md-block">
+    <v-select
+      v-model="selectedCompany"
+      :items="getDropdown"
+      item-text="manager"
+      item-value="companyId"
+      single-line
+      return-object
+      :menu-props="{ offsetY: true }"
+      solo
+      flat
+    />
   </div>
 </template>
 
@@ -70,20 +68,8 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.account-button {
-  align-items: center;
-  background-color: white;
-}
-
-.account-dd {
-  @media only screen and (max-width: 769px) {
-    justify-content: center !important;
-    margin-right: 20px;
-  }
-}
-
-.account-wrapper {
+<style lang="scss">
+.account-select {
   align-items: center;
   margin-left: 35px;
   margin-top: 0;

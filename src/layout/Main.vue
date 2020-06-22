@@ -1,5 +1,5 @@
 <template>
-  <v-app class="main">
+  <v-app class="layout-container">
     <app-snackbar />
     <v-dialog v-model="feedbackdialog" :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
@@ -8,7 +8,7 @@
     <tour-widget></tour-widget>
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
-        <v-progress-circular :size="50" color="primary" indeterminate></v-progress-circular>
+        <v-progress-circular :size="50" color="primary" indeterminate />
       </div>
     </v-overlay>
     <v-row justify="center">
@@ -24,7 +24,8 @@
         <connection-lost v-on:onIUnderstand="onIUndestandClick($event)"></connection-lost>
       </div>
     </v-overlay>
-    <div class="background"></div>
+    <div class="layout-container__background"></div>
+
     <v-navigation-drawer
       color="rgba(255, 255, 255, 0.9)"
       app
@@ -33,9 +34,10 @@
       :mini-variant.sync="getMini"
       transition="scale-transition"
       :mobile-break-point="767"
+      class="page-nav"
     >
       <v-app-bar-nav-icon
-        class="Oval-3 ml-4 menu-icon-wrapper"
+        class="page-nav__menu-toggle menu-icon-wrapper"
         color="blue"
         @click.stop="onNavigationClick()"
         :style="getDrawerPadding2"
@@ -48,7 +50,7 @@
         :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
       ></v-overlay>
       <div>
-        <div class="logo-wrapper">
+        <div class="page-nav__logo-wrapper">
           <div
             v-show="isTourActive"
             class="tour-btn-container tour-five"
@@ -216,242 +218,216 @@
             <v-list-item-title>Phishing Reporter</v-list-item-title>
           </v-list-item>
         </router-link>
-        <!--
-        <div v-for="(item, index) in menuList" :key="index">
-          <v-list-group
-            v-if="item.childs && item.childs.length"
-            v-model="item.active"
-            :prepend-icon="item.icon"
-            no-action
-            class="menu-list-item"
-          >
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title"></v-list-item-title>
-              </v-list-item-content>
-            </template>
-            <v-list-item v-for="(subItem, ind) in item.childs" :key="ind">
-              <v-list-item-content>
-                <v-list-item-title v-text="subItem.title"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-group>
-          <v-list-item v-else v-model="item.active" class="menu-list-item">
-            <v-list-item-icon>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </div>
-        -->
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :style="getMini ? 'padding-left: 6px' : 'padding-left: 5px'"
-      app
-      flat
-      absolute
-      class="header-container"
-      height="160"
-    >
-      <div class="d-flex flex-column topbar-wrapper">
-        <div class="topbar-inline-wrapper d-flex flex-row flex-wrap mt-3">
-          <account-dropdown></account-dropdown>
-          <div class="d-flex flex-lg-grow-1"></div>
-          <div class="search-notification-wrapper d-flex flex-row flex-wrap ml-auto">
-            <div class="d-flex flex-lg-grow-1"></div>
-            <div class="ml-auto">
-              <div class="search-wrapper">
-                <v-text-field flat dark rounded solo prepend-inner-icon="mdi-magnify">
-                  <template v-slot:label>
-                    <span class="placeholder-search" style="font-size: 16px;">Search</span>
-                  </template>
-                </v-text-field>
-              </div>
-            </div>
-            <div class="divider-header"></div>
-            <v-menu
-              :close-on-content-click="false"
-              fixed
-              content-class="notification-menu"
-              transition="scale-transition"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn style="margin-top: -3px;" icon color="white" v-on="on">
-                  <div class="notification-bell">
-                    <v-icon style="font-size: 22px;" color="white">mdi-bell</v-icon>
-                    <span v-if="getUnreadMessages > 0" class="manuel-badge">
-                      {{ getUnreadMessages }}
-                    </span>
-                  </div>
-                </v-btn>
-              </template>
-              <div class="notification-wrapper">
-                <div v-for="(notification, index) in notificationList" :key="index">
-                  <!-- eslint-disable-line -->
-                  <div class="notification-content">
-                    <div class="notification-title">{{ notification.content }}</div>
-                    <div
-                      v-on:click="onNotificationSeen(notification)"
-                      v-if="notification.isSeen == false"
-                      class="notification-light"
-                    ></div>
-                    <div class="notification-date-time">
-                      {{ getFormattedDate(notification.date) }}
-                    </div>
-                  </div>
-                  <v-divider class="mt-5 mb-5"></v-divider>
-                </div>
-              </div>
-            </v-menu>
-
-            <div class="help-wrapper pl-2">
-              <v-menu content-class="help-menu" fixed transition="scale-transition">
-                <template nudge-right v-slot:activator="{ on }">
-                  <v-btn style="margin-top: -3px;" icon color="white" v-on="on">
-                    <v-icon style="font-size: 25px; margin-bottom: 2px;">mdi-help-circle</v-icon>
-                  </v-btn>
-                </template>
-                <v-list class="v-cart-dropdown-list">
-                  <v-list-item
-                    v-for="(item, index) in rightDropdownData"
-                    :key="index"
-                    @click="changeDropdownItem2(item)"
-                  >
-                    <v-list-item-title>
-                      <v-icon>{{ item.icon }}</v-icon>
-                      {{ item.text }}
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </div>
-          </div>
-        </div>
-
-        <div class="v-flex flex-column align-center">
-          <v-toolbar-title>
-            <span v-if="routerName === 'Community'">{{ communityName || $route.params.name }}</span>
-            <span v-else>{{ routerName }}</span>
-          </v-toolbar-title>
-
-          <div class="breadcrumb-wrapper ml-2 pt-1">
-            <div class="pr-2">
-              <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'">{{
-                breadcrumbs[0].text
-              }}</router-link>
-
-              <router-link
-                class="breadcrumb-links"
-                to="/threat-sharing"
-                v-if="routerName === 'Threat Sharing'"
-                >{{ breadcrumbs[1].text }}</router-link
-              >
-
-              <router-link
-                class="breadcrumb-links"
-                to="/threat-sharing"
-                v-if="routerName === 'Community'"
-              >
-                {{ breadcrumbs[1].text }}
-                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-                {{ breadcrumbs[2].text }}
-              </router-link>
-
-              <router-link
-                class="breadcrumb-links"
-                to="/threat-sharing"
-                v-if="routerName === 'Incident Responder'"
-              >
-                {{ breadcrumbs[3].text }}
-                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-                Dashboard
-              </router-link>
-
-              <router-link
-                class="breadcrumb-links"
-                to="/integrations"
-                v-if="routerName === 'Integrations'"
-              >
-                {{ breadcrumbs[3].text }}
-              </router-link>
-
-              <router-link
-                class="breadcrumb-links"
-                to="/phishing-reporter"
-                style="display: flex; align-items: center;"
-                v-if="routerName === 'Phishing Reporter'"
-              >
-                {{ breadcrumbs[1].text }}
-                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-                Phishing Reporter
-              </router-link>
-              <router-link
-                class="breadcrumb-links"
-                to="/playbook"
-                style="display: flex; align-items: center;"
-                v-if="routerName === 'Playbook'"
-              >
-                {{ breadcrumbs[1].text }}
-                <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-                Playbook
-              </router-link>
-
-              <router-link
-                class="breadcrumb-links"
-                to="/incident-responder"
-                v-if="routerName === 'Analysis Details'"
-                >{{ breadcrumbs[3].text }}</router-link
-              >
-
-              <router-link
-                class="breadcrumb-links"
-                to="/investigations"
-                v-if="routerName === 'Investigation Details'"
-              >
-                Investigations
-              </router-link>
-
-              <router-link
-                v-if="routerName === 'Target Users'"
-                :to="$route.path"
-                class="bread-last-step breadcrumb-links"
-              >
-                Company
-              </router-link>
-
-              <router-link
-                v-if="routerName === 'Investigations'"
-                :to="$route.path"
-                class="bread-last-step breadcrumb-links"
-                >Incident Responder > {{ routerName }}</router-link
-              >
-              <v-icon
-                v-if="
-                  routerName !== 'Incident Responder' &&
-                  routerName !== 'Investigations' &&
-                  routerName !== 'Playbook' &&
-                  routerName !== 'Phishing Reporter'
-                "
-                style="color: #fff; font-size: 16px;"
-                >mdi-chevron-right</v-icon
-              >
-              <router-link
-                v-if="
-                  routerName !== 'Incident Responder' &&
-                  routerName !== 'Investigations' &&
-                  routerName !== 'Playbook' &&
-                  routerName !== 'Phishing Reporter'
-                "
-                :to="$route.path"
-                class="bread-last-step breadcrumb-links"
-                >{{ routerName }}</router-link
-              >
-            </div>
-          </div>
-        </div>
+    <!-- Header Begin -->
+    <v-app-bar class="page-header elevation-0 transparent" extension-height="100" app absolute flat>
+      <account-dropdown />
+      <v-spacer />
+      <div class="page-header__search">
+        <v-text-field
+          class="elevation-0"
+          hide-details
+          rounded
+          solo
+          flat
+          dark
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+        />
       </div>
+      <v-divider class="page-header__divider" vertical></v-divider>
+
+      <v-menu
+        offset-y
+        min-width="300"
+        max-width="300"
+        max-height="520"
+        :close-on-content-click="false"
+        transition="scale-transition"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn icon color="white" v-on="on">
+            <div class="notification-bell">
+              <v-icon color="white">mdi-bell</v-icon>
+              <span v-if="getUnreadMessages > 0" class="manuel-badge">
+                {{ getUnreadMessages }}
+              </span>
+            </div>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item-group>
+            <template v-for="(notification, index) in notificationList">
+              <v-list-item :key="index">
+                <v-list-item-content>
+                  <v-list-item-title>{{ notification.content }}</v-list-item-title>
+                  <v-list-item-subtitle
+                    >{{ getFormattedDate(notification.date) }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action v-if="notification.isSeen === false">
+                  <v-btn
+                    :key="index"
+                    v-on:click="onNotificationSeen(notification)"
+                    v-ripple="false"
+                    icon
+                  >
+                    <v-icon x-small color="#409eff">mdi-circle</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+              <v-divider v-if="index + 1 < notificationList.length" :key="index" />
+            </template>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
+
+      <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
+        <template v-slot:activator="{ on }">
+          <v-btn icon color="white" v-on="on">
+            <v-icon>mdi-help-circle</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in rightDropdownData"
+            :key="index"
+            @click="changeDropdownItem2(item)"
+          >
+            <v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.text"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <template v-slot:extension>
+        <div class="page-header__content">
+          <div class="page-header__title">
+            <h1 v-if="routerName === 'Community'">{{ communityName || $route.params.name }}</h1>
+            <h1 v-else>{{ routerName }}</h1>
+          </div>
+
+          <div class="page-header__breadcrumb">
+            <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'"
+              >{{ breadcrumbs[0].text }}
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/threat-sharing"
+              v-if="routerName === 'Threat Sharing'"
+              >{{ breadcrumbs[1].text }}
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/threat-sharing"
+              v-if="routerName === 'Community'"
+            >
+              {{ breadcrumbs[1].text }}
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              {{ breadcrumbs[2].text }}
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/threat-sharing"
+              v-if="routerName === 'Incident Responder'"
+            >
+              {{ breadcrumbs[3].text }}
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              Dashboard
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/integrations"
+              v-if="routerName === 'Integrations'"
+            >
+              {{ breadcrumbs[3].text }}
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/phishing-reporter"
+              style="display: flex; align-items: center;"
+              v-if="routerName === 'Phishing Reporter'"
+            >
+              {{ breadcrumbs[1].text }}
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              Phishing Reporter
+            </router-link>
+            <router-link
+              class="breadcrumb-links"
+              to="/playbook"
+              style="display: flex; align-items: center;"
+              v-if="routerName === 'Playbook'"
+            >
+              {{ breadcrumbs[1].text }}
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              Playbook
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/incident-responder"
+              v-if="routerName === 'Analysis Details'"
+              >{{ breadcrumbs[3].text }}
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/investigations"
+              v-if="routerName === 'Investigation Details'"
+            >
+              Investigations
+            </router-link>
+
+            <router-link
+              v-if="routerName === 'Target Users'"
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
+            >
+              Company
+            </router-link>
+
+            <router-link
+              v-if="routerName === 'Investigations'"
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
+              >Incident Responder > {{ routerName }}
+            </router-link>
+            <v-icon
+              v-if="
+                routerName !== 'Incident Responder' &&
+                routerName !== 'Investigations' &&
+                routerName !== 'Playbook' &&
+                routerName !== 'Phishing Reporter'
+              "
+              style="color: #fff; font-size: 16px;"
+              >mdi-chevron-right
+            </v-icon>
+            <router-link
+              v-if="
+                routerName !== 'Incident Responder' &&
+                routerName !== 'Investigations' &&
+                routerName !== 'Playbook' &&
+                routerName !== 'Phishing Reporter'
+              "
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
+              >{{ routerName }}
+            </router-link>
+          </div>
+        </div>
+      </template>
     </v-app-bar>
+    <!-- Header End -->
     <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'">
       <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0">
         <router-view />
@@ -914,18 +890,191 @@ export default {
   }
 }
 </script>
-<style scoped lang="scss">
-.main {
-  .header-container {
+<style lang="scss">
+.layout-container {
+  &__background {
+    height: 285px;
+    width: 100%;
+    background-image: url('../assets/img/light.svg');
+    background-position: left top; // Center the image
+    background-repeat: no-repeat; // Do not repeat the image
+    background-size: cover;
+    flex-flow: column !important;
+    position: absolute;
+  }
+  .page-header {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    padding-right: 16px;
+    padding-top: 8px;
     @media only screen and (max-width: 1025px) {
       left: 0 !important;
     }
-  }
 
-  ::v-deep .z_index_custom_1 {
+    &__search {
+      width: 180px;
+      .v-text-field {
+        line-height: 28px;
+        color: #fff;
+        .v-input__control {
+          font-size: 16px;
+          .v-input__slot {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 0 14px;
+            input {
+            }
+          }
+        }
+      }
+    }
+
+    &__divider {
+      margin-left: 24px;
+      margin-right: 16px;
+      min-height: initial;
+      max-height: initial;
+      height: 24px;
+      align-self: center;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    &__content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    &__title {
+      margin-bottom: 6px;
+      h1 {
+        color: white;
+        font-size: 34px;
+        font-weight: bold;
+        margin: 0;
+      }
+    }
+    &__breadcrumb {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 12px;
+      font-weight: bold;
+      a {
+        color: inherit;
+        text-decoration: inherit;
+        &:last-of-type {
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+  .page-nav {
+    overflow: visible;
+    &__menu-toggle {
+      left: 232px;
+      top: 16px;
+      position: fixed;
+      z-index: 9;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 2px 10px 5px rgba(33, 150, 243, 0.2);
+      background-color: #edf7fd;
+      margin-left: 16px;
+    }
+    &__logo-wrapper {
+      margin: 56px auto 16px;
+      width: 180px;
+      height: 60px;
+    }
+    &.v-navigation-drawer--mini-variant {
+      min-width: 64px;
+      .page-nav__menu-toggle {
+        transition: all 0.2s ease-in-out;
+        margin-left: 0;
+      }
+      .page-nav__logo-wrapper {
+        margin-left: 8px;
+        margin-top: 110px;
+      }
+    }
+
+    .tour-five {
+      left: 210px;
+      top: 77px;
+    }
+
+    .tour-six {
+      left: 210px;
+      top: 244px;
+    }
+
+    .tour-btn-container {
+      cursor: pointer;
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      display: flex;
+
+      .tour-btn-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: solid 1px #e5f1ff;
+        margin-top: 10px;
+
+        .tour-btn-circle {
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          background-color: #e5f1ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .tour-btn-circle-inner {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #b3d4fc;
+          }
+        }
+      }
+    }
+    .v-list-group .v-list-group__header .v-list-item__icon.v-list-group__header__append-icon {
+      margin-left: 6px !important;
+      min-width: 24px !important;
+    }
+
+    .v-list-item__title {
+      align-items: center;
+      display: flex;
+      font-family: 'Open Sans', sans-serif !important;
+
+      i {
+        padding-right: 16px;
+      }
+    }
+
+    .menu-list-item > .v-list-item__title {
+      font-size: 16px !important;
+      line-height: 22px !important;
+    }
+
+    .v-navigation-drawer__border {
+      display: none !important;
+    }
+
+    .v-list-group__header__prepend-icon {
+      margin-right: 16px !important;
+    }
+  }
+}
+
+.layout-container {
+  .z_index_custom_1 {
     z-index: 99999 !important;
   }
 
@@ -987,7 +1136,7 @@ export default {
   }
 
   .menu-list-item {
-    ::v-deep .v-list-item__title {
+    .v-list-item__title {
       line-height: 1.2rem !important;
     }
   }
@@ -1095,7 +1244,7 @@ export default {
       align-items: center;
     }
 
-    ::v-deep .v-breadcrumbs__item {
+    .v-breadcrumbs__item {
       color: white;
     }
 
@@ -1104,11 +1253,11 @@ export default {
     }
   }
 
-  ::v-deep .v-breadcrumbs li {
+  .v-breadcrumbs li {
     font-size: 12px !important;
   }
 
-  ::v-deep .v-breadcrumbs li:nth-child(even) {
+  .v-breadcrumbs li:nth-child(even) {
     padding: 0px 3px;
   }
 
@@ -1172,17 +1321,17 @@ export default {
     height: 60px;
   }
 
-  ::v-deep .v-navigation-drawer {
+  .v-navigation-drawer {
     min-width: 64px;
   }
 
-  ::v-deep .v-navigation-drawer__content {
+  .v-navigation-drawer__content {
     .v-list-item {
       border-left: 5px solid transparent;
     }
   }
 
-  ::v-deep .v-list-item--active {
+  .v-list-item--active {
     border-left: solid 5px !important;
     border-color: #2196f3 !important;
     color: #2196f3 !important;
@@ -1220,7 +1369,7 @@ export default {
     padding-top: 0;
     margin-right: 24px;
 
-    ::v-deep .v-input__slot {
+    .v-input__slot {
       background-color: rgba(255, 255, 255, 0.3) !important;
       min-height: 27px !important;
       font-size: 14px;
@@ -1231,7 +1380,7 @@ export default {
       letter-spacing: normal;
     }
 
-    ::v-deep .v-icon {
+    .v-icon {
       font-size: 20px !important;
     }
   }
@@ -1275,8 +1424,8 @@ export default {
     height: 285px;
     width: 100%;
     background-image: url('../assets/img/light.svg') !important;
-    background-position: left top; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
+    background-position: left top; // Center the image
+    background-repeat: no-repeat; // Do not repeat the image
     background-size: cover;
     flex-flow: column !important;
     position: absolute;
@@ -1343,13 +1492,13 @@ export default {
       margin-left: 3px !important;
     }
 
-    ::v-deep .v-list-group__header,
-    ::v-deep .v-list-item--active {
+    .v-list-group__header,
+    .v-list-item--active {
       padding-left: 12px !important;
     }
 
-    ::v-deep .v-list-item .v-list-item__icon,
-    ::v-deep .v-list-group__header > .v-list-item__icon {
+    .v-list-item .v-list-item__icon,
+    .v-list-group__header > .v-list-item__icon {
       margin-right: 0 !important;
     }
   }
@@ -1402,7 +1551,7 @@ export default {
     font-size: 32px;
   }
 
-  ::v-deep .v-dialog {
+  .v-dialog {
     overflow: hidden !important;
   }
 
@@ -1411,75 +1560,10 @@ export default {
       height: 0 !important;
     }
 
-    .menu-icon-wrapper {
-      transition: all 0.2s ease-in-out;
-      left: 0 !important;
-    }
-
-    .logo-wrapper {
-      margin-left: 8px !important;
-      margin-top: 110px !important;
-    }
-
     .v-sheet--tile > div {
       margin-top: 5px !important;
       margin-left: 0 !important;
     }
-  }
-
-  .topbar-wrapper {
-    justify-content: center !important;
-    position: relative;
-    width: 100%;
-  }
-
-  .placeholder-search {
-    color: rgba(255, 255, 255, 0.87);
-    font-size: 16px;
-    font-family: 'Open Sans', sans-serif !important;
-  }
-
-  ::v-deep
-    .v-list-group
-    .v-list-group__header
-    .v-list-item__icon.v-list-group__header__append-icon {
-    margin-left: 6px !important;
-    min-width: 24px !important;
-  }
-
-  ::v-deep .v-list-item__title {
-    align-items: center;
-    display: flex;
-    font-family: 'Open Sans', sans-serif !important;
-
-    i {
-      padding-right: 16px;
-    }
-  }
-
-  .menu-list-item > ::v-deep .v-list-item__title {
-    font-size: 16px !important;
-    line-height: 22px !important;
-  }
-
-  ::v-deep .v-text-field--rounded > .v-input__control > .v-input__slot {
-    width: 180px;
-    height: 40px;
-    padding-left: 12px !important;
-  }
-
-  ::v-deep .theme--dark.v-breadcrumbs .v-breadcrumbs__item--disabled {
-    color: rgba(255, 255, 255, 0.7) !important;
-    font-weight: bold !important;
-    font-size: 12px !important;
-  }
-
-  ::v-deep .v-navigation-drawer__border {
-    display: none !important;
-  }
-
-  ::v-deep .v-list-group__header__prepend-icon {
-    margin-right: 16px !important;
   }
 
   @media only screen and (max-width: 1025px) {
@@ -1487,45 +1571,14 @@ export default {
       background-color: rgba(255, 255, 255, 1) !important;
       border-color: rgba(255, 255, 255, 1) !important;
     }
-    .menu-icon-wrapper {
-      transition: all 0.2s ease-in-out;
-      box-shadow: unset !important;
-    }
-    .topbar-inline-wrapper {
-      justify-content: space-between !important;
-    }
   }
 
   @media only screen and (max-width: 500px) {
-    ::v-deep .v-card,
+    .v-card,
     .v-card__text {
       padding: 8px !important;
     }
-    .v-application .app-container {
-      padding-bottom: 100px !important;
-    }
-    .search-wrapper,
-    .divider-header {
-      display: none !important;
-    }
-    .search-notification-wrapper {
-      margin-top: 0;
-    }
-    .v-application .breadcrumb-wrapper {
-      padding-top: 0 !important;
-    }
-    .v-application .topbar-inline-wrapper {
-      margin-top: 0 !important;
-    }
-    ::v-deep .v-toolbar__content {
-      align-items: flex-start;
-      margin-top: 15px;
-    }
-    ::v-deep .v-toolbar__title {
-      margin-top: 26px;
-      padding-bottom: 7px;
-    }
-    ::v-deep .v-cart-icon-wrapper {
+    .v-cart-icon-wrapper {
       width: 40px;
       height: 40px;
       margin-right: 10px !important;
@@ -1549,7 +1602,7 @@ export default {
   .menu-link-default {
     text-decoration: none;
   }
-
+  /*
   .help-wrapper {
     padding-left: 30px;
   }
@@ -1559,15 +1612,7 @@ export default {
       height: 44px !important;
     }
   }
-
-  .notification-bell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    width: 44px;
-    height: 44px;
-  }
+*/
 
   .manuel-badge {
     width: 18px !important;
@@ -1586,18 +1631,18 @@ export default {
       font-size: 11px;
     }
   }
+  /*
+    .header-container > ::v-deep .v-toolbar__content {
+      padding-bottom: 0 !important;
+      padding-top: 4px !important;
+    }
 
-  .header-container > ::v-deep .v-toolbar__content {
-    padding-bottom: 0 !important;
-    padding-top: 4px !important;
-  }
-
-  .breadcrumb-links {
-    text-decoration: none !important;
-    color: #fff !important;
-    cursor: pointer;
-  }
-
+    .breadcrumb-links {
+      text-decoration: none !important;
+      color: #fff !important;
+      cursor: pointer;
+    }
+  */
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .v-cart-dropdown-list {
       width: 160px !important;
@@ -1608,7 +1653,7 @@ export default {
     }
   }
 
-  ::v-deep
+  /*
     .v-application--is-ltr
     .v-list-group--no-action
     > .v-list-group__items
@@ -1616,7 +1661,7 @@ export default {
     > .v-list-item {
     padding-left: 0 !important;
   }
-
+*/
   .menu-item-wrapper {
     line-height: 1.2 !important;
     border-radius: 23px;
@@ -1639,7 +1684,7 @@ export default {
     }
   }
 
-  .menu-with-item ::v-deep .v-list-item {
+  .menu-with-item .v-list-item {
     align-items: center;
     display: flex;
     min-height: 48px !important;
@@ -1654,7 +1699,7 @@ export default {
     }
   }
 
-  .active-menu-parent > ::v-deep .v-list-group__header {
+  .active-menu-parent > .v-list-group__header {
     border-left: solid 5px !important;
     border-color: #2196f3 !important;
 
@@ -1667,35 +1712,19 @@ export default {
     }
   }
 
-  .disabled-cursor,
+  /* .disabled-cursor,
   button:disabled {
     cursor: no-drop !important;
     pointer-events: all !important;
   }
-
-  ::v-deep .switch-dialog {
+*/
+  .switch-dialog {
     width: 600px !important;
     border-radius: 20px !important;
   }
 
-  ::v-deep .v-application--wrap {
+  .v-application--wrap {
     background-color: #fafafa !important;
-  }
-
-  .help-menu {
-    left: unset !important;
-    right: 0 !important;
-    top: 56px !important;
-    min-width: 200px !important;
-    width: 200px !important;
-  }
-
-  .notification-menu {
-    left: unset !important;
-    right: 0 !important;
-    top: 56px !important;
-    min-width: 300px !important;
-    width: 300px !important;
   }
 }
 </style>

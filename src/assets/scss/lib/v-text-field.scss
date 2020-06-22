@@ -1,9 +1,10 @@
 #app {
   .v-text-field {
-    input {
-      font-size: 13px;
+    font-size: 13px;
+    border-radius: 8px;
+    /*input {
       &::placeholder {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 13px !important;
         font-weight: normal !important;
         font-stretch: normal !important;
@@ -12,23 +13,25 @@
         letter-spacing: normal !important;
         color: rgba(0, 0, 0, 0.54) !important;
       }
+    }*/
+    .v-input__control {
+      min-height: 40px;
     }
     &--outlined > .v-input__control > .v-input__slot {
       min-height: 40px;
       background-color: #fff;
-      border-radius: 8px;
     }
     &--outlined:not(.v-input--is-focused):not(.v-input--has-state).flat-white
-    > .v-input__control
-    > .v-input__slot
-    fieldset {
+      > .v-input__control
+      > .v-input__slot
+      fieldset {
       border-color: #fff;
     }
     &--enclosed .v-input__append-inner {
       margin-top: initial !important;
     }
-    & .v-input__prepend-inner,
-    & .v-input__append-inner {
+    .v-input__prepend-inner,
+    .v-input__append-inner {
       align-self: center;
       margin: initial;
     }
@@ -37,7 +40,7 @@
       border: 1px solid currentColor;
     }
     &--outlined fieldset {
-      border-radius: 8px;
+
       top: 0;
     }
     &--outlined legend {
