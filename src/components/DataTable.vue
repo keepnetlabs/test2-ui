@@ -120,9 +120,20 @@
               v-if="copyOfEditedRows && copyOfEditedRows.length && columns && columns.length"
             >
               <div class="items-wrapper">
-                <div :key="col.label" class="row-edit-div" v-for="col in columns" v-if="col.show">
-                  <div style="display: flex; align-items: center;">
-                    <label v-if="col.property !== 'createDate' && col.property !== 'lastUpdate'">
+                <div
+                  :key="col.label"
+                  class="row-edit-div"
+                  :style="{ order: index * 10 }"
+                  v-for="(col, index) in columns"
+                  v-if="
+                    col.show &&
+                    !col.hideLabel &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdate'
+                  "
+                >
+                  <div>
+                    <label>
                       {{ col.label }}
                     </label>
                     <span
@@ -164,7 +175,9 @@
                     <router-link
                       v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
                       :to="`${col.href}/${copyOfEditedRows[0][col.hrefKey]}`"
-                    ></router-link>
+                      class="k-table__link"
+                      >{{ copyOfEditedRows[0][col.property] }}</router-link
+                    >
                     <div
                       class="popup__apexchart-container"
                       style="display: flex; align-items: center;"
@@ -365,7 +378,7 @@
                   v-if="editMode"
                 >
                 </slot>
-                <div class="edit-popup-footer" v-if="hasEditPopupFooter()">
+                <div class="edit-popup-footer" style="order: 55555;" v-if="hasEditPopupFooter()">
                   <div class="edit-footer-date">
                     <div
                       class="edit-date-created"
@@ -682,6 +695,7 @@
             @cell-mouse-leave="cellLeave"
             :cell-class-name="setCellClass"
             @sort-change="sortChangedEvent"
+            :show-header="showHeader"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
@@ -766,7 +780,7 @@
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
-                  <span>{{ column.label }}</span>
+                  <span>{{ col.headerTooltip }}</span>
                 </v-tooltip>
               </template>
             </el-table-column>
@@ -821,7 +835,7 @@
                       >
                     </v-btn>
                   </template>
-                  <v-list class="v-cart-dropdown-list">
+                  <v-list class="v-cart-dropdown-list el-table__action-buttons">
                     <v-list-item
                       :key="ind"
                       class="sub-menu-el"
@@ -1013,6 +1027,10 @@ export default {
       type: Array,
       required: true
     },
+    isEditableRuntime: {
+      type: Boolean,
+      default: false
+    },
     setClassName: {
       type: Function,
       default: () => {}
@@ -1122,6 +1140,10 @@ export default {
     isServerSide: {
       type: Boolean,
       default: false
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
@@ -1729,35 +1751,37 @@ export default {
     },
     saveEditedOnes() {
       // After user edited the row and pressed SAVE button
-
-      if (this.multipleSelection.length === 1) {
-        this.multipleSelection.map((item, index) => {
-          const keys = Object.keys(item)
-          keys.map((key) => {
-            //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
-            item[key] = this.copyOfEditedRows[0][key]
-          })
-        })
-      } else {
-        this.editedPopupProperties.map((key) => {
+      if (this.isEditableRuntime) {
+        if (this.multipleSelection.length === 1) {
           this.multipleSelection.map((item, index) => {
-            item[key] = this.copyOfEditedRows[0][key]
-          })
-        })
-
-        this.multipleSelection.map((item, index) => {
-          const keys = Object.keys(item)
-          keys.map((key) => {
-            const keyIndex = this.editedPopupProperties.findIndex((k) => {
-              return k === key
+            const keys = Object.keys(item)
+            keys.map((key) => {
+              //birden çok edited row olsada bir tanesi v-modella bağlı. Bu değeri almamız yeterli.
+              item[key] = this.copyOfEditedRows[0][key]
             })
-            if (keyIndex === -1) {
-              item[key] = this.copyOfEditedRows[index][key]
-            }
           })
-        })
+        } else {
+          this.editedPopupProperties.map((key) => {
+            this.multipleSelection.map((item, index) => {
+              item[key] = this.copyOfEditedRows[0][key]
+            })
+          })
+
+          this.multipleSelection.map((item, index) => {
+            const keys = Object.keys(item)
+            keys.map((key) => {
+              const keyIndex = this.editedPopupProperties.findIndex((k) => {
+                return k === key
+              })
+              if (keyIndex === -1) {
+                item[key] = this.copyOfEditedRows[index][key]
+              }
+            })
+          })
+        }
       }
 
+      this.$emit('handleEdit', this.copyOfEditedRows)
       this.$refs.elTableRef.clearSelection()
       this.editMode = false
       this.isWantToEditRow = false

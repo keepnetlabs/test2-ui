@@ -1,0 +1,26 @@
+.v-radio{
+  .v-label {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #757575;
+  }
+  .mdi-radiobox-blank{
+    color:#757575
+  }
+  .mdi-radiobox-marked{
+    color: #2196F3;
+    caret-color:#2196F3;
+  }
+  &.v-item--active{
+    .v-label{
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: #2196f3;
+    }
+    }
+
+}

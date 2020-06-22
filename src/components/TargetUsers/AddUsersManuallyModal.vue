@@ -78,6 +78,7 @@
 
 <script>
 import DataTable from '../../components/DataTable'
+import { getStoreValue } from '../../model/constants/commonConstants'
 export default {
   name: 'AddUsersManuallyModal',
   components: {
@@ -97,7 +98,7 @@ export default {
             property: 'firstName',
             align: 'left',
             editable: false,
-            label: 'First Name',
+            label: getStoreValue('firstName'),
             sortable: true,
             show: true,
             fixed: true,
@@ -212,7 +213,6 @@ export default {
 
 <style lang="scss">
 .add-users-manually {
-  font-family: 'Open Sans', sans-serif !important;
   max-width: 100% !important;
   &__container {
     width: 100%;
@@ -308,15 +308,6 @@ export default {
       box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
       background-color: #2196f3;
     }
-  }
-  .v-cart-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    margin-right: 24px;
-    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-    border: solid 1px rgba(100, 181, 246, 0.5);
-    background-color: #e3f2fd;
   }
 
   &__overlay {

@@ -10,286 +10,54 @@
           <v-tab id="expansion-attachment">Attachment Analysis</v-tab>
         </v-tabs>
 
-        <v-tabs-items v-show="postDetail.Data && postDetail.IsSuccess" v-model="tab">
-          <v-tab-item>
+        <v-tabs-items v-model="tab">
+          <v-tab-item v-if="mailDetails">
             <div class="details-content">
-              <div class="details-content--item mb-4">
+              <div class="details-content--item">
                 <div class="details-content--item--key">
                   To
                 </div>
                 <div class="details-content--item--value">
-                  sedatozdemirtest3@outlook.com
+                  {{ mailDetails && mailDetails.to && mailDetails.to.toString() }}
                 </div>
               </div>
-              <div class="details-content--item mb-4">
+              <div class="details-content--item">
                 <div class="details-content--item--key">
                   From
                 </div>
                 <div class="details-content--item--value">
-                  ets@securelogout.com
+                  {{ mailDetails.from }}
                 </div>
               </div>
-              <div class="details-content--item mb-4">
+              <div class="details-content--item">
                 <div class="details-content--item--key">
                   Subject
                 </div>
                 <div class="details-content--item--value">
-                  File Format Exploits
+                  {{ mailDetails.subject }}
                 </div>
               </div>
-              <div class="details-content--item mb-4">
+              <!--<div class="details-content--item ">
                 <div class="details-content--item--key">
                   Analysis Date
                 </div>
                 <div class="details-content--item--value">
                   7/26/2019 5:22:30 PM
                 </div>
-              </div>
+              </div>-->
             </div>
           </v-tab-item>
-          <v-tab-item>
-            <div class="preview-header pt-0 mt-0">
-              <h2
-                v-for="(el, ind) of shareSettings.subject"
-                :key="ind + el.Id"
-                :id="'detail-subject-' + el.Id"
-                v-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                  el.IsShow
-                "
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >Subject: {{ postDetail.Data.CommunityPostEmails[0].Subject }}</span
-                >
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>The subject has been reported as a threat source</span>
-                </v-tooltip>
-              </h2>
-              <h2
-                v-for="(el, ind) of shareSettings.subject"
-                :key="ind + el.Id"
-                v-else-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                  !el.IsShow
-                "
-                :id="'detail-subject-' + el.Id"
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >Subject: hidden by owner</span
-                >
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-              </h2>
-              <div class="header-info pb-5">
-                <div
-                  v-for="(el, ind) of shareSettings.senderInfo"
-                  :key="ind + el.Id"
-                  :id="'detail-sender-' + el.Id"
-                  v-if="
-                    postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].From.length &&
-                    el.IsShow
-                  "
-                >
-                  <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >From: {{ postDetail.Data.CommunityPostEmails[0].From }}</span
-                  >
-                  <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>This email address has been reported as a threat source</span>
-                  </v-tooltip>
-                  <br />
-                </div>
-                <div
-                  v-for="(el, ind) of shareSettings.senderInfo"
-                  :key="ind + el.Id"
-                  v-else-if="
-                    postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].From.length &&
-                    !el.IsShow
-                  "
-                  :id="'detail-from-' + el.Id"
-                >
-                  <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >From: hidden by owner</span
-                  >
-                  <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>This email address has been reported as a threat source</span>
-                  </v-tooltip>
-                </div>
-                <div
-                  v-for="(el, ind) of shareSettings.receiverInfo"
-                  :key="ind + el.Id"
-                  :id="'detail-to-' + el.Id"
-                  v-if="
-                    postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].To.length &&
-                    el.IsShow
-                  "
-                >
-                  <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >To: {{ postDetail.Data.CommunityPostEmails[0].To }}</span
-                  >
-                  <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>This email address has been reported as a threat source</span>
-                  </v-tooltip>
-                </div>
-                <div
-                  v-for="(el, ind) of shareSettings.receiverInfo"
-                  :key="ind + el.Id"
-                  v-else-if="
-                    postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].To.length &&
-                    !el.IsShow
-                  "
-                  :id="'detail-to-' + el.Id"
-                >
-                  <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >To: hidden by owner</span
-                  >
-                  <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>This email address has been reported as a threat source</span>
-                  </v-tooltip>
-                </div>
-                <div
-                  v-for="(el, ind) of shareSettings.receiverInfo"
-                  :key="ind + el.Id"
-                  v-if="
-                    postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                    el.IsShow
-                  "
-                  :id="'detail-cc-' + el.Id"
-                >
-                  <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >CC: {{ postDetail.Data.CommunityPostEmails[0].Cc }}</span
-                  >
-                  <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>This email address has been reported as a threat source</span>
-                  </v-tooltip>
-                </div>
-                <div
-                  v-for="(el, ind) of shareSettings.receiverInfo"
-                  :key="ind + el.Id"
-                  v-else-if="
-                    postDetail.Data.CommunityPostEmails[0] &&
-                    postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                    !el.IsShow
-                  "
-                  :id="'detail-cc-' + el.Id"
-                >
-                  <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >CC: hidden by owner</span
-                  >
-                  <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>This email address has been reported as a threat source</span>
-                  </v-tooltip>
-                </div>
-                <div id="details-post-date" v-if="postDetail.Data.CommunityPostEmails[0]">
-                  Date:
-                  {{ postDetail.Data.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
-                  {{ postDetail.Data.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                  <br />
-                </div>
-              </div>
-            </div>
-            <div id="single-post-body" class="preview-body">
-              <k-shadow-frame
-                id="sframe"
-                v-bind:content="postDetail.Data.CommunityPostEmails[0].Body"
-              />
-            </div>
-            <div
-              class="preview-footer"
-              v-if="shareSettings.attachments && shareSettings.attachments.length"
-            >
-              <h2>Attachments</h2>
-              <div
-                v-for="(att, ind) of shareSettings.attachments"
-                :key="ind + att.Id"
-                class="preview-attch-wrapper"
-              >
-                <div class="attachment-wrapper">
-                  <div
-                    class="attachment red-attach"
-                    :id="'single-post-attachments-' + att.Id"
-                    :class="[
-                      att.IsMalicious ? 'red-attach malicious-style' : '',
-                      !att.IsMalicious ? 'blue-attach' : ''
-                    ]"
-                  >
-                    <v-tooltip v-if="att.IsMalicious" bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
-                        <div v-on="on" class="attach-icon red-icon">
-                          <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                        </div>
-                      </template>
-                      <span>This attachment has been reported as a malicious file</span>
-                    </v-tooltip>
-                    <div v-else class="attach-icon blue-icon">
-                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                    </div>
-                    <v-tooltip bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
-                        <div v-on="on" v-if="att.IsShow" class="file-name max-char pl-2">
-                          {{ att.Name }}
-                        </div>
-                        <div v-on="on" v-if="!att.IsShow" class="file-name max-char pl-2">
-                          hidden by owner
-                        </div>
-                      </template>
-                      <span>{{ att.IsShow ? att.Name : 'hidden by owner' }}</span>
-                    </v-tooltip>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <v-tab-item v-if="mailDetails">
+            <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
           </v-tab-item>
-          <v-tab-item>
+          <v-tab-item v-if="mailDetails">
             <div>
               <datatable
-                id="urlAnaylsisTable"
-                :refName="'urlAnaylysisTable'"
-                :columns="columns"
+                id="urlAnalysisTable"
+                ref="refUrlAnalysisTable"
                 :table="tableData"
+                :refName="'urlAnalysisTable'"
+                :columns="columns"
                 :countRow="5"
                 :pageSizes="pageSizes"
                 :defaultSort="'date'"
@@ -302,166 +70,24 @@
               />
             </div>
           </v-tab-item>
-          <v-tab-item>
-            <div class="attachment-analysis-item">
+          <v-tab-item v-if="mailDetails">
+            <div
+              class="attachment-analysis-item"
+              v-for="(attachment, index) in mailDetails.attachments"
+              :key="index"
+            >
               <div class="ed-title">
                 <div class="d-flex">
                   <p class="mr-6 attachment-name">Attachment Name</p>
-                  <p class="mr-6 wrf">watermark_master.wcf</p>
-                  <p class="mr-6 cursor-pointer download">
+                  <p class="mr-6 wrf">{{ attachment.name }}</p>
+                  <a :href="attachment.name" class="mr-6 cursor-pointer download">
                     <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
                     Download file
-                  </p>
-                </div>
-              </div>
-              <div class="flex-grow-1"></div>
-              <div class="ed-header-btn-1 collapse-details">
-                <v-expansion-panel-header
-                  class="pa-0"
-                  style="min-height: 36px;"
-                  disable-icon-rotate
-                >
-                  <template v-slot:actions mandatory="true">
-                    <v-btn
-                      v-if="showFirstCollapse"
-                      @click.native="showFirstCollapse = false"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      >COLLAPSE
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      @click.native="showFirstCollapse = true"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      >EXPAND
-                    </v-btn>
-                  </template>
-                </v-expansion-panel-header>
-              </div>
-              <v-expansion-panel-content
-                v-if="showFirstCollapse"
-                eager
-                transition="scale-transition"
-                class="pa-0 no-shadow"
-              >
-                <div class="details-content">
-                  <div class="details-content--item mb-4 mt-4">
-                    <div class="details-content--item--key text-right">
-                      SHA512
-                    </div>
-                    <div class="details-content--item--value">
-                      ad332bacf12da20cdcf84c6ed5dd590a8cb428acd1f636fc1a5c9fb4cf06e584b3b3c2fc97b6e0bab2d27cea60d13cd053ade7e7f2cb0aaa7117d9b1401a37a0
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      MD5
-                    </div>
-                    <div class="details-content--item--value">
-                      1f0e84c265ebe2911565c091afa36df9
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      Content Type
-                    </div>
-                    <div class="details-content--item--value">
-                      application/octet-stream
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      VirusTotal
-                    </div>
-                    <div class="details-content--item--value">
-                      <span
-                        class="details-content--item--value--status"
-                        style="color: rgba(219, 37, 37, 0.87);"
-                        >Phishing</span
-                      >
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                      </span>
-                      <a>DETAILS</a>
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      Valkyrie
-                    </div>
-                    <div class="details-content--item--value">
-                      <span class="details-content--item--value--status">Clean</span>
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      Roksit
-                    </div>
-                    <div class="details-content--item--value">
-                      <span
-                        class="details-content--item--value--status"
-                        style="color: rgba(219, 37, 37, 0.87);"
-                        >Phishing</span
-                      >
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                      </span>
-                      <a>DETAILS</a>
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      PhishTank
-                    </div>
-                    <div class="details-content--item--value">
-                      <span class="details-content--item--value--status">Clean</span>
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-pound</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="details-content--item">
-                    <div class="details-content--item--key text-right">
-                      Hybrid Analysis
-                    </div>
-                    <div class="details-content--item--value">
-                      <span class="details-content--item--value--status" style="color: #b06000;"
-                        >Malicious</span
-                      >
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </v-expansion-panel-content>
-            </div>
-            <div class="attachment-analysis-item">
-              <div class="ed-title">
-                <div class="d-flex">
-                  <p class="mr-6 attachment-name">Attachment Name</p>
-                  <p class="mr-6 wrf">watermark_master.wcf</p>
-                  <p class="mr-6 cursor-pointer download">
-                    <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                    Download file
-                  </p>
-                  <p class="mr-6 cursor-pointer not-found">
+                  </a>
+                  <p
+                    class="mr-6 cursor-pointer not-found"
+                    v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
+                  >
                     *This file was not uploaded to any integration
                   </p>
                 </div>
@@ -502,107 +128,57 @@
                 class="pa-0 no-shadow"
               >
                 <div class="details-content">
-                  <div class="details-content--item mb-4 mt-4">
+                  <div class="details-content--item mt-4">
                     <div class="details-content--item--key text-right">
                       SHA512
                     </div>
                     <div class="details-content--item--value">
-                      ad332bacf12da20cdcf84c6ed5dd590a8cb428acd1f636fc1a5c9fb4cf06e584b3b3c2fc97b6e0bab2d27cea60d13cd053ade7e7f2cb0aaa7117d9b1401a37a0
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      MD5
-                    </div>
-                    <div class="details-content--item--value">
-                      1f0e84c265ebe2911565c091afa36df9
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      Content Type
-                    </div>
-                    <div class="details-content--item--value">
-                      application/octet-stream
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      VirusTotal
-                    </div>
-                    <div class="details-content--item--value">
-                      <span
-                        class="details-content--item--value--status"
-                        style="color: rgba(219, 37, 37, 0.87);"
-                        >Phishing</span
-                      >
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                      </span>
-                      <a>DETAILS</a>
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      Valkyrie
-                    </div>
-                    <div class="details-content--item--value">
-                      <span class="details-content--item--value--status">Clean</span>
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      Roksit
-                    </div>
-                    <div class="details-content--item--value">
-                      <span
-                        class="details-content--item--value--status"
-                        style="color: rgba(219, 37, 37, 0.87);"
-                        >Phishing</span
-                      >
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                      </span>
-                      <a>DETAILS</a>
-                    </div>
-                  </div>
-                  <div class="details-content--item mb-4">
-                    <div class="details-content--item--key text-right">
-                      PhishTank
-                    </div>
-                    <div class="details-content--item--value">
-                      <span class="details-content--item--value--status">Clean</span>
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-pound</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
-                      </span>
+                      {{ attachment.sha512 }}
                     </div>
                   </div>
                   <div class="details-content--item">
                     <div class="details-content--item--key text-right">
-                      Hybrid Analysis
+                      MD5
                     </div>
                     <div class="details-content--item--value">
-                      <span class="details-content--item--value--status" style="color: #b06000;"
-                        >Malicious</span
+                      {{ attachment.md5 }}
+                    </div>
+                  </div>
+                  <div class="details-content--item">
+                    <div class="details-content--item--key text-right">
+                      Content Type
+                    </div>
+                    <div class="details-content--item--value">
+                      {{ attachment.contentType }}
+                    </div>
+                  </div>
+                  <div
+                    class="details-content--item"
+                    v-for="(analysis, ind) in attachment.analysisList"
+                    :key="ind"
+                  >
+                    <div class="details-content--item--key text-right">
+                      {{ analysis.analysisEngine }}
+                    </div>
+                    <div class="details-content--item--value">
+                      <span
+                        class="details-content--item--value--status"
+                        :class="`details-content--item--value--status__${analysis.result}`"
+                        >{{ analysis.result }}</span
                       >
                       <span class="details-content--item--value--icon">
                         <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
                         <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
                         <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
                       </span>
+                      <a v-if="false">DETAILS</a>
                     </div>
                   </div>
                 </div>
               </v-expansion-panel-content>
+            </div>
+            <div class="empty-attachment" v-if="!mailDetails.attachments.length">
+              <h2>No Attachment</h2>
             </div>
           </v-tab-item>
         </v-tabs-items>
@@ -612,9 +188,6 @@
 </template>
 
 <script>
-import VClamp from 'vue-clamp'
-import { mapGetters } from 'vuex'
-import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
@@ -689,38 +262,16 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  `
 })
 import Datatable from '../../components/DataTable'
+import { getNotifiedEmail, getAnalysisEngineTypes } from '../../api/notifiedEmail'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   components: {
     Datatable
   },
-  props: {
-    post: {
-      type: Object,
-      required: false,
-      default: () => ({})
-    },
-    postIndex: {
-      type: Number,
-      required: true
-    },
-    totalPostCount: {
-      type: Number,
-      required: true
-    }
-  },
-  computed: {
-    ...mapGetters({
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      fetchedCommunity: 'threadSharing/fetchedCommunGetter',
-      userGetter: 'auth/userGetter',
-      postDetail: 'threadSharing/postDetailGetter',
-      myCommunities: 'threadSharing/myCommunitiesGetter',
-      getSelectedCompany: 'dashboard/getSelectedCompany',
-      toggle: 'threadSharing/collapsesGetter'
-    })
-  },
+  props: {},
   data: () => ({
+    mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: false,
     expanded: false,
@@ -759,86 +310,23 @@ export default {
         fixed: 'left',
         sortable: true,
         show: true,
-        type: 'text',
-        width: 350
-        //minWidth: 80
+        type: 'text'
       },
       {
-        property: 'status',
+        property: 'result',
         align: 'center',
         editable: false,
         label: 'Status',
-        fixed: 'right',
-        sortable: true,
-        show: true,
-        type: 'status',
-        width: 180
-        //minWidth: 80
-      },
-      {
-        property: 'Valkyrie',
-        align: 'left',
-        editable: false,
-        label: 'Valkyrie',
         fixed: false,
-        sortable: true,
+        sortable: false,
         show: true,
-        type: 'text',
-        width: 180
-        //minWidth: 80
-      },
-      {
-        property: 'Roksit',
-        align: 'left',
-        editable: false,
-        label: 'Roksit',
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'text',
-        width: 180
-        //minWidth: 80
-      },
-      {
-        property: 'Phishtank',
-        align: 'left',
-        editable: false,
-        label: 'Phishtank',
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'text',
-        width: 180
-        //minWidth: 80
-      },
-      {
-        property: 'UrlVoid',
-        align: 'left',
-        editable: false,
-        label: 'Url Void',
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'text',
-        width: 180
-        //minWidth: 80
-      },
-      {
-        property: 'VirusTotal',
-        align: 'left',
-        editable: false,
-        label: 'Virus Total',
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'text',
-        width: 180
-        //minWidth: 80
+        type: 'detected',
+        hasTooltip: true
       }
     ],
     title: {
       icon: 'mdi-tab-unselected',
-      title: 'Investigations',
+      title: 'Url Analysis',
       subTitle: ''
     },
     pageSizes: [5, 10, 25, 50, 100],
@@ -849,292 +337,62 @@ export default {
       clipboard: true,
       download: true
     },
-    tableData: [
-      {
-        url: 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd',
-        status: 'Clean',
-        Valkyrie: 'Clean',
-        Roksit: 'Clean',
-        Phishtank: 'Clean',
-        UrlVoid: 'Clean',
-        VirusTotal: 'Clean'
-      },
-      {
-        url: 'http://www.w3.org/1999/xhtml',
-        status: 'Clean',
-        Valkyrie: 'Clean',
-        Roksit: 'Clean',
-        Phishtank: 'Clean',
-        UrlVoid: 'Clean',
-        VirusTotal: 'Clean'
-      },
-      {
-        url: 'http://webapplayers.com/.../email_templates/styles.css',
-        status: 'Clean',
-        Valkyrie: 'Clean',
-        Roksit: 'Clean',
-        Phishtank: 'Clean',
-        UrlVoid: 'Clean',
-        VirusTotal: 'Clean'
-      },
-      {
-        url: 'https://dashboard.keepnetlabs.com/.../keepnetla...png',
-        status: 'Clean',
-        Valkyrie: 'Clean',
-        Roksit: 'Clean',
-        Phishtank: 'Clean',
-        UrlVoid: 'Clean',
-        VirusTotal: 'Clean'
-      },
-      {
-        url: 'http://zinfaudioplayer221_pls.pl',
-        status: 'Phishing',
-        Valkyrie: 'Clean',
-        Roksit: 'Clean',
-        Phishtank: 'Clean',
-        UrlVoid: 'Clean',
-        VirusTotal: 'Clean'
-      }
-    ]
+    tableData: []
   }),
-  watch: {
-    postDetail(val) {
-      const datas = val.Data
-      if (
-        datas &&
-        datas.CommunityPostEmails[0] &&
-        datas.CommunityPostEmails[0].ShareSettings.length
-      ) {
-        const ShareSettings = {
-          senderInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'SenderInfo'
-          ),
-          subject: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Subject'),
-          receiverInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'ReceiverInfo'
-          ),
-          attachments: datas.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'Attachment'
-          ),
-          links: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Link')
-        }
-        if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function () {
-            for (let a of ShareSettings.links) {
-              var els = document
-                .getElementById('sframe')
-                .shadowRoot.querySelectorAll('[href="' + a.Value + '"]')
-              for (var i = 0, l = els.length; i < l; i++) {
-                var el = els[i]
-                el.setAttribute('target', '_blank')
-                el.setAttribute('data-title', 'This link has been reported as a phishing')
-                if (!a.IsShow) {
-                  if (!el.hasChildNodes()) {
-                    el.innerHTML = 'hidden by owner'
-                  } else {
-                    el.lastChild.innerHTML = 'hidden by owner'
-                  }
-                  el.setAttribute('href', '#')
-                }
-                if (a.IsMalicious) {
-                  el.classList.add('malicious-style')
-                  var iEl = document.createElement('i')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
-                }
-              }
-            }
-          }, 0)
-        }
-        this.shareSettings = ShareSettings
-      }
-    }
-  },
   mounted() {
-    this.getPostDetails('', 0, true)
+    this.getEngineDetails()
+    this.getPostDetails()
   },
   methods: {
-    openInvestigate() {
-      this.$emit('openInvestigateModal', { status: true, title: this.post.Title })
-    },
-    shareIncident(postId, creatorUserId) {
-      this.$store.state.threadSharing.isWantToShareIncident = true
-      this.$store.state.threadSharing.sharedPost = postId
-      this.$store.state.threadSharing.postCreatorId = creatorUserId
-    },
-    userLike() {
-      this.userLiked = !this.userLiked
-      this.userLiked ? (this.likeCount = this.likeCount + 1) : (this.likeCount = this.likeCount - 1)
-    },
-    addComment() {
-      if (this.$refs.comment.validate()) {
-        const commentObj = {
-          comment: this.userComment,
-          name: this.$store.state.auth.user.fullName,
-          company: this.$store.state.auth.user.currentCompany.name
-        }
-        this.comments.push(commentObj)
-        this.userComment = ''
+    isFileUploaded(attachments) {
+      if (attachments) {
+        const data = attachments.filter((item) => item.isSendFile || item.isSendFileHash)
+        return !!data.length
       }
     },
-    openDetails() {
-      this.panel.push(0)
+    getPostDetails() {
+      getNotifiedEmail(this.$attrs.id)
+        .then((response) => {
+          if (response.data.data.urls.length) response.data.data.urls[0].result = 'Clean'
+          if (response.data.data.urls.length) response.data.data.urls[0].analysisEngine = 'aaaaaa'
+          if (response.data.data.urls.length) response.data.data.urls[1].result = 'Phishing'
+          if (response.data.data.urls.length) response.data.data.urls[1].analysisEngine = 'cccccc'
+          if (response.data.data.urls.length) response.data.data.urls[2].result = 'Clean'
+          if (response.data.data.urls.length) response.data.data.urls[2].analysisEngine = 'fffff'
+          this.mailDetails = response.data.data
+          this.tableData = this.mailDetails.urls
+          console.log(this.tableData)
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when gettin details!'
+          })
+        })
     },
-    getPostDetails(postId, ind, bool) {
-      const postDetailObj = {
-        companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
-        communPostId: 'cf519747-7b6e-4060-a170-fe7f1f82d992'
-      }
-      this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
-
-      if (this.toggle && this.toggle.length < 1) {
-        let arr = []
-        for (let a = 0; a < this.totalPostCount; a++) {
-          arr.push(false)
-        }
-        arr[ind] = bool
-        this.$store.commit('threadSharing/SET_COLLAPSES', arr)
-      } else {
-        let newToggle = this.toggle
-        for (let b = 0; b < newToggle.length; b++) {
-          newToggle[b] = false
-        }
-        newToggle[ind] = bool
-        this.$store.commit('threadSharing/SET_COLLAPSES', newToggle)
-      }
-      if (this.bool === true) {
-      }
-    },
-    userLikePost(postId, communId) {
-      if (this.isJoined(communId)) {
-        const likeObj = {
-          communPostId: postId,
-          createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
-          communId: communId
-        }
-        this.$store.dispatch('threadSharing/likePost', likeObj)
-        this.post.LikeCount = this.post.LikeCount + 1
-        this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount + 1
-        const refThis = this
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
-    },
-    userUnlikePost(postId, communId) {
-      if (this.isJoined(communId)) {
-        const unlikeObj = {
-          communPostId: postId,
-          createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
-          communId: communId
-        }
-        this.$store.dispatch('threadSharing/unlikePost', unlikeObj)
-        this.post.LikeCount = this.post.LikeCount - 1
-        this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount - 1
-        const refThis = this
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
-    },
-    addPostComment(postId, communId) {
-      const commentObj = {
-        communPostId: postId,
-        comment: this.addCommentValue,
-        createUserId: this.userGetter.id || localStorage.getItem('userId'),
-        companyId: this.getSelectedCompany.companyId,
-        communId: communId
-      }
-      if (
-        this.addCommentValue.length >= 5 &&
-        this.addCommentValue.length <= 300 &&
-        this.isJoined(communId) &&
-        this.regexChar(this.addCommentValue)
-      ) {
-        this.$store.dispatch('threadSharing/addComment', commentObj)
-        this.addCommentValue = ''
-        const refThis = this
-        this.post.CommentCount = this.post.CommentCount + 1
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
-    },
-    editIncident(postId, communityName) {
-      this.$store.commit('threadSharing/SET_INCIDENT_EDIT_STATUS', true)
-      this.$emit('edit-incident', { postId, communityName })
-    },
-    deleteIncident(postId, name, postCommunityId) {
-      this.$emit('delete-incident', {
-        postId: postId,
-        name: name,
-        postCommunityId: postCommunityId
-      })
-    },
-    isJoined(communId) {
-      if (this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some((cId) => cId.CommunityId === communId)
-      } else {
-        return false
-      }
-    },
-    isOwnerOfTheCommunity() {
-      const creator = localStorage.getItem('communityCompanyId')
-      const user = localStorage.getItem('companyId')
-      if (
-        user == creator ||
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
-    },
-    canDelete(compId) {
-      if (
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
-        localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
-        this.getSelectedCompany.companyId === compId
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    canEdit(compId) {
-      if (
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
-        localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
-        this.getSelectedCompany.companyId === compId
-      ) {
-        return true
-      } else {
-        return false
-      }
-    },
-    maliciousFound() {
-      return this.shareSettings.attachments.some((at) => at.IsMalicious === true)
+    getEngineDetails() {
+      getAnalysisEngineTypes()
+        .then((response) => {
+          const engineTypes = response.data.data
+          engineTypes.map((item) => {
+            this.columns.push({
+              property: 'analysisEngine',
+              align: 'left',
+              editable: false,
+              label: item.name,
+              fixed: false,
+              sortable: true,
+              show: true,
+              type: 'text'
+            })
+          })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting analysis engine types!'
+          })
+        })
     }
   }
 }
@@ -1142,6 +400,19 @@ export default {
 
 <style lang="scss">
 .single-wrapper {
+  .empty-attachment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    h2 {
+      font-size: 24px;
+      font-weight: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      padding-bottom: 6px;
+    }
+  }
   .single-post {
     margin: 15px !important;
     border-radius: 12px;
@@ -1160,7 +431,6 @@ export default {
     line-height: 1.6;
     letter-spacing: normal;
     color: #2196f3;
-    margin-top: 24px;
     margin-bottom: 40px;
     display: block;
   }
@@ -1173,6 +443,7 @@ export default {
 
     .v-slide-group__wrapper {
       padding-left: 0 !important;
+      height: 55px;
     }
 
     .v-slide-group__content {
@@ -1185,19 +456,6 @@ export default {
 
     .v-tab {
       width: auto;
-      height: 27px;
-      font-family: Lato;
-      font-size: 22px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: 0.3px;
-      color: #434343 !important;
-      padding-left: 0px;
-      padding-right: 0px;
-      margin-right: 48px;
-      text-transform: capitalize !important;
     }
 
     .v-tab--active {
@@ -1207,7 +465,6 @@ export default {
     .v-tabs-bar {
       height: 48px !important;
       border-radius: 0 !important;
-      margin-top: 24px;
     }
   }
   .mdi-attachment {
@@ -1222,6 +479,9 @@ export default {
     position: relative;
     &:first-child {
       margin-bottom: 16px;
+    }
+    p {
+      margin-bottom: 0 !important;
     }
   }
 
@@ -1248,6 +508,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    padding-left: 24px;
   }
 
   .wrf {
@@ -1280,12 +541,15 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     color: #2196f3;
+    text-decoration: none;
   }
 
   .details-content {
     &--item {
       display: flex;
-
+      &:not(:last-child) {
+        margin-bottom: 18px;
+      }
       &--value {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
@@ -1309,6 +573,19 @@ export default {
         &--status {
           min-width: 80px;
           display: inline-block;
+          font-size: 14px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.5;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+          &__Phishing {
+            color: rgba(219, 37, 37, 0.87);
+          }
+          &__Malicious {
+            color: #b06000;
+          }
         }
 
         &--icon {
@@ -1334,6 +611,8 @@ export default {
         color: rgba(0, 0, 0, 0.87);
         min-width: 104px;
         margin-right: 24px;
+        min-width: 125px;
+        max-width: 125px;
       }
     }
   }
@@ -1732,7 +1011,7 @@ export default {
   }
 
   .preview-body {
-    margin-top: 24px;
+    margin-top: 4px;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;

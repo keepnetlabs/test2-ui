@@ -26,8 +26,18 @@
             @click="changeSnackbarStatus(false, snackbar)"
             >mdi-close</v-icon
           >
-          <router-link class="snackbar__action" v-else :to="snackbar.action.link">
-            <v-btn @click.native="changeSnackbarStatus($event, snackbar)" color="#2196f3" rounded>
+          <router-link
+            class="snackbar__action"
+            :class="[snackbar.action.linkType === 'text' ? 'mr-n1' : '']"
+            v-else
+            :to="snackbar.action.link"
+          >
+            <v-btn
+              :text="snackbar.action.linkType === 'text'"
+              @click.native="changeSnackbarStatus($event, snackbar)"
+              color="#2196f3"
+              rounded
+            >
               {{ snackbar.action.label }}
             </v-btn>
           </router-link>
@@ -59,7 +69,7 @@ export default {
           styleObj['bottom'] = `${75 * index}px`
         }
       } else {
-        styleObj['bottom'] = '5px'
+        styleObj['bottom'] = '10px'
       }
       if (messageLength > 40 && messageLength < 60) {
         styleObj['width'] = '580px'
@@ -83,9 +93,6 @@ export default {
   @media only screen and (min-width: 600px) {
     margin: 0;
   }
-}
-.v-snack__content {
-  padding: 12px 16px;
 }
 
 .snackbar {
@@ -124,6 +131,20 @@ export default {
 .v-snack {
   @media (max-width: 580px) {
     width: 95% !important;
+  }
+  &__content {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 0 16px;
+    overflow: hidden;
+    width: 100%;
   }
 }
 </style>

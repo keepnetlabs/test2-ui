@@ -5,14 +5,15 @@
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
           >Send Suspicious Emails To
         </v-list-item-title>
-        <v-list-item-subtitle class="email-settings__list-item--text email-settings__sub-header"
+        <v-list-item-subtitle
+          class="email-settings__list-item--text email-settings__sub-header mb-6"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
       <v-list-item
-        class="px-0 email-settings__list-item mt-4"
+        class="px-0 email-settings__list-item"
         :class="[!hasError && !formValues.to ? 'mb-2' : '']"
       >
         <v-list-item-content>
@@ -94,16 +95,15 @@
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="email-message">Email Message</label>
-          <v-text-field
+          <v-textarea
             placeholder="Please investigate the attached email"
             outlined
             dense
-            class="k-textfield mt-2"
+            class="mt-2"
             v-model.trim="formValues.content"
             :rules="[(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]"
             id="email-message"
-            height="40"
-          ></v-text-field>
+          ></v-textarea>
         </v-list-item-content>
       </v-list-item>
       <v-btn

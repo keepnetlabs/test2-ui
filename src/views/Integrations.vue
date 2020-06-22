@@ -1,6 +1,6 @@
 <template>
   <div class="integrations" id="integrations">
-    <v-layout id="ts-layout" wrap style="min-height: 79vh;">
+    <v-layout id="ts-layout" wrap style="min-height: 80vh;">
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card">
           <v-tabs
@@ -8,12 +8,12 @@
             v-model="tab"
             background-color="transparent"
             color="basil"
-            active-class="pr-tab-active"
+            class="k-tabs"
           >
-            <v-tab id="pr-tab-users" class="pr-tab pr-tab-users p-2" @click="changeTabStatus(0)">
+            <v-tab id="pr-tab-users" class="k-tab p-2" @click="changeTabStatus(0)">
               Integrations
             </v-tab>
-            <v-tab id="pr-tab-settings" class="pr-tab p-2" @click="changeTabStatus(1)"
+            <v-tab id="pr-tab-settings" class="k-tab p-2" @click="changeTabStatus(1)"
               >Clients
             </v-tab>
           </v-tabs>
@@ -56,13 +56,12 @@ export default {
 
 <style lang="scss">
 .integrations {
-  padding: 16px;
-  padding-top: 10px;
+  padding: 0 16px 16px 16px;
 
   &__tab-container {
     padding-left: 0 !important;
     padding-right: 0 !important;
-    margin-top: 16px !important;
+    padding-top: 8px !important;
   }
 
   .v-slide-group__content {

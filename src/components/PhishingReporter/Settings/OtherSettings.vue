@@ -1,18 +1,28 @@
 <template>
-  <v-container fluid id="other-settings" class="other-settings mt-n3">
+  <v-container fluid id="other-settings" class="other-settings">
+    <v-list-item class="pl-0 other-settings__list-item" v-if="showHeader">
+      <v-list-item-content>
+        <v-list-item-title class="other-settings__title">
+          Other Settings
+        </v-list-item-title>
+        <v-list-item-subtitle class="other-settings__sub-title mb-6">
+          Extra settings
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
     <v-form ref="refForm">
-      <v-list-item class="px-0 other-settings__list-item mt-0">
+      <v-list-item class="px-0 other-settings__list-item mt-n4">
         <v-list-item-content>
-          <div class="other-settings__list-item-header" @click="handleMarginStatusForOptional">
+          <div class="other-settings__list-item-header">
             Optional Features
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
+      <v-list-item class="px-0 other-settings__list-item" :class="[inModal ? 'mb-3' : '']">
         <v-list-item-content>
           <div>
             <v-checkbox
-              v-model="formValues.deleteOriginalMail"
+              v-model="formValues.isDeleteEmailBeforeAnalysis"
               class="other-settings__checkbox k-checkbox mt-3"
               color="#2196f3"
               label="Delete Original Email"
@@ -66,36 +76,7 @@
           </template>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="extra-message-text"
-            >Extra Message</label
-          >
-          <v-text-field
-            placeholder="Extra message in the dialog boxes"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.extraMessage"
-            id="extra-message-text"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="screen-tip-text">Screen Tip</label>
-          <v-text-field
-            placeholder="Popup tooltip text"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.screenTip"
-            id="screen-tip-text"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
+
       <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="no-internet-connection-message"
@@ -270,19 +251,21 @@ export default {
     inModal: {
       type: Boolean,
       default: false
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
       formValues: {
-        deleteOriginalMail: true,
+        isDeleteEmailBeforeAnalysis: false,
         enableProxy: false,
         isOnPremise: false,
         apiUrl: '',
         companyId: '',
-        extraMessage: '',
-        screenTip: '',
-        enableEnterpriseVault: false,
+        enableEnterpriseVault: null,
         enterpriseVaultUrl: '',
         superTip: '',
         noInternetConnectionMessage: '',
@@ -292,7 +275,6 @@ export default {
         msgBoxBtnOkText: '',
         emailSendingErrorMessage: ''
       },
-      marginStatusOptional: true,
       enterpriseVaultDisabled: true
     }
   },
@@ -307,14 +289,10 @@ export default {
     },
     handleEnterpriseVaultChange(value) {
       this.enterpriseVaultDisabled = !value
-    },
-    handleMarginStatusForOptional() {
-      this.marginStatusOptional = !this.marginStatusOptional
     }
   },
   created() {
     if (this.formData) {
-      console.log('this.formData', this.formData)
       const {
         companyId,
         noInternetConnectionMessage,
@@ -325,7 +303,9 @@ export default {
         emailSendingErrorMessage,
         enterpriseVaultUrl,
         apiUrl,
-        isOnPremise
+        isOnPremise,
+        isDeleteEmailBeforeAnalysis,
+        enableProxy
       } = this.formData
       this.formValues.companyId = companyId || localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
@@ -339,17 +319,19 @@ export default {
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isOnPremise = isOnPremise || ''
+      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
+      this.formValues.enableProxy = enableProxy || ''
     } else {
       this.formValues.companyId = localStorage.getItem('companyId')
-      this.formValues.extraMessage = 'Extra message in the dialog boxes'
-      this.formValues.screenTip = 'Popup tooltip text'
       this.formValues.noInternetConnectionMessage =
         'No internet connection. Please try again later.'
+      this.formValues.enableEnterpriseVault = false
       this.formValues.msgBoxBtnYesText = 'Yes'
       this.formValues.msgBoxBtnNoText = 'No'
       this.formValues.msgBoxBtnCancelText = 'Cancel'
       this.formValues.msgBoxBtnOkText = 'Okay'
       this.formValues.emailSendingErrorMessage = 'Email cannot be sent'
+      this.formValues.isDeleteEmailBeforeAnalysis = false
     }
   }
 }
@@ -357,8 +339,6 @@ export default {
 
 <style lang="scss">
 .other-settings {
-  margin-top: -12px;
-
   &__link {
     text-transform: uppercase;
     font-size: 14px;
@@ -375,6 +355,20 @@ export default {
       margin-top: 10px;
       justify-content: center;
     }
+  }
+
+  &__title {
+    font-size: 24px;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  &__sub-title {
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: normal;
+    margin-top: 2px;
+    color: rgba(0, 0, 0, 0.87) !important;
   }
 
   &__checkbox {

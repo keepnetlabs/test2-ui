@@ -1,7 +1,7 @@
 <template>
   <div class="playbook investigation-details" id="playbook">
     <div class="phishing-reporter">
-      <v-layout id="ts-layout" style="min-height: 79vh;" wrap>
+      <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
         <v-col class="p-0" cols="12">
           <v-card class="pr-card" id="pr-card">
             <v-tabs

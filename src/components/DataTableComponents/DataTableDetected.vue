@@ -41,7 +41,7 @@ export default {
         case 'malicious':
           return '#e6a23c'
         case 'offline':
-          return '#e6a23c'
+          return '#f56c6c'
         case 'expired':
           return '#e6a23c'
         case 'cancelled':
@@ -61,11 +61,11 @@ export default {
         case 'running':
           return '#2196f3'
         case 'completed':
-          return '#43a047'
+          return '#00bcd4'
         case 'finished':
           return '#43a047'
         case 'online':
-          return '#43a047'
+          return '#00bcd4'
         case 'deactivated':
           return '#757575'
         case 'not installed':

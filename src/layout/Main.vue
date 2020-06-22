@@ -313,8 +313,11 @@
           </div>
 
           <div class="page-header__breadcrumb">
-            <router-link class="breadcrumb-links" to="/" v-if="routerName === 'Dashboard'"
-              >{{ breadcrumbs[0].text }}
+            <router-link class="breadcrumb-links" to="/">
+              {{ $store.state.dashboard.selectedCompany.manager || 'Company' }}
+              <v-icon style="color: #fff; font-size: 16px;" v-if="routerName !== 'Dashboard'"
+                >mdi-chevron-right</v-icon
+              >
             </router-link>
 
             <router-link
@@ -635,7 +638,7 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: 'Keepnet Labs',
+          text: 'Dashboard',
           disabled: true,
           exact: false,
           href: '/'
@@ -681,6 +684,9 @@ export default {
       notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading'
     }),
+    companyName() {
+      return localStorage.getItem('companyName')
+    },
     communityName() {
       return (
         this.$store.state.threadSharing.selectedCommunity.name ||
