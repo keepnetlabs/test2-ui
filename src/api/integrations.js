@@ -5,7 +5,7 @@ export function getIntegrationList(payload) {
 }
 
 export function exportReportedEmails(payload) {
-  return testRequest.post(`${API_URL}`, payload)
+  return testRequest.post(`${API_URL}/search/export`, payload)
 }
 
 export function getIntegrationTypes() {

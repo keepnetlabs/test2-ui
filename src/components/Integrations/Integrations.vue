@@ -229,6 +229,7 @@ export default {
         }
         exportReportedEmails(payload)
           .then((response) => {
+            debugger
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
