@@ -49,9 +49,7 @@ import {
   deleteIntegration,
   disableIntegration,
   exportReportedEmails,
-  getIntegrationList,
-  getIntegrationDetails,
-  updateIntegration
+  getIntegrationList
 } from '../../api/integrations'
 import {
   COMMON_CONSTANTS,

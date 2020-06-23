@@ -209,7 +209,7 @@
                 }}</span>
               </v-tooltip>
             </slot>
-            <v-menu bottom left offset-y>
+            <v-menu bottom left offset-y v-if="isDownloadable">
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -811,6 +811,10 @@ export default {
       default: false
     },
     showHeader: {
+      type: Boolean,
+      default: true
+    },
+    isDownloadable: {
       type: Boolean,
       default: true
     }

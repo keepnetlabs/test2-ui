@@ -860,7 +860,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
     content: attr(data-title);
     position: absolute;
-    padding:5px 16px;
+    padding: 5px 16px 5px 36px;
     bottom: -1.6em;
     left: 100%;
     white-space: nowrap;
@@ -878,7 +878,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     position: relative;
 }
 .malicious-style {
-  background-color: #f3e1e5 !important;
+
   color: #bb2a45 !important;
   text-decoration: underline !important;
 }
@@ -910,11 +910,6 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 .red-malicious-alert::before {
   border: unset !important;
 }
-
-
-.malicious-style  .red-malicious-alert:not(:first-child) {
-    display: none !important;
-  }
  `
 })
 export default {
@@ -2202,7 +2197,6 @@ export default {
   }
 
   .malicious-style {
-    background-color: #f3e1e5 !important;
     color: #bb2a45 !important;
     text-decoration: underline !important;
   }

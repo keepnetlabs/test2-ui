@@ -19,7 +19,7 @@
             class="new-integration__confirm-modal__btn-continue mr-3"
             color="#2196f3"
             rounded
-            @click="showConfirmModal = false"
+            @click="saveButtonClickOnConfirmModal"
           >
             YES, CONTINUE
           </button>
@@ -90,7 +90,7 @@
               class="new-integration__select"
               required
               dense
-              label="Select integration type"
+              placeholder="Select integration type"
               item-text="name"
               item-value="resourceId"
               height="40"
@@ -227,7 +227,15 @@
         </v-list-item>
         <v-list-item class="px-0">
           <v-list-item-content class="pl-3">
-            <v-switch v-model="formValues.isUploadOtherFileType" label="Upload other files" />
+            <v-switch
+              v-model="formValues.isUploadOtherFileType"
+              @change="
+                formValues.isUploadOtherFileType
+                  ? (showConfirmModal = true)
+                  : (showConfirmModal = false)
+              "
+              label="Upload other files"
+            />
           </v-list-item-content>
         </v-list-item>
         <div class="mb-8 new-integration__api-key__subtitle__upload-subtitle">
@@ -247,12 +255,11 @@
               class="new-integration__select"
               required
               dense
-              label="Select integration type"
+              placeholder="Select integration type"
               height="40"
               item-text="name"
               item-value="resourceId"
               multiple
-              @blur="showConfirmModal = true"
             ></v-select>
           </div>
         </div>
@@ -339,19 +346,6 @@ export default {
           message: 'Error when getting integrations type!'
         })
       })
-    getFileTypes()
-      .then((response) => {
-        const {
-          data: { data, status }
-        } = response
-        this.uploadFileTypes = data
-      })
-      .catch((error) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting file types! '
-        })
-      })
   },
   methods: {
     submit() {
@@ -397,6 +391,25 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay', false, true)
     },
+    saveButtonClickOnConfirmModal() {
+      if (!this.uploadFileTypes.length) this.getFileTypes()
+      this.showConfirmModal = false
+    },
+    getFileTypes() {
+      getFileTypes()
+        .then((response) => {
+          const {
+            data: { data, status }
+          } = response
+          this.uploadFileTypes = data
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting file types! '
+          })
+        })
+    },
     addApiKey() {
       this.formValues.apiKeys.push('')
     },
@@ -425,6 +438,7 @@ export default {
         })
     },
     updateVModel(id) {
+      this.getFileTypes()
       getIntegrationDetails(id)
         .then((response) => {
           const integrationData = response['data'].data

@@ -395,7 +395,7 @@
               <div class="input-sub">Select how many days the investigation will run</div>
               <v-select
                 :items="durations"
-                label="3 days"
+                placeholder="3 days"
                 outlined
                 class="input-select"
                 v-model="selectedDuration"
@@ -407,7 +407,7 @@
               <div class="input-sub">Select action to be executed if email is found</div>
               <v-select
                 :items="actions"
-                label="Delete email"
+                placeholder="Delete email"
                 outlined
                 class="input-select"
                 v-model="selectedAction"

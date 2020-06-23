@@ -96,7 +96,7 @@
             <label class="edit-sub-labels">Select an industry category</label>
             <v-select
               :items="categories"
-              :label="categories[0]"
+              :placeholder="categories[0]"
               outlined
               class="edit-select"
               v-model="selectedCategory"
