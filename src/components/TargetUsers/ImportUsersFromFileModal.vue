@@ -27,9 +27,7 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item>
-                <v-list-item-content>
-                  asas
-                </v-list-item-content>
+                <v-list-item-content> </v-list-item-content>
               </v-list-item>
             </div>
           </v-stepper-content>
@@ -53,7 +51,7 @@
                   :items="[]"
                   outlined
                   v-model="formValues.group"
-                  label="Delete Email"
+                  placeholder="Delete Email"
                 ></v-select>
               </v-list-item>
               <v-list-item class="map-fields__list-item map-fields__list-item--2">
@@ -63,7 +61,7 @@
                   :items="[]"
                   outlined
                   v-model="formValues.sheet"
-                  label="Sheet 1"
+                  placeholder="Sheet 1"
                 ></v-select>
               </v-list-item>
               <v-list-item>

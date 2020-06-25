@@ -46,6 +46,8 @@ export function getBtnStatusColor(type) {
       return '#757575'
     case 'n/a':
       return '#00bcd4'
+    case 'stopped':
+      return '#f56c6c'
     default:
       return '#00bcd4'
   }

@@ -125,6 +125,18 @@ import { maxLength, mail, required } from '../../../utils/validations'
 
 export default {
   name: 'EmailSettings',
+  watch: {
+    formData: {
+      handler(data) {
+        const { to, cc, bcc, subject, content } = data
+        this.formValues.to = to || ''
+        this.formValues.cc = cc || ''
+        this.formValues.bcc = bcc || ''
+        this.formValues.subject = subject || ''
+        this.formValues.content = content || ''
+      }
+    }
+  },
   props: {
     showHeader: {
       type: Boolean,
@@ -165,6 +177,14 @@ export default {
       } else {
         this.$emit('updateForm', this.formValues)
         return this.formValues
+      }
+    },
+    getFormValues() {
+      const result = this.$refs.refForm.validate()
+      if (result) {
+        return this.formValues
+      } else {
+        return false
       }
     },
     handleEmailAddressChange(value) {

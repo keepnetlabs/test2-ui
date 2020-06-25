@@ -1,19 +1,13 @@
 <template>
   <div>
-    <v-overlay
-      id="first-time__overlay"
-      fixed
-      :opacity="0.46"
-      :value="showAddInConfiguration"
-      :z-index="999"
-      color="white"
-      class="first-time__overlay"
-    >
-      <add-in-configuration
-        @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
-        @getPhishingReport="getReport"
-      />
-    </v-overlay>
+    <add-in-configuration
+      @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
+      @getPhishingReport="getReport"
+      v-if="showAddInConfiguration"
+      :status="showAddInConfiguration"
+      @closeOverlay="showAddInConfiguration = false"
+    />
+
     <v-container tag="div" id="first-time" fluid>
       <v-list-item class="first-time__list-item">
         <v-list-item-content>
@@ -34,7 +28,7 @@
         <v-list-item-content>
           <div class="first-time__button-container">
             <v-btn
-              @click="changeAddInConfigurationStatus"
+              @click="changeAddInConfigurationStatus(true)"
               rounded
               class="white--text first-time__btn-util"
               color="#2196f3"
@@ -79,7 +73,6 @@
 <script>
 import AddInConfiguration from '../AddInConfiguration'
 import Logos from '../Logos'
-
 export default {
   components: {
     AddInConfiguration,

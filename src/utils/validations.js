@@ -11,6 +11,12 @@ export function maxLength(value, length, message) {
   return value.length < length || message
 }
 
+export function minLength(value, length, message) {
+  //length patlamasın diye.
+  value = getValue(value)
+  return value.length > length || message
+}
+
 export function mail(value, message) {
   value = getValue(value)
   return !value || /\S+@\S+\.\S+/gi.test(value) || message

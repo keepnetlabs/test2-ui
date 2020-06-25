@@ -67,6 +67,7 @@
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :sizeable="true"
+                :isDownloadable="false"
               />
             </div>
           </v-tab-item>
@@ -80,7 +81,11 @@
                 <div class="d-flex">
                   <p class="mr-6 attachment-name">Attachment Name</p>
                   <p class="mr-6 wrf">{{ attachment.name }}</p>
-                  <a :href="attachment.name" class="mr-6 cursor-pointer download">
+                  <a
+                    :href="attachment.name"
+                    v-if="attachment.downloadUrl"
+                    class="mr-6 cursor-pointer download"
+                  >
                     <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
                     Download file
                   </a>
@@ -167,9 +172,19 @@
                         >{{ analysis.result }}</span
                       >
                       <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons">mdi-attachment</v-icon>
-                        <v-icon color="#757575" class="selection-icons">mdi-pound</v-icon>
-                        <v-icon color="#e0e0e0" class="selection-icons">mdi-file</v-icon>
+                        <v-icon color="#757575" class="selection-icons" v-if="false"
+                          >mdi-attachment</v-icon
+                        >
+                        <v-icon
+                          :color="analysis.isSendFileHash ? '#757575' : '#e0e0e0'"
+                          class="selection-icons"
+                          >mdi-pound</v-icon
+                        >
+                        <v-icon
+                          :color="analysis.isSendFile ? '#757575' : '#e0e0e0'"
+                          class="selection-icons"
+                          >mdi-file</v-icon
+                        >
                       </span>
                       <a v-if="false">DETAILS</a>
                     </div>
@@ -204,7 +219,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
     content: attr(data-title);
     position: absolute;
-    padding:5px 16px;
+    padding: 5px 16px 5px 36px;
     bottom: -1.6em;
     left: 100%;
     white-space: nowrap;
@@ -222,7 +237,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     position: relative;
 }
 .malicious-style {
-  background-color: #f3e1e5 !important;
+
   color: #bb2a45 !important;
   text-decoration: underline !important;
 }
@@ -254,11 +269,6 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 .red-malicious-alert::before {
   border: unset !important;
 }
-
-
-.malicious-style  .red-malicious-alert:not(:first-child) {
-    display: none !important;
-  }
  `
 })
 import Datatable from '../../components/DataTable'
@@ -335,7 +345,7 @@ export default {
     },
     selectEvent: {
       clipboard: true,
-      download: true
+      download: false
     },
     tableData: []
   }),
@@ -361,8 +371,35 @@ export default {
           if (response.data.data.urls.length) response.data.data.urls[2].analysisEngine = 'fffff'
           this.mailDetails = response.data.data
           this.tableData = this.mailDetails.urls
-          console.log(this.tableData)
-        })
+          const urls = this.mailDetails.urls
+          setTimeout(function () {
+            for (let a of urls) {
+              const els = document
+                .getElementById('sframe')
+                .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
+              for (let i = 0, l = els.length; i < l; i++) {
+                const el = els[i]
+                el.setAttribute('target', '_blank')
+                el.setAttribute('data-title', 'This link has been reported as a phishing')
+                /*if (!a.IsShow) {
+                  if (!el.hasChildNodes()) {
+                    el.innerHTML = 'hidden by owner'
+                  } else {
+                    el.lastChild.innerHTML = 'hidden by owner'
+                  }
+                  el.setAttribute('href', '#')
+                }*/
+                //if (a) {
+                el.classList.add('malicious-style')
+                const iEl = document.createElement('i')
+                iEl.className +=
+                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                el.appendChild(iEl)
+                // }
+              }
+            }
+          })
+        }, 100)
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -1586,7 +1623,6 @@ export default {
   }
 
   .malicious-style {
-    background-color: #f3e1e5 !important;
     color: #bb2a45 !important;
     text-decoration: underline !important;
   }
@@ -1620,7 +1656,7 @@ export default {
 
   .malicious-style {
     .red-malicious-alert:not(:first-child) {
-      display: none !important;
+      display: block !important;
     }
   }
 }

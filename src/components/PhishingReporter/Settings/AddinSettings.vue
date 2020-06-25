@@ -246,6 +246,13 @@ export default {
       } else {
         return false
       }
+    },
+    getFormValues() {
+      if (this.$refs.refForm.validate()) {
+        return this.formValues
+      } else {
+        return false
+      }
     }
   },
   created() {

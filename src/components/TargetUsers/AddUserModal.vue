@@ -102,19 +102,7 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="jobTitle">Job Title</label>
-          <v-text-field
-            placeholder="Enter job title"
-            outlined
-            dense
-            v-model="formValues.jobTitle"
-            id="department"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
+
       <v-list-item class="add-user-overlay__list-item">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="priority">Priority</label>
@@ -195,7 +183,6 @@ export default {
         email: '',
         department: '',
         priority: 'Medium',
-        jobTitle: '',
         customFields: [],
         isActive: true
       },
@@ -258,7 +245,6 @@ export default {
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
-        console.log('data', data)
         this.autoCompleteItems = data
       })
     }

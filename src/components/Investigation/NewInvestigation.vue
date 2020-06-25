@@ -56,7 +56,7 @@
                 <div class="target-users-select__input-area">
                   <v-combobox
                     :items="[]"
-                    :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                    :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
                     class="edit-select standard-height"
                     item-text="name"
@@ -72,7 +72,7 @@
                   ></v-combobox>
                   <v-combobox
                     :items="targetUsersList"
-                    :label="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                    :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
                     class="edit-select target-users-select-multi"
                     v-model="targetUsersValue"
@@ -91,7 +91,7 @@
                   <v-combobox
                     :items="[]"
                     v-if="targetUserType == 'SpecificUsers'"
-                    label="Enter Email Addresses"
+                    placeholder="Enter Email Addresses"
                     item-text="name"
                     multiple
                     dense
@@ -116,7 +116,7 @@
                     <v-select
                       :items="filterListOption"
                       v-model="list.option"
-                      label="Select filter"
+                      placeholder="Select filter"
                       outlined
                       class="edit-select standard-height"
                       required
@@ -268,7 +268,7 @@
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
-                  label="3 Days"
+                  placeholder="3 Days"
                 ></v-select>
               </v-list-item-content>
             </v-list-item>
@@ -286,7 +286,7 @@
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"
-                  label="Delete Email"
+                  placeholder="Delete Email"
                 ></v-select>
               </v-list-item-content>
             </v-list-item>
@@ -1050,11 +1050,9 @@ export default {
       }
 
       i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
-        font-size: 20px !important;
       }
 
       i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
-        font-size: 20px !important;
       }
     }
 
@@ -1100,6 +1098,11 @@ export default {
 
     .v-label--active {
       top: 8px !important;
+    }
+
+    &:not(.v-input--is-focused).v-select--chips input {
+      max-height: 15px;
+      padding: 0;
     }
   }
 
