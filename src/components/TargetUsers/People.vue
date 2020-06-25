@@ -22,6 +22,12 @@
       @closeImportUsersFromFileModal="isWantToShowImportUsersFromFileModal = false"
       v-if="isWantToShowImportUsersFromFileModal"
     />
+    <custom-fields-modal
+      :status="isWantToShowCustomFieldsModal"
+      @closeCustomFieldsModal="isWantToShowCustomFieldsModal = false"
+      v-if="isWantToShowCustomFieldsModal"
+    />
+
     <datatable
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -62,6 +68,12 @@
           </v-list>
         </v-menu>
       </template>
+
+      <template v-slot:settings-popup-body>
+        <div class="edit-fields" @click="handleEditFieldsClick">
+          EDIT FIELDS
+        </div>
+      </template>
     </datatable>
   </div>
 </template>
@@ -78,10 +90,12 @@ import {
   getStoreValue,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
+import CustomFieldsModal from './CustomFieldsModal'
 
 export default {
   name: 'People',
   components: {
+    CustomFieldsModal,
     ImportUsersFromFileModal,
     DeleteUserModal,
     Datatable,
@@ -96,6 +110,7 @@ export default {
     isWantToShowAddUsersModal: false,
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
+    isWantToShowCustomFieldsModal: false,
     items: [
       { title: 'Click Me1' },
       { title: 'Click Me2' },
@@ -148,16 +163,6 @@ export default {
           width: 200
         },
         {
-          property: PROPERTY_STORE.TITLE,
-          align: 'left',
-          editable: false,
-          label: 'Job Title',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 250
-        },
-        {
           property: PROPERTY_STORE.PRIORITY,
           align: 'center',
           editable: false,
@@ -167,16 +172,6 @@ export default {
           type: 'priority',
           width: 125,
           fullWidth: true
-        },
-        {
-          property: 'progress',
-          align: 'left',
-          editable: false,
-          label: 'Date Added',
-          sortable: true,
-          show: true,
-          type: 'progress',
-          width: 150
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -243,6 +238,9 @@ export default {
         default:
           break
       }
+    },
+    handleEditFieldsClick() {
+      this.isWantToShowCustomFieldsModal = true
     },
     setCellClassName(obj) {
       if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
@@ -338,6 +336,9 @@ export default {
     this.callForTargetUsers()
 
      */
+  },
+  mounted() {
+    this.$refs.refPeopleTable.loadWithDataArray([{}])
   }
 }
 </script>
@@ -349,6 +350,17 @@ export default {
     font-size: 14px;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+  }
+  .edit-fields {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    margin-top: 10px;
+    cursor: pointer;
+    color: #2196f3;
   }
   .btn-add {
     width: 36px;

@@ -247,8 +247,16 @@ export default {
           .catch((error) => {})
       })
     },
+    callForDeletePhishingReporterUser() {
+      deletePhishingReporterUser(this.selectedRow.resourceId)
+        .then((response) => {
+          this.callForPhishingReporterUser()
+          this.$emit('callForPhishingReporterSummary')
+        })
+        .catch((error) => {})
+    },
     deleteUser() {
-      debugger
+      this.callForDeletePhishingReporterUser()
       this.isWantToDelete = false
     }
   },

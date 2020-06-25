@@ -1,209 +1,193 @@
 <template>
   <div>
-    <v-overlay
-      :opacity="0.46"
-      :value="showModal"
-      :z-index="999"
-      absolute
-      fixed
-      class="download-add-in"
+    <app-modal
+      :status="status"
+      @closeOverlay="$emit('closeOverlay')"
+      icon-name="mdi-domain"
+      title="Phishing Reporter Add-in Configuration"
     >
-      <v-card
-        class="overlay__container"
-        light
-        style="border-radius: 12px !important; padding: 24px 24px 16px 24px !important;"
-      >
-        <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Download Add-in</v-list-item-title>
-            <v-list-item-subtitle class="v-card-sub-header"
-              >You can download the add-in below
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-          <div class="logos-buttons__container">
-            <logos wrapperClasses="mt-10 logos" />
-            <div class="buttons__container">
-              <v-btn class="white--text btn-util" color="#2196f3" rounded>
-                <v-icon left>mdi-download</v-icon>
-                Download
-              </v-btn>
-              <v-btn class="white--text btn-util" color="#2196f3" rounded>
-                <v-icon left>mdi-download</v-icon>
-                Download
-              </v-btn>
-              <v-btn class="white--text btn-util" color="#2196f3" rounded>
-                <v-icon left>mdi-download</v-icon>
-                Download
-              </v-btn>
-            </div>
-          </div>
-        </v-list-item>
-        <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
-          <div class="link__container">
-            <img src="../../assets/img/copy-icon.png" />
-            <div class="link__text ml-2">Copy Link</div>
-          </div>
-        </v-list-item>
-
-        <v-list-item class="px-0 d-flex align-end mt-6 add-in-configuration__list-item">
-          <div class="link__header">Diagnostic Tool</div>
-        </v-list-item>
-        <v-list-item class="px-0 d-flex align-start add-in-configuration__list-item">
-          <div class="link__sub-header">Only for Outlook Desktop (Windows OS only)</div>
-        </v-list-item>
-        <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
-          <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
-        </v-list-item>
-        <v-list-item class="px-0 add-in-configuration__list-item">
-          <v-btn class="white--text btn-util mt-n2" color="#2196f3" rounded>
-            <v-icon left>mdi-download</v-icon>
-            Download
-          </v-btn>
-        </v-list-item>
-        <v-list-item class="px-0 mt-7 add-in-configuration__list-item">
-          <div class="px-0 overlay__footer">
-            <a
-              class="overlay__footer-text"
-              href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-              target="_blank"
-            >
-              Installation and configuration guide
-            </a>
-            <div @click="handleContinue" class="overlay__footer-text">
-              Close
-            </div>
-          </div>
-        </v-list-item>
-      </v-card>
-    </v-overlay>
-
-    <v-container class="add-in-configuration" fluid id="add-in-configuration" tag="div">
-      <div class="add-in-configuration__container">
-        <v-card light>
-          <div class="add-in-configuration__card">
+      <template v-slot:overlay-body>
+        <v-overlay :value="showModal" :z-index="9999" absolute fixed class="download-add-in">
+          <v-card
+            class="overlay__container"
+            light
+            style="border-radius: 12px !important; padding: 24px 24px 16px 24px !important;"
+          >
             <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
               <div class="v-btn v-cart-icon-wrapper">
-                <v-icon class="ml-2" color="blue" left medium>mdi-domain</v-icon>
+                <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
               </div>
               <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline"
-                  >Phishing Reporter Add-in Configuration
-                </v-list-item-title>
+                <v-list-item-title class="v-card-headline">Download Add-in</v-list-item-title>
+                <v-list-item-subtitle class="v-card-sub-header"
+                  >You can download the add-in below
+                </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-            <v-stepper v-model="step" class="k-stepper">
-              <v-stepper-header class="k-stepper__header">
-                <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
-                  >Add-in Settings</v-stepper-step
+            <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
+              <div class="logos-buttons__container">
+                <logos wrapperClasses="mt-10 logos" />
+                <div class="buttons__container">
+                  <v-btn class="white--text btn-util" color="#2196f3" rounded>
+                    <v-icon left>mdi-download</v-icon>
+                    Download
+                  </v-btn>
+                  <v-btn class="white--text btn-util" color="#2196f3" rounded>
+                    <v-icon left>mdi-download</v-icon>
+                    Download
+                  </v-btn>
+                  <v-btn class="white--text btn-util" color="#2196f3" rounded>
+                    <v-icon left>mdi-download</v-icon>
+                    Download
+                  </v-btn>
+                </div>
+              </div>
+            </v-list-item>
+            <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
+              <div class="link__container">
+                <img src="../../assets/img/copy-icon.png" />
+                <div class="link__text ml-2">Copy Link</div>
+              </div>
+            </v-list-item>
+
+            <v-list-item class="px-0 d-flex align-end mt-6 add-in-configuration__list-item">
+              <div class="link__header">Diagnostic Tool</div>
+            </v-list-item>
+            <v-list-item class="px-0 d-flex align-start add-in-configuration__list-item">
+              <div class="link__sub-header">Only for Outlook Desktop (Windows OS only)</div>
+            </v-list-item>
+            <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
+              <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
+            </v-list-item>
+            <v-list-item class="px-0 add-in-configuration__list-item">
+              <v-btn class="white--text btn-util mt-n2" color="#2196f3" rounded>
+                <v-icon left>mdi-download</v-icon>
+                Download
+              </v-btn>
+            </v-list-item>
+            <v-list-item class="px-0 mt-7 add-in-configuration__list-item">
+              <div class="px-0 overlay__footer">
+                <a
+                  class="overlay__footer-text"
+                  href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+                  target="_blank"
                 >
-                <v-divider class="k-stepper__divider" />
-                <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
-                  >Email Settings</v-stepper-step
-                >
-                <v-divider class="k-stepper__divider" />
-                <v-stepper-step class="k-stepper__step" :step="3">Other Settings</v-stepper-step>
-              </v-stepper-header>
-              <v-stepper-items class="k-stepper__items">
-                <v-stepper-content class="k-stepper__content" :step="1">
-                  <v-list-item class="pl-0 add-in-configuration__list-item">
-                    <v-list-item-content>
-                      <v-list-item-title class="add-in-configuration__title">
-                        Add-in Settings
-                      </v-list-item-title>
-                      <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
-                        General add-in settings
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <addin-settings
-                    :showFooter="false"
-                    @getFormValues="getAddinSettingsValues"
-                    ref="refAddInSettings"
-                    :inModal="true"
-                    :showHeader="false"
-                  />
-                </v-stepper-content>
-                <v-stepper-content class="k-stepper__content" :step="2">
-                  <v-list-item class="pl-0 add-in-configuration__list-item">
-                    <v-list-item-content>
-                      <v-list-item-title class="add-in-configuration__title">
-                        Email Settings
-                      </v-list-item-title>
-                      <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
-                        Reported emails will be sent to specified recipients
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <email-settings
-                    :showFooter="false"
-                    :showHeader="false"
-                    @getFormValues="getEmailSettingsValues"
-                    ref="refEmailSettings"
-                  />
-                </v-stepper-content>
-                <v-stepper-content class="k-stepper__content" :step="3">
-                  <v-list-item class="pl-0 add-in-configuration__list-item">
-                    <v-list-item-content>
-                      <v-list-item-title class="add-in-configuration__title">
-                        Other Settings
-                      </v-list-item-title>
-                      <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
-                        Additional settings for add-in and archive
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <other-settings
-                    :showFooter="false"
-                    @getFormValues="getOtherSettingsValues"
-                    ref="refOtherSettings"
-                    :inModal="true"
-                    :show-header="false"
-                  />
-                </v-stepper-content>
-              </v-stepper-items>
-            </v-stepper>
-          </div>
-          <div class="add-in-configuration__footer">
-            <v-btn @click="closeOverlay" class="add-in-configuration__footer-btn-cancel" rounded>
-              CANCEL
-            </v-btn>
-            <div class="add-in-configuration__footer__right-col">
-              <v-btn
-                @click="changeStep(-1)"
-                class="add-in-configuration__footer-btn-back mr-4"
-                rounded
-                v-if="step > 1"
-              >
-                BACK
-              </v-btn>
-              <v-btn
-                @click="changeStep(+1)"
-                class="add-in-configuration__footer-btn-next"
-                color="#2196f3"
-                rounded
-                v-if="step < 3"
-              >
-                NEXT
-              </v-btn>
-              <v-btn
-                @click="submit"
-                class="add-in-configuration__footer-btn-next"
-                color="#2196f3"
-                rounded
-                v-if="step === 3"
-              >
-                SAVE
-              </v-btn>
-            </div>
-          </div>
-        </v-card>
-      </div>
-    </v-container>
+                  Installation and configuration guide
+                </a>
+                <div @click="handleContinue" class="overlay__footer-text">
+                  Close
+                </div>
+              </div>
+            </v-list-item>
+          </v-card>
+        </v-overlay>
+
+        <v-stepper v-model="step" class="k-stepper">
+          <v-stepper-header class="k-stepper__header">
+            <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
+              >Add-in Settings</v-stepper-step
+            >
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
+              >Email Settings</v-stepper-step
+            >
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step class="k-stepper__step" :step="3">Other Settings</v-stepper-step>
+          </v-stepper-header>
+          <v-stepper-items class="k-stepper__items">
+            <v-stepper-content class="k-stepper__content" :step="1">
+              <v-list-item class="pl-0 add-in-configuration__list-item">
+                <v-list-item-content>
+                  <v-list-item-title class="add-in-configuration__title">
+                    Add-in Settings
+                  </v-list-item-title>
+                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
+                    General add-in settings
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <addin-settings
+                :showFooter="false"
+                @getFormValues="getAddinSettingsValues"
+                ref="refAddInSettings"
+                :inModal="true"
+                :showHeader="false"
+              />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="2">
+              <v-list-item class="pl-0 add-in-configuration__list-item">
+                <v-list-item-content>
+                  <v-list-item-title class="add-in-configuration__title">
+                    Email Settings
+                  </v-list-item-title>
+                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
+                    Reported emails will be sent to specified recipients
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <email-settings
+                :showFooter="false"
+                :showHeader="false"
+                @getFormValues="getEmailSettingsValues"
+                ref="refEmailSettings"
+              />
+            </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="3">
+              <v-list-item class="pl-0 add-in-configuration__list-item">
+                <v-list-item-content>
+                  <v-list-item-title class="add-in-configuration__title">
+                    Other Settings
+                  </v-list-item-title>
+                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
+                    Additional settings for add-in and archive
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+              <other-settings
+                :showFooter="false"
+                @getFormValues="getOtherSettingsValues"
+                ref="refOtherSettings"
+                :inModal="true"
+                :show-header="false"
+              />
+            </v-stepper-content>
+          </v-stepper-items>
+        </v-stepper>
+      </template>
+      <template v-slot:overlay-footer>
+        <v-btn @click="closeOverlay" class="add-in-configuration__footer-btn-cancel" rounded>
+          CANCEL
+        </v-btn>
+        <div class="add-in-configuration__footer__right-col">
+          <v-btn
+            @click="changeStep(-1)"
+            class="add-in-configuration__footer-btn-back mr-4"
+            rounded
+            v-if="step > 1"
+          >
+            BACK
+          </v-btn>
+          <v-btn
+            @click="changeStep(+1)"
+            class="add-in-configuration__footer-btn-next"
+            color="#2196f3"
+            rounded
+            v-if="step < 3"
+          >
+            NEXT
+          </v-btn>
+          <v-btn
+            @click="submit"
+            class="add-in-configuration__footer-btn-next"
+            color="#2196f3"
+            rounded
+            v-if="step === 3"
+          >
+            SAVE
+          </v-btn>
+        </div>
+      </template>
+    </app-modal>
   </div>
 </template>
 
@@ -215,7 +199,7 @@ import Logos from './Logos'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import { createPhishingReporter } from '../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-
+import AppModal from '../AppModal'
 export default {
   name: 'AddInConfiguration',
   components: {
@@ -223,7 +207,13 @@ export default {
     EmailSettings,
     OtherSettings,
     Logos,
-    DiagnosticTool
+    DiagnosticTool,
+    AppModal
+  },
+  props: {
+    status: {
+      type: Boolean
+    }
   },
   data() {
     return {
@@ -578,11 +568,8 @@ export default {
     width: 100%;
 
     &-text {
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       color: #2196f3;
@@ -598,7 +585,7 @@ export default {
       0 9px 46px 8px rgba(80, 80, 80, 0.12);
     overflow-y: auto;
     height: 100%;
-    max-height: 550px !important;
+    max-height: 430px !important;
 
     @media (min-width: 600px) {
       max-width: 600px !important;
@@ -650,6 +637,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0) !important;
   }
 }
 </style>

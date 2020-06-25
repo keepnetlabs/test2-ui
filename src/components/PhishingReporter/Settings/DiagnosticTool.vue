@@ -18,113 +18,8 @@
             class="diagnostic-tool__checkbox k-checkbox"
             color="#2196f3"
             label="Check and enable all disabled add-ins automatically"
-            v-model="formValues.enableAllAddIns"
+            v-model="formValues.isEnableAddIn"
           ></v-checkbox>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item
-        :class="[isInModal && 'mt-n3', isInModal && 'p-0']"
-        class="diagnostic-tool__list-item"
-      >
-        <v-list-item-content>
-          <div
-            :style="getDiagnosticToolFormStyle"
-            class="diagnostic-tool__form-container"
-            :class="[isInModal && 'mt-2']"
-          >
-            <div>
-              <v-select
-                :items="intervalItems"
-                class="diagnostic-tool__select"
-                dense
-                height="40"
-                outlined
-                placeholder="Weekly"
-                required
-                v-model="formValues.interval"
-              ></v-select>
-            </div>
-            <div class="diagnostic-tool__text diagnostic-tool__text--1">
-              on
-            </div>
-            <div>
-              <v-select
-                :items="dayItems"
-                class="diagnostic-tool__select"
-                dense
-                height="40"
-                outlined
-                placeholder="Monday"
-                required
-                v-model="formValues.day"
-              ></v-select>
-            </div>
-            <div class="diagnostic-tool__text diagnostic-tool__text--2">
-              at
-            </div>
-            <v-menu
-              ref="menu"
-              v-model="menu2"
-              :close-on-content-click="false"
-              :close-on-click="true"
-              :return-value="formValues.time"
-              transition="scale-transition"
-              bottom
-              offset-y
-              max-width="210px"
-              min-width="210px"
-            >
-              <template v-slot:activator="{ on }">
-                <div class="diagnostic-tool__textfield">
-                  <v-text-field
-                    append-icon="mdi-clock-outline"
-                    class="diagnostic-tool__list-item-text"
-                    dense
-                    height="40"
-                    outlined
-                    placeholder="01:00 PM"
-                    required
-                    v-on="on"
-                    v-model="formValues.time2"
-                  ></v-text-field>
-                </div>
-              </template>
-              <v-time-picker
-                v-model="formValues.time"
-                full-width
-                ref="refTimePicker"
-                class="k-time-picker"
-                @click:minute="handleTimePickerChange"
-                format="ampm"
-              ></v-time-picker>
-            </v-menu>
-
-            <div
-              :class="[
-                'diagnostic-tool__text diagnostic-tool__text--timezone',
-                isInModal && 'timezone-in-modal'
-              ]"
-            >
-              Timezone
-            </div>
-
-            <div>
-              <v-autocomplete
-                :class="[isInModal && 'select-in-modal']"
-                :items="timezones"
-                class="diagnostic-tool__select"
-                dense
-                item-text="displayName"
-                item-value="id"
-                height="40"
-                outlined
-                placeholder="GMT +3"
-                required
-                v-model="formValues.timezone"
-                :menu-props="{ bottom: true, offsetY: true }"
-              ></v-autocomplete>
-            </div>
-          </div>
         </v-list-item-content>
       </v-list-item>
     </div>
@@ -179,12 +74,7 @@ export default {
   data() {
     return {
       formValues: {
-        enableAllAddIns: true,
-        interval: '',
-        day: '',
-        time: '',
-        time2: '',
-        timezone: ''
+        isEnableAddIn: false
       },
       menu2: false,
       showTimePicker: false,
@@ -200,9 +90,12 @@ export default {
       return this.isInModal && { flexWrap: 'wrap', marginLeft: '16px' }
     }
   },
-  watch: {},
   methods: {
     submit() {
+      this.$emit('updateForm', this.formValues)
+      return this.formValues
+    },
+    getFormValues() {
       return this.formValues
     },
     handleTimePickerChange(value) {
@@ -216,7 +109,10 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('common/getTimezone')
+    //this.$store.dispatch('common/getTimezone')
+    if (this.formData) {
+      this.formValues.isEnableAddIn = this.formData.isEnableAddIn
+    }
   }
 }
 </script>
@@ -269,7 +165,7 @@ export default {
 
   &__checkbox {
     @media (min-width: 768px) {
-      margin-top: 16px !important;
+      margin-top: 12px !important;
     }
     @media (max-width: 768px) {
       margin-top: 9px !important;
@@ -283,7 +179,8 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
-    margin-top: 80px;
+    margin-top: 20px;
+    margin-bottom: 6px;
     @media (max-width: 768px) {
       flex-direction: column;
       align-items: center;
@@ -292,13 +189,10 @@ export default {
   }
 
   &__link {
-    font-family: 'Open Sans', sans-serif !important;
     text-transform: uppercase;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
     color: #2196f3;
@@ -320,14 +214,10 @@ export default {
   }
 
   &__list-item {
-    font-family: 'Open Sans', sans-serif !important;
     padding: 0;
     &-text {
-      font-family: 'Open Sans', sans-serif !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
 
       &--special {
         &-1 {
@@ -345,22 +235,16 @@ export default {
       overflow: visible;
     }
     &-header {
-      font-family: 'Open Sans', sans-serif !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
       font-size: 20px;
       font-weight: 600;
       line-height: 1.2;
     }
 
     &-sub-header {
-      font-family: 'Open Sans', sans-serif !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
-      font-stretch: normal;
-      font-style: normal;
       font-size: 14px;
       font-weight: normal;
       line-height: 1.5;
@@ -377,10 +261,6 @@ export default {
       margin-left: 32px !important;
       margin-right: 16px !important;
       font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      //line-height: 1.5;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
       @media (max-width: 768px) {
@@ -391,11 +271,8 @@ export default {
   }
 
   &__btn-util {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
     text-align: center;

@@ -123,7 +123,7 @@
             </v-tabs>
             <v-tabs-items v-model="tab" class="phishing-reporter__tabs-items">
               <v-tab-item>
-                <users />
+                <users @callForPhishingReporterSummary="getPhishingReportSummary()" />
               </v-tab-item>
               <v-tab-item>
                 <component
@@ -224,7 +224,6 @@ export default {
       }
     },
     getDates() {
-      const dateObj = { startDate: '', endDate: '' }
       const today = new Date()
       const day = today.getDate()
       const month = today.getMonth() + 1
@@ -681,7 +680,6 @@ export default {
             }
 
             &--text-header {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
               font-weight: 600;
               font-stretch: normal;
@@ -693,7 +691,6 @@ export default {
             }
 
             &--text-content {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
               font-weight: normal;
               font-stretch: normal;
@@ -710,7 +707,6 @@ export default {
 
               button {
                 border-radius: 18px;
-                font-family: 'Open Sans', sans-serif;
                 font-size: 14px;
                 font-weight: 600;
                 font-stretch: normal;
@@ -727,11 +723,8 @@ export default {
           &--header {
             margin-top: 25px;
             margin-bottom: 0;
-            font-family: 'Open Sans', sans-serif;
             font-size: 12px;
             font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
             line-height: normal;
             letter-spacing: normal;
             color: rgba(0, 0, 0, 0.87);
@@ -739,11 +732,8 @@ export default {
 
           &--list {
             .v-chip {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
               font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.71;
               letter-spacing: normal;
               text-align: center;
@@ -762,11 +752,9 @@ export default {
           &--header {
             margin-top: 25px;
             margin-bottom: 0;
-            font-family: 'Open Sans', sans-serif;
             font-size: 12px;
             font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
+
             line-height: normal;
             letter-spacing: normal;
             color: rgba(0, 0, 0, 0.87);
@@ -774,11 +762,7 @@ export default {
 
           &--list {
             .v-chip {
-              font-family: 'Open Sans', sans-serif;
               font-size: 14px;
-              font-weight: normal;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.71;
               letter-spacing: normal;
               text-align: center;

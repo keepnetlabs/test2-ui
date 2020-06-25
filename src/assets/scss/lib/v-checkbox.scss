@@ -3,6 +3,9 @@
     font-size: 14px;
     line-height: 21px;
     color: rgba(0, 0, 0, 0.87) !important;
+    &--is-disabled{
+      opacity: .5 !important;
+    }
   }
   &.v-input--selection-controls {
     margin-top: 0;

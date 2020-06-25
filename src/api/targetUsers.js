@@ -38,3 +38,15 @@ export function updateTargetGroup(payload) {
 export function deleteTargetGroup(payload) {
   return testRequest.delete('/target-groups/n2sdsbsPU4Yt')
 }
+
+export function getTargetUserCustomFieldsByCompanyId() {
+  return testRequest.get(`/custom-fields/company`)
+}
+
+export function createTargetUserCustomField(payload) {
+  return testRequest.post(`/custom-fields`, payload)
+}
+
+export function updateTargetUserCustomField(payload) {
+  return testRequest.put(`/custom-fields/${payload.resourceId}`, payload)
+}

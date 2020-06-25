@@ -71,6 +71,7 @@
             {{ col.label }}
             <v-switch v-model="col.show" color="#2196f3" />
           </div>
+          <slot name="settings-popup-body"> </slot>
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
           <div class="popup-row">
             First Column

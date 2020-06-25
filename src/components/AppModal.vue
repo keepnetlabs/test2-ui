@@ -105,7 +105,7 @@ export default {
     @media (max-width: 500px) {
       padding: 10px 24px 68px 24px !important;
     }
-    box-shadow: none;
+    box-shadow: none !important;
   }
   &__title {
     white-space: normal;

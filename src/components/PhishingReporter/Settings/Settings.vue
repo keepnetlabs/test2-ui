@@ -17,16 +17,32 @@
     </v-tabs>
     <v-tabs-items v-model="tab" class="k-sub-tabs__container">
       <v-tab-item>
-        <addin-settings :formData="formData" @updateForm="callForCreatePhishingReporter" />
+        <addin-settings
+          ref="refAddinSettings"
+          :formData="formData"
+          @updateForm="callForCreatePhishingReporter"
+        />
       </v-tab-item>
       <v-tab-item>
-        <email-settings :formData="formData" @updateForm="callForCreatePhishingReporter" />
+        <email-settings
+          ref="refEmailSettings"
+          :formData="formData"
+          @updateForm="callForCreatePhishingReporter"
+        />
       </v-tab-item>
       <v-tab-item>
-        <other-settings :formData="formData" @updateForm="callForCreatePhishingReporter" />
+        <other-settings
+          :formData="formData"
+          ref="refOtherSettings"
+          @updateForm="callForCreatePhishingReporter"
+        />
       </v-tab-item>
       <v-tab-item>
-        <diagnostic-tool :formData="formData" @updateForm="callForCreatePhishingReporter" />
+        <diagnostic-tool
+          ref="refDiagnosticTool"
+          :formData="formData"
+          @updateForm="callForCreatePhishingReporter"
+        />
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -64,10 +80,24 @@ export default {
       this.tab = status
     },
     callForCreatePhishingReporter(updatedValues) {
+      const addinSettings =
+        this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
+      const emailSettings =
+        this.$refs.refEmailSettings && this.$refs.refEmailSettings.getFormValues()
+      const otherSettings =
+        this.$refs.refOtherSettings && this.$refs.refOtherSettings.getFormValues()
+      const diagnosticTool =
+        this.$refs.refDiagnosticTool && this.$refs.refDiagnosticTool.getFormValues()
+
       const newFormData = {
         ...this.formData,
+        ...addinSettings,
+        ...emailSettings,
+        ...otherSettings,
+        ...diagnosticTool,
         ...updatedValues
       }
+
       const formData = new FormData()
       Object.keys(newFormData).map((key) => {
         formData.append(

@@ -30,7 +30,7 @@
           </div>
           <div>
             <v-checkbox
-              v-model="formValues.enableProxy"
+              v-model="formValues.isEnableProxy"
               class="other-settings__checkbox k-checkbox"
               color="#2196f3"
               label="Enable proxy"
@@ -261,7 +261,7 @@ export default {
     return {
       formValues: {
         isDeleteEmailBeforeAnalysis: false,
-        enableProxy: false,
+        isEnableProxy: false,
         isOnPremise: false,
         apiUrl: '',
         companyId: '',
@@ -287,6 +287,13 @@ export default {
         return false
       }
     },
+    getFormValues() {
+      if (this.$refs.refForm.validate()) {
+        return this.formValues
+      } else {
+        return false
+      }
+    },
     handleEnterpriseVaultChange(value) {
       this.enterpriseVaultDisabled = !value
     }
@@ -305,7 +312,8 @@ export default {
         apiUrl,
         isOnPremise,
         isDeleteEmailBeforeAnalysis,
-        enableProxy
+        enableProxy,
+        isEnableProxy
       } = this.formData
       this.formValues.companyId = companyId || localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
@@ -318,6 +326,7 @@ export default {
       this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
+      this.formValues.isEnableProxy = isEnableProxy || false
       this.formValues.isOnPremise = isOnPremise || ''
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
       this.formValues.enableProxy = enableProxy || ''

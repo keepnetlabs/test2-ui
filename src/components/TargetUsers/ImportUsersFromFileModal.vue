@@ -27,9 +27,7 @@
                 </v-list-item-content>
               </v-list-item>
               <v-list-item>
-                <v-list-item-content>
-                  asas
-                </v-list-item-content>
+                <v-list-item-content> </v-list-item-content>
               </v-list-item>
             </div>
           </v-stepper-content>
