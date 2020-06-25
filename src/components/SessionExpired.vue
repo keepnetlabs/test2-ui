@@ -1,6 +1,6 @@
 <template>
   <div class="session-expired">
-    <v-card class="pb-5">
+    <v-card light class="pb-5">
       <v-list-item>
         <v-list-item-content class="d-flex flex-wrap flex-row mt-10 pt-10">
           <v-list-item-title class="v-card-headline">Session Expired</v-list-item-title>
@@ -9,18 +9,11 @@
           >
         </v-list-item-content>
       </v-list-item>
-      <v-container>
+      <v-col>
         <div class="login-user-pass-wrapper pt-10">
           <v-row align="center" justify="center">
             <v-col md="6" sm="12">
-              <v-text-field
-                dark
-                color="#2196f3"
-                v-model="userName"
-                style="color: black;"
-                outlined
-                label="Username"
-              ></v-text-field>
+              <v-text-field v-model="userName" outlined label="Username"></v-text-field>
             </v-col>
           </v-row>
 
@@ -34,7 +27,6 @@
                 label="Password"
                 hint="At least 8 characters"
                 v-model="password"
-                class="input-group--focused black--text"
                 outlined
                 @click:append="show1 = !show1"
               ></v-text-field>
@@ -44,8 +36,6 @@
             <v-col class="pt-1" md="6" xs="12">
               <div class="login-remember d-flex">
                 <v-checkbox
-                  class="black--text"
-                  dense
                   v-model="rememberMe"
                   color="#2196f3"
                   :label="`Remember me`"
@@ -58,7 +48,7 @@
             </v-col>
           </v-row>
         </div>
-      </v-container>
+      </v-col>
       <v-card-actions class="justify-center mt-0 pt-5 mb-8">
         <v-btn color="blue" class="pl-4 white--text" rounded @click="onLoginClicked">
           CONTINUE
@@ -160,102 +150,6 @@ export default {
   }
 
   ///LOGIN
-  .theme--dark.v-input:not(.v-input--is-disabled) input,
-  .theme--dark.v-input:not(.v-input--is-disabled) textarea {
-    color: rgba(0, 0, 0, 0.54) !important;
-  }
-
-  .reset-password-wrapper {
-    .v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
-      > .v-input__control
-      > .v-input__slot {
-      box-shadow: none !important;
-    }
-
-    .v-input {
-      // border: solid 1px rgba(0, 0, 0, 0.16);
-      border-radius: 6px;
-      height: 43px;
-      padding-left: 12px;
-      padding-right: 10px;
-    }
-
-    .v-text-field.v-text-field--solo .v-input__control {
-      min-height: 20px !important;
-      padding: 0;
-    }
-  }
-
-  .forgot-password {
-    align-items: center;
-    text-decoration: none;
-    color: rgba(0, 0, 0, 0.87) !important;
-    cursor: pointer;
-    padding-top: 4px;
-  }
-
-  .login-remember {
-    .v-input--checkbox {
-      border: none;
-      font-size: 11px;
-      font-weight: normal;
-      font-style: normal;
-      font-stretch: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      text-align: center;
-      padding-top: 0px;
-      margin-top: 0px;
-
-      label.v-label.theme--light {
-        font-size: 11px;
-      }
-
-      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
-        font-size: 20px !important;
-      }
-
-      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
-        font-size: 20px !important;
-      }
-    }
-  }
-
-  .v-text-field > .v-input__control > .v-input__slot:after {
-    border-color: currentColor;
-    border-style: none;
-    border-width: unset;
-    -webkit-transform: scaleX(0);
-    transform: scaleX(0);
-  }
-
-  .v-input .v-label {
-    height: 21px;
-    line-height: 28px;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-
-  .v-input--is-focused {
-    border: 0px;
-  }
-
-  .v-input__slot {
-    margin-bottom: -1px;
-  }
-
-  .v-input__slot:before {
-    border-style: none !important;
-    border-width: 0px !important;
-  }
-
-  .v-input {
-    border: solid 1px rgba(0, 0, 0, 0.16);
-    border-radius: 6px;
-    font-size: 13px;
-    height: 40px;
-    padding-left: 14px;
-    padding-right: 10px;
-  }
 
   .login-desc {
     font-family: 'Open Sans', sans-serif !important;
@@ -283,16 +177,8 @@ export default {
     text-align: center;
     color: #2196f3;
   }
-  .v-input--selection-controls__input {
-    border: #2196f3 2px solid;
-    border-radius: 5px;
-  }
   .v-icon.v-icon {
     text-indent: -2px !important;
-  }
-  .v-input--selection-controls__ripple:before {
-    left: -3px !important;
-    right: 2px !important;
   }
 
   .v-sheet {
@@ -304,9 +190,6 @@ export default {
     padding-left: 24px;
     padding-right: 24px;
     padding-bottom: 80px;
-  }
-  .theme--dark.v-input:not(.v-input--is-disabled) input {
-    color: black !important;
   }
 }
 </style>
