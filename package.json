@@ -22,6 +22,7 @@
     "jszip": "^3.4.0",
     "pdfmake": "^0.1.63",
     "print-js": "^1.0.63",
+    "query-builder-vue": "^0.2.6",
     "v-offline": "^1.1.0",
     "vue": "^2.6.10",
     "vue-analytics": "^5.22.1",

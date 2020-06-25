@@ -104,7 +104,6 @@
                       <v-col class="pl-0 pt-1 pr-5 pb-0" md="6" xs="12">
                         <div class="login-remember d-flex">
                           <v-checkbox
-                            dense
                             v-model="rememberMe"
                             :label="`Remember`"
                             class="remember-me-check"
@@ -449,6 +448,7 @@ export default {
     text-decoration: none;
     color: black;
     cursor: pointer;
+    line-height: 38px;
   }
 
   .login-remember {
