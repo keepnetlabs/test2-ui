@@ -4,7 +4,7 @@
       <v-icon left medium color="#757575">mdi-menu</v-icon>
       <v-text-field
         class="table-field__input"
-        v-model="values.name"
+        v-model="item.name"
         outlined
         dense
         :rules="[
@@ -15,13 +15,13 @@
       ></v-text-field>
       <v-select
         class="mx-2 table-field__input"
-        v-model="values.fieldDataType"
+        v-model="item.fieldDataType"
         :items="fieldItems"
         dense
         outlined
       />
       <v-checkbox
-        v-model="values.checkbox"
+        v-model="item.checkbox"
         color="#2196f3"
         class="ml-1"
         label="Required"
@@ -51,27 +51,15 @@ export default {
     return {
       fieldItems: [
         {
-          text: 'Text (alphanumeric)',
+          text: 'Text',
           value: 'String'
         },
         {
-          text: 'Text (only letters)',
-          value: 'String'
-        },
-        {
-          text: 'Text (only digits)',
+          text: 'Number',
           value: 'Number'
         },
         {
-          text: 'Email',
-          value: 'String'
-        },
-        {
           text: 'Date',
-          value: 'DateTime'
-        },
-        {
-          text: 'Date and Time',
           value: 'DateTime'
         },
         {
@@ -79,13 +67,6 @@ export default {
           value: 'Boolean'
         }
       ],
-      values: {
-        resourceId: null,
-        name: '',
-        fieldDataType: '',
-        fieldOwner: '',
-        checkbox: ''
-      },
       validations: {
         required,
         minLength,
@@ -95,17 +76,10 @@ export default {
   },
   methods: {
     handleDelete() {
-      this.$emit('deleteTableField')
+      this.$emit('deleteTableField', this.values)
     }
   },
-  created() {
-    if (this.item) {
-      const { resourceId, name, fieldDataType } = this.item
-      this.values.resourceId = resourceId
-      this.values.name = name
-      this.values.fieldDataType = fieldDataType
-    }
-  }
+  created() {}
 }
 </script>
 

@@ -5,8 +5,28 @@
     class-name="custom-fields-overlay"
     icon-name="mdi-file-excel"
     title="Edit Fields - Target Users / People"
+    ref="refAppModal"
   >
     <template v-slot:overlay-body>
+      <app-dialog
+        :status="isWantToDelete"
+        icon="mdi-alert"
+        title="Delete Custom Field"
+        subtitle="Do you want to change status of this custom field?"
+        @changeStatus="isWantToDelete = false"
+      >
+        <template v-slot:app-dialog-body> This custom field status is will be changed ! </template>
+        <template v-slot:app-dialog-footer>
+          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+            <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"
+              >CANCEL</v-btn
+            >
+            <v-btn class="users__button" text color="#2196f3" @click="deleteCustomField">
+              {{ getAppDialogButtonText }}</v-btn
+            >
+          </div>
+        </template>
+      </app-dialog>
       <v-list-item class="mt-8 mb-6 custom-fields-overlay__list-item">
         <v-list-item-content>
           <v-list-item-title>
@@ -17,19 +37,9 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item :key="index" v-for="(item, index) in fields">
-        <v-list-item-content>
-          <table-field :item="item" @deleteTableField="handleDeleteTableField(index)" />
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="custom-fields-overlay__list-item mt-2">
-        <v-list-item-content>
-          <v-list-item-title class="custom-fields-overlay__title">Custom Fields</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
       <v-list-item :key="index" v-for="(item, index) in customFields">
         <v-list-item-content>
-          <table-field isDeleteable @deleteTableField="handleDeleteTableField(index)" />
+          <table-field isDeleteable :item="item" @deleteTableField="handleDeleteTableField(item)" />
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
@@ -65,13 +75,19 @@
 
 <script>
 import AppModal from '../AppModal'
+import AppDialog from '../AppDialog'
 import TableField from './subcomponents/TableField'
-import { getTargetUserCustomFieldsByCompanyId } from '../../api/targetUsers'
+import {
+  getTargetUserCustomFieldsByCompanyId,
+  updateTargetUserCustomField,
+  createTargetUserCustomField
+} from '../../api/targetUsers'
 
 export default {
   name: 'CustomFieldsModal',
   components: {
     AppModal,
+    AppDialog,
     TableField
   },
   props: {
@@ -79,10 +95,16 @@ export default {
       type: Boolean
     }
   },
+  computed: {
+    getAppDialogButtonText() {
+      return this.selectedItem && this.selectedItem.isActive ? 'Inactive' : 'Active'
+    }
+  },
   data() {
     return {
       customFields: [],
-      fields: []
+      selectedItem: null,
+      isWantToDelete: false
     }
   },
   methods: {
@@ -90,19 +112,59 @@ export default {
       this.$emit('closeCustomFieldsModal')
     },
     handleAddCustomField() {
-      this.customFields.push({})
+      this.customFields.push({
+        name: '',
+        fieldOwner: 'Company',
+        fieldDataType: 'String',
+        isActive: true,
+        isNew: true
+      })
+    },
+    deleteCustomField() {
+      this.selectedItem.isActive = !this.selectedItem.isActive
+      updateTargetUserCustomField(this.selectedItem)
+        .then((response) => {
+          debugger
+          this.isWantToDelete = false
+          this.selectedItem = null
+          this.callForGetTargetUserCustomFieldsByCompanyId()
+        })
+        .catch((error) => {
+          this.isWantToDelete = false
+          this.selectedItem = null
+        })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const { data } = response
-          this.fields = data.data
+          this.customFields = data.data
         })
         .catch((error) => {})
     },
-    submit() {},
-    handleDeleteTableField(index) {
-      this.customFields.splice(index, 1)
+    submit() {
+      if (this.$refs.refAppModal.$refs.refForm.validate()) {
+        this.customFields.map((item) => {
+          if (item.isNew) {
+            createTargetUserCustomField(item)
+              .then((response) => {
+                this.callForGetTargetUserCustomFieldsByCompanyId()
+              })
+              .catch((error) => {})
+          } else {
+            /*
+            updateTargetUserCustomField(item)
+              .then((response) => {})
+              .catch((error) => {})
+
+             */
+          }
+        })
+      }
+    },
+    handleDeleteTableField(item) {
+      this.isWantToDelete = true
+      this.selectedItem = JSON.parse(JSON.stringify(item))
     }
   },
   created() {
