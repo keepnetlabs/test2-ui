@@ -1,7 +1,7 @@
 <template>
   <div class="table-field">
     <div class="table-field__container">
-      <v-icon left medium color="#757575">mdi-menu</v-icon>
+      <v-icon left medium color="#757575" class="handle" style="cursor: move;">mdi-menu</v-icon>
       <v-text-field
         class="table-field__input"
         v-model="item.name"

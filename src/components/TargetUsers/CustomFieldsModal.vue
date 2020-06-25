@@ -37,11 +37,17 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item :key="index" v-for="(item, index) in customFields">
-        <v-list-item-content>
-          <table-field isDeleteable :item="item" @deleteTableField="handleDeleteTableField(item)" />
-        </v-list-item-content>
-      </v-list-item>
+      <draggable v-model="customFields" handle=".handle">
+        <v-list-item :key="index" v-for="(item, index) in customFields">
+          <v-list-item-content>
+            <table-field
+              isDeleteable
+              :item="item"
+              @deleteTableField="handleDeleteTableField(item)"
+            />
+          </v-list-item-content>
+        </v-list-item>
+      </draggable>
       <v-list-item>
         <v-list-item-content>
           <div @click="handleAddCustomField" class="custom-fields-overlay__add">
@@ -77,6 +83,7 @@
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import TableField from './subcomponents/TableField'
+import Draggable from 'vuedraggable'
 import {
   getTargetUserCustomFieldsByCompanyId,
   updateTargetUserCustomField,
@@ -88,7 +95,8 @@ export default {
   components: {
     AppModal,
     AppDialog,
-    TableField
+    TableField,
+    Draggable
   },
   props: {
     status: {
@@ -143,6 +151,7 @@ export default {
         .catch((error) => {})
     },
     submit() {
+      debugger
       if (this.$refs.refAppModal.$refs.refForm.validate()) {
         this.customFields.map((item) => {
           if (item.isNew) {
