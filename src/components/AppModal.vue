@@ -16,9 +16,7 @@
               <v-icon class="ml-2" color="blue" left medium>{{ iconName }}</v-icon>
             </div>
             <v-list-item-content>
-              <v-list-item-title class="v-card-headline k-overlay__title">{{
-                title
-              }}</v-list-item-title>
+              <v-list-item-title class="k-overlay__title">{{ title }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </slot>
@@ -109,6 +107,11 @@ export default {
   }
   &__title {
     white-space: normal;
+    color: #2196f3 !important;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: normal;
   }
 
   .v-list-item {

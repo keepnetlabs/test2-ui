@@ -1,33 +1,37 @@
 <template>
   <div id="clients" class="clients">
     <new-clients :showModal="modalStatus" :clientId="clientId" @closeOverlay="changeModalStatus" />
-    <v-overlay fixed :opacity="0.46" :value="isWantToDelete" :z-index="999">
-      <v-card light class="download-card pb-4 pa-6" style="max-width: 580px;">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline"
-              >Are You Sure To Delete This Client
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="check-wrapper pl-0 pr-0">
-          <p>Do you want to delete emails or move to trash?</p>
-        </v-list-item>
+    <app-dialog
+      :status="isWantToDelete"
+      @changeStatus="isWantToDelete = false"
+      icon="mdi-alert"
+      title="Delete Client?"
+      subtitle="The client will deleted permanently"
+    >
+      <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
           <div>
-            <v-btn class="pa-0" text color="#f56c6c" @click="isWantToDelete = false">CANCEL </v-btn>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDelete = false"
+              >CANCEL
+            </v-btn>
           </div>
           <div class="d-flex flex-row flex-end">
-            <v-btn class="pa-0" text color="#2196f3" @click="isWantToDeleteConfirm(true)"
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="isWantToDeleteConfirm(true)"
               >Delete Client
             </v-btn>
           </div>
         </div>
-      </v-card>
-    </v-overlay>
+      </template>
+    </app-dialog>
+
     <data-table
       id="clientList"
       ref="refClientList"
@@ -54,17 +58,20 @@
 <script>
 import DataTable from '../DataTable'
 import NewClients from './NewClients'
+import AppDialog from '../AppDialog'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import { getClientList, exportClientList, deleteClient } from '../../api/clients'
+
 export default {
   name: 'Clients',
   components: {
     DataTable,
-    NewClients
+    NewClients,
+    AppDialog
   },
   data() {
     return {

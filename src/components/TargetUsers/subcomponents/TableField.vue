@@ -5,6 +5,7 @@
       <v-text-field
         class="table-field__input"
         v-model="item.name"
+        autofocus
         outlined
         dense
         :rules="[
@@ -17,6 +18,7 @@
         class="mx-2 table-field__input"
         v-model="item.fieldDataType"
         :items="fieldItems"
+        :disabled="!item.isNew"
         dense
         outlined
       />

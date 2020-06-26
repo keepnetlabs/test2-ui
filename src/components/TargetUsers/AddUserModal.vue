@@ -127,7 +127,7 @@
             multiple
             deletable-chips
             :items="autoCompleteItems"
-            v-model="formValues.customFields"
+            v-model="formValues.addToUserGroups"
             id="addUserGroup"
             item-text="name"
             item-value="resourceId"
@@ -183,7 +183,7 @@ export default {
         email: '',
         department: '',
         priority: 'Medium',
-        customFields: [],
+        addToUserGroups: [],
         isActive: true
       },
       autoCompleteItems: [],
@@ -204,24 +204,9 @@ export default {
     submit() {
       this.callForCreateTargetUser()
     },
-    getCustomFields() {
-      return this.formValues.customFields.map((resourceId) => {
-        const object = this.autoCompleteItems.find((item) => {
-          return item.resourceId === resourceId
-        })
-        if (object) {
-          return {
-            resourceId,
-            value: object.name
-          }
-        }
-        return null
-      })
-    },
     callForCreateTargetUser() {
       const payload = {
-        ...this.formValues,
-        customFields: this.getCustomFields()
+        ...this.formValues
       }
 
       createTargetUser(payload)
@@ -250,7 +235,9 @@ export default {
     }
   },
   created() {
+    /*
     this.callForTargetGroups()
+     */
   }
 }
 </script>

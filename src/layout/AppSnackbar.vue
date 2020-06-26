@@ -64,9 +64,9 @@ export default {
       const messageLength = message.trim().length
       const styleObj = {}
       if (index >= 1) {
-        styleObj['bottom'] = `${65 * index}px`
+        styleObj['bottom'] = `${65 * index + 10}px`
         if (window.outerWidth <= 580) {
-          styleObj['bottom'] = `${75 * index}px`
+          styleObj['bottom'] = `${75 * index + 10}px`
         }
       } else {
         styleObj['bottom'] = '10px'
@@ -81,6 +81,8 @@ export default {
       if (window.outerWidth <= 580) {
         styleObj['width'] = '95%'
       }
+      styleObj['left'] = '5px'
+      styleObj['paddingTop'] = '0 !important'
       return styleObj
     }
   }
@@ -129,6 +131,7 @@ export default {
 }
 
 .v-snack {
+  height: auto !important;
   @media (max-width: 580px) {
     width: 95% !important;
   }

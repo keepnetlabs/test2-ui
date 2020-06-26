@@ -12,7 +12,7 @@
         :status="isWantToDelete"
         icon="mdi-alert"
         title="Delete Custom Field"
-        subtitle="Do you want to change status of this custom field?"
+        subtitle="Do you want to delete this custom field?"
         @changeStatus="isWantToDelete = false"
       >
         <template v-slot:app-dialog-body> This custom field status is will be changed ! </template>
@@ -37,8 +37,8 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <draggable v-model="customFields" handle=".handle">
-        <v-list-item :key="index" v-for="(item, index) in customFields">
+      <draggable v-bind="dragOptions" v-model="customFields" handle=".handle">
+        <v-list-item :key="item.name" v-for="item in customFields">
           <v-list-item-content>
             <table-field
               isDeleteable
@@ -89,6 +89,7 @@ import {
   updateTargetUserCustomField,
   createTargetUserCustomField
 } from '../../api/targetUsers'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'CustomFieldsModal',
@@ -112,7 +113,12 @@ export default {
     return {
       customFields: [],
       selectedItem: null,
-      isWantToDelete: false
+      isWantToDelete: false,
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'ghost'
+      },
+      copyOfCustomFields: []
     }
   },
   methods: {
@@ -130,9 +136,8 @@ export default {
     },
     deleteCustomField() {
       this.selectedItem.isActive = !this.selectedItem.isActive
-      updateTargetUserCustomField(this.selectedItem)
+      updateTargetUserCustomField({ ...this.selectedItem, fieldDataType: 'String' })
         .then((response) => {
-          debugger
           this.isWantToDelete = false
           this.selectedItem = null
           this.callForGetTargetUserCustomFieldsByCompanyId()
@@ -146,12 +151,14 @@ export default {
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const { data } = response
-          this.customFields = data.data
+          this.customFields = data.data.filter((item) => {
+            return item.isActive
+          })
+          this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))
         })
         .catch((error) => {})
     },
     submit() {
-      debugger
       if (this.$refs.refAppModal.$refs.refForm.validate()) {
         this.customFields.map((item) => {
           if (item.isNew) {
@@ -161,12 +168,25 @@ export default {
               })
               .catch((error) => {})
           } else {
-            /*
-            updateTargetUserCustomField(item)
-              .then((response) => {})
-              .catch((error) => {})
+            const updatedField = this.copyOfCustomFields.find((copyField) => {
+              return (
+                copyField.resourceId === item.resourceId &&
+                (item.name !== copyField.name || item.isActive !== copyField.isActive)
+              )
+            })
 
-             */
+            if (updatedField) {
+              updateTargetUserCustomField({ ...item, fieldDataType: 'String' })
+                .then((response) => {
+                  const message = response.data.message
+                  this.$store.dispatch('common/createSnackBar', {
+                    message,
+                    color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+                  })
+                  this.callForGetTargetUserCustomFieldsByCompanyId()
+                })
+                .catch((error) => {})
+            }
           }
         })
       }
@@ -221,5 +241,14 @@ export default {
     margin-top: -13px;
     cursor: pointer;
   }
+}
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.ghost {
+  opacity: 0;
 }
 </style>

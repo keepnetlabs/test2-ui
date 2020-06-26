@@ -22,66 +22,54 @@
             @refreshDatatable="refreshDatatable"
           />
         </v-overlay>
-        <v-overlay fixed :opacity="0.46" :value="isWantToDelete" :z-index="999">
-          <v-card
-            light
-            class="download-card investigation-details__alerts pb-4 pa-6"
-            style="max-width: 580px;"
-          >
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper investigation-details__alerts-icon-wrapper">
-                <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline investigation-details__alerts-title"
-                  >Delete Ongoing Investigation
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  class="v-card-sub-header investigation-details__alerts-sub-title"
-                  >{{ deleteMessage() }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
-              <p>Do you want to delete emails or move to trash?</p>
-            </v-list-item>
+        <app-dialog
+          :status="isWantToDelete"
+          icon="mdi-alert"
+          size="big"
+          title="Delete Ongoing Investigation"
+          :subtitle="deleteMessage()"
+          @changeStatus="isWantToDelete = false"
+          body="Do you want to delete emails or move to trash?"
+        >
+          <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
-                <v-btn class="pa-0" text color="#f56c6c" @click="isWantToDelete = false"
+                <v-btn
+                  class="pa-0 k-dialog__button"
+                  text
+                  color="#f56c6c"
+                  @click="isWantToDelete = false"
                   >CANCEL
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
-                <v-btn class="pa-0 mr-3" text color="#00bcd4" @click="isWantToDeleteConfirm(false)"
+                <v-btn
+                  class="pa-0 mr-3 k-dialog__button"
+                  text
+                  color="#00bcd4"
+                  @click="isWantToDeleteConfirm(false)"
                   >Move to trash
                 </v-btn>
-                <v-btn class="pa-0" text color="#2196f3" @click="isWantToDeleteConfirm(true)"
+                <v-btn
+                  class="pa-0 k-dialog__button"
+                  text
+                  color="#2196f3"
+                  @click="isWantToDeleteConfirm(true)"
                   >Delete Permenantly
                 </v-btn>
               </div>
             </div>
-          </v-card>
-        </v-overlay>
-        <v-overlay fixed :opacity="0.46" :value="isWantToWarn" :z-index="999">
-          <v-card
-            light
-            class="download-card investigation-details__alerts pb-4 pa-6"
-            style="max-width: 580px;"
-          >
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper investigation-details__alerts-icon-wrapper">
-                <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline investigation-details__alerts-title"
-                  >{{ warningMessage }}
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  class="v-card-sub-header investigation-details__alerts-sub-title"
-                  >Type a message to reporting user
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+          </template>
+        </app-dialog>
+        <app-dialog
+          :status="isWantToWarn"
+          size="big"
+          @changeStatus="isWantToWarn = false"
+          icon="mdi-alert"
+          :title="warningMessage"
+          subtitle="Type a message to reporting user"
+        >
+          <template v-slot:app-dialog-body>
             <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
               <v-text-field
                 placeholder="Dangerous Email"
@@ -92,61 +80,52 @@
                 height="40"
               ></v-text-field>
             </v-list-item>
+          </template>
+          <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-              <v-btn class="pa-0" text color="#f56c6c" @click="isWantToWarn = false">CANCEL</v-btn>
-              <v-btn class="pa-0" text color="#2196f3" @click="isWantToWarnConfirm">Send</v-btn>
+              <v-btn
+                class="pa-0 k-dialog__button"
+                text
+                color="#f56c6c"
+                @click="isWantToWarn = false"
+                >CANCEL</v-btn
+              >
+              <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="isWantToWarnConfirm"
+                >Send</v-btn
+              >
             </div>
-          </v-card>
-        </v-overlay>
-        <v-overlay fixed :opacity="0.46" :value="isWantToStop" :z-index="999">
-          <v-card
-            light
-            class="download-card investigation-details__alerts pb-4 pa-6"
-            style="max-width: 580px;"
-          >
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper investigation-details__alerts-icon-wrapper">
-                <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline investigation-details__alerts-title"
-                  >Stop Ongoing Investigation
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  class="v-card-sub-header investigation-details__alerts-sub-title"
-                  >Do you want to stop this investigation?
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
-              <p>Once stopped, you cannot resume this investigation</p>
-            </v-list-item>
+          </template>
+        </app-dialog>
+        <app-dialog
+          :status="isWantToStop"
+          size="big"
+          @changeStatus="isWantToStop = false"
+          icon="mdi-alert"
+          title="Stop Ongoing Investigation"
+          subtitle="Do you want to stop this investigation?"
+          body="Once stopped, you cannot resume this investigation"
+        >
+          <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-              <v-btn text color="#f56c6c" @click="isWantToStop = false">CANCEL</v-btn>
-              <v-btn text color="#2196f3" @click="isWantToStopConfirm">Stop</v-btn>
+              <v-btn text color="#f56c6c" class="k-dialog__button" @click="isWantToStop = false"
+                >CANCEL</v-btn
+              >
+              <v-btn text color="#2196f3" class="k-dialog__button" @click="isWantToStopConfirm"
+                >Stop</v-btn
+              >
             </div>
-          </v-card>
-        </v-overlay>
-        <v-overlay fixed :opacity="0.46" :value="isWantToWarnAndDelete" :z-index="999">
-          <v-card
-            light
-            class="download-card investigation-details__alerts pb-4 pa-6"
-            style="max-width: 580px;"
-          >
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper investigation-details__alerts-icon-wrapper">
-                <v-icon medium left color="blue" class="ml-2">mdi-alert</v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline investigation-details__alerts-title"
-                  >Delete Emails and Notify Users?
-                </v-list-item-title>
-                <v-list-item-subtitle
-                  class="v-card-sub-header investigation-details__alerts-sub-title"
-                  >{{ deleteMessage() }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+          </template>
+        </app-dialog>
+
+        <app-dialog
+          :status="isWantToWarnAndDelete"
+          @changeStatus="isWantToWarnAndDelete = false"
+          size="big"
+          icon="mdi-alert"
+          title="Delete Emails and Notify Users?"
+          :subtitle="deleteMessage()"
+        >
+          <template v-slot:app-dialog-body>
             <v-list-item
               class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
             >
@@ -159,22 +138,29 @@
                 required
               ></v-text-field>
             </v-list-item>
+          </template>
+          <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
-                <v-btn class="pa-0" text color="#f56c6c" @click="isWantToWarnAndDelete = false">
+                <v-btn
+                  class="pa-0 k-dialog__button"
+                  text
+                  color="#f56c6c"
+                  @click="isWantToWarnAndDelete = false"
+                >
                   CANCEL
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
-                  class="pa-0 mr-3"
+                  class="pa-0 mr-3 k-dialog__button"
                   text
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false, notifyMessageWithDelete)"
                   >Move to trash
                 </v-btn>
                 <v-btn
-                  class="pa-0"
+                  class="pa-0 k-dialog__button"
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
@@ -182,8 +168,9 @@
                 </v-btn>
               </div>
             </div>
-          </v-card>
-        </v-overlay>
+          </template>
+        </app-dialog>
+
         <div class="investigation-details__container__stats">
           <div class="investigation-details__container__stats__cards">
             <div class="investigation-details__container__stats__cards__card">
@@ -780,11 +767,12 @@ import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import { getStoreValue } from '../model/constants/commonConstants'
-
+import AppDialog from '../components/AppDialog'
 export default {
   components: {
     Datatable,
-    newInvestigation
+    newInvestigation,
+    AppDialog
   },
   data: () => ({
     isWantToAddNewCommunity: false,
@@ -949,7 +937,8 @@ export default {
       {
         name: 'Delete',
         icon: 'mdi-delete',
-        action: 'deleteInvestigationDetails'
+        action: 'deleteInvestigationDetails',
+        isNotShow: true
       },
       {
         name: 'Send user a warning message',

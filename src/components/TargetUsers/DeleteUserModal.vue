@@ -3,7 +3,7 @@
     :status="isShow"
     icon="mdi-delete"
     title="Delete User?"
-    subtitle="The user will be deleted permanently"
+    subtitle="The user will  deleted permanently"
   >
     <template v-slot:app-dialog-body>
       {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain

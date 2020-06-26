@@ -138,6 +138,13 @@ export default {
     padding-bottom: 17px;
   }
 
+  &__button {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+  }
+
   &__footer {
     > * {
       width: 100%;
