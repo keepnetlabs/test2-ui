@@ -772,7 +772,7 @@ export default {
           label: 'Note',
           fixed: false,
           sortable: true,
-          show: true,
+          show: false,
           type: 'text',
           editOptions: {
             component: 'textarea'
