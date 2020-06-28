@@ -5,7 +5,9 @@ export function getIntegrationList(payload) {
 }
 
 export function exportReportedEmails(payload) {
-  return testRequest.post(`${API_URL}/search/export`, payload)
+  return testRequest.post(`${API_URL}/search/export`, payload, {
+    responseType: 'blob'
+  })
 }
 
 export function getIntegrationTypes() {
@@ -36,6 +38,10 @@ export function updateIntegration(id, payload) {
   return testRequest.put(`${API_URL}/${id}`, payload)
 }
 
+export function testAnalysis(id, apiKey) {
+  return testRequest.put(`/analysis-engines-types/${id}/test-connection/${apiKey}`)
+}
+
 export function searchNotifiedMail(payload) {
-  return testRequest.post(`notified-email/search`, payload)
+  return testRequest.post(`notified-emails/search`, payload)
 }

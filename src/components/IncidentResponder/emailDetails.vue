@@ -5,14 +5,23 @@
       <v-expansion-panel-content eager class="expand-body member-company-body pa-0">
         <v-tabs v-model="tab" class="tab-bar">
           <v-tab id="expansion-details">Details</v-tab>
+          <v-tab id="analysis-header">Header</v-tab>
           <v-tab id="expansion-preview">Email Preview</v-tab>
-          <v-tab id="expansion-url">URL Analysis</v-tab>
-          <v-tab id="expansion-attachment">Attachment Analysis</v-tab>
+          <v-tab id="expansion-url">URLs</v-tab>
+          <v-tab id="expansion-attachment">Attachments</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="tab">
           <v-tab-item v-if="mailDetails">
             <div class="details-content">
+              <div class="details-content--item mb-12">
+                <div class="details-content--item--key">
+                  Analysis Date
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails.analysisDate }}
+                </div>
+              </div>
               <div class="details-content--item">
                 <div class="details-content--item--key">
                   To
@@ -37,15 +46,53 @@
                   {{ mailDetails.subject }}
                 </div>
               </div>
-              <!--<div class="details-content--item ">
+              <div class="details-content--item">
                 <div class="details-content--item--key">
-                  Analysis Date
+                  Date Received
                 </div>
                 <div class="details-content--item--value">
-                  7/26/2019 5:22:30 PM
+                  {{ mailDetails.receivedDate }}
                 </div>
-              </div>-->
+              </div>
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  CC
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails && mailDetails.to && mailDetails.cc.toString() }}
+                </div>
+              </div>
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  BCC
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails && mailDetails.to && mailDetails.bcc.toString() }}
+                </div>
+              </div>
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  Attachment Count
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails && mailDetails.attachments.length }}
+                </div>
+              </div>
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  Url Count
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails && mailDetails.urls.length }}
+                </div>
+              </div>
             </div>
+          </v-tab-item>
+          <v-tab-item v-if="mailDetails">
+            <el-table :data="mailDetails.headers" style="width: 100%;" :border="false">
+              <el-table-column prop="key" width="200"> </el-table-column>
+              <el-table-column prop="value"> </el-table-column>
+            </el-table>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
@@ -289,7 +336,7 @@ export default {
     isWantToShareIncident: false,
     isWantToInvestigate: false,
     isWantToPostIncident: false,
-    tab: 1,
+    tab: 2,
     showAllTags: false,
     seeComments: false,
     rules: {
@@ -363,12 +410,6 @@ export default {
     getPostDetails() {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
-          if (response.data.data.urls.length) response.data.data.urls[0].result = 'Clean'
-          if (response.data.data.urls.length) response.data.data.urls[0].analysisEngine = 'aaaaaa'
-          if (response.data.data.urls.length) response.data.data.urls[1].result = 'Phishing'
-          if (response.data.data.urls.length) response.data.data.urls[1].analysisEngine = 'cccccc'
-          if (response.data.data.urls.length) response.data.data.urls[2].result = 'Clean'
-          if (response.data.data.urls.length) response.data.data.urls[2].analysisEngine = 'fffff'
           this.mailDetails = response.data.data
           this.tableData = this.mailDetails.urls
           const urls = this.mailDetails.urls

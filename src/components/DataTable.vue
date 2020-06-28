@@ -642,12 +642,27 @@
           </div>
         </div>
       </div>
-      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0">
+      <div
+        class="pagination block"
+        v-if="pageSizes.length && tableData.length > 0 && !filteredData.length"
+      >
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
           :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
           :total="dataLength || initialData.length"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          layout="total, sizes, prev, pager, next"
+        >
+        </el-pagination>
+      </div>
+      <div class="pagination block" v-if="!!filteredData.length">
+        <el-pagination
+          :current-page.sync="currentPage"
+          :page-size="filteredData.length"
+          :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
+          :total="filteredData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
           layout="total, sizes, prev, pager, next"
@@ -1011,7 +1026,29 @@ export default {
       }
     },
     sortChangedEvent(sortProps) {
-      if (this.isServerSide) this.$emit('sortChangedEvent', sortProps)
+      if (this.isServerSide) {
+        this.$emit('sortChangedEvent', sortProps)
+      } else {
+        if (this.filteredData.length) {
+          this.filteredData = this.initialData.sort(function (a, b) {
+            if (sortProps.order === 'descending') {
+              return b[sortProps.prop] - a[sortProps.prop]
+            } else {
+              return a[sortProps.prop] - b[sortProps.prop]
+            }
+          })
+        } else {
+          this.tableData = this.initialData
+            .sort(function (a, b) {
+              if (sortProps.order === 'descending') {
+                return b[sortProps.prop] - a[sortProps.prop]
+              } else {
+                return a[sortProps.prop] - b[sortProps.prop]
+              }
+            })
+            .slice((this.currentPage - 1) * this.rowCount, this.currentPage * this.rowCount)
+        }
+      }
     },
 
     paginationChangedEvent(paginationProps) {
@@ -1045,18 +1082,17 @@ export default {
       } else {
         const searchValue = this.search
         this.showfilteredData = !!searchValue.length
-        this.filteredData = this.initialData
-          .reduce((acc, item) => {
-            const data = Object.values(item).find((i) => {
-              if (
-                typeof i === 'string' &&
-                i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-              )
-                return acc.push(item)
-            })
-            return acc
-          }, [])
-          .slice(0, this.rowCount || this.countRow)
+        this.filteredData = this.initialData.reduce((acc, item) => {
+          const data = Object.values(item).find((i) => {
+            if (
+              typeof i === 'string' &&
+              i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+            )
+              return acc.push(item)
+          })
+          return acc
+        }, [])
+        if (!this.showfilteredData) this.filteredData = []
       }
     },
     addUsersAction(actionName, row) {

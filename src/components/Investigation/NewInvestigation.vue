@@ -161,71 +161,28 @@
                 <label class="edit-labels">Email Date Range</label>
                 <label class="edit-sub-labels">Select range of emails’ sending date</label>
                 <div class="date-row">
-                  <v-col class="date-col pa-0" cols="12" md="6">
-                    <v-icon class="date-icon">mdi-calendar-range</v-icon>
-                    <v-menu
-                      ref="menu1"
-                      v-model="menu1"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      max-width="290px"
-                      min-width="290px"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="startDate"
-                          class="date-picker first-date standard-height"
-                          label="Start Date"
-                          solo
-                          v-on="on"
-                          required
-                          readonly
-                          :rules="[datePickerRule]"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        v-model="startDate"
-                        no-title
-                        @input="menu1 = false"
-                        :min="minDate()"
-                        :max="maxDate()"
-                        :rules="[datePickerRule]"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
-                  <v-col class="date-col pa-0" cols="12" md="6">
-                    <span class="date-to">To</span>
-                    <v-menu
-                      v-model="menu2"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      max-width="290px"
-                      min-width="290px"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="endDate"
-                          class="date-picker sec-date standard-height"
-                          label="End Date"
-                          solo
-                          v-on="on"
-                          readonly
-                          :rules="[datePickerRule]"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        v-model="endDate"
-                        no-title
-                        @input="menu2 = false"
-                        :min="minDate()"
-                        :max="maxDate()"
-                        :rules="[datePickerRule]"
-                      ></v-date-picker>
-                    </v-menu>
-                  </v-col>
+                  <el-date-picker
+                    v-model="date"
+                    type="daterange"
+                    range-separator="To"
+                    start-placeholder="Start date"
+                    end-placeholder="End date"
+                    :picker-options="pickerOptions"
+                  >
+                  </el-date-picker>
                 </div>
+                <!--<div>
+                  <el-date-picker
+                    v-model="value2"
+                    type="datetimerange"
+                    :picker-options="pickerOptions"
+                    range-separator="To"
+                    start-placeholder="Start date"
+                    end-placeholder="End date"
+                    align="right"
+                  >
+                  </el-date-picker>
+                </div>-->
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area pb-0 pa-0">
@@ -305,6 +262,37 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data() {
     return {
+      pickerOptions: {
+        shortcuts: [
+          {
+            text: 'Last week',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'Last month',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
+          },
+          {
+            text: 'Last 3 months',
+            onClick(picker) {
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
+            }
+          }
+        ]
+      },
       placeholders: {
         ip: '1.1.1.1',
         from: 'Email address',
@@ -325,6 +313,7 @@ export default {
       investgationName: '',
       targetUserType: 'AllUsers',
       targetUsersValue: '',
+      date: [],
       startDate: '',
       endDate: '',
       selectedDuration: '',
@@ -522,10 +511,6 @@ export default {
       }*/
     },
 
-    datePickerRule() {
-      if (!this.startDate || !this.endDate) return true
-      return this.startDate <= this.endDate || 'Invalid Date'
-    },
     addNewFilterListOption() {
       this.filterList.push({ option: '', text: '' })
     },
@@ -837,9 +822,9 @@ export default {
           isScanEnterpriseVault: false,
           investigationType: 'Manuel',
           name: this.investgationName,
-          startDate: this.startDate,
-          endDate: this.endDate,
-          expireDate: this.newExpireDate(this.startDate, this.selectedDuration),
+          startDate: this.date[0],
+          endDate: this.date[1],
+          expireDate: this.newExpireDate(this.date[0], this.selectedDuration),
           targetUserType: this.targetUserType,
           targetUsers:
             this.targetUserType == 'Groups'
@@ -912,6 +897,8 @@ export default {
         let _this = this
         this.investgationName = this.investigationDetailsData.name
         this.startDate = this.investigationDetailsData.startDate
+        this.data.push(this.investigationDetailsData.startDate)
+        this.data.push(this.investigationDetailsData.endDate)
         this.endDate = this.investigationDetailsData.endDate
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -
@@ -1406,17 +1393,6 @@ export default {
       .v-list-item__content {
         margin-bottom: 100px;
       }
-    }
-  }
-
-  .date-row {
-    max-width: 430px !important;
-    display: flex;
-    flex-direction: row;
-
-    @media only screen and (max-width: 1025px) {
-      width: 100%;
-      max-width: 100% !important;
     }
   }
 
