@@ -163,28 +163,18 @@
                 >
                   <template v-slot:actions mandatory="true">
                     <v-btn
-                      v-if="showSecondCollapse"
-                      @click.native="showSecondCollapse = false"
+                      @click.native="showSecondCollapse = index"
                       outlined
                       rounded
                       medium
                       color="blue"
-                      >COLLAPSE
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      @click.native="showSecondCollapse = true"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      >EXPAND
+                      >{{ showSecondCollapse ? 'COLLAPSE' : 'EXPAND' }}
                     </v-btn>
                   </template>
                 </v-expansion-panel-header>
               </div>
               <v-expansion-panel-content
-                v-if="showSecondCollapse"
+                v-if="showSecondCollapse == index"
                 eager
                 transition="scale-transition"
                 class="pa-0 no-shadow"
@@ -340,7 +330,7 @@ export default {
   data: () => ({
     mailDetails: null,
     showFirstCollapse: false,
-    showSecondCollapse: false,
+    showSecondCollapse: [],
     expanded: false,
     commentOpened: false,
     isWantToShareIncident: false,
@@ -565,9 +555,7 @@ export default {
     background-color: #ffffff;
     padding: 26px;
     position: relative;
-    &:first-child {
-      margin-bottom: 16px;
-    }
+    margin-bottom: 16px;
     p {
       margin-bottom: 0 !important;
     }

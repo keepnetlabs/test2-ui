@@ -5,7 +5,7 @@
         size="big"
         :status="isShowRoi"
         icon="mdi-cog"
-        :title="'ROI Summary Settings'"
+        :title="'\ROI Summary Settings'"
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
@@ -39,7 +39,7 @@
           </v-form>
         </template>
         <template v-slot:app-dialog-footer>
-          <div class="download-modal__footer">
+          <div class="download-modal__footer justify-end">
             <v-btn
               class="ml-n4 download-modal__button"
               @click="isShowRoi = false"
@@ -312,7 +312,7 @@
                           />
                         </v-list-item-content>
                       </v-list-item>
-                      <div class="d-flex download-buttons flex-row flex-wrap">
+                      <div class="download-buttons flex-row flex-end">
                         <v-btn @click="showMatchingModal = false" color="#f56c6c" text>Close</v-btn>
                       </div>
                     </v-card>
