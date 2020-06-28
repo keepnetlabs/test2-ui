@@ -89,10 +89,20 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
-            <el-table :data="mailDetails.headers" style="width: 100%;" :border="false">
-              <el-table-column prop="key" width="200"> </el-table-column>
-              <el-table-column prop="value"> </el-table-column>
-            </el-table>
+            <div class="details-content">
+              <div
+                class="details-content--item mb-12"
+                v-for="header in mailDetails.headers"
+                :key="header"
+              >
+                <div class="details-content--item--key">
+                  {{ header.key }}
+                </div>
+                <div class="details-content--item--value">
+                  {{ header.value }}
+                </div>
+              </div>
+            </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
@@ -153,28 +163,18 @@
                 >
                   <template v-slot:actions mandatory="true">
                     <v-btn
-                      v-if="showSecondCollapse"
-                      @click.native="showSecondCollapse = false"
+                      @click.native="showSecondCollapse = index"
                       outlined
                       rounded
                       medium
                       color="blue"
-                      >COLLAPSE
-                    </v-btn>
-                    <v-btn
-                      v-else
-                      @click.native="showSecondCollapse = true"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      >EXPAND
+                      >{{ showSecondCollapse ? 'COLLAPSE' : 'EXPAND' }}
                     </v-btn>
                   </template>
                 </v-expansion-panel-header>
               </div>
               <v-expansion-panel-content
-                v-if="showSecondCollapse"
+                v-if="showSecondCollapse == index"
                 eager
                 transition="scale-transition"
                 class="pa-0 no-shadow"
@@ -330,7 +330,7 @@ export default {
   data: () => ({
     mailDetails: null,
     showFirstCollapse: false,
-    showSecondCollapse: false,
+    showSecondCollapse: [],
     expanded: false,
     commentOpened: false,
     isWantToShareIncident: false,
@@ -555,9 +555,7 @@ export default {
     background-color: #ffffff;
     padding: 26px;
     position: relative;
-    &:first-child {
-      margin-bottom: 16px;
-    }
+    margin-bottom: 16px;
     p {
       margin-bottom: 0 !important;
     }
@@ -678,7 +676,6 @@ export default {
       }
 
       &--key {
-        height: 24px;
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: 600;
@@ -689,8 +686,8 @@ export default {
         color: rgba(0, 0, 0, 0.87);
         min-width: 104px;
         margin-right: 24px;
-        min-width: 125px;
-        max-width: 125px;
+        min-width: 225px;
+        max-width: 225px;
       }
     }
   }
