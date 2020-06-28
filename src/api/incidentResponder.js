@@ -14,6 +14,22 @@ export function exportInvestigationList(payload) {
   })
 }
 
+export function getMatchingIncidents(payload, id) {
+  return testRequest.post(`notified-emails/matching-playbooks/${id}/search`, payload)
+}
+
+export function exportInvestigationEmailList(payload, id) {
+  return testRequest.post(`investigations/${id}/search-email/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+export function exportInvestigationUserList(payload, id) {
+  return testRequest.post(`investigations/${id}/search-user/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export function searchNotifiedMail(payload) {
-  return testRequest.post(`notified-email/search`, payload)
+  return testRequest.post(`notified-emails/search`, payload)
 }

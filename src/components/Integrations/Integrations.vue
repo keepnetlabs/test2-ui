@@ -176,6 +176,7 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
+      debugger
       deleteIntegration(row.resourceId)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {

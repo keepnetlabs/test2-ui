@@ -724,6 +724,7 @@
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
                 :rowActionsMinWidth="80"
+                @downloadEvent="exportInvestigationEmails"
                 v-if="showEmails"
               />
             </div>
@@ -753,6 +754,7 @@
                 "
                 @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
                 v-if="showTargetUsersDetails"
+                @downloadEvent="exportTargetUsers"
               />
             </div>
           </div>
@@ -768,6 +770,7 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import { getStoreValue } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
+import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 export default {
   components: {
     Datatable,
@@ -929,7 +932,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text'
+        type: 'service'
       }
     ],
     pageSizes: [5, 10, 25, 50, 100],
@@ -1035,6 +1038,46 @@ export default {
     }
   }),
   methods: {
+    exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber,
+          pageSize: 5,
+          orderBy: 'ReceivedTime',
+          ascending: true,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+
+        exportInvestigationEmailList(payload, this.$route.params.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `email.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
+    },
+    exportTargetUsers({ exportTypes, reportAllPages, pageNumber }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber,
+          pageSize: 5,
+          orderBy: 'CreateTime',
+          ascending: true,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+
+        exportInvestigationUserList(payload, this.$route.params.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `user.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
+    },
     deleteMessage() {
       return `${this.totalSelectedItemsCount} ${
         this.totalSelectedItemsCount > 1 ? 'emails' : 'email'
@@ -1634,7 +1677,7 @@ export default {
                   &-item {
                     &:first-child {
                       margin-top: 10px;
-                      margin-bottom: 24px;
+                      margin-bottom: 24px !important;
                     }
 
                     &__archived {

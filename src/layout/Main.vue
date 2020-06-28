@@ -1129,15 +1129,16 @@ export default {
       }
     }
   }
+  .page-nav {
+    .v-list-item--active > .v-list-item__icon,
+    .menu-list-item > .v-list-item__icon {
+      margin-right: 16px !important;
+      margin-bottom: 12px !important;
+      margin-top: 12px !important;
 
-  .v-list-item--active > .v-list-item__icon,
-  .menu-list-item > .v-list-item__icon {
-    margin-right: 16px !important;
-    margin-bottom: 12px !important;
-    margin-top: 12px !important;
-
-    i {
-      font-size: 22px !important;
+      i {
+        font-size: 22px !important;
+      }
     }
   }
 

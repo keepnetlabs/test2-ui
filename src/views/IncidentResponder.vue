@@ -1,6 +1,62 @@
 <template>
   <div class="incident-wrapper">
     <div class="incident-responder">
+      <app-dialog
+        size="big"
+        :status="isShowRoi"
+        icon="mdi-cog"
+        :title="'ROI Summary Settings'"
+        class-name="roi-modal"
+      >
+        <template v-slot:app-dialog-body>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-list-item class="edit-name-area pt-1 0 pa-0">
+              <v-list-item-content class>
+                <label class="pb-3 edit-labels">Hourly Rate ($)</label>
+                <v-text-field
+                  placeholder="Hourly Rate"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model="roiRate"
+                  required
+                  type="number"
+                ></v-text-field>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="edit-name-area pt-1 0 pa-0">
+              <v-list-item-content class>
+                <label class="pb-3 edit-labels">Saved Time Per Task (hours)</label>
+                <v-text-field
+                  placeholder="Saved Time"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model="roiTask"
+                  type="number"
+                  required
+                ></v-text-field>
+              </v-list-item-content>
+            </v-list-item>
+          </v-form>
+        </template>
+        <template v-slot:app-dialog-footer>
+          <div class="download-modal__footer">
+            <v-btn
+              class="ml-n4 download-modal__button"
+              @click="isShowRoi = false"
+              color="#f56c6c"
+              text
+              >CANCEL</v-btn
+            >
+            <v-btn
+              class="ml-n4 download-modal__button"
+              @click="isShowRoi = false"
+              color="#2196f3"
+              text
+              >Save</v-btn
+            >
+          </div>
+        </template>
+      </app-dialog>
       <v-overlay
         id="add-new-community-overlay"
         :value="openInvestigationOverlay"
@@ -57,7 +113,7 @@
               Start Now
             </button>
           </div>
-          <div class="bg-image" style="bottom: 10px;">
+          <div class="bg-image" style="bottom: 10px; right: 0;">
             <img src="../assets/img/shape.svg" />
           </div>
         </div>
@@ -76,7 +132,7 @@
               <span class="biggest">{{
                 (irSummary &&
                   irSummary.notifiedEmailResultCount &&
-                  irSummary.notifiedEmailResultCount.maliciousCount) ||
+                  irSummary.notifiedEmailResultCount.harmfulCount) ||
                 0
               }}</span>
             </div>
@@ -85,7 +141,7 @@
               {{
                 (irSummary &&
                   irSummary.notifiedEmailResultCount &&
-                  irSummary.notifiedEmailResultCount.maliciousCount) ||
+                  irSummary.notifiedEmailResultCount.reportedMailCount) ||
                 0
               }}
               reported emails
@@ -157,6 +213,7 @@
         <div class="dashboard-cards roi-summary">
           <div class="card-header">
             <span class="head">ROI Summary</span>
+            <v-icon color="#fff" @click="isShowRoi = true">mdi-cog</v-icon>
           </div>
           <div class="card-body">
             <div class="body-row">
@@ -213,6 +270,54 @@
                 @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
                 class="no-sub-border-datatable"
               >
+                <template v-slot:datatable-column-popup="{ scope, col }">
+                  <span
+                    @click="matchingPopupClick(scope.row)"
+                    style="cursor: pointer; color: #2196f3;"
+                  >
+                    {{ scope.row[col.property] == 0 ? 'No' : scope.row[col.property] }} Matches
+                  </span>
+                  <v-overlay :opacity="0.46" :value="showMatchingModal" :z-index="999" fixed>
+                    <v-card class="download-card pb-4 pa-6" light style="max-width: 648px;">
+                      <v-list-item>
+                        <div class="v-btn v-cart-icon-wrapper">
+                          <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
+                        </div>
+                        <v-list-item-content class="pt-0 pb-0">
+                          <v-list-item-title class="v-card-headline text-left"
+                            >Matching Incidents</v-list-item-title
+                          >
+                          <v-list-item-subtitle class="v-card-sub-header text-left"
+                            >Incidents matching Rule: Rule Name</v-list-item-subtitle
+                          >
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item class="check-wrapper pl-0 pr-0 mt-4">
+                        <v-list-item-content>
+                          <datatable
+                            :refName="'matchingInvestigation'"
+                            ref="refMatchingInvestigation"
+                            :columns="matchingInvestigation.columns"
+                            :countRow="5"
+                            :pageSizes="[]"
+                            :border="false"
+                            :showHeader="true"
+                            :defaultSort="'subject'"
+                            :selectable="false"
+                            :filterable="true"
+                            :options="true"
+                            :rowActions="[]"
+                            class="no-sub-border-datatable"
+                            :empty="matchingInvestigation.iEmpty"
+                          />
+                        </v-list-item-content>
+                      </v-list-item>
+                      <div class="d-flex download-buttons flex-row flex-wrap">
+                        <v-btn @click="showMatchingModal = false" color="#f56c6c" text>Close</v-btn>
+                      </div>
+                    </v-card>
+                  </v-overlay>
+                </template>
               </datatable>
             </div>
           </v-card>
@@ -329,24 +434,36 @@
 import { exportReportedEmails } from '../api/integrations'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
-import { getTopRules, getRunningInvestigations, searchNotifiedMail } from '../api/incidentResponder'
+import {
+  getTopRules,
+  getRunningInvestigations,
+  searchNotifiedMail,
+  getMatchingIncidents
+} from '../api/incidentResponder'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import { exportPhishingReporterUserList } from '../api/phishingReporter'
 import { required } from '../utils/validations'
+import AppDialog from '../components/AppDialog'
 
 export default {
   components: {
     Datatable,
-    NewInvestigation
+    NewInvestigation,
+    AppDialog
   },
 
   data: () => ({
+    roiRate: '',
+    roiTask: '',
+    selectedMatchId: '',
+    isShowRoi: false,
     openInvestigationOverlay: false,
     investigationListData: [],
     notes: '',
     isNotifyMail: true,
     isCustomMessage: false,
+    showMatchingModal: false,
     topRules: {
       table: [],
       columns: [
@@ -364,14 +481,14 @@ export default {
           minWidth: '40'
         },
         {
-          property: 'matching',
+          property: 'matchCount',
           align: 'right',
           editable: false,
           label: 'Matching Incidents',
           fixed: false,
           sortable: false,
           show: true,
-          type: 'link',
+          type: 'popup',
           minWidth: '30',
           emptyText: 'No Match'
         },
@@ -458,6 +575,59 @@ export default {
       selectEvent: {},
       chartOptions: {}
     },
+    matchingInvestigation: {
+      table: [],
+      columns: [
+        {
+          property: 'subject',
+          align: 'left',
+          editable: false,
+          label: 'Investigation Name',
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'text',
+          minWidth: '40'
+        },
+        {
+          property: 'createDate',
+          align: 'center',
+          editable: false,
+          label: getStoreValue('createDate'),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'text',
+          minWidth: '30'
+        },
+        {
+          property: 'reportedBy',
+          align: 'center',
+          editable: false,
+          label: getStoreValue('reportedBy'),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'text',
+          minWidth: '30'
+        }
+      ],
+      addUsers: {
+        show: false,
+        popUp: false
+      },
+      addMenu: {
+        show: false,
+        popUp: false
+      },
+      iEmpty: {
+        message: "There isn't any matching Incidents, yet",
+        btn: '',
+        icon: 'mdi-plus'
+      },
+      selectEvent: {},
+      chartOptions: {}
+    },
     emails: {
       table: [],
       columns: [
@@ -524,6 +694,22 @@ export default {
           //minWidth: 80
         },
         {
+          property: 'resultTag',
+          align: 'left',
+          editable: false,
+          label: 'Result Tag',
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'text',
+          isEditable: false,
+          editOptions: {
+            component: 'text'
+          },
+          width: '150'
+          //minWidth: 80
+        },
+        {
           property: PROPERTY_STORE.STATUS,
           isEditable: true,
           align: 'center',
@@ -533,6 +719,27 @@ export default {
           sortable: false,
           show: true,
           type: 'status',
+          width: '150',
+          fullWidth: true,
+          editOptions: {
+            component: 'select',
+            props: {
+              rules: [(v) => required(v, 'Required')],
+              items: ['Open', 'Malicious', 'Phishing', 'Clean']
+            }
+          }
+          // minWidth: 80
+        },
+        {
+          property: 'source',
+          isEditable: true,
+          align: 'center',
+          editable: false,
+          label: 'Source',
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'detected',
           width: '150',
           fullWidth: true,
           editOptions: {
@@ -555,6 +762,20 @@ export default {
           type: 'text',
           editOptions: {
             component: 'datepicker'
+          },
+          width: '230'
+        },
+        {
+          property: 'note',
+          align: 'left',
+          editable: false,
+          label: 'Note',
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          editOptions: {
+            component: 'textarea'
           },
           width: '230'
         }
@@ -672,10 +893,7 @@ export default {
             status
           }
         } = response
-        const tableData = results.map((item) => {
-          const result = { ...item, result: item.resultTag + `,${item.result}` }
-          return result
-        })
+        const tableData = results
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
       .catch((error) => {
@@ -690,6 +908,28 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    matchingPopupClick(match) {
+      this.showMatchingModal = true
+      const payload = {
+        pageNumber: 1,
+        pageSize: 5,
+        orderBy: 'CreateDate',
+        ascending: true
+      }
+      getMatchingIncidents(payload, match.resourceId)
+        .then((response) => {
+          const tableData = response.data.data
+          debugger
+          this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || [])
+        })
+        .catch((error) => {
+          /*this.$store.dispatch('common/createSnackBar', {
+                  errorState: true,
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  message: 'Error when getting the notified emails!'
+                })*/
+        })
+    },
     onEmptyBtnClicked() {
       this.$router.push({ path: '/investigations', query: { openPopup: true } })
     },
@@ -732,7 +972,7 @@ export default {
       } else if (
         data &&
         data.notifiedEmailResultCount &&
-        data.notifiedEmailResultCount.maliciousCount
+        data.notifiedEmailResultCount.reportedMailCount
       ) {
         return false
       } else {
@@ -758,27 +998,7 @@ export default {
       this.$router.push('/investigations')
     },
 
-    exportReportedListEmails({ exportTypes, reportAllPages, pageNumber }) {
-      exportTypes.map((exportType) => {
-        const payload = {
-          pageNumber: 1,
-          pageSize: 3,
-          orderBy: 'Name',
-          ascending: false,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
-        }
-        exportReportedEmails(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `users.${exportType.toLocaleLowerCase()}`
-            link.click()
-          })
-          .catch((error) => {})
-      })
-    }
+    exportReportedListEmails({ exportTypes, reportAllPages, pageNumber }) {}
   },
 
   beforeRouteLeave(to, from, next) {
@@ -794,6 +1014,15 @@ export default {
 <style lang="scss">
 .incident-wrapper {
   .incident-responder {
+    ::v-deep .edit-labels {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
     padding: 0 8px;
     padding-bottom: 35px;
 
@@ -930,7 +1159,7 @@ export default {
 
       .bg-image {
         position: absolute;
-        right: 0;
+        right: -15px;
         bottom: 0;
       }
     }
@@ -949,6 +1178,11 @@ export default {
 
     .roi-summary {
       background-image: linear-gradient(to bottom, #b27fc2, #66257a 96%);
+      &__settings-button {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
     }
   }
 

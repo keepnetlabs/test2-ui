@@ -1,5 +1,5 @@
 import testRequest from '../utils/testRequest'
-const API_URL = 'notified-email'
+const API_URL = 'notified-emails'
 export function getNotifiedEmail(id) {
   return testRequest.get(`${API_URL}/${id}`)
 }
