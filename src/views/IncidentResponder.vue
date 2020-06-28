@@ -764,6 +764,20 @@ export default {
             component: 'datepicker'
           },
           width: '230'
+        },
+        {
+          property: 'note',
+          align: 'left',
+          editable: false,
+          label: 'Note',
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          editOptions: {
+            component: 'textarea'
+          },
+          width: '230'
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
