@@ -401,7 +401,14 @@
             @handleDetails="irDetailsOnClick"
             @handleEdit="handleEdit"
             titleKey="reportedBy"
-          />
+          >
+            <template v-slot:datatable-custom-column="{ scope, col }">
+              <span
+                :class="[scope.row.matchingPlaybooks.length > 0 ? 'incident-wrapper__link' : '']"
+                >{{ getSourceValue(scope, col) }}</span
+              >
+            </template>
+          </datatable>
         </v-card>
       </div>
     </div>
@@ -658,7 +665,7 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
+          type: 'slot',
           width: '150',
           fullWidth: true
           // minWidth: 80
@@ -861,6 +868,17 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    getSourceValue(scope, col) {
+      if (scope.row.matchingPlaybooks.length > 0) {
+        const item = scope.row.matchingPlaybooks.reduce((acc, item) => {
+          acc += item
+          return acc + ','
+        }, '')
+        return item.slice(0, item.length - 1)
+      } else {
+        return scope.row.source
+      }
+    },
     matchingPopupClick(match) {
       this.showMatchingModal = true
       const payload = {
@@ -1008,6 +1026,14 @@ export default {
     }
   }
 
+  &__link {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: #2196f3;
+    cursor: pointer;
+  }
   .columns-row {
     display: flex;
     flex-direction: row;

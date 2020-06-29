@@ -38,7 +38,12 @@ const LABEL_STORE = {
   COMPANYNAME: 'Company Name',
   APIKEY: 'API Key',
   DATECREATED: 'Date Created',
-  RESULTTAG: 'Tags'
+  RESULTTAG: 'Tags',
+  SERVICE: 'Service',
+  ISSENDFILEHASH: 'Hash Scan',
+  ISSENDFILE: 'File Scan',
+  DETAILS: 'Details',
+  ANALYSISENGINE: 'Service'
 }
 
 export const PROPERTY_STORE = {
@@ -66,7 +71,12 @@ export const PROPERTY_STORE = {
   APIKEY: 'apiKey',
   DATECREATED: 'dateCreated',
   RESULTTAG: 'resultTag',
-  SOURCE: 'source'
+  SOURCE: 'source',
+  SERVICE: 'service',
+  ISSENDFILEHASH: 'isSendFileHash',
+  ISSENDFILE: 'isSendFile',
+  DETAILS: 'details',
+  ANALYSISENGINE: 'analysisEngine'
 }
 
 export function getStoreValue(key, type) {

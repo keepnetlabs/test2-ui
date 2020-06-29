@@ -2,7 +2,7 @@
   <div class="single-wrapper">
     <div class="single-post">
       <span class="single-post-header">Email Details - File Format Exploit</span>
-      <v-expansion-panel-content eager class="expand-body member-company-body pa-0">
+      <div class="single-post__container">
         <v-tabs v-model="tab" class="tab-bar">
           <v-tab id="expansion-details">Details</v-tab>
           <v-tab id="analysis-header">Header</v-tab>
@@ -10,7 +10,6 @@
           <v-tab id="expansion-url">URLs</v-tab>
           <v-tab id="expansion-attachment">Attachments</v-tab>
         </v-tabs>
-
         <v-tabs-items v-model="tab">
           <v-tab-item v-if="mailDetails">
             <div class="details-content">
@@ -104,7 +103,7 @@
               </div>
             </div>
           </v-tab-item>
-          <v-tab-item v-if="mailDetails">
+          <v-tab-item v-if="mailDetails" style="margin-left: 30px;">
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
@@ -129,122 +128,117 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
-            <div
-              class="attachment-analysis-item"
-              v-for="(attachment, index) in mailDetails.attachments"
-              :key="index"
-            >
-              <div class="ed-title">
-                <div class="d-flex">
-                  <p class="mr-6 attachment-name">Attachment Name</p>
-                  <p class="mr-6 wrf">{{ attachment.name }}</p>
-                  <a
-                    :href="attachment.name"
-                    v-if="attachment.downloadUrl"
-                    class="mr-6 cursor-pointer download"
-                  >
-                    <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                    Download file
-                  </a>
-                  <p
-                    class="mr-6 cursor-pointer not-found"
-                    v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
-                  >
-                    *This file was not uploaded to any integration
-                  </p>
-                </div>
-              </div>
-              <div class="flex-grow-1"></div>
-              <div class="ed-header-btn-1 collapse-details">
-                <v-expansion-panel-header
-                  class="pa-0"
-                  style="min-height: 36px;"
-                  disable-icon-rotate
-                >
-                  <template v-slot:actions mandatory="true">
-                    <v-btn
-                      @click.native="showSecondCollapse = index"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      >{{ showSecondCollapse ? 'COLLAPSE' : 'EXPAND' }}
-                    </v-btn>
-                  </template>
-                </v-expansion-panel-header>
-              </div>
-              <v-expansion-panel-content
-                v-if="showSecondCollapse == index"
-                eager
-                transition="scale-transition"
-                class="pa-0 no-shadow"
+            <v-expansion-panels :multiple="false">
+              <v-expansion-panel
+                class="attachment-analysis-item"
+                v-for="(attachment, index) in mailDetails.attachments"
+                :key="attachment.resourceId"
               >
-                <div class="details-content">
-                  <div class="details-content--item mt-4">
-                    <div class="details-content--item--key text-right">
-                      SHA512
-                    </div>
-                    <div class="details-content--item--value">
-                      {{ attachment.sha512 }}
-                    </div>
-                  </div>
-                  <div class="details-content--item">
-                    <div class="details-content--item--key text-right">
-                      MD5
-                    </div>
-                    <div class="details-content--item--value">
-                      {{ attachment.md5 }}
-                    </div>
-                  </div>
-                  <div class="details-content--item">
-                    <div class="details-content--item--key text-right">
-                      Content Type
-                    </div>
-                    <div class="details-content--item--value">
-                      {{ attachment.contentType }}
-                    </div>
-                  </div>
-                  <div
-                    class="details-content--item"
-                    v-for="(analysis, ind) in attachment.analysisList"
-                    :key="ind"
-                  >
-                    <div class="details-content--item--key text-right">
-                      {{ analysis.analysisEngine }}
-                    </div>
-                    <div class="details-content--item--value">
-                      <span
-                        class="details-content--item--value--status"
-                        :class="`details-content--item--value--status__${analysis.result}`"
-                        >{{ analysis.result }}</span
-                      >
-                      <span class="details-content--item--value--icon">
-                        <v-icon color="#757575" class="selection-icons" v-if="false"
-                          >mdi-attachment</v-icon
-                        >
-                        <v-icon
-                          :color="analysis.isSendFileHash ? '#757575' : '#e0e0e0'"
-                          class="selection-icons"
-                          >mdi-pound</v-icon
-                        >
-                        <v-icon
-                          :color="analysis.isSendFile ? '#757575' : '#e0e0e0'"
-                          class="selection-icons"
-                          >mdi-file</v-icon
-                        >
-                      </span>
-                      <a v-if="false">DETAILS</a>
-                    </div>
+                <div class="ed-title">
+                  <div class="d-flex">
+                    <p class="mr-6 attachment-name">Attachment Name</p>
+                    <p class="mr-6 wrf">{{ attachment.name }}</p>
+                    <a
+                      :href="attachment.name"
+                      v-if="attachment.downloadUrl"
+                      class="mr-6 cursor-pointer download"
+                    >
+                      <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                      Download file
+                    </a>
+                    <p
+                      class="mr-6 cursor-pointer not-found"
+                      v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
+                    >
+                      *This file was not uploaded to any integration
+                    </p>
                   </div>
                 </div>
-              </v-expansion-panel-content>
-            </div>
+                <div class="ed-header-btn-1 collapse-details">
+                  <v-expansion-panel-header
+                    class="pa-0"
+                    style="min-height: 36px;"
+                    disable-icon-rotate
+                  >
+                    <template v-slot:actions mandatory="true">
+                      <v-btn
+                        @click.native="setSecondCollapse($event, index)"
+                        outlined
+                        rounded
+                        medium
+                        color="blue"
+                        >{{ showSecondCollapse === index ? 'COLLAPSE' : 'EXPAND' }}
+                      </v-btn>
+                    </template>
+                  </v-expansion-panel-header>
+                </div>
+                <v-expansion-panel-content
+                  v-if="showSecondCollapse === index"
+                  eager
+                  transition="scale-transition"
+                  class="pa-0 no-shadow"
+                >
+                  <div class="details-content">
+                    <div class="details-content--item mt-4">
+                      <div class="details-content--item--key text-right">
+                        SHA512
+                      </div>
+                      <div class="details-content--item--value">
+                        {{ attachment.sha512 }}
+                      </div>
+                    </div>
+                    <div class="details-content--item">
+                      <div class="details-content--item--key text-right">
+                        MD5
+                      </div>
+                      <div class="details-content--item--value">
+                        {{ attachment.md5 }}
+                      </div>
+                    </div>
+                    <div class="details-content--item">
+                      <div class="details-content--item--key text-right">
+                        Content Type
+                      </div>
+                      <div class="details-content--item--value">
+                        {{ attachment.contentType }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="attachments-table">
+                    <datatable
+                      ref="refAttachmentsTable"
+                      :refName="'attachmentsTable'"
+                      :columns="attachmentTableOptions.columns"
+                      :countRow="5"
+                      :table="attachmentTableOptions.tableData[index].analysisList"
+                      :pageSizes="pageSizes"
+                      :options="false"
+                      :border="false"
+                      :empty="attachmentTableOptions.iEmpty"
+                    >
+                      <template v-slot:datatable-custom-column="{ scope, col }">
+                        <span @click="showPopupModal = true" style="cursor: pointer;">
+                          <a
+                            :href="
+                              getDetailsLink(scope, col, attachmentTableOptions.tableData[index])
+                            "
+                            target="_blank"
+                            class="attachments-table__link"
+                            >See Details</a
+                          >
+                        </span>
+                      </template>
+                    </datatable>
+                  </div>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
             <div class="empty-attachment" v-if="!mailDetails.attachments.length">
               <h2>No Attachment</h2>
             </div>
           </v-tab-item>
         </v-tabs-items>
-      </v-expansion-panel-content>
+      </div>
     </div>
   </div>
 </template>
@@ -320,7 +314,11 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 })
 import Datatable from '../../components/DataTable'
 import { getNotifiedEmail, getAnalysisEngineTypes } from '../../api/notifiedEmail'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
 
 export default {
   components: {
@@ -328,6 +326,50 @@ export default {
   },
   props: {},
   data: () => ({
+    attachmentTableOptions: {
+      iEmpty: {
+        message: 'You do not have Attachments, yet'
+      },
+      tableData: [],
+      columns: [
+        {
+          property: PROPERTY_STORE.ANALYSISENGINE,
+          align: 'left',
+          label: getStoreValue(PROPERTY_STORE.ANALYSISENGINE),
+          show: true,
+          type: 'text'
+        },
+        {
+          property: PROPERTY_STORE.RESULT,
+          align: 'center',
+          label: getStoreValue(PROPERTY_STORE.RESULT),
+          show: true,
+          type: 'badge'
+        },
+        {
+          property: PROPERTY_STORE.ISSENDFILEHASH,
+          align: 'left',
+          label: getStoreValue(PROPERTY_STORE.ISSENDFILEHASH),
+          show: true,
+          type: 'text'
+        },
+        {
+          property: PROPERTY_STORE.ISSENDFILE,
+          align: 'left',
+          label: getStoreValue(PROPERTY_STORE.ISSENDFILE),
+          show: true,
+          type: 'text',
+          emptyText: 'false'
+        },
+        {
+          property: PROPERTY_STORE.DETAILS,
+          align: 'left',
+          label: getStoreValue(PROPERTY_STORE.DETAILS),
+          show: true,
+          type: 'slot'
+        }
+      ]
+    },
     mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: [],
@@ -407,12 +449,31 @@ export default {
         return !!data.length
       }
     },
+    getDetailsLink(scope, col, parentRow) {
+      switch (scope.row.analysisEngine) {
+        case 'Virus Total Engine':
+          return `https://www.virustotal.com/gui/file/${parentRow.md5}`
+      }
+    },
+    setSecondCollapse(event, index) {
+      if (event.target.textContent.startsWith('COLLAPSE')) {
+        this.showSecondCollapse = -1
+      } else {
+        this.showSecondCollapse = index
+      }
+    },
     getPostDetails() {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-          console.log('mailDetails', this.mailDetails)
+          console.log('this.mailDetails.attachments', this.mailDetails.attachments)
           this.tableData = this.mailDetails.urls
+
+          this.attachmentTableOptions.tableData = this.mailDetails.attachments
+          console.log(
+            'this.attachmentTableOptions.tableData',
+            this.attachmentTableOptions.tableData
+          )
           const urls = this.mailDetails.urls
           setTimeout(function () {
             for (let a of urls) {
@@ -496,29 +557,30 @@ export default {
   .single-post {
     margin: 15px !important;
     border-radius: 12px;
-    border-radius: 12px;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
     background-color: #ffffff;
     padding: 24px;
+    &__container {
+      margin-top: 35px;
+      border-radius: 20px;
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+        0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      padding: 10px 24px 16px;
+    }
   }
 
   .single-post-header {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.6;
     letter-spacing: normal;
     color: #2196f3;
-    margin-bottom: 40px;
     display: block;
   }
   .tab-bar {
     width: 100%;
     padding: 0;
     border-radius: 0 !important;
-    margin-top: 24px;
     display: inline-block;
 
     .v-slide-group__wrapper {
@@ -678,18 +740,14 @@ export default {
       }
 
       &--key {
-        font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
         line-height: 1.71;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
-        min-width: 104px;
         margin-right: 24px;
-        min-width: 225px;
-        max-width: 225px;
+        min-width: 125px;
+        max-width: 150px;
       }
     }
   }
@@ -1609,7 +1667,6 @@ export default {
       color: rgba(255, 255, 255, 0.87) !important;
       font-size: 12px !important;
       line-height: 1.33 !important;
-      font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
     }
 
@@ -1698,6 +1755,25 @@ export default {
     .red-malicious-alert:not(:first-child) {
       display: block !important;
     }
+  }
+  .k-table__wrapper .card .table-wrapper .el-table th > .cell {
+    padding-left: 24px !important;
+  }
+  .k-table__wrapper .card .table-wrapper .el-table td > .cell {
+    padding-left: 24px !important;
+  }
+}
+
+.attachments-table {
+  margin-top: 24px;
+
+  &__link {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: #2196f3;
   }
 }
 </style>
