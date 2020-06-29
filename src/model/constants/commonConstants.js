@@ -37,7 +37,8 @@ const LABEL_STORE = {
   DELIVERY: 'Delivery',
   COMPANYNAME: 'Company Name',
   APIKEY: 'API Key',
-  DATECREATED: 'Date Created'
+  DATECREATED: 'Date Created',
+  RESULTTAG: 'Tags'
 }
 
 export const PROPERTY_STORE = {
@@ -63,7 +64,9 @@ export const PROPERTY_STORE = {
   DELIVERY: 'delivery',
   COMPANYNAME: 'companyName',
   APIKEY: 'apiKey',
-  DATECREATED: 'dateCreated'
+  DATECREATED: 'dateCreated',
+  RESULTTAG: 'resultTag',
+  SOURCE: 'source'
 }
 
 export function getStoreValue(key, type) {

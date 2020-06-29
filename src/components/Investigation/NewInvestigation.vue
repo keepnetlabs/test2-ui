@@ -1,18 +1,8 @@
 <template>
-  <div class="new-investigation-wrapper">
-    <div class="new-investigation-container">
-      <div class="new-investigation-inner">
-        <v-card flat light class="pa-6" style="width: 600px;">
-          <v-list-item class="pl-0 pr-0">
-            <div class="v-btn v-cart-icon-wrapper">
-              <v-icon medium left color="blue" class="ml-2">mdi-magnify</v-icon>
-            </div>
-            <v-list-item-content class="pt-0 pb-0">
-              <v-list-item-title class="v-card-headline"
-                >New Investigation {{ data }}</v-list-item-title
-              >
-            </v-list-item-content>
-          </v-list-item>
+  <app-modal :status="status" iconName="mdi-magnify" :title="`New Investigation`">
+    <template v-slot:overlay-body>
+      <div class="new-investigation-wrapper">
+        <v-card flat light style="max-width: 554px;">
           <v-list-item class="pl-0 pr-0 pt-4 pb-4">
             <v-list-item-content class="pt-4 pb-0">
               <v-list-item-title class="v-card-headline">Start New Investigation</v-list-item-title>
@@ -171,18 +161,6 @@
                   >
                   </el-date-picker>
                 </div>
-                <!--<div>
-                  <el-date-picker
-                    v-model="value2"
-                    type="datetimerange"
-                    :picker-options="pickerOptions"
-                    range-separator="To"
-                    start-placeholder="Start date"
-                    end-placeholder="End date"
-                    align="right"
-                  >
-                  </el-date-picker>
-                </div>-->
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area pb-0 pa-0">
@@ -250,16 +228,22 @@
           </v-form>
         </v-card>
       </div>
-      <div class="footer-actions">
+    </template>
+    <template v-slot:overlay-footer>
+      <div class="new-investigation-footer">
         <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
         <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">Save</v-btn>
       </div>
-    </div>
-  </div>
+    </template>
+  </app-modal>
 </template>
 <script>
+import AppModal from '../AppModal'
 import { mapGetters, mapActions } from 'vuex'
 export default {
+  components: {
+    AppModal
+  },
   data() {
     return {
       pickerOptions: {
@@ -477,7 +461,8 @@ export default {
     'isEdit',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
-    'investigationDetailsData'
+    'investigationDetailsData',
+    'status'
   ],
   methods: {
     checkCheckboxValidation() {
@@ -1172,7 +1157,6 @@ export default {
   .new-investigation-inner {
     width: 100%;
     height: 100%;
-    padding: 0 8vw;
     position: relative;
     display: flex;
     overflow: visible;
@@ -1352,20 +1336,6 @@ export default {
     height: 68px;
     width: 100%;
     z-index: 9999;
-
-    .cancel-btn {
-      background-color: transparent !important;
-      border-radius: 18px !important;
-      border: solid 1px #f56c6c !important;
-      color: #f56c6c !important;
-    }
-
-    .create-btn {
-      border-radius: 18px !important;
-      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-    }
   }
 
   .error-border {
@@ -2826,6 +2796,24 @@ export default {
       height: 20px !important;
       width: 20px !important;
     }
+  }
+}
+.new-investigation-footer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  .cancel-btn {
+    background-color: transparent !important;
+    border-radius: 18px !important;
+    border: solid 1px #f56c6c !important;
+    color: #f56c6c !important;
+  }
+
+  .create-btn {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+    background-color: #2196f3 !important;
+    color: #fff !important;
   }
 }
 </style>

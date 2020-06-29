@@ -412,6 +412,26 @@
                 <data-table-progress :col="col" :scope="scope" v-if="col.type === 'progress'" />
                 <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
                 <data-table-link :col="col" :scope="scope" v-if="col.type === 'link'" />
+                <div v-if="col.type === 'badge'">
+                  <v-tooltip bottom v-if="scope.row && scope.row[col.property]">
+                    <template v-slot:activator="{ on }">
+                      <badge
+                        :color="getBtnStatusColor(scope.row[col.property])"
+                        :listeners="on"
+                        :full-width="col.fullWidth"
+                        :text="scope.row[col.property]"
+                      />
+                    </template>
+                    <span class="tooltip-span">
+                      <slot name="status-tooltip-text" :scope="scope" :col="col">
+                        {{ scope.row[col.property] }}
+                      </slot>
+                    </span>
+                  </v-tooltip>
+                  <span v-else>
+                    {{ col.emptyText || '' }}
+                  </span>
+                </div>
                 <div v-if="col.type === 'status'">
                   <v-tooltip bottom v-if="scope.row && scope.row['status']">
                     <template v-slot:activator="{ on }">
@@ -450,6 +470,9 @@
                 </div>
                 <div v-if="col.type === 'popup'">
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
+                </div>
+                <div v-if="col.type === 'slot'">
+                  <slot name="datatable-custom-column" :col="col" :scope="scope"></slot>
                 </div>
               </template>
               <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">

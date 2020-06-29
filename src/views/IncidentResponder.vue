@@ -9,10 +9,10 @@
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-list-item class="edit-name-area pt-1 0 pa-0">
+          <v-form ref="form" lazy-validation>
+            <v-list-item class="roi-modal__list-item">
               <v-list-item-content class>
-                <label class="pb-3 edit-labels">Hourly Rate ($)</label>
+                <label class="roi-modal__label">Hourly Rate ($)</label>
                 <v-text-field
                   placeholder="Hourly Rate"
                   outlined
@@ -23,9 +23,9 @@
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item class="edit-name-area pt-1 0 pa-0">
-              <v-list-item-content class>
-                <label class="pb-3 edit-labels">Saved Time Per Task (hours)</label>
+            <v-list-item class="roi-modal__list-item">
+              <v-list-item-content>
+                <label class="roi-modal__label">Saved Time Per Task (hours)</label>
                 <v-text-field
                   placeholder="Saved Time"
                   outlined
@@ -48,7 +48,7 @@
               >CANCEL</v-btn
             >
             <v-btn
-              class="ml-n4 download-modal__button"
+              class="mr-n2 download-modal__button"
               @click="isShowRoi = false"
               color="#2196f3"
               text
@@ -106,7 +106,6 @@
             </div>
             <button
               class="btn-action btn-playbook btn-playbook__no-data"
-              block
               rounded
               @click="emptyPhishingButtonClick"
             >
@@ -277,46 +276,51 @@
                   >
                     {{ scope.row[col.property] == 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
-                  <v-overlay :opacity="0.46" :value="showMatchingModal" :z-index="999" fixed>
-                    <v-card class="download-card pb-4 pa-6" light style="max-width: 648px;">
-                      <v-list-item>
-                        <div class="v-btn v-cart-icon-wrapper">
-                          <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
-                        </div>
-                        <v-list-item-content class="pt-0 pb-0">
-                          <v-list-item-title class="v-card-headline text-left"
-                            >Matching Incidents</v-list-item-title
-                          >
-                          <v-list-item-subtitle class="v-card-sub-header text-left"
-                            >Incidents matching Rule: Rule Name</v-list-item-subtitle
-                          >
-                        </v-list-item-content>
-                      </v-list-item>
-                      <v-list-item class="check-wrapper pl-0 pr-0 mt-4">
-                        <v-list-item-content>
-                          <datatable
-                            :refName="'matchingInvestigation'"
-                            ref="refMatchingInvestigation"
-                            :columns="matchingInvestigation.columns"
-                            :countRow="5"
-                            :pageSizes="[]"
-                            :border="false"
-                            :showHeader="true"
-                            :defaultSort="'subject'"
-                            :selectable="false"
-                            :filterable="true"
-                            :options="true"
-                            :rowActions="[]"
-                            class="no-sub-border-datatable"
-                            :empty="matchingInvestigation.iEmpty"
-                          />
-                        </v-list-item-content>
-                      </v-list-item>
-                      <div class="download-buttons flex-row flex-end">
-                        <v-btn @click="showMatchingModal = false" color="#f56c6c" text>Close</v-btn>
+                  <app-dialog
+                    :status="showMatchingModal"
+                    icon="mdi-email"
+                    title="Matching Incidents"
+                    subtitle="Incidents matching Rule: Rule Name"
+                    @changeStatus="showMatchingModal = false"
+                    size="maximum"
+                    class-name="matching-modal"
+                  >
+                    <template v-slot:app-dialog-body>
+                      <v-card light>
+                        <v-list-item class="matching-modal__list-item">
+                          <v-list-item-content>
+                            <datatable
+                              :refName="'matchingInvestigation'"
+                              ref="refMatchingInvestigation"
+                              :columns="matchingInvestigation.columns"
+                              :countRow="5"
+                              :pageSizes="[5, 10, 20, 50, 100]"
+                              :border="false"
+                              :showHeader="true"
+                              :defaultSort="'subject'"
+                              :selectable="false"
+                              :filterable="true"
+                              :options="true"
+                              :rowActions="[]"
+                              class="no-sub-border-datatable"
+                              :empty="matchingInvestigation.iEmpty"
+                            />
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-card>
+                    </template>
+                    <template v-slot:app-dialog-footer>
+                      <div class="d-flex" style="justify-content: flex-end;">
+                        <v-btn
+                          class="pa-0 k-dialog__button"
+                          text
+                          color="#2196f3"
+                          @click="showMatchingModal = false"
+                          >CLOSE
+                        </v-btn>
                       </div>
-                    </v-card>
-                  </v-overlay>
+                    </template>
+                  </app-dialog>
                 </template>
               </datatable>
             </div>
@@ -397,34 +401,7 @@
             @handleDetails="irDetailsOnClick"
             @handleEdit="handleEdit"
             titleKey="reportedBy"
-          >
-            <template v-slot:data-table-edit-popup-body>
-              <div class="row-edit-div" style="order: 59;">
-                <div>
-                  <label>
-                    Notes
-                  </label>
-                  <v-text-field
-                    dense
-                    outlined
-                    v-model="notes"
-                    placeholder="Write Notes For This Incident"
-                  />
-                </div>
-              </div>
-
-              <div class="row-edit-div" style="order: 60;">
-                <v-checkbox
-                  v-model="isNotifyMail"
-                  color="#2196f3"
-                  label="Notify Reporting User Aborting this Update"
-                />
-              </div>
-              <div class="row-edit-div mt-n2" style="order: 70;">
-                <v-checkbox v-model="isCustomMessage" color="#2196f3" label="Add Custom Message" />
-              </div>
-            </template>
-          </datatable>
+          />
         </v-card>
       </div>
     </div>
@@ -442,7 +419,6 @@ import {
 } from '../api/incidentResponder'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
-import { exportPhishingReporterUserList } from '../api/phishingReporter'
 import { required } from '../utils/validations'
 import AppDialog from '../components/AppDialog'
 
@@ -582,34 +558,34 @@ export default {
           property: 'subject',
           align: 'left',
           editable: false,
-          label: 'Investigation Name',
+          label: 'Subject',
           fixed: false,
           sortable: false,
           show: true,
           type: 'text',
-          minWidth: '40'
+          minWidth: '33'
         },
         {
           property: 'createDate',
-          align: 'center',
+          align: 'left',
           editable: false,
           label: getStoreValue('createDate'),
           fixed: false,
           sortable: false,
           show: true,
           type: 'text',
-          minWidth: '30'
+          minWidth: '33'
         },
         {
           property: 'reportedBy',
-          align: 'center',
+          align: 'left',
           editable: false,
           label: getStoreValue('reportedBy'),
           fixed: false,
           sortable: false,
           show: true,
           type: 'text',
-          minWidth: '30'
+          minWidth: '34'
         }
       ],
       addUsers: {
@@ -674,14 +650,28 @@ export default {
           //minWidth: 100
         },
         {
+          property: PROPERTY_STORE.SOURCE,
+          isEditable: true,
+          align: 'center',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.SOURCE),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'text',
+          width: '150',
+          fullWidth: true
+          // minWidth: 80
+        },
+        {
           property: PROPERTY_STORE.RESULT,
-          align: 'left',
+          align: 'center',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
+          type: 'badge',
           isEditable: false,
           editOptions: {
             component: 'select',
@@ -691,23 +681,6 @@ export default {
             }
           },
           width: '150'
-          //minWidth: 80
-        },
-        {
-          property: 'resultTag',
-          align: 'left',
-          editable: false,
-          label: 'Result Tag',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'text',
-          isEditable: false,
-          editOptions: {
-            component: 'text'
-          },
-          width: '150'
-          //minWidth: 80
         },
         {
           property: PROPERTY_STORE.STATUS,
@@ -728,28 +701,6 @@ export default {
               items: ['Open', 'Malicious', 'Phishing', 'Clean']
             }
           }
-          // minWidth: 80
-        },
-        {
-          property: 'source',
-          isEditable: true,
-          align: 'center',
-          editable: false,
-          label: 'Source',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'detected',
-          width: '150',
-          fullWidth: true,
-          editOptions: {
-            component: 'select',
-            props: {
-              rules: [(v) => required(v, 'Required')],
-              items: ['Open', 'Malicious', 'Phishing', 'Clean']
-            }
-          }
-          // minWidth: 80
         },
         {
           property: PROPERTY_STORE.CREATEDATE,
@@ -766,18 +717,19 @@ export default {
           width: '230'
         },
         {
-          property: 'note',
+          property: PROPERTY_STORE.RESULTTAG,
           align: 'left',
           editable: false,
-          label: 'Note',
+          label: getStoreValue(PROPERTY_STORE.RESULTTAG),
           fixed: false,
-          sortable: true,
-          show: false,
+          sortable: false,
+          show: true,
           type: 'text',
+          isEditable: false,
           editOptions: {
-            component: 'textarea'
+            component: 'text'
           },
-          width: '230'
+          width: '150'
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -894,6 +846,7 @@ export default {
           }
         } = response
         const tableData = results
+        console.log('tableData', tableData)
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
       .catch((error) => {
@@ -919,7 +872,6 @@ export default {
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
           const tableData = response.data.data
-          debugger
           this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || [])
         })
         .catch((error) => {
@@ -1187,12 +1139,8 @@ export default {
   }
 
   .double-table {
-    align-items: flex-start;
     display: flex;
-    flex-direction: row;
-    padding-top: 8px;
-    width: 100%;
-
+    margin-top: 8px;
     .k-table__wrapper .card {
       justify-content: unset;
       box-shadow: none !important;
@@ -1223,27 +1171,15 @@ export default {
         min-height: 260px;
         padding: 24px;
         padding-bottom: 0;
+        height: 100%;
 
         .header {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-
-          @media only screen and (max-width: 1024px) {
-            flex-direction: column;
-            .title,
-            .action {
-              min-width: 100% !important;
-              max-width: 100% !important;
-              width: 100% !important;
-            }
-          }
+          margin-bottom: 24px;
 
           .title {
-            width: 65%;
-
-            margin-bottom: 24px;
-
             h2 {
               font-family: 'Open Sans', sans-serif;
               font-size: 20px;
@@ -1269,27 +1205,17 @@ export default {
 
           .action {
             display: flex;
-            min-width: 25%;
-            max-width: 35%;
 
             .btn-action {
               font-size: 14px;
               font-weight: 600;
-              font-stretch: normal;
-              font-style: normal;
               line-height: 1.71;
               letter-spacing: normal;
               color: #2196f3;
               background-color: #ffffff !important;
-              font-family: 'Open Sans', sans-serif !important;
-              padding: 0 !important;
-              height: 36px !important;
               border-radius: 18px;
               box-shadow: none !important;
-              max-width: 100%;
-              border-radius: 18px;
               border: solid 1px #2196f3;
-
               i {
                 font-size: 19px !important;
               }
@@ -1386,17 +1312,12 @@ export default {
 
         .action {
           display: flex;
-          min-width: 25%;
-          max-width: 35%;
 
           .btn-action {
             background-color: #2196f3 !important;
             color: #fff;
-            font-family: 'Open Sans', sans-serif !important;
             font-size: 14px;
             font-weight: 400;
-            font-stretch: normal;
-            font-style: normal;
             line-height: 1.71;
             letter-spacing: normal;
             padding: 0 !important;
@@ -1490,6 +1411,42 @@ export default {
   }
   .table.investigations {
     padding: 0 !important;
+  }
+}
+.matching-modal {
+  &__list-item {
+    padding: 0;
+    .v-list-item__content {
+      padding: 0;
+    }
+  }
+  .k-table__wrapper {
+    padding-bottom: 0;
+  }
+  .v-card {
+    border-radius: 12px;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+  }
+}
+
+.roi-modal {
+  &__list-item {
+    padding: 0;
+    .v-list-item__content {
+      padding: 0;
+    }
+  }
+  .k-dialog__body {
+    padding-bottom: 0;
+  }
+  &__label {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+    margin-bottom: 8px !important;
   }
 }
 </style>

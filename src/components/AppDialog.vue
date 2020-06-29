@@ -92,6 +92,8 @@ export default {
         case 'big':
           retValue = '580'
           break
+        case 'maximum':
+          retValue = '650'
         default:
           break
       }
