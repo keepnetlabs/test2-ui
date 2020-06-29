@@ -411,6 +411,7 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
+          console.log('mailDetails', this.mailDetails)
           this.tableData = this.mailDetails.urls
           const urls = this.mailDetails.urls
           setTimeout(function () {
@@ -478,6 +479,7 @@ export default {
 
 <style lang="scss">
 .single-wrapper {
+  min-height: 80vh;
   .empty-attachment {
     display: flex;
     align-items: center;
