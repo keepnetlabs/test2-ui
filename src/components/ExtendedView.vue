@@ -34,10 +34,7 @@
               :style="{ order: index * 10 }"
               v-for="(col, index) in options"
               v-if="
-                col.show &&
-                !col.hideLabel &&
-                col.property !== 'createDate' &&
-                col.property !== 'lastUpdate'
+                !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdate'
               "
             >
               <div>
@@ -58,7 +55,7 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
-                    col.type === 'text' &&
+                    (col.type === 'text' || col.type === 'slot') &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdate'
                   "
@@ -68,7 +65,7 @@
                 <badge
                   v-else-if="
                         ((!editMode || !col.isEditable) && (col.type === 'status' ||
-                        col.type === 'detected'))
+                        col.type === 'detected' || col.type==='badge'))
                       "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
@@ -199,12 +196,12 @@
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
+                    col.isEditable &&
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
                     col.property !== 'createDate' &&
-                    col.editOptions.component === 'textfield' &&
-                    col.isEditable
+                    col.editOptions.component === 'textfield'
                   "
                 >
                   <template v-slot:append>
@@ -228,12 +225,12 @@
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
+                    col.isEditable &&
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
                     col.property !== 'createDate' &&
-                    col.editOptions.component === 'datepicker' &&
-                    col.isEditable
+                    col.editOptions.component === 'datepicker'
                   "
                 >
                   <template v-slot:activator="{ on }">
@@ -288,12 +285,12 @@
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
+                    col.isEditable &&
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
                     col.property !== 'createDate' &&
-                    col.editOptions.component === 'select' &&
-                    col.isEditable
+                    col.editOptions.component === 'select'
                   "
                   :value="multipleEditModels[col.property]"
                   @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
@@ -358,7 +355,7 @@
    show --> boolean
    hideLabel --> boolean
    label --> string
-   type --> string (text,date,status,priority,detected,progress,chart)
+   type --> string (text,date,status,priority,detected,progress,chart,badge,slot)
    isEditable --> boolean
    editOptions --> object {component:"textfield,select,textarea,datepicker", props:{} dynamic props}
    }
@@ -535,7 +532,6 @@ export default {
       this.$forceUpdate()
     }
   },
-
   created() {
     this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
   }

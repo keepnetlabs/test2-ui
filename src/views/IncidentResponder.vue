@@ -617,19 +617,13 @@ export default {
         {
           property: PROPERTY_STORE.SUBJECT,
           align: 'left',
-          editable: false,
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
           fixed: 'left',
           sortable: true,
           show: true,
           type: 'text',
           width: '300',
-          isEditable: true,
-          editOptions: {
-            component: 'checkbox',
-            checkboxLabel: 'I am checkbox label'
-          }
-          //minWidth: 80
+          isEditable: false
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
@@ -657,33 +651,38 @@ export default {
           //minWidth: 100
         },
         {
+          property: PROPERTY_STORE.RESOURCEID,
+          show: false,
+          label: 'Case Id',
+          type: 'text',
+          isEditable: false
+        },
+        {
           property: PROPERTY_STORE.SOURCE,
-          isEditable: true,
+          isEditable: false,
           align: 'center',
-          editable: false,
           label: getStoreValue(PROPERTY_STORE.SOURCE),
           fixed: false,
           sortable: false,
           show: true,
           type: 'slot',
           width: '150',
-          fullWidth: true
-          // minWidth: 80
+          fullWidth: true,
+          showKey: 'matchingPlaybooks'
         },
         {
           property: PROPERTY_STORE.RESULT,
           align: 'center',
-          editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
           type: 'badge',
-          isEditable: false,
+          isEditable: true,
           editOptions: {
             component: 'select',
             props: {
-              items: ['Very Low', 'Low', 'Medium', 'High', 'Very High', 'N/A'],
+              items: ['N/A', 'Phishing', 'Malicious', 'Clean'],
               rules: [(v) => required(v, 'Required')]
             }
           },
@@ -693,7 +692,6 @@ export default {
           property: PROPERTY_STORE.STATUS,
           isEditable: true,
           align: 'center',
-          editable: false,
           label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
           sortable: false,
@@ -705,7 +703,7 @@ export default {
             component: 'select',
             props: {
               rules: [(v) => required(v, 'Required')],
-              items: ['Open', 'Malicious', 'Phishing', 'Clean']
+              items: ['Open', 'Closed', 'In Progress', 'FalsePositive', 'BeingAnalyzed']
             }
           }
         },
@@ -732,9 +730,9 @@ export default {
           sortable: false,
           show: true,
           type: 'text',
-          isEditable: false,
+          isEditable: true,
           editOptions: {
-            component: 'text'
+            component: 'textfield'
           },
           width: '150'
         }

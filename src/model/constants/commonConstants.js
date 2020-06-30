@@ -76,7 +76,8 @@ export const PROPERTY_STORE = {
   ISSENDFILEHASH: 'isSendFileHash',
   ISSENDFILE: 'isSendFile',
   DETAILS: 'details',
-  ANALYSISENGINE: 'analysisEngine'
+  ANALYSISENGINE: 'analysisEngine',
+  RESOURCEID: 'resourceId'
 }
 
 export function getStoreValue(key, type) {
