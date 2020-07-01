@@ -107,7 +107,13 @@ export default {
             editOptions: {
               component: 'select',
               props: {
-                items: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh']
+                items: [
+                  { text: 'Very Low', value: 'VeryLow' },
+                  'Low',
+                  'Medium',
+                  'High',
+                  { text: 'Very High', value: 'VeryHigh' }
+                ]
               }
             },
             width: 300

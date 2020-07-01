@@ -107,13 +107,13 @@
               @keyup="searchChangedEvent"
             />
           </div>
-          <div class="table-settings" v-if="options">
+          <div class="table-settings" v-if="options" v-once>
             <v-btn
               class="clust-btn btn-hover mr-2"
               color="#2196f3"
               icon
               outlined
-              style="border-radius: 6px !important;"
+              style="border-radius: 6px !important; order: 1;"
               v-if="groupable"
             >
               <v-icon>mdi-format-list-bulleted</v-icon>
@@ -122,7 +122,7 @@
               class="clust-btn cluster-btn btn-hover mr-4"
               color="white"
               icon
-              style="border-radius: 6px !important;"
+              style="border-radius: 6px !important; order: 2;"
               v-if="groupable"
             >
               <v-icon>mdi-format-list-text</v-icon>
@@ -203,6 +203,7 @@
                   <v-btn
                     class="btn-add mr-1"
                     icon
+                    style="order: 3;"
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
                   >
@@ -221,6 +222,7 @@
                     <v-btn
                       class="btn-hover mr-1"
                       icon
+                      style="order: 4;"
                       v-bind="attrs"
                       v-on="{ ...tooltip, ...menu }"
                     >
@@ -241,7 +243,7 @@
 
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn class="btn-hover mr-1" icon v-on="on">
+                <v-btn class="btn-hover mr-1" icon v-on="on" style="order: 5;">
                   <v-icon @click="printMethod()">mdi-printer</v-icon>
                 </v-btn>
               </template>
@@ -249,7 +251,13 @@
             </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn @click="isSettingsOpened = true" class="btn-hover mr-1" icon v-on="on">
+                <v-btn
+                  @click="isSettingsOpened = true"
+                  class="btn-hover mr-1"
+                  icon
+                  v-on="on"
+                  style="order: 6;"
+                >
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </template>
@@ -423,7 +431,8 @@
                         :color="getBtnStatusColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row[col.property]"
+                        v-bind="col.props"
+                        :text="getDataTableFieldLabel(scope.row[col.property])"
                       />
                     </template>
                     <span class="tooltip-span">
@@ -443,7 +452,8 @@
                         :color="getBtnStatusColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.status"
+                        v-bind="col.props"
+                        :text="getDataTableFieldLabel(scope.row.status)"
                       />
                     </template>
                     <span class="tooltip-span">
@@ -463,7 +473,7 @@
                         :color="getBtnPriorityColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.priority"
+                        :text="getDataTableFieldLabel(scope.row.priority)"
                       />
                     </template>
                     <span class="tooltip-span">{{ scope.row.priority }}</span>
@@ -724,7 +734,7 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
+import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
 export default {
   components: {
     Badge,
@@ -1034,6 +1044,9 @@ export default {
     getBtnPriorityColor(type) {
       return getBtnPriorityColor(type)
     },
+    getDataTableFieldLabel(field) {
+      return getDataTableFieldLabel(field)
+    },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
     },
@@ -1053,7 +1066,7 @@ export default {
         this.overFlowTooltipContent = row[column.property]
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + 60}px`,
-          left: `${parentRect.left}px`
+          left: `${parentRect.left + this.cellPadding}px`
         }
       }
     },

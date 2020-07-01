@@ -135,7 +135,7 @@
                 :key="attachment.resourceId"
               >
                 <div class="ed-title">
-                  <div class="d-flex">
+                  <div class="d-flex" style="align-items: center;">
                     <p class="mr-6 attachment-name">Attachment Name</p>
                     <p class="mr-6 wrf">{{ attachment.name }}</p>
                     <a

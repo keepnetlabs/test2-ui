@@ -224,7 +224,6 @@ export default {
       }
     },
     getDates() {
-      
       const today = new Date()
       const day = today.getDate()
       const month = today.getMonth() + 1
@@ -236,7 +235,7 @@ export default {
             startDate: `${yesterday.getFullYear()}-${
               yesterday.getMonth() + 1
             }-${yesterday.getDate()}`,
-            endDate: `${year}-${month}-${day}`
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day + 1)).getDate()}`
           }
         case this.listItems[1]:
           const sevenDaysAgo = new Date(new Date().setDate(day - 7))
@@ -244,12 +243,12 @@ export default {
             startDate: `${sevenDaysAgo.getFullYear()}-${
               sevenDaysAgo.getMonth() + 1
             }-${sevenDaysAgo.getDate()}`,
-            endDate: `${year}-${month}-${day}`
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day + 1)).getDate()}`
           }
         case this.listItems[2]:
           const last30DayDate = new Date(new Date().setDate(day - 30))
           return {
-            endDate: `${year}-${month}-${day}`,
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day + 1)).getDate()}`,
             startDate: `${last30DayDate.getFullYear()}-${
               last30DayDate.getMonth() + 1
             }-${last30DayDate.getDate()}`

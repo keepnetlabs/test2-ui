@@ -501,7 +501,9 @@
     .v-tooltip__content {
       background: #6d6d6d !important;
     }
-
+    .el-table-column--selection.is-hidden > .cell{
+      visibility: visible !important;
+    }
     .k-grid td.k-state-selected,
     .k-grid tr.k-state-selected > td {
       background-color: rgba(0, 188, 212, 0.05) !important;

@@ -461,7 +461,8 @@ export default {
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
     'investigationDetailsData',
-    'status'
+    'status',
+    'selectedMail'
   ],
   methods: {
     checkCheckboxValidation() {
@@ -943,6 +944,30 @@ export default {
   created() {
     // when the page is created ( vue life cylce) get target users list via vuex
     this.$store.dispatch('investigations/getTargetUsersList').then(() => this.checkIsEdit()) //module name than method name
+    if (this.selectedMail) {
+      this.filterList = []
+      this.selectedMail.attachments.map((item) => {
+        this.filterList.push({ option: 'md5', text: item.md5 })
+        this.filterList.push({ option: 'sha512', text: item.sha512 })
+      })
+      this.selectedMail.bcc.map((item) => {
+        this.filterList.push({ option: 'bcc', item })
+      })
+      this.selectedMail.cc.map((item) => {
+        this.filterList.push({ option: 'cc', item })
+      })
+      this.selectedMail.from &&
+        this.filterList.push({ option: 'from', text: this.selectedMail.from })
+      this.selectedMail.subject &&
+        this.filterList.push({ option: 'subject', text: this.selectedMail.subject })
+      this.selectedMail.to.map((item) => {
+        this.filterList.push({ option: 'to', text: item })
+      })
+      this.selectedMail.urls.map((item) => {
+        this.filterList.push({ option: 'url', text: item.url })
+      })
+      this.investgationName = 'Manuel Investigation'
+    }
   },
   mounted() {}
 }
@@ -1089,7 +1114,7 @@ export default {
     }
 
     .v-text-field__details {
-      bottom: -25px !important;
+      //bottom: -25px !important;
     }
 
     .filter-item {
@@ -1101,7 +1126,7 @@ export default {
       position: relative;
 
       &:not(:first-of-type) {
-        margin-top: 30px;
+        margin-top: 11px;
       }
 
       &:hover {
@@ -1122,18 +1147,17 @@ export default {
       }
 
       &__button {
-        margin-top: 25px;
-        font-family: 'Open Sans', sans-serif;
         font-size: 14px;
         font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
+        margin-top: 8px;
         line-height: 1.71;
         letter-spacing: normal;
         color: #2196f3 !important;
         align-items: center;
         display: flex;
-
+        .v-icon.v-icon {
+          margin-left: 0 !important;
+        }
         &:focus,
         &:focus-within {
           outline: 0 !important;

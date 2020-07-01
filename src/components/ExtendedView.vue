@@ -36,7 +36,7 @@
                 !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdate'
               "
             >
-              <div>
+              <div v-if="!col.showOnlyPreview || editMode">
                 <label>
                   {{ col.label }}
                 </label>

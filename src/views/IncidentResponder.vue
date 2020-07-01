@@ -72,6 +72,7 @@
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
         v-if="isWantToAddNewInvestigation"
+        :selectedMail="selectedEmail"
       />
       <div class="columns-row">
         <div
@@ -286,7 +287,7 @@
                     :status="showMatchingModal"
                     icon="mdi-email"
                     title="Matching Incidents"
-                    subtitle="Incidents matching Rule: Rule Name"
+                    :subtitle="getSelectedMatchingIncidentsSubtitle"
                     @changeStatus="showMatchingModal = false"
                     size="maximum"
                     class-name="matching-modal"
@@ -409,10 +410,18 @@
             @handleEdit="handleEdit"
             titleKey="reportedBy"
           >
-            <template v-slot:datatable-custom-column="{ scope, col }">
-              <span
-                :class="[scope.row.matchingPlaybooks.length > 0 ? 'incident-wrapper__link' : '']"
-                >{{ getSourceValue(scope, col) }}</span
+            <template v-slot:datatable-custom-column="{ scope }">
+              <span v-if="scope.row.matchingPlaybooks.length === 0">
+                {{ scope.row.source }}
+              </span>
+              <router-link
+                tag="span"
+                :key="item.resourceId"
+                v-else
+                :to="`/playbook/${item.resourceId}`"
+                v-for="item in scope.row.matchingPlaybooks"
+                class="incident-wrapper__link"
+                >{{ item.name }}</router-link
               >
             </template>
             <template v-slot:extended-view-slot>
@@ -421,6 +430,7 @@
                   color="#2196f3"
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
+                  @change="handleIsNotify"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
@@ -450,6 +460,7 @@
 </template>
 <script>
 import { updateNotifiedEmail } from '../api/incidentResponder'
+import { getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import {
@@ -472,8 +483,9 @@ export default {
 
   data: () => ({
     roiRate: '',
+    selectedEmail: null,
     roiTask: '',
-    selectedMatchId: '',
+    selectedMatch: null,
     isShowRoi: false,
     openInvestigationOverlay: false,
     investigationListData: [],
@@ -716,8 +728,12 @@ export default {
           editOptions: {
             component: 'select',
             props: {
-              items: ['Phishing', 'Malicious', 'NonMalicious'],
-              rules: [(v) => required(v, 'Required')]
+              items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
+            }
+          },
+          props: {
+            style: {
+              maxWidth: '110px'
             }
           },
           width: '150'
@@ -736,9 +752,18 @@ export default {
           editOptions: {
             component: 'select',
             props: {
-              rules: [(v) => required(v, 'Required')],
-              items: ['Open', 'Closed', 'InProgress', 'FalsePositive', 'BeingAnalyzed']
+              items: [
+                'Open',
+                'Closed',
+                'Idle',
+                { text: 'In Progress', value: 'InProgress' },
+                { text: 'False Positive', value: 'FalsePositive' },
+                { text: 'Being Analyzed', value: 'BeingAnalyzed' }
+              ]
             }
+          },
+          props: {
+            style: { maxWidth: '110px' }
           }
         },
         {
@@ -777,6 +802,7 @@ export default {
           property: 'note',
           label: 'Notes',
           isEditable: true,
+          showOnlyPreview: true,
           editOptions: {
             component: 'textarea',
             props: {
@@ -858,7 +884,10 @@ export default {
     ...mapGetters({
       // get IR Reports data via vuex.
       irSummary: 'investigations/irSummaryGetter' // for using getters
-    })
+    }),
+    getSelectedMatchingIncidentsSubtitle() {
+      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
+    }
   },
   mounted() {
     this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
@@ -906,7 +935,7 @@ export default {
     callForSearchNotifiedMail() {
       const payload = {
         pageNumber: 1,
-        pageSize: 5,
+        pageSize: 500,
         orderBy: 'CreateDate',
         ascending: true
       }
@@ -922,18 +951,8 @@ export default {
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
     },
-    getSourceValue(scope, col) {
-      if (scope.row.matchingPlaybooks.length > 0) {
-        const item = scope.row.matchingPlaybooks.reduce((acc, item) => {
-          acc += item
-          return acc + ','
-        }, '')
-        return item.slice(0, item.length - 1)
-      } else {
-        return scope.row.source
-      }
-    },
     matchingPopupClick(match) {
+      this.selectedMatch = match
       this.showMatchingModal = true
       const payload = {
         pageNumber: 1,
@@ -969,6 +988,11 @@ export default {
         params: { id: row.resourceId }
       })
     },
+    handleIsNotify(value) {
+      if (!value) {
+        this.extendedView.isMessage = false
+      }
+    },
     handleEdit(selectedRow) {
       selectedRow.map((item, index) => {
         const payload = {
@@ -977,7 +1001,7 @@ export default {
           tag: item.resultTag || '',
           note: item.note || '',
           isNotifyUser: this.extendedView.isNotify,
-          customMessage: this.extendedView.customMessage || ''
+          customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : ''
         }
         console.log('payload', payload)
         updateNotifiedEmail(item.resourceId, payload)
@@ -989,6 +1013,7 @@ export default {
             this.callForGetRunningInvestigations()
             this.callForGetTopRules()
             this.callForSearchNotifiedMail()
+            this.$store.dispatch('investigations/getIrSummary')
           })
           .catch((error) => {})
       })
@@ -1027,8 +1052,10 @@ export default {
       }
     },
     handleReportedEmailInvestigate(row) {
-      console.log('row', row)
-      this.isWantToAddNewInvestigation = true
+      getNotifiedEmail(row.resourceId).then((response) => {
+        this.selectedEmail = response.data.data
+        this.isWantToAddNewInvestigation = true
+      })
     },
     emptyPhishingButtonClick() {
       this.$router.push('/phishing-reporter')

@@ -716,7 +716,6 @@
                 @deleteAndNotifyInvestigationDetailsFunction="
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
-                :rowActionsMinWidth="80"
                 @downloadEvent="exportInvestigationEmails"
                 v-if="showEmails"
               />
