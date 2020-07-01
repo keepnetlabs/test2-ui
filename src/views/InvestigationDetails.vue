@@ -5,23 +5,16 @@
       v-if="investigationDetailsListData && statsAndMenuData && investigationDetailsData"
     >
       <div class="investigation-details__container">
-        <v-overlay
-          id="add-new-community-overlay"
-          :value="isWantToAddNewCommunity"
-          :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
-          :opacity="1"
-          :z-index="999"
-          color="white"
-        >
-          <new-investigation
-            :isEdit="true"
-            :statsAndMenuData="statsAndMenuData"
-            :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
-            :investigationDetailsData="investigationDetailsData"
-            @closeAdd="onAddClose"
-            @refreshDatatable="refreshDatatable"
-          />
-        </v-overlay>
+        <new-investigation
+          :isEdit="true"
+          :statsAndMenuData="statsAndMenuData"
+          :status="isWantToAddNewCommunity"
+          :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
+          :investigationDetailsData="investigationDetailsData"
+          @closeAdd="onAddClose"
+          v-if="isWantToAddNewCommunity"
+          @refreshDatatable="refreshDatatable"
+        />
         <app-dialog
           :status="isWantToDelete"
           icon="mdi-alert"

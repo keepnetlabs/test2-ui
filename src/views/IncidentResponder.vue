@@ -67,6 +67,12 @@
       >
         <new-investigation @closeAdd="openInvestigationOverlay = false" />
       </v-overlay>
+      <new-investigation
+        @closeAdd="isWantToAddNewInvestigation = false"
+        ref="refNewInvestigation"
+        :status="isWantToAddNewInvestigation"
+        v-if="isWantToAddNewInvestigation"
+      />
       <div class="columns-row">
         <div
           class="dashboard-cards phishing-reporter mr-2"
@@ -302,6 +308,7 @@
                               :filterable="true"
                               :options="true"
                               :rowActions="[]"
+                              :cell-padding="15"
                               class="no-sub-border-datatable"
                               :empty="matchingInvestigation.iEmpty"
                             />
@@ -408,6 +415,33 @@
                 >{{ getSourceValue(scope, col) }}</span
               >
             </template>
+            <template v-slot:extended-view-slot>
+              <div class="row-edit-div">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Notify reporting user about this update"
+                  v-model="extendedView.isNotify"
+                ></v-checkbox>
+              </div>
+              <div class="row-edit-div">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Add Custom Message"
+                  v-model="extendedView.isMessage"
+                  :disabled="!extendedView.isNotify"
+                ></v-checkbox>
+              </div>
+              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
+                <v-textarea
+                  outlined
+                  dense
+                  v-model="extendedView.customMessage"
+                  rows="3"
+                  placeholder="Write custom messages for recipients"
+                  row-height="30"
+                ></v-textarea>
+              </div>
+            </template>
           </datatable>
         </v-card>
       </div>
@@ -415,7 +449,7 @@
   </div>
 </template>
 <script>
-import { exportReportedEmails } from '../api/integrations'
+import { updateNotifiedEmail } from '../api/incidentResponder'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import {
@@ -682,7 +716,7 @@ export default {
           editOptions: {
             component: 'select',
             props: {
-              items: ['N/A', 'Phishing', 'Malicious', 'Clean'],
+              items: ['Phishing', 'Malicious', 'NonMalicious'],
               rules: [(v) => required(v, 'Required')]
             }
           },
@@ -703,7 +737,7 @@ export default {
             component: 'select',
             props: {
               rules: [(v) => required(v, 'Required')],
-              items: ['Open', 'Closed', 'In Progress', 'FalsePositive', 'BeingAnalyzed']
+              items: ['Open', 'Closed', 'InProgress', 'FalsePositive', 'BeingAnalyzed']
             }
           }
         },
@@ -732,9 +766,24 @@ export default {
           type: 'text',
           isEditable: true,
           editOptions: {
-            component: 'textfield'
+            component: 'textfield',
+            props: {
+              placeholder: 'Enter Tags'
+            }
           },
           width: '150'
+        },
+        {
+          property: 'note',
+          label: 'Notes',
+          isEditable: true,
+          editOptions: {
+            component: 'textarea',
+            props: {
+              placeholder: 'Write notes for this incident'
+            }
+          },
+          show: false
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -797,6 +846,12 @@ export default {
           enabled: false
         }
       }
+    },
+    isWantToAddNewInvestigation: false,
+    extendedView: {
+      isNotify: true,
+      isMessage: false,
+      customMessage: ''
     }
   }),
   computed: {
@@ -809,41 +864,53 @@ export default {
     this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
   },
   created() {
-    getRunningInvestigations()
-      .then((response) => {
-        const {
-          data: { data, status }
-        } = response
-        this.investigationListData = data
-        this.$refs.refRecentInv.loadWithDataArray(data || [])
-      })
-      .catch((error) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting the recent investigations! '
+    this.callForGetRunningInvestigations()
+    this.callForGetTopRules()
+    this.callForSearchNotifiedMail()
+  },
+  methods: {
+    ...mapActions({
+      getCurrentUser: 'auth/getCurrentUser'
+    }),
+    callForGetRunningInvestigations() {
+      getRunningInvestigations()
+        .then((response) => {
+          const {
+            data: { data, status }
+          } = response
+          this.investigationListData = data
+          this.$refs.refRecentInv.loadWithDataArray(data || [])
         })
-      })
-    getTopRules()
-      .then((response) => {
-        const {
-          data: { data, status }
-        } = response
-        this.$refs.refTopRules.loadWithDataArray(data || [])
-      })
-      .catch((error) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting the top rules!'
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting the recent investigations! '
+          })
         })
-      })
-    const payload = {
-      pageNumber: 1,
-      pageSize: 5,
-      orderBy: 'CreateDate',
-      ascending: true
-    }
-    searchNotifiedMail(payload)
-      .then((response) => {
+    },
+    callForGetTopRules() {
+      getTopRules()
+        .then((response) => {
+          const {
+            data: { data, status }
+          } = response
+          this.$refs.refTopRules.loadWithDataArray(data || [])
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting the top rules!'
+          })
+        })
+    },
+    callForSearchNotifiedMail() {
+      const payload = {
+        pageNumber: 1,
+        pageSize: 5,
+        orderBy: 'CreateDate',
+        ascending: true
+      }
+      searchNotifiedMail(payload).then((response) => {
         const {
           data: {
             data: { results },
@@ -854,18 +921,7 @@ export default {
         console.log('tableData', tableData)
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
-      .catch((error) => {
-        /*this.$store.dispatch('common/createSnackBar', {
-          errorState: true,
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting the notified emails!'
-        })*/
-      })
-  },
-  methods: {
-    ...mapActions({
-      getCurrentUser: 'auth/getCurrentUser'
-    }),
+    },
     getSourceValue(scope, col) {
       if (scope.row.matchingPlaybooks.length > 0) {
         const item = scope.row.matchingPlaybooks.reduce((acc, item) => {
@@ -913,7 +969,30 @@ export default {
         params: { id: row.resourceId }
       })
     },
-    handleEdit(selectedRow) {},
+    handleEdit(selectedRow) {
+      selectedRow.map((item, index) => {
+        const payload = {
+          result: item.result === 'N/A' ? 'Unknown' : item.result,
+          status: item.status,
+          tag: item.resultTag || '',
+          note: item.note || '',
+          isNotifyUser: this.extendedView.isNotify,
+          customMessage: this.extendedView.customMessage || ''
+        }
+        console.log('payload', payload)
+        updateNotifiedEmail(item.resourceId, payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
+            this.callForGetRunningInvestigations()
+            this.callForGetTopRules()
+            this.callForSearchNotifiedMail()
+          })
+          .catch((error) => {})
+      })
+    },
     irDetailsOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',
@@ -948,13 +1027,8 @@ export default {
       }
     },
     handleReportedEmailInvestigate(row) {
-      this.$router.push({
-        name: 'Investigations',
-        params: {
-          selectedEmail: row,
-          isSelectedEmail: true
-        }
-      })
+      console.log('row', row)
+      this.isWantToAddNewInvestigation = true
     },
     emptyPhishingButtonClick() {
       this.$router.push('/phishing-reporter')
@@ -1446,6 +1520,12 @@ export default {
   }
   .k-table__wrapper {
     padding-bottom: 0;
+    .card .table-wrapper .el-table th > .cell {
+      margin-left: 24px;
+    }
+    .card .table-wrapper .el-table td > .cell {
+      padding-left: 32px !important;
+    }
   }
   .v-card {
     border-radius: 12px;

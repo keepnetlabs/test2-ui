@@ -31,8 +31,7 @@
             <div
               :key="col.label"
               class="row-edit-div"
-              :style="{ order: index * 10 }"
-              v-for="(col, index) in options"
+              v-for="col in options"
               v-if="
                 !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdate'
               "
@@ -167,6 +166,7 @@
                         (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'textarea')
                       "
                   rows="2"
+                  v-bind="col.editOptions.props"
                   row-height="20"
                 ></v-textarea>
                 <v-select
@@ -186,7 +186,7 @@
                 <v-text-field
                   :autofocus="!multipleEditDisables[col.property]"
                   :value="multipleEditModels[col.property]"
-                  @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                  @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                   class="edit-text-field"
                   dense
                   label="Multiple Values"
@@ -214,7 +214,6 @@
                     </v-btn>
                   </template>
                 </v-text-field>
-
                 <v-menu
                   ref="menu1"
                   :close-on-content-click="false"
@@ -259,7 +258,7 @@
 
                   <v-date-picker
                     :value="multipleEditModels[col.property]"
-                    @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                    @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                     no-title
                   ></v-date-picker>
                 </v-menu>
@@ -293,7 +292,7 @@
                     col.editOptions.component === 'select'
                   "
                   :value="multipleEditModels[col.property]"
-                  @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                  @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                 >
                   <template v-slot:append v-if="!multipleEditDisables[col.property]">
                     <v-btn
@@ -307,8 +306,8 @@
                 </v-select>
               </div>
             </div>
-
-            <div class="edit-popup__footer" style="order: 55555;" v-if="hasEditPopupFooter()">
+            <slot name="body" v-if="editMode"> </slot>
+            <div class="edit-popup__footer" v-if="hasEditPopupFooter()">
               <div class="edit-footer-date">
                 <div
                   class="edit-date-created"
@@ -398,7 +397,12 @@ export default {
     },
     isEditableRuntime: {
       type: Boolean,
-      default: true
+      default: false
+    }
+  },
+  watch: {
+    value(rows) {
+      this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
     }
   },
   data() {
@@ -502,7 +506,9 @@ export default {
       })
     },
     handleMultipleEdits(item, key, value) {
-      item[key] = value
+      item.map((i) => {
+        i[key] = value
+      })
       this.multipleEditModels[key] = value
     },
     handleEditPopupTextFieldChange(value, props) {

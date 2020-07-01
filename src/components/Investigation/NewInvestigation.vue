@@ -68,7 +68,6 @@
                     v-model="targetUsersValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
-                    :input-value="groupId"
                     multiple
                     dense
                     persistent-hint
@@ -882,8 +881,8 @@ export default {
         let _this = this
         this.investgationName = this.investigationDetailsData.name
         this.startDate = this.investigationDetailsData.startDate
-        this.data.push(this.investigationDetailsData.startDate)
-        this.data.push(this.investigationDetailsData.endDate)
+        //this.data.push(this.investigationDetailsData.startDate)
+        //this.data.push(this.investigationDetailsData.endDate)
         this.endDate = this.investigationDetailsData.endDate
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -

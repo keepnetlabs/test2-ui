@@ -89,7 +89,11 @@
           :titleKey="titleKey"
           @handleEdit="$emit('handleEdit', $event)"
           @closeEditPopup="closeEditPopup"
-        />
+        >
+          <template v-slot:body>
+            <slot name="extended-view-slot"> </slot>
+          </template>
+        </extended-view>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -747,6 +751,10 @@ export default {
       type: String,
       default: 'name'
     },
+    cellPadding: {
+      type: Number,
+      default: 0
+    },
     isEditableRuntime: {
       type: Boolean,
       default: false
@@ -962,6 +970,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
+
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
     const browser = navigator.userAgent.toLowerCase()
@@ -1038,7 +1047,7 @@ export default {
         cell.querySelector('span') ||
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('div')
-      const spanWidth = span.getBoundingClientRect().width + 15
+      const spanWidth = span.getBoundingClientRect().width + 15 + this.cellPadding
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         this.overFlowTooltipContent = row[column.property]

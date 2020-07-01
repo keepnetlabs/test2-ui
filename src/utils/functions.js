@@ -12,6 +12,8 @@ export function getBtnStatusColor(type) {
       return '#e6a23c'
     case 'malicious':
       return '#e6a23c'
+    case 'nonmalicious':
+      return '#00bcd4'
     case 'offline':
       return '#e6a23c'
     case 'expired':
