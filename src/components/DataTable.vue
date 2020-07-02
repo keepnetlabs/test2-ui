@@ -1268,7 +1268,7 @@ export default {
       this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
         pageNumber: this.currentPage,
-        pageSize: this.countRow || this.rowCount,
+        pageSize: this.rowCount || this.countRow,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1] ? true : false
       })
     },
