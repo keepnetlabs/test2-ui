@@ -223,9 +223,7 @@ export default {
              */
         })
     },
-    callForTurnOn(row) {
-      console.log('row', row)
-    },
+    callForTurnOn(row) {},
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {
         const payload = {

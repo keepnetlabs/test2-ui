@@ -1059,6 +1059,7 @@ export default {
     handleReportedEmailInvestigate(row) {
       getNotifiedEmail(row.resourceId).then((response) => {
         this.selectedEmail = response.data.data
+        console.log('this.selectedEmail', this.selectedEmail)
         this.isWantToAddNewInvestigation = true
       })
     },
