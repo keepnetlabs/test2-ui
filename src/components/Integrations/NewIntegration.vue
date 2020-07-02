@@ -579,6 +579,11 @@ export default {
   max-width: 554px !important;
 }
 .new-integration {
+  .new-integration__api-key__textfield {
+    .v-text-field__details {
+      margin-bottom: 0;
+    }
+  }
   .connection-error-state {
     font-size: 9px;
     font-weight: normal;
