@@ -65,6 +65,13 @@
             />
           </v-btn>
         </v-list-item-content>
+        <v-list-item-content v-if="this.formValues.file">
+          <div>
+            <div class="add-in-settings__image-container">
+              <img style="width: 100%; height: 100%;" :src="getImagePreview()" />
+            </div>
+          </div>
+        </v-list-item-content>
       </v-list-item>
 
       <v-list-item
@@ -172,10 +179,23 @@
         <v-btn @click="submit" class="white--text btn-util" color="#2196f3" rounded>
           SAVE CHANGES
         </v-btn>
-        <v-btn class="white--text btn-util ml-3" color="#00bcd4" rounded>
+        <v-btn
+          @click="submit($event, true)"
+          class="white--text btn-util ml-3"
+          color="#00bcd4"
+          rounded
+        >
           <v-icon left>mdi-download</v-icon>
           Save and Download Add-in
         </v-btn>
+        <img
+          src="../../../assets/img/spinner.png"
+          class="add-in-settings__spinner"
+          v-if="spinnerStatus"
+        />
+        <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
+          >Download link is generating...</span
+        >
         <a
           class="add-in-settings__link"
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
@@ -190,6 +210,7 @@
 
 <script>
 import { maxLength } from '../../../utils/validations'
+import { getPhishingReporterImg } from '../../../api/phishingReporter'
 
 export default {
   name: 'AddinSettings',
@@ -209,6 +230,10 @@ export default {
     showHeader: {
       type: Boolean,
       default: true
+    },
+    spinnerStatus: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -236,12 +261,16 @@ export default {
     onBtnSelectFileClick(e) {
       this.$refs.uploader.click()
     },
+    getImagePreview() {
+      return this.formValues.file && URL.createObjectURL(this.formValues.file)
+    },
     onFileChanged(e) {
       this.formValues.file = e.target.files[0]
+      console.log('this.formValues.file', this.formValues.file)
     },
-    submit() {
+    submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
-        this.$emit('updateForm', this.formValues)
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
         return false
@@ -276,6 +305,9 @@ export default {
       this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
       this.formValues.analysisThankYouMessage = analysisThankYouMessage
       this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
+      getPhishingReporterImg().then((response) => {
+        this.formValues.file = response.data
+      })
     } else {
       this.formValues.brandName = localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
@@ -292,6 +324,12 @@ export default {
 </script>
 
 <style lang="scss">
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
 .add-in {
   &-settings {
     &__label {
@@ -301,7 +339,27 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
     }
-
+    &__image-container {
+      border: 2px solid whitesmoke;
+      border-radius: 3px;
+      transition: all 0.3s;
+      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+      &:hover {
+        transform: scale(1.05) translateY(-0.5rem);
+        box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.4);
+        z-index: 20;
+      }
+    }
+    &__spinner {
+      animation: spin 2s linear infinite;
+      margin-left: 8px;
+      &-text {
+        white-space: nowrap;
+        margin-left: 4px;
+        font-size: 10px;
+        color: rgb(0, 188, 212) !important;
+      }
+    }
     &__title {
       font-size: 24px;
       line-height: 1.29;
@@ -354,6 +412,7 @@ export default {
       }
       .v-list-item__content {
         padding: 0 !important;
+        overflow: visible;
       }
     }
 
