@@ -277,14 +277,18 @@
                 class="no-sub-border-datatable"
               >
                 <template v-slot:datatable-column-popup="{ scope, col }">
+                  <span v-if="scope.row[col.property] == 0">
+                    No Matches
+                  </span>
                   <span
+                    v-else
                     @click="matchingPopupClick(scope.row)"
                     style="cursor: pointer; color: #2196f3;"
                   >
                     {{ scope.row[col.property] == 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
-                    :status="showMatchingModal"
+                    :stadtus="showMatchingModal"
                     icon="mdi-email"
                     title="Matching Incidents"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
@@ -408,7 +412,7 @@
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
             @handleEdit="handleEdit"
-            titleKey="reportedBy"
+            titleKey="subject"
           >
             <template v-slot:datatable-custom-column="{ scope }">
               <span v-if="scope.row.matchingPlaybooks.length === 0">
@@ -471,7 +475,6 @@ import {
 } from '../api/incidentResponder'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
-import { required } from '../utils/validations'
 import AppDialog from '../components/AppDialog'
 
 export default {
@@ -996,7 +999,7 @@ export default {
     handleEdit(selectedRow) {
       selectedRow.map((item, index) => {
         const payload = {
-          result: item.result === 'N/A' ? 'Unknown' : item.result,
+          result: item.result,
           status: item.status,
           tag: item.resultTag || '',
           note: item.note || '',
@@ -1015,7 +1018,9 @@ export default {
             this.callForSearchNotifiedMail()
             this.$store.dispatch('investigations/getIrSummary')
           })
-          .catch((error) => {})
+          .catch((error) => {
+            console.log('error.response', error.response)
+          })
       })
     },
     irDetailsOnClick(row) {

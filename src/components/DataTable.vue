@@ -91,7 +91,7 @@
           @closeEditPopup="closeEditPopup"
         >
           <template v-slot:body>
-            <slot name="extended-view-slot"> </slot>
+            <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
           </template>
         </extended-view>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
