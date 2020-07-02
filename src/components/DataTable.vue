@@ -383,7 +383,7 @@
               :maxWidth="col.maxWidth || ''"
               :minWidth="col.minWidth || ''"
               :prop="col.property"
-              :sortable="col.sortable"
+              :sortable="'custom'"
               :width="col.width || ''"
               v-for="(col, ind) of columns"
               v-if="col.show"
@@ -976,10 +976,6 @@ export default {
   },
 
   methods: {
-    handleTableData() {
-      return this.showfilteredData ? this.filteredData : this.tableData
-    },
-
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
@@ -1030,25 +1026,62 @@ export default {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.filteredData.length) {
-          this.filteredData = this.initialData.sort(function (a, b) {
-            if (sortProps.order === 'descending') {
-              return b[sortProps.prop] - a[sortProps.prop]
-            } else {
-              return a[sortProps.prop] - b[sortProps.prop]
-            }
-          })
+          this.filteredData = this.sortFunction(this.filteredData, sortProps)
+          return this.filteredData
         } else {
-          this.tableData = this.initialData
-            .sort(function (a, b) {
-              if (sortProps.order === 'descending') {
-                return b[sortProps.prop] - a[sortProps.prop]
-              } else {
-                return a[sortProps.prop] - b[sortProps.prop]
-              }
-            })
-            .slice((this.currentPage - 1) * this.rowCount, this.currentPage * this.rowCount)
+          const data = this.sortFunction(this.initialData, sortProps)
+          this.tableData = data.slice(
+            (this.currentPage - 1) * this.rowCount,
+            this.currentPage * this.rowCount
+          )
+          return this.tableData
         }
       }
+    },
+
+    sortFunction(data, sortProps) {
+      const isDate = function () {
+        const isDate = data.reduce((acc, item) => {
+          acc.push(
+            new Date(item[sortProps.prop]) !== 'Invalid Date' &&
+              !isNaN(new Date(item[sortProps.prop]))
+          )
+          return acc
+        }, [])
+        return isDate.includes(false)
+      }
+      let sortData = []
+      if (!isDate()) {
+        sortData = data.sort(function (a, b) {
+          if (sortProps.order === 'descending' && sortProps.prop) {
+            return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop])
+          } else {
+            return new Date(b[sortProps.prop]) - new Date(a[sortProps.prop])
+          }
+        })
+      } else {
+        sortData = data.sort(function (a, b) {
+          if (a === b) {
+            return 0
+          }
+          // nulls sort after anything else
+          else if (a === null) {
+            return 1
+          } else if (b === null) {
+            return -1
+          }
+          // otherwise, if we're ascending, lowest sorts first
+          else if (sortProps.order === 'ascending') {
+            return a < b ? -1 : 1
+          }
+          // if descending, highest sorts first
+          else {
+            return a < b ? 1 : -1
+          }
+        })
+      }
+
+      return sortData
     },
 
     paginationChangedEvent(paginationProps) {
@@ -1190,6 +1223,7 @@ export default {
       this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
         pageNumber: this.currentPage,
+        pageSize: this.countRow || this.rowCount,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1] ? true : false
       })
     },

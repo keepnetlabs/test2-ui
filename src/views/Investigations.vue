@@ -321,11 +321,12 @@ export default {
         params: { id: value.row.resourceId }
       })
     },
-    exportInvestigationList({ exportTypes, reportAllPages, pageNumber }) {
+    exportInvestigationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      debugger
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize: 5,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'ExpireDate',
           ascending: true,
           reportAllPages,

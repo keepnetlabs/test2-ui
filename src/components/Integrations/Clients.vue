@@ -182,11 +182,11 @@ export default {
       this.isWantToDelete = false
     },
     handleAdd() {},
-    exportClientList({ exportTypes, reportAllPages, pageNumber }) {
+    exportClientList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber: 1,
-          pageSize: 3,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'Name',
           ascending: false,
           reportAllPages,

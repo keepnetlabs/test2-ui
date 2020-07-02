@@ -123,7 +123,7 @@
             </v-list-item-subtitle>
             <div
               v-for="(item, index) in formValues.apiKeys"
-              :key="item.value"
+              :key="item.status"
               class="position-relative new-integration__api-keys"
             >
               <div class="max-width__form">
@@ -132,30 +132,44 @@
                   outlined
                   dense
                   class="new-integration__textfield new-integration__api-key__textfield mt-2"
-                  v-model="formValues.apiKeys[index].value"
+                  :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
+                  v-model="item.value"
                   required
                   @input="handleApiKeyChange"
                   height="40"
                 ></v-text-field>
+                <div class="connection-error-state" v-if="item.status === 'failed'">
+                  Error message from connection comes here
+                </div>
                 <div class="new-integration__api-keys__connection-status" v-if="!!item.status">
                   <v-icon
                     medium
                     left
-                    class="ml-1"
-                    v-if="formValues.apiKeys.length > 1"
-                    @click="formValues.apiKeys.splice(index, 1)"
-                    >{{
-                      item.status == 'loading'
-                        ? 'mdi-rotate-left'
-                        : item.status == 'failed'
-                        ? 'mdi-close'
-                        : 'mdi-check'
-                    }}</v-icon
+                    class="ml-1 loading-spin"
+                    v-if="item.status == 'loading'"
+                    color="#00bcd4"
+                    >mdi-rotate-left</v-icon
                   >
+                  <v-icon medium left class="ml-1" v-if="item.status == 'success'" color="#43a047"
+                    >mdi-check</v-icon
+                  >
+                  <v-icon
+                    medium
+                    left
+                    class="ml-1"
+                    color="#f56c6c"
+                    v-if="item.status == 'failed' && loadingState.length"
+                    >mdi-close</v-icon
+                  >
+                  <div v-if="item.status == 'failed' && !loadingState.length">
+                    <button class="retry-button" @click="retryTestConnection(item)">
+                      RETRY
+                    </button>
+                  </div>
                 </div>
                 <div
                   class="new-integration__api-keys__delete"
-                  :style="{ right: item.status ? '-80px' : '-40px' }"
+                  :style="{ right: item.status ? '-100px' : '-40px' }"
                 >
                   <v-icon
                     medium
@@ -163,7 +177,7 @@
                     class="ml-2"
                     v-if="formValues.apiKeys.length > 1"
                     @click="formValues.apiKeys.splice(index, 1)"
-                    >mdi-close</v-icon
+                    >mdi-delete</v-icon
                   >
                 </div>
               </div>
@@ -180,7 +194,13 @@
                 :class="{ 'new-integration__api-key__test-text': isTestConnectionDisabled }"
                 @click="testConnection"
               >
-                TEST CONNECTION
+                <div v-if="loadingState.length" class="test-connection">
+                  <v-icon medium left class="ml-1 loading-spin" color="#00bcd4"
+                    >mdi-rotate-left</v-icon
+                  >
+                  TESTING CONNECTION
+                </div>
+                <div v-else class="test-connection">TEST CONNECTION</div>
               </div>
             </div>
           </v-list-item-content>
@@ -229,7 +249,7 @@
             <template v-slot:activator="{ on: tooltip }">
               <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
             </template>
-            <span class="tooltip-span">{{ 'Add Users' }}</span>
+            <span class="tooltip-span">{{ 'Send URLs without query string parameters' }}</span>
           </v-tooltip>
         </div>
         <v-list-item class="px-0">
@@ -330,6 +350,7 @@ export default {
   },
   data() {
     return {
+      loadingState: [],
       formValues: {
         description: null,
         analysisEngineTypeResourceId: null,
@@ -492,10 +513,27 @@ export default {
         apiUrl: null
       }
     },
+    retryTestConnection(item) {
+      item.status = 'loading'
+      this.loadingState.push('loading')
+      testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
+        .then((response) => {
+          item.status = 'success'
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when testing connections!'
+          })
+          item.status = 'failed'
+        })
+        .finally(() => this.loadingState.shift('loading'))
+    },
     testConnection() {
       for (let i = 0; i < this.formValues.apiKeys.length; i++) {
         const item = this.formValues.apiKeys[i]
         this.formValues.apiKeys[i].status = 'loading'
+        this.loadingState.push('loading')
         testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
           .then((response) => {
             this.formValues.apiKeys[i].status = 'success'
@@ -507,6 +545,7 @@ export default {
             })
             this.formValues.apiKeys[i].status = 'failed'
           })
+          .finally(() => this.loadingState.shift('loading'))
       }
     }
   },
@@ -518,6 +557,20 @@ export default {
 </script>
 
 <style lang="scss">
+.loading-spin {
+  animation-name: spin;
+  animation-duration: 1000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+@keyframes spin {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
 .position-relative {
   position: relative;
 }
@@ -526,6 +579,42 @@ export default {
   max-width: 554px !important;
 }
 .new-integration {
+  .connection-error-state {
+    font-size: 9px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #d0021b;
+    position: absolute;
+    top: 42px;
+    left: 13px;
+    &__border {
+      fieldset {
+        border-color: #d0021b;
+      }
+    }
+  }
+  .test-connection {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #00bcd4;
+  }
+  .retry-button {
+    color: #f56c6c;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+  }
   &__container {
     padding: 24px 0 0 96px !important;
     border-radius: 0 !important;
@@ -552,7 +641,7 @@ export default {
       color: #757575;
       position: absolute;
       right: -40px;
-      top: 0px;
+      top: -2px;
       justify-content: center;
       display: none;
     }

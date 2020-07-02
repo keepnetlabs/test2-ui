@@ -218,11 +218,11 @@ export default {
       this.modalStatus = status
       if (restart) this.getDatatableList()
     },
-    exportIntegrationList({ exportTypes, reportAllPages, pageNumber }) {
+    exportIntegrationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber: 1,
-          pageSize: 3,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'Name',
           ascending: false,
           reportAllPages,

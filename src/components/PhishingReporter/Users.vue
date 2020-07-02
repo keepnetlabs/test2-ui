@@ -226,11 +226,11 @@ export default {
     callForTurnOn(row) {
       console.log('row', row)
     },
-    exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber }) {
+    exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize: 10,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'LastSeen',
           ascending: false,
           reportAllPages,

@@ -1038,11 +1038,11 @@ export default {
     }
   }),
   methods: {
-    exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber }) {
+    exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize: 5,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'ReceivedTime',
           ascending: true,
           reportAllPages,
