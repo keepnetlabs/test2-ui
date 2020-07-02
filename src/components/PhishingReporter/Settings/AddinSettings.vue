@@ -184,6 +184,7 @@
           class="white--text btn-util ml-3"
           color="#00bcd4"
           rounded
+          :disabled="spinnerStatus"
         >
           <v-icon left>mdi-download</v-icon>
           Save and Download Add-in
@@ -501,7 +502,6 @@ export default {
 }
 
 .btn-util {
-  font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.71;
@@ -515,6 +515,14 @@ export default {
 
   .v-icon {
     font-size: 19px;
+  }
+  &.v-btn--disabled {
+    .v-btn__content {
+      color: white !important;
+      .v-icon {
+        color: white !important;
+      }
+    }
   }
 }
 

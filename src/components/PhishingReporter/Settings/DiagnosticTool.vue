@@ -37,6 +37,7 @@
         class="white--text diagnostic-tool__btn-util ml-3"
         color="#00bcd4"
         rounded
+        :disabled="spinnerStatus"
       >
         <v-icon left>mdi-download</v-icon>
         Download diagnostic tool
@@ -328,6 +329,15 @@ export default {
 
     .v-icon {
       font-size: 19px;
+    }
+
+    &.v-btn--disabled {
+      .v-btn__content {
+        color: white !important;
+        .v-icon {
+          color: white !important;
+        }
+      }
     }
   }
 

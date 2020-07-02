@@ -316,7 +316,6 @@ export default {
       })
     },
     exportInvestigationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      debugger
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
