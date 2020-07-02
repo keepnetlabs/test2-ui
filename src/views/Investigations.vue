@@ -2,20 +2,14 @@
   <div class="investigations">
     <div class="investigations__container">
       <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
-      <v-overlay
-        id="add-new-community-overlay"
-        :value="isWantToAddNewCommunity"
-        :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
-        :opacity="1"
-        :z-index="999"
-        color="white"
-      >
-        <new-investigation
-          @closeAdd="onAddClose"
-          @refreshDatatable="refreshDatatable"
-          ref="refNewInvestigation"
-        />
-      </v-overlay>
+
+      <new-investigation
+        @closeAdd="onAddClose"
+        @refreshDatatable="refreshDatatable"
+        ref="refNewInvestigation"
+        :status="isWantToAddNewCommunity"
+        v-if="isWantToAddNewCommunity"
+      />
       <app-dialog
         :status="isWantToStopInvestigation"
         icon="mdi-alert"

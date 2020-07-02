@@ -103,6 +103,22 @@
         </v-list-item-content>
       </v-list-item>
 
+      <v-list-item
+        class="add-user-overlay__list-item"
+        :key="index"
+        v-for="(item, index) in customFields"
+      >
+        <v-list-item-content>
+          <label class="add-user-overlay__label">{{ item.name }}</label>
+          <v-text-field
+            outlined
+            dense
+            v-model="customFieldsModels[item.key]"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
       <v-list-item class="add-user-overlay__list-item">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="priority">Priority</label>
@@ -186,6 +202,8 @@ export default {
         addToUserGroups: [],
         isActive: true
       },
+      customFields: [],
+      customFieldsModels: {},
       autoCompleteItems: [],
       priorityItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh'],
       validations: {

@@ -233,7 +233,10 @@ export default {
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
-          this.isWantToShowAddUsersManuallyModal = true
+          this.isWantToShowAddUsersModal = true
+          break
+        case this.addUsersItems[1]:
+          //this.isWantToShowImportUsersFromFileModal = true
           break
         default:
           break

@@ -89,7 +89,11 @@
           :titleKey="titleKey"
           @handleEdit="$emit('handleEdit', $event)"
           @closeEditPopup="closeEditPopup"
-        />
+        >
+          <template v-slot:body>
+            <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
+          </template>
+        </extended-view>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -103,13 +107,13 @@
               @keyup="searchChangedEvent"
             />
           </div>
-          <div class="table-settings" v-if="options">
+          <div class="table-settings" v-if="options" v-once>
             <v-btn
               class="clust-btn btn-hover mr-2"
               color="#2196f3"
               icon
               outlined
-              style="border-radius: 6px !important;"
+              style="border-radius: 6px !important; order: 1;"
               v-if="groupable"
             >
               <v-icon>mdi-format-list-bulleted</v-icon>
@@ -118,7 +122,7 @@
               class="clust-btn cluster-btn btn-hover mr-4"
               color="white"
               icon
-              style="border-radius: 6px !important;"
+              style="border-radius: 6px !important; order: 2;"
               v-if="groupable"
             >
               <v-icon>mdi-format-list-text</v-icon>
@@ -199,6 +203,7 @@
                   <v-btn
                     class="btn-add mr-1"
                     icon
+                    style="order: 3;"
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
                   >
@@ -217,6 +222,7 @@
                     <v-btn
                       class="btn-hover mr-1"
                       icon
+                      style="order: 4;"
                       v-bind="attrs"
                       v-on="{ ...tooltip, ...menu }"
                     >
@@ -237,7 +243,7 @@
 
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn class="btn-hover mr-1" icon v-on="on">
+                <v-btn class="btn-hover mr-1" icon v-on="on" style="order: 5;">
                   <v-icon @click="printMethod()">mdi-printer</v-icon>
                 </v-btn>
               </template>
@@ -245,7 +251,13 @@
             </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn @click="isSettingsOpened = true" class="btn-hover mr-1" icon v-on="on">
+                <v-btn
+                  @click="isSettingsOpened = true"
+                  class="btn-hover mr-1"
+                  icon
+                  v-on="on"
+                  style="order: 6;"
+                >
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </template>
@@ -412,6 +424,27 @@
                 <data-table-progress :col="col" :scope="scope" v-if="col.type === 'progress'" />
                 <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
                 <data-table-link :col="col" :scope="scope" v-if="col.type === 'link'" />
+                <div v-if="col.type === 'badge'">
+                  <v-tooltip bottom v-if="scope.row && scope.row[col.property]">
+                    <template v-slot:activator="{ on }">
+                      <badge
+                        :color="getBtnStatusColor(scope.row[col.property])"
+                        :listeners="on"
+                        :full-width="col.fullWidth"
+                        v-bind="col.props"
+                        :text="getDataTableFieldLabel(scope.row[col.property])"
+                      />
+                    </template>
+                    <span class="tooltip-span">
+                      <slot name="status-tooltip-text" :scope="scope" :col="col">
+                        {{ scope.row[col.property] }}
+                      </slot>
+                    </span>
+                  </v-tooltip>
+                  <span v-else>
+                    {{ col.emptyText || '' }}
+                  </span>
+                </div>
                 <div v-if="col.type === 'status'">
                   <v-tooltip bottom v-if="scope.row && scope.row['status']">
                     <template v-slot:activator="{ on }">
@@ -419,7 +452,8 @@
                         :color="getBtnStatusColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.status"
+                        v-bind="col.props"
+                        :text="getDataTableFieldLabel(scope.row.status)"
                       />
                     </template>
                     <span class="tooltip-span">
@@ -439,7 +473,7 @@
                         :color="getBtnPriorityColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.priority"
+                        :text="getDataTableFieldLabel(scope.row.priority)"
                       />
                     </template>
                     <span class="tooltip-span">{{ scope.row.priority }}</span>
@@ -450,6 +484,9 @@
                 </div>
                 <div v-if="col.type === 'popup'">
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
+                </div>
+                <div v-if="col.type === 'slot'">
+                  <slot name="datatable-custom-column" :col="col" :scope="scope"></slot>
                 </div>
               </template>
               <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">
@@ -697,7 +734,7 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
+import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
 export default {
   components: {
     Badge,
@@ -723,6 +760,10 @@ export default {
     titleKey: {
       type: String,
       default: 'name'
+    },
+    cellPadding: {
+      type: Number,
+      default: 0
     },
     isEditableRuntime: {
       type: Boolean,
@@ -939,6 +980,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
+
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
     const browser = navigator.userAgent.toLowerCase()
@@ -998,6 +1040,9 @@ export default {
     getBtnPriorityColor(type) {
       return getBtnPriorityColor(type)
     },
+    getDataTableFieldLabel(field) {
+      return getDataTableFieldLabel(field)
+    },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
     },
@@ -1011,13 +1056,13 @@ export default {
         cell.querySelector('span') ||
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('div')
-      const spanWidth = span.getBoundingClientRect().width + 15
+      const spanWidth = span.getBoundingClientRect().width + 15 + this.cellPadding
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         this.overFlowTooltipContent = row[column.property]
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + 60}px`,
-          left: `${parentRect.left}px`
+          left: `${parentRect.left + this.cellPadding}px`
         }
       }
     },

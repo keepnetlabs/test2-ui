@@ -76,6 +76,11 @@
                 </v-list-item-content>
               </v-list-item>
             </div>
+            <v-list-item class="map-fields__list-item mt-2">
+              <v-list-item-content>
+                <mapper ref="refMapper" :columns="mapperColumns" />
+              </v-list-item-content>
+            </v-list-item>
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3"> </v-stepper-content>
         </v-stepper-items>
@@ -119,10 +124,12 @@
 
 <script>
 import AppModal from '../AppModal'
+import Mapper from '../Mapper'
 export default {
   name: 'ImportUsersFromFileModal',
   components: {
-    AppModal
+    AppModal,
+    Mapper
   },
   data() {
     return {
@@ -130,7 +137,48 @@ export default {
       formValues: {
         sheet: '',
         group: ''
-      }
+      },
+      mapperColumns: [
+        {
+          property: 'firstName',
+          width: 250,
+          show: true,
+          label: 'First Name'
+        },
+        {
+          property: 'lastName',
+          width: 250,
+          show: true,
+          label: 'Last Name'
+        },
+        {
+          property: 'email',
+          width: 250,
+          show: true,
+          label: 'Email'
+        },
+        {
+          property: 'department',
+          width: 250,
+          show: true,
+          label: 'Department',
+          isCustom: true
+        },
+        {
+          property: 'jobTitle',
+          width: 250,
+          show: true,
+          label: 'Job Title',
+          isCustom: true
+        },
+        {
+          property: 'middleName',
+          width: 250,
+          show: true,
+          label: 'Middle Name',
+          isCustom: true
+        }
+      ]
     }
   },
   props: {
@@ -147,6 +195,34 @@ export default {
       this.step += flag
     },
     submit() {}
+  },
+  mounted() {
+    this.$refs.refMapper.loadWithDataArray([
+      {
+        firstName: 'Gürkan',
+        lastName: 'Ugurlu',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        department: 'Computer',
+        jobTitle: 'Engineer',
+        middleName: 'Nurkan'
+      },
+      {
+        firstName: 'Gürkan',
+        lastName: 'Ugurlu',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        department: 'Computer',
+        jobTitle: 'Engineer',
+        middleName: 'Nurkan'
+      },
+      {
+        firstName: 'Gürkan',
+        lastName: 'Ugurlu',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        department: 'Computer',
+        jobTitle: 'Engineer',
+        middleName: 'Nurkan'
+      }
+    ])
   }
 }
 </script>
@@ -244,6 +320,10 @@ export default {
 }
 .map-fields {
   &__list-item {
+    .v-list-item__content {
+      padding: 1px;
+      overflow-x: auto;
+    }
     &--1 {
       margin-top: 24px;
     }

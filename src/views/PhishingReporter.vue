@@ -230,19 +230,25 @@ export default {
       const year = today.getFullYear()
       switch (this.selectedDate) {
         case this.listItems[0]:
+          const yesterday = new Date(new Date().setDate(day - 1))
           return {
-            startDate: `${year}-${month}-${new Date(new Date().setDate(day - 1)).getDate()}`,
-            endDate: `${year}-${month}-${day}`
+            startDate: `${yesterday.getFullYear()}-${
+              yesterday.getMonth() + 1
+            }-${yesterday.getDate()}`,
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day + 1)).getDate()}`
           }
         case this.listItems[1]:
+          const sevenDaysAgo = new Date(new Date().setDate(day - 7))
           return {
-            startDate: `${year}-${month}-${new Date(new Date().setDate(day - 7)).getDate()}`,
-            endDate: `${year}-${month}-${day}`
+            startDate: `${sevenDaysAgo.getFullYear()}-${
+              sevenDaysAgo.getMonth() + 1
+            }-${sevenDaysAgo.getDate()}`,
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day + 1)).getDate()}`
           }
         case this.listItems[2]:
           const last30DayDate = new Date(new Date().setDate(day - 30))
           return {
-            endDate: `${year}-${month}-${day}`,
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day + 1)).getDate()}`,
             startDate: `${last30DayDate.getFullYear()}-${
               last30DayDate.getMonth() + 1
             }-${last30DayDate.getDate()}`
@@ -250,7 +256,7 @@ export default {
         case this.listItems[3]:
           return {
             startDate: `${year}-${month}-01`,
-            endDate: `${year}-${month}-${day}`
+            endDate: `${year}-${month}-${day + 1}`
           }
         case this.listItems[4]:
           const lastMonthDate = new Date(new Date().setMonth(month - 1))

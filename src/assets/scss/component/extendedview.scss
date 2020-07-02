@@ -141,6 +141,8 @@
       }
     }
   }
-
+  .v-input--dense > .v-input__control > .v-input__slot {
+    margin-bottom: 0;
+  }
 
 }
