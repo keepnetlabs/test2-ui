@@ -56,7 +56,6 @@ export function getBtnStatusColor(type) {
 }
 
 export function getBtnPriorityColor(type) {
-  console.log('type', type)
   switch (type.toLowerCase()) {
     case 'active':
       return '#00bcd4'

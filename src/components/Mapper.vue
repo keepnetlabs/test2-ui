@@ -10,7 +10,15 @@
     >
       <template v-slot:header="{}">
         <div>
-          <div class="mapper__header-title">{{ col.label }}</div>
+          <div class="mapper__header-title">
+            {{
+              selectValues[col.property] !== 'none'
+                ? columns.find((item) => {
+                    return item.property === selectValues[col.property]
+                  }).label
+                : 'None'
+            }}
+          </div>
           <div>
             <v-select
               class="mt-3 mb-1"
@@ -33,7 +41,7 @@
           >
             {{ getColumnValue(col.property, scope) }}
           </span>
-          <span v-else></span>
+          <div v-else style="text-align: center;">-</div>
         </div>
       </template>
     </el-table-column>
@@ -67,14 +75,12 @@ export default {
     },
     getSelectItems(property, colProp, isCustom) {
       const items = this.columns.map((item) => {
+        console.log(this.selectValues)
+        console.l
         return {
           text: item.label,
           value: item.property,
-          disabled:
-            (property === 'none' && colProp === item.property) ||
-            colProp === this.selectValues[item.property]
-              ? false
-              : !this.getSelectItemDisabled(item.property)
+          disabled: this.getSelectItemDisabled(item.property)
         }
       })
       if (isCustom) {
@@ -89,8 +95,9 @@ export default {
       this.tableKey = `table${Math.random()}`
     },
     getSelectItemDisabled(prop) {
-      console.log(prop)
-      return this.selectValues[prop] === 'none'
+      return Object.values(this.selectValues).some((item) => {
+        return item === prop
+      })
     },
     getColumnValue(property, scope) {
       return this.selectValues[property] === 'none' ? '' : scope.row[this.selectValues[property]]
@@ -109,7 +116,7 @@ export default {
   box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
     0 3px 1px -2px rgba(80, 80, 80, 0.12);
   border-radius: 12px;
-  max-width: 1500pxD;
+  max-width: 1500pxd;
   .v-text-field__details {
     display: none;
   }
@@ -139,6 +146,9 @@ export default {
   }
   .el-table__body-wrapper {
     padding-left: 5px;
+  }
+  .theme--light.v-select .v-select__selection--disabled {
+    color: rgba(0, 0, 0, 0.87) !important;
   }
 }
 </style>

@@ -271,6 +271,7 @@ export default {
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
+        console.log(this.formValues)
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {

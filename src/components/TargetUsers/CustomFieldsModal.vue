@@ -118,12 +118,17 @@ export default {
         animation: 200,
         ghostClass: 'ghost'
       },
-      copyOfCustomFields: []
+      copyOfCustomFields: [],
+      isMakePost: false
     }
   },
   methods: {
     closeOverlay() {
-      this.$emit('closeCustomFieldsModal')
+      if (this.isMakePost) {
+        this.$emit('closeCustomFieldsModalWithUpdate')
+      } else {
+        this.$emit('closeCustomFieldsModal')
+      }
     },
     handleAddCustomField() {
       this.customFields.push({
@@ -141,6 +146,7 @@ export default {
           this.isWantToDelete = false
           this.selectedItem = null
           this.callForGetTargetUserCustomFieldsByCompanyId()
+          this.isMakePost = true
         })
         .catch((error) => {
           this.isWantToDelete = false
@@ -164,6 +170,7 @@ export default {
           if (item.isNew) {
             createTargetUserCustomField(item)
               .then((response) => {
+                this.isMakePost = true
                 this.callForGetTargetUserCustomFieldsByCompanyId()
               })
               .catch((error) => {})
@@ -179,6 +186,7 @@ export default {
               updateTargetUserCustomField({ ...item, fieldDataType: 'String' })
                 .then((response) => {
                   const message = response.data.message
+                  this.isMakePost = true
                   this.$store.dispatch('common/createSnackBar', {
                     message,
                     color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
