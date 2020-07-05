@@ -59,7 +59,6 @@ const investigations = {
       //set target list data to vuex store
       let data = payload.data
       //data.asd = new Date()
-      console.log('data', data)
       state.getInvestigationDetailsData = data
     },
     SET_STATSANDMENUDATA(state, payload) {

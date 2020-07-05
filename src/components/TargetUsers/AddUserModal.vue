@@ -94,7 +94,20 @@
             v-model="customFieldsModels[item.name]"
             :placeholder="`Enter ${item.name}`"
             height="40"
+            :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
+            v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
           ></v-text-field>
+          <el-date-picker
+            v-model="customFieldsModels[item.name]"
+            :placeholder="`Enter ${item.name}`"
+            type="date"
+            v-else-if="item.fieldDataType === 'Date'"
+          />
+          <v-checkbox
+            v-model="customFieldsModels[item.name]"
+            :label="item.name"
+            v-if="item.fieldDataType === 'Boolean'"
+          />
         </v-list-item-content>
       </v-list-item>
 

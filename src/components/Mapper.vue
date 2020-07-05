@@ -75,8 +75,6 @@ export default {
     },
     getSelectItems(property, colProp, isCustom) {
       const items = this.columns.map((item) => {
-        console.log(this.selectValues)
-        console.l
         return {
           text: item.label,
           value: item.property,

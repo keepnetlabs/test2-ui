@@ -221,7 +221,6 @@ export default {
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
-        console.log('data', data)
         this.$refs.refGroupsTable.loadWithDataArray(data)
       })
     },

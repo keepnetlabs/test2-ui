@@ -327,7 +327,7 @@ export default {
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isEnableProxy = isEnableProxy || false
-      this.formValues.isOnPremise = isOnPremise || ''
+      this.formValues.isOnPremise = !!apiUrl
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
       this.formValues.enableProxy = enableProxy || ''
     } else {

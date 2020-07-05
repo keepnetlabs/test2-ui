@@ -346,6 +346,7 @@ export default {
       border-radius: 3px;
       transition: all 0.3s;
       box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+      width: fit-content;
       &:hover {
         transform: scale(1.05) translateY(-0.5rem);
         box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.4);

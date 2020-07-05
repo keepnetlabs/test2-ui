@@ -71,6 +71,19 @@
                   :text="copyOfEditedRows[0][col.property]"
                 />
                 <badge
+                  v-else-if="
+                        (copyOfEditedRows[0][col.property] && (!editMode || !col.isEditable) && (col.type === 'smallBadge'))
+                      "
+                  size="small"
+                  :color="'#2196f3'"
+                  v-for="badge in copyOfEditedRows[0][col.property]
+                    .slice(0, copyOfEditedRows[0][col.property].length - 2)
+                    .split(',')"
+                  class-name="mr-1"
+                  :key="badge"
+                  :text="badge"
+                />
+                <badge
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
                   size="small"
                   :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"

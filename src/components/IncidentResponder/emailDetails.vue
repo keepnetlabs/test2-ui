@@ -466,14 +466,8 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-          console.log('this.mailDetails.attachments', this.mailDetails.attachments)
           this.tableData = this.mailDetails.urls
-
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
-          console.log(
-            'this.attachmentTableOptions.tableData',
-            this.attachmentTableOptions.tableData
-          )
           const urls = this.mailDetails.urls
           setTimeout(function () {
             for (let a of urls) {

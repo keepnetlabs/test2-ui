@@ -747,7 +747,8 @@ export default {
           align: 'center',
           label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
-          sortable: false,
+          sortable: true,
+
           show: true,
           type: 'status',
           width: '150',
@@ -758,16 +759,32 @@ export default {
               items: [
                 'Open',
                 'Closed',
-                'Idle',
                 { text: 'In Progress', value: 'InProgress' },
-                { text: 'False Positive', value: 'FalsePositive' },
-                { text: 'Being Analyzed', value: 'BeingAnalyzed' }
+                { text: 'False Positive', value: 'FalsePositive' }
               ]
             }
           },
           props: {
             style: { maxWidth: '110px' }
           }
+        },
+        {
+          property: PROPERTY_STORE.RESULTTAG,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.RESULTTAG),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'smallBadge',
+          isEditable: true,
+          editOptions: {
+            component: 'textfield',
+            props: {
+              placeholder: 'Enter Tags'
+            }
+          },
+          width: '150'
         },
         {
           property: PROPERTY_STORE.CREATEDATE,
@@ -783,24 +800,7 @@ export default {
           },
           width: '230'
         },
-        {
-          property: PROPERTY_STORE.RESULTTAG,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.RESULTTAG),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'text',
-          isEditable: true,
-          editOptions: {
-            component: 'textfield',
-            props: {
-              placeholder: 'Enter Tags'
-            }
-          },
-          width: '150'
-        },
+
         {
           property: 'note',
           label: 'Notes',

@@ -248,7 +248,6 @@ export default {
           this.bodyData.pageNumber = data.pageNumber
           this.bodyData.pageSize = data.pageSize
           this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-          console.log(this.tableData.totalNumberOfRecords)
           this.$refs.refIntegrationsList.loadWithDataArray(data.results || [], this.bodyData)
         })
         .catch((error) => {

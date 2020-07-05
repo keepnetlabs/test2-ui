@@ -445,6 +445,9 @@
                     {{ col.emptyText || '' }}
                   </span>
                 </div>
+                <div v-if="col.type === 'smallBadge'">
+                  <data-table-small-badge :scope="scope" :col="col" />
+                </div>
                 <div v-if="col.type === 'status'">
                   <v-tooltip bottom v-if="scope.row && scope.row['status']">
                     <template v-slot:activator="{ on }">
@@ -725,6 +728,7 @@ import DataTableTooltip from './DataTableComponents/DataTableTooltip'
 import DownloadModal from './DataTableComponents/DownloadModal'
 import Badge from './Badge'
 import ExtendedView from './ExtendedView'
+import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -750,7 +754,8 @@ export default {
     DataTableLink,
     DataTableTooltip,
     DownloadModal,
-    ExtendedView
+    ExtendedView,
+    DataTableSmallBadge
   },
   props: {
     columns: {

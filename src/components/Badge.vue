@@ -3,7 +3,7 @@
     rounded
     :color="color"
     v-on="listeners"
-    :class="['k-badge', fullWidth ? 'full-width' : '', getBadgeSize]"
+    :class="['k-badge', fullWidth ? 'full-width' : '', getBadgeSize, className]"
   >
     {{ text }}
   </v-btn>
@@ -28,6 +28,9 @@ export default {
     size: {
       type: String,
       default: 'medium'
+    },
+    className: {
+      type: String
     }
   },
   computed: {
@@ -39,6 +42,10 @@ export default {
           break
         case 'small':
           retValue = 'k-badge__sizes--small'
+          break
+        case 'mini':
+          retValue = 'k-badge__sizes--mini'
+          break
         default:
           break
       }
@@ -80,6 +87,18 @@ export default {
       }
       &.v-btn:not(.v-btn--round).v-size--default {
         min-width: 60px;
+        padding: 0;
+      }
+    }
+    &--mini {
+      &.v-btn {
+        border-radius: 4px !important;
+        max-width: 26px;
+        height: 24px !important;
+        box-shadow: none !important;
+      }
+      &.v-btn:not(.v-btn--round).v-size--default {
+        min-width: 26px;
         padding: 0;
       }
     }
