@@ -748,7 +748,6 @@ export default {
           label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
           sortable: true,
-
           show: true,
           type: 'status',
           width: '150',
@@ -776,7 +775,7 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'smallBadge',
+          type: 'text',
           isEditable: true,
           editOptions: {
             component: 'textfield',
