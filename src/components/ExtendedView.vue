@@ -73,7 +73,7 @@
                       "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
-                  :text="copyOfEditedRows[0][col.property]"
+                  :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <badge
                   v-else-if="
@@ -92,7 +92,7 @@
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
                   size="small"
                   :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"
-                  :text="copyOfEditedRows[0][col.property]"
+                  :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <router-link
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
@@ -206,8 +206,8 @@
                   :value="multipleEditModels[col.property]"
                   @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                   class="edit-text-field"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
                   dense
-                  label="Multiple Values"
                   placeholder="Multiple Values"
                   outlined
                   :readonly="!multipleEditDisables[col.property]"
@@ -299,6 +299,7 @@
                   v-bind="col.editOptions.props"
                   :readonly="!multipleEditDisables[col.property]"
                   :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&

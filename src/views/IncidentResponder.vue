@@ -420,6 +420,7 @@
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
             @handleEdit="handleEdit"
+            @handleSelectionChange="handleReportedEmailsChange"
             titleKey="subject"
           >
             <template v-slot:datatable-custom-column="{ scope }">
@@ -443,6 +444,7 @@
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
+                  :disabled="selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
@@ -450,10 +452,17 @@
                   color="#2196f3"
                   label="Add Custom Message"
                   v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify"
+                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
-              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
+              <div
+                class="row-edit-div"
+                v-if="
+                  extendedView.isMessage &&
+                  extendedView.isNotify &&
+                  selectedRowsOfReportedEmailsLength <= 1
+                "
+              >
                 <v-textarea
                   outlined
                   dense
@@ -504,6 +513,7 @@ export default {
     isNotifyMail: true,
     isCustomMessage: false,
     showMatchingModal: false,
+    selectedRowsOfReportedEmailsLength: 0,
     topRules: {
       table: [],
       columns: [
@@ -963,6 +973,13 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleReportedEmailsChange(val) {
+      this.selectedRowsOfReportedEmailsLength = val.length
+      if (this.selectedRowsOfReportedEmailsLength > 1) {
+        this.extendedView.isNotify = true
+        this.extendedView.isMessage = false
+      }
+    },
     closeNewInvestigationModal(value) {
       if (value) {
         this.callForGetRunningInvestigations()

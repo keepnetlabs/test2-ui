@@ -110,13 +110,7 @@ export default {
     }
   },
   created() {
-    const stringBadges = this.scope.row[this.col.property]
-
-    if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
-      this.badges = stringBadges.substring(0, stringBadges.length - 2).split(',')
-      this.maximumRenderedBadgeCount = Math.floor(parseInt(this.col.width, 10) / 70)
-      this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-    }
+    this.getBadges()
   },
   methods: {
     getKey(index) {
@@ -125,7 +119,7 @@ export default {
     getBadges() {
       const stringBadges = this.scope.row[this.col.property]
       if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
-        this.badges = stringBadges.substring(0, stringBadges.length - 2).split(',')
+        this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
         this.maximumRenderedBadgeCount = Math.floor(parseInt(this.col.width, 10) / 70)
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
       } else {

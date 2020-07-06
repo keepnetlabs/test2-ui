@@ -1247,6 +1247,7 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
+      this.$emit('handleSelectionChange', val)
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
