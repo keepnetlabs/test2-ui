@@ -295,7 +295,7 @@
                     {{ scope.row[col.property] == 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
-                    :stadtus="showMatchingModal"
+                    :status="showMatchingModal"
                     icon="mdi-email"
                     title="Matching Incidents"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
@@ -756,7 +756,7 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
-          type: 'status',
+          type: 'colorfulText',
           width: '150',
           fullWidth: true,
           editOptions: {
@@ -775,6 +775,20 @@ export default {
           }
         },
         {
+          property: PROPERTY_STORE.CREATEDATE,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          editOptions: {
+            component: 'datepicker'
+          },
+          width: '230'
+        },
+        {
           property: PROPERTY_STORE.RESULTTAG,
           align: 'left',
           editable: false,
@@ -791,20 +805,6 @@ export default {
             }
           },
           width: '150'
-        },
-        {
-          property: PROPERTY_STORE.CREATEDATE,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
-          fixed: false,
-          sortable: true,
-          show: true,
-          type: 'text',
-          editOptions: {
-            component: 'datepicker'
-          },
-          width: '230'
         },
 
         {
@@ -1015,7 +1015,7 @@ export default {
       this.showMatchingModal = true
       const payload = {
         pageNumber: 1,
-        pageSize: 5,
+        pageSize: 500,
         orderBy: 'CreateDate',
         ascending: true
       }

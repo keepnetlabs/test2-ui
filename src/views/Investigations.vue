@@ -198,6 +198,7 @@ export default {
         sortable: false,
         show: true,
         type: 'progress',
+        progressType: 'stats',
         width: 90
         // minWidth: 60
       }

@@ -82,8 +82,24 @@ export function getBtnPriorityColor(type) {
   }
 }
 
+export function getTextColor(type) {
+  switch (type.toLowerCase()) {
+    case 'open':
+      return '#f56c6c'
+    case 'in progress':
+      return '#2196f3'
+    case 'false positive':
+      return '#e6a23c'
+    case 'closed':
+      return '#43a047'
+    default:
+      break
+  }
+}
+
 export function getDataTableFieldLabel(field) {
   field = field.trim().toLowerCase()
+  debugger
   let upperCaseCount = 0
   for (let i = 0; i < field.length; i++) {
     if (upperCaseCount === 2) {
@@ -107,6 +123,6 @@ export function getDataTableFieldLabel(field) {
     case 'verylow':
       return 'Very Low'
     default:
-      return field
+      return field.substring(0, 1).toUpperCase() + field.substring(1, field.length)
   }
 }

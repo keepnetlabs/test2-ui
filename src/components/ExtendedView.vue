@@ -54,10 +54,15 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
-                    (col.type === 'text' || col.type === 'slot') &&
+                    (col.type === 'text' || col.type === 'slot' || col.type === 'colorfulText') &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdate'
                   "
+                  :style="[
+                    col.type === 'colorfulText'
+                      ? { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
+                      : ''
+                  ]"
                 >
                   {{ copyOfEditedRows[0][col.property] }}
                 </span>
@@ -379,7 +384,12 @@
   ]
    */
 import Badge from './Badge'
-import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getTextColor,
+  getDataTableFieldLabel
+} from '../utils/functions'
 export default {
   name: 'ExtendedView',
   components: {
@@ -512,6 +522,12 @@ export default {
     },
     getBtnPriorityColor(type) {
       return getBtnPriorityColor(type)
+    },
+    getTextColor(type) {
+      return getTextColor(this.getDataTableFieldLabel(type))
+    },
+    getDataTableFieldLabel(type) {
+      return getDataTableFieldLabel(type)
     },
     hasEditPopupFooter() {
       return this.copyOfEditedRows.some((item) => {

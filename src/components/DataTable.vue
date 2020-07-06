@@ -402,6 +402,12 @@
             >
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
+                <data-table-colorful-text
+                  :col="col"
+                  :scope="scope"
+                  v-if="col.type === 'colorfulText'"
+                  :text="getDataTableFieldLabel(scope.row[col.property])"
+                />
                 <data-table-array :col="col" :scope="scope" v-if="col.type === 'array'" />
                 <data-table-attachment
                   :col="col"
@@ -739,8 +745,10 @@ import { mapGetters } from 'vuex'
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
+import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 export default {
   components: {
+    DataTableColorfulText,
     Badge,
     DataTableText,
     DataTableAttachment,
@@ -1060,6 +1068,7 @@ export default {
       const span =
         cell.querySelector('span') ||
         cell.querySelector('.datatable-chart__empty') ||
+        cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
       const spanWidth = span.getBoundingClientRect().width + 15 + this.cellPadding
       if (spanWidth > widthOfParent) {

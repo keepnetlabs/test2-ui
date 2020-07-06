@@ -1,7 +1,7 @@
 <template>
-  <div class="datatable-progress" style="max-width: 80px; margin: 0 auto;">
+  <div class="datatable-progress">
     <template v-if="scope.row && parseInt(scope.row.progress) >= 0">
-      <span class="datatable-progress__per">{{
+      <span v-if="col.progressType !== 'plain'" class="datatable-progress__per">{{
         scope.row.progress === 100 ? 'Completed' : scope.row.progress + '%'
       }}</span>
       <v-progress-linear
@@ -12,6 +12,7 @@
         reactive
         rounded
       />
+      <span v-if="col.progressType === 'stats'" class="datatable-progress__stats"> </span>
     </template>
     <span v-else>
       <v-progress-linear
@@ -35,24 +36,40 @@ export default {
     col: {
       type: Object
     }
+  },
+  created() {
+    console.log('col', this.col)
   }
 }
 </script>
 
 <style lang="scss">
 .datatable-progress {
-  max-width: 80px;
+  max-width: 60px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .v-progress-linear {
+    max-width: 48px;
+    margin-top: 1px;
+  }
   &__per {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 10px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.9;
     letter-spacing: normal;
     text-align: center;
-    color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87) !important;
+    margin-left: 3px;
+  }
+  &__stats {
+    opacity: 0.64;
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.87) !important;
+    text-align: center;
+    line-height: 19px;
   }
 }
 </style>
