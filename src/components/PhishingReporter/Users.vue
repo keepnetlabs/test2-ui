@@ -258,7 +258,6 @@ export default {
       this.isWantToDelete = false
     }
   },
-
   created() {
     this.callForPhishingReporterUser()
   }

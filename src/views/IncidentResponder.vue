@@ -168,7 +168,10 @@
         <div
           class="dashboard-cards investigations mr-2"
           :class="{
-            'no-data__opacity-green': investigationListData && !investigationListData.length
+            'no-data__opacity-green':
+              irSummary &&
+              irSummary.investigationTypeCount &&
+              JSON.stringify(irSummary.investigationTypeCount) === '{}'
           }"
         >
           <div class="card-header">
@@ -177,7 +180,11 @@
           </div>
           <div
             class="columns-row__body"
-            v-if="investigationListData && investigationListData.length"
+            v-if="
+              irSummary &&
+              irSummary.investigationTypeCount &&
+              JSON.stringify(irSummary.investigationTypeCount) !== '{}'
+            "
           >
             <div class="card-body">
               <div class="body-row">
@@ -227,7 +234,7 @@
               <span>and</span>
             </div>
             <div class="body-row">
-              ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}k
+              {{ getRoiSummaryValue }}
             </div>
           </div>
           <div class="card-status">Saved</div>
@@ -775,7 +782,7 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
+          type: 'smallBadge',
           isEditable: true,
           editOptions: {
             component: 'textfield',
@@ -887,6 +894,56 @@ export default {
       // get IR Reports data via vuex.
       irSummary: 'investigations/irSummaryGetter' // for using getters
     }),
+    getRoiSummaryValue() {
+      if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
+        let revenue = Number(this.irSummary.roiSummary.revenue)
+        if (revenue < 1000) {
+          return `$${revenue}`
+        } else if (revenue >= 1000 && revenue < 1000000) {
+          const newRevenue = revenue / 1000
+          const stringRevenue = String(newRevenue)
+          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
+            const beforeDecimal = stringRevenue.split('.')[0]
+            return `$${beforeDecimal}.${stringRevenue.charAt(indexOfNewRevenue + 1)}k`
+          } else {
+            return `$${newRevenue}k`
+          }
+        } else if (revenue >= 1000000 && revenue < 1000000000) {
+          const newRevenu = revenue / 1000000
+          const stringRevenue = String(newRevenu)
+          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
+            const beforeDecimal = stringRevenue.split('.')[0]
+            const nextDecimalValue = stringRevenue.charAt(indexOfNewRevenue + 2)
+            if (nextDecimalValue) {
+              return `$${beforeDecimal}.${stringRevenue.charAt(
+                indexOfNewRevenue + 1
+              )}${nextDecimalValue}M`
+            } else {
+              return `$${newRevenu}m`
+            }
+          } else {
+            if (stringRevenue.length === 7) {
+              return `$${stringRevenue.substring(0, stringRevenue.length - 1)}m`
+            }
+            return `$${newRevenu}m`
+          }
+        } else if (revenue >= 1000000000) {
+          const newRevenue = revenue / 1000000000
+          const stringRevenue = String(newRevenue)
+          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          if (indexOfNewRevenue !== -1) {
+            return `$${newRevenue.toFixed(3)}b`
+          } else {
+            return `$${newRevenue}b`
+          }
+        }
+      } else {
+        return `$0`
+      }
+      return `$0`
+    },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
     }

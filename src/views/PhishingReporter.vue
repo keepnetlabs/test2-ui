@@ -123,7 +123,10 @@
             </v-tabs>
             <v-tabs-items v-model="tab" class="phishing-reporter__tabs-items">
               <v-tab-item>
-                <users @callForPhishingReporterSummary="getPhishingReportSummary()" />
+                <users
+                  ref="refUsers"
+                  @callForPhishingReporterSummary="getPhishingReportSummary()"
+                />
               </v-tab-item>
               <v-tab-item>
                 <component
@@ -303,6 +306,9 @@ export default {
     const refs = this.$refs
     if (refs && refs.refFirstTime && refs.refFirstTime.showAddInConfiguration) {
       refs.refFirstTime.showAddInConfiguration = false
+      next(false)
+    } else if (refs && refs.refUsers && refs.refUsers.isWantToDelete) {
+      refs.refUsers.isWantToDelete = false
       next(false)
     } else {
       next()

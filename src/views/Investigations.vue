@@ -119,8 +119,13 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'detected',
-        width: 150
+        type: 'badge',
+        props: {
+          style: {
+            maxWidth: '150px'
+          }
+        },
+        width: 170
         //minWidth: 80
       },
       {

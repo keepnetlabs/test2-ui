@@ -77,6 +77,7 @@ const investigations = {
     },
     SET_IRSUMMARY(state, payload) {
       let data = payload.data
+      console.log('summary', data)
       state.irSummary = data
     },
     SET_TARGETUSERSLIST(state, payload) {
@@ -247,6 +248,7 @@ const investigations = {
       await investigationList(obj)
         .then((response) => {
           const result = response.data
+          console.log('result', result)
           commit('SET_INVESTIGATIONLIST', result)
         })
         .catch(() => {
