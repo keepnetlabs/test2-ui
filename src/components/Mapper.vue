@@ -81,12 +81,7 @@ export default {
           disabled: this.getSelectItemDisabled(item.property)
         }
       })
-      if (isCustom) {
-        return [{ text: 'None', value: 'none', disabled: false }, ...items]
-      }
-      return items.map((a) => {
-        return { ...a, disabled: a.value !== property }
-      })
+      return [{ text: 'None', value: 'none', disabled: false }, ...items]
     },
     handleSelectChange(prop, value) {
       this.selectValues[prop] = value

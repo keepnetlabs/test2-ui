@@ -273,7 +273,7 @@ export default {
           this.isWantToShowAddUsersModal = true
           break
         case this.addUsersItems[1]:
-          //this.isWantToShowImportUsersFromFileModal = true
+          this.isWantToShowImportUsersFromFileModal = true
           break
         default:
           break
@@ -289,7 +289,6 @@ export default {
     },
     handleEditTargetUsers(selectedRow) {
       this.selectedRow = selectedRow
-      console.log('selectedRow', this.selectedRow)
       this.isWantToShowAddUsersModal = true
     },
     handleEditFieldsClick() {
