@@ -68,7 +68,7 @@
         <new-investigation @closeAdd="openInvestigationOverlay = false" />
       </v-overlay>
       <new-investigation
-        @closeAdd="isWantToAddNewInvestigation = false"
+        @closeAdd="closeNewInvestigationModal($event)"
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
         v-if="isWantToAddNewInvestigation"
@@ -413,6 +413,7 @@
             :empty="emails.iEmpty"
             :groupable="true"
             :selectEvent="emails.selectEvent"
+            :extended-view-style="{ top: '-120px' }"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
@@ -711,7 +712,8 @@ export default {
           show: false,
           label: 'Case Id',
           type: 'text',
-          isEditable: false
+          isEditable: false,
+          hideOnSettingsPopup: true
         },
         {
           property: PROPERTY_STORE.SOURCE,
@@ -818,7 +820,8 @@ export default {
               placeholder: 'Write notes for this incident'
             }
           },
-          show: false
+          show: false,
+          hideOnSettingsPopup: true
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -960,6 +963,14 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    closeNewInvestigationModal(value) {
+      if (value) {
+        this.callForGetRunningInvestigations()
+        this.callForGetTopRules()
+        this.callForSearchNotifiedMail()
+      }
+      this.isWantToAddNewInvestigation = false
+    },
     callForGetRunningInvestigations() {
       getRunningInvestigations()
         .then((response) => {

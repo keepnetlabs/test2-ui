@@ -67,7 +67,12 @@
             <v-icon @click="isSettingsOpened = false" class="close-icon">mdi-close</v-icon>
           </div>
           <div class="sub-header">Show / Hide Columns</div>
-          <div :key="ind" class="popup-row" v-for="(col, ind) of columns" v-if="ind != 0">
+          <div
+            :key="ind"
+            class="popup-row"
+            v-for="(col, ind) of columns"
+            v-if="ind !== 0 && !col.hideOnSettingsPopup"
+          >
             {{ col.label }}
             <v-switch v-model="col.show" color="#2196f3" />
           </div>
@@ -87,6 +92,7 @@
           :value="multipleSelection"
           :options="columns"
           :titleKey="titleKey"
+          :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
           @closeEditPopup="closeEditPopup"
         >
@@ -880,6 +886,9 @@ export default {
       type: Boolean,
       default: false
     },
+    extendedViewStyle: {
+      type: Object
+    },
     showHeader: {
       type: Boolean,
       default: true
@@ -993,7 +1002,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
-
+    console.log('this.columns', this.columns)
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
     const browser = navigator.userAgent.toLowerCase()

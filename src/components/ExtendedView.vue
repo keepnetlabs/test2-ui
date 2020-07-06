@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-popup edit-popup">
+  <div class="settings-popup edit-popup" :style="[editMode && containerStyle]">
     <div class="inline-wrapper" v-if="options && options.length">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
@@ -401,6 +401,9 @@ export default {
       default: () => {
         return []
       }
+    },
+    containerStyle: {
+      type: Object
     },
     value: {
       type: Array,

@@ -99,7 +99,6 @@ export function getTextColor(type) {
 
 export function getDataTableFieldLabel(field) {
   field = field.trim().toLowerCase()
-  debugger
   let upperCaseCount = 0
   for (let i = 0; i < field.length; i++) {
     if (upperCaseCount === 2) {
