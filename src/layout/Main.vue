@@ -688,10 +688,7 @@ export default {
       return localStorage.getItem('companyName')
     },
     communityName() {
-      return (
-        this.$store.state.threadSharing.selectedCommunity.name ||
-        localStorage.getItem('communityName')
-      )
+      return localStorage.getItem('communityName')
     },
     routerName() {
       return this.$route.name
