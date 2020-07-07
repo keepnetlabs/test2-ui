@@ -1,35 +1,33 @@
 <template>
   <div class="playbook investigation-details" id="playbook">
-    <div class="phishing-reporter">
-      <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
-        <v-col class="p-0" cols="12">
-          <v-card class="pr-card" id="pr-card">
-            <v-tabs
-              active-class="pr-tab-active"
-              background-color="transparent"
-              color="basil"
-              id="pr-tabs"
-              v-model="tab"
-            >
-              <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-users p-2" id="pr-tab-users">
-                Rules
-              </v-tab>
-              <v-tab @click="changeTabStatus(1)" class="pr-tab p-2" id="pr-tab-settings"
-                >Plays
-              </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="tab">
-              <v-tab-item>
-                <Rules />
-              </v-tab-item>
-              <v-tab-item>
-                Plays
-              </v-tab-item>
-            </v-tabs-items>
-          </v-card>
-        </v-col>
-      </v-layout>
-    </div>
+    <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
+      <v-col class="p-0" cols="12">
+        <v-card class="pr-card">
+          <v-tabs
+            active-class="pr-tab-active"
+            background-color="transparent"
+            color="basil"
+            id="pr-tabs"
+            v-model="tab"
+          >
+            <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-users p-2" id="pr-tab-users">
+              Rules
+            </v-tab>
+            <v-tab @click="changeTabStatus(1)" class="pr-tab p-2" id="pr-tab-settings"
+              >Plays
+            </v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tab">
+            <v-tab-item>
+              <Rules />
+            </v-tab-item>
+            <v-tab-item>
+              Plays
+            </v-tab-item>
+          </v-tabs-items>
+        </v-card>
+      </v-col>
+    </v-layout>
   </div>
 </template>
 

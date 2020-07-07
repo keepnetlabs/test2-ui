@@ -1,5 +1,5 @@
 <template>
-  <div class="rules">
+  <div class="playbook-rules">
     <data-table
       ref="refRulesList"
       :refName="'rulesListTable'"
@@ -14,31 +14,34 @@
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
       @deleteAction="handleDelete"
-      @addAction="handleAdd"
+      @addAction="toggleRuleModal"
     />
-    <v-overlay :value="this.isCreateNewRule" :z-index="15">
-      <div class="overlay">
-        <CreateNewRule />
-      </div>
-    </v-overlay>
+    <v-dialog
+      v-model="this.showRuleModal"
+      fullscreen
+      scrollable
+      @input="(v) => v || toggleRuleModal()"
+    >
+      <CreateOrEditRule @cancelForm="toggleRuleModal" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import DataTable from '../DataTable'
-import CreateNewRule from './CreateNewRule'
+import CreateOrEditRule from './CreateOrEditRule'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 
 export default {
-  name: 'Users',
+  name: 'Rules',
   components: {
     DataTable,
-    CreateNewRule
+    CreateOrEditRule
   },
   data() {
     return {
-      isCreateNewRule: false,
+      showRuleModal: false,
       tableOptions: {
         columns: [
           {
@@ -168,31 +171,14 @@ export default {
       getPlaybookList: 'playbook/getPlaybookList'
     }),
     handleDelete(row) {},
-    handleAdd() {
-      this.isCreateNewRule = !this.isCreateNewRule
+    toggleRuleModal() {
+      return (this.showRuleModal = !this.showRuleModal)
     }
   },
   mounted() {
-    this.getPlaybookList(this.tableCredientials)
-    this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
-    /* this.$refs.refRulesList.loadWithDataArray([
-      {
-        ruleName: 'Ransomware',
-        description: 'Rule for ransomware',
-        company: 'Company name',
-        created: '08.17.2019',
-        status: 'Active',
-        priority: 'Low'
-      },
-      {
-        ruleName: 'BankDecont.xls',
-        description: 'Investigates and deletes emails with attachment named BankDecont.xls',
-        company: 'Company name',
-        created: '08.17.2019',
-        status: 'Inactive',
-        priority: 'Very Low'
-      }
-    ])*/
+    this.getPlaybookList(this.tableCredientials).then(() => {
+      this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
+    })
   },
   computed: {
     ...mapGetters({
@@ -205,8 +191,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.rules {
+<style lang="scss">
+.playbook-rules {
   .overlay {
     background: white;
     width: 100vw;

@@ -3,19 +3,22 @@
     <v-container>
       <v-row align="center">
         <v-col class="d-flex" cols="12">
-          <query-builder :config="config" v-model="query">
-            <template #groupOperator="props">
-              <group-operator-slot :group-operator="props" />
+          <vue-query-builder
+            :max-depth="2"
+            class="w-100"
+            :labels="label"
+            :rules="rules"
+            v-model="query"
+          >
+            <template v-slot:default="slotProps">
+              <query-builder-group v-bind="slotProps" :query.sync="query" />
             </template>
-
-            <template #groupControl="props">
-              <group-ctrl-slot :group-ctrl="props" />
-            </template>
-
-            <template #rule="props">
-              <rule-slot :rules="config.rules" :ruleCtrl="props" />
-            </template>
-          </query-builder>
+          </vue-query-builder>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <pre>{{ JSON.stringify(this.query, null, 2) }}</pre>
         </v-col>
       </v-row>
     </v-container>
@@ -45,41 +48,83 @@
 </template>
 
 <script>
-import QueryBuilder from 'query-builder-vue'
-import GroupOperatorSlot from '../components/Common/QueryBuilder/GroupOperatorSlot'
-import GroupCtrlSlot from '../components/Common/QueryBuilder/GroupCtrlSlot'
-import RuleSlot from '../components/Common/QueryBuilder/RuleSlot'
-import VTextField from 'vuetify/lib/components/VTextField/VTextField'
+import VueQueryBuilder from 'vue-query-builder'
+import QueryBuilderGroup from '../components/Common/QueryBuilder/CustomGroup'
+
 export default {
   name: 'Workshop',
-  components: { QueryBuilder, GroupOperatorSlot, GroupCtrlSlot, RuleSlot },
+  components: { VueQueryBuilder, QueryBuilderGroup },
   props: {},
   data: () => ({
-    query: null,
-
-    config: {
-      operators: [
-        {
-          name: 'AND',
-          identifier: 'AND'
-        },
-        {
-          name: 'OR',
-          identifier: 'OR'
-        }
+    label: {
+      matchType: 'Match Type',
+      matchTypes: [
+        { id: 'and', label: 'AND' },
+        { id: 'or', label: 'OR' }
       ],
-      rules: [
+      addRule: 'ADD CONDITION',
+      addGroup: 'ADD NEW CONDITION SET',
+      textInputPlaceholder: 'value'
+    },
+    operators: [
+      'contains',
+      'does not contain',
+      'is equal to',
+      'is not equal to',
+      'exist',
+      'does not exist'
+    ],
+    rules: [
+      {
+        type: 'conditions',
+        id: 'conditions',
+        label: 'Conditions',
+        operands: [
+          'From',
+          'To',
+          'CC',
+          'Sender IP',
+          'Subject',
+          'Keyword',
+          'Attachment name',
+          'Attachment hash',
+          'Attachment extension',
+          'Custom syntax',
+          'Analysis result'
+        ],
+        operandsFrom: ['Email', 'Domain', 'Regex'],
+        operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
+        operandsAnalysisResult: ['Phising', 'Malicious', 'Non-malicious'],
+        operators: [
+          'contains',
+          'does not contain',
+          'is equal to',
+          'is not equal to',
+          'exist',
+          'does not exist'
+        ]
+      }
+    ],
+    query: {
+      logicalOperator: 'AND',
+      children: [
         {
-          identifier: 'txt',
-          name: 'Text Selection',
-          component: VTextField,
-          initialValue: ''
-        },
-        {
-          identifier: 'num',
-          name: 'Number Selection',
-          component: VTextField,
-          initialValue: 10
+          type: 'query-builder-group',
+          query: {
+            logicalOperator: 'AND',
+            children: [
+              {
+                type: 'query-builder-rule',
+                query: {
+                  rule: 'conditions',
+                  operator: 'contains',
+                  operand: 'From',
+                  format: 'Domain',
+                  value: null
+                }
+              }
+            ]
+          }
         }
       ]
     }
