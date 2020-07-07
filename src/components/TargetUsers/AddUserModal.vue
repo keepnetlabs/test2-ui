@@ -124,24 +124,7 @@
           ></v-select>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="addUserGroup">Add To User Groups</label>
-          <v-autocomplete
-            placeholder="Type to search user groups"
-            outlined
-            dense
-            chips
-            multiple
-            deletable-chips
-            :items="autoCompleteItems"
-            v-model="formValues.addToUserGroups"
-            id="addUserGroup"
-            item-text="name"
-            item-value="resourceId"
-          ></v-autocomplete>
-        </v-list-item-content>
-      </v-list-item>
+
       <v-list-item class="add-user-overlay__list-item">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="isActive">Active</label>
@@ -205,11 +188,9 @@ export default {
         email: '',
         department: '',
         priority: 'Medium',
-        addToUserGroups: [],
         isActive: true
       },
       customFieldsModels: {},
-      autoCompleteItems: [],
       priorityItems: [
         { text: 'Very Low', value: 'VeryLow' },
         'Low',

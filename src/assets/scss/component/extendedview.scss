@@ -144,5 +144,9 @@
   .v-input--dense > .v-input__control > .v-input__slot {
     margin-bottom: 0;
   }
-
+.multiple-values-input{
+  input {
+    font-style: italic;
+  }
+}
 }

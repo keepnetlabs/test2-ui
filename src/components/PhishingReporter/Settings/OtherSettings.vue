@@ -18,7 +18,7 @@
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item" :class="[inModal ? 'mb-3' : '']">
+      <v-list-item class="px-0 other-settings__list-item mt-1" :class="[inModal ? 'mb-3' : '']">
         <v-list-item-content>
           <div>
             <v-checkbox
@@ -180,11 +180,8 @@
           >
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content
-          class="enterprise-vault-url"
-          :class="[inModal ? 'enterprise-vault-url-margin' : '']"
-        >
+      <v-list-item class="px-0 other-settings__list-item mt-1" style="min-height: auto;">
+        <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
             v-model="formValues.enableEnterpriseVault"
             class="other-settings__checkbox k-checkbox mt-2"
@@ -395,6 +392,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 16px;
     @media (max-width: 768px) {
       flex-direction: column;
     }

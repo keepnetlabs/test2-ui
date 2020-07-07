@@ -68,7 +68,7 @@
         <new-investigation @closeAdd="openInvestigationOverlay = false" />
       </v-overlay>
       <new-investigation
-        @closeAdd="isWantToAddNewInvestigation = false"
+        @closeAdd="closeNewInvestigationModal($event)"
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
         v-if="isWantToAddNewInvestigation"
@@ -168,7 +168,10 @@
         <div
           class="dashboard-cards investigations mr-2"
           :class="{
-            'no-data__opacity-green': investigationListData && !investigationListData.length
+            'no-data__opacity-green':
+              irSummary &&
+              irSummary.investigationTypeCount &&
+              JSON.stringify(irSummary.investigationTypeCount) === '{}'
           }"
         >
           <div class="card-header">
@@ -177,7 +180,11 @@
           </div>
           <div
             class="columns-row__body"
-            v-if="investigationListData && investigationListData.length"
+            v-if="
+              irSummary &&
+              irSummary.investigationTypeCount &&
+              JSON.stringify(irSummary.investigationTypeCount) !== '{}'
+            "
           >
             <div class="card-body">
               <div class="body-row">
@@ -227,7 +234,7 @@
               <span>and</span>
             </div>
             <div class="body-row">
-              ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}k
+              {{ getRoiSummaryValue }}
             </div>
           </div>
           <div class="card-status">Saved</div>
@@ -288,7 +295,7 @@
                     {{ scope.row[col.property] == 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
-                    :stadtus="showMatchingModal"
+                    :status="showMatchingModal"
                     icon="mdi-email"
                     title="Matching Incidents"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
@@ -406,12 +413,14 @@
             :empty="emails.iEmpty"
             :groupable="true"
             :selectEvent="emails.selectEvent"
+            :extended-view-style="{ top: '-120px' }"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
             @handleEdit="handleEdit"
+            @handleSelectionChange="handleReportedEmailsChange"
             titleKey="subject"
           >
             <template v-slot:datatable-custom-column="{ scope }">
@@ -435,6 +444,7 @@
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
+                  :disabled="selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
@@ -442,10 +452,17 @@
                   color="#2196f3"
                   label="Add Custom Message"
                   v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify"
+                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
-              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
+              <div
+                class="row-edit-div"
+                v-if="
+                  extendedView.isMessage &&
+                  extendedView.isNotify &&
+                  selectedRowsOfReportedEmailsLength <= 1
+                "
+              >
                 <v-textarea
                   outlined
                   dense
@@ -496,6 +513,7 @@ export default {
     isNotifyMail: true,
     isCustomMessage: false,
     showMatchingModal: false,
+    selectedRowsOfReportedEmailsLength: 0,
     topRules: {
       table: [],
       columns: [
@@ -704,7 +722,8 @@ export default {
           show: false,
           label: 'Case Id',
           type: 'text',
-          isEditable: false
+          isEditable: false,
+          hideOnSettingsPopup: true
         },
         {
           property: PROPERTY_STORE.SOURCE,
@@ -749,7 +768,7 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
-          type: 'status',
+          type: 'colorfulText',
           width: '150',
           fullWidth: true,
           editOptions: {
@@ -768,24 +787,6 @@ export default {
           }
         },
         {
-          property: PROPERTY_STORE.RESULTTAG,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.RESULTTAG),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'text',
-          isEditable: true,
-          editOptions: {
-            component: 'textfield',
-            props: {
-              placeholder: 'Enter Tags'
-            }
-          },
-          width: '150'
-        },
-        {
           property: PROPERTY_STORE.CREATEDATE,
           align: 'left',
           editable: false,
@@ -799,6 +800,24 @@ export default {
           },
           width: '230'
         },
+        {
+          property: PROPERTY_STORE.RESULTTAG,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.RESULTTAG),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'smallBadge',
+          isEditable: true,
+          editOptions: {
+            component: 'textfield',
+            props: {
+              placeholder: 'Enter Tags'
+            }
+          },
+          width: '150'
+        },
 
         {
           property: 'note',
@@ -811,7 +830,8 @@ export default {
               placeholder: 'Write notes for this incident'
             }
           },
-          show: false
+          show: false,
+          hideOnSettingsPopup: true
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -887,6 +907,56 @@ export default {
       // get IR Reports data via vuex.
       irSummary: 'investigations/irSummaryGetter' // for using getters
     }),
+    getRoiSummaryValue() {
+      if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
+        let revenue = Number(this.irSummary.roiSummary.revenue)
+        if (revenue < 1000) {
+          return `$${revenue}`
+        } else if (revenue >= 1000 && revenue < 1000000) {
+          const newRevenue = revenue / 1000
+          const stringRevenue = String(newRevenue)
+          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
+            const beforeDecimal = stringRevenue.split('.')[0]
+            return `$${beforeDecimal}.${stringRevenue.charAt(indexOfNewRevenue + 1)}k`
+          } else {
+            return `$${newRevenue}k`
+          }
+        } else if (revenue >= 1000000 && revenue < 1000000000) {
+          const newRevenu = revenue / 1000000
+          const stringRevenue = String(newRevenu)
+          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
+            const beforeDecimal = stringRevenue.split('.')[0]
+            const nextDecimalValue = stringRevenue.charAt(indexOfNewRevenue + 2)
+            if (nextDecimalValue) {
+              return `$${beforeDecimal}.${stringRevenue.charAt(
+                indexOfNewRevenue + 1
+              )}${nextDecimalValue}M`
+            } else {
+              return `$${newRevenu}m`
+            }
+          } else {
+            if (stringRevenue.length === 7) {
+              return `$${stringRevenue.substring(0, stringRevenue.length - 1)}m`
+            }
+            return `$${newRevenu}m`
+          }
+        } else if (revenue >= 1000000000) {
+          const newRevenue = revenue / 1000000000
+          const stringRevenue = String(newRevenue)
+          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          if (indexOfNewRevenue !== -1) {
+            return `$${newRevenue.toFixed(3)}b`
+          } else {
+            return `$${newRevenue}b`
+          }
+        }
+      } else {
+        return `$0`
+      }
+      return `$0`
+    },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
     }
@@ -903,6 +973,21 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleReportedEmailsChange(val) {
+      this.selectedRowsOfReportedEmailsLength = val.length
+      if (this.selectedRowsOfReportedEmailsLength > 1) {
+        this.extendedView.isNotify = true
+        this.extendedView.isMessage = false
+      }
+    },
+    closeNewInvestigationModal(value) {
+      if (value) {
+        this.callForGetRunningInvestigations()
+        this.callForGetTopRules()
+        this.callForSearchNotifiedMail()
+      }
+      this.isWantToAddNewInvestigation = false
+    },
     callForGetRunningInvestigations() {
       getRunningInvestigations()
         .then((response) => {
@@ -958,7 +1043,7 @@ export default {
       this.showMatchingModal = true
       const payload = {
         pageNumber: 1,
-        pageSize: 5,
+        pageSize: 500,
         orderBy: 'CreateDate',
         ascending: true
       }

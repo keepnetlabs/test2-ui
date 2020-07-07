@@ -119,8 +119,13 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'detected',
-        width: 150
+        type: 'badge',
+        props: {
+          style: {
+            maxWidth: '150px'
+          }
+        },
+        width: 170
         //minWidth: 80
       },
       {
@@ -193,6 +198,7 @@ export default {
         sortable: false,
         show: true,
         type: 'progress',
+        progressType: 'stats',
         width: 90
         // minWidth: 60
       }

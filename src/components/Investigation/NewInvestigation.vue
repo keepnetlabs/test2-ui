@@ -827,7 +827,7 @@ export default {
           .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {})
           .then((resp) => {
-            this.$emit('closeAdd')
+            this.$emit('closeAdd', true)
             this.isEdit ? this.$router.push('/investigations') : this.$emit('refreshDatatable')
           })
       }
@@ -1379,7 +1379,7 @@ export default {
     .v-text-field__details {
       position: absolute;
       left: 0;
-      bottom: -22px;
+      bottom: -5px;
     }
 
     &:last-child {
@@ -1390,8 +1390,6 @@ export default {
   }
 
   .date-picker {
-    font-family: 'Open Sans', sans-serif !important;
-
     .v-input__slot {
       box-shadow: unset !important;
       border: 1px solid rgba(0, 0, 0, 0.24);

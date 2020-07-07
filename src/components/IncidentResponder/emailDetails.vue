@@ -103,7 +103,7 @@
               </div>
             </div>
           </v-tab-item>
-          <v-tab-item v-if="mailDetails" style="margin-left: 30px;">
+          <v-tab-item v-if="mailDetails">
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
           </v-tab-item>
           <v-tab-item v-if="mailDetails">

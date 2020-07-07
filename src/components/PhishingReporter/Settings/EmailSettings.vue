@@ -12,6 +12,24 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
+      <v-list-item class="px-0 other-settings__list-item mt-n4">
+        <v-list-item-content>
+          <div class="other-settings__list-item-header">
+            Optional Features
+          </div>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 email-settings__list-item">
+        <v-list-item-content>
+          <v-checkbox
+            v-model="formValues.isSendInformationEmail"
+            class="other-settings__checkbox k-checkbox mt-2"
+            color="#2196f3"
+            label="Send Information Email"
+          ></v-checkbox>
+        </v-list-item-content>
+      </v-list-item>
+
       <v-list-item
         class="px-0 email-settings__list-item"
         :class="[!hasError && !formValues.to ? 'mb-2' : '']"
@@ -158,7 +176,8 @@ export default {
         cc: '',
         bcc: '',
         subject: '',
-        content: ''
+        content: '',
+        IsSendInformationEmail: null
       },
       hasError: false,
       validations: {
@@ -195,12 +214,13 @@ export default {
   },
   created() {
     if (this.formData) {
-      const { to, cc, bcc, subject, content } = this.formData
+      const { to, cc, bcc, subject, content, isSendInformationEmail } = this.formData
       this.formValues.to = to || ''
       this.formValues.cc = cc || ''
       this.formValues.bcc = bcc || ''
       this.formValues.subject = subject || ''
       this.formValues.content = content || ''
+      this.formValues.isSendInformationEmail = isSendInformationEmail
     }
   }
 }
@@ -217,6 +237,7 @@ export default {
     }
     .v-list-item__content {
       padding: 0 !important;
+      overflow: visible;
     }
 
     &--header {

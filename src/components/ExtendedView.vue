@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-popup edit-popup">
+  <div class="settings-popup edit-popup" :style="[editMode && containerStyle]">
     <div class="inline-wrapper" v-if="options && options.length">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
@@ -54,10 +54,15 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
-                    (col.type === 'text' || col.type === 'slot') &&
+                    (col.type === 'text' || col.type === 'slot' || col.type === 'colorfulText') &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdate'
                   "
+                  :style="[
+                    col.type === 'colorfulText'
+                      ? { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
+                      : ''
+                  ]"
                 >
                   {{ copyOfEditedRows[0][col.property] }}
                 </span>
@@ -68,7 +73,7 @@
                       "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
-                  :text="copyOfEditedRows[0][col.property]"
+                  :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <badge
                   v-else-if="
@@ -87,7 +92,7 @@
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
                   size="small"
                   :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"
-                  :text="copyOfEditedRows[0][col.property]"
+                  :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <router-link
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
@@ -201,8 +206,8 @@
                   :value="multipleEditModels[col.property]"
                   @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                   class="edit-text-field"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
                   dense
-                  label="Multiple Values"
                   placeholder="Multiple Values"
                   outlined
                   :readonly="!multipleEditDisables[col.property]"
@@ -294,6 +299,7 @@
                   v-bind="col.editOptions.props"
                   :readonly="!multipleEditDisables[col.property]"
                   :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
@@ -379,7 +385,12 @@
   ]
    */
 import Badge from './Badge'
-import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getTextColor,
+  getDataTableFieldLabel
+} from '../utils/functions'
 export default {
   name: 'ExtendedView',
   components: {
@@ -391,6 +402,9 @@ export default {
       default: () => {
         return []
       }
+    },
+    containerStyle: {
+      type: Object
     },
     value: {
       type: Array,
@@ -512,6 +526,12 @@ export default {
     },
     getBtnPriorityColor(type) {
       return getBtnPriorityColor(type)
+    },
+    getTextColor(type) {
+      return getTextColor(this.getDataTableFieldLabel(type))
+    },
+    getDataTableFieldLabel(type) {
+      return getDataTableFieldLabel(type)
     },
     hasEditPopupFooter() {
       return this.copyOfEditedRows.some((item) => {

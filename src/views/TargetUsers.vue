@@ -45,9 +45,26 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (this.$refs && this.$refs.refPeople && this.$refs.refPeople.isWantToShowDeleteUserModal) {
-      this.$refs.refPeople.changeDeleteModalStatus(false)
-      next(false)
+    const refs = this.$refs
+    if (refs && refs.refPeople) {
+      const refPeople = refs.refPeople
+      if (refPeople.isWantToShowDeleteUserModal) {
+        refPeople.changeDeleteModalStatus(false)
+        next(false)
+      } else if (refPeople.isWantToShowAddUsersManuallyModal) {
+        refPeople.isWantToShowAddUsersManuallyModal = false
+        next(false)
+      } else if (refPeople.isWantToShowAddUsersModal) {
+        refPeople.isWantToShowAddUsersModal = false
+        next(false)
+      } else if (refPeople.isWantToShowImportUsersFromFileModal) {
+        refPeople.isWantToShowImportUsersFromFileModal = false
+        next(false)
+      } else if (refPeople.isWantToShowCustomFieldsModal) {
+        next(false)
+      } else {
+        next()
+      }
     } else {
       next()
     }
