@@ -934,7 +934,6 @@ export default {
   computed: {
     ...mapGetters({
       selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      fetchedCommunity: 'threadSharing/fetchedCommunGetter',
       userGetter: 'auth/userGetter',
       postDetail: 'threadSharing/postDetailGetter',
       myCommunities: 'threadSharing/myCommunitiesGetter',

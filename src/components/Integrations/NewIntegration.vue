@@ -219,15 +219,22 @@
               <v-list-item-subtitle class="new-integration__api-key__subtitle">
                 Use enter key to use tags
               </v-list-item-subtitle>
-              <v-text-field
-                placeholder="Enter tag"
-                outlined
-                dense
-                class="new-integration__textfield mt-2"
-                v-model="formValues.tag"
-                required
-                height="40"
-              ></v-text-field>
+              <div class="max-width__form">
+                <v-combobox
+                  :items="[]"
+                  placeholder="Enter Tag"
+                  outlined
+                  class="edit-select standard-height"
+                  item-text="name"
+                  multiple
+                  dense
+                  persistent-hint
+                  small-chips
+                  :return-object="false"
+                  v-model="formValues.tag"
+                  required
+                ></v-combobox>
+              </div>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="px-0">
@@ -361,7 +368,7 @@ export default {
       formValues: {
         description: null,
         analysisEngineTypeResourceId: null,
-        tag: null,
+        tag: [],
         isActive: true,
         isSendUrl: false,
         isSendFileHash: true,
@@ -518,9 +525,12 @@ export default {
       this.getFileTypes()
       getIntegrationDetails(id)
         .then((response) => {
+          response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
+            return { value: item, status: null }
+          })
+          response['data'].data.tag = response['data'].data.tags
           const integrationData = response['data'].data
           this.formValues = integrationData
-          console.log(this.formValues)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -612,6 +622,11 @@ export default {
   max-width: 554px !important;
 }
 .new-integration {
+  .edit-select {
+    .v-input__append-inner {
+      display: none;
+    }
+  }
   .new-integration__api-key__textfield {
     .v-text-field__details {
       margin-bottom: 0;

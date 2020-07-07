@@ -340,7 +340,7 @@ const dashboard = {
         dispatch('getOverallStats', 12)
         dispatch('getCompanyInformation')
         dispatch('getDropdownCompanies')
-        commit('threadSharing/SET_COLLAPSE_TO_INCIDENTS', false, { root: true })
+        //commit('threadSharing/SET_COLLAPSE_TO_INCIDENTS', false, { root: true })
       })
     },
     getLastFiveCompaignsStats({ commit }) {

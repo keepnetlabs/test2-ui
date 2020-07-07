@@ -19,7 +19,6 @@ import {
   deleteInvestigationDetailsItem,
   irSummary
 } from '../../api/investigations'
-import { listNotifications, saveNotifications } from '../../api/threadSharing'
 
 const investigations = {
   namespaced: true,
