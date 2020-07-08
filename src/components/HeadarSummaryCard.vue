@@ -1,104 +1,92 @@
 <template>
-  <div class="phishing-reporter__header__container">
-    <div class="phishing-reporter__header__container__stats">
-      <div class="phishing-reporter__header__container__stats__cards">
-        <div class="phishing-reporter__header__container__stats__cards__card">
-          <div class="phishing-reporter__header__container__stats__cards__card-left">
+  <div class="header-summary-card">
+    <div class="header-summary-card__stats">
+      <div class="header-summary-card__stats-cards">
+        <div class="header-summary-card__stats-card">
+          <div class="header-summary-card__stats-card-left">
             <div
-              class="phishing-reporter__header__container__stats__cards__card-left__icon"
+              class="header-summary-card__stats-card-left__icon"
               style="background-color: #00bcd4;"
             >
               <v-icon color="white" left medium>mdi-account</v-icon>
             </div>
           </div>
-          <div class="phishing-reporter__header__container__stats__cards__card-right">
-            <h3
-              class="phishing-reporter__header__container__stats__cards__card-right__title"
-              style="color: #00bcd4;"
-            >
+          <div class="header-summary-card__stats-card-right">
+            <h3 class="header-summary-card__stats-card-right__title" style="color: #00bcd4;">
               {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
             </h3>
-            <p class="phishing-reporter__header__container__stats__cards__card-right__stats">
+            <p class="header-summary-card__stats-card-right__stats">
               Online Users
             </p>
           </div>
         </div>
       </div>
-      <div class="phishing-reporter__header__container__stats__cards">
-        <div class="phishing-reporter__header__container__stats__cards__card">
-          <div class="phishing-reporter__header__container__stats__cards__card-left">
+      <div class="header-summary-card__stats-cards">
+        <div class="header-summary-card__stats-card">
+          <div class="header-summary-card__stats-card-left">
             <div
-              class="phishing-reporter__header__container__stats__cards__card-left__icon"
+              class="header-summary-card__stats-card-left__icon"
               style="background-color: #2196f3;"
             >
               <v-icon color="white" left medium>mdi-puzzle</v-icon>
             </div>
           </div>
-          <div class="phishing-reporter__header__container__stats__cards__card-right">
-            <h3
-              class="phishing-reporter__header__container__stats__cards__card-right__title"
-              style="color: #2196f3;"
-            >
+          <div class="header-summary-card__stats-card-right">
+            <h3 class="header-summary-card__stats-card-right__title" style="color: #2196f3;">
               {{ getAddOnStatus }}
             </h3>
-            <p class="phishing-reporter__header__container__stats__cards__card-right__stats">
+            <p class="header-summary-card__stats-card-right__stats">
               Users have the add-on
             </p>
           </div>
         </div>
       </div>
-      <div class="phishing-reporter__header__container__stats__cards">
-        <div class="phishing-reporter__header__container__stats__cards__card">
-          <div class="phishing-reporter__header__container__stats__cards__card-left">
+      <div class="header-summary-card__stats-cards">
+        <div class="header-summary-card__stats-card">
+          <div class="header-summary-card__stats-card-left">
             <div
-              class="phishing-reporter__header__container__stats__cards__card-left__icon"
+              class="header-summary-card__stats-card-left__icon"
               style="background-color: #f56c6c;"
             >
               <v-icon color="white" left medium>mdi-account-outline</v-icon>
             </div>
           </div>
-          <div class="phishing-reporter__header__container__stats__cards__card-right">
-            <h3
-              class="phishing-reporter__header__container__stats__cards__card-right__title"
-              style="color: #f56c6c;"
-            >
+          <div class="header-summary-card__stats-card-right">
+            <h3 class="header-summary-card__stats-card-right__title" style="color: #f56c6c;">
               {{ (phishingReportSummary && phishingReportSummary.offlineUsersCount) || 0 }}
             </h3>
-            <p class="phishing-reporter__header__container__stats__cards__card-right__stats">
+            <p class="header-summary-card__stats-card-right__stats">
               Users Stayed Offline
             </p>
           </div>
         </div>
       </div>
-      <div class="phishing-reporter__header__container__stats__cards">
-        <div class="phishing-reporter__header__container__stats__cards__card">
-          <div class="phishing-reporter__header__container__stats__cards__card-left">
+      <div class="header-summary-card__stats-cards">
+        <div class="header-summary-card__stats-card">
+          <div class="header-summary-card__stats-card-left">
             <div
-              class="phishing-reporter__header__container__stats__cards__card-left__icon"
+              class="header-summary-card__stats-card-left__icon"
               style="background-color: #2196f3;"
             >
               <img src="../assets/img/account-tree.png" />
             </div>
           </div>
-          <div class="phishing-reporter__header__container__stats__cards__card-right">
-            <h3
-              class="phishing-reporter__header__container__stats__cards__card-right__title"
-              style="color: #2196f3;"
-            >
+          <div class="header-summary-card__stats-card-right">
+            <h3 class="header-summary-card__stats-card-right__title" style="color: #2196f3;">
               {{ (phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}
             </h3>
-            <p class="phishing-reporter__header__container__stats__cards__card-right__stats">
+            <p class="header-summary-card__stats-card-right__stats">
               Latest Release
             </p>
           </div>
         </div>
       </div>
     </div>
-    <div class="phishing-reporter__header__container__panel">
+    <div class="header-summary-card__panel">
       <v-menu bottom offset-y min-width="133">
         <template v-slot:activator="{ on }">
-          <div v-on="on" class="phishing-reporter__header__container__panel-right-col">
-            <div class="phishing-reporter__header__container__panel-text">{{ selectedDate }}</div>
+          <div v-on="on" class="header-summary-card__panel-right-col">
+            <div class="header-summary-card__panel-text">{{ selectedDate }}</div>
             <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
           </div>
         </template>
@@ -119,10 +107,8 @@ export default {
 </script>
 
 <style lang="scss">
-.phishing-reporter__header {
-  padding: 16px;
-  padding-top: 10px;
-
+.header-summary-card__header {
+  padding: 10px 16px 16px 16px;
   &__container {
     border-radius: 20px;
     box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
@@ -172,7 +158,7 @@ export default {
         flex-direction: column;
       }
 
-      &__cards {
+      &-cards {
         display: flex;
         flex-basis: 30%;
         flex-grow: 0;
