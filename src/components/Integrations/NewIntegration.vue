@@ -90,7 +90,7 @@
                 :items="integrationTypes"
                 v-model="formValues.analysisEngineTypeResourceId"
                 outlined
-                class="new-integration__select"
+                class="new-integration__select mt-2"
                 required
                 :rules="[integrationTypeRules.required, integrationTypeRules.empty]"
                 dense
@@ -144,8 +144,11 @@
                     @input="handleApiKeyChange"
                     height="40"
                   ></v-text-field>
-                  <div class="connection-error-state" v-if="item.status === 'failed'">
-                    Error message from connection comes here
+                  <div
+                    class="connection-error-state"
+                    v-if="item.status === 'failed' && item.value.length > 0"
+                  >
+                    {{ item.errorMessage || 'Error' }}
                   </div>
                   <div class="new-integration__api-keys__connection-status" v-if="!!item.status">
                     <v-icon
@@ -224,10 +227,11 @@
                   :items="[]"
                   placeholder="Enter Tag"
                   outlined
-                  class="edit-select standard-height"
+                  class="edit-select standard-height mt-2"
                   item-text="name"
                   multiple
                   dense
+                  deletable-chips
                   persistent-hint
                   small-chips
                   :return-object="false"
@@ -568,6 +572,7 @@ export default {
             message: 'Error when testing connections!'
           })
           item.status = 'failed'
+          item.errorMessage = error.response.data.message || error.response.data.Message
         })
         .finally(() => this.loadingState.shift('loading'))
     },
@@ -586,6 +591,8 @@ export default {
               message: 'Error when testing connections!'
             })
             this.formValues.apiKeys[i].status = 'failed'
+            this.formValues.apiKeys[i].errorMessage =
+              error.response.data.message || error.response.data.Message
           })
           .finally(() => this.loadingState.shift('loading'))
       }
@@ -638,7 +645,8 @@ export default {
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: #d0021b;
+    color: #ff5252 !important;
+
     position: absolute;
     top: 42px;
     left: 13px;
@@ -825,6 +833,7 @@ export default {
       max-width: 554px !important;
       justify-content: space-between;
       align-items: center;
+      margin-top: -7px;
 
       &-left-side {
         display: flex;

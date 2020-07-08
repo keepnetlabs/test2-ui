@@ -360,7 +360,6 @@ export default {
       getCommunityDetails(this.$route.params.name).then((response) => {
         this.communityDetails = response.data.data
         this.getMembers()
-        debugger
         if (this.communityDetails.privacyStatusId == 2) this.getRequestMembers()
       })
     },
