@@ -71,13 +71,13 @@
                   <v-radio value="3" label="Hidden" color="primary"></v-radio>
                 </v-radio-group>
                 <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
-                  >Only invited users can see posted threats</label
-                >
-                <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
                   >Anyone can find the community and see posted threats</label
                 >
+                <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
+                  >Only invited users can see posted threats</label
+                >
                 <label v-else class="edit-privacy-bottom-label"
-                  >Only owner can see posted threats</label
+                  >Only invited members can see the group in communities list</label
                 >
               </div>
             </v-list-item-content>
@@ -85,7 +85,12 @@
           <v-list-item class="p-0">
             <v-list-item-content class="pt-1 pb-0">
               <div class="d-flex">
-                <v-checkbox class="k-checkbox" color="#2196f3" v-model="acceptCheckbox" />
+                <v-checkbox
+                  class="k-checkbox"
+                  color="#2196f3"
+                  v-model="acceptCheckbox"
+                  :rules="[checkboxRulex.required]"
+                />
                 <span class="checkbox-text"
                   >I accept <a>terms and conditions</a> for posting an incident</span
                 >
@@ -128,6 +133,11 @@ export default {
           /^[a-zA-Z0-9]+$/.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+      },
+      checkboxRulex: {
+        required: (v) => {
+          return v || 'Required'
+        }
       },
       descriptionRules: {
         required: (v) =>

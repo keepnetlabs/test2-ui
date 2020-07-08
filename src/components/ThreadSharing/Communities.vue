@@ -343,6 +343,7 @@ export default {
         name: `Community`,
         params: { id: item.communityResourceId, item: item }
       })
+      localStorage.setItem('communityName', item.communityName)
     },
     updateCommunities() {
       clearTimeout(this.debounce)

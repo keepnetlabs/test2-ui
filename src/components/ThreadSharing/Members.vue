@@ -5,7 +5,14 @@
         <v-tab @click="getMembers()">Members</v-tab>
         <v-tab
           @click="getRequestMembers()"
-          v-if="ownerDetails.membershipStatusId === 1 && communityDetails.privacyStatusId === 2"
+          v-if="
+            ownerDetails &&
+            ownerDetails.membershipStatusId &&
+            ownerDetails.membershipStatusId === 1 &&
+            communityDetails &&
+            communityDetails.privacyStatusId &&
+            communityDetails.privacyStatusId === 2
+          "
         >
           Requests
           <span v-if="requestMembers.length" class="request-count">

@@ -99,7 +99,7 @@
               <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
                 {{ communityDetails.memberCount }}
                 <a
-                  v-if="ownerDetails.membershipStatusId === 1"
+                  v-if="ownerDetails && ownerDetails.membershipStatusId === 1"
                   href="#"
                   class="pl-4"
                   @click="isWantToAddMembers()"
@@ -646,7 +646,6 @@ export default {
       selectedCommunity: 'threadSharing/selectedCommunityGetter',
       getSelectedCompany: 'dashboard/getSelectedCompany',
       userGetter: 'auth/userGetter',
-      topPosts: 'threadSharing/topPostsGetter',
       requests: 'threadSharing/requestsGetter'
     }),
     ...mapState({
