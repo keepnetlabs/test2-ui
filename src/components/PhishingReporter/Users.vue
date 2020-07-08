@@ -169,11 +169,6 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction'
-          },
-          {
-            name: 'Turn On',
-            icon: 'mdi-power',
-            action: 'turnOn'
           }
         ],
         pageSizes: [5, 10, 25, 50, 100]
@@ -223,7 +218,6 @@ export default {
              */
         })
     },
-    callForTurnOn(row) {},
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {

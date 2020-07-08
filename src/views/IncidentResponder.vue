@@ -105,7 +105,7 @@
               }}
               users are
             </div>
-            <div class="card-status">Online</div>
+            <div class="card-status">Currently Online</div>
           </div>
           <div class="columns-row__body" v-else>
             <div class="card-footer no-data-text">
