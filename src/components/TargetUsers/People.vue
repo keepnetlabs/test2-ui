@@ -273,7 +273,7 @@ export default {
           this.isWantToShowAddUsersModal = true
           break
         case this.addUsersItems[1]:
-          this.isWantToShowImportUsersFromFileModal = true
+          //this.isWantToShowImportUsersFromFileModal = true
           break
         default:
           break
