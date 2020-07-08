@@ -231,7 +231,7 @@
                   persistent-hint
                   small-chips
                   :return-object="false"
-                  v-model="formValues.tag"
+                  v-model="formValues.tags"
                   required
                 ></v-combobox>
               </div>
@@ -368,7 +368,7 @@ export default {
       formValues: {
         description: null,
         analysisEngineTypeResourceId: null,
-        tag: [],
+        tags: [],
         isActive: true,
         isSendUrl: false,
         isSendFileHash: true,
@@ -528,7 +528,6 @@ export default {
           response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
             return { value: item, status: null }
           })
-          response['data'].data.tag = response['data'].data.tags
           const integrationData = response['data'].data
           this.formValues = integrationData
         })
@@ -543,7 +542,7 @@ export default {
       this.formValues = {
         description: null,
         analysisEngineTypeResourceId: null,
-        tag: null,
+        tags: null,
         isActive: true,
         isSendUrl: false,
         isSendFileHash: true,
