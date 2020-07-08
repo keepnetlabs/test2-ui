@@ -1,5 +1,10 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
+    <version-history-modal
+      :status="versionHistoryModalStatus"
+      @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
+      v-if="versionHistoryModalStatus"
+    />
     <v-list-item class="pl-0 add-in-settings__list-item" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
@@ -16,14 +21,15 @@
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
+              (v) =>
+                validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
             id="add-in-text"
             outlined
             placeholder="Suspicious E-Mail Reporter"
-            required
             v-model="formValues.addInName"
           ></v-text-field>
         </v-list-item-content>
@@ -34,7 +40,8 @@
           <label class="add-in-settings__label" for="company-text">Brand Name</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')
+              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -82,7 +89,9 @@
           <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
+              (v) =>
+                validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -137,6 +146,7 @@
             outlined
             placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
             required
+            :rules="[(v) => validations.required(v, 'Required')]"
             v-model="formValues.analysisThankYouMessage"
           ></v-text-field>
         </v-list-item-content>
@@ -162,7 +172,8 @@
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
+              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -197,24 +208,23 @@
         <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
           >Download link is generating...</span
         >
-        <a
-          class="add-in-settings__link"
-          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-          target="_blank"
-        >
-          Installation and configuration guide
-        </a>
+        <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
+          Version History
+        </div>
       </div>
     </v-form>
   </v-container>
 </template>
 
 <script>
-import { maxLength } from '../../../utils/validations'
+import { maxLength, required } from '../../../utils/validations'
 import { getPhishingReporterImg } from '../../../api/phishingReporter'
-
+import VersionHistoryModal from './VersionHistoryModal'
 export default {
   name: 'AddinSettings',
+  components: {
+    VersionHistoryModal
+  },
   props: {
     showFooter: {
       type: Boolean,
@@ -252,9 +262,11 @@ export default {
         warningLabel: '',
         hiddenFileUploadValue: ''
       },
+      versionHistoryModalStatus: false,
       marginStatus: true,
       validations: {
-        maxLength
+        maxLength,
+        required
       }
     }
   },
@@ -384,13 +396,11 @@ export default {
       font-size: 14px;
       font-weight: 600;
       text-decoration: none;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
+      cursor: pointer;
       letter-spacing: normal;
       color: #2196f3;
       flex-basis: 100%;
-      text-align: center;
       display: flex;
       justify-content: flex-end;
     }

@@ -1770,4 +1770,8 @@ export default {
     color: #2196f3;
   }
 }
+.details-content--item--value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

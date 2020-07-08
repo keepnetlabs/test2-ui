@@ -56,6 +56,7 @@
                     :disabled="!formValues.isOnPremise"
                     class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
                     v-model="formValues.apiUrl"
+                    :rules="[(v) => validations.required(v, 'Required')]"
                     height="40"
                   ></v-text-field>
                 </div>
@@ -67,7 +68,21 @@
                     outlined
                     dense
                     class="k-textfield site-url__textfield site-url__textfield--2"
-                    v-model="formValues.companyId"
+                    v-model="formValues.companyKey"
+                    :rules="[(v) => validations.required(v, 'Required')]"
+                    height="40"
+                  ></v-text-field>
+                </div>
+                <div class="site-url__container mt-n4">
+                  <span class="site-url__message site-url__message--1 mr-13">Api Key</span>
+                  <v-text-field
+                    placeholder="Api Key"
+                    outlined
+                    dense
+                    :disabled="!formValues.isOnPremise"
+                    class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
+                    v-model="formValues.apiKey"
+                    :rules="[(v) => validations.required(v, 'Required')]"
                     height="40"
                   ></v-text-field>
                 </div>
@@ -88,6 +103,7 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.noInternetConnectionMessage"
+            :rules="[(v) => validations.required(v, 'Required')]"
             id="no-internet-connection-message"
             height="40"
           ></v-text-field>
@@ -104,6 +120,7 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnYesText"
+            :rules="[(v) => validations.required(v, 'Required')]"
             id="yes-button-text"
             height="40"
           ></v-text-field>
@@ -120,6 +137,7 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnNoText"
+            :rules="[(v) => validations.required(v, 'Required')]"
             id="no-button-text"
             height="40"
           ></v-text-field>
@@ -136,6 +154,7 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnCancelText"
+            :rules="[(v) => validations.required(v, 'Required')]"
             id="cancel-button-text"
             height="40"
           ></v-text-field>
@@ -152,6 +171,7 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnOkText"
+            :rules="[(v) => validations.required(v, 'Required')]"
             id="super-tip-text"
             height="40"
           ></v-text-field>
@@ -168,6 +188,41 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.emailSendingErrorMessage"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            id="email-sending-message"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content>
+          <label class="other-settings__list-item-header" for="email-sending-message"
+            >Email Selection Error Message</label
+          >
+          <v-text-field
+            placeholder="Email selection error message"
+            outlined
+            dense
+            class="k-textfield mt-2"
+            v-model="formValues.emailSelectionErrorMessage"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            id="email-sending-message"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content>
+          <label class="other-settings__list-item-header" for="email-sending-message"
+            >Bad Format Email Message</label
+          >
+          <v-text-field
+            placeholder="Bad format email message"
+            outlined
+            dense
+            class="k-textfield mt-2"
+            v-model="formValues.badFormatEmailMessage"
+            :rules="[(v) => validations.required(v, 'Required')]"
             id="email-sending-message"
             height="40"
           ></v-text-field>
@@ -234,6 +289,8 @@
 </template>
 
 <script>
+import { required } from '../../../utils/validations'
+
 export default {
   name: 'OtherSettings',
   props: {
@@ -261,7 +318,7 @@ export default {
         isEnableProxy: false,
         isOnPremise: false,
         apiUrl: '',
-        companyId: '',
+        companyKey: '',
         enableEnterpriseVault: null,
         enterpriseVaultUrl: '',
         superTip: '',
@@ -270,9 +327,15 @@ export default {
         msgBoxBtnNoText: '',
         msgBoxBtnCancelText: '',
         msgBoxBtnOkText: '',
-        emailSendingErrorMessage: ''
+        emailSendingErrorMessage: '',
+        emailSelectionErrorMessage: '',
+        apiKey: '',
+        badFormatEmailMessage: ''
       },
-      enterpriseVaultDisabled: true
+      enterpriseVaultDisabled: true,
+      validations: {
+        required
+      }
     }
   },
   methods: {
@@ -298,7 +361,7 @@ export default {
   created() {
     if (this.formData) {
       const {
-        companyId,
+        companyKey,
         noInternetConnectionMessage,
         msgBoxBtnYesText,
         msgBoxBtnNoText,
@@ -310,15 +373,19 @@ export default {
         isOnPremise,
         isDeleteEmailBeforeAnalysis,
         enableProxy,
-        isEnableProxy
+        isEnableProxy,
+        emailSelectionErrorMessage,
+        apiKey,
+        badFormatEmailMessage
       } = this.formData
-      this.formValues.companyId = companyId || localStorage.getItem('companyId')
+      this.formValues.companyKey = companyKey
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
       this.formValues.msgBoxBtnYesText = msgBoxBtnYesText || ''
       this.formValues.msgBoxBtnNoText = msgBoxBtnNoText || ''
       this.formValues.msgBoxBtnOkText = msgBoxBtnOkText || ''
       this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText || ''
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
+      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage || ''
       this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
       this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
@@ -327,8 +394,10 @@ export default {
       this.formValues.isOnPremise = !!apiUrl
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
       this.formValues.enableProxy = enableProxy || ''
+      this.formValues.apiKey = apiKey || ''
+      this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
     } else {
-      this.formValues.companyId = localStorage.getItem('companyId')
+      this.formValues.companyKey = localStorage.getItem('companyId')
       this.formValues.noInternetConnectionMessage =
         'No internet connection. Please try again later.'
       this.formValues.enableEnterpriseVault = false
@@ -337,7 +406,10 @@ export default {
       this.formValues.msgBoxBtnCancelText = 'Cancel'
       this.formValues.msgBoxBtnOkText = 'Okay'
       this.formValues.emailSendingErrorMessage = 'Email cannot be sent'
+      this.formValues.emailSelectionErrorMessage = 'Email error'
       this.formValues.isDeleteEmailBeforeAnalysis = false
+      this.formValues.apiKey = ''
+      this.formValues.badFormatEmailMessage = 'Bad Format Email Message'
     }
   }
 }
@@ -504,6 +576,9 @@ export default {
     }
     &--2 {
       margin-top: -9px !important;
+      @media (max-width: 768px) {
+        margin-top: 8px !important;
+      }
     }
 
     &--3 {

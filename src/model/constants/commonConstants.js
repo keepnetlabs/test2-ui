@@ -20,12 +20,13 @@ const LABEL_STORE = {
   PRIORITY: 'Priority',
   PROGRESS: 'Progress',
   SUBJECT: 'Subject',
-  ATTACHMENTCOUNT: 'File',
+  ATTACHMENTCOUNT: 'Attachment',
   REPORTEDBY: 'Reported By',
   RESULT: 'Result',
   INCIDENT: 'Incident',
   DETECTED: 'Detected',
   SOURCE: 'Source',
+  ANALYSISSOURCE: 'Analysis Source',
   EXPIREDATE: 'Expiry Date',
   USERSTATUS: 'User Status',
   FROM: 'From',
@@ -43,7 +44,8 @@ const LABEL_STORE = {
   ISSENDFILEHASH: 'Hash Scan',
   ISSENDFILE: 'File Scan',
   DETAILS: 'Details',
-  ANALYSISENGINE: 'Service'
+  ANALYSISENGINE: 'Service',
+  CREATEDBY: 'Created By'
 }
 
 export const PROPERTY_STORE = {
@@ -77,7 +79,9 @@ export const PROPERTY_STORE = {
   ISSENDFILE: 'isSendFile',
   DETAILS: 'details',
   ANALYSISENGINE: 'analysisEngine',
-  RESOURCEID: 'resourceId'
+  RESOURCEID: 'resourceId',
+  CREATEDBY: 'createdBy',
+  ANALYSISSOURCE: 'source'
 }
 
 export function getStoreValue(key, type) {

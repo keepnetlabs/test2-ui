@@ -666,11 +666,13 @@
               </p>
               <div
                 class="investigation-details__container__content--right-menu__filters--list d-flex"
+                style="flex-wrap: wrap;"
               >
                 <div
+                  style="max-width: 100%; width: 100%;"
                   v-for="(item, index) in investigationDetailsData.headers"
                   :key="index"
-                  class="mr-2"
+                  class="mr-2 investigation__attachments"
                 >
                   <v-chip
                     class="ma-2"
@@ -680,12 +682,22 @@
                     >{{ key }}: {{ value }}
                   </v-chip>
                 </div>
-                <div v-for="(item, index) in investigationDetailsData.bodies" :key="index">
+                <div
+                  style="max-width: 100%; width: 100%;"
+                  v-for="(item, index) in investigationDetailsData.bodies"
+                  :key="index"
+                  class="investigation__attachments"
+                >
                   <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
                 </div>
-                <div v-for="(item, index) in investigationDetailsData.attachments" :key="index">
+                <div
+                  style="max-width: 100%; width: 100%;"
+                  class="investigation__attachments"
+                  v-for="(item, index) in investigationDetailsData.attachments"
+                  :key="index"
+                >
                   <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
@@ -1751,7 +1763,9 @@ export default {
         }
 
         &--right-menu {
-          width: calc(100% - 220px);
+          width: 100%;
+          overflow: hidden;
+          flex-wrap: wrap;
 
           .card.v-card.v-sheet.theme--light {
             padding: 0 !important;
@@ -1824,9 +1838,8 @@ export default {
                 letter-spacing: normal;
                 text-align: center;
                 color: #000000;
-
                 &:first-child {
-                  margin-left: 0 !important;
+                  //margin-left: 0 !important;
                 }
               }
             }
@@ -1878,5 +1891,14 @@ export default {
       width: 100%;
     }
   }
+  .v-chip__content {
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    display: block !important;
+    margin-top: 8px !important;
+  }
+}
+.investigation__attachments .v-chip:last-child {
+  margin-left: 0 !important;
 }
 </style>

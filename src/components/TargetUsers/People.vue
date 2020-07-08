@@ -289,7 +289,6 @@ export default {
     },
     handleEditTargetUsers(selectedRow) {
       this.selectedRow = selectedRow
-      console.log('selectedRow', this.selectedRow)
       this.isWantToShowAddUsersModal = true
     },
     handleEditFieldsClick() {

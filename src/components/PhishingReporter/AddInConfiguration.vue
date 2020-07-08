@@ -383,6 +383,11 @@ export default {
               icon: 'mdi-alert'
             })
           } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Phishing Reporter Saved Succesfully!',
+              icon: 'mdi-check-circle',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
             this.showModal = true
           }
         })

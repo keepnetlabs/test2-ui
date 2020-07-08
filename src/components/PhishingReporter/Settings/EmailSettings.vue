@@ -30,10 +30,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item
-        class="px-0 email-settings__list-item"
-        :class="[!hasError && !formValues.to ? 'mb-2' : '']"
-      >
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
@@ -45,18 +42,12 @@
             class="k-textfield mt-2"
             v-model="formValues.to"
             :rules="[
-              (v) => validations.required(v, 'Required'),
               (v) => validations.mail(v, 'Invalid recipient email address'),
               (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
             ]"
             id="recipient-email-address"
-            @input="handleEmailAddressChange"
-            @blur="hasError = true"
             height="40"
           ></v-text-field>
-          <div v-if="!hasError && !formValues.to" class="email-settings__required__text">
-            *Required
-          </div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
@@ -179,7 +170,6 @@ export default {
         content: '',
         IsSendInformationEmail: null
       },
-      hasError: false,
       validations: {
         maxLength,
         mail,
@@ -191,7 +181,6 @@ export default {
     submit() {
       const result = this.$refs.refForm.validate()
       if (!result) {
-        this.hasError = true
         return false
       } else {
         this.$emit('updateForm', this.formValues)

@@ -134,6 +134,11 @@ export default {
       })
       createPhishingReporter(formData)
         .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Phishing Reporter Saved Succesfully!',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
           this.$emit('getPhishingReport')
           if (updatedValues.isAddIn) {
             generateOutlookAddIn()
