@@ -34,7 +34,6 @@
       @downloadEvent="exportPhishingReporterUserList"
       id="usersList"
       ref="refUsersList"
-      @turnOn="callForTurnOn"
     />
   </div>
 </template>
@@ -154,8 +153,7 @@ export default {
             show: true,
             type: 'status',
             width: 160,
-            isEditable: true,
-            editComponent: 'textfield',
+            isEditable: false,
             hasTooltip: true,
             //minWidth: 80,
             fullWidth: true

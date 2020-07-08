@@ -16,14 +16,15 @@
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
+              (v) =>
+                validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
             id="add-in-text"
             outlined
             placeholder="Suspicious E-Mail Reporter"
-            required
             v-model="formValues.addInName"
           ></v-text-field>
         </v-list-item-content>
@@ -34,7 +35,8 @@
           <label class="add-in-settings__label" for="company-text">Brand Name</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')
+              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -82,7 +84,9 @@
           <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
+              (v) =>
+                validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -137,6 +141,7 @@
             outlined
             placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
             required
+            :rules="[(v) => validations.required(v, 'Required')]"
             v-model="formValues.analysisThankYouMessage"
           ></v-text-field>
         </v-list-item-content>
@@ -162,7 +167,8 @@
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
+              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -210,7 +216,7 @@
 </template>
 
 <script>
-import { maxLength } from '../../../utils/validations'
+import { maxLength, required } from '../../../utils/validations'
 import { getPhishingReporterImg } from '../../../api/phishingReporter'
 
 export default {
@@ -254,7 +260,8 @@ export default {
       },
       marginStatus: true,
       validations: {
-        maxLength
+        maxLength,
+        required
       }
     }
   },
