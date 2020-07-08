@@ -1,5 +1,10 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
+    <version-history-modal
+      :status="versionHistoryModalStatus"
+      @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
+      v-if="versionHistoryModalStatus"
+    />
     <v-list-item class="pl-0 add-in-settings__list-item" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
@@ -203,13 +208,9 @@
         <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
           >Download link is generating...</span
         >
-        <a
-          class="add-in-settings__link"
-          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-          target="_blank"
-        >
-          Installation and configuration guide
-        </a>
+        <div class="add-in-settings__link">
+          Version History
+        </div>
       </div>
     </v-form>
   </v-container>
@@ -218,9 +219,12 @@
 <script>
 import { maxLength, required } from '../../../utils/validations'
 import { getPhishingReporterImg } from '../../../api/phishingReporter'
-
+import VersionHistoryModal from './VersionHistoryModal'
 export default {
   name: 'AddinSettings',
+  components: {
+    VersionHistoryModal
+  },
   props: {
     showFooter: {
       type: Boolean,
@@ -258,6 +262,7 @@ export default {
         warningLabel: '',
         hiddenFileUploadValue: ''
       },
+      versionHistoryModalStatus: false,
       marginStatus: true,
       validations: {
         maxLength,
@@ -391,13 +396,11 @@ export default {
       font-size: 14px;
       font-weight: 600;
       text-decoration: none;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
+      cursor: pointer;
       letter-spacing: normal;
       color: #2196f3;
       flex-basis: 100%;
-      text-align: center;
       display: flex;
       justify-content: flex-end;
     }
