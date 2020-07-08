@@ -208,7 +208,7 @@
         <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
           >Download link is generating...</span
         >
-        <div class="add-in-settings__link">
+        <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
           Version History
         </div>
       </div>
