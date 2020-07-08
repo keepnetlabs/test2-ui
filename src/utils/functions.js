@@ -125,3 +125,18 @@ export function getDataTableFieldLabel(field) {
       return field.substring(0, 1).toUpperCase() + field.substring(1, field.length)
   }
 }
+
+export function isOwnerOrMember(membershipStatusId) {
+  switch (membershipStatusId) {
+    case 1:
+      return 'Being Analyzed'
+    case 2:
+      return 'In Progress'
+    default:
+      return false
+  }
+}
+
+export function isOwner(membershipStatusId) {
+  return membershipStatusId === 1 ? true : false
+}

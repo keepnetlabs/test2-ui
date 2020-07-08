@@ -36,7 +36,7 @@
                 name="description"
                 outlined
                 v-model="description"
-                :rules="[descriptionRules.regex, descriptionRules.required, descriptionRules.empty]"
+                :rules="[descriptionRules.required, descriptionRules.empty]"
                 required
                 class="edit-description"
                 placeholder="Description"
@@ -125,7 +125,7 @@ export default {
         required: (v) =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
         regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ,.\-_\s]*$/gi.test(v) ||
+          /^[a-zA-Z0-9]+$/.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
       },
@@ -133,9 +133,6 @@ export default {
         required: (v) =>
           (!!v && v.length >= 5 && v.length <= 300) ||
           'Description required and must between 5-300 characters.',
-        regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       categoryRules: {

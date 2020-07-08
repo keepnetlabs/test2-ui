@@ -99,7 +99,7 @@
               <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
                 {{ communityDetails.memberCount }}
                 <a
-                  v-if="communityDetails.privacyStatusName == 'Owner'"
+                  v-if="ownerDetails.membershipStatusId === 1"
                   href="#"
                   class="pl-4"
                   @click="isWantToAddMembers()"
@@ -208,6 +208,7 @@ export default {
   data() {
     return {
       communityDetails: {},
+      ownerDetails: null,
       yourPosts: {
         Data: [
           {
@@ -661,7 +662,8 @@ export default {
   methods: {
     getCommunityDetails() {
       if (this.$route.name == 'Community') {
-        getCommunityDetails(this.$route.params.name).then((response) => {
+        this.ownerDetails = this.$route.params.item
+        getCommunityDetails(this.$route.params.id).then((response) => {
           this.communityDetails = response.data.data
         })
       }

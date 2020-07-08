@@ -48,7 +48,7 @@
           <div v-if="selectedTab === 'tab-0' || selectedTab === 'tab-1'" id="tab-0">
             <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
               <div class="ts-header">
-                <div class="ts-title" @click="communityDetails(item.communityResourceId)">
+                <div class="ts-title" @click="communityDetails(item)">
                   {{ item.communityName }}
                 </div>
                 <div class="flex-grow-1"></div>
@@ -159,12 +159,9 @@
                     {{ item.industryName || 'Industry' }}
                   </span>
                   &bull;
-                  <span
-                    class="ts-community-industry pl-2"
-                    v-if="item.privacyStatusName == 'Private'"
-                    >Private</span
-                  >
-                  <span class="ts-community-industry pl-2" v-else>Public</span>
+                  <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
+                    item.privacyStatusName
+                  }}</span>
                 </div>
                 <div v-if="item && item.createTime" class="ts-community-date pt-1">
                   Last update:
@@ -224,6 +221,7 @@
 import { getAllCommunityList, getMyCommunityList, joinCommunity } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
+import { isOwnerOrMember } from '../../utils/functions'
 
 export default {
   components: {
@@ -339,8 +337,12 @@ export default {
           })
         })
     },
-    communityDetails(communityId) {
-      this.$router.push({ path: `/Community/${communityId}` })
+    communityDetails(item) {
+      if (!isOwnerOrMember(item.membershipStatusId)) return false
+      this.$router.push({
+        name: `Community`,
+        params: { id: item.communityResourceId, item: item }
+      })
     },
     updateCommunities() {
       clearTimeout(this.debounce)

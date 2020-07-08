@@ -3,7 +3,10 @@
     <v-card-text class="pt-2">
       <v-tabs v-model="tab" class="community-selector">
         <v-tab @click="getMembers()">Members</v-tab>
-        <v-tab @click="getRequestMembers()" v-if="requestMembers.length">
+        <v-tab
+          @click="getRequestMembers()"
+          v-if="ownerDetails.membershipStatusId === 1 && communityDetails.privacyStatusId === 2"
+        >
           Requests
           <span v-if="requestMembers.length" class="request-count">
             {{ requestMembers.length }}
@@ -264,13 +267,13 @@ import {
   refuseCommunityMembershipRequest
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-
 export default {
   components: {
     apexchart: VueApexCharts
   },
   data: () => ({
     communityDetails: null,
+    ownerDetails: null,
     tab: null,
     members: [],
     requestMembers: [],
@@ -353,15 +356,16 @@ export default {
     }
   },
   mounted() {
+    if (!this.$route.params.item) this.$router.push('/threat-sharing')
+    this.ownerDetails = this.$route.params.item
     this.getCommunityDetails()
   },
   methods: {
     getCommunityDetails() {
-      getCommunityDetails(this.$route.params.name).then((response) => {
+      getCommunityDetails(this.$route.params.id).then((response) => {
         this.communityDetails = response.data.data
         this.getMembers()
-        debugger
-        if (this.communityDetails.privacyStatusId == 2) this.getRequestMembers()
+        this.getRequestMembers()
       })
     },
     listRequests() {},
@@ -425,7 +429,7 @@ export default {
           ]
         }
       }
-      getCommunityMembers(this.$route.params.name, payload)
+      getCommunityMembers(this.$route.params.id, payload)
         .then((response) => {
           const { data } = response
           this.members = data.data.results
@@ -438,34 +442,39 @@ export default {
         })
     },
     getRequestMembers() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 5,
-        orderBy: 'CompanyName',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
+      if (
+        this.ownerDetails.membershipStatusId === 1 &&
+        this.communityDetails.privacyStatusId === 2
+      ) {
+        const payload = {
+          pageNumber: 1,
+          pageSize: 5,
+          orderBy: 'CompanyName',
+          ascending: true,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [
+                  {
+                    FieldName: 'CompanyName',
+                    Operator: 'Contains',
+                    Value: ''
+                  }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
         }
+        getCommunityMembersRequest(this.$route.params.id, payload)
+          .then((response) => {
+            const { data } = response
+            this.requestMembers = data.data.results
+          })
+          .catch((error) => {})
       }
-      getCommunityMembersRequest(this.$route.params.name, payload)
-        .then((response) => {
-          const { data } = response
-          this.members = data.data.results
-        })
-        .catch((error) => {})
     }
   },
   watch: {
