@@ -36,7 +36,7 @@
                 name="description"
                 outlined
                 v-model="description"
-                :rules="[descriptionRules.regex, descriptionRules.required, descriptionRules.empty]"
+                :rules="[descriptionRules.required, descriptionRules.empty]"
                 required
                 class="edit-description"
                 placeholder="Description"
@@ -71,13 +71,13 @@
                   <v-radio value="3" label="Hidden" color="primary"></v-radio>
                 </v-radio-group>
                 <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
-                  >Only invited users can see posted threats</label
-                >
-                <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
                   >Anyone can find the community and see posted threats</label
                 >
+                <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
+                  >Only members can see posted threats and community is listed</label
+                >
                 <label v-else class="edit-privacy-bottom-label"
-                  >Only owner can see posted threats</label
+                  >Only members can see posted threats and the group in communities list</label
                 >
               </div>
             </v-list-item-content>
@@ -85,7 +85,13 @@
           <v-list-item class="p-0">
             <v-list-item-content class="pt-1 pb-0">
               <div class="d-flex">
-                <v-checkbox class="k-checkbox" color="#2196f3" v-model="acceptCheckbox" />
+                <v-checkbox
+                  class="k-checkbox"
+                  color="#2196f3"
+                  v-model="acceptCheckbox"
+                  :rules="[checkboxRulex.required]"
+                  @change="checkCheckboxValidation()"
+                />
                 <span class="checkbox-text"
                   >I accept <a>terms and conditions</a> for posting an incident</span
                 >
@@ -121,21 +127,24 @@ export default {
       valid: false,
       privacystatusid: '1',
       acceptCheckbox: false,
+      isCheckboxChecked: false,
       nameRules: {
         required: (v) =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
         regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ,.\-_\s]*$/gi.test(v) ||
+          /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+      },
+      checkboxRulex: {
+        required: (v) => {
+          return v || 'You must accept terms and conditions before creating the community'
+        }
       },
       descriptionRules: {
         required: (v) =>
           (!!v && v.length >= 5 && v.length <= 300) ||
           'Description required and must between 5-300 characters.',
-        regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       categoryRules: {
@@ -153,6 +162,9 @@ export default {
     }
   },
   methods: {
+    checkCheckboxValidation() {
+      this.isCheckboxChecked = this.acceptCheckbox
+    },
     onCancelClicked() {
       this.$emit('closeAdd')
     },
@@ -217,7 +229,9 @@ export default {
   overflow: visible;
   width: 100%;
   .k-checkbox .v-messages {
-    display: none;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
   }
   .checkbox-text {
     position: absolute;

@@ -478,6 +478,7 @@ export default {
   data() {
     return {
       sessionCheck: false,
+      communityName: null,
       tour: {
         isActive: false,
         one: { active: false },
@@ -697,9 +698,6 @@ export default {
     companyName() {
       return localStorage.getItem('companyName')
     },
-    communityName() {
-      return localStorage.getItem('communityName')
-    },
     routerName() {
       return this.$route.name
     },
@@ -835,10 +833,17 @@ export default {
   beforeDestroy() {
     clearInterval(this.interval)
   },
+  updated() {
+    this.getCommunityName()
+  },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+
+    getCommunityName() {
+      this.communityName = localStorage.getItem('communityName')
+    },
     onNotificationSeen(notification) {
       notification.isSeen = true
       this.notificationSeen(notification)

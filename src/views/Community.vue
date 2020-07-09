@@ -47,6 +47,7 @@ export default {
     RightColumn
   },
   data: () => ({
+    communityDetails: {},
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
@@ -124,7 +125,9 @@ export default {
   computed: {},
   watch: {},
   created() {},
-  mounted() {},
+  mounted() {
+    this.communityDetails = this.$route.params.item
+  },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize)
   },
