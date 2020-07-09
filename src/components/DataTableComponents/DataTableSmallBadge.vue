@@ -57,7 +57,7 @@ export default {
     badge: Badge
   },
   watch: {
-    scope() {
+    scope(val) {
       this.getBadges()
     }
   },
@@ -85,33 +85,14 @@ export default {
       type: Object
     }
   },
-  updated() {
-    if (this.$refs.refSmallBadgeContainer) {
-      if (this.unRenderedBadgeCount === 0) {
-        this.maximumRenderedBadgeCount = Math.floor(
-          this.$refs.refSmallBadgeContainer.getBoundingClientRect().width / 65
-        )
-      } else {
-        this.maximumRenderedBadgeCount = Math.floor(
-          this.$refs.refSmallBadgeContainer.getBoundingClientRect().width / 95
-        )
-      }
-      this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-    }
-    if (this.scope.column.order === 'descending' && !this.isDescending && this.isAscending) {
-      this.isDescending = true
-      this.isAscending = false
-      this.getBadges()
-    } else if (this.scope.column.order === 'ascending' && this.isDescending && !this.isAscending) {
-      this.isDescending = false
-      this.isAscending = true
-      this.getBadges()
-    } else {
-    }
-  },
   created() {
-    this.getBadges()
+    const stringBadges = this.scope.row[this.col.property]
+    if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
+      this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
+      this.getBadges()
+    }
   },
+
   methods: {
     getKey(index) {
       return `${index}ab-${Math.random()}`
@@ -120,12 +101,18 @@ export default {
       const stringBadges = this.scope.row[this.col.property]
       if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
         this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
-        this.maximumRenderedBadgeCount = Math.floor(parseInt(this.col.width, 10) / 70)
+        console.log('this.scope.column.width ', this.scope.column.width)
+        console.log('this.scope.column.realWidth ', this.scope.column.realWidth)
+        if (this.unRenderedBadgeCount > 0) {
+          const totalWidth = this.scope.column.width - 35
+          this.maximumRenderedBadgeCount = Math.floor(totalWidth / 65)
+        } else {
+          this.maximumRenderedBadgeCount = Math.floor(this.scope.column.width / 65)
+        }
+        if (this.maximumRenderedBadgeCount > this.badges.length) {
+          this.maximumRenderedBadgeCount = this.badges.length
+        }
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
-      } else {
-        this.badges = []
-        this.maximumRenderedBadgeCount = 0
-        this.unRenderedBadgeCount = 0
       }
     }
   }

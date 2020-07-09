@@ -43,7 +43,8 @@ const LABEL_STORE = {
   ISSENDFILEHASH: 'Hash Scan',
   ISSENDFILE: 'File Scan',
   DETAILS: 'Details',
-  ANALYSISENGINE: 'Service'
+  ANALYSISENGINE: 'Service',
+  CREATEDBY: 'Created By'
 }
 
 export const PROPERTY_STORE = {
@@ -78,7 +79,8 @@ export const PROPERTY_STORE = {
   DETAILS: 'details',
   ANALYSISENGINE: 'analysisEngine',
   RESOURCEID: 'resourceId',
-  ANALYSISSOURCE: 'source'
+  ANALYSISSOURCE: 'source',
+  CREATEDBY: 'createdBy'
 }
 
 export function getStoreValue(key, type) {

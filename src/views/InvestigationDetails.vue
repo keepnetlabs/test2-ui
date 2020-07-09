@@ -1838,6 +1838,9 @@ export default {
                 letter-spacing: normal;
                 text-align: center;
                 color: #000000;
+                line-break: anywhere;
+                height: auto !important;
+
                 &:first-child {
                   //margin-left: 0 !important;
                 }
@@ -1895,7 +1898,12 @@ export default {
     text-overflow: ellipsis !important;
     overflow: hidden !important;
     display: block !important;
-    margin-top: 8px !important;
+    line-break: anywhere;
+    white-space: pre-wrap;
+    text-align: left;
+  }
+  .v-chip {
+    padding: 4px 12px !important;
   }
 }
 .investigation__attachments .v-chip:last-child {

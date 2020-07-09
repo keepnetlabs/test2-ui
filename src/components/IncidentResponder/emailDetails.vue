@@ -88,19 +88,34 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
-            <div class="details-content">
-              <div
-                class="details-content--item mb-12"
-                v-for="header in mailDetails.headers"
-                :key="header"
-              >
-                <div class="details-content--item--key">
-                  {{ header.key }}
+            <div class="email-details__header" v-if="false">
+              <v-card light class="email-details__header-card">
+                <v-card-title class="email-details__header-title">Relay Information</v-card-title>
+              </v-card>
+              <v-card light class="email-details__header-card">
+                <v-card-title class="email-details__header-title">Headers Found</v-card-title>
+                <div class="email-details__header-content">
+                  <datatable
+                    ref="refHeadersTable"
+                    :table="headersTable.data"
+                    :refName="'headersTable'"
+                    :columns="headersTable.columns"
+                    :countRow="25"
+                    :pageSizes="pageSizes"
+                    :defaultSort="'date'"
+                    :selectable="false"
+                    :filterable="true"
+                    :options="true"
+                    :empty="iEmpty"
+                    :selectEvent="selectEvent"
+                    :sizeable="true"
+                    :isDownloadable="true"
+                  />
                 </div>
-                <div class="details-content--item--value">
-                  {{ header.value }}
-                </div>
-              </div>
+              </v-card>
+              <v-card light class="email-details__header-card">
+                <v-card-title class="email-details__header-title">Received Header</v-card-title>
+              </v-card>
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
@@ -138,14 +153,13 @@
                   <div class="d-flex" style="align-items: center;">
                     <p class="mr-6 attachment-name">Attachment Name</p>
                     <p class="mr-6 wrf">{{ attachment.name }}</p>
-                    <a
-                      :href="attachment.name"
-                      v-if="attachment.downloadUrl"
+                    <div
+                      @click="handleDownloadAttachment(attachment)"
                       class="mr-6 cursor-pointer download"
                     >
                       <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                      Download file
-                    </a>
+                      DOWNLOAD FILE
+                    </div>
                     <p
                       class="mr-6 cursor-pointer not-found"
                       v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
@@ -313,7 +327,11 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  `
 })
 import Datatable from '../../components/DataTable'
-import { getNotifiedEmail, getAnalysisEngineTypes } from '../../api/notifiedEmail'
+import {
+  getNotifiedEmail,
+  getAnalysisEngineTypes,
+  downloadAttachment
+} from '../../api/notifiedEmail'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
@@ -370,6 +388,30 @@ export default {
         }
       ]
     },
+    headersTable: {
+      data: [],
+      columns: [
+        {
+          property: 'key',
+          align: 'left',
+          editable: false,
+          label: 'Header Key',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 400
+        },
+        {
+          property: 'value',
+          align: 'left',
+          editable: false,
+          label: 'Header Value',
+          sortable: true,
+          show: true,
+          type: 'text'
+        }
+      ]
+    },
     mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: [],
@@ -378,7 +420,7 @@ export default {
     isWantToShareIncident: false,
     isWantToInvestigate: false,
     isWantToPostIncident: false,
-    tab: 2,
+    tab: null,
     showAllTags: false,
     seeComments: false,
     rules: {
@@ -462,6 +504,25 @@ export default {
         this.showSecondCollapse = index
       }
     },
+    handleDownloadAttachment(attachment) {
+      downloadAttachment(attachment.resourceId)
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = attachment.name
+          link.click()
+        })
+        .catch((error) => {
+          if (error.response && error.response.data && error.response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: error.response.data.message,
+              icon: 'mdi-alert-circle',
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+            })
+          }
+        })
+    },
     getPostDetails() {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
@@ -469,6 +530,7 @@ export default {
           this.tableData = this.mailDetails.urls
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
+          this.headersTable.data = this.mailDetails.headers
           setTimeout(function () {
             for (let a of urls) {
               const els = document
@@ -527,6 +589,11 @@ export default {
             message: 'Error when getting analysis engine types!'
           })
         })
+    }
+  },
+  created() {
+    if (this.$route.params && this.$route.params.tab) {
+      this.tab = this.$route.params.tab
     }
   }
 }
@@ -1773,5 +1840,34 @@ export default {
 .details-content--item--value {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.email-details__header {
+  &-card {
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    background-color: #ffffff !important;
+    border-radius: 12px !important;
+  }
+  &-content {
+    margin-top: 40px;
+  }
+  &-title {
+    padding: 0;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+}
+.selection-icons {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.71;
+  letter-spacing: normal;
+  color: #2196f3;
+  text-transform: uppercase !important;
 }
 </style>
