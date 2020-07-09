@@ -338,12 +338,11 @@ export default {
         })
     },
     communityDetails(item) {
-      if (!isOwnerOrMember(item.membershipStatusId)) return false
+      localStorage.setItem('communityName', item.communityName)
       this.$router.push({
         name: `Community`,
         params: { id: item.communityResourceId, item: item }
       })
-      localStorage.setItem('communityName', item.communityName)
     },
     updateCommunities() {
       clearTimeout(this.debounce)

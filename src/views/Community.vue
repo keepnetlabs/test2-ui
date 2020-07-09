@@ -126,7 +126,6 @@ export default {
   watch: {},
   created() {},
   mounted() {
-    if (!this.$route.params.item) this.$router.push('/threat-sharing')
     this.communityDetails = this.$route.params.item
   },
   beforeDestroy() {

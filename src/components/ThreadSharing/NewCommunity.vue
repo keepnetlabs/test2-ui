@@ -74,10 +74,10 @@
                   >Anyone can find the community and see posted threats</label
                 >
                 <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
-                  >Only invited users can see posted threats</label
+                  >Only members can see posted threats and community is listed</label
                 >
                 <label v-else class="edit-privacy-bottom-label"
-                  >Only invited members can see the group in communities list</label
+                  >Only members can see posted threats and the group in communities list</label
                 >
               </div>
             </v-list-item-content>
@@ -90,6 +90,7 @@
                   color="#2196f3"
                   v-model="acceptCheckbox"
                   :rules="[checkboxRulex.required]"
+                  @change="checkCheckboxValidation()"
                 />
                 <span class="checkbox-text"
                   >I accept <a>terms and conditions</a> for posting an incident</span
@@ -126,17 +127,18 @@ export default {
       valid: false,
       privacystatusid: '1',
       acceptCheckbox: false,
+      isCheckboxChecked: false,
       nameRules: {
         required: (v) =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
         regex: (v) =>
-          /^[a-zA-Z0-9]+$/.test(v) ||
+          /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
       },
       checkboxRulex: {
         required: (v) => {
-          return v || 'Required'
+          return v || 'You must accept terms and conditions before creating the community'
         }
       },
       descriptionRules: {
@@ -160,6 +162,9 @@ export default {
     }
   },
   methods: {
+    checkCheckboxValidation() {
+      this.isCheckboxChecked = this.acceptCheckbox
+    },
     onCancelClicked() {
       this.$emit('closeAdd')
     },
@@ -224,7 +229,9 @@ export default {
   overflow: visible;
   width: 100%;
   .k-checkbox .v-messages {
-    display: none;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
   }
   .checkbox-text {
     position: absolute;

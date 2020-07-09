@@ -1379,7 +1379,7 @@ export default {
     .v-text-field__details {
       position: absolute;
       left: 0;
-      bottom: -5px;
+      bottom: -23px;
     }
 
     &:last-child {

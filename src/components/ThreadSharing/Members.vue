@@ -6,10 +6,9 @@
         <v-tab
           @click="getRequestMembers()"
           v-if="
-            ownerDetails &&
-            ownerDetails.membershipStatusId &&
-            ownerDetails.membershipStatusId === 1 &&
             communityDetails &&
+            communityDetails.myMembershipStatusId &&
+            communityDetails.myMembershipStatusId === 1 &&
             communityDetails.privacyStatusId &&
             communityDetails.privacyStatusId === 2
           "
@@ -280,7 +279,6 @@ export default {
   },
   data: () => ({
     communityDetails: null,
-    ownerDetails: null,
     tab: null,
     members: [],
     requestMembers: [],
@@ -363,13 +361,12 @@ export default {
     }
   },
   mounted() {
-    if (!this.$route.params.item) this.$router.push('/threat-sharing')
-    this.ownerDetails = this.$route.params.item
     this.getCommunityDetails()
   },
   methods: {
     getCommunityDetails() {
       getCommunityDetails(this.$route.params.id).then((response) => {
+        debugger
         this.communityDetails = response.data.data
         this.getMembers()
         this.getRequestMembers()
@@ -450,7 +447,7 @@ export default {
     },
     getRequestMembers() {
       if (
-        this.ownerDetails.membershipStatusId === 1 &&
+        this.communityDetails.myMembershipStatusId === 1 &&
         this.communityDetails.privacyStatusId === 2
       ) {
         const payload = {
