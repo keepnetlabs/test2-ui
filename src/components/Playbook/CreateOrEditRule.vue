@@ -136,45 +136,17 @@
             <!-- STEP 3 -->
             <v-stepper-content step="3">
               <v-container fluid class="playbook-actions">
+                <v-row :ref="`itemID-${index}`" v-for="(item, index) in actionList" :key="index">
+                  <v-col class="v-col" cols="12">
+                    <ActionItem v-bind:act.sync="act" :id="item.id" @remove="removeAction" />
+                  </v-col>
+                </v-row>
                 <v-row>
-                  <div class="v-col">
-                    <div class="vqb-rule rounded-xl">
-                      <div class="row">
-                        <div class="mr-2 col col-3">
-                          <v-select outlined hide-details />
-                        </div>
-                        <div class="col">
-                          <div
-                            class="v-input v-input--hide-details theme--light v-text-field v-text-field--is-booted v-text-field--enclosed v-text-field--outlined v-text-field--placeholder"
-                          >
-                            <div class="v-input__control">
-                              <div class="v-input__slot">
-                                <fieldset aria-hidden="true">
-                                  <legend style="width: 0px;"><span>&#8203;</span></legend>
-                                </fieldset>
-                                <div class="v-text-field__slot">
-                                  <input id="input-280" placeholder="value" type="text" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="text-right col col-auto">
-                          <button
-                            type="button"
-                            class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--default"
-                          >
-                            <span class="v-btn__content"
-                              ><i
-                                aria-hidden="true"
-                                class="v-icon notranslate mdi mdi-close-circle theme--light"
-                              ></i
-                            ></span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <v-col>
+                    <v-btn text color="primary" @click="addAction()">
+                      <v-icon>mdi-plus</v-icon> Add Action
+                    </v-btn>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-stepper-content>
@@ -211,86 +183,17 @@
 <script>
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
+import ActionItem from './ActionItem'
 
 export default {
   name: 'CreateOrEditRule',
-  components: { VueQueryBuilder, QueryBuilderGroup },
+  components: { ActionItem, VueQueryBuilder, QueryBuilderGroup },
   data() {
     return {
-      label: {
-        matchType: 'Match Type',
-        matchTypes: [
-          { id: 'and', label: 'AND' },
-          { id: 'or', label: 'OR' }
-        ],
-        addRule: 'ADD CONDITION',
-        addGroup: 'ADD NEW CONDITION SET',
-        textInputPlaceholder: 'value'
-      },
-      operators: [
-        'contains',
-        'does not contain',
-        'is equal to',
-        'is not equal to',
-        'exist',
-        'does not exist'
-      ],
-      rules: [
-        {
-          type: 'conditions',
-          id: 'conditions',
-          label: 'Conditions',
-          operands: [
-            'From',
-            'To',
-            'CC',
-            'Sender IP',
-            'Subject',
-            'Keyword',
-            'Attachment name',
-            'Attachment hash',
-            'Attachment extension',
-            'Custom syntax',
-            'Analysis result'
-          ],
-          operandsFrom: ['Email', 'Domain', 'Regex'],
-          operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
-          operandsAnalysisResult: ['Phising', 'Malicious', 'Non-malicious'],
-          operators: [
-            'contains',
-            'does not contain',
-            'is equal to',
-            'is not equal to',
-            'exist',
-            'does not exist'
-          ]
-        }
-      ],
-      query: {
-        logicalOperator: 'AND',
-        children: [
-          {
-            type: 'query-builder-group',
-            query: {
-              logicalOperator: 'AND',
-              children: [
-                {
-                  type: 'query-builder-rule',
-                  query: {
-                    rule: 'conditions',
-                    operator: 'contains',
-                    operand: 'From',
-                    format: 'Domain',
-                    value: null
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      },
+      idCounter: 1,
+      actionList: [{ id: 0 }],
       totalStep: 3,
-      activeStep: 1,
+      activeStep: 3,
       form1: false,
       form2: false,
       form3: false,
@@ -300,54 +203,58 @@ export default {
       priority: '',
       tags: [],
       isActive: true,
-      playbookAction: {
-        markType: 'Clean',
-        targetUser: '',
-        targetGroupId: '',
-        tags: ['']
+      act: {
+        actionTypes: ['Mark as', 'Analyse', 'Investigate', 'Notify', 'Tag'],
+        markAsOpts: ['Clean', 'Phising', 'Malicious', 'Spam'],
+        playbookAction: {
+          markType: 'Clean',
+          targetUser: '',
+          targetGroupId: '',
+          tags: ['']
+        },
+        playbookActionNotifications: [
+          {
+            targetUserType: 'Groups',
+            targetUsers: [],
+            emailTemplateId: 1
+          }
+        ],
+        playbookActionAnalyzers: [
+          {
+            integrationId: 'faczwHLF1Jmw',
+            isCheckHash: true,
+            isCheckFile: false,
+            isCheckUrl: true
+          }
+        ],
+        playbookActionInvestigations: [
+          {
+            isCreatedByAnalyzer: false,
+            expireDate: '2020-05-01 03:17:07.140',
+            startDate: '2020-01-01 03:17:07.140',
+            endDate: '2020-09-09 03:17:07.140',
+            scanTypes: ['Outlook'],
+            filters: [
+              'From',
+              'To',
+              'Cc',
+              'SenderIp',
+              'Subject',
+              'Keyword',
+              'Url',
+              'AttachmentName',
+              'AttachmentExtension',
+              'AttachmentHash'
+            ],
+            targetUserType: 'SpecificUsers',
+            targetUsers: ['burak@keepnetlabs.com', 'burak.okmen@outlook.com'],
+            actionType: 'Notify',
+            actionNotifyTargetUserType: 'Reporter',
+            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
+            emailTemplateId: 1
+          }
+        ]
       },
-      playbookActionNotifications: [
-        {
-          targetUserType: 'Groups',
-          targetUsers: [],
-          emailTemplateId: 1
-        }
-      ],
-      playbookActionAnalyzers: [
-        {
-          integrationId: 'faczwHLF1Jmw',
-          isCheckHash: true,
-          isCheckFile: false,
-          isCheckUrl: true
-        }
-      ],
-      playbookActionInvestigations: [
-        {
-          isCreatedByAnalyzer: false,
-          expireDate: '2020-05-01 03:17:07.140',
-          startDate: '2020-01-01 03:17:07.140',
-          endDate: '2020-09-09 03:17:07.140',
-          scanTypes: ['Outlook'],
-          filters: [
-            'From',
-            'To',
-            'Cc',
-            'SenderIp',
-            'Subject',
-            'Keyword',
-            'Url',
-            'AttachmentName',
-            'AttachmentExtension',
-            'AttachmentHash'
-          ],
-          targetUserType: 'SpecificUsers',
-          targetUsers: ['burak@keepnetlabs.com', 'burak.okmen@outlook.com'],
-          actionType: 'Notify',
-          actionNotifyTargetUserType: 'Reporter',
-          actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-          emailTemplateId: 1
-        }
-      ],
       condition: {
         operator: 'Or',
         conditionGroups: [
@@ -439,6 +346,78 @@ export default {
           required: (v) => (v && v.length <= 10) || 'It must between 1 - 10 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
+      },
+      label: {
+        matchType: 'Match Type',
+        matchTypes: [
+          { id: 'and', label: 'AND' },
+          { id: 'or', label: 'OR' }
+        ],
+        addRule: 'ADD CONDITION',
+        addGroup: 'ADD NEW CONDITION SET',
+        textInputPlaceholder: 'value'
+      },
+      operators: [
+        'contains',
+        'does not contain',
+        'is equal to',
+        'is not equal to',
+        'exist',
+        'does not exist'
+      ],
+      rules: [
+        {
+          type: 'conditions',
+          id: 'conditions',
+          label: 'Conditions',
+          operands: [
+            'From',
+            'To',
+            'CC',
+            'Sender IP',
+            'Subject',
+            'Keyword',
+            'Attachment name',
+            'Attachment hash',
+            'Attachment extension',
+            'Custom syntax',
+            'Analysis result'
+          ],
+          operandsFrom: ['Email', 'Domain', 'Regex'],
+          operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
+          operandsAnalysisResult: ['Phising', 'Malicious', 'Non-malicious'],
+          operators: [
+            'contains',
+            'does not contain',
+            'is equal to',
+            'is not equal to',
+            'exist',
+            'does not exist'
+          ]
+        }
+      ],
+      query: {
+        logicalOperator: 'AND',
+        children: [
+          {
+            type: 'query-builder-group',
+            query: {
+              logicalOperator: 'AND',
+              children: [
+                {
+                  type: 'query-builder-rule',
+                  query: {
+                    rule: 'conditions',
+                    operator: 'contains',
+                    operand: 'From',
+                    format: 'Domain',
+                    value: null
+                  }
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   },
@@ -452,6 +431,10 @@ export default {
     }
   },
   methods: {
+    addAction() {
+      this.actionList.push({ id: this.idCounter })
+      this.idCounter = this.idCounter + 1
+    },
     nextStep() {
       this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
     },
@@ -468,6 +451,10 @@ export default {
           this.tagsearch = ''
         })
       })
+    },
+    removeAction(event) {
+      let a = this.actionList.findIndex((x, i) => x.id == event)
+      this.actionList.splice(a, 1)
     }
   }
 }
