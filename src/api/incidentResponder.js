@@ -33,3 +33,7 @@ export function exportInvestigationUserList(payload, id) {
 export function searchNotifiedMail(payload) {
   return testRequest.post(`notified-emails/search`, payload)
 }
+
+export function updateNotifiedEmail(id, payload) {
+  return testRequest.put(`/notified-emails/${id}`, payload)
+}

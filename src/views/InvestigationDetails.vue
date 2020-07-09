@@ -5,23 +5,16 @@
       v-if="investigationDetailsListData && statsAndMenuData && investigationDetailsData"
     >
       <div class="investigation-details__container">
-        <v-overlay
-          id="add-new-community-overlay"
-          :value="isWantToAddNewCommunity"
-          :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
-          :opacity="1"
-          :z-index="999"
-          color="white"
-        >
-          <new-investigation
-            :isEdit="true"
-            :statsAndMenuData="statsAndMenuData"
-            :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
-            :investigationDetailsData="investigationDetailsData"
-            @closeAdd="onAddClose"
-            @refreshDatatable="refreshDatatable"
-          />
-        </v-overlay>
+        <new-investigation
+          :isEdit="true"
+          :statsAndMenuData="statsAndMenuData"
+          :status="isWantToAddNewCommunity"
+          :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
+          :investigationDetailsData="investigationDetailsData"
+          @closeAdd="onAddClose"
+          v-if="isWantToAddNewCommunity"
+          @refreshDatatable="refreshDatatable"
+        />
         <app-dialog
           :status="isWantToDelete"
           icon="mdi-alert"
@@ -673,11 +666,13 @@
               </p>
               <div
                 class="investigation-details__container__content--right-menu__filters--list d-flex"
+                style="flex-wrap: wrap;"
               >
                 <div
+                  style="max-width: 100%; width: 100%;"
                   v-for="(item, index) in investigationDetailsData.headers"
                   :key="index"
-                  class="mr-2"
+                  class="mr-2 investigation__attachments"
                 >
                   <v-chip
                     class="ma-2"
@@ -687,12 +682,22 @@
                     >{{ key }}: {{ value }}
                   </v-chip>
                 </div>
-                <div v-for="(item, index) in investigationDetailsData.bodies" :key="index">
+                <div
+                  style="max-width: 100%; width: 100%;"
+                  v-for="(item, index) in investigationDetailsData.bodies"
+                  :key="index"
+                  class="investigation__attachments"
+                >
                   <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
                 </div>
-                <div v-for="(item, index) in investigationDetailsData.attachments" :key="index">
+                <div
+                  style="max-width: 100%; width: 100%;"
+                  class="investigation__attachments"
+                  v-for="(item, index) in investigationDetailsData.attachments"
+                  :key="index"
+                >
                   <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
@@ -723,7 +728,6 @@
                 @deleteAndNotifyInvestigationDetailsFunction="
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
-                :rowActionsMinWidth="80"
                 @downloadEvent="exportInvestigationEmails"
                 v-if="showEmails"
               />
@@ -1038,11 +1042,11 @@ export default {
     }
   }),
   methods: {
-    exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber }) {
+    exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize: 5,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'ReceivedTime',
           ascending: true,
           reportAllPages,
@@ -1759,7 +1763,9 @@ export default {
         }
 
         &--right-menu {
-          width: calc(100% - 220px);
+          width: 100%;
+          overflow: hidden;
+          flex-wrap: wrap;
 
           .card.v-card.v-sheet.theme--light {
             padding: 0 !important;
@@ -1832,9 +1838,11 @@ export default {
                 letter-spacing: normal;
                 text-align: center;
                 color: #000000;
+                line-break: anywhere;
+                height: auto !important;
 
                 &:first-child {
-                  margin-left: 0 !important;
+                  //margin-left: 0 !important;
                 }
               }
             }
@@ -1886,5 +1894,19 @@ export default {
       width: 100%;
     }
   }
+  .v-chip__content {
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    display: block !important;
+    line-break: anywhere;
+    white-space: pre-wrap;
+    text-align: left;
+  }
+  .v-chip {
+    padding: 4px 12px !important;
+  }
+}
+.investigation__attachments .v-chip:last-child {
+  margin-left: 0 !important;
 }
 </style>

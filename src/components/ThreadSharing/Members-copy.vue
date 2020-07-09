@@ -1,21 +1,62 @@
 <template>
   <v-card flat color="basil">
+    <v-overlay
+      id="delete-community-overlay"
+      fixed
+      :opacity="0.46"
+      :value="isWantToRemoveMember"
+      :z-index="999"
+    >
+      <v-card
+        id="delete-community-card"
+        light
+        class="confirm-dialog pb-4 pa-6"
+        style="width: 444px;"
+      >
+        <v-list-item class="pl-0 pr-0">
+          <div class="v-btn v-cart-icon-wrapper">
+            <v-icon medium left color="blue" class="ml-2">mdi-account-outline</v-icon>
+          </div>
+          <v-list-item-content class="pt-0 pb-0">
+            <v-list-item-title class="v-card-headline"
+              >Remove user from community?
+            </v-list-item-title>
+            <v-list-item-subtitle class="v-card-sub-header">
+              User will be removed from community
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="pl-0 pr-0 pt-7 pb-6">
+          <span class="delete-info"
+            >User will be removed and won’t be able to access the community
+          </span>
+        </v-list-item>
+        <div class="d-flex flex-row flex-wrap justify-end">
+          <v-btn
+            id="delete-community-cancel-btn"
+            text
+            color="#f56c6c"
+            @click="isWantToRemoveMember = false"
+            >CANCEL
+          </v-btn>
+          <v-btn id="delete-community-delete-btn" text color="#2196f3" @click="onRemoveMember"
+            >REMOVE
+          </v-btn>
+        </div>
+      </v-card>
+    </v-overlay>
     <v-card-text class="pt-2">
       <v-tabs v-model="tab" class="community-selector">
         <v-tab @click="getMembers()">Members</v-tab>
         <v-tab
-          @click="getRequestMembers()"
           v-if="
-            communityDetails &&
-            communityDetails.myMembershipStatusId &&
-            communityDetails.myMembershipStatusId === 1 &&
-            communityDetails.privacyStatusId &&
-            communityDetails.privacyStatusId === 2
+            isOwnerOfTheCommunity() && (communityPrivacy === 'true' || communityPrivacy === true)
           "
+          @click="listRequests"
         >
           Requests
-          <span v-if="requestMembers.length" class="request-count">
-            {{ requestMembers.length }}
+          <span v-if="memberRequests.length" class="request-count">
+            {{ memberRequests.length }}
           </span>
         </v-tab>
       </v-tabs>
@@ -33,7 +74,7 @@
               <div class="search-wrapper">
                 <v-text-field
                   @mouseover.native="hover = true"
-                  placeholder="Filter by attributes or keywords"
+                  label="Filter by attributes or keywords"
                   outlined
                   dense
                   class="filter-field pt-6"
@@ -55,22 +96,22 @@
                       <div class="ts-title">
                         <img src="../../assets/img/logo-min.png" alt="KeepNet" />
                         <div class="community-info-wrapper">
-                          <h2>{{ member.companyName }}</h2>
+                          <h2>{{ member.CompanyName }}</h2>
                           <div class="community-sub-info">
                             <div class="pa-0">
                               <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                              <span class="company-mini-info">{{ member.userCount }} users</span>
+                              <span class="company-mini-info">{{ member.UserCount }} users</span>
                             </div>
                             <div class="pl-4 pa-0">
                               <v-icon class="company-mini-icon">mdi-domain</v-icon>
                               <span class="company-mini-info">{{
-                                member.industryName || 'Unknown'
+                                member.CategoryName || 'Unknown'
                               }}</span>
                             </div>
                             <div class="pl-4 pa-0">
                               <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
                               <span class="company-mini-info"
-                                >{{ member.postCount }} threat posts</span
+                                >{{ member.PostCount }} threat posts</span
                               >
                             </div>
                           </div>
@@ -94,7 +135,7 @@
                                   <v-list-item-title>See posted incidents</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
-                              <!--<v-list-item
+                              <v-list-item
                                 v-if="setRemoveFromCommunityVisibility(member)"
                                 @click="removeFromCommunity(member.CompanyId)"
                               >
@@ -104,7 +145,7 @@
                                 <v-list-item-content>
                                   <v-list-item-title>Remove from community</v-list-item-title>
                                 </v-list-item-content>
-                              </v-list-item>-->
+                              </v-list-item>
                             </v-list-item-group>
                           </v-list>
                         </div>
@@ -156,25 +197,12 @@
         </v-tab-item>
         <v-tab-item>
           <v-data-iterator
-            :items="requestMembers"
+            :items="memberRequests"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
             :search="search"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
-            <template v-slot:header>
-              <div class="search-wrapper">
-                <v-text-field
-                  @mouseover.native="hover = true"
-                  placeholder="Filter by attributes or keywords"
-                  outlined
-                  dense
-                  class="filter-field pt-6"
-                  v-model="search"
-                ></v-text-field>
-                <v-icon class="filter-icon">mdi-filter-variant</v-icon>
-              </div>
-            </template>
             <template v-slot:default="props">
               <v-expansion-panels
                 v-if="props.items && props.items.length > 0"
@@ -191,21 +219,21 @@
                     <div class="ts-title">
                       <img src="../../assets/img/logo-min.png" alt="Keepnet" />
                       <div class="community-info-wrapper">
-                        <h2>{{ req.companyName }}</h2>
+                        <h2>{{ req.CompanyName }}</h2>
                         <div class="community-sub-info">
                           <div class="pa-0">
                             <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                            <span class="company-mini-info">{{ req.userCount }} users</span>
+                            <span class="company-mini-info">{{ req.UserCount }} users</span>
                           </div>
                           <div class="pl-4 pa-0">
                             <v-icon class="company-mini-icon">mdi-domain</v-icon>
                             <span class="company-mini-info"
-                              >{{ req.industryName || 'No Category defined' }}
+                              >{{ req.BusinessCategory || 'No Category defined' }}
                             </span>
                           </div>
                           <div class="pl-4 pa-0">
                             <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
-                            <span class="company-mini-info">{{ req.postCount }} threat posts</span>
+                            <span class="company-mini-info">{{ req.PostCount }} threat posts</span>
                           </div>
                         </div>
                       </div>
@@ -216,7 +244,7 @@
                         block
                         rounded
                         medium
-                        @click="refuseRequest(req.communityRequestResourceId)"
+                        @click="refuseRequest(req.CommunityCompanyRequestId)"
                       >
                         Refuse
                       </v-btn>
@@ -225,7 +253,7 @@
                         block
                         rounded
                         medium
-                        @click="acceptRequest(req.communityRequestResourceId)"
+                        @click="acceptRequest(req.CommunityCompanyRequestId)"
                       >
                         Accept
                       </v-btn>
@@ -265,23 +293,15 @@
 </template>
 <script>
 import VueApexCharts from 'vue-apexcharts'
-import {
-  acceptCommunityMembershipRequest,
-  getCommunityDetails,
-  getCommunityMembers,
-  getCommunityMembersRequest,
-  refuseCommunityMembershipRequest
-} from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     apexchart: VueApexCharts
   },
   data: () => ({
-    communityDetails: null,
     tab: null,
-    members: [],
-    requestMembers: [],
+    members: ['dummy community', 'dummy 32'],
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
@@ -350,6 +370,13 @@ export default {
     memberCompId: null
   }),
   computed: {
+    ...mapGetters({
+      memberList: 'threadSharing/membersGetter',
+      selectedCommunity: 'threadSharing/selectedCommunityGetter',
+      memberRequests: 'threadSharing/memberRequestsGetter',
+      fetchedCommunity: 'threadSharing/fetchedCommunGetter',
+      getSelectedCompany: 'dashboard/getSelectedCompany'
+    }),
     communityPrivacy() {
       return (
         this.$store.state.threadSharing.selectedCommunity.privacy ||
@@ -360,128 +387,80 @@ export default {
       return this.$store.state.auth.user.currentCompany.id
     }
   },
-  mounted() {
-    this.getCommunityDetails()
-  },
   methods: {
-    getCommunityDetails() {
-      getCommunityDetails(this.$route.params.id).then((response) => {
-        debugger
-        this.communityDetails = response.data.data
-        this.getMembers()
-        this.getRequestMembers()
-      })
+    setRemoveFromCommunityVisibility(member) {
+      return (
+        this.selectedCommunity &&
+        this.isOwnerOfTheCommunity() &&
+        member.CompanyId !== this.getSelectedCompany.companyId
+      )
     },
-    listRequests() {},
+    listRequests() {
+      this.$store.dispatch(
+        'threadSharing/getMemberRequests',
+        this.selectedCommunity.id || localStorage.getItem('communityId')
+      )
+    },
     refuseRequest(reqId) {
-      refuseCommunityMembershipRequest(reqId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Membership refuse request has been accepted successfully'
-          })
-          this.getMembers()
-          this.getRequestMembers()
+      this.$store
+        .dispatch('threadSharing/declineMemberRequest', {
+          CommunityCompanyRequestId: reqId,
+          ModifyUserId: localStorage.getItem('userId')
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when refuse membership request'
-          })
+        .then(() => {
+          this.listRequests()
         })
     },
     acceptRequest(reqId) {
-      acceptCommunityMembershipRequest(reqId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Membership accept request has been accepted successfully'
-          })
-          this.getMembers()
-          this.getRequestMembers()
+      this.$store
+        .dispatch('threadSharing/acceptMemberRequest', {
+          CommunityCompanyRequestId: reqId,
+          ModifyUserId: localStorage.getItem('userId')
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when accept membership request'
-          })
+        .then(() => {
+          this.$store.dispatch('threadSharing/getCommunityInfo')
+          this.listRequests()
         })
     },
-    isOwnerOfTheCommunity() {},
-    removeFromCommunity(compId) {},
-    onRemoveMember() {},
-    getMembers() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 5,
-        orderBy: 'CompanyName',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      getCommunityMembers(this.$route.params.id, payload)
-        .then((response) => {
-          const { data } = response
-          this.members = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting community members'
-          })
-        })
-    },
-    getRequestMembers() {
+    isOwnerOfTheCommunity() {
+      const creator = localStorage.getItem('communityCompanyId')
+      const user = localStorage.getItem('companyId')
       if (
-        this.communityDetails.myMembershipStatusId === 1 &&
-        this.communityDetails.privacyStatusId === 2
+        user == creator ||
+        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId
       ) {
-        const payload = {
-          pageNumber: 1,
-          pageSize: 5,
-          orderBy: 'CompanyName',
-          ascending: true,
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'AND',
-                FilterItems: [
-                  {
-                    FieldName: 'CompanyName',
-                    Operator: 'Contains',
-                    Value: ''
-                  }
-                ],
-                FilterGroups: []
-              }
-            ]
-          }
-        }
-        getCommunityMembersRequest(this.$route.params.id, payload)
-          .then((response) => {
-            const { data } = response
-            this.requestMembers = data.data.results
-          })
-          .catch((error) => {})
+        return true
+      } else {
+        return false
       }
+    },
+    removeFromCommunity(compId) {
+      this.isWantToRemoveMember = true
+      this.memberCompId = compId
+    },
+    onRemoveMember() {
+      const obj = {
+        CommunityId: localStorage.getItem('communityId'),
+        ModifyUserId: localStorage.getItem('userId'),
+        CompanyId: this.memberCompId
+      }
+      this.$store.dispatch('threadSharing/deleteCompFromCommunity', obj).then(() => {
+        this.getMembers()
+        this.isWantToRemoveMember = false
+      })
+    },
+    getMembers() {
+      this.$store.dispatch('threadSharing/getMembers')
+      this.$store.dispatch(
+        'threadSharing/getMemberRequests',
+        this.selectedCommunity.id || localStorage.getItem('communityId')
+      )
     }
   },
   watch: {
+    memberList(val) {
+      if (val) this.members = val
+    },
     getSelectedCompany(val) {
       if (val) this.getMembers()
     }
@@ -489,16 +468,42 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.notification-wrapper {
-  padding: 0 !important;
-  width: 100%;
-  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
-    0 3px 14px 2px rgba(255, 255, 255, 0.12);
-}
 ::v-deep .community-selector {
   .v-tabs-bar {
     height: 44px !important;
   }
+}
+
+::v-deep .community-selector .v-slide-group__wrapper {
+  background-color: #f5f7fa !important;
+  height: 44px !important;
+  padding-left: 0 !important;
+
+  .v-tab {
+    font-weight: 400;
+    font-size: 14px !important;
+    margin-top: 6px;
+    margin-right: 32px !important;
+  }
+}
+
+::v-deep .community-selector .v-slide-group__wrapper > div {
+  height: 100%;
+  margin-right: 0 !important;
+}
+
+.v-tab {
+  padding: 0 3px !important;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.15;
+  letter-spacing: normal;
+  text-transform: none;
+  color: rgba(0, 0, 0, 0.87);
+  min-width: min-content !important;
+  text-align: left !important;
 }
 
 .search-wrapper {
@@ -518,7 +523,6 @@ export default {
   .filter-icon {
     color: rgba(0, 0, 0, 0.34) !important;
     cursor: pointer;
-    margin-top: 15px;
   }
 }
 
@@ -695,6 +699,27 @@ export default {
 
 .notification-wrapper {
   background-color: #fff;
+}
+
+.v-menu__content {
+  border-radius: 8px !important;
+  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+  .v-list-item {
+    padding-left: 29px !important;
+    padding-right: 16px !important;
+  }
+
+  .v-list-item__title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
 }
 
 .v-application--is-ltr .v-list-item__icon:first-child {

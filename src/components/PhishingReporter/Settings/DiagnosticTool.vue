@@ -32,10 +32,24 @@
       >
         SAVE CHANGES
       </v-btn>
-      <v-btn class="white--text diagnostic-tool__btn-util ml-3" color="#00bcd4" rounded>
+      <v-btn
+        @click="callForGenerateDiagnosticTool"
+        class="white--text diagnostic-tool__btn-util ml-3"
+        color="#00bcd4"
+        rounded
+        :disabled="spinnerStatus"
+      >
         <v-icon left>mdi-download</v-icon>
         Download diagnostic tool
       </v-btn>
+      <img
+        src="../../../assets/img/spinner.png"
+        class="add-in-settings__spinner"
+        v-if="spinnerStatus"
+      />
+      <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
+        >Download link is generating...</span
+      >
       <div class="diagnostic-tool__link-container">
         <a
           class="diagnostic-tool__link"
@@ -51,6 +65,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { generateDiagnosticTool, downloadDiagnosticTool } from '../../../api/phishingReporter'
+
 export default {
   name: 'DiagnosticTool',
   props: {
@@ -76,6 +92,7 @@ export default {
       formValues: {
         isEnableAddIn: false
       },
+      spinnerStatus: false,
       menu2: false,
       showTimePicker: false,
       intervalItems: ['Daily', 'Weekly', 'Monthly'],
@@ -106,6 +123,33 @@ export default {
           : this.formValues.time
       } ${period.toUpperCase()}`
       //this.$refs.menu.save(this.formValues.time)
+    },
+    callForGenerateDiagnosticTool() {
+      generateDiagnosticTool().then((response) => {
+        this.callForDownloadDiagnosticTool(response.data.data.transactionId)
+      })
+    },
+    callForDownloadDiagnosticTool(id) {
+      this.spinnerStatus = true
+      downloadDiagnosticTool(id)
+        .then((response) => {
+          this.spinnerStatus = false
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `DiagnosticTool.msi`
+          link.click()
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.spinnerStatus = true
+            setTimeout(() => {
+              this.callForDownloadDiagnosticTool(id)
+            }, 7500)
+          } else {
+            this.spinnerStatus = false
+          }
+        })
     }
   },
   created() {
@@ -285,6 +329,15 @@ export default {
 
     .v-icon {
       font-size: 19px;
+    }
+
+    &.v-btn--disabled {
+      .v-btn__content {
+        color: white !important;
+        .v-icon {
+          color: white !important;
+        }
+      }
     }
   }
 

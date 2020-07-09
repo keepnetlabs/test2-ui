@@ -1,50 +1,8 @@
 <template>
   <v-card flat color="basil">
-    <app-dialog
-      :status="confirmDialog"
-      icon="mdi-delete"
-      title="Delete Community?"
-      :subtitle="selectedCommunName"
-      body="All incidents and data will be lost"
-    >
-      <template v-slot:app-dialog-footer>
-        <v-spacer></v-spacer>
-        <v-btn text color="#2196f3" class="pa-0" @click="confirmDialog = false">
-          Cancel
-        </v-btn>
-        <v-btn text color="#f56c6c" class="pa-0" @click="deleteCommunity()">
-          Delete
-        </v-btn>
-      </template>
-    </app-dialog>
-    <app-dialog
-      :status="leaveDialog"
-      icon="mdi-exit-to-app"
-      title="Leave Community?"
-      :subtitle="selectedCommunName"
-    >
-      <template v-slot:app-dialog-body>
-        <span v-if="selectedCommunPrivacy" class="delete-info">
-          You are leaving "{{ selectedCommunName }}". You won’t be able to access this community
-        </span>
-        <span v-else class="delete-info">
-          You are leaving "{{ selectedCommunName }}". You won’t be able to post incidents to this
-          community
-        </span>
-      </template>
-      <template v-slot:app-dialog-footer>
-        <v-spacer></v-spacer>
-        <v-btn text color="#2196f3" class="pa-0" @click="leaveDialog = false">
-          Cancel
-        </v-btn>
-        <v-btn text color="#f56c6c" class="pa-0" @click="leaveCommunity()">
-          Leave
-        </v-btn>
-      </template>
-    </app-dialog>
     <v-card-text class="pt-2">
       <v-data-iterator
-        :items="listCommunities"
+        :items="listData"
         :page="page"
         :items-per-page.sync="itemsPerPage"
         :footer-props="{ itemsPerPageOptions }"
@@ -52,7 +10,7 @@
         :no-data-text="'Sorry, we couldn\'t find any results matching your criteria'"
       >
         <template v-slot:header>
-          <v-tabs v-model="yoursOrAll" class="community-selector">
+          <v-tabs v-model="selectedTab" class="community-selector">
             <v-tab
               v-for="(tab, ind) in tabOptions"
               :key="ind"
@@ -62,9 +20,9 @@
             >
               <template v-if="ind === 2">
                 {{ tab }}
-                <span v-if="invitations.length" class="invitations-count">
+                <!--<span v-if="invitations.length" class="invitations-count">
                   {{ invitations.length }}
-                </span>
+                </span>-->
               </template>
               <template v-else>
                 {{ tab }}
@@ -74,7 +32,7 @@
           <div class="search-wrapper">
             <v-text-field
               @mouseover.native="hover = true"
-              label="Filter by attributes or keywords"
+              placeholder="Filter by attributes or keywords"
               outlined
               dense
               class="filter-field pt-6"
@@ -86,31 +44,17 @@
             </v-icon>
           </div>
         </template>
-        <template v-slot:default="items">
-          <div v-if="yoursOrAll === 'tab-0' || yoursOrAll === 'tab-1'" id="tab-0">
-            <div v-for="(comp, ind) of items.items" :key="ind" class="threat-sharing-content">
+        <template v-slot:default="props">
+          <div v-if="selectedTab === 'tab-0' || selectedTab === 'tab-1'" id="tab-0">
+            <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
               <div class="ts-header">
-                <div
-                  class="ts-title"
-                  @click="
-                    goToCommunity(
-                      comp.Name,
-                      comp.CommunityId,
-                      comp.Description,
-                      comp.BusinessCategoryText,
-                      comp.IsPrivate,
-                      comp.CreateUserId,
-                      comp.CommunityCompany[0].CompanyId,
-                      isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
-                    )
-                  "
-                >
-                  {{ comp.Name }}
+                <div class="ts-title" @click="communityDetails(item)">
+                  {{ item.communityName }}
                 </div>
                 <div class="flex-grow-1"></div>
                 <div class="ts-header-btn-1">
                   <v-btn
-                    v-if="isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)"
+                    v-if="item.membershipStatusName == 'Owner'"
                     outlined
                     rounded
                     medium
@@ -119,11 +63,7 @@
                     OWNER
                   </v-btn>
                   <v-btn
-                    v-else-if="
-                      isRequestSent(comp.CommunityId) &&
-                      !isJoined(comp.CommunityId) &&
-                      comp.IsPrivate
-                    "
+                    v-else-if="item.membershipStatusName == 'RequestSent'"
                     outlined
                     rounded
                     medium
@@ -133,7 +73,7 @@
                     REQUEST SENT
                   </v-btn>
                   <v-btn
-                    v-else-if="isJoined(comp.CommunityId)"
+                    v-else-if="item.membershipStatusName == 'Member'"
                     outlined
                     rounded
                     medium
@@ -142,36 +82,29 @@
                     MEMBER
                   </v-btn>
                   <v-btn
-                    v-else-if="!isJoined(comp.CommunityId) && comp.IsPrivate"
+                    v-else-if="!item.membershipStatusName && item.privacyStatusName == 'Private'"
                     outlined
                     rounded
                     medium
                     class="join-button"
-                    @click="requestJoin(comp.CommunityId, comp.IsPrivate, comp.Name)"
+                    @click="requestJoin(item.communityResourceId, 'requestToJoin')"
                   >
                     <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                     REQUEST TO JOIN
                   </v-btn>
                   <v-btn
-                    v-else
+                    v-else-if="!item.membershipStatusName && item.privacyStatusName == 'Public'"
                     outlined
                     rounded
                     medium
                     class="join-button"
-                    @click="requestJoin(comp.CommunityId, comp.IsPrivate, comp.Name)"
+                    @click="requestJoin(item.communityResourceId, 'join')"
                   >
                     <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                     JOIN
                   </v-btn>
                 </div>
-                <v-menu
-                  v-if="
-                    isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId) ||
-                    isJoined(comp.CommunityId)
-                  "
-                  offset-y
-                  transition="scale-transition"
-                >
+                <v-menu offset-y transition="scale-transition">
                   <template v-slot:activator="{ on }">
                     <v-btn icon color="blue" v-on="on">
                       <v-icon>mdi-dots-vertical</v-icon>
@@ -180,19 +113,7 @@
                   <div class="notification-wrapper">
                     <v-list dense flat>
                       <v-list-item-group color="primary">
-                        <v-list-item
-                          v-if="isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)"
-                          @click="
-                            editCommunity(
-                              comp.Name,
-                              comp.CommunityId,
-                              comp.Description,
-                              comp.BusinessCategoryText,
-                              comp.IsPrivate,
-                              comp.CreateUserId
-                            )
-                          "
-                        >
+                        <v-list-item>
                           <v-list-item-icon>
                             <v-icon>mdi-pencil</v-icon>
                           </v-list-item-icon>
@@ -200,7 +121,7 @@
                             <v-list-item-title>Edit Community</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <v-list-item @click="openNotificationSettings(comp.CommunityId)">
+                        <v-list-item>
                           <v-list-item-icon>
                             <v-icon>mdi-bell</v-icon>
                           </v-list-item-icon>
@@ -208,20 +129,7 @@
                             <v-list-item-title>Notification Settings</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <v-list-item
-                          v-if="
-                            isJoined(comp.CommunityId) &&
-                            !isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
-                          "
-                          @click="
-                            openLeaveDialog(
-                              comp.CommunityId,
-                              comp.CreateUserId,
-                              comp.Name,
-                              comp.IsPrivate
-                            )
-                          "
-                        >
+                        <v-list-item>
                           <v-list-item-icon>
                             <v-icon>mdi-exit-to-app</v-icon>
                           </v-list-item-icon>
@@ -229,10 +137,7 @@
                             <v-list-item-title>Leave</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <v-list-item
-                          @click="openConfirmDialog(comp.CommunityId, comp.ModifyUserId, comp.Name)"
-                          v-if="isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)"
-                        >
+                        <v-list-item>
                           <v-list-item-icon>
                             <v-icon>mdi-delete</v-icon>
                           </v-list-item-icon>
@@ -244,89 +149,40 @@
                     </v-list>
                   </div>
                 </v-menu>
-                <div v-else style="width: 40px; display: block;"></div>
               </div>
               <div class="ts-user-comp">
                 <div class="ts-user-comp-detail">
                   <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
-                  <span class="pr-2">{{ comp.MemberCount }}</span>
+                  <span class="pr-2">{{ item.memberCount }}</span>
                   &bull;
                   <span class="ts-community-industry pl-2 pr-2">
-                    {{ comp.BusinessCategoryText || 'Industry' }}
+                    {{ item.industryName || 'Industry' }}
                   </span>
                   &bull;
-                  <span class="ts-community-industry pl-2" v-if="comp.IsPrivate === true"
-                    >Private</span
-                  >
-                  <span class="ts-community-industry pl-2" v-else-if="comp.IsPrivate === false"
-                    >Public</span
-                  >
+                  <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
+                    item.privacyStatusName
+                  }}</span>
                 </div>
-                <div v-if="comp && comp.ModifyDate" class="ts-community-date pt-1">
-                  Last update: {{ comp.ModifyDate.substring(0, 10).replace(/-/g, '.') }}
-                </div>
-              </div>
-              <div class="ts-body">
-                <v-clamp autoresize :max-lines="3">
-                  {{ comp.Description }}
-                </v-clamp>
-              </div>
-            </div>
-          </div>
-          <div v-if="yoursOrAll === 'tab-2'">
-            <div v-for="(comp, ind) of items.items" :key="ind" class="threat-sharing-content">
-              <div class="ts-header">
-                <div class="ts-title">
-                  {{ comp.Name }}
-                </div>
-                <div class="flex-grow-1"></div>
-                <div class="ts-header-btn-1">
-                  <v-btn
-                    @click="
-                      cancelInvitation(comp.CommunityId, comp.CreateUserId, comp.CommunityRequestId)
-                    "
-                    outlined
-                    rounded
-                    medium
-                    class="invitation-cancel"
-                  >
-                    CANCEL
-                  </v-btn>
-                  <v-btn
-                    @click="
-                      acceptInvitation(comp.CommunityId, comp.CreateUserId, comp.CommunityRequestId)
-                    "
-                    outlined
-                    rounded
-                    medium
-                    class="join-button invitation-accept ml-1"
-                  >
-                    JOIN
-                  </v-btn>
-                </div>
-              </div>
-              <div class="ts-user-comp">
-                <div class="ts-user-comp-detail">
-                  <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
-                  {{ comp.MemberCount }}
-                  <span class="ts-community-industry pl-2">
-                    {{ comp.BusinessCategoryText || 'Industry' }}
-                  </span>
-                </div>
-                <div v-if="comp && comp.LastUpdateDate" class="ts-community-date pt-1">
-                  Last update: {{ comp.LastUpdateDate.substring(0, 10).replace(/-/g, '.') }}
+                <div v-if="item && item.createTime" class="ts-community-date pt-1">
+                  Last update:
+                  {{ item.lastPostTime ? item.lastPostTime : item.createTime }}
+                  <!--{{
+                  item.lastPostTime
+                  ? item.lastPostTime.substring(0, 10).replace(/-/g, '.')
+                  : item.createTime.substring(0, 10).replace(/-/g, '.')
+                  }}-->
                 </div>
               </div>
               <div class="ts-body">
                 <v-clamp autoresize :max-lines="3">
-                  {{ comp.Description }}
+                  {{ item.communityDescription }}
                 </v-clamp>
               </div>
             </div>
           </div>
         </template>
         <template v-if="!filter || filter.length < 1" slot="no-data">
-          <div class="empty-communities" v-if="yoursOrAll === 'tab-1'">
+          <div class="empty-communities" v-if="selectedTab === 'tab-1'">
             <div class="empty-communities-inline">
               <span class="no-community">
                 No community has been created, yet
@@ -336,7 +192,7 @@
               </v-btn>
             </div>
           </div>
-          <div class="empty-communities" v-if="yoursOrAll === 'tab-0'">
+          <div class="empty-communities" v-if="selectedTab === 'tab-0'">
             <div class="empty-communities-inline">
               <span class="no-community">
                 You haven’t joined any communities, yet
@@ -346,7 +202,7 @@
               </v-btn>
             </div>
           </div>
-          <div class="empty-communities" v-if="yoursOrAll === 'tab-2'" id="tab-2">
+          <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
             <div class="empty-communities-inline">
               <span class="no-community">
                 You don't have any invitations from communities
@@ -362,17 +218,17 @@
   </v-card>
 </template>
 <script>
+import { getAllCommunityList, getMyCommunityList, joinCommunity } from '../../api/threadSharing'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
-import AppDialog from '../AppDialog'
-import { mapGetters } from 'vuex'
+import { isOwnerOrMember } from '../../utils/functions'
 
 export default {
   components: {
-    VClamp,
-    AppDialog
+    VClamp
   },
   data: () => ({
-    yoursOrAll: 'tab-1',
+    selectedTab: 'tab-1',
     tabOptions: ['Your Communities', 'All', 'Invitations'],
     communities: ['keepnet'],
     search: '',
@@ -380,352 +236,163 @@ export default {
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
     filter: '',
-    filteredBefore: false,
-    filteredValue: '',
-    confirmDialog: false,
-    leaveDialog: false,
-    communityId: '',
-    deleteId: '',
-    creatorOfCommun: '',
-    selectedCommunName: '',
-    selectedSubTab: null,
-    debounce: null,
-    mountedCommunities: [],
-    invitedCommunities: [],
-    selectedCommunPrivacy: null
+    listData: []
   }),
-  computed: {
-    ...mapGetters({
-      communityList: 'threadSharing/communityGetter',
-      myCommunities: 'threadSharing/myCommunitiesGetter',
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      requests: 'threadSharing/requestsGetter',
-      getSelectedCompany: 'dashboard/getSelectedCompany',
-      invitations: 'threadSharing/invitationsGetter'
-    }),
-    listCommunities: {
-      get() {
-        if (this.yoursOrAll === 'tab-1') {
-          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          return this.communityList.Results.sort(function (a, b) {
-            if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
-              return -1
-            }
-            if (a.Name.toLowerCase() > b.Name.toLowerCase()) {
-              return 1
-            }
-            return 0
-          })
-        } else if (this.yoursOrAll === 'tab-0') {
-          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          return this.myCommunities.sort(function (a, b) {
-            if (a.Name.toLowerCase() < b.Name.toLowerCase()) {
-              return -1
-            }
-            if (a.Name.toLowerCase() > b.Name.toLowerCase()) {
-              return 1
-            }
-            return 0
-          })
-        } else if (this.yoursOrAll === 'tab-2') {
-          return this.invitations
-        } else {
-          return undefined
-        }
-      },
-      set(filtered) {
-        this.communityList.Results = filtered
-      }
-    },
-    userId() {
-      return localStorage.getItem('userId')
-    },
-    companyId() {
-      return localStorage.getItem('companyId')
+  props: {
+    refresh: {
+      type: Boolean
     }
   },
   watch: {
-    yoursOrAll(val) {
-      if (val && val == 'tab-0') {
-        let myCommuns = []
-        for (let a of this.listCommunities) {
-          let match = this.myCommunities.find((c) => c.CommunityId == a.CommunityId)
-          if (match) myCommuns.push(match)
-        }
-        this.listCommunities = myCommuns
+    refresh: function (newVal, oldVal) {
+      if (oldVal != newVal) {
+        this.getAllCommunitiesListData()
+        this.getMyCommunitiesListData()
       }
     }
   },
+  created() {},
   mounted() {
-    this.yoursOrAll = 'tab-1'
-    this.mountedCommunities = this.communityList.Results
-    this.$store.dispatch('threadSharing/getInvitions')
-    if (this.$route.query && !!this.$route.query.invitations) {
-      this.subTabSelected()
-    }
-    if (this.$route.query && !!this.$route.query.CommunityRequestId) {
-      this.subTabSelected()
-    }
-
-    if (this.$route.query && !!this.$route.query.communityID) {
-      const comp = this.listCommunities.find(
-        (item) => item.CommunityId === this.$route.query.communityID
-      )
-      if (comp) {
-        this.goToCommunity(
-          comp.Name,
-          comp.CommunityId,
-          comp.Description,
-          comp.BusinessCategoryText,
-          comp.IsPrivate,
-          comp.CreateUserId,
-          comp.CommunityCompany[0].CompanyId,
-          this.isOwnerOfTheCommunity(comp.CommunityCompany[0].CompanyId)
-        )
-      }
-    }
+    this.selectedTab = 'tab-1'
+    this.getAllCommunitiesListData()
   },
   methods: {
+    getAllCommunitiesListData() {
+      const payload = {
+        pageNumber: 1,
+        pageSize: 100,
+        orderBy: 'CommunityName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'CommunityName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'CommunityDescription',
+                  Operator: 'Contains',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      getAllCommunityList(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting all community list data'
+          })
+        })
+    },
+    getMyCommunitiesListData() {
+      const payload = {
+        pageNumber: 1,
+        pageSize: 100,
+        orderBy: 'CommunityName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'CommunityName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'CommunityDescription',
+                  Operator: 'Contains',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      getMyCommunityList(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting my community list'
+          })
+        })
+    },
+    communityDetails(item) {
+      localStorage.setItem('communityName', item.communityName)
+      this.$router.push({
+        name: `Community`,
+        params: { id: item.communityResourceId, item: item }
+      })
+    },
     updateCommunities() {
       clearTimeout(this.debounce)
       const refThis = this
-      this.debounce = setTimeout(function () {
-        if (refThis.filteredValue != refThis.filter) {
-          if (refThis.filter.length) {
-            if (refThis.yoursOrAll === 'tab-1') {
-              refThis.listCommunities = refThis.mountedCommunities.filter(
-                (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
-              )
-            } else if (refThis.yoursOrAll === 'tab-0') {
-              refThis.listCommunities = refThis.myCommunities.filter(
-                (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
-              )
-            }
-            refThis.filteredBefore = true
-            refThis.filteredValue = refThis.filter
-          } else if (refThis.filteredBefore) {
-            if (refThis.yoursOrAll === 'tab-1') {
-              refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
-                refThis.listCommunities = refThis.mountedCommunities.filter(
-                  (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
-                )
-              })
-            } else if (refThis.yoursOrAll === 'tab-0') {
-              refThis.$store.dispatch('threadSharing/getCommunities').then(() => {
-                refThis.listCommunities = refThis.myCommunities.filter(
-                  (f) => f.Name.toLowerCase().indexOf(refThis.filter.toLowerCase()) !== -1
-                )
-              })
-            }
-            refThis.filteredBefore = true
-            refThis.filteredValue = refThis.filter
-          } else {
-            refThis.$store.dispatch('threadSharing/getCommunities')
-            refThis.filteredBefore = true
-            refThis.filteredValue = refThis.filter
-          }
-        } else {
-          if (refThis.yoursOrAll === 'tab-1') {
-            return refThis.listCommunities
-          }
-        }
-      }, 300)
+      this.debounce = setTimeout(function () {}, 300)
     },
-    openNotificationSettings(id) {
-      this.selectedCommunity.id = id
-      this.$emit('open-notification', id)
+    requestJoin(communityId) {
+      joinCommunity(communityId)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Join request has been sent successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attemping to send join request'
+          })
+        })
     },
     createNewCommunity() {
       this.$emit('create-community')
     },
-    refreshCommunities() {
-      this.$store.dispatch('threadSharing/getCommunities')
-    },
-    refreshRequests() {
-      this.$store.dispatch('threadSharing/getRequestsCompany', localStorage.getItem('companyId'))
-    },
-    editCommunity(name, communityId, description, category, privacy, creator) {
-      this.$store.dispatch('threadSharing/setSelectedCommunity', {
-        id: communityId,
-        name: name,
-        description: description,
-        industry: category,
-        privacy: privacy
-      })
-      localStorage.setItem('creatorId', creator)
-      this.$emit('edit-community')
-    },
-    goToCommunity(
-      name,
-      communityId,
-      description,
-      category,
-      privacy,
-      creator,
-      communCompId,
-      isOwner
-    ) {
-      if (!this.isJoined(communityId) && privacy) {
-        return
-      }
-      localStorage.setItem('companyId', this.getSelectedCompany.companyId)
-      localStorage.setItem('communityName', name)
-      localStorage.setItem('communityDesc', description)
-      localStorage.setItem('communityCat', category)
-      localStorage.setItem('communityPrivacy', privacy)
-      localStorage.setItem('creatorId', creator)
-      localStorage.setItem('communityId', communityId)
-      localStorage.setItem('communityCompanyId', communCompId)
-      localStorage.setItem('isOwner', isOwner)
-      this.$router.push({ path: `/Community/${communityId}` })
-      this.$store.dispatch('threadSharing/setSelectedCommunity', {
-        id: communityId,
-        name: name,
-        description: description,
-        industry: category,
-        privacy: privacy,
-        communityCompanyId: communCompId,
-        isOwner: isOwner
-      })
-    },
-    isJoined(id) {
-      if (this.myCommunities && this.myCommunities.length) {
-        return this.myCommunities.some((cId) => cId.CommunityId == id)
-      }
-    },
-    isOwnerOfTheCommunity(communityCompId) {
-      if (this.getSelectedCompany.companyId === communityCompId) {
-        return true
-      } else {
-        return false
-      }
-    },
     subTabSelected(name) {
       if (name == 'Your Communities') {
-        this.yoursOrAll = 'tab-0'
-        let myCommuns = []
-        for (let a of this.listCommunities) {
-          let match = this.myCommunities.find((c) => c.CommunityId == a.CommunityId)
-          if (match) myCommuns.push(match)
-        }
-        this.listCommunities = myCommuns
+        this.selectedTab = 'tab-0'
+        this.getMyCommunitiesListData()
       } else if (name == 'All') {
-        this.yoursOrAll = 'tab-1'
-        this.$store.dispatch('threadSharing/getCommunities')
+        this.selectedTab = 'tab-1'
+        this.getAllCommunitiesListData()
       } else {
-        this.yoursOrAll = 'tab-2'
+        this.selectedTab = 'tab-2'
+        this.listData = []
         return
       }
-    },
-    openLeaveDialog(communityId, creatorOfCommun, name, privacy) {
-      this.leaveDialog = true
-      this.communityId = communityId
-      this.creatorId = creatorOfCommun
-      this.selectedCommunName = name
-      this.selectedCommunPrivacy = privacy
-    },
-    leaveCommunity() {
-      this.$store.dispatch('threadSharing/leaveCommunity', {
-        communityId: this.communityId,
-        creatorId: this.creatorId
-      })
-      this.leaveDialog = false
-    },
-    openConfirmDialog(communityId, deleteId, name) {
-      this.confirmDialog = true
-      this.communityId = communityId
-      this.deleteId = deleteId
-      this.selectedCommunName = name
-    },
-    deleteCommunity() {
-      this.$store.dispatch('threadSharing/deleteCommunity', {
-        communityId: this.communityId,
-        userId: this.deleteId
-      })
-      this.confirmDialog = false
-    },
-    requestJoin(communId, privacy, name) {
-      this.$store
-        .dispatch('threadSharing/joinCommunity', {
-          CommunityId: communId,
-          CompanyId: localStorage.getItem('companyId'),
-          CreateUserId: localStorage.getItem('userId'),
-          IsPrivate: privacy,
-          Name: name
-        })
-        .then(() => {
-          this.refreshRequests()
-          this.refreshCommunities()
-        })
-    },
-    isRequestSent(communId) {
-      return this.requests.some((cId) => cId.CommunityId === communId)
-    },
-    cancelInvitation(communId, createUserId, communReqId) {
-      const refuseObj = {
-        CommunityId: communId,
-        InvitedCompanyId: localStorage.getItem('companyId'),
-        CreateUserId: createUserId,
-        CommunityRequestId: communReqId
-      }
-      this.$store.dispatch('threadSharing/setRefuseInvitation', refuseObj).then((response) => {
-        this.$store.dispatch('threadSharing/getInvitions')
-      })
-    },
-    acceptInvitation(communId, createUserId, communReqId) {
-      const refuseObj = {
-        CommunityId: communId,
-        InvitedCompanyId: localStorage.getItem('companyId'),
-        CreateUserId: createUserId,
-        CommunityRequestId: communReqId
-      }
-      this.$store.dispatch('threadSharing/setAcceptInvitation', refuseObj).then((response) => {
-        this.$store.dispatch('threadSharing/getInvitions')
-      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-::v-deep .community-selector {
-  .v-tabs-bar {
-    height: 44px !important;
-  }
+.notification-wrapper {
+  padding: 0 !important;
+  width: 100%;
+  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
+    0 3px 14px 2px rgba(255, 255, 255, 0.12);
 }
-
-::v-deep .community-selector .v-slide-group__wrapper {
-  background-color: #f5f7fa !important;
-  height: 44px !important;
-  padding-left: 0 !important;
-
-  .v-tab {
-    font-weight: 400;
-    font-size: 14px !important;
-    margin-top: 6px;
-    margin-right: 32px !important;
-  }
-}
-
-::v-deep .community-selector .v-slide-group__wrapper > div {
-  height: 100%;
-  margin-right: 0 !important;
-}
-
-.v-tab {
-  padding: 0 3px !important;
-  font-size: 20px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
-  min-width: min-content !important;
-  text-align: left !important;
-}
-
 .search-wrapper {
   align-items: center;
   display: flex;
@@ -825,30 +492,6 @@ export default {
 
 .ts-people-icon {
   font-size: 16px;
-}
-
-.notification-wrapper {
-  background-color: #fff;
-}
-
-.v-menu__content {
-  border-radius: 8px !important;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-
-  .v-list-item {
-    padding-left: 29px !important;
-    padding-right: 16px !important;
-  }
-
-  .v-list-item__title {
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
 }
 
 .v-application--is-ltr .v-list-item__icon:first-child {

@@ -13,7 +13,9 @@ export function getPhishingReporter() {
 }
 
 export function getPhishingReporterImg() {
-  return testRequest.get('/phishing-reporter/img')
+  return testRequest.get('/phishing-reporter/img', {
+    responseType: 'blob'
+  })
 }
 
 export function deletePhishingReporterUser(id) {
@@ -26,6 +28,26 @@ export function searchPhishingReporterUser(payload) {
 
 export function exportPhishingReporterUserList(payload) {
   return testRequest.post('/phishing-reporter/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
+export function generateOutlookAddIn() {
+  return testRequest.get('/phishing-reporter/generate/outlook-addin')
+}
+
+export function downloadOutlookAddIn(id) {
+  return testRequest.get(`/phishing-reporter/download/outlook-addin/${id}`, {
+    responseType: 'blob'
+  })
+}
+
+export function generateDiagnosticTool() {
+  return testRequest.get('/phishing-reporter/generate/diagnostic-tool')
+}
+
+export function downloadDiagnosticTool(id) {
+  return testRequest.get(`/phishing-reporter/download/diagnostic-tool/${id}`, {
     responseType: 'blob'
   })
 }

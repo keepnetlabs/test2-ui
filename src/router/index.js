@@ -64,7 +64,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/community/:name',
+          path: '/community/:id',
           name: 'Community',
           component: Community,
           meta: {

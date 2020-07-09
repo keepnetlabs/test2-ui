@@ -21,6 +21,7 @@
           ref="refAddinSettings"
           :formData="formData"
           @updateForm="callForCreatePhishingReporter"
+          :spinnerStatus="spinnerStatus"
         />
       </v-tab-item>
       <v-tab-item>
@@ -53,7 +54,11 @@ import AddinSettings from './AddinSettings'
 import DiagnosticTool from './DiagnosticTool'
 import EmailSettings from './EmailSettings'
 import OtherSettings from './OtherSettings'
-import { createPhishingReporter } from '../../../api/phishingReporter'
+import {
+  createPhishingReporter,
+  generateOutlookAddIn,
+  downloadOutlookAddIn
+} from '../../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 
 export default {
@@ -72,12 +77,34 @@ export default {
   },
   data() {
     return {
-      tab: 0
+      tab: 0,
+      spinnerStatus: false
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
+    },
+    callForDownloadOutlookAddIn(transactionId) {
+      downloadOutlookAddIn(transactionId)
+        .then((response) => {
+          this.spinnerStatus = false
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `OutlookPhishingReporter.msi`
+          link.click()
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.spinnerStatus = true
+            const timeout = setTimeout(() => {
+              this.callForDownloadOutlookAddIn(transactionId)
+            }, 7500)
+          } else {
+            this.spinnerStatus = false
+          }
+        })
     },
     callForCreatePhishingReporter(updatedValues) {
       const addinSettings =
@@ -107,7 +134,19 @@ export default {
       })
       createPhishingReporter(formData)
         .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Phishing Reporter Saved Succesfully!',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
           this.$emit('getPhishingReport')
+          if (updatedValues.isAddIn) {
+            generateOutlookAddIn()
+              .then((response) => {
+                this.callForDownloadOutlookAddIn(response.data.data.transactionId)
+              })
+              .catch((error) => {})
+          }
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

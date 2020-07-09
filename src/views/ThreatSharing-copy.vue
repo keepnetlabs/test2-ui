@@ -1,23 +1,19 @@
 <template>
-  <div id="" class="component-threat-sharing page-wrapper">
-    <v-overlay
-      id="new-community-overlay"
-      :value="isWantToAddNewCommunity"
-      :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
-      :opacity="1"
-      :z-index="999"
-      color="white"
-    >
-      <new-community @closeAdd="onAddClose" />
-    </v-overlay>
+  <div id="component-threat-sharing" class="page-wrapper">
     <v-layout id="ts-layout" wrap style="min-height: 79vh;">
       <v-col class="main-column pr-0" cols="12" md="8">
         <v-card id="ts-card" class="pl-1 pt-2 pr-1">
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
-            <v-tab id="ts-tab-incident">Incidents</v-tab>
-            <v-tab id="ts-tab-community">Communities</v-tab>
+            <v-tab id="ts-tab-incident" @click="getIncidents">Incidents</v-tab>
+            <v-tab id="ts-tab-community" @click="getCommunities">Communities</v-tab>
             <div class="tablet-info-btn">
-              <v-btn id="ts-info-btn" class="create-com-btn" block rounded>
+              <v-btn
+                id="ts-info-btn"
+                class="create-com-btn"
+                @click="mobileInfoClicked"
+                block
+                rounded
+              >
                 <v-icon class="pr-1">mdi-information</v-icon>
                 INFO
               </v-btn>
@@ -25,57 +21,340 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
-              <incidents />
+              <incidents ref="refIncidents" @go-to-communities="changeTabCommunities" />
             </v-tab-item>
             <v-tab-item>
-              <communities :refresh="refreshMemberTable" />
+              <communities
+                @open-notification="notificationFromCommunities()"
+                @create-pageViewcommunity="isWantToAddNewCommunity = true"
+                @edit-community="editTheCommunity()"
+                ref="refCommunities"
+              />
             </v-tab-item>
           </v-tabs-items>
         </v-card>
       </v-col>
       <v-col id="ts-right-column" class="right-column" cols="12" md="4">
-        <right-column
-          class="right-col-desktop"
-          @createCommunityAction="openCreateCommunityModal()"
-        />
+        <right-column class="right-col-desktop" />
       </v-col>
     </v-layout>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from 'vuex'
+import AuthenticationService from '../services/authentication'
 import Incidents from '../components/ThreadSharing/Incidents'
 import Communities from '../components/ThreadSharing/Communities'
-import RightColumn from '../components/ThreadSharing/RightColumn'
+import EditCommunity from '../components/ThreadSharing/EditCommunity'
 import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import RightColumn from '../components/ThreadSharing/RightColumn'
 
 export default {
   name: 'ThreatSharing',
   components: {
     Incidents,
     Communities,
-    RightColumn,
-    NewCommunity
+    RightColumn
   },
   data: () => ({
+    search: '',
+    itemsPerPageOptions: [5, 10, 20],
+    itemsPerPage: 5,
     tab: null,
+    text:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    notificationSettingsOpened: false,
     isWantToAddNewCommunity: false,
-    refreshMemberTable: false
+    isWantToEditCommunity: false,
+    isWantToDeleteCommunity: false,
+    isWantToAddMembers: false,
+    isMobileInfo: false,
+    isWantToPostIncident: false,
+    isWantToLeaveFromCommunity: false,
+    inviteEmail: '',
+    activator: null,
+    attach: null,
+    colors: ['#e0e0e0'],
+    editing: null,
+    index: -1,
+    items: [],
+    nonce: 1,
+    menu: false,
+    model: [],
+    x: 0,
+    inviteSearch: null,
+    y: 0,
+    IsNotificationsEnabled: false,
+    editObj: {},
+    pageView: true,
+    dbound: null,
+    firstClick: 1,
+    windowWidth: 0
   }),
+  computed: {
+    ...mapGetters({
+      isTourActive: 'tour/isTourActive',
+      getTourData: 'tour/getTourData',
+      menuList: 'dashboard/getMenuList',
+      selectedCompany: 'dashboard/getSelectedCompany',
+      notifications: 'threadSharing/notificationGetter',
+      selectedCommunity: 'threadSharing/selectedCommunityGetter',
+      userGetter: 'auth/userGetter',
+      isMobileVisible: 'threadSharing/mobileVisibilityGetter'
+    }),
+    ...mapState({
+      companyInformation: (state) => state.dashboard.companyInformation
+    }),
+    isMobile() {
+      if (window.outerWidth < 769) {
+        return true
+      } else {
+        this.$store.commit('threadSharing/SET_MOBILE_INFO', false)
+        return false
+      }
+    }
+  },
+  watch: {
+    model(val, prev) {
+      if (val && val.length > 5) {
+        this.$nextTick(() => this.model.pop())
+      }
+      if (val.length === prev.length) return
+
+      this.model = val.map((v) => {
+        if (typeof v === 'string' && !v.startsWith(' ')) {
+          v = {
+            text: v,
+            color: this.colors[this.nonce - 1]
+          }
+          this.items.push(v)
+          this.nonce++
+        }
+        return v
+      })
+    },
+    IsNotificationsEnabled() {
+      if (this.IsNotificationsEnabled) {
+        this.notifications.IsDashboardEnabled = true
+        this.notifications.IsEmailEnabled = true
+        this.notifications.IsWhatsappEnabled = true
+      }
+    },
+    selectedCompany(val, prev) {
+      if (val && val != prev) {
+        this.dispatchPage()
+      }
+    },
+    windowWidth(val, prev) {
+      if (val && val != prev && val > 768) {
+        this.$store.commit('threadSharing/SET_MOBILE_INFO', false)
+        this.isMobileInfo = false
+      }
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (AuthenticationService.isAuthenticated()) {
+        this.getCurrentUser()
+        this.dispatchPage()
+      }
+      window.addEventListener('resize', this.onResize)
+    })
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize)
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.isWantToAddNewCommunity) {
+      this.onAddClose()
+      next(false)
+    } else if (this.$refs.refIncidents.isWantToInvestigate) {
+      this.$refs.refIncidents.isWantToInvestigate = false
+      next(false)
+    } else if (this.$refs.refIncidents.isWantToShareIncident) {
+      this.$refs.refIncidents.isWantToShareIncident = false
+      next(false)
+    } else if (this.$refs.refIncidents.isWantToPostIncident) {
+      this.$refs.refIncidents.isWantToPostIncident = false
+      next(false)
+    } else if (this.$refs.refIncidents.deleteIncidentModal) {
+      this.$refs.refIncidents.deleteIncidentModal = false
+      next(false)
+    } else if (this.isWantToEditCommunity) {
+      this.isWantToEditCommunity = false
+      next(false)
+    } else if (this.notificationSettingsOpened) {
+      this.notificationSettingsOpened = false
+      next(false)
+    } else if (this.isWantToDeleteCommunity) {
+      this.isWantToDeleteCommunity = false
+      next(false)
+    } else if (this.$refs.refCommunities && this.$refs.refCommunities.confirmDialog) {
+      this.$refs.refCommunities.confirmDialog = false
+      next(false)
+    } else {
+      next()
+    }
+  },
   methods: {
-    openCreateCommunityModal() {
-      this.isWantToAddNewCommunity = true
+    ...mapActions({
+      getCurrentUser: 'auth/getCurrentUser'
+    }),
+    dispatchPage(account) {
+      this.$store.dispatch('threadSharing/getCommunities')
+      this.$store.dispatch('threadSharing/getBusinessCategories')
+      this.$store.dispatch('threadSharing/getSuggestedCommunities')
+      this.$store.dispatch('threadSharing/getRequestsCompany', localStorage.getItem('companyId'))
+      this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
+      const yourPostsObj = {
+        compId: localStorage.getItem('companyId'),
+        userId: localStorage.getItem('userId')
+      }
+      this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
+    },
+    onResize() {
+      this.windowWidth = window.outerWidth
+    },
+    onEditClose() {
+      if (this.isMobileVisible && this.windowWidth < 769) {
+        this.isMobileInfo = true
+      }
+      this.isWantToEditCommunity = false
+    },
+    getCommunities(firstClickValue, isDefault) {
+      if (firstClickValue || this.firstClick > 1) {
+        const refThis = this
+        refThis.isDefault = isDefault
+        if (this.timer) {
+          clearTimeout(this.timer)
+        }
+        this.timer = setTimeout(function () {
+          refThis.$store.dispatch('threadSharing/getCommunities').finally((res) => {
+            refThis.isDefault ? (refThis.tab = 1) : ''
+          })
+        }, 3000)
+      }
+      this.firstClick = this.firstClick + 1
+    },
+    getIncidents() {
+      const compId =
+        // (this.userGetter.currentCompany && this.userGetter.currentCompany.id) ||
+        localStorage.getItem('companyId')
+      const communId = ''
+      this.$store.dispatch('threadSharing/fetchCommunityPosts', {
+        companyId: compId,
+        communId: ''
+      })
+    },
+    onCancelDelete() {
+      if (this.isMobileVisible && this.windowWidth < 769) {
+        this.isMobileInfo = true
+      }
+      this.isWantToDeleteCommunity = false
+    },
+    onDeleteCommunity() {
+      if (this.isMobileVisible && this.windowWidth < 769) {
+        this.isMobileInfo = true
+      }
+      this.isWantToDeleteCommunity = false
+      this.$store.dispatch('threadSharing/deleteCommunity', {
+        communityId: localStorage.getItem('communityId'),
+        userId: localStorage.getItem('creatorId')
+      })
+    },
+    onCancelLeave() {
+      if (this.isMobileVisible && this.windowWidth < 769) {
+        this.isMobileInfo = true
+      }
+      this.isWantToLeaveFromCommunity = false
+    },
+    onCancelInvite() {
+      if (this.isMobileVisible && this.windowWidth < 769) {
+        this.isMobileInfo = true
+      }
+      this.isWantToAddMembers = false
     },
     onAddClose() {
+      if (this.isMobileVisible && this.windowWidth < 769) {
+        this.isMobileInfo = true
+      }
       this.isWantToAddNewCommunity = false
-      this.refreshMemberTable = !this.refreshMemberTable
+    },
+    notificationFromCommunities() {
+      this.notificationSettingsOpened = true
+      this.$store.dispatch('threadSharing/getNotifications', this.selectedCommunity.id)
+    },
+    saveNotifications() {
+      this.notifications.CommunityId = this.selectedCommunity.id
+      this.notifications.CompanyId =
+        this.selectedCommunity.communityCompanyId || localStorage.getItem('companyId')
+      const refThis = this
+      this.$store.dispatch('threadSharing/saveNotifications', this.notifications).then(() => {
+        refThis.notificationSettingsOpened = false
+      })
+    },
+    editTheCommunity() {
+      this.isWantToEditCommunity = true
+    },
+    postIncident() {
+      this.$store.state.threadSharing.isWantToPostIncident = true
+    },
+    changeTabCommunities() {
+      this.tab = 1
+    },
+    edit(index, item) {
+      if (!this.editing) {
+        this.editing = item
+        this.index = index
+      } else {
+        this.editing = null
+        this.index = -1
+      }
+    },
+    filter(item, queryText, itemText) {
+      if (item.header) return false
+      const hasValue = (val) => (val != null ? val : '')
+      const text = hasValue(itemText)
+      const query = hasValue(queryText)
+
+      return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1
+    },
+    mobileInfoClicked() {
+      this.isMobileInfo = true
+      this.$store.commit('threadSharing/SET_MOBILE_INFO', true)
+    },
+    closeCommunityFromMobileInfo() {
+      this.isMobileInfo = false
+    },
+    notificationsFromMobileInfo() {
+      this.notificationSettingsOpened = true
+    },
+    postIncidentFromMobileInfo() {
+      this.isWantToPostIncident = true
+    },
+    addMembersFromMobileInfo() {
+      this.isWantToAddMembers = true
+    },
+    editCommunityFromMobileInfo() {
+      this.isWantToEditCommunity = true
+    },
+    createCommunityFromMobileInfo() {
+      this.isWantToAddNewCommunity = true
+    },
+    onLeaveConfirmed() {
+      this.isWantToLeaveFromCommunity = false
+      this.$store.dispatch('threadSharing/leaveCommunity', {
+        communityId: localStorage.getItem('communityId'),
+        creatorId: localStorage.getItem('creatorId')
+      })
     }
   }
 }
 </script>
 
 <style lang="scss">
-.component-threat-sharing.page-wrapper {
+#component-threat-sharing.page-wrapper {
   height: 100%;
   position: relative;
 

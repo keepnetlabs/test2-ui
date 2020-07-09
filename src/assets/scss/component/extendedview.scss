@@ -141,6 +141,61 @@
       }
     }
   }
+  .v-input--dense > .v-input__control > .v-input__slot {
+    margin-bottom: 0;
+  }
+.multiple-values-input{
 
+  input[placeholder] {
+    font-style: italic;
+  }
+  .v-input__append-inner{
+    display: block !important;
+    .mdi-menu-down{
+      display: none;
+    }
+  }
+}
+  .edit-combo-box{
 
+    .v-chip{
+      margin: 2px 2px 2px 2px !important;
+      height: auto !important;
+      border-radius: 4px !important;
+      background: #2196f3 !important;
+      color:#fff !important;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.33;
+      letter-spacing: normal;
+      text-align: center;
+      padding: 4px 5px 5px 6px;
+    }
+
+    .v-chip__content{
+      max-width: 150px;
+      padding-top: 1.5px;
+      overflow: visible;
+      button{
+        margin-top: -1px;
+        margin-left: 2px !important;
+        color: white;
+        font-size: 16px !important;
+        margin-right: -1px !important;
+      }
+      .mdi-close-circle:before{
+        content: "\F0156" !important;
+      }
+    }
+    .v-select__selections {
+      min-height: 44px !important;
+      input{
+        max-height: max-content;
+      }
+    }
+
+    .v-input__append-inner{
+      display: none;
+    }
+  }
 }

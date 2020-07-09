@@ -12,10 +12,25 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
-      <v-list-item
-        class="px-0 email-settings__list-item"
-        :class="[!hasError && !formValues.to ? 'mb-2' : '']"
-      >
+      <v-list-item class="px-0 other-settings__list-item mt-n4">
+        <v-list-item-content>
+          <div class="other-settings__list-item-header">
+            Optional Features
+          </div>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="px-0 email-settings__list-item">
+        <v-list-item-content>
+          <v-checkbox
+            v-model="formValues.isSendInformationEmail"
+            class="other-settings__checkbox k-checkbox mt-2"
+            color="#2196f3"
+            label="Send Information Email"
+          ></v-checkbox>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
@@ -27,18 +42,12 @@
             class="k-textfield mt-2"
             v-model="formValues.to"
             :rules="[
-              (v) => validations.required(v, 'Required'),
               (v) => validations.mail(v, 'Invalid recipient email address'),
               (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
             ]"
             id="recipient-email-address"
-            @input="handleEmailAddressChange"
-            @blur="hasError = true"
             height="40"
           ></v-text-field>
-          <div v-if="!hasError && !formValues.to" class="email-settings__required__text">
-            *Required
-          </div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
@@ -158,9 +167,9 @@ export default {
         cc: '',
         bcc: '',
         subject: '',
-        content: ''
+        content: '',
+        IsSendInformationEmail: null
       },
-      hasError: false,
       validations: {
         maxLength,
         mail,
@@ -172,7 +181,6 @@ export default {
     submit() {
       const result = this.$refs.refForm.validate()
       if (!result) {
-        this.hasError = true
         return false
       } else {
         this.$emit('updateForm', this.formValues)
@@ -195,12 +203,13 @@ export default {
   },
   created() {
     if (this.formData) {
-      const { to, cc, bcc, subject, content } = this.formData
+      const { to, cc, bcc, subject, content, isSendInformationEmail } = this.formData
       this.formValues.to = to || ''
       this.formValues.cc = cc || ''
       this.formValues.bcc = bcc || ''
       this.formValues.subject = subject || ''
       this.formValues.content = content || ''
+      this.formValues.isSendInformationEmail = isSendInformationEmail
     }
   }
 }
@@ -217,6 +226,7 @@ export default {
     }
     .v-list-item__content {
       padding: 0 !important;
+      overflow: visible;
     }
 
     &--header {

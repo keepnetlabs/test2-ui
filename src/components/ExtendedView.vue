@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-popup edit-popup">
+  <div class="settings-popup edit-popup" :style="[editMode && containerStyle]">
     <div class="inline-wrapper" v-if="options && options.length">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
@@ -31,16 +31,12 @@
             <div
               :key="col.label"
               class="row-edit-div"
-              :style="{ order: index * 10 }"
-              v-for="(col, index) in options"
+              v-for="col in options"
               v-if="
-                col.show &&
-                !col.hideLabel &&
-                col.property !== 'createDate' &&
-                col.property !== 'lastUpdate'
+                !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdate'
               "
             >
-              <div>
+              <div v-if="!col.showOnlyPreview || editMode">
                 <label>
                   {{ col.label }}
                 </label>
@@ -65,20 +61,75 @@
                 >
                   {{ copyOfEditedRows[0][col.property] }}
                 </span>
+                <span
+                  v-else-if="
+                    (!editMode || !col.isEditable) &&
+                    col.type === 'analysisSource' &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdate'
+                  "
+                >
+                  <span v-if="copyOfEditedRows[0].matchingPlaybooks.length === 0">
+                    {{
+                      copyOfEditedRows[0].source === 'Auto'
+                        ? 'Auto Analysis'
+                        : copyOfEditedRows[0].source
+                    }}
+                  </span>
+                  <router-link
+                    tag="span"
+                    :key="item.resourceId"
+                    v-else
+                    :to="`/playbook/${item.resourceId}`"
+                    v-for="item in copyOfEditedRows[0].matchingPlaybooks"
+                    class="incident-wrapper__link"
+                    >{{ item.name }}</router-link
+                  >
+                </span>
+                <span
+                  v-else-if="
+                    (!editMode || !col.isEditable) &&
+                    col.type === 'colorfulText' &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdate'
+                  "
+                  :style="[
+                    { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
+                  ]"
+                >
+                  {{ getDataTableFieldLabel(copyOfEditedRows[0][col.property]) }}
+                </span>
                 <badge
                   v-else-if="
                         ((!editMode || !col.isEditable) && (col.type === 'status' ||
-                        col.type === 'detected'))
+                        col.type === 'detected' || col.type==='badge') && copyOfEditedRows[0][col.property] !=='N/A' &&copyOfEditedRows[0][col.property] !=='InAnalysis')
                       "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
-                  :text="copyOfEditedRows[0][col.property]"
+                  :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
+                <div
+                  v-else-if="
+                        (copyOfEditedRows[0][col.property] && (!editMode || !col.isEditable) && (col.type === 'smallBadge'))
+                      "
+                >
+                  <badge
+                    size="small"
+                    :color="'#2196f3'"
+                    v-for="badge in copyOfEditedRows[0][col.property]
+                      .slice(0, copyOfEditedRows[0][col.property].length - 1)
+                      .split(',')"
+                    class-name="mr-1"
+                    :key="badge"
+                    :text="badge"
+                  />
+                </div>
+
                 <badge
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
                   size="small"
                   :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"
-                  :text="copyOfEditedRows[0][col.property]"
+                  :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <router-link
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
@@ -161,6 +212,22 @@
                   :value="copyOfEditedRows[0][col.property]"
                   @input="handleEditPopupTextFieldChange($event, col.property)"
                 />
+                <v-combobox
+                  v-if="
+                        (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'combobox')
+                      "
+                  :items="[]"
+                  placeholder="Enter Tag"
+                  outlined
+                  class="edit-combo-box"
+                  multiple
+                  dense
+                  deletable-chips
+                  small-chips
+                  :return-object="false"
+                  :value="getComboBoxValue(copyOfEditedRows[0][col.property])"
+                  @input="handleEditComboBoxChange($event, col.property)"
+                ></v-combobox>
                 <v-textarea
                   outlined
                   dense
@@ -170,6 +237,7 @@
                         (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'textarea')
                       "
                   rows="2"
+                  v-bind="col.editOptions.props"
                   row-height="20"
                 ></v-textarea>
                 <v-select
@@ -189,22 +257,22 @@
                 <v-text-field
                   :autofocus="!multipleEditDisables[col.property]"
                   :value="multipleEditModels[col.property]"
-                  @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                  @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                   class="edit-text-field"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
                   dense
-                  label="Multiple Values"
                   placeholder="Multiple Values"
                   outlined
                   :readonly="!multipleEditDisables[col.property]"
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
+                    col.isEditable &&
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
                     col.property !== 'createDate' &&
-                    col.editOptions.component === 'textfield' &&
-                    col.isEditable
+                    col.editOptions.component === 'textfield'
                   "
                 >
                   <template v-slot:append>
@@ -217,7 +285,6 @@
                     </v-btn>
                   </template>
                 </v-text-field>
-
                 <v-menu
                   ref="menu1"
                   :close-on-content-click="false"
@@ -228,12 +295,12 @@
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
+                    col.isEditable &&
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
                     col.property !== 'createDate' &&
-                    col.editOptions.component === 'datepicker' &&
-                    col.isEditable
+                    col.editOptions.component === 'datepicker'
                   "
                 >
                   <template v-slot:activator="{ on }">
@@ -262,7 +329,7 @@
 
                   <v-date-picker
                     :value="multipleEditModels[col.property]"
-                    @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                    @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                     no-title
                   ></v-date-picker>
                 </v-menu>
@@ -278,6 +345,42 @@
                   @input="handleEditPopupCheckboxChange($event, col.property)"
                 ></v-checkbox>
 
+                <v-combobox
+                  class="edit-combo-box"
+                  :items="[]"
+                  outlined
+                  multiple
+                  dense
+                  deletable-chips
+                  small-chips
+                  :return-object="false"
+                  :readonly="!multipleEditDisables[col.property]"
+                  :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
+                  v-if="
+                    multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.type !== 'chart' &&
+                    col.type !== 'progress' &&
+                    col.type !== 'date' &&
+                    col.property !== 'createDate' &&
+                    col.editOptions.component === 'combobox'
+                  "
+                  :value="getMultipleComboValue(multipleEditModels[col.property])"
+                  @input="handleMultipleComboEdit(copyOfEditedRows, col.property, $event)"
+                >
+                  <template v-slot:append v-if="!multipleEditDisables[col.property]">
+                    <v-btn
+                      text
+                      @click.native="handleEditClick(col.property)"
+                      class="edit-popup__edit-component"
+                    >
+                      EDIT
+                    </v-btn>
+                  </template>
+                </v-combobox>
+
                 <v-select
                   class="edit-select"
                   dense
@@ -285,18 +388,19 @@
                   v-bind="col.editOptions.props"
                   :readonly="!multipleEditDisables[col.property]"
                   :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
                   v-if="
                     multipleValues(col.property) &&
                     editMode &&
+                    col.isEditable &&
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
                     col.property !== 'createDate' &&
-                    col.editOptions.component === 'select' &&
-                    col.isEditable
+                    col.editOptions.component === 'select'
                   "
                   :value="multipleEditModels[col.property]"
-                  @input="handleMultipleEdits(copyOfEditedRows[0], col.property, $event)"
+                  @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                 >
                   <template v-slot:append v-if="!multipleEditDisables[col.property]">
                     <v-btn
@@ -310,8 +414,8 @@
                 </v-select>
               </div>
             </div>
-
-            <div class="edit-popup__footer" style="order: 55555;" v-if="hasEditPopupFooter()">
+            <slot name="body" v-if="editMode"> </slot>
+            <div class="edit-popup__footer" v-if="hasEditPopupFooter()">
               <div class="edit-footer-date">
                 <div
                   class="edit-date-created"
@@ -358,7 +462,7 @@
    show --> boolean
    hideLabel --> boolean
    label --> string
-   type --> string (text,date,status,priority,detected,progress,chart)
+   type --> string (text,date,status,priority,detected,progress,chart,badge,slot)
    isEditable --> boolean
    editOptions --> object {component:"textfield,select,textarea,datepicker", props:{} dynamic props}
    }
@@ -370,7 +474,12 @@
   ]
    */
 import Badge from './Badge'
-import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getTextColor,
+  getDataTableFieldLabel
+} from '../utils/functions'
 export default {
   name: 'ExtendedView',
   components: {
@@ -382,6 +491,9 @@ export default {
       default: () => {
         return []
       }
+    },
+    containerStyle: {
+      type: Object
     },
     value: {
       type: Array,
@@ -397,11 +509,16 @@ export default {
     },
     isPopupDateEditable: {
       type: Boolean,
-      default: true
+      default: false
     },
     isEditableRuntime: {
       type: Boolean,
-      default: true
+      default: false
+    }
+  },
+  watch: {
+    value(rows) {
+      this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
     }
   },
   data() {
@@ -413,22 +530,36 @@ export default {
       editMode: false,
       multipleEditModels: [],
       editedPopupProperties: [],
-      multipleEditDisables: []
+      multipleEditDisables: [],
+      defaultValues: []
     }
   },
   methods: {
     multipleValues(key, val) {
       // This method controls whether selected items has same value or not
       if (this.value && this.value.length > 1) {
-        for (let a = 0; a < this.value.length - 1; a++) {
+        let value = true
+        for (let a = 0; a <= this.value.length - 2; a++) {
           let el = this.value[a]
-          if (el[key] === this.value[a + 1][key]) {
-            return false
-          } else {
-            return true
+          for (let b = a + 1; b <= this.value.length - 1; b++) {
+            if (el[key] === this.value[b][key]) {
+              value = false
+            } else {
+              return true
+            }
           }
         }
+        return value
       }
+    },
+    getMultipleComboValue(prop) {
+      return prop ? prop : []
+    },
+    handleMultipleComboEdit(item, key, value) {
+      item.map((i) => {
+        i[key] = value ? value.join(',') : value
+      })
+      this.multipleEditModels[key] = value
     },
     getCheckboxStatus(prop) {
       return this.hasOneMoreCheckboxValue(prop)
@@ -446,10 +577,23 @@ export default {
     closeEditPopup() {
       this.$emit('closeEditPopup', true)
     },
+    getComboBoxValue(prop) {
+      if (typeof prop === 'string' && prop.length > 0) {
+        if (prop.charAt(prop.length - 1) === ',') {
+          return prop.substring(0, prop.length - 1).split(',')
+        } else {
+          return prop && prop.split(',')
+        }
+      } else if (typeof prop === 'object') {
+        return prop
+      }
+      return []
+    },
     cancelEditedOnes() {
       this.editMode = false
       this.multipleEditModels = []
       this.editedPopupProperties = []
+      this.copyOfEditedRows = JSON.parse(JSON.stringify(this.defaultValues))
       this.multipleEditDisables = []
     },
     saveEditedOnes() {
@@ -499,13 +643,21 @@ export default {
     getBtnPriorityColor(type) {
       return getBtnPriorityColor(type)
     },
+    getTextColor(type) {
+      return getTextColor(this.getDataTableFieldLabel(type))
+    },
+    getDataTableFieldLabel(type) {
+      return getDataTableFieldLabel(type)
+    },
     hasEditPopupFooter() {
       return this.copyOfEditedRows.some((item) => {
         return item['createDate'] || item['lastUpdate']
       })
     },
     handleMultipleEdits(item, key, value) {
-      item[key] = value
+      item.map((i) => {
+        i[key] = value
+      })
       this.multipleEditModels[key] = value
     },
     handleEditPopupTextFieldChange(value, props) {
@@ -516,6 +668,11 @@ export default {
     handleEditPopupCheckboxChange(value, props) {
       this.copyOfEditedRows.map((item) => {
         item[props] = value
+      })
+    },
+    handleEditComboBoxChange(value, props) {
+      this.copyOfEditedRows.map((item) => {
+        item[props] = value.join(',')
       })
     },
     handleEditPopupDatePickerChange(value, props) {
@@ -535,9 +692,9 @@ export default {
       this.$forceUpdate()
     }
   },
-
   created() {
     this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
+    this.defaultValues = JSON.parse(JSON.stringify(this.value))
   }
 }
 </script>

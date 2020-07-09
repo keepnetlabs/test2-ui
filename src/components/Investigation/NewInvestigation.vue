@@ -1,18 +1,8 @@
 <template>
-  <div class="new-investigation-wrapper">
-    <div class="new-investigation-container">
-      <div class="new-investigation-inner">
-        <v-card flat light class="pa-6" style="width: 600px;">
-          <v-list-item class="pl-0 pr-0">
-            <div class="v-btn v-cart-icon-wrapper">
-              <v-icon medium left color="blue" class="ml-2">mdi-magnify</v-icon>
-            </div>
-            <v-list-item-content class="pt-0 pb-0">
-              <v-list-item-title class="v-card-headline"
-                >New Investigation {{ data }}</v-list-item-title
-              >
-            </v-list-item-content>
-          </v-list-item>
+  <app-modal :status="status" iconName="mdi-magnify" :title="`New Investigation`">
+    <template v-slot:overlay-body>
+      <div class="new-investigation-wrapper">
+        <v-card flat light style="max-width: 554px;">
           <v-list-item class="pl-0 pr-0 pt-4 pb-4">
             <v-list-item-content class="pt-4 pb-0">
               <v-list-item-title class="v-card-headline">Start New Investigation</v-list-item-title>
@@ -78,7 +68,6 @@
                     v-model="targetUsersValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
-                    :input-value="groupId"
                     multiple
                     dense
                     persistent-hint
@@ -171,18 +160,6 @@
                   >
                   </el-date-picker>
                 </div>
-                <!--<div>
-                  <el-date-picker
-                    v-model="value2"
-                    type="datetimerange"
-                    :picker-options="pickerOptions"
-                    range-separator="To"
-                    start-placeholder="Start date"
-                    end-placeholder="End date"
-                    align="right"
-                  >
-                  </el-date-picker>
-                </div>-->
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area pb-0 pa-0">
@@ -250,16 +227,22 @@
           </v-form>
         </v-card>
       </div>
-      <div class="footer-actions">
+    </template>
+    <template v-slot:overlay-footer>
+      <div class="new-investigation-footer">
         <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
         <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">Save</v-btn>
       </div>
-    </div>
-  </div>
+    </template>
+  </app-modal>
 </template>
 <script>
+import AppModal from '../AppModal'
 import { mapGetters, mapActions } from 'vuex'
 export default {
+  components: {
+    AppModal
+  },
   data() {
     return {
       pickerOptions: {
@@ -477,7 +460,9 @@ export default {
     'isEdit',
     'statsAndMenuData',
     'investigationDetailsTargetUsersListData',
-    'investigationDetailsData'
+    'investigationDetailsData',
+    'status',
+    'selectedMail'
   ],
   methods: {
     checkCheckboxValidation() {
@@ -842,7 +827,7 @@ export default {
           .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {})
           .then((resp) => {
-            this.$emit('closeAdd')
+            this.$emit('closeAdd', true)
             this.isEdit ? this.$router.push('/investigations') : this.$emit('refreshDatatable')
           })
       }
@@ -897,8 +882,8 @@ export default {
         let _this = this
         this.investgationName = this.investigationDetailsData.name
         this.startDate = this.investigationDetailsData.startDate
-        this.data.push(this.investigationDetailsData.startDate)
-        this.data.push(this.investigationDetailsData.endDate)
+        //this.data.push(this.investigationDetailsData.startDate)
+        //this.data.push(this.investigationDetailsData.endDate)
         this.endDate = this.investigationDetailsData.endDate
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -
@@ -959,6 +944,30 @@ export default {
   created() {
     // when the page is created ( vue life cylce) get target users list via vuex
     this.$store.dispatch('investigations/getTargetUsersList').then(() => this.checkIsEdit()) //module name than method name
+    if (this.selectedMail) {
+      this.filterList = []
+      this.selectedMail.attachments.map((item) => {
+        this.filterList.push({ option: 'md5', text: item.md5 })
+        this.filterList.push({ option: 'sha512', text: item.sha512 })
+      })
+      this.selectedMail.bcc.map((item) => {
+        this.filterList.push({ option: 'bcc', item })
+      })
+      this.selectedMail.cc.map((item) => {
+        this.filterList.push({ option: 'cc', item })
+      })
+      this.selectedMail.from &&
+        this.filterList.push({ option: 'from', text: this.selectedMail.from })
+      this.selectedMail.subject &&
+        this.filterList.push({ option: 'subject', text: this.selectedMail.subject })
+      this.selectedMail.to.map((item) => {
+        this.filterList.push({ option: 'to', text: item })
+      })
+      this.selectedMail.urls.map((item) => {
+        this.filterList.push({ option: 'url', text: item.url })
+      })
+      this.investgationName = 'Manuel Investigation'
+    }
   },
   mounted() {}
 }
@@ -1105,7 +1114,7 @@ export default {
     }
 
     .v-text-field__details {
-      bottom: -25px !important;
+      //bottom: -25px !important;
     }
 
     .filter-item {
@@ -1117,7 +1126,7 @@ export default {
       position: relative;
 
       &:not(:first-of-type) {
-        margin-top: 30px;
+        margin-top: 11px;
       }
 
       &:hover {
@@ -1138,18 +1147,17 @@ export default {
       }
 
       &__button {
-        margin-top: 25px;
-        font-family: 'Open Sans', sans-serif;
         font-size: 14px;
         font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
+        margin-top: 8px;
         line-height: 1.71;
         letter-spacing: normal;
         color: #2196f3 !important;
         align-items: center;
         display: flex;
-
+        .v-icon.v-icon {
+          margin-left: 0 !important;
+        }
         &:focus,
         &:focus-within {
           outline: 0 !important;
@@ -1172,7 +1180,6 @@ export default {
   .new-investigation-inner {
     width: 100%;
     height: 100%;
-    padding: 0 8vw;
     position: relative;
     display: flex;
     overflow: visible;
@@ -1352,20 +1359,6 @@ export default {
     height: 68px;
     width: 100%;
     z-index: 9999;
-
-    .cancel-btn {
-      background-color: transparent !important;
-      border-radius: 18px !important;
-      border: solid 1px #f56c6c !important;
-      color: #f56c6c !important;
-    }
-
-    .create-btn {
-      border-radius: 18px !important;
-      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-    }
   }
 
   .error-border {
@@ -1386,7 +1379,7 @@ export default {
     .v-text-field__details {
       position: absolute;
       left: 0;
-      bottom: -22px;
+      bottom: -23px;
     }
 
     &:last-child {
@@ -1397,8 +1390,6 @@ export default {
   }
 
   .date-picker {
-    font-family: 'Open Sans', sans-serif !important;
-
     .v-input__slot {
       box-shadow: unset !important;
       border: 1px solid rgba(0, 0, 0, 0.24);
@@ -2826,6 +2817,24 @@ export default {
       height: 20px !important;
       width: 20px !important;
     }
+  }
+}
+.new-investigation-footer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  .cancel-btn {
+    background-color: transparent !important;
+    border-radius: 18px !important;
+    border: solid 1px #f56c6c !important;
+    color: #f56c6c !important;
+  }
+
+  .create-btn {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+    background-color: #2196f3 !important;
+    color: #fff !important;
   }
 }
 </style>

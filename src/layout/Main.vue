@@ -34,6 +34,7 @@
       :mini-variant.sync="getMini"
       transition="scale-transition"
       :mobile-break-point="767"
+      permanent
       class="page-nav"
     >
       <v-app-bar-nav-icon
@@ -187,6 +188,15 @@
               <router-link to="/incident-responder" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Incident Responder</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/investigations" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Investigations</span>
                 </v-list-item-title>
               </router-link>
             </v-list-item-content>
@@ -468,6 +478,7 @@ export default {
   data() {
     return {
       sessionCheck: false,
+      communityName: null,
       tour: {
         isActive: false,
         one: { active: false },
@@ -687,12 +698,6 @@ export default {
     companyName() {
       return localStorage.getItem('companyName')
     },
-    communityName() {
-      return (
-        this.$store.state.threadSharing.selectedCommunity.name ||
-        localStorage.getItem('communityName')
-      )
-    },
     routerName() {
       return this.$route.name
     },
@@ -713,7 +718,7 @@ export default {
     getMini: {
       get() {
         if (this.mini == null) {
-          if (window.outerWidth > 768) {
+          if (window.outerWidth > 767) {
             return false
           }
           return false
@@ -762,7 +767,7 @@ export default {
       return this.$store.state.auth.userRoleName
     },
     getDrawerPadding2() {
-      if (window.outerWidth > 768) {
+      if (window.outerWidth > 767) {
         if (this.mini) {
           return 'left: 5px !important;'
         }
@@ -828,10 +833,17 @@ export default {
   beforeDestroy() {
     clearInterval(this.interval)
   },
+  updated() {
+    this.getCommunityName()
+  },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+
+    getCommunityName() {
+      this.communityName = localStorage.getItem('communityName')
+    },
     onNotificationSeen(notification) {
       notification.isSeen = true
       this.notificationSeen(notification)
@@ -872,7 +884,7 @@ export default {
       return this.isDisconnected
     },
     onNavigationClick() {
-      if (window.outerWidth > 778) {
+      if (window.outerWidth > 767) {
         this.getDrawer = true
         this.getMini = !this.getMini
       } else {
@@ -914,10 +926,6 @@ export default {
     box-shadow: none !important;
     padding-right: 16px;
     padding-top: 8px;
-    @media only screen and (max-width: 1025px) {
-      left: 0 !important;
-    }
-
     &__search {
       width: 180px;
       .v-text-field {
@@ -947,14 +955,22 @@ export default {
     }
     &__content {
       display: flex;
-      flex-direction: column;
+      //flex-direction: column;
+      justify-content: space-between;
       width: 100%;
+      @media (max-width: 896px) {
+        flex-direction: column;
+        align-items: center;
+      }
     }
     &__title {
       margin-bottom: 6px;
       h1 {
         color: white;
         font-size: 34px;
+        @media (max-width: 1024px) {
+          font-size: 22px;
+        }
         font-weight: bold;
         margin: 0;
       }
@@ -964,6 +980,7 @@ export default {
       text-decoration: none;
       display: flex;
       justify-content: flex-end;
+      align-items: center;
       font-size: 12px;
       font-weight: bold;
       a {
@@ -1467,12 +1484,6 @@ export default {
   }
 
   header {
-    @media only screen and (max-width: 1025px) {
-      padding-left: 75px !important;
-    }
-    @media only screen and (max-width: 769px) {
-      padding-left: 0 !important;
-    }
   }
 
   .v-navigation-drawer--mini-variant {

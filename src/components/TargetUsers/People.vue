@@ -15,6 +15,8 @@
     <add-user-modal
       :status="isWantToShowAddUsersModal"
       @closeAddUserModal="closeAddUserModal"
+      @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
+      :editData="selectedRow"
       v-if="isWantToShowAddUsersModal"
     />
     <import-users-from-file-modal
@@ -25,6 +27,7 @@
     <custom-fields-modal
       :status="isWantToShowCustomFieldsModal"
       @closeCustomFieldsModal="isWantToShowCustomFieldsModal = false"
+      @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
       v-if="isWantToShowCustomFieldsModal"
     />
 
@@ -47,6 +50,7 @@
       @delete="handleDelete"
       :setClassName="setCellClassName"
       ref="refPeopleTable"
+      @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
     >
       <template v-slot:addUsers>
@@ -58,7 +62,7 @@
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">{{ 'Add Users' }}</span>
+              <span class="tooltip-span">{{ 'Add User' }}</span>
             </v-tooltip>
           </template>
           <v-list>
@@ -84,7 +88,11 @@ import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
 import ImportUsersFromFileModal from './ImportUsersFromFileModal'
-import { deleteTargetUser, getTargetUsers } from '../../api/targetUsers'
+import {
+  deleteTargetUser,
+  getTargetUserCustomFieldsByCompanyId,
+  getTargetUsers
+} from '../../api/targetUsers'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
@@ -107,6 +115,7 @@ export default {
     selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
     selectedRow: {},
+    customFields: [],
     isWantToShowAddUsersModal: false,
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
@@ -118,7 +127,45 @@ export default {
       { title: 'Click Me4' }
     ],
     tableOptions: {
-      columns: [
+      lastColumns: [
+        {
+          property: PROPERTY_STORE.PRIORITY,
+          align: 'center',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.PRIORITY),
+          sortable: true,
+          show: true,
+          type: 'priority',
+          width: 150,
+          fullWidth: true
+        },
+        {
+          property: PROPERTY_STORE.STATUS,
+          align: 'center',
+          label: getStoreValue(PROPERTY_STORE.STATUS),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'status',
+          width: 150,
+          isEditable: true,
+          hasTooltip: true,
+          fullWidth: true
+        },
+        {
+          property: 'createTime',
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 180
+        }
+      ],
+      columns: [],
+      defaultColumns: [
         // Should be defined to show the table
         {
           property: PROPERTY_STORE.FIRSTNAME,
@@ -129,7 +176,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 200,
+          width: 150,
           showHeaderTooltip: true
         },
         {
@@ -139,8 +186,8 @@ export default {
           label: getStoreValue(PROPERTY_STORE.LASTNAME),
           sortable: true,
           show: true,
-          type: 'status',
-          width: 200
+          type: 'text',
+          width: 150
         },
         {
           property: PROPERTY_STORE.EMAIL,
@@ -149,8 +196,8 @@ export default {
           label: getStoreValue(PROPERTY_STORE.EMAIL),
           sortable: true,
           show: true,
-          type: 'priority',
-          width: 250
+          type: 'text',
+          width: 275
         },
         {
           property: PROPERTY_STORE.DEPARTMENT,
@@ -159,19 +206,8 @@ export default {
           label: getStoreValue(PROPERTY_STORE.DEPARTMENT),
           sortable: true,
           show: true,
-          type: 'chart',
-          width: 200
-        },
-        {
-          property: PROPERTY_STORE.PRIORITY,
-          align: 'center',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.PRIORITY),
-          sortable: true,
-          show: true,
-          type: 'priority',
-          width: 125,
-          fullWidth: true
+          type: 'text',
+          width: 150
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -195,7 +231,7 @@ export default {
         {
           name: 'Edit this row',
           icon: 'mdi-pencil',
-          action: 'edit',
+          action: 'editTargetUsers',
           isNotShow: true
         },
         {
@@ -233,11 +269,27 @@ export default {
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
-          this.isWantToShowAddUsersManuallyModal = true
+          this.selectedRow = null
+          this.isWantToShowAddUsersModal = true
+          break
+        case this.addUsersItems[1]:
+          //this.isWantToShowImportUsersFromFileModal = true
           break
         default:
           break
       }
+    },
+    closeCustomFieldsModalWithUpdate() {
+      this.isWantToShowCustomFieldsModal = false
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    closeAddUserModalWithUpdate() {
+      this.isWantToShowAddUsersModal = false
+      this.callForTargetUsers()
+    },
+    handleEditTargetUsers(selectedRow) {
+      this.selectedRow = selectedRow
+      this.isWantToShowAddUsersModal = true
     },
     handleEditFieldsClick() {
       this.isWantToShowCustomFieldsModal = true
@@ -318,28 +370,74 @@ export default {
     },
     handleDeleteUser(selectedUser) {
       deleteTargetUser(selectedUser.resourceId)
-        .then((response) => {})
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.callForTargetUsers()
+          }
+        })
         .catch((error) => {})
     },
     callForTargetUsers() {
-      getTargetUsers()
+      const payload = {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'CreateTime',
+        ascending: false
+      }
+      getTargetUsers(payload)
         .then((response) => {
           const { data } = response.data
           console.log('data', data)
-          this.$refs.refPeopleTable.loadWithDataArray(data || [])
+          this.$refs.refPeopleTable.loadWithDataArray(data.results || [])
         })
         .catch((error) => {})
+    },
+    callForGetTargetUserCustomFieldsByCompanyId() {
+      getTargetUserCustomFieldsByCompanyId()
+        .then((response) => {
+          const { data } = response
+          this.customFields = data.data.filter((item) => {
+            return item.isActive
+          })
+          const columnsOfCustomFields = this.customFields.map((field) => {
+            return {
+              property: field.name,
+              type: 'text',
+              sortable: true,
+              filterable: true,
+              label: field.name,
+              align: 'left',
+              show: true,
+              width: field.name.length > 12 ? 200 : 150
+            }
+          })
+          this.tableOptions.columns = [
+            ...this.tableOptions.defaultColumns,
+            ...columnsOfCustomFields,
+            ...this.tableOptions.lastColumns
+          ]
+        })
+        .catch((error) => {
+          this.tableOptions.columns = [
+            ...this.tableOptions.defaultColumns,
+            ...this.tableOptions.lastColumns
+          ]
+        })
+        .finally((fin) => {
+          this.callForTargetUsers()
+        })
     }
   },
   created() {
-    /*
-    this.callForTargetUsers()
-
-     */
+    // this.tableOptions.columns = [...this.tableOptions.columns, ...this.tableOptions.lastColumns]
+    this.callForGetTargetUserCustomFieldsByCompanyId()
   },
-  mounted() {
-    this.$refs.refPeopleTable.loadWithDataArray([{}])
-  }
+  mounted() {}
 }
 </script>
 

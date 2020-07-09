@@ -2,20 +2,14 @@
   <div class="investigations">
     <div class="investigations__container">
       <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
-      <v-overlay
-        id="add-new-community-overlay"
-        :value="isWantToAddNewCommunity"
-        :class="{ newInvestigationOverlay: isWantToAddNewCommunity }"
-        :opacity="1"
-        :z-index="999"
-        color="white"
-      >
-        <new-investigation
-          @closeAdd="onAddClose"
-          @refreshDatatable="refreshDatatable"
-          ref="refNewInvestigation"
-        />
-      </v-overlay>
+
+      <new-investigation
+        @closeAdd="onAddClose"
+        @refreshDatatable="refreshDatatable"
+        ref="refNewInvestigation"
+        :status="isWantToAddNewCommunity"
+        v-if="isWantToAddNewCommunity"
+      />
       <app-dialog
         :status="isWantToStopInvestigation"
         icon="mdi-alert"
@@ -125,8 +119,13 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'detected',
-        width: 150
+        type: 'badge',
+        props: {
+          style: {
+            maxWidth: '150px'
+          }
+        },
+        width: 170
         //minWidth: 80
       },
       {
@@ -199,6 +198,7 @@ export default {
         sortable: false,
         show: true,
         type: 'progress',
+        progressType: 'stats',
         width: 90
         // minWidth: 60
       }
@@ -321,11 +321,11 @@ export default {
         params: { id: value.row.resourceId }
       })
     },
-    exportInvestigationList({ exportTypes, reportAllPages, pageNumber }) {
+    exportInvestigationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize: 5,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'ExpireDate',
           ascending: true,
           reportAllPages,

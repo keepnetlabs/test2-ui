@@ -18,12 +18,20 @@
                 placeholder="Community Name"
                 outlined
                 class="edit-name-textfield"
+                :class="{ 'error-border': communNameAvailable }"
                 v-model="name"
                 :rules="[nameRules.regex, nameRules.required]"
                 required
                 @blur="checkCommunName()"
               >
               </v-text-field>
+              <p
+                v-if="communNameAvailable && nameRules.regex() && nameRules.required()"
+                style="margin-top: -10px; margin-left: 12px;"
+                class="v-messages theme--light error--text"
+              >
+                A Community Exists with the same name. Please try another name for your community
+              </p>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-descrition-area pa-0">
@@ -36,7 +44,7 @@
                 name="description"
                 outlined
                 v-model="description"
-                :rules="[descriptionRules.required, descriptionRules.empty]"
+                :rules="[descriptionRules.regex, descriptionRules.required, descriptionRules.empty]"
                 required
                 class="edit-description"
                 placeholder="Description"
@@ -44,14 +52,13 @@
               ></v-textarea>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-0 pa-0">
+          <v-list-item class="edit-industry-area pb-4 pa-0">
             <v-list-item-content class="pt-0 pb-0">
               <label class="edit-labels">Industry</label>
               <label class="edit-sub-labels">Select an industry category</label>
               <v-combobox
                 :items="categories"
-                item-text="name"
-                placeholder="Select the industry category"
+                label="Select the industry category"
                 outlined
                 class="edit-select"
                 v-model="selectedCategory"
@@ -60,45 +67,27 @@
               ></v-combobox>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
-            <v-list-item-content class>
-              <label class="edit-labels">Privacy</label>
-              <label class="edit-sub-labels pb-0">Select an industry category</label>
-              <div class="new-community__radio-group">
-                <v-radio-group v-model="privacystatusid" :mandatory="false" row>
-                  <v-radio value="1" label="Public" color="primary"></v-radio>
-                  <v-radio value="2" label="Private" color="primary"></v-radio>
-                  <v-radio value="3" label="Hidden" color="primary"></v-radio>
-                </v-radio-group>
-                <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
-                  >Anyone can find the community and see posted threats</label
-                >
-                <label v-else-if="privacystatusid == '2'" class="edit-privacy-bottom-label"
-                  >Only members can see posted threats and community is listed</label
-                >
-                <label v-else class="edit-privacy-bottom-label"
-                  >Only members can see posted threats and the group in communities list</label
-                >
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="p-0">
-            <v-list-item-content class="pt-1 pb-0">
-              <div class="d-flex">
-                <v-checkbox
-                  class="k-checkbox"
-                  color="#2196f3"
-                  v-model="acceptCheckbox"
-                  :rules="[checkboxRulex.required]"
-                  @change="checkCheckboxValidation()"
-                />
-                <span class="checkbox-text"
-                  >I accept <a>terms and conditions</a> for posting an incident</span
-                >
-              </div>
-            </v-list-item-content>
-          </v-list-item>
         </v-form>
+        <v-list-item class="edit-privacy-area pb-6 pt-4 pa-0">
+          <v-list-item-content class="pt-0 pb-0">
+            <label class="edit-labels">Privacy</label>
+            <label class="edit-sub-labels">Select an industry category</label>
+            <div class="edit-privacy-buttons">
+              <button :class="{ btnActive: !privacy }" @click="privacy = false" class="public-btn">
+                PUBLIC
+              </button>
+              <button :class="{ btnActive: privacy }" @click="privacy = true" class="private-btn">
+                PRIVATE
+              </button>
+            </div>
+            <label v-if="privacy" class="edit-privacy-bottom-label"
+              >Only invited users can see posted threats</label
+            >
+            <label v-else class="edit-privacy-bottom-label"
+              >Anyone can find the community and see posted threats</label
+            >
+          </v-list-item-content>
+        </v-list-item>
       </v-card>
     </div>
     <div class="footer-actions">
@@ -109,12 +98,6 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
-import {
-  createCommunity,
-  getMyCommunityList,
-  listBusinessCategories
-} from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   data() {
@@ -125,26 +108,21 @@ export default {
       categories: [],
       selectedCategory: '',
       valid: false,
-      privacystatusid: '1',
-      acceptCheckbox: false,
-      isCheckboxChecked: false,
       nameRules: {
         required: (v) =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
         regex: (v) =>
-          /^[a-z\d\-_\s]+$/i.test(v) ||
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ,.\-_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
-      },
-      checkboxRulex: {
-        required: (v) => {
-          return v || 'You must accept terms and conditions before creating the community'
-        }
       },
       descriptionRules: {
         required: (v) =>
           (!!v && v.length >= 5 && v.length <= 300) ||
           'Description required and must between 5-300 characters.',
+        regex: (v) =>
+          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       categoryRules: {
@@ -153,8 +131,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      businessCategories: 'threadSharing/businessCategoryGetter',
+      communNameAvailable: 'threadSharing/communNameAvailableGetter'
+    }),
     categoryRule() {
-      if (this.selectedCategory) {
+      if (this.selectedCategory && this.selectedCategory.length) {
         return true
       } else {
         return 'Category required for creating a community'
@@ -162,122 +144,61 @@ export default {
     }
   },
   methods: {
-    checkCheckboxValidation() {
-      this.isCheckboxChecked = this.acceptCheckbox
-    },
     onCancelClicked() {
       this.$emit('closeAdd')
     },
     onCreateClicked() {
-      const refThis = this
-      if (this.$refs.form.validate()) {
-        const payload = {
-          name: this.name,
-          description: this.description,
-          privacystatusid: this.privacystatusid,
-          industryresourceid: this.selectedCategory.resourceId
+      if (this.$refs.form.validate() && !this.communNameAvailable) {
+        let selectedBusinessObj = this.businessCategories.filter(
+          (item) => item.IDESC == this.selectedCategory
+        )
+        localStorage.setItem('communityName', this.name)
+        const newCommunityObj = {
+          Name: this.name,
+          Description: this.description,
+          IsPrivate: this.privacy,
+          CreateUserId: localStorage.getItem('userId'),
+          BusinessCategory: [
+            {
+              IKEY: selectedBusinessObj[0].IKEY
+            }
+          ],
+          CommunityCompany: [
+            {
+              CompanyId: localStorage.getItem('companyId'),
+              CompanyName: localStorage.getItem('companyName')
+            }
+          ]
         }
-        createCommunity(payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Community created succesfully'
-            })
-            refThis.$emit('closeAdd')
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when create community'
-            })
-          })
-        //this.$store.dispatch('threadSharing/createCommunity', newCommunityObj).then(() => {
-        //const refThis = this
-        //refThis.$emit('closeAdd')
-        //})
+        const refThis = this
+        this.$store.dispatch('threadSharing/createCommunity', newCommunityObj).then(() => {
+          refThis.$emit('closeAdd')
+        })
       }
     },
     checkCommunName() {
       if (this.name.length && !this.name.startsWith(' '))
         this.$store.dispatch('threadSharing/checkName', this.name)
-    },
-    getBusinessCategories() {
-      listBusinessCategories()
-        .then((response) => {
-          this.categories = response.data.data
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting business category list'
-          })
-        })
     }
   },
   mounted() {
-    this.getBusinessCategories()
+    let businessCats = []
+    for (let cat of this.businessCategories) {
+      businessCats.push(cat.IDESC)
+    }
+    this.categories = businessCats
   },
   beforeDestroy() {
-    this.$router.push('/threat-sharing')
+    //this.$router.push("/threat-sharing")
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .new-community-container {
   min-height: 100vh;
   height: 820px;
   overflow: visible;
   width: 100%;
-  .k-checkbox .v-messages {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-  }
-  .checkbox-text {
-    position: absolute;
-    top: 9px;
-    left: 45px;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-  .v-list-item__content {
-    padding: 12px 10px;
-  }
-  .v-text-field__slot input,
-  textarea,
-  .v-select__slot input {
-    font-size: 13px;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    line-height: normal !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.72) !important;
-  }
-  .v-radio .v-label {
-    font-size: 14px !important;
-    font-weight: normal !important;
-    font-stretch: normal !important;
-    font-style: normal !important;
-    line-height: 1.5 !important;
-    letter-spacing: normal !important;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-  .new-community {
-    &__radio-group {
-      .v-input--radio-group {
-        margin-top: 0;
-        .v-messages {
-          display: none !important;
-        }
-      }
-    }
-  }
 
   .new-community-inner {
     width: 100%;

@@ -34,7 +34,6 @@
       @downloadEvent="exportPhishingReporterUserList"
       id="usersList"
       ref="refUsersList"
-      @turnOn="callForTurnOn"
     />
   </div>
 </template>
@@ -154,8 +153,7 @@ export default {
             show: true,
             type: 'status',
             width: 160,
-            isEditable: true,
-            editComponent: 'textfield',
+            isEditable: false,
             hasTooltip: true,
             //minWidth: 80,
             fullWidth: true
@@ -169,11 +167,6 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction'
-          },
-          {
-            name: 'Turn On',
-            icon: 'mdi-power',
-            action: 'turnOn'
           }
         ],
         pageSizes: [5, 10, 25, 50, 100]
@@ -223,14 +216,11 @@ export default {
              */
         })
     },
-    callForTurnOn(row) {
-      console.log('row', row)
-    },
-    exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber }) {
+    exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber,
-          pageSize: 10,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'LastSeen',
           ascending: false,
           reportAllPages,
@@ -260,7 +250,6 @@ export default {
       this.isWantToDelete = false
     }
   },
-
   created() {
     this.callForPhishingReporterUser()
   }

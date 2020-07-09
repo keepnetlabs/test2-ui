@@ -32,7 +32,13 @@
                     <v-icon left>mdi-download</v-icon>
                     Download
                   </v-btn>
-                  <v-btn class="white--text btn-util" color="#2196f3" rounded>
+                  <v-btn
+                    class="white--text btn-util"
+                    color="#2196f3"
+                    rounded
+                    :loading="outlookSpinnerStatus"
+                    @click="callForGenerateOutlookAddIn"
+                  >
                     <v-icon left>mdi-download</v-icon>
                     Download
                   </v-btn>
@@ -60,7 +66,13 @@
               <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
             </v-list-item>
             <v-list-item class="px-0 add-in-configuration__list-item">
-              <v-btn class="white--text btn-util mt-n2" color="#2196f3" rounded>
+              <v-btn
+                @click="callForGenerateDiagnosticTool"
+                class="white--text btn-util mt-n2"
+                color="#2196f3"
+                rounded
+                :disabled="diagnosticToolSpinnerStatus"
+              >
                 <v-icon left>mdi-download</v-icon>
                 Download
               </v-btn>
@@ -197,7 +209,13 @@ import EmailSettings from './Settings/EmailSettings'
 import OtherSettings from './Settings/OtherSettings'
 import Logos from './Logos'
 import DiagnosticTool from './Settings/DiagnosticTool'
-import { createPhishingReporter } from '../../api/phishingReporter'
+import {
+  createPhishingReporter,
+  downloadDiagnosticTool,
+  downloadOutlookAddIn,
+  generateDiagnosticTool,
+  generateOutlookAddIn
+} from '../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppModal from '../AppModal'
 export default {
@@ -221,13 +239,68 @@ export default {
       addingSettings: {},
       emailSettings: {},
       otherSettings: {},
-      showModal: false
+      showModal: false,
+      outlookSpinnerStatus: false,
+      diagnosticToolSpinnerStatus: false
     }
   },
   methods: {
     closeOverlay() {
       this.resetValues()
       this.$emit('changeAddInConfigurationStatus', false)
+    },
+    callForGenerateOutlookAddIn() {
+      generateOutlookAddIn().then((response) => {
+        response.data.data && this.callForDownloadOutlookAddIn(response.data.data.transactionId)
+      })
+    },
+    callForDownloadOutlookAddIn(transactionId) {
+      downloadOutlookAddIn(transactionId)
+        .then((response) => {
+          this.outlookSpinnerStatus = false
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `OutlookPhishingReporter.msi`
+          link.click()
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.outlookSpinnerStatus = true
+            const timeout = setTimeout(() => {
+              this.callForDownloadOutlookAddIn(transactionId)
+            }, 7500)
+          } else {
+            this.outlookSpinnerStatus = false
+          }
+        })
+    },
+    callForGenerateDiagnosticTool() {
+      generateDiagnosticTool().then((response) => {
+        response.data.data && this.callForDownloadDiagnosticTool(response.data.data.transactionId)
+      })
+    },
+    callForDownloadDiagnosticTool(id) {
+      this.diagnosticToolSpinnerStatus = true
+      downloadDiagnosticTool(id)
+        .then((response) => {
+          this.diagnosticToolSpinnerStatus = false
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `DiagnosticTool.msi`
+          link.click()
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.diagnosticToolSpinnerStatus = true
+            setTimeout(() => {
+              this.callForDownloadDiagnosticTool(id)
+            }, 7500)
+          } else {
+            this.diagnosticToolSpinnerStatus = false
+          }
+        })
     },
     changeStep(flag) {
       let hasValidationError = false
@@ -310,6 +383,11 @@ export default {
               icon: 'mdi-alert'
             })
           } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Phishing Reporter Saved Succesfully!',
+              icon: 'mdi-check-circle',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
             this.showModal = true
           }
         })

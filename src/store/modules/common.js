@@ -78,7 +78,7 @@ const common = {
       color --> string,
       action --> object { link, label }
        */
-      commit('SET_CREATE_SNACKBAR', { ...payload, status: true })
+      commit('SET_CREATE_SNACKBAR', { ...payload, status: true, id: Math.random() })
     },
     closeSnackBar({ commit }, payload) {
       commit('SET_CLOSE_SNACKBAR', payload)

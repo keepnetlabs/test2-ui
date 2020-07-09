@@ -1,7 +1,7 @@
 import testRequest from '../utils/testRequest'
 
-export function getTargetUsers() {
-  return testRequest.get(`/target-users`)
+export function getTargetUsers(payload) {
+  return testRequest.post(`/target-users/search`, payload)
 }
 
 export function getTargetUser(resourceId) {

@@ -176,7 +176,6 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      debugger
       deleteIntegration(row.resourceId)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -218,11 +217,11 @@ export default {
       this.modalStatus = status
       if (restart) this.getDatatableList()
     },
-    exportIntegrationList({ exportTypes, reportAllPages, pageNumber }) {
+    exportIntegrationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber: 1,
-          pageSize: 3,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
           orderBy: 'Name',
           ascending: false,
           reportAllPages,
@@ -249,7 +248,6 @@ export default {
           this.bodyData.pageNumber = data.pageNumber
           this.bodyData.pageSize = data.pageSize
           this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-          console.log(this.tableData.totalNumberOfRecords)
           this.$refs.refIntegrationsList.loadWithDataArray(data.results || [], this.bodyData)
         })
         .catch((error) => {

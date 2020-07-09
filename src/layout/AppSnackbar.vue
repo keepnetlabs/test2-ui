@@ -2,7 +2,7 @@
   <div>
     <template v-for="(snackbar, index) in snackbars">
       <v-snackbar
-        :key="snackbar.message"
+        :key="snackbar.id"
         v-model="snackbar.status"
         :color="snackbar.color"
         bottom

@@ -107,7 +107,13 @@ export default {
             editOptions: {
               component: 'select',
               props: {
-                items: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh']
+                items: [
+                  { text: 'Very Low', value: 'VeryLow' },
+                  'Low',
+                  'Medium',
+                  'High',
+                  { text: 'Very High', value: 'VeryHigh' }
+                ]
               }
             },
             width: 300
@@ -215,7 +221,6 @@ export default {
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
-        console.log('data', data)
         this.$refs.refGroupsTable.loadWithDataArray(data)
       })
     },

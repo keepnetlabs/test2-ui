@@ -2,25 +2,22 @@
   <app-modal
     :status="status"
     @closeOverlay="status = false"
-    icon-name="mdi-account-plus"
-    title="Add New User"
+    :icon-name="getIcon"
+    :title="getTitle"
     className="add-user-overlay"
   >
     <template v-slot:overlay-body>
       <v-list-item class="add-user-overlay__list-item mt-8">
         <v-list-item-content>
           <v-list-item-title class="add-user-overlay__main-title">
-            Add New User Manually
+            {{ editData ? 'Edit  User Manually' : 'Add New User Manually' }}
           </v-list-item-title>
           <v-list-item-subtitle class="add-user-overlay__main-sub-title"
             >Define user properties
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item
-        class="add-user-overlay__list-item mt-6"
-        :class="[!hasFirstNameError && !formValues.firstName ? 'mb-2' : '']"
-      >
+      <v-list-item class="add-user-overlay__list-item mt-6">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="firstName">First Name</label>
           <v-text-field
@@ -28,23 +25,12 @@
             outlined
             dense
             v-model="formValues.firstName"
-            :rules="[(v) => validations.required(v, 'Required')]"
             id="firstName"
-            @blur="hasFirstNameError = true"
             height="40"
           ></v-text-field>
-          <div
-            v-if="!hasFirstNameError && !formValues.firstName"
-            class="email-settings__required__text"
-          >
-            *Required
-          </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item
-        class="add-user-overlay__list-item"
-        :class="[!hasLastNameError && !formValues.lastName ? 'mb-2' : '']"
-      >
+      <v-list-item class="add-user-overlay__list-item">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="lastName">Last Name</label>
           <v-text-field
@@ -52,17 +38,9 @@
             outlined
             dense
             v-model="formValues.lastName"
-            :rules="[(v) => validations.required(v, 'Required')]"
             id="lastName"
             height="40"
-            @blur="hasLastNameError = true"
           ></v-text-field>
-          <div
-            v-if="!hasLastNameError && !formValues.lastName"
-            class="email-settings__required__text"
-          >
-            *Required
-          </div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item
@@ -103,6 +81,36 @@
         </v-list-item-content>
       </v-list-item>
 
+      <v-list-item
+        class="add-user-overlay__list-item"
+        :key="index"
+        v-for="(item, index) in customFields"
+      >
+        <v-list-item-content>
+          <label class="add-user-overlay__label">{{ item.name }}</label>
+          <v-text-field
+            outlined
+            dense
+            v-model="customFieldsModels[item.name]"
+            :placeholder="`Enter ${item.name}`"
+            height="40"
+            :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
+            v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
+          ></v-text-field>
+          <el-date-picker
+            v-model="customFieldsModels[item.name]"
+            :placeholder="`Enter ${item.name}`"
+            type="date"
+            v-else-if="item.fieldDataType === 'Date'"
+          />
+          <v-checkbox
+            v-model="customFieldsModels[item.name]"
+            :label="item.name"
+            v-if="item.fieldDataType === 'Boolean'"
+          />
+        </v-list-item-content>
+      </v-list-item>
+
       <v-list-item class="add-user-overlay__list-item">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="priority">Priority</label>
@@ -116,24 +124,7 @@
           ></v-select>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="addUserGroup">Add To User Groups</label>
-          <v-autocomplete
-            placeholder="Type to search user groups"
-            outlined
-            dense
-            chips
-            multiple
-            deletable-chips
-            :items="autoCompleteItems"
-            v-model="formValues.addToUserGroups"
-            id="addUserGroup"
-            item-text="name"
-            item-value="resourceId"
-          ></v-autocomplete>
-        </v-list-item-content>
-      </v-list-item>
+
       <v-list-item class="add-user-overlay__list-item">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="isActive">Active</label>
@@ -164,7 +155,7 @@
 
 <script>
 import { required, mail } from '../../utils/validations'
-import { createTargetUser, getTargetGroups } from '../../api/targetUsers'
+import { createTargetUser, getTargetGroups, updateTargetUser } from '../../api/targetUsers'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppModal from '../AppModal'
 export default {
@@ -173,6 +164,20 @@ export default {
   props: {
     status: {
       type: Boolean
+    },
+    editData: {
+      type: Object
+    },
+    customFields: {
+      type: Array
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.editData ? 'Edit User' : 'Add New User'
+    },
+    getIcon() {
+      return this.editData ? 'mdi-account-edit' : 'mdi-account-plus'
     }
   },
   data() {
@@ -183,11 +188,16 @@ export default {
         email: '',
         department: '',
         priority: 'Medium',
-        addToUserGroups: [],
         isActive: true
       },
-      autoCompleteItems: [],
-      priorityItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh'],
+      customFieldsModels: {},
+      priorityItems: [
+        { text: 'Very Low', value: 'VeryLow' },
+        'Low',
+        'Medium',
+        'High',
+        { text: 'Very High', value: 'VeryHigh' }
+      ],
       validations: {
         required,
         mail
@@ -202,7 +212,11 @@ export default {
       this.$emit('closeAddUserModal')
     },
     submit() {
-      this.callForCreateTargetUser()
+      if (this.editData) {
+        this.callForUpdateTargetUser()
+      } else {
+        this.callForCreateTargetUser()
+      }
     },
     callForCreateTargetUser() {
       const payload = {
@@ -219,11 +233,29 @@ export default {
           } else {
             this.$store.dispatch('common/createSnackBar', {
               message: '1 user added to Users List ',
-              icon: 'mdi-check-circle',
+              icon: 'mdi-check-circle-outline',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
             })
+            this.$emit('closeAddUserModalWithUpdate')
           }
-          this.$emit('closeAddUserModal')
+        })
+        .catch((error) => {})
+    },
+    callForUpdateTargetUser() {
+      const payload = {
+        ...this.formValues
+      }
+      delete payload.status
+      updateTargetUser(payload)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+          }
+          this.$emit('closeAddUserModalWithUpdate')
         })
         .catch((error) => {})
     },
@@ -238,6 +270,12 @@ export default {
     /*
     this.callForTargetGroups()
      */
+    if (this.editData) {
+      this.formValues = {
+        ...this.editData,
+        isActive: this.editData.status === 'Active'
+      }
+    }
   }
 }
 </script>

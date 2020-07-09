@@ -67,7 +67,12 @@
             <v-icon @click="isSettingsOpened = false" class="close-icon">mdi-close</v-icon>
           </div>
           <div class="sub-header">Show / Hide Columns</div>
-          <div :key="ind" class="popup-row" v-for="(col, ind) of columns" v-if="ind != 0">
+          <div
+            :key="ind"
+            class="popup-row"
+            v-for="(col, ind) of columns"
+            v-if="ind !== 0 && !col.hideOnSettingsPopup"
+          >
             {{ col.label }}
             <v-switch v-model="col.show" color="#2196f3" />
           </div>
@@ -87,9 +92,14 @@
           :value="multipleSelection"
           :options="columns"
           :titleKey="titleKey"
+          :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
           @closeEditPopup="closeEditPopup"
-        />
+        >
+          <template v-slot:body>
+            <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
+          </template>
+        </extended-view>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -103,13 +113,13 @@
               @keyup="searchChangedEvent"
             />
           </div>
-          <div class="table-settings" v-if="options">
+          <div class="table-settings" v-if="options" v-once>
             <v-btn
               class="clust-btn btn-hover mr-2"
               color="#2196f3"
               icon
               outlined
-              style="border-radius: 6px !important;"
+              style="border-radius: 6px !important; order: 1;"
               v-if="groupable"
             >
               <v-icon>mdi-format-list-bulleted</v-icon>
@@ -118,7 +128,7 @@
               class="clust-btn cluster-btn btn-hover mr-4"
               color="white"
               icon
-              style="border-radius: 6px !important;"
+              style="border-radius: 6px !important; order: 2;"
               v-if="groupable"
             >
               <v-icon>mdi-format-list-text</v-icon>
@@ -199,6 +209,7 @@
                   <v-btn
                     class="btn-add mr-1"
                     icon
+                    style="order: 3;"
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
                   >
@@ -217,6 +228,7 @@
                     <v-btn
                       class="btn-hover mr-1"
                       icon
+                      style="order: 4;"
                       v-bind="attrs"
                       v-on="{ ...tooltip, ...menu }"
                     >
@@ -237,7 +249,7 @@
 
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn class="btn-hover mr-1" icon v-on="on">
+                <v-btn class="btn-hover mr-1" icon v-on="on" style="order: 5;">
                   <v-icon @click="printMethod()">mdi-printer</v-icon>
                 </v-btn>
               </template>
@@ -245,7 +257,13 @@
             </v-tooltip>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn @click="isSettingsOpened = true" class="btn-hover mr-1" icon v-on="on">
+                <v-btn
+                  @click="isSettingsOpened = true"
+                  class="btn-hover mr-1"
+                  icon
+                  v-on="on"
+                  style="order: 6;"
+                >
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </template>
@@ -383,13 +401,19 @@
               :maxWidth="col.maxWidth || ''"
               :minWidth="col.minWidth || ''"
               :prop="col.property"
-              :sortable="col.sortable"
+              :sortable="'custom'"
               :width="col.width || ''"
               v-for="(col, ind) of columns"
               v-if="col.show"
             >
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
+                <data-table-colorful-text
+                  :col="col"
+                  :scope="scope"
+                  v-if="col.type === 'colorfulText'"
+                  :text="getDataTableFieldLabel(scope.row[col.property])"
+                />
                 <data-table-array :col="col" :scope="scope" v-if="col.type === 'array'" />
                 <data-table-attachment
                   :col="col"
@@ -412,6 +436,30 @@
                 <data-table-progress :col="col" :scope="scope" v-if="col.type === 'progress'" />
                 <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
                 <data-table-link :col="col" :scope="scope" v-if="col.type === 'link'" />
+                <div v-if="col.type === 'badge'">
+                  <v-tooltip bottom v-if="scope.row && scope.row[col.property]">
+                    <template v-slot:activator="{ on }">
+                      <badge
+                        :color="getBtnStatusColor(scope.row[col.property])"
+                        :listeners="on"
+                        :full-width="col.fullWidth"
+                        v-bind="col.props"
+                        :text="getDataTableFieldLabel(scope.row[col.property])"
+                      />
+                    </template>
+                    <span class="tooltip-span">
+                      <slot name="status-tooltip-text" :scope="scope" :col="col">
+                        {{ scope.row[col.property] }}
+                      </slot>
+                    </span>
+                  </v-tooltip>
+                  <span v-else>
+                    {{ col.emptyText || '' }}
+                  </span>
+                </div>
+                <div v-if="col.type === 'smallBadge'">
+                  <data-table-small-badge :scope="scope" :col="col" />
+                </div>
                 <div v-if="col.type === 'status'">
                   <v-tooltip bottom v-if="scope.row && scope.row['status']">
                     <template v-slot:activator="{ on }">
@@ -419,7 +467,8 @@
                         :color="getBtnStatusColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.status"
+                        v-bind="col.props"
+                        :text="getDataTableFieldLabel(scope.row.status)"
                       />
                     </template>
                     <span class="tooltip-span">
@@ -439,7 +488,7 @@
                         :color="getBtnPriorityColor(scope.row[col.property])"
                         :listeners="on"
                         :full-width="col.fullWidth"
-                        :text="scope.row.priority"
+                        :text="getDataTableFieldLabel(scope.row.priority)"
                       />
                     </template>
                     <span class="tooltip-span">{{ scope.row.priority }}</span>
@@ -450,6 +499,9 @@
                 </div>
                 <div v-if="col.type === 'popup'">
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
+                </div>
+                <div v-if="col.type === 'slot' || col.type === 'analysisSource'">
+                  <slot name="datatable-custom-column" :col="col" :scope="scope"></slot>
                 </div>
               </template>
               <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">
@@ -688,6 +740,7 @@ import DataTableTooltip from './DataTableComponents/DataTableTooltip'
 import DownloadModal from './DataTableComponents/DownloadModal'
 import Badge from './Badge'
 import ExtendedView from './ExtendedView'
+import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -697,9 +750,11 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-import { getBtnPriorityColor, getBtnStatusColor } from '../utils/functions'
+import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
+import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 export default {
   components: {
+    DataTableColorfulText,
     Badge,
     DataTableText,
     DataTableAttachment,
@@ -713,7 +768,8 @@ export default {
     DataTableLink,
     DataTableTooltip,
     DownloadModal,
-    ExtendedView
+    ExtendedView,
+    DataTableSmallBadge
   },
   props: {
     columns: {
@@ -723,6 +779,10 @@ export default {
     titleKey: {
       type: String,
       default: 'name'
+    },
+    cellPadding: {
+      type: Number,
+      default: 0
     },
     isEditableRuntime: {
       type: Boolean,
@@ -825,6 +885,9 @@ export default {
     isServerSide: {
       type: Boolean,
       default: false
+    },
+    extendedViewStyle: {
+      type: Object
     },
     showHeader: {
       type: Boolean,
@@ -939,6 +1002,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
+    console.log('this.columns', this.columns)
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
     const browser = navigator.userAgent.toLowerCase()
@@ -976,10 +1040,6 @@ export default {
   },
 
   methods: {
-    handleTableData() {
-      return this.showfilteredData ? this.filteredData : this.tableData
-    },
-
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
@@ -1002,6 +1062,9 @@ export default {
     getBtnPriorityColor(type) {
       return getBtnPriorityColor(type)
     },
+    getDataTableFieldLabel(field) {
+      return getDataTableFieldLabel(field)
+    },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
     },
@@ -1014,14 +1077,15 @@ export default {
       const span =
         cell.querySelector('span') ||
         cell.querySelector('.datatable-chart__empty') ||
+        cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
-      const spanWidth = span.getBoundingClientRect().width + 15
+      const spanWidth = span.getBoundingClientRect().width + 15 + this.cellPadding
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         this.overFlowTooltipContent = row[column.property]
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + 60}px`,
-          left: `${parentRect.left}px`
+          left: `${parentRect.left + this.cellPadding}px`
         }
       }
     },
@@ -1030,25 +1094,62 @@ export default {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.filteredData.length) {
-          this.filteredData = this.initialData.sort(function (a, b) {
-            if (sortProps.order === 'descending') {
-              return b[sortProps.prop] - a[sortProps.prop]
-            } else {
-              return a[sortProps.prop] - b[sortProps.prop]
-            }
-          })
+          this.filteredData = this.sortFunction(this.filteredData, sortProps)
+          return this.filteredData
         } else {
-          this.tableData = this.initialData
-            .sort(function (a, b) {
-              if (sortProps.order === 'descending') {
-                return b[sortProps.prop] - a[sortProps.prop]
-              } else {
-                return a[sortProps.prop] - b[sortProps.prop]
-              }
-            })
-            .slice((this.currentPage - 1) * this.rowCount, this.currentPage * this.rowCount)
+          const data = this.sortFunction(this.initialData, sortProps)
+          this.tableData = data.slice(
+            (this.currentPage - 1) * this.rowCount,
+            this.currentPage * this.rowCount
+          )
+          return this.tableData
         }
       }
+    },
+
+    sortFunction(data, sortProps) {
+      const isDate = function () {
+        const isDate = data.reduce((acc, item) => {
+          acc.push(
+            new Date(item[sortProps.prop]) !== 'Invalid Date' &&
+              !isNaN(new Date(item[sortProps.prop]))
+          )
+          return acc
+        }, [])
+        return isDate.includes(false)
+      }
+      let sortData = []
+      if (!isDate()) {
+        sortData = data.sort(function (a, b) {
+          if (sortProps.order === 'descending' && sortProps.prop) {
+            return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop])
+          } else {
+            return new Date(b[sortProps.prop]) - new Date(a[sortProps.prop])
+          }
+        })
+      } else {
+        sortData = data.sort(function (a, b) {
+          if (a === b) {
+            return 0
+          }
+          // nulls sort after anything else
+          else if (a === null) {
+            return 1
+          } else if (b === null) {
+            return -1
+          }
+          // otherwise, if we're ascending, lowest sorts first
+          else if (sortProps.order === 'ascending') {
+            return a < b ? -1 : 1
+          }
+          // if descending, highest sorts first
+          else {
+            return a < b ? 1 : -1
+          }
+        })
+      }
+
+      return sortData
     },
 
     paginationChangedEvent(paginationProps) {
@@ -1146,6 +1247,7 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
+      this.$emit('handleSelectionChange', val)
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
@@ -1190,6 +1292,7 @@ export default {
       this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
         pageNumber: this.currentPage,
+        pageSize: this.rowCount || this.countRow,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1] ? true : false
       })
     },

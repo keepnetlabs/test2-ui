@@ -2,7 +2,6 @@
   font-family: "Open Sans", sans-serif !important;
 }
 .el-range-editor.el-input__inner{
-  display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
   -webkit-box-align: center;
@@ -14,6 +13,9 @@
   border: solid 1px currentColor;
   .el-range__icon{
     color: rgba(0, 0, 0, 0.72);
+  }
+  .el-range__close-icon{
+    margin-left: 40px;
   }
   input{
     font-size: 13px;

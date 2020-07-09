@@ -1,5 +1,10 @@
 <template>
   <v-container class="add-in-settings" fluid id="add-in-settings" tag="div">
+    <version-history-modal
+      :status="versionHistoryModalStatus"
+      @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
+      v-if="versionHistoryModalStatus"
+    />
     <v-list-item class="pl-0 add-in-settings__list-item" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
@@ -16,14 +21,15 @@
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters')
+              (v) =>
+                validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
             id="add-in-text"
             outlined
             placeholder="Suspicious E-Mail Reporter"
-            required
             v-model="formValues.addInName"
           ></v-text-field>
         </v-list-item-content>
@@ -34,7 +40,8 @@
           <label class="add-in-settings__label" for="company-text">Brand Name</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters')
+              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -65,6 +72,13 @@
             />
           </v-btn>
         </v-list-item-content>
+        <v-list-item-content v-if="this.formValues.file">
+          <div>
+            <div class="add-in-settings__image-container">
+              <img style="width: 100%; height: 100%;" :src="getImagePreview()" />
+            </div>
+          </div>
+        </v-list-item-content>
       </v-list-item>
 
       <v-list-item
@@ -75,7 +89,9 @@
           <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters')
+              (v) =>
+                validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -130,6 +146,7 @@
             outlined
             placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
             required
+            :rules="[(v) => validations.required(v, 'Required')]"
             v-model="formValues.analysisThankYouMessage"
           ></v-text-field>
         </v-list-item-content>
@@ -155,7 +172,8 @@
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
           <v-text-field
             :rules="[
-              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters')
+              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters'),
+              (v) => validations.required(v, 'Required')
             ]"
             class="k-textfield mt-2"
             dense
@@ -172,27 +190,41 @@
         <v-btn @click="submit" class="white--text btn-util" color="#2196f3" rounded>
           SAVE CHANGES
         </v-btn>
-        <v-btn class="white--text btn-util ml-3" color="#00bcd4" rounded>
+        <v-btn
+          @click="submit($event, true)"
+          class="white--text btn-util ml-3"
+          color="#00bcd4"
+          rounded
+          :disabled="spinnerStatus"
+        >
           <v-icon left>mdi-download</v-icon>
           Save and Download Add-in
         </v-btn>
-        <a
-          class="add-in-settings__link"
-          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-          target="_blank"
+        <img
+          src="../../../assets/img/spinner.png"
+          class="add-in-settings__spinner"
+          v-if="spinnerStatus"
+        />
+        <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
+          >Download link is generating...</span
         >
-          Installation and configuration guide
-        </a>
+        <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
+          Version History
+        </div>
       </div>
     </v-form>
   </v-container>
 </template>
 
 <script>
-import { maxLength } from '../../../utils/validations'
-
+import { maxLength, required } from '../../../utils/validations'
+import { getPhishingReporterImg } from '../../../api/phishingReporter'
+import VersionHistoryModal from './VersionHistoryModal'
 export default {
   name: 'AddinSettings',
+  components: {
+    VersionHistoryModal
+  },
   props: {
     showFooter: {
       type: Boolean,
@@ -209,6 +241,10 @@ export default {
     showHeader: {
       type: Boolean,
       default: true
+    },
+    spinnerStatus: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -226,9 +262,11 @@ export default {
         warningLabel: '',
         hiddenFileUploadValue: ''
       },
+      versionHistoryModalStatus: false,
       marginStatus: true,
       validations: {
-        maxLength
+        maxLength,
+        required
       }
     }
   },
@@ -236,12 +274,17 @@ export default {
     onBtnSelectFileClick(e) {
       this.$refs.uploader.click()
     },
+    getImagePreview() {
+      return this.formValues.file && URL.createObjectURL(this.formValues.file)
+    },
     onFileChanged(e) {
       this.formValues.file = e.target.files[0]
+      console.log('this.formValues.file', this.formValues.file)
     },
-    submit() {
+    submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
-        this.$emit('updateForm', this.formValues)
+        console.log(this.formValues)
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
         return false
@@ -276,6 +319,9 @@ export default {
       this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
       this.formValues.analysisThankYouMessage = analysisThankYouMessage
       this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
+      getPhishingReporterImg().then((response) => {
+        this.formValues.file = response.data
+      })
     } else {
       this.formValues.brandName = localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
@@ -292,6 +338,12 @@ export default {
 </script>
 
 <style lang="scss">
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
 .add-in {
   &-settings {
     &__label {
@@ -301,7 +353,28 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
     }
-
+    &__image-container {
+      border: 2px solid whitesmoke;
+      border-radius: 3px;
+      transition: all 0.3s;
+      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+      width: fit-content;
+      &:hover {
+        transform: scale(1.05) translateY(-0.5rem);
+        box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.4);
+        z-index: 20;
+      }
+    }
+    &__spinner {
+      animation: spin 2s linear infinite;
+      margin-left: 8px;
+      &-text {
+        white-space: nowrap;
+        margin-left: 4px;
+        font-size: 10px;
+        color: rgb(0, 188, 212) !important;
+      }
+    }
     &__title {
       font-size: 24px;
       line-height: 1.29;
@@ -323,13 +396,11 @@ export default {
       font-size: 14px;
       font-weight: 600;
       text-decoration: none;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
+      cursor: pointer;
       letter-spacing: normal;
       color: #2196f3;
       flex-basis: 100%;
-      text-align: center;
       display: flex;
       justify-content: flex-end;
     }
@@ -354,6 +425,7 @@ export default {
       }
       .v-list-item__content {
         padding: 0 !important;
+        overflow: visible;
       }
     }
 
@@ -442,7 +514,6 @@ export default {
 }
 
 .btn-util {
-  font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
   font-weight: 500;
   line-height: 1.71;
@@ -456,6 +527,14 @@ export default {
 
   .v-icon {
     font-size: 19px;
+  }
+  &.v-btn--disabled {
+    .v-btn__content {
+      color: white !important;
+      .v-icon {
+        color: white !important;
+      }
+    }
   }
 }
 
