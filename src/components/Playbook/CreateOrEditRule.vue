@@ -193,7 +193,7 @@ export default {
       idCounter: 1,
       actionList: [{ id: 0 }],
       totalStep: 3,
-      activeStep: 3,
+      activeStep: 1,
       form1: false,
       form2: false,
       form3: false,
