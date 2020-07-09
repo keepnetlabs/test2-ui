@@ -284,7 +284,7 @@
                 class="no-sub-border-datatable"
               >
                 <template v-slot:datatable-column-popup="{ scope, col }">
-                  <span v-if="scope.row[col.property] == 0">
+                  <span v-if="scope.row[col.property] === 0">
                     No Matches
                   </span>
                   <span
@@ -292,7 +292,7 @@
                     @click="matchingPopupClick(scope.row)"
                     style="cursor: pointer; color: #2196f3;"
                   >
-                    {{ scope.row[col.property] == 0 ? 'No' : scope.row[col.property] }} Matches
+                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
                     :status="showMatchingModal"
@@ -404,7 +404,7 @@
             :columns="emails.columns"
             :countRow="5"
             :pageSizes="emails.pageSizes"
-            :defaultSort="'subject'"
+            :defaultSort="'createDate'"
             :selectable="true"
             :filterable="true"
             :options="true"
@@ -425,7 +425,7 @@
           >
             <template v-slot:datatable-custom-column="{ scope }">
               <span v-if="scope.row.matchingPlaybooks.length === 0">
-                {{ scope.row.source }}
+                {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
               </span>
               <router-link
                 tag="span"
@@ -702,7 +702,7 @@ export default {
           show: true,
           isEditable: false,
           type: 'attachment',
-          width: 80
+          width: 120
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
@@ -726,17 +726,16 @@ export default {
           hideOnSettingsPopup: true
         },
         {
-          property: PROPERTY_STORE.SOURCE,
+          property: PROPERTY_STORE.ANALYSISSOURCE,
           isEditable: false,
           align: 'center',
-          label: getStoreValue(PROPERTY_STORE.SOURCE),
+          label: 'Analysis Source',
           fixed: false,
           sortable: false,
           show: true,
-          type: 'slot',
-          width: '150',
-          fullWidth: true,
-          showKey: 'matchingPlaybooks'
+          type: 'analysisSource',
+          width: '200',
+          fullWidth: true
         },
         {
           property: PROPERTY_STORE.RESULT,
@@ -811,7 +810,7 @@ export default {
           type: 'smallBadge',
           isEditable: true,
           editOptions: {
-            component: 'textfield',
+            component: 'combobox',
             props: {
               placeholder: 'Enter Tags'
             }
@@ -973,6 +972,7 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    getSlot() {},
     handleReportedEmailsChange(val) {
       this.selectedRowsOfReportedEmailsLength = val.length
       if (this.selectedRowsOfReportedEmailsLength > 1) {
@@ -1022,9 +1022,9 @@ export default {
     callForSearchNotifiedMail() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateDate',
-        ascending: true
+        pageSize: 500000,
+        orderBy: 'createDate',
+        ascending: false
       }
       searchNotifiedMail(payload).then((response) => {
         const {
@@ -1072,7 +1072,7 @@ export default {
     irPreviewOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',
-        params: { id: row.resourceId }
+        params: { id: row.resourceId, tab: 2 }
       })
     },
     handleIsNotify(value) {
@@ -1081,6 +1081,7 @@ export default {
       }
     },
     handleEdit(selectedRow) {
+      debugger
       selectedRow.map((item, index) => {
         const payload = {
           result: item.result,
@@ -1110,7 +1111,7 @@ export default {
     irDetailsOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',
-        params: { id: row.resourceId }
+        params: { id: row.resourceId, tab: 0 }
       })
     },
     isPhishingEmpty(data) {

@@ -54,22 +54,55 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
-                    (col.type === 'text' || col.type === 'slot' || col.type === 'colorfulText') &&
+                    col.type === 'text' &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdate'
+                  "
+                >
+                  {{ copyOfEditedRows[0][col.property] }}
+                </span>
+                <span
+                  v-else-if="
+                    (!editMode || !col.isEditable) &&
+                    col.type === 'analysisSource' &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdate'
+                  "
+                >
+                  <span v-if="copyOfEditedRows[0].matchingPlaybooks.length === 0">
+                    {{
+                      copyOfEditedRows[0].source === 'Auto'
+                        ? 'Auto Analysis'
+                        : copyOfEditedRows[0].source
+                    }}
+                  </span>
+                  <router-link
+                    tag="span"
+                    :key="item.resourceId"
+                    v-else
+                    :to="`/playbook/${item.resourceId}`"
+                    v-for="item in copyOfEditedRows[0].matchingPlaybooks"
+                    class="incident-wrapper__link"
+                    >{{ item.name }}</router-link
+                  >
+                </span>
+                <span
+                  v-else-if="
+                    (!editMode || !col.isEditable) &&
+                    col.type === 'colorfulText' &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdate'
                   "
                   :style="[
-                    col.type === 'colorfulText'
-                      ? { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
-                      : ''
+                    { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
                   ]"
                 >
-                  {{ copyOfEditedRows[0][col.property] }}
+                  {{ getDataTableFieldLabel(copyOfEditedRows[0][col.property]) }}
                 </span>
                 <badge
                   v-else-if="
                         ((!editMode || !col.isEditable) && (col.type === 'status' ||
-                        col.type === 'detected' || col.type==='badge'))
+                        col.type === 'detected' || col.type==='badge') && copyOfEditedRows[0][col.property] !=='N/A' &&copyOfEditedRows[0][col.property] !=='InAnalysis')
                       "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
@@ -82,7 +115,7 @@
                   size="small"
                   :color="'#2196f3'"
                   v-for="badge in copyOfEditedRows[0][col.property]
-                    .slice(0, copyOfEditedRows[0][col.property].length - 2)
+                    .slice(0, copyOfEditedRows[0][col.property].length - 1)
                     .split(',')"
                   class-name="mr-1"
                   :key="badge"
@@ -175,6 +208,22 @@
                   :value="copyOfEditedRows[0][col.property]"
                   @input="handleEditPopupTextFieldChange($event, col.property)"
                 />
+                <v-combobox
+                  v-if="
+                        (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'combobox')
+                      "
+                  :items="[]"
+                  placeholder="Enter Tag"
+                  outlined
+                  class="edit-combo-box"
+                  multiple
+                  dense
+                  deletable-chips
+                  small-chips
+                  :return-object="false"
+                  :value="getComboBoxValue(copyOfEditedRows[0][col.property])"
+                  @input="handleEditComboBoxChange($event, col.property)"
+                ></v-combobox>
                 <v-textarea
                   outlined
                   dense
@@ -291,6 +340,42 @@
                   :value="copyOfEditedRows[0][col.property]"
                   @input="handleEditPopupCheckboxChange($event, col.property)"
                 ></v-checkbox>
+
+                <v-combobox
+                  class="edit-combo-box"
+                  :items="[]"
+                  outlined
+                  multiple
+                  dense
+                  deletable-chips
+                  small-chips
+                  :return-object="false"
+                  :readonly="!multipleEditDisables[col.property]"
+                  :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                  :class="[multipleValues(col.property) && 'multiple-values-input']"
+                  v-if="
+                    multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.type !== 'chart' &&
+                    col.type !== 'progress' &&
+                    col.type !== 'date' &&
+                    col.property !== 'createDate' &&
+                    col.editOptions.component === 'combobox'
+                  "
+                  :value="getMultipleComboValue(multipleEditModels[col.property])"
+                  @input="handleMultipleComboEdit(copyOfEditedRows, col.property, $event)"
+                >
+                  <template v-slot:append v-if="!multipleEditDisables[col.property]">
+                    <v-btn
+                      text
+                      @click.native="handleEditClick(col.property)"
+                      class="edit-popup__edit-component"
+                    >
+                      EDIT
+                    </v-btn>
+                  </template>
+                </v-combobox>
 
                 <v-select
                   class="edit-select"
@@ -420,7 +505,7 @@ export default {
     },
     isPopupDateEditable: {
       type: Boolean,
-      default: true
+      default: false
     },
     isEditableRuntime: {
       type: Boolean,
@@ -441,22 +526,36 @@ export default {
       editMode: false,
       multipleEditModels: [],
       editedPopupProperties: [],
-      multipleEditDisables: []
+      multipleEditDisables: [],
+      defaultValues: []
     }
   },
   methods: {
     multipleValues(key, val) {
       // This method controls whether selected items has same value or not
       if (this.value && this.value.length > 1) {
-        for (let a = 0; a < this.value.length - 1; a++) {
+        let value = true
+        for (let a = 0; a <= this.value.length - 2; a++) {
           let el = this.value[a]
-          if (el[key] === this.value[a + 1][key]) {
-            return false
-          } else {
-            return true
+          for (let b = a + 1; b <= this.value.length - 1; b++) {
+            if (el[key] === this.value[b][key]) {
+              value = false
+            } else {
+              return true
+            }
           }
         }
+        return value
       }
+    },
+    getMultipleComboValue(prop) {
+      return prop ? prop : []
+    },
+    handleMultipleComboEdit(item, key, value) {
+      item.map((i) => {
+        i[key] = value ? value.join(',') : value
+      })
+      this.multipleEditModels[key] = value
     },
     getCheckboxStatus(prop) {
       return this.hasOneMoreCheckboxValue(prop)
@@ -474,10 +573,23 @@ export default {
     closeEditPopup() {
       this.$emit('closeEditPopup', true)
     },
+    getComboBoxValue(prop) {
+      if (typeof prop === 'string' && prop.length > 0) {
+        if (prop.charAt(prop.length - 1) === ',') {
+          return prop.substring(0, prop.length - 1).split(',')
+        } else {
+          return prop && prop.split(',')
+        }
+      } else if (typeof prop === 'object') {
+        return prop
+      }
+      return []
+    },
     cancelEditedOnes() {
       this.editMode = false
       this.multipleEditModels = []
       this.editedPopupProperties = []
+      this.copyOfEditedRows = JSON.parse(JSON.stringify(this.defaultValues))
       this.multipleEditDisables = []
     },
     saveEditedOnes() {
@@ -554,6 +666,11 @@ export default {
         item[props] = value
       })
     },
+    handleEditComboBoxChange(value, props) {
+      this.copyOfEditedRows.map((item) => {
+        item[props] = value.join(',')
+      })
+    },
     handleEditPopupDatePickerChange(value, props) {
       this.menu1 = false
       this.copyOfEditedRows.map((item) => {
@@ -573,6 +690,7 @@ export default {
   },
   created() {
     this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
+    this.defaultValues = JSON.parse(JSON.stringify(this.value))
   }
 }
 </script>

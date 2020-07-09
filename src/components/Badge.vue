@@ -81,9 +81,10 @@ export default {
     &--small {
       &.v-btn {
         border-radius: 4px !important;
-        max-width: 60px;
-        height: 24px !important;
         box-shadow: none !important;
+        max-width: fit-content;
+        height: auto !important;
+        padding: 4px 6px !important;
       }
       &.v-btn:not(.v-btn--round).v-size--default {
         min-width: 60px;
