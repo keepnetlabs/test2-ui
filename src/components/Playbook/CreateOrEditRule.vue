@@ -199,10 +199,9 @@ export default {
   components: { ActionItem, VueQueryBuilder, QueryBuilderGroup },
   data() {
     return {
-      idCounter: 1,
       actionList: [{ id: 0 }],
       totalStep: 3,
-      activeStep: 3,
+      activeStep: 1,
       form1: false,
       form2: false,
       form3: false,
@@ -368,21 +367,13 @@ export default {
       label: {
         matchType: 'Match Type',
         matchTypes: [
-          { id: 'and', label: 'AND' },
-          { id: 'or', label: 'OR' }
+          { id: 'OR', label: 'OR' },
+          { id: 'AND', label: 'AND' }
         ],
         addRule: 'ADD CONDITION',
         addGroup: 'ADD NEW CONDITION SET',
         textInputPlaceholder: 'value'
       },
-      operators: [
-        'contains',
-        'does not contain',
-        'is equal to',
-        'is not equal to',
-        'exist',
-        'does not exist'
-      ],
       rules: [
         {
           type: 'conditions',

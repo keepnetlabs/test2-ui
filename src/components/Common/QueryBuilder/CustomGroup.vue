@@ -5,7 +5,7 @@
     <div class="vqb-group-heading card-header">
       <div class="match-type-container d-flex">
         <v-switch
-          v-if="depth !== 1"
+          if="depth !== 1"
           v-model="query.logicalOperator"
           :true-value="labels.matchTypes[0].id"
           :false-value="labels.matchTypes[1].id"

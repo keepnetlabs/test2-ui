@@ -28,31 +28,37 @@
           hide-details="auto"
         ></v-combobox>
       </v-col>
-      <v-col v-if="actionItemType == 'Notify'" md="2" class="mr-2">
-        <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
-      </v-col>
-      <v-col v-if="actionItemType == 'The reporter'" md="2" class="mr-2 flex-grow-1">
-        <v-combobox
-          v-model="tags"
-          :items="[]"
+      <v-col v-if="notifyType == 'A user'" md="2" class="mr-2">
+        <v-autocomplete
+          v-model="targetUsers"
+          :items="targets"
+          :search-input.sync="search"
           chips
-          deletable-chips
-          :search-input.sync="tagsearch"
-          @keyup.tab="updateTags"
-          @paste="updateTags"
-          outlined
-          class="hide-caret"
-          multiple
-          dense
-          persistent-hint
-          small-chips
-          :return-object="false"
+          clearable
+          item-text="name"
+          item-value="symbol"
+          label="Select users, groups, departments or companies"
+          class="first-select input-select"
+          solo
+          :rules="autocomplete"
           required
-          hide-details="auto"
-        ></v-combobox>
-      </v-col>
-      <v-col v-if="notifyType == 'Notify'" md="2" class="mr-2">
-        <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
+        >
+          <template v-slot:selection="{ attr, on, item, selected }">
+            <v-chip
+              v-bind="attr"
+              :input-value="selected"
+              color="#2196f3"
+              class="white--text"
+              v-on="on"
+            >
+              {{ item }}
+            </v-chip>
+          </template>
+          <template v-slot:item="{ item }">
+            {{ item }}
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+          </template>
+        </v-autocomplete>
       </v-col>
       <v-col v-if="actionItemType == 'Notify'" md="2" class="mr-2">
         <v-select
@@ -89,7 +95,11 @@ export default {
       tagsearch: '',
       tags: [],
       notifyType: '',
-      notifyTemplate: ''
+      notifyTemplate: '',
+      searchUser: '',
+      searchGroup: '',
+      targets: [],
+      targetUsers: ''
     }
   },
   mounted() {

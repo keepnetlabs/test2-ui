@@ -13,16 +13,10 @@
             <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-users p-2" id="pr-tab-users">
               Rules
             </v-tab>
-            <v-tab @click="changeTabStatus(1)" class="pr-tab p-2" id="pr-tab-settings"
-              >Plays
-            </v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
               <Rules />
-            </v-tab-item>
-            <v-tab-item>
-              Plays
             </v-tab-item>
           </v-tabs-items>
         </v-card>
