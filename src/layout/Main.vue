@@ -1571,7 +1571,7 @@ export default {
   }
 
   .v-dialog {
-    overflow: hidden !important;
+    //overflow: hidden !important;
   }
 
   .v-navigation-drawer--mini-variant {
