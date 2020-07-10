@@ -7,7 +7,7 @@
 
   .v-card.header {
     padding: 2rem 6rem;
-    @media (min-width: 768px) {
+    @media (max-width: 768px) {
       padding: 2rem 2rem;
     }
 
@@ -70,7 +70,7 @@
     height: 4rem;
     box-shadow: none;
     background-color: #f5f7fa;
-    @media (min-width: 768px) {
+    @media (max-width: 768px) {
       padding: 0 3rem;
     }
 
@@ -135,7 +135,7 @@
 
   .v-stepper__content {
     padding: 24px 6rem;
-    @media (min-width: 768px) {
+    @media (max-width: 768px) {
       padding: 24px 1rem;
     }
   }

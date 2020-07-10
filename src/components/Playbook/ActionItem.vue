@@ -2,13 +2,34 @@
   <div class="vqb-rule rounded-xl">
     <!-- <p>{{ id }}</p> -->
     <v-row>
-      <v-col cols="2" class="mr-2">
+      <v-col md="2" class="mr-2">
         <v-select v-model="actionItemType" :items="act.actionTypes" outlined hide-details />
       </v-col>
-      <v-col v-if="actionItemType == 'Mark as'" cols="2" class="mr-2">
+      <v-col v-if="actionItemType == 'Mark as'" md="2" class="mr-2">
         <v-select v-model="markAsOpts" :items="act.markAsOpts" outlined hide-details />
       </v-col>
-      <v-col class="text-right">
+      <v-col v-if="actionItemType == 'Tag'" md="auto" class="mr-2 flex-grow-1">
+        <v-combobox
+          v-model="tags"
+          :items="[]"
+          chips
+          deletable-chips
+          :search-input.sync="tagsearch"
+          @keyup.tab="updateTags"
+          @paste="updateTags"
+          outlined
+          class="hide-caret"
+          multiple
+          dense
+          persistent-hint
+          small-chips
+          :return-object="false"
+          required
+          hide-details="auto"
+        ></v-combobox>
+      </v-col>
+      <v-spacer v-if="actionItemType != 'Tag'" />
+      <v-col class="text-right flex-grow-0">
         <!-- Remove act button -->
         <v-btn icon @click="$emit('remove', id)">
           <v-icon>mdi-close-circle</v-icon>
@@ -28,13 +49,24 @@ export default {
   data() {
     return {
       actionItemType: '',
-      markAsOpts: ''
+      markAsOpts: '',
+      tagsearch: '',
+      tags: []
     }
   },
   mounted() {
     //console.log(this)
   },
-  methods: {}
+  methods: {
+    updateTags() {
+      this.$nextTick(() => {
+        this.tags.push(...this.tagsearch.split(','))
+        this.$nextTick(() => {
+          this.tagsearch = ''
+        })
+      })
+    }
+  }
 }
 </script>
 
