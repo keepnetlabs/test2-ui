@@ -135,13 +135,12 @@
                 <template v-slot:default="slotProps">
                   <query-builder-group v-bind="slotProps" :query.sync="query" />
                 </template>
-
-                <v-row>
-                  <v-col>
-                    <pre>{{ JSON.stringify(this.query, null, 2) }}</pre>
-                  </v-col>
-                </v-row>
               </vue-query-builder>
+              <v-row>
+                <v-col>
+                  <pre>{{ JSON.stringify(this.query, null, 2) }}</pre>
+                </v-col>
+              </v-row>
             </v-stepper-content>
             <!-- STEP 3 -->
             <v-stepper-content step="3">
