@@ -126,7 +126,7 @@
             <!-- STEP 2 -->
             <v-stepper-content step="2">
               <vue-query-builder
-                :max-depth="2"
+                :max-depth="3"
                 class="w-100"
                 :labels="label"
                 :rules="rules"
@@ -197,7 +197,7 @@ export default {
       idCounter: 1,
       actionList: [{ id: 0 }],
       totalStep: 3,
-      activeStep: 1,
+      activeStep: 3,
       form1: false,
       form2: false,
       form3: false,
@@ -209,7 +209,16 @@ export default {
       isActive: true,
       act: {
         actionTypes: ['Mark as', 'Analyse', 'Investigate', 'Notify', 'Tag'],
+        notifyTypes: ['The reporter', 'A user', 'A group'],
         markAsOpts: ['Clean', 'Phising', 'Malicious', 'Spam'],
+        notifyTemplates: [
+          { label: 'IR User Notification', value: '18' },
+          { label: 'IR Delete Action Notification', value: '41' },
+          { label: 'Incident Investigation', value: '46' },
+          { label: 'About to Expire', value: '2282' },
+          { label: 'Incident Investigation Progress Report', value: '2311' },
+          { label: 'Incident Investigation Suspicious Email Analysis Report', value: '2320' }
+        ],
         playbookAction: {
           markType: 'Clean',
           targetUser: '',
