@@ -6,7 +6,10 @@
   //overflow-y: auto;
 
   .v-card.header {
-    padding: 2rem 6rem !important;
+    padding: 2rem 6rem;
+    @media (min-width: 768px) {
+      padding: 2rem 2rem;
+    }
 
     .v-btn__icon-wrapper {
       width: 48px;
@@ -22,6 +25,7 @@
       font-size: 20px;
       font-weight: 600;
       color: #2196f3;
+      line-height: 1.15rem;
     }
   }
   &__radio-group {
@@ -66,6 +70,9 @@
     height: 4rem;
     box-shadow: none;
     background-color: #f5f7fa;
+    @media (min-width: 768px) {
+      padding: 0 3rem;
+    }
 
     .v-divider {
       max-width: 65px;
@@ -128,6 +135,9 @@
 
   .v-stepper__content {
     padding: 24px 6rem;
+    @media (min-width: 768px) {
+      padding: 24px 1rem;
+    }
   }
 
   &__footer {
@@ -147,6 +157,9 @@
         line-height: 1.2rem;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
+        margin-bottom: 4px;
+      }
+      .bottom-margin {
         margin-bottom: 16px;
       }
       .v-radio {

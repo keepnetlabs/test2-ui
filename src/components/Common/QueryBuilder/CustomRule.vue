@@ -3,19 +3,19 @@
   <div class="vqb-rule rounded-xl">
     <v-row>
       <!-- <label class="mr-5">{{ rule.label }}</label> -->
-      <v-col cols="2" class="mr-2">
+      <v-col md="2" class="mr-2">
         <!-- List of operands (optional) -->
         <v-select v-model="query.operand" :items="rule.operands" outlined hide-details />
       </v-col>
       <v-col
-        cols="2"
+        md="2"
         class="mr-2"
         v-if="typeof rule.operators !== 'undefined' && rule.operators.length > 1"
       >
         <!-- List of operators (e.g. =, !=, >, <) -->
         <v-select v-model="query.operator" :items="rule.operators" outlined hide-details />
       </v-col>
-      <v-col cols="2" v-if="query.operand == 'From'">
+      <v-col md="2" v-if="query.operand == 'From'">
         <!-- List of "From" operands-->
         <v-select
           v-model="query.format"
@@ -25,7 +25,7 @@
           hide-details
         />
       </v-col>
-      <v-col cols="2" v-if="query.operand == 'To'">
+      <v-col md="2" v-if="query.operand == 'To'">
         <!-- List of "From" operands-->
         <v-select
           v-model="query.format"
@@ -35,7 +35,7 @@
           hide-details
         />
       </v-col>
-      <v-col cols="2" v-if="query.operand == 'Analysis result'">
+      <v-col md="2" v-if="query.operand == 'Analysis result'">
         <!-- List of "Analysis result" operands-->
         <v-select
           v-model="query.value"
@@ -54,7 +54,7 @@
           hide-details
         />
       </v-col>
-      <v-col cols="auto" class="text-right">
+      <v-col md="auto" class="text-right">
         <!-- Remove rule button -->
         <v-btn icon class="" @click="remove">
           <v-icon>mdi-close-circle</v-icon>

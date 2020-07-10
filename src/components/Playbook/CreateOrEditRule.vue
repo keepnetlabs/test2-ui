@@ -8,7 +8,7 @@
               <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>
             </div>
             <v-list-item-content class="pt-0 pb-0">
-              <v-list-item-title class="v-card-headline">Create New Rule</v-list-item-title>
+              <v-list-item-title class="">Create New Rule</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -28,7 +28,7 @@
 
           <v-stepper-items>
             <!-- STEP 1 -->
-            <v-stepper-content step="1" class="col-5">
+            <v-stepper-content step="1">
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="v-card-form-title">
@@ -39,85 +39,89 @@
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-form ref="form" v-model="form1" lazy-validation>
-                <v-list-item class="pt-1 0 pa-0">
-                  <v-list-item-content>
-                    <label>Rule Name</label>
-                    <v-text-field
-                      placeholder="Enter a name for the rule"
-                      outlined
-                      v-model="name"
-                      :rules="[nameRules.required, nameRules.empty]"
-                      required
-                      hide-details="auto"
-                    ></v-text-field>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label>Description</label>
-                    <v-textarea
-                      placeholder="Describe the role"
-                      outlined
-                      v-model="description"
-                      required
-                      hide-details="auto"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="mb-0">Priority</label>
-                    <v-list-item-title class="v-card-sub-header">
-                      Rules with higher priority override lower priority rules
-                    </v-list-item-title>
-                    <div class="playbook-rule-form__radio-group">
-                      <v-radio-group v-model="priority" row>
-                        <v-radio :ripple="false" value="Very Low" label="Very Low" />
-                        <v-radio :ripple="false" value="Low" label="Low" />
-                        <v-radio :ripple="false" value="Medium" label="Medium" />
-                        <v-radio :ripple="false" value="High" label="High" />
-                        <v-radio :ripple="false" value="Very High" label="Very High" />
-                      </v-radio-group>
-                    </div>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label class="mb-0">Tags</label>
-                    <v-list-item-title class="v-card-sub-header">
-                      Define tags for the rule
-                    </v-list-item-title>
-                    <v-combobox
-                      v-model="tags"
-                      :items="[]"
-                      chips
-                      deletable-chips
-                      :search-input.sync="tagsearch"
-                      @keyup.tab="updateTags"
-                      @paste="updateTags"
-                      outlined
-                      class="hide-caret"
-                      multiple
-                      dense
-                      persistent-hint
-                      small-chips
-                      :return-object="false"
-                      required
-                      hide-details="auto"
-                    ></v-combobox>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-switch
-                      :ripple="false"
-                      v-model="isActive"
-                      :label="isActive ? 'Active' : 'Inactive'"
-                    />
-                  </v-list-item-content>
-                </v-list-item>
-              </v-form>
+              <v-row class="pt-1">
+                <v-col lg="5">
+                  <v-form ref="form" v-model="form1" lazy-validation>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <label class="bottom-margin">Rule Name</label>
+                        <v-text-field
+                          placeholder="Enter a name for the rule"
+                          outlined
+                          v-model="name"
+                          :rules="[nameRules.required, nameRules.empty]"
+                          required
+                          hide-details="auto"
+                        ></v-text-field>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <label class="bottom-margin">Description</label>
+                        <v-textarea
+                          placeholder="Describe the role"
+                          outlined
+                          v-model="description"
+                          required
+                          hide-details="auto"
+                        />
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <label>Priority</label>
+                        <v-list-item-title class="v-card-sub-header bottom-margin">
+                          Rules with higher priority override lower priority rules
+                        </v-list-item-title>
+                        <div class="playbook-rule-form__radio-group">
+                          <v-radio-group v-model="priority" row>
+                            <v-radio :ripple="false" value="Very Low" label="Very Low" />
+                            <v-radio :ripple="false" value="Low" label="Low" />
+                            <v-radio :ripple="false" value="Medium" label="Medium" />
+                            <v-radio :ripple="false" value="High" label="High" />
+                            <v-radio :ripple="false" value="Very High" label="Very High" />
+                          </v-radio-group>
+                        </div>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <label>Tags</label>
+                        <v-list-item-title class="v-card-sub-header bottom-margin">
+                          Define tags for the rule
+                        </v-list-item-title>
+                        <v-combobox
+                          v-model="tags"
+                          :items="[]"
+                          chips
+                          deletable-chips
+                          :search-input.sync="tagsearch"
+                          @keyup.tab="updateTags"
+                          @paste="updateTags"
+                          outlined
+                          class="hide-caret"
+                          multiple
+                          dense
+                          persistent-hint
+                          small-chips
+                          :return-object="false"
+                          required
+                          hide-details="auto"
+                        ></v-combobox>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-switch
+                          :ripple="false"
+                          v-model="isActive"
+                          :label="isActive ? 'Active' : 'Inactive'"
+                        />
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-form>
+                </v-col>
+              </v-row>
             </v-stepper-content>
             <!-- STEP 2 -->
             <v-stepper-content step="2">
