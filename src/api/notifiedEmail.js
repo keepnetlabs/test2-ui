@@ -13,8 +13,10 @@ export function getAnalysisEngineTypes() {
   return testRequest.get(`analysis-engines/types`)
 }
 
-export function exportReportedEmails(payload) {
-  return testRequest.post(`${API_URL}`, payload)
+export function exportNotifiedEmails(payload) {
+  return testRequest.post(`/notified-emails/search/export`, payload, {
+    responseType: 'blob'
+  })
 }
 
 export function downloadMsgFiles(id, zipPassword) {

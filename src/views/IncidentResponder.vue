@@ -295,9 +295,10 @@
                     {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
-                    :status="showMatchingModal"
+                    :status="scope.row.resourceId === selectedMatch.resourceId"
                     icon="mdi-email"
                     title="Matching Incidents"
+                    v-if="showMatchingModal"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
                     @changeStatus="showMatchingModal = false"
                     size="maximum"
@@ -481,7 +482,7 @@
 </template>
 <script>
 import { updateNotifiedEmail } from '../api/incidentResponder'
-import { getNotifiedEmail } from '../api/notifiedEmail'
+import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import {
@@ -493,6 +494,7 @@ import {
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
+import { exportPhishingReporterUserList } from '../api/phishingReporter'
 
 export default {
   components: {
@@ -1158,7 +1160,27 @@ export default {
       this.$router.push('/investigations')
     },
 
-    exportReportedListEmails({ exportTypes, reportAllPages, pageNumber }) {}
+    exportReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: reportAllPages ? 500 : pageSize,
+          orderBy: 'CreateDate',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportNotifiedEmails(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `users.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
+    }
   },
 
   beforeRouteLeave(to, from, next) {
