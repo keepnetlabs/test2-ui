@@ -21,7 +21,7 @@
           <v-stepper-header class="wizard__header">
             <v-stepper-step :complete="activeStep > 1" step="1">Rule Info</v-stepper-step>
             <v-divider />
-            <v-stepper-step :complete="activeStep > 2" step="2">Condutions</v-stepper-step>
+            <v-stepper-step :complete="activeStep > 2" step="2">Conditions</v-stepper-step>
             <v-divider />
             <v-stepper-step step="3">Actions</v-stepper-step>
           </v-stepper-header>

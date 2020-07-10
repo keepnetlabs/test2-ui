@@ -15,6 +15,7 @@
       :addButton="tableOptions.addButton"
       @deleteAction="handleDelete"
       @addAction="toggleRuleModal"
+      @onEmptyBtnClicked="toggleRuleModal"
     />
     <v-dialog
       v-model="this.showRuleModal"
@@ -139,7 +140,8 @@ export default {
         pageSizes: [5, 10, 25, 50, 100],
         addButton: {
           show: true,
-          action: 'addAction'
+          action: 'addAction',
+          tooltip: 'Add Rule'
         }
       },
       tableCredientials: {

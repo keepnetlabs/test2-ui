@@ -34,11 +34,7 @@ export default {
   mounted() {
     //console.log(this)
   },
-  methods: {
-    rowdelete(id) {
-      this.$emit('remove', id)
-    }
-  }
+  methods: {}
 }
 </script>
 
