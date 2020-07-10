@@ -12,21 +12,27 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item v-if="mailDetails">
+            <download-modal
+              :status="downloadModalStatus"
+              v-if="downloadModalStatus"
+              @changeDownloadModalStatus="downloadModalStatus = $event"
+              :id="$attrs.id"
+            />
             <div class="details-content">
-              <div class="details-content--item mb-12">
-                <div class="details-content--item--key">
-                  Analysis Date
+              <div class="details-content--item mb-6" style="justify-content: space-between;">
+                <div style="display: flex; align-items: center;">
+                  <div class="details-content--item--key">
+                    Analysis Date
+                  </div>
+                  <div class="details-content--item--value">
+                    {{ mailDetails.analysisDate }}
+                  </div>
                 </div>
-                <div class="details-content--item--value">
-                  {{ mailDetails.analysisDate }}
-                </div>
-              </div>
-              <div class="details-content--item">
-                <div class="details-content--item--key">
-                  To
-                </div>
-                <div class="details-content--item--value">
-                  {{ mailDetails && mailDetails.to && mailDetails.to.toString() }}
+                <div>
+                  <div @click="handleDownloadEmail()" class="mr-6 cursor-pointer download">
+                    <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                    DOWNLOAD EMAIL
+                  </div>
                 </div>
               </div>
               <div class="details-content--item">
@@ -39,20 +45,21 @@
               </div>
               <div class="details-content--item">
                 <div class="details-content--item--key">
-                  Subject
+                  From Name
                 </div>
                 <div class="details-content--item--value">
-                  {{ mailDetails.subject }}
+                  {{ mailDetails.senderName }}
                 </div>
               </div>
               <div class="details-content--item">
                 <div class="details-content--item--key">
-                  Date Received
+                  To
                 </div>
                 <div class="details-content--item--value">
-                  {{ mailDetails.receivedDate }}
+                  {{ mailDetails && mailDetails.to && mailDetails.to.toString() }}
                 </div>
               </div>
+
               <div class="details-content--item">
                 <div class="details-content--item--key">
                   CC
@@ -69,6 +76,33 @@
                   {{ mailDetails && mailDetails.to && mailDetails.bcc.toString() }}
                 </div>
               </div>
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  Date Received
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails.receivedDate }}
+                </div>
+              </div>
+
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  Sender IP
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails.senderIp }}
+                </div>
+              </div>
+
+              <div class="details-content--item">
+                <div class="details-content--item--key">
+                  Folder Name
+                </div>
+                <div class="details-content--item--value">
+                  {{ mailDetails.folderName }}
+                </div>
+              </div>
+
               <div class="details-content--item">
                 <div class="details-content--item--key">
                   Attachment Count
@@ -327,6 +361,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  `
 })
 import Datatable from '../../components/DataTable'
+import DownloadModal from './DownloadModal'
 import {
   getNotifiedEmail,
   getAnalysisEngineTypes,
@@ -340,7 +375,8 @@ import {
 
 export default {
   components: {
-    Datatable
+    Datatable,
+    DownloadModal
   },
   props: {},
   data: () => ({
@@ -388,6 +424,7 @@ export default {
         }
       ]
     },
+    downloadModalStatus: false,
     headersTable: {
       data: [],
       columns: [
@@ -490,6 +527,9 @@ export default {
         const data = attachments.filter((item) => item.isSendFile || item.isSendFileHash)
         return !!data.length
       }
+    },
+    handleDownloadEmail() {
+      this.downloadModalStatus = true
     },
     getDetailsLink(scope, col, parentRow) {
       switch (scope.row.analysisEngine) {
@@ -749,14 +789,11 @@ export default {
     &--item {
       display: flex;
       &:not(:last-child) {
-        margin-bottom: 18px;
+        margin-bottom: 8px;
       }
       &--value {
-        font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
         line-height: 1.5;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
@@ -1860,6 +1897,15 @@ export default {
     line-height: 1.15;
     letter-spacing: normal;
     color: #2196f3;
+  }
+}
+.email-details__download-modal {
+  .v-list-item__title,
+  .v-list-item__subtitle {
+    white-space: pre-wrap !important;
+  }
+  .k-dialog__body {
+    padding-bottom: 0;
   }
 }
 .selection-icons {

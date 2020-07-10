@@ -16,3 +16,9 @@ export function getAnalysisEngineTypes() {
 export function exportReportedEmails(payload) {
   return testRequest.post(`${API_URL}`, payload)
 }
+
+export function downloadMsgFiles(id, zipPassword) {
+  return testRequest.get(`/notified-emails/msg-files/${id}?zipPassword=${zipPassword}`, {
+    responseType: 'blob'
+  })
+}

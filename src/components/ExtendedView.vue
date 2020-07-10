@@ -119,7 +119,7 @@
                     v-for="badge in copyOfEditedRows[0][col.property]
                       .slice(0, copyOfEditedRows[0][col.property].length - 1)
                       .split(',')"
-                    class-name="mr-1"
+                    class-name="mr-1 mb-1"
                     :key="badge"
                     :text="badge"
                   />

@@ -311,6 +311,46 @@ export default {
       default: true
     }
   },
+  watch: {
+    formData: {
+      handler(data) {
+        const {
+          companyKey,
+          noInternetConnectionMessage,
+          msgBoxBtnYesText,
+          msgBoxBtnNoText,
+          msgBoxBtnOkText,
+          msgBoxBtnCancelText,
+          emailSendingErrorMessage,
+          enterpriseVaultUrl,
+          apiUrl,
+          isOnPremise,
+          isDeleteEmailBeforeAnalysis,
+          isEnableProxy,
+          emailSelectionErrorMessage,
+          apiKey,
+          badFormatEmailMessage
+        } = data
+        this.formValues.companyKey = companyKey
+        this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
+        this.formValues.msgBoxBtnYesText = msgBoxBtnYesText || ''
+        this.formValues.msgBoxBtnNoText = msgBoxBtnNoText || ''
+        this.formValues.msgBoxBtnOkText = msgBoxBtnOkText || ''
+        this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText || ''
+        this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
+        this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage || ''
+        this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
+        this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
+        this.enterpriseVaultDisabled = !enterpriseVaultUrl
+        this.formValues.apiUrl = apiUrl || ''
+        this.formValues.isEnableProxy = isEnableProxy || false
+        this.formValues.isOnPremise = !!apiUrl
+        this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
+        this.formValues.apiKey = apiKey || ''
+        this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
+      }
+    }
+  },
   data() {
     return {
       formValues: {
@@ -321,7 +361,6 @@ export default {
         companyKey: '',
         enableEnterpriseVault: null,
         enterpriseVaultUrl: '',
-        superTip: '',
         noInternetConnectionMessage: '',
         msgBoxBtnYesText: '',
         msgBoxBtnNoText: '',
@@ -372,7 +411,6 @@ export default {
         apiUrl,
         isOnPremise,
         isDeleteEmailBeforeAnalysis,
-        enableProxy,
         isEnableProxy,
         emailSelectionErrorMessage,
         apiKey,
@@ -393,7 +431,6 @@ export default {
       this.formValues.isEnableProxy = isEnableProxy || false
       this.formValues.isOnPremise = !!apiUrl
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
-      this.formValues.enableProxy = enableProxy || ''
       this.formValues.apiKey = apiKey || ''
       this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
     } else {

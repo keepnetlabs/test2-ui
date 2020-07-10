@@ -958,9 +958,10 @@ export default {
       //flex-direction: column;
       justify-content: space-between;
       width: 100%;
+      padding-left: 8px;
       @media (max-width: 896px) {
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
       }
     }
     &__title {
