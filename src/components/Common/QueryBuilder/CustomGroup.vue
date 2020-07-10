@@ -29,7 +29,7 @@
           <v-icon>mdi-plus</v-icon> {{ labels.addRule }}
         </v-btn>
 
-        <v-btn v-if="depth < maxDepth" text color="primary" @click="addGroup">
+        <v-btn v-if="depth < maxDepth && depth != 1" text color="primary" @click="addGroup">
           <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
         </v-btn>
       </div>

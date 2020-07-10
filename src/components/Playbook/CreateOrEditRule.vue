@@ -126,7 +126,7 @@
             <!-- STEP 2 -->
             <v-stepper-content step="2">
               <vue-query-builder
-                :max-depth="3"
+                :max-depth="4"
                 class="w-100"
                 :labels="label"
                 :rules="rules"
