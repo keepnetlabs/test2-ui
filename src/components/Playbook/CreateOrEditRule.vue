@@ -193,6 +193,7 @@
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'CreateOrEditRule',
@@ -445,7 +446,40 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     nextStep() {
-      this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+      console.log(this.findHasError(this.query))
+      if (this.findHasError(this.query)) {
+        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+      } else {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'Condition set must not be empty !',
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+      }
+    },
+    findHasError(object) {
+      const keys = Object.keys(object)
+      let retValue = true
+      keys.map((key) => {
+        if (object.hasOwnProperty(key)) {
+          if (
+            key === 'children' &&
+            object[key].constructor.name === 'Array' &&
+            object[key].length === 0
+          ) {
+            retValue = false
+            return retValue
+          } else if (
+            object[key] !== null &&
+            object[key] !== undefined &&
+            object[key].constructor &&
+            (object[key].constructor.name === 'Object' || object[key].constructor.name === 'Array')
+          ) {
+            retValue = this.findHasError(object[key])
+          }
+        }
+      })
+      return retValue
     },
     prevStep() {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1

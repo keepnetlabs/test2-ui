@@ -3,14 +3,23 @@
 
   <div class="vqb-group pa-4 mb-3" :class="'elevation-' + (depth - 1).toString()">
     <div class="vqb-group-heading card-header">
-      <div class="match-type-container d-flex">
-        <v-switch
-          if="depth !== 1"
-          v-model="query.logicalOperator"
-          :true-value="labels.matchTypes[0].id"
-          :false-value="labels.matchTypes[1].id"
-          :label="`${labels.matchTypes[0].label} / ${labels.matchTypes[1].label}`"
-        />
+      <div class="match-type-container d-flex mb-2">
+        <div class="edit-privacy-buttons">
+          <button
+            :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[1].label}` }"
+            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
+            class="public-btn"
+          >
+            AND
+          </button>
+          <button
+            :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[0].label}` }"
+            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
+            class="private-btn"
+          >
+            OR
+          </button>
+        </div>
 
         <v-btn v-if="depth > 1" icon class="ml-auto" @click="remove">
           <v-icon>mdi-close-circle</v-icon>
