@@ -41,7 +41,7 @@
               </v-list-item>
               <v-row class="pt-1">
                 <v-col lg="5">
-                  <v-form ref="form" v-model="form1" lazy-validation>
+                  <v-form ref="refStep1Form" lazy-validation>
                     <v-list-item>
                       <v-list-item-content>
                         <label class="bottom-margin">Rule Name</label>
@@ -49,9 +49,10 @@
                           placeholder="Enter a name for the rule"
                           outlined
                           v-model="name"
-                          :rules="[nameRules.required, nameRules.empty]"
-                          required
-                          hide-details="auto"
+                          :rules="[
+                            (v) => validations.required(v, 'Required'),
+                            (v) => validations.maxLength(v, 150, 'Max 150 characters')
+                          ]"
                         ></v-text-field>
                       </v-list-item-content>
                     </v-list-item>
@@ -62,8 +63,7 @@
                           placeholder="Describe the role"
                           outlined
                           v-model="description"
-                          required
-                          hide-details="auto"
+                          :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
                         />
                       </v-list-item-content>
                     </v-list-item>
@@ -105,7 +105,6 @@
                           persistent-hint
                           small-chips
                           :return-object="false"
-                          required
                           hide-details="auto"
                         ></v-combobox>
                       </v-list-item-content>
@@ -133,7 +132,7 @@
                 v-model="query"
               >
                 <template v-slot:default="slotProps">
-                  <v-form ref="refForm" lazy-validation>
+                  <v-form ref="refStep2Form" lazy-validation>
                     <query-builder-group
                       ref="queryBuilderGroup"
                       v-bind="slotProps"
@@ -200,6 +199,7 @@ import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { maxLength, required } from '../../utils/validations'
 
 export default {
   name: 'CreateOrEditRule',
@@ -216,9 +216,13 @@ export default {
       tagsearch: '',
       name: '',
       description: '',
-      priority: '',
+      priority: 'Medium',
       tags: [],
       isActive: true,
+      validations: {
+        required,
+        maxLength
+      },
       act: {
         actionTypes: ['Mark as', 'Analyse', 'Investigate', 'Notify', 'Tag'],
         notifyTypes: ['The reporter', 'A user', 'A group'],
@@ -404,6 +408,7 @@ export default {
           operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
           operandsCC: ['Email', 'Group', 'Domain', 'Regex'],
           operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
+          operandsSenderIP: ['is equal to', 'is not equal to', 'exist', 'does not exist'],
           operators: [
             'contains',
             'does not contain',
@@ -421,18 +426,7 @@ export default {
             type: 'query-builder-group',
             query: {
               logicalOperator: 'AND',
-              children: [
-                {
-                  type: 'query-builder-rule',
-                  query: {
-                    rule: 'conditions',
-                    operator: 'contains',
-                    operand: 'From',
-                    format: 'Domain',
-                    value: null
-                  }
-                }
-              ]
+              children: []
             }
           }
         ]
@@ -458,7 +452,9 @@ export default {
       if (this.findHasError(this.query)) {
         let isFormValid = true
         if (this.activeStep === 2) {
-          isFormValid = this.$refs.refForm.validate()
+          isFormValid = this.$refs.refStep2Form.validate()
+        } else if (this.activeStep === 1) {
+          isFormValid = this.$refs.refStep1Form.validate()
         }
         if (isFormValid) {
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1

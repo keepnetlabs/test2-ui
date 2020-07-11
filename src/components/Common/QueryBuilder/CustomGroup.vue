@@ -9,6 +9,7 @@
             :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[1].label}` }"
             @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
             class="public-btn"
+            type="button"
           >
             AND
           </button>
@@ -16,12 +17,18 @@
             :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[0].label}` }"
             @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
             class="private-btn"
+            type="button"
           >
             OR
           </button>
         </div>
 
-        <v-btn v-if="depth > 1" icon class="ml-auto" @click="remove">
+        <v-btn
+          v-if="depth > 1 && $parent.$parent.query.children.length > 1"
+          icon
+          class="ml-auto"
+          @click="deleteGroup"
+        >
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </div>
@@ -29,20 +36,18 @@
     <query-builder-children v-bind="$props" />
     <div class="vqb-group-body card-body">
       <div class="rule-actions">
-        <!-- <select v-model="selectedRule" class="form-control mr-2">
-            <option v-for="rule in rules" :key="rule.id" :value="rule">
-              {{ rule.label }}
-            </option>
-          </select> -->
         <v-btn v-if="depth !== 1" text color="primary" class="mr-2" @click="addRule">
           <v-icon>mdi-plus</v-icon> {{ labels.addRule }}
         </v-btn>
 
-        <v-btn v-if="depth < maxDepth && depth != 1" text color="primary" @click="addGroup">
+        <v-btn v-if="depth < maxDepth && depth != 1" text color="primary" @click="addNewGroup">
           <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
         </v-btn>
       </div>
     </div>
+    <v-btn v-if="depth < maxDepth && depth === 1" text color="primary" @click="addGroup">
+      <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
+    </v-btn>
   </div>
 </template>
 
@@ -55,8 +60,26 @@ export default {
     // eslint-disable-next-line vue/no-unused-components
     QueryBuilderRule: QueryBuilderRule
   },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.init) {
+        this.addRule()
+        this.init = false
+      }
+    })
+  },
   extends: QueryBuilderGroup,
-  data: () => ({})
+  data: () => ({
+    init: true
+  }),
+  methods: {
+    addNewGroup() {
+      this.addGroup()
+    },
+    deleteGroup() {
+      this.remove()
+    }
+  }
 }
 </script>
 

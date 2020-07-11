@@ -5,20 +5,40 @@
       <!-- <label class="mr-5">{{ rule.label }}</label> -->
       <v-col md="2" class="mr-2">
         <!-- List of operands (optional) -->
-        <v-select v-model="query.operand" :items="rule.operands" outlined hide-details />
+        <v-select
+          v-model.trim="query.operand"
+          :items="rule.operands"
+          outlined
+          hide-details
+          @input="handleOperandChange"
+        />
       </v-col>
       <v-col
         md="2"
         class="mr-2"
-        v-if="typeof rule.operators !== 'undefined' && rule.operators.length > 1"
+        v-if="
+          typeof rule.operators !== 'undefined' &&
+          query.operand !== 'Sender IP' &&
+          rule.operators.length > 1
+        "
       >
         <!-- List of operators (e.g. =, !=, >, <) -->
         <v-select v-model="query.operator" :items="rule.operators" outlined hide-details />
       </v-col>
+      <v-col md="2" v-if="query.operand === 'Sender IP'">
+        <!-- List of "From" operands-->
+        <v-select
+          v-model.trim="query.operator"
+          :items="rule.operandsSenderIP"
+          class="mr-2"
+          outlined
+          hide-details
+        />
+      </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
         <!-- List of "From" operands-->
         <v-select
-          v-model="query.format"
+          v-model.trim="query.format"
           :items="rule.operandsFrom"
           class="mr-2"
           outlined
@@ -28,7 +48,7 @@
       <v-col md="2" v-if="query.operand === 'To'">
         <!-- List of "From" operands-->
         <v-select
-          v-model="query.format"
+          v-model.trim="query.format"
           :items="rule.operandsTo"
           class="mr-2"
           outlined
@@ -38,7 +58,7 @@
       <v-col md="2" v-if="query.operand === 'CC'">
         <!-- List of "From" operands-->
         <v-select
-          v-model="query.format"
+          v-model.trim="query.format"
           :items="rule.operandsCC"
           class="mr-2"
           outlined
@@ -68,7 +88,7 @@
       >
         <!-- Condition text input-->
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           :placeholder="getPlaceholder()"
           outlined
           :rules="getRules()"
@@ -77,7 +97,7 @@
       <v-col v-if="query.operand === 'Sender IP'">
         <!-- Condition text input-->
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           placeholder="Enter IP or a regular expression"
           outlined
           :rules="getSenderIpRules()"
@@ -86,7 +106,7 @@
       <v-col v-if="query.operand === 'Subject'">
         <!-- Condition text input-->
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           placeholder="Enter subject or a regular expression"
           outlined
           :rules="getSubjectRules()"
@@ -95,7 +115,7 @@
       <v-col v-if="query.operand === 'Keyword'">
         <!-- Condition text input-->
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           placeholder="Enter keywords or a regular expression to search in email body"
           outlined
           :rules="getKeywordRules()"
@@ -104,7 +124,7 @@
       <v-col v-if="query.operand === 'Attachment name'">
         <!-- Condition text input-->
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           placeholder="Enter file name or a regular expression"
           outlined
           :rules="getAttachmentNameRules()"
@@ -112,7 +132,7 @@
       </v-col>
       <v-col v-if="query.operand === 'Attachment extension'">
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           placeholder="Enter file extension"
           outlined
           :rules="getAttachmentExtensionRules()"
@@ -120,15 +140,19 @@
       </v-col>
       <v-col v-if="query.operand === 'Attachment hash'">
         <v-text-field
-          v-model="query.value"
+          v-model.trim="query.value"
           placeholder="Enter SHA512 or MD5 hash"
           outlined
           :rules="getAttachmentHashRules()"
         />
       </v-col>
-      <v-col md="auto" class="text-right">
+      <v-col
+        :md="query.operand === 'Analysis result' ? '6' : 'auto'"
+        class="text-right"
+        :class="[query.operand === 'Analysis result' && 'ml-n4']"
+      >
         <!-- Remove rule button -->
-        <v-btn icon class="" @click="remove">
+        <v-btn icon v-if="isDeleteRuleButton()" @click="removeRule">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
@@ -138,7 +162,7 @@
 
 <script>
 import QueryBuilderRule from 'vue-query-builder/src/components/QueryBuilderRule'
-import { mail, required, ip, domain, extension } from '../../../utils/validations'
+import { mail, required, ip, domain, extension, maxLength } from '../../../utils/validations'
 export default {
   extends: QueryBuilderRule,
   data() {
@@ -148,7 +172,8 @@ export default {
         mail,
         ip,
         domain,
-        extension
+        extension,
+        maxLength
       }
     }
   },
@@ -188,7 +213,7 @@ export default {
     getSenderIpRules() {
       return [
         (v) => this.validations.required(v, 'Required'),
-        (v) => this.validations.ip(v, 'Invalid Ip')
+        (v) => this.validations.ip(v, 'Invalid ip address')
       ]
     },
     getSubjectRules() {
@@ -201,10 +226,36 @@ export default {
       return [(v) => this.validations.required(v, 'Required')]
     },
     getAttachmentExtensionRules() {
-      return [(v) => this.validations.required(v, 'Required')]
+      return [
+        (v) => this.validations.required(v, 'Required'),
+        (v) => this.validations.extension(v, 'Invalid extension Type')
+      ]
     },
     getAttachmentHashRules() {
-      return [(v) => this.validations.required(v, 'Required')]
+      return [
+        (v) => this.validations.required(v, 'Required'),
+        (v) => this.validations.maxLength(v, 512, 'Max 512 characters')
+      ]
+    },
+    handleOperandChange(value) {
+      if (value === 'Sender IP') {
+        this.query.operator = 'is equal to'
+      } else if (value === 'Analysis result') {
+        this.query.value = 'Phishing'
+      }
+    },
+    removeRule() {
+      debugger
+      this.remove()
+    },
+    isDeleteRuleButton() {
+      let ruleCount = 0
+      this.$parent.$parent.query.children.map((obj) => {
+        if (obj.type === 'query-builder-rule') {
+          ruleCount++
+        }
+      })
+      return ruleCount > 1
     }
   }
 }
