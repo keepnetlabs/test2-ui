@@ -81,15 +81,15 @@ export default {
   },
   methods: {
     getRules() {
-      switch (this.query && this.query.format.toLowerCase()) {
-        case 'email':
+      switch (this.query && this.query.format) {
+        case 'Email':
           return [
             (v) => this.validations.required(v, 'Required'),
             (v) => this.validations.mail(v, 'Invalid email address')
           ]
-        case 'domain':
+        case 'Domain':
           return [(v) => this.validations.required(v, 'Required')]
-        case 'regex':
+        case 'Regex':
           return [(v) => this.validations.required(v, 'Required')]
         default:
           break

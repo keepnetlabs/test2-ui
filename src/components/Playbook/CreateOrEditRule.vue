@@ -460,6 +460,7 @@ export default {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-alert-circle'
         })
+        this.isValid = true
       }
     },
     findHasError(object) {
