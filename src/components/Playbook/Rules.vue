@@ -77,9 +77,9 @@
               <v-list-item class="matching-modal__list-item">
                 <v-list-item-content>
                   <datatable
-                    :refName="'matchingInvestigation'"
-                    ref="refMatchingInvestigation"
-                    :columns="matchingInvestigation.columns"
+                    :refName="'matchingInvestigationPlaybookRules'"
+                    ref="refmatchingInvestigationPlaybookRules"
+                    :columns="matchingInvestigationPlaybookRules.columns"
                     :countRow="5"
                     :pageSizes="[5, 10, 20, 50, 100]"
                     :border="false"
@@ -91,7 +91,7 @@
                     :rowActions="[]"
                     :cell-padding="15"
                     class="no-sub-border-datatable"
-                    :empty="matchingInvestigation.iEmpty"
+                    :empty="matchingInvestigationPlaybookRules.iEmpty"
                   />
                 </v-list-item-content>
               </v-list-item>
@@ -273,7 +273,7 @@ export default {
           ]
         }
       },
-      matchingInvestigation: {
+      matchingInvestigationPlaybookRules: {
         table: [],
         columns: [
           {
@@ -347,7 +347,9 @@ export default {
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
           const tableData = response.data.data
-          this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || [])
+          this.$refs.refmatchingInvestigationPlaybookRules.loadWithDataArray(
+            tableData.results || []
+          )
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
