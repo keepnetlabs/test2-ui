@@ -16,6 +16,7 @@
       @deleteAction="handleDelete"
       @addAction="toggleRuleModal"
       @onEmptyBtnClicked="toggleRuleModal"
+      @editAction="editPlaybookRule"
     />
     <v-dialog
       v-model="this.showRuleModal"
@@ -175,7 +176,8 @@ export default {
     handleDelete(row) {},
     toggleRuleModal() {
       return (this.showRuleModal = !this.showRuleModal)
-    }
+    },
+    editPlaybookRule(row) {}
   },
   mounted() {
     this.getPlaybookList(this.tableCredientials).then(() => {

@@ -457,6 +457,7 @@ export default {
           isFormValid = this.$refs.refStep1Form.validate()
         }
         if (isFormValid) {
+          this.transformQuery()
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
         }
       } else {
@@ -467,6 +468,9 @@ export default {
         })
         this.isValid = true
       }
+    },
+    transformQuery() {
+      debugger
     },
     findHasError(object) {
       const keys = Object.keys(object)
