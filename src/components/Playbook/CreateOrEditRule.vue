@@ -470,7 +470,25 @@ export default {
       }
     },
     transformQuery() {
-      debugger
+      const condition = {
+        operator: this.query.logicalOperator,
+        conditionGroups: [...this.getQuery(this.query.children)]
+      }
+      console.log('cond', condition)
+    },
+    getQuery(children) {
+      return children.map((obj) => {
+        if (obj.type === 'query-builder-group') {
+          return {
+            operator: obj.query.logicalOperator,
+            conditionGroups: [...this.getQuery(obj.query.children)]
+          }
+        } else {
+          return {
+            ...obj.query
+          }
+        }
+      })
     },
     findHasError(object) {
       const keys = Object.keys(object)

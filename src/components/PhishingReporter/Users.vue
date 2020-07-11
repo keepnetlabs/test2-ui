@@ -203,7 +203,7 @@ export default {
               data: { results }
             }
           } = response
-          console.log('results', results)
+
           this.$refs.refUsersList.loadWithDataArray(results || [])
         })
         .catch((error) => {
