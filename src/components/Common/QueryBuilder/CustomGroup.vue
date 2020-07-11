@@ -77,7 +77,7 @@ export default {
   margin-bottom: 15px;
   background-color: #f5f5f5;
   border-color: #ddd;
-  padding: 16px 24px;
+  padding: 21px 24px 0 24px;
 }
 /*
 .vue-query-builder .vqb-group.depth-1 .vqb-rule,

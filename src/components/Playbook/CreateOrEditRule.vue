@@ -201,6 +201,7 @@ export default {
   data() {
     return {
       actionList: [{ id: 0 }],
+      isValid: true,
       totalStep: 3,
       activeStep: 1,
       form1: false,
@@ -459,27 +460,28 @@ export default {
     },
     findHasError(object) {
       const keys = Object.keys(object)
-      let retValue = true
+      debugger
       keys.map((key) => {
+        debugger
         if (object.hasOwnProperty(key)) {
           if (
             key === 'children' &&
             object[key].constructor.name === 'Array' &&
             object[key].length === 0
           ) {
-            retValue = false
-            return retValue
+            this.isValid = false
+            return this.isValid
           } else if (
             object[key] !== null &&
             object[key] !== undefined &&
             object[key].constructor &&
             (object[key].constructor.name === 'Object' || object[key].constructor.name === 'Array')
           ) {
-            retValue = this.findHasError(object[key])
+            this.isValid = this.findHasError(object[key])
           }
         }
       })
-      return retValue
+      return this.isValid
     },
     prevStep() {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
