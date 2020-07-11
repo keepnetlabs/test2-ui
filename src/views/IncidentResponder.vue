@@ -1083,7 +1083,6 @@ export default {
       }
     },
     handleEdit(selectedRow) {
-      debugger
       selectedRow.map((item, index) => {
         const payload = {
           result: item.result,

@@ -133,7 +133,11 @@
                 v-model="query"
               >
                 <template v-slot:default="slotProps">
-                  <query-builder-group v-bind="slotProps" :query.sync="query" />
+                  <query-builder-group
+                    ref="queryBuilderGroup"
+                    v-bind="slotProps"
+                    :query.sync="query"
+                  />
                 </template>
               </vue-query-builder>
               <v-row>
@@ -460,9 +464,8 @@ export default {
     },
     findHasError(object) {
       const keys = Object.keys(object)
-      debugger
+
       keys.map((key) => {
-        debugger
         if (object.hasOwnProperty(key)) {
           if (
             key === 'children' &&

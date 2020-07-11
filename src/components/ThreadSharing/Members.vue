@@ -366,7 +366,6 @@ export default {
   methods: {
     getCommunityDetails() {
       getCommunityDetails(this.$route.params.id).then((response) => {
-        debugger
         this.communityDetails = response.data.data
         this.getMembers()
         this.getRequestMembers()
