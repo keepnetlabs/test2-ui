@@ -1,6 +1,39 @@
 <template>
   <div class="playbook-rules">
-    <data-table
+    <app-dialog
+      :status="isWantToDelete"
+      icon="mdi-alert"
+      size="big"
+      title="Delete Playbook Rule"
+      :subtitle="deleteMessage(deleteValues)"
+      @changeStatus="isWantToDelete = false"
+      body="Do you want to delete playbook rule?"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDelete = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="isWantToDeleteRuleConfirm(true)"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+
+    <datatable
       ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
@@ -13,10 +46,72 @@
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
-      @deleteAction="handleDelete"
       @addAction="toggleRuleModal"
       @onEmptyBtnClicked="toggleRuleModal"
-    />
+      @downloadEvent="exportPlaybookRules"
+      @deleteAction="deleteRule($event)"
+    >
+      <template v-slot:datatable-column-popup="{ scope, col }">
+        <span v-if="scope.row[col.property] === 0">
+          No Matches
+        </span>
+        <span
+          v-else
+          @click="matchingPopupClick(scope.row)"
+          style="cursor: pointer; color: #2196f3;"
+        >
+          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+        </span>
+        <app-dialog
+          :status="scope.row.resourceId === selectedMatch.resourceId"
+          icon="mdi-email"
+          title="Matching Incidents"
+          v-if="showMatchingModal"
+          :subtitle="getSelectedMatchingIncidentsSubtitle"
+          @changeStatus="showMatchingModal = false"
+          size="maximum"
+          class-name="matching-modal"
+        >
+          <template v-slot:app-dialog-body>
+            <v-card light>
+              <v-list-item class="matching-modal__list-item">
+                <v-list-item-content>
+                  <datatable
+                    :refName="'matchingInvestigation'"
+                    ref="refMatchingInvestigation"
+                    :columns="matchingInvestigation.columns"
+                    :countRow="5"
+                    :pageSizes="[5, 10, 20, 50, 100]"
+                    :border="false"
+                    :showHeader="true"
+                    :defaultSort="'subject'"
+                    :selectable="false"
+                    :filterable="true"
+                    :options="true"
+                    :rowActions="[]"
+                    :cell-padding="15"
+                    class="no-sub-border-datatable"
+                    :empty="matchingInvestigation.iEmpty"
+                  />
+                </v-list-item-content>
+              </v-list-item>
+            </v-card>
+          </template>
+          <template v-slot:app-dialog-footer>
+            <div class="d-flex" style="justify-content: flex-end;">
+              <v-btn
+                class="pa-0 k-dialog__button"
+                text
+                color="#2196f3"
+                @click="showMatchingModal = false"
+                >CLOSE
+              </v-btn>
+            </div>
+          </template>
+        </app-dialog>
+      </template>
+    </datatable>
+
     <v-dialog
       v-model="this.showRuleModal"
       fullscreen
@@ -29,20 +124,32 @@
 </template>
 
 <script>
-import DataTable from '../DataTable'
+import Datatable from '../DataTable'
 import CreateOrEditRule from './CreateOrEditRule'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
+import { getMatchingIncidents } from '../../api/incidentResponder'
+import AppDialog from '../AppDialog'
+import { exportPlaybookRules, deletePlaybookRule } from '../../api/playbook'
 
 export default {
   name: 'Rules',
   components: {
-    DataTable,
-    CreateOrEditRule
+    Datatable,
+    CreateOrEditRule,
+    AppDialog
   },
   data() {
     return {
       showRuleModal: false,
+      selectedMatch: null,
+      showMatchingModal: false,
+      isWantToDelete: false,
+      deleteValues: null,
       tableOptions: {
         columns: [
           {
@@ -67,18 +174,18 @@ export default {
             //width: 250,
             minWidth: 100
           },
-          /*{
-            property: 'company',
+          {
+            property: 'matchCount',
             align: 'left',
             editable: false,
-            label: 'Company',
+            label: 'Matching Incidents',
             fixed: false,
-            sortable: true,
+            sortable: false,
             show: true,
-            type: 'text',
-            width: 125
-            //minWidth: 80
-          },*/
+            type: 'popup',
+            minWidth: '80',
+            emptyText: 'No Match'
+          },
           {
             property: PROPERTY_STORE.CREATEDATE,
             align: 'left',
@@ -146,8 +253,8 @@ export default {
       },
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 3,
-        orderBy: 'Name',
+        pageSize: 500,
+        orderBy: 'CreateDate',
         ascending: true,
         filter: {
           Condition: 'AND',
@@ -165,6 +272,59 @@ export default {
             }
           ]
         }
+      },
+      matchingInvestigation: {
+        table: [],
+        columns: [
+          {
+            property: 'subject',
+            align: 'left',
+            editable: false,
+            label: 'Subject',
+            fixed: false,
+            sortable: false,
+            show: true,
+            type: 'text',
+            minWidth: '33'
+          },
+          {
+            property: 'createDate',
+            align: 'left',
+            editable: false,
+            label: getStoreValue('createDate'),
+            fixed: false,
+            sortable: false,
+            show: true,
+            type: 'text',
+            minWidth: '33'
+          },
+          {
+            property: 'reportedBy',
+            align: 'left',
+            editable: false,
+            label: getStoreValue('reportedBy'),
+            fixed: false,
+            sortable: false,
+            show: true,
+            type: 'text',
+            minWidth: '34'
+          }
+        ],
+        addUsers: {
+          show: false,
+          popUp: false
+        },
+        addMenu: {
+          show: false,
+          popUp: false
+        },
+        iEmpty: {
+          message: "There isn't any matching Incidents, yet",
+          btn: '',
+          icon: 'mdi-plus'
+        },
+        selectEvent: {},
+        chartOptions: {}
       }
     }
   },
@@ -172,9 +332,96 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
-    handleDelete(row) {},
     toggleRuleModal() {
       return (this.showRuleModal = !this.showRuleModal)
+    },
+    matchingPopupClick(match) {
+      this.selectedMatch = match
+      this.showMatchingModal = true
+      const payload = {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'CreateDate',
+        ascending: true
+      }
+      getMatchingIncidents(payload, match.resourceId)
+        .then((response) => {
+          const tableData = response.data.data
+          this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || [])
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            errorState: true,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting the matching rules!'
+          })
+        })
+    },
+    exportPlaybookRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateDate',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportPlaybookRules(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Playbook Rules.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
+    },
+    deleteRule(value, multi) {
+      let isArray = Array.isArray(value)
+      this.totalSelectedItemsCount = isArray ? value.length : 1
+      this.isWantToDelete = true
+      this.deleteValues = value
+    },
+    isWantToDeleteRuleConfirm(val, message) {
+      let values = []
+      let _this = this
+      if (this.totalSelectedItemsCount > 1) {
+        for (const [key, value] of Object.entries(this.deleteValues)) {
+          values.push(value.resourceId)
+        }
+      } else {
+        values.push(this.deleteValues.resourceId)
+      }
+      values.map((item) => {
+        deletePlaybookRule(item)
+          .then((response) => {
+            _this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Playbook rule deleted successfully!'
+            })
+            this.isWantToDelete = false
+            _this.getPlaybookList(_this.tableCredientials).then(() => {
+              _this.$refs.refRulesList.loadWithDataArray(_this.playbookList.results)
+            })
+          })
+          .catch((error) => {
+            _this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting the matching rules!'
+            })
+          })
+      })
+    },
+    deleteMessage(item) {
+      const nameValues =
+        this.totalSelectedItemsCount > 1
+          ? `${this.totalSelectedItemsCount} rules`
+          : item && item.name
+      return `${nameValues} will be deleted!`
     }
   },
   mounted() {
@@ -188,7 +435,10 @@ export default {
     }),
     ...mapState({
       playbookList: (state) => state.playbook.playbookList
-    })
+    }),
+    getSelectedMatchingIncidentsSubtitle() {
+      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.name}`
+    }
   }
 }
 </script>
