@@ -20,7 +20,10 @@ const playbook = {
     async getPlaybookList({ commit }, obj) {
       await searchPlaybook(obj)
         .then((response) => {
-          const result = response.data
+          let result = response.data
+          result.data.results = result.data.results.map((item) => {
+            return { ...item, matchCount: 1 }
+          })
           commit('SET_PLAYBOOK_LIST', result)
         })
         .catch(() => {
