@@ -160,6 +160,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            fixed: 'left',
             width: 175
             //minWidth: 80
           },
