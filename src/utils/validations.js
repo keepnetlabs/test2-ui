@@ -22,6 +22,25 @@ export function mail(value, message) {
   return !value || /\S+@\S+\.\S+/gi.test(value) || message
 }
 
+export function ip(value, message) {
+  value = getValue(value)
+  return (
+    /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
+      value
+    ) || message
+  )
+}
+
+export function domain(value, message) {
+  value = getValue(value)
+  return /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
+}
+
+export function extension(value, message) {
+  value = getValue(value)
+  return !value.startsWith('.') || message
+}
+
 export function required(value, message) {
   return !!hasValue(value) || message
 }

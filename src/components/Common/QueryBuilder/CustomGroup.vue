@@ -26,7 +26,7 @@
         </v-btn>
       </div>
     </div>
-    <query-builder-children ref="refQueryBuilderChildren" v-bind="$props" />
+    <query-builder-children v-bind="$props" />
     <div class="vqb-group-body card-body">
       <div class="rule-actions">
         <!-- <select v-model="selectedRule" class="form-control mr-2">

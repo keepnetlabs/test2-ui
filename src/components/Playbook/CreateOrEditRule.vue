@@ -133,11 +133,13 @@
                 v-model="query"
               >
                 <template v-slot:default="slotProps">
-                  <query-builder-group
-                    ref="queryBuilderGroup"
-                    v-bind="slotProps"
-                    :query.sync="query"
-                  />
+                  <v-form ref="refForm" lazy-validation>
+                    <query-builder-group
+                      ref="queryBuilderGroup"
+                      v-bind="slotProps"
+                      :query.sync="query"
+                    />
+                  </v-form>
                 </template>
               </vue-query-builder>
               <v-row>
@@ -400,7 +402,8 @@ export default {
           ],
           operandsFrom: ['Email', 'Domain', 'Regex'],
           operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
-          operandsAnalysisResult: ['Phising', 'Malicious', 'Non-malicious'],
+          operandsCC: ['Email', 'Group', 'Domain', 'Regex'],
+          operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
           operators: [
             'contains',
             'does not contain',
@@ -453,7 +456,13 @@ export default {
     nextStep() {
       console.log(this.findHasError(this.query))
       if (this.findHasError(this.query)) {
-        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        let isFormValid = true
+        if (this.activeStep === 2) {
+          isFormValid = this.$refs.refForm.validate()
+        }
+        if (isFormValid) {
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        }
       } else {
         this.$store.dispatch('common/createSnackBar', {
           message: 'Condition set must not be empty !',
