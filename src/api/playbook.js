@@ -10,6 +10,10 @@ export function exportPlaybookRules(payload) {
   })
 }
 
+export function createPlaybook(payload) {
+  return testRequest.post('/playbooks', payload)
+}
+
 export function deletePlaybookRule(id) {
   return testRequest.delete(`playbooks/${id}`)
 }

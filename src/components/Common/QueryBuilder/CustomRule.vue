@@ -240,12 +240,14 @@ export default {
     handleOperandChange(value) {
       if (value === 'Sender IP') {
         this.query.operator = 'is equal to'
+        this.query.format = 'ip'
       } else if (value === 'Analysis result') {
         this.query.value = 'Phishing'
+      } else if (value === 'To' || value === 'CC' || value === 'From') {
+        this.query.format = 'Email'
       }
     },
     removeRule() {
-      debugger
       this.remove()
     },
     isDeleteRuleButton() {
@@ -257,6 +259,9 @@ export default {
       })
       return ruleCount > 1
     }
+  },
+  created() {
+    this.query.format = 'Email'
   }
 }
 </script>

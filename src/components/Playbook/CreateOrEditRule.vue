@@ -143,7 +143,13 @@
               </vue-query-builder>
               <v-row>
                 <v-col>
-                  <pre>{{ JSON.stringify(this.query, null, 2) }}</pre>
+                  <pre>{{ JSON.stringify(query, null, 2) }}</pre>
+                </v-col>
+                <v-col>
+                  <pre>{{ JSON.stringify(condition, null, 2) }}</pre>
+                </v-col>
+                <v-col>
+                  <pre>{{ JSON.stringify(newQuery, null, 2) }}</pre>
                 </v-col>
               </v-row>
             </v-stepper-content>
@@ -153,6 +159,13 @@
                 <v-row>
                   <v-col class="v-col" cols="12">
                     <ActionItem :actionData.sync="actionData" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-btn text color="primary" @click="addAction()">
+                      <v-icon>mdi-plus</v-icon> Add Action
+                    </v-btn>
                   </v-col>
                 </v-row>
               </v-container>
@@ -199,9 +212,11 @@ export default {
   components: { ActionItem, VueQueryBuilder, QueryBuilderGroup },
   data() {
     return {
+      actionData: {},
+      actionList: [{ id: 0 }],
       isValid: true,
       totalStep: 3,
-      activeStep: 3,
+      activeStep: 1,
       form1: false,
       form2: false,
       form3: false,
@@ -211,28 +226,13 @@ export default {
       priority: 'Medium',
       tags: [],
       isActive: true,
+      newQuery: null,
       validations: {
         required,
         maxLength
       },
-      actionData: {},
-      condition: {
-        operator: 'Or',
-        conditionGroups: [
-          {
-            operator: 'And',
-            conditionItems: [
-              {
-                FieldName: 'To',
-                operator: 'Equal',
-                Format: 'Email',
-                Value: 'burak.okmen@outlook.com'
-              }
-            ],
-            conditionGroups: []
-          }
-        ]
-      },
+      frontendObj: {},
+      condition: {},
       nameRules: {
         required: (v) => (v && v.length <= 150) || 'Name must between 1-150 characters',
         empty: (v) => (v && !v.startsWith(' ')) || 'Name cannot start with space'
@@ -358,7 +358,64 @@ export default {
             type: 'query-builder-group',
             query: {
               logicalOperator: 'AND',
-              children: []
+              children: [
+                {
+                  type: 'query-builder-group',
+                  query: {
+                    logicalOperator: 'OR',
+                    children: [
+                      {
+                        type: 'query-builder-rule',
+                        query: {
+                          rule: 'conditions',
+                          operator: 'contains',
+                          operand: 'From',
+                          value: 'gurkan.ugurlu@keepnetlabs.com',
+                          format: 'Email'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: 'query-builder-group',
+                  query: {
+                    logicalOperator: 'OR',
+                    children: [
+                      {
+                        type: 'query-builder-rule',
+                        query: {
+                          rule: 'conditions',
+                          operator: 'contains',
+                          operand: 'From',
+                          value: 'gurkan.ugurlu@keepnetlabs.com',
+                          format: 'Email'
+                        }
+                      },
+                      {
+                        type: 'query-builder-rule',
+                        query: {
+                          rule: 'conditions',
+                          operator: 'contains',
+                          operand: 'From',
+                          value: 'ugurlu.gurkan96@gmail.com',
+                          format: 'Email'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: 'query-builder-rule',
+                  query: {
+                    rule: 'conditions',
+                    operator: 'contains',
+                    operand: 'From',
+                    value: 'gurkan.ugurlu@keepnetlabs.com',
+                    format: 'Email'
+                  }
+                }
+              ]
             }
           }
         ]
@@ -375,8 +432,11 @@ export default {
     }
   },
   methods: {
+    addAction() {
+      this.actionList.push({ id: this.idCounter })
+      this.idCounter = this.idCounter + 1
+    },
     nextStep() {
-      console.log(this.findHasError(this.query))
       if (this.findHasError(this.query)) {
         let isFormValid = true
         if (this.activeStep === 2) {
@@ -398,7 +458,82 @@ export default {
       }
     },
     transformQuery() {
-      debugger
+      this.condition = {
+        operator: this.query.logicalOperator,
+        ...this.getQuery(this.query.children)
+      }
+      const a = this.condition
+      this.newQuery = {
+        logicalOperator: a.operator,
+        children: [...this.refGetQuery(a.conditionGroups, 'conditionGroups')]
+      }
+      const aqsa = {
+        logicalOperator: this.newQuery.operator,
+        children: this.newQuery.children.map((item) => {})
+      }
+    },
+    refGetQuery(children, key) {
+      return children.map((item) => {
+        if (key === 'conditionGroups') {
+          let children = []
+          if (item.conditionGroups) {
+            children.push(this.refGetQuery(item.conditionGroups, 'conditionGroups'))
+          }
+          if (item.conditionItems) {
+            children.push(this.refGetQuery(item.conditionItems, 'conditionItems'))
+          }
+          let temp = []
+          if (children.length > 1) {
+            const ret = []
+            children.map((item) => {
+              let returnObj = {}
+              item.map((i) => {
+                temp.push(i)
+              })
+            })
+            console.log('temp', temp)
+          }
+          return {
+            type: 'query-builder-group',
+            query: {
+              logicalOperator: item.operator,
+              children: children.length > 1 ? temp : children[0]
+            }
+          }
+        } else {
+          return {
+            type: 'query-builder-rule',
+            query: {
+              ...item
+            }
+          }
+        }
+      })
+    },
+
+    getQuery(children) {
+      const conditionItems = []
+      const conditionGroups = []
+      children.map((obj) => {
+        if (obj.type === 'query-builder-group') {
+          conditionGroups.push({
+            operator: obj.query.logicalOperator,
+            ...this.getQuery(obj.query.children)
+          })
+        } else {
+          conditionItems.push({
+            ...obj.query
+          })
+        }
+      })
+      const obj = {}
+      if (conditionGroups.length > 0) {
+        obj['conditionGroups'] = conditionGroups
+      }
+      if (conditionItems.length > 0) {
+        obj['conditionItems'] = conditionItems
+      }
+      return obj
     },
     findHasError(object) {
       const keys = Object.keys(object)
@@ -437,6 +572,10 @@ export default {
           this.tagsearch = ''
         })
       })
+    },
+    removeAction(event) {
+      let a = this.actionList.findIndex((x, i) => x.id == event)
+      this.actionList.splice(a, 1)
     }
   }
 }
