@@ -168,6 +168,10 @@
     @media (max-width: 768px) {
       padding: 24px 1rem;
     }
+    .v-stepper__wrapper{
+      overflow: visible;
+    }
+
   }
 
   &__footer {

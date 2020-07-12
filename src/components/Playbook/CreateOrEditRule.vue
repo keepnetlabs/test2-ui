@@ -197,7 +197,7 @@
           v-if="!canNext"
           class="playbook-rule-form__button"
           rounded
-          color="primary"
+          color="#2196f3"
           @click="handleSave"
         >
           SAVE

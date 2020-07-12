@@ -90,6 +90,7 @@ export default {
   .vqb-group {
     border-radius: 20px;
     padding: 34px;
+
     background-color: #ffffff;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
@@ -106,6 +107,9 @@ export default {
   .elevation-1 {
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+  }
+  .elevation-0 {
+    padding-left: 0 !important;
   }
 }
 .query__button {
