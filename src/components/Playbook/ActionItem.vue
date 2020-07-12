@@ -5,6 +5,7 @@
     <p>{{ actions }}</p>
     <p>{{ openEnginesModal }}</p>
     <p>{{ analysisEngines }}</p>
+    <p>{{ notifyTemplate }}</p>
     <app-dialog
       size="big"
       :status="openEnginesModal"
@@ -132,7 +133,6 @@
           hide-details
           placeholder="Select Action Type"
           height="40"
-          v-model="analyzeModel"
           @click="openEnginesModal = true"
           class="analysis-engines-select"
         >
@@ -165,7 +165,7 @@
       <v-col v-if="actionItemType == 'notify'" md="2" class="mr-2">
         <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
       </v-col>
-      <v-col v-if="notifyType == 'A user'" md="2" class="mr-2">
+      <v-col v-if="actionItemType == 'notify' && notifyType == 'A user'" md="2" class="mr-2">
         <v-autocomplete
           :items="targetUsers"
           :loading="isLoading"
@@ -211,7 +211,69 @@
             </v-list-item>
           </v-col>
           <v-col md="5">
-            <v-text-field outlined hide-details="auto" placeholder="deneme"></v-text-field>
+            <div class="target-users-select__radio-group">
+              <v-radio-group
+                v-model="targetUserType"
+                :mandatory="false"
+                @change="targetUsersValue = []"
+                row
+              >
+                <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
+                <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
+                <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
+              </v-radio-group>
+            </div>
+            <div class="target-users-select__input-area">
+              <v-combobox
+                :items="[]"
+                :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                outlined
+                class="edit-select standard-height"
+                item-text="name"
+                multiple
+                dense
+                persistent-hint
+                small-chips
+                :return-object="false"
+                @change="targetUsersListChange"
+                v-if="targetUserType == 'AllUsers'"
+                :disabled="targetUserType == 'AllUsers'"
+                required
+              ></v-combobox>
+              <v-combobox
+                :items="targetUsersList"
+                :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                outlined
+                class="edit-select target-users-select-multi"
+                v-model="targetUsersValue"
+                :rules="[targetUsers.required]"
+                item-text="name"
+                multiple
+                dense
+                persistent-hint
+                small-chips
+                :return-object="true"
+                @change="targetUsersListChange"
+                v-if="targetUserType == 'Groups'"
+                required
+              ></v-combobox>
+              <v-combobox
+                :items="[]"
+                v-if="targetUserType == 'SpecificUsers'"
+                placeholder="Enter Email Addresses"
+                item-text="name"
+                multiple
+                dense
+                persistent-hint
+                small-chips
+                :return-object="false"
+                :rules="[targetUsers.required]"
+                required
+                outlined
+                class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
+                v-model="targetUsersValue"
+              ></v-combobox>
+            </div>
           </v-col>
         </v-row>
         <v-row align="center">
@@ -343,6 +405,7 @@ export default {
   },
   data() {
     return {
+      targetUserType: 'AllUsers',
       timerId: null,
       isLoading: false,
       search: '',
@@ -358,7 +421,7 @@ export default {
       tagsearch: '',
       tags: [],
       notifyType: 'The reporter',
-      notifyTemplate: 18,
+      notifyTemplate: '18',
       searchUser: '',
       searchGroup: '',
       targets: [],
@@ -366,7 +429,7 @@ export default {
       investigationFilter: ['URLs', 'Attachments'],
       investigationRange: '3 days before and after',
       investigationDuration: '3 days',
-      investigateAction: '',
+      investigateAction: 'Delete email',
       investigateActionNotification: '',
       investigateActionNotificationTemplate: '',
       act: {
@@ -481,7 +544,17 @@ export default {
     },
     acceptAllAnalysisEnginesClick() {},
     getAnalysisEngine() {
-      getAnalysisEngine()
+      const payload = {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'CreateDate',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [{}]
+        }
+      }
+      getAnalysisEngine(payload)
         .then((response) => {
           const data = response.data.data.results.map((item) => {
             return {
