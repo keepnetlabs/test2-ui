@@ -1,0 +1,85 @@
+
+.action-items {
+  &__item {
+  }
+}
+.analyze__main {
+}
+.analyze__main__select {
+}
+.analyze__main-checkbox {
+  position: relative;
+  display: flex;
+  padding: 4px 0 0 24px;
+}
+.checkbox-text {
+  padding-top: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.k-checkbox {
+  z-index: 100;
+}
+
+.analyze__main__select-row-wrap {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  width: 100%;
+  padding: 0 2px;
+}
+
+.analyze__main__select-row-wrap__item {
+  display: flex;
+  padding: 5px 15px;
+}
+
+.analyze__main__select-row-inline {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  height: 32px;
+}
+.analyze__main__file-type-wrap {
+  display: flex;
+  justify-content: space-between;
+}
+
+.analyze__main__select-row-inline__button {
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.71;
+  letter-spacing: normal;
+  color: #757575;
+  margin-right: 32px;
+  cursor: pointer;
+}
+
+.analyze__main__select-row-inline__button-selected {
+  color: #2196f3;
+}
+
+.checkbox-and-text {
+  display: flex;
+  width: 250px;
+}
+
+.check-all {
+  padding: 15px 15px;
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-start;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 12px;
+}
+
+.analysis-engines-select {
+}
+
+.bg-white{
+  background: white;
+}
