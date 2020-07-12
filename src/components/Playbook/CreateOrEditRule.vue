@@ -143,7 +143,13 @@
               </vue-query-builder>
               <v-row>
                 <v-col>
-                  <pre>{{ JSON.stringify(this.query, null, 2) }}</pre>
+                  <pre>{{ JSON.stringify(query, null, 2) }}</pre>
+                </v-col>
+                <v-col>
+                  <pre>{{ JSON.stringify(condition, null, 2) }}</pre>
+                </v-col>
+                <v-col>
+                  <pre>{{ JSON.stringify(newQuery, null, 2) }}</pre>
                 </v-col>
               </v-row>
             </v-stepper-content>
@@ -219,6 +225,7 @@ export default {
       priority: 'Medium',
       tags: [],
       isActive: true,
+      newQuery: null,
       validations: {
         required,
         maxLength
@@ -284,23 +291,7 @@ export default {
           }
         ]
       },
-      condition: {
-        operator: 'Or',
-        conditionGroups: [
-          {
-            operator: 'And',
-            conditionItems: [
-              {
-                FieldName: 'To',
-                operator: 'Equal',
-                Format: 'Email',
-                Value: 'burak.okmen@outlook.com'
-              }
-            ],
-            conditionGroups: []
-          }
-        ]
-      },
+      condition: {},
       nameRules: {
         required: (v) => (v && v.length <= 150) || 'Name must between 1-150 characters',
         empty: (v) => (v && !v.startsWith(' ')) || 'Name cannot start with space'
@@ -448,7 +439,6 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     nextStep() {
-      console.log(this.findHasError(this.query))
       if (this.findHasError(this.query)) {
         let isFormValid = true
         if (this.activeStep === 2) {
@@ -470,25 +460,77 @@ export default {
       }
     },
     transformQuery() {
-      const condition = {
+      this.condition = {
         operator: this.query.logicalOperator,
-        conditionGroups: [...this.getQuery(this.query.children)]
+        ...this.getQuery(this.query.children)
       }
-      console.log('cond', condition)
-    },
-    getQuery(children) {
-      return children.map((obj) => {
-        if (obj.type === 'query-builder-group') {
-          return {
-            operator: obj.query.logicalOperator,
-            conditionGroups: [...this.getQuery(obj.query.children)]
+      const a = {
+        operator: 'AND',
+        conditionGroups: [
+          {
+            operator: 'AND',
+            conditionItems: [
+              {
+                rule: 'conditions',
+                operator: 'contains',
+                operand: 'From',
+                value: null,
+                format: 'Email'
+              }
+            ]
           }
-        } else {
+        ]
+      }
+      this.newQuery = {
+        logicalOperator: a.operator,
+        children: [...this.reGetQuery(a.conditionGroups, 'conditionGroups')]
+      }
+    },
+    reGetQuery(children, key) {
+      return children.map((obj) => {
+        debugger
+        if (obj.conditionGroups) {
           return {
-            ...obj.query
+            type: 'query-builder-group',
+            query: {
+              logicalOperator: obj.operator,
+              children: [...this.reGetQuery(obj)]
+            }
+          }
+        }
+        if (obj.conditionItems) {
+          return {
+            type: 'query-builder-rule',
+            query: {
+              ...obj.conditionItems
+            }
           }
         }
       })
+    },
+    getQuery(children) {
+      const conditionItems = []
+      const conditionGroups = []
+      children.map((obj) => {
+        if (obj.type === 'query-builder-group') {
+          conditionGroups.push({
+            operator: obj.query.logicalOperator,
+            ...this.getQuery(obj.query.children)
+          })
+        } else {
+          conditionItems.push({
+            ...obj.query
+          })
+        }
+      })
+      const obj = {}
+      if (conditionGroups.length > 0) {
+        obj['conditionGroups'] = conditionGroups
+      }
+      if (conditionItems.length > 0) {
+        obj['conditionItems'] = conditionItems
+      }
+      return obj
     },
     findHasError(object) {
       const keys = Object.keys(object)
