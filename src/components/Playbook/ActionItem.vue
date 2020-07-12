@@ -3,6 +3,104 @@
     <!-- <p>{{ id }}</p> -->
     <p>{{ actionItemType }}</p>
     <p>{{ actions }}</p>
+    <p>{{ openEnginesModal }}</p>
+    <p>{{ analysisEngines }}</p>
+    <app-dialog
+      size="big"
+      :status="openEnginesModal"
+      class-name="download-modal"
+      @changeStatus="openEnginesModal = false"
+    >
+      <template v-slot:app-dialog-body>
+        <div class="bg-white">
+          <div class="">
+            <div class="analyze__main__select-row-wrap check-all">
+              <div class="checkbox-and-text">
+                <v-checkbox
+                  class="k-checkbox"
+                  color="#2196f3"
+                  v-model="acceptAllAnalysisEngines"
+                  @change="acceptAllAnalysisEnginesClick"
+                />
+                <span class="checkbox-text">Select All</span>
+              </div>
+              <div class="analyze__main__select-row-inline">
+                <span type="button" class="analyze__main__select-row-inline__button">
+                  Hash
+                </span>
+                <span type="button" class="analyze__main__select-row-inline__button">
+                  File
+                </span>
+                <span type="button" class="analyze__main__select-row-inline__button">
+                  Url
+                </span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="analyze__main__select-row-wrap">
+              <div
+                v-for="(engine, index) in analysisEngines"
+                :key="index"
+                class="analyze__main__select-row-wrap__item"
+              >
+                <div class="checkbox-and-text">
+                  <v-checkbox
+                    class="k-checkbox"
+                    color="#2196f3"
+                    v-model="engine.selected"
+                    @change="engine.selected != engine.selected"
+                  />
+                  <span class="checkbox-text">{{ engine.name }}</span>
+                </div>
+                <div class="analyze__main__select-row-inline">
+                  <span
+                    class="analyze__main__select-row-inline__button"
+                    :class="
+                      engine.isSendFileHash
+                        ? 'analyze__main__select-row-inline__button-selected'
+                        : ''
+                    "
+                    @click="engine.isSendFileHash = !engine.isSendFileHash"
+                  >
+                    Hash
+                  </span>
+                  <span
+                    class="analyze__main__select-row-inline__button"
+                    :class="
+                      engine.isSendFile ? 'analyze__main__select-row-inline__button-selected' : ''
+                    "
+                    @click="engine.isSendFile = !engine.isSendFile"
+                  >
+                    File
+                  </span>
+                  <span
+                    class="analyze__main__select-row-inline__button"
+                    :class="
+                      engine.isSendUrl ? 'analyze__main__select-row-inline__button-selected' : ''
+                    "
+                    @click="engine.isSendUrl = !engine.isSendUrl"
+                  >
+                    Url
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="delete-user__footer">
+          <v-btn
+            @click="openEnginesModal = false"
+            color="#f56c6c"
+            class="delete-user__footer-button"
+            text
+            >CANCEL</v-btn
+          >
+        </div>
+      </template>
+    </app-dialog>
     <v-row
       v-for="(action, index) in actions"
       :key="index"
@@ -29,94 +127,18 @@
         md="auto"
         class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
       >
-        <v-select
+        <v-text-field
           outlined
           hide-details
           placeholder="Select Action Type"
           height="40"
           v-model="analyzeModel"
-          :items="['']"
-          multiple
+          @click="openEnginesModal = true"
           class="analysis-engines-select"
-          :v-ripple="false"
         >
-          <template v-slot:prepend-item>
-            <div class="analyze__main__select-row-wrap check-all">
-              <div class="checkbox-and-text">
-                <v-checkbox
-                  class="k-checkbox"
-                  color="#2196f3"
-                  v-model="acceptAllAnalysisEngines"
-                  @change="acceptAllAnalysisEnginesClick"
-                />
-                <span class="checkbox-text">Select All</span>
-              </div>
-              <div class="analyze__main__select-row-inline">
-                <button class="analyze__main__select-row-inline__button">
-                  Hash
-                </button>
-                <button class="analyze__main__select-row-inline__button">
-                  File
-                </button>
-                <button class="analyze__main__select-row-inline__button">
-                  Url
-                </button>
-              </div>
-            </div>
-          </template>
-          <template v-slot:item>
-            <div class="analyze__main__select-row-wrap">
-              <div
-                v-for="(engine, index) in analysisEngines"
-                :key="index"
-                class="analyze__main__select-row-wrap__item"
-              >
-                <div class="checkbox-and-text">
-                  <v-checkbox
-                    class="k-checkbox"
-                    color="#2196f3"
-                    v-model="engine.selected"
-                    @change="engine.selected != engine.selected"
-                  />
-                  <span class="checkbox-text">{{ engine.name }}</span>
-                </div>
-                <div class="analyze__main__select-row-inline">
-                  <button
-                    class="analyze__main__select-row-inline__button"
-                    :class="
-                      engine.isSendFileHash
-                        ? 'analyze__main__select-row-inline__button-selected'
-                        : ''
-                    "
-                    @click="engine.isSendFileHash = !engine.isSendFileHash"
-                  >
-                    Hash
-                  </button>
-                  <button
-                    class="analyze__main__select-row-inline__button"
-                    :class="
-                      engine.isSendFile ? 'analyze__main__select-row-inline__button-selected' : ''
-                    "
-                    @click="engine.isSendFile = !engine.isSendFile"
-                  >
-                    File
-                  </button>
-                  <button
-                    class="analyze__main__select-row-inline__button"
-                    :class="
-                      engine.isSendUrl ? 'analyze__main__select-row-inline__button-selected' : ''
-                    "
-                    @click="engine.isSendUrl = !engine.isSendUrl"
-                  >
-                    Url
-                  </button>
-                </div>
-              </div>
-            </div>
-          </template>
-        </v-select>
+        </v-text-field>
         <v-col class="analyze__main-checkbox">
-          <v-checkbox class="k-checkbox" color="#2196f3" v-model="acceptCheckbox3" />
+          <v-checkbox class="k-checkbox" color="#2196f3" v-model="analyzeCheckbox" />
           <span class="checkbox-text">Investigate according to analyze results</span>
         </v-col>
       </v-col>
@@ -170,8 +192,10 @@
 <script>
 import { getAnalysisEngine } from '../../api/playbook'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import AppDialog from '../AppDialog'
 
 export default {
+  components: { AppDialog },
   name: 'ActionItem',
   props: {
     id: Number,
@@ -179,6 +203,9 @@ export default {
   },
   data() {
     return {
+      analyzeModel: false,
+      analyzeCheckbox: false,
+      openEnginesModal: false,
       acceptAllAnalysisEngines: false,
       analysisEngines: [],
       actionItemType: 'markAs',
@@ -346,84 +373,4 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.action-items {
-  &__item {
-  }
-}
-.analyze__main {
-}
-.analyze__main__select {
-}
-.analyze__main-checkbox {
-  position: relative;
-  display: flex;
-  padding: 4px 0 0 24px;
-}
-.checkbox-text {
-  padding-top: 4px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.k-checkbox {
-  z-index: 100;
-}
-
-.analyze__main__select-row-wrap {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  width: 100%;
-  padding: 0 2px;
-}
-
-.analyze__main__select-row-wrap__item {
-  display: flex;
-}
-
-.analyze__main__select-row-inline {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  padding-left: 10px;
-  height: 32px;
-}
-.analyze__main__file-type-wrap {
-  display: flex;
-  justify-content: space-between;
-}
-
-.analyze__main__select-row-inline__button {
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  color: #757575;
-  margin-right: 32px;
-}
-
-.analyze__main__select-row-inline__button-selected {
-  color: #2196f3;
-}
-
-.checkbox-and-text {
-  display: flex;
-  width: 250px;
-}
-
-.check-all {
-  padding: 0 18px;
-  display: flex;
-  flex-flow: row;
-  justify-content: start;
-  border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 12px;
-}
-
-.analysis-engines-select {
-}
-</style>
+<style lang="scss" src="./ActionItem.scss" />

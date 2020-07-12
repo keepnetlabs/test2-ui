@@ -10,8 +10,8 @@
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm">
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
+        <v-list-item class="pl-0 pr-0" v-if="icon && title && subtitle">
+          <div class="v-btn v-cart-icon-wrapper" v-if="icon">
             <v-icon :color="iconColor" class="ml-2" left medium>
               {{ icon }}
             </v-icon>
