@@ -50,6 +50,7 @@
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportPlaybookRules"
       @deleteAction="deleteRule($event)"
+      @editAction="handleEdit"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -113,7 +114,12 @@
     </datatable>
 
     <v-dialog v-model="showRuleModal" fullscreen scrollable @input="(v) => v || toggleRuleModal()">
-      <CreateOrEditRule @cancelForm="toggleRuleModal" />
+      <CreateOrEditRule
+        :playbookId="selectedPlaybookId"
+        @cancelForm="toggleRuleModal"
+        @cancelFormWithUpdate="updateTable"
+        v-if="showRuleModal"
+      />
     </v-dialog>
   </div>
 </template>
@@ -145,6 +151,7 @@ export default {
       showMatchingModal: false,
       isWantToDelete: false,
       deleteValues: null,
+      selectedPlaybookId: null,
       tableOptions: {
         columns: [
           {
@@ -329,7 +336,18 @@ export default {
       getPlaybookList: 'playbook/getPlaybookList'
     }),
     toggleRuleModal() {
+      this.selectedPlaybookId = null
       return (this.showRuleModal = !this.showRuleModal)
+    },
+    handleEdit(row) {
+      this.selectedPlaybookId = row.resourceId
+      this.showRuleModal = true
+    },
+    updateTable() {
+      this.toggleRuleModal()
+      this.getPlaybookList(this.tableCredientials).then(() => {
+        this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
+      })
     },
     matchingPopupClick(match) {
       this.selectedMatch = match

@@ -240,7 +240,7 @@ export default {
     handleOperandChange(value) {
       if (value === 'Sender IP') {
         this.query.operator = 'is equal to'
-        this.query.format = 'ip'
+        this.query.format = 'Ip'
       } else if (value === 'Analysis result') {
         this.query.value = 'Phishing'
       } else if (value === 'To' || value === 'CC' || value === 'From') {

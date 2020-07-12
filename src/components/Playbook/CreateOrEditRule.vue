@@ -199,11 +199,17 @@ import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { maxLength, required } from '../../utils/validations'
-import { createPlaybook } from '../../api/playbook'
+import { createPlaybook, getPlaybook } from '../../api/playbook'
 
 export default {
   name: 'CreateOrEditRule',
   components: { ActionItem, VueQueryBuilder, QueryBuilderGroup },
+  props: {
+    playbookId: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       actionData: {},
@@ -221,6 +227,7 @@ export default {
       tags: [],
       isActive: true,
       newQuery: null,
+      addedQuery: null,
       validations: {
         required,
         maxLength
@@ -440,7 +447,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
-          this.$emit('cancelForm')
+          this.$emit('cancelFormWithUpdate')
         })
         .catch((error) => {})
     },
@@ -484,11 +491,11 @@ export default {
       return children.map((item) => {
         if (key === 'conditionGroups') {
           let children = []
-          if (item.conditionGroups) {
-            children.push(this.refGetQuery(item.conditionGroups, 'conditionGroups'))
-          }
           if (item.conditionItems) {
             children.push(this.refGetQuery(item.conditionItems, 'conditionItems'))
+          }
+          if (item.conditionGroups) {
+            children.push(this.refGetQuery(item.conditionGroups, 'conditionGroups'))
           }
           let temp = []
           if (children.length > 1) {
@@ -504,7 +511,7 @@ export default {
           return {
             type: 'query-builder-group',
             query: {
-              logicalOperator: item.operator,
+              logicalOperator: item.operator.toUpperCase(),
               children: children.length > 1 ? temp : children[0]
             }
           }
@@ -512,7 +519,9 @@ export default {
           return {
             type: 'query-builder-rule',
             query: {
-              ...item
+              ...item,
+              operand: item.FieldName || item.fieldName,
+              rule: 'conditions'
             }
           }
         }
@@ -530,7 +539,9 @@ export default {
           })
         } else {
           conditionItems.push({
-            ...obj.query
+            ...obj.query,
+            fieldName: obj.query.operand,
+            FieldName: obj.query.operand
           })
         }
       })
@@ -584,6 +595,28 @@ export default {
     removeAction(event) {
       let a = this.actionList.findIndex((x, i) => x.id == event)
       this.actionList.splice(a, 1)
+    },
+    callForGetPlaybook() {
+      getPlaybook(this.playbookId)
+        .then((response) => {
+          const { data } = response.data
+          this.name = data.name
+          this.isActive = data.isActive
+          this.description = data.description
+          this.priority = data.priority
+          this.tags = data.tags
+
+          this.query = {
+            logicalOperator: data.condition.operator.toUpperCase(),
+            children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
+          }
+        })
+        .catch((error) => {})
+    }
+  },
+  created() {
+    if (this.playbookId) {
+      this.callForGetPlaybook()
     }
   }
 }
