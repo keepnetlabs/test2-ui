@@ -3,7 +3,7 @@
 
   <div class="vqb-group pa-4 mb-3" :class="'elevation-' + (depth - 1).toString()">
     <div class="vqb-group-heading card-header">
-      <div class="match-type-container d-flex mb-2">
+      <div class="match-type-container d-flex">
         <div class="edit-privacy-buttons">
           <button
             :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[1].label}` }"
@@ -36,69 +36,98 @@
     <query-builder-children v-bind="$props" />
     <div class="vqb-group-body card-body">
       <div class="rule-actions">
-        <v-btn v-if="depth !== 1" text color="primary" class="mr-2" @click="addRule">
+        <v-btn v-if="depth !== 1" text color="#2196f3" class="mr-2" @click="addRule">
           <v-icon>mdi-plus</v-icon> {{ labels.addRule }}
         </v-btn>
 
-        <v-btn v-if="depth < maxDepth && depth != 1" text color="primary" @click="addNewGroup">
+        <v-btn v-if="depth < maxDepth && depth != 1" text color="#2196f3" @click="addNewGroup">
           <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
         </v-btn>
       </div>
     </div>
-    <v-btn v-if="depth < maxDepth && depth === 1" text color="primary" @click="addGroup">
+    <v-btn
+      class="query__button"
+      v-if="depth < maxDepth && depth === 1"
+      text
+      color="#2196f3"
+      @click="addGroup"
+    >
       <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
     </v-btn>
   </div>
 </template>
 
 <script>
-  import QueryBuilderGroup from 'vue-query-builder/src/components/QueryBuilderGroup'
-  import QueryBuilderRule from './CustomRule'
-  export default {
-    name: 'QueryBuilderGroup',
-    components: {
-      // eslint-disable-next-line vue/no-unused-components
-      QueryBuilderRule: QueryBuilderRule
-    },
-    mounted() {
-      this.$nextTick(() => {
-        if (this.query && this.query.children.length === 0) {
-          this.addRule()
-        }
-      })
-    },
-    extends: QueryBuilderGroup,
-    methods: {
-      addNewGroup() {
-        this.addGroup()
-      },
-      deleteGroup() {
-        this.remove()
+import QueryBuilderGroup from 'vue-query-builder/src/components/QueryBuilderGroup'
+import QueryBuilderRule from './CustomRule'
+export default {
+  name: 'QueryBuilderGroup',
+  components: {
+    // eslint-disable-next-line vue/no-unused-components
+    QueryBuilderRule: QueryBuilderRule
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.query && this.query.children.length === 0) {
+        this.addRule()
       }
+    })
+  },
+  extends: QueryBuilderGroup,
+  methods: {
+    addNewGroup() {
+      this.addGroup()
+    },
+    deleteGroup() {
+      this.remove()
     }
   }
+}
 </script>
 
 <style lang="scss">
-  .vue-query-builder {
-    .vqb-group {
-      border-radius: 20px;
-      padding: 34px;
-      background-color: #ffffff;
-      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+.vue-query-builder {
+  .vqb-group {
+    border-radius: 20px;
+    padding: 34px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
-      .rule-actions {
+    .rule-actions {
+      .v-btn__content {
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        line-height: 1.71 !important;
+        letter-spacing: normal !important;
+        color: #2196f3 !important;
       }
     }
   }
-  .vqb-rule {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    background-color: #f5f5f5;
-    border-color: #ddd;
-    padding: 21px 24px 0 24px;
+  .elevation-1 {
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   }
-  /*
+}
+.query__button {
+  .v-btn__content {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.71 !important;
+    letter-spacing: normal !important;
+    color: #2196f3 !important;
+  }
+}
+.vqb-rule {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background-color: #f5f5f5;
+  border-color: #ddd;
+  padding: 21px 24px 0 24px;
+}
+.match-type-container {
+  margin-bottom: 9.5px !important;
+}
+/*
   .vue-query-builder .vqb-group.depth-1 .vqb-rule,
   .vue-query-builder .vqb-group.depth-2 {
     border-left: 2px solid #8bc34a;
@@ -111,13 +140,13 @@
   .vue-query-builder .vqb-group.depth-4 {
     border-left: 2px solid #ff5722;
   }*/
-  .vue-query-builder .close {
-    opacity: 1;
-    color: rgb(150, 150, 150);
+.vue-query-builder .close {
+  opacity: 1;
+  color: rgb(150, 150, 150);
+}
+@media (min-width: 768px) {
+  .vue-query-builder .vqb-rule.form-inline .form-group {
+    display: block;
   }
-  @media (min-width: 768px) {
-    .vue-query-builder .vqb-rule.form-inline .form-group {
-      display: block;
-    }
-  }
+}
 </style>

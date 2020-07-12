@@ -261,7 +261,9 @@ export default {
     }
   },
   created() {
-    this.query.format = 'Email'
+    if (!this.query.format) {
+      this.query.format = 'Email'
+    }
   }
 }
 </script>

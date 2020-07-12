@@ -35,88 +35,98 @@
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-row class="pt-1">
-                <v-col lg="5">
-                  <v-form ref="refStep1Form" lazy-validation>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <label class="bottom-margin">Rule Name</label>
-                        <v-text-field
-                          placeholder="Enter a name for the rule"
-                          outlined
-                          v-model="name"
-                          :rules="[
-                            (v) => validations.required(v, 'Required'),
-                            (v) => validations.maxLength(v, 150, 'Max 150 characters')
-                          ]"
-                        ></v-text-field>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <label class="bottom-margin">Description</label>
-                        <v-textarea
-                          placeholder="Describe the role"
-                          outlined
-                          v-model="description"
-                          :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
-                        />
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <label>Priority</label>
-                        <v-list-item-title class="v-card-sub-header bottom-margin">
-                          Rules with higher priority override lower priority rules
-                        </v-list-item-title>
-                        <div class="playbook-rule-form__radio-group">
-                          <v-radio-group v-model="priority" row>
-                            <v-radio :ripple="false" value="Very Low" label="Very Low" />
-                            <v-radio :ripple="false" value="Low" label="Low" />
-                            <v-radio :ripple="false" value="Medium" label="Medium" />
-                            <v-radio :ripple="false" value="High" label="High" />
-                            <v-radio :ripple="false" value="Very High" label="Very High" />
-                          </v-radio-group>
-                        </div>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <label>Tags</label>
-                        <v-list-item-title class="v-card-sub-header bottom-margin">
-                          Define tags for the rule
-                        </v-list-item-title>
-                        <v-combobox
-                          v-model="tags"
-                          :items="[]"
-                          chips
-                          deletable-chips
-                          :search-input.sync="tagsearch"
-                          @keyup.tab="updateTags"
-                          @paste="updateTags"
-                          outlined
-                          class="hide-caret"
-                          multiple
-                          dense
-                          persistent-hint
-                          small-chips
-                          :return-object="false"
-                          hide-details="auto"
-                        ></v-combobox>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-switch
+
+              <v-form ref="refStep1Form" lazy-validation>
+                <v-list-item class="mt-6">
+                  <v-list-item-content>
+                    <label class="bottom-margin">Rule Name</label>
+                    <v-text-field
+                      placeholder="Enter a name for the rule"
+                      outlined
+                      v-model="name"
+                      :rules="[
+                        (v) => validations.required(v, 'Required'),
+                        (v) => validations.maxLength(v, 150, 'Max 150 characters')
+                      ]"
+                    ></v-text-field>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item class="mt-1">
+                  <v-list-item-content class="pt-0">
+                    <label class="bottom-margin">Description</label>
+                    <v-textarea
+                      placeholder="Describe the role"
+                      outlined
+                      v-model="description"
+                      :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
+                    />
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item class="mt-2">
+                  <v-list-item-content>
+                    <label>Priority</label>
+                    <v-list-item-title class="v-card-sub-header bottom-margin">
+                      Rules with higher priority override lower priority rules
+                    </v-list-item-title>
+                    <div class="playbook-rule-form__radio-group mt-2 mb-1">
+                      <v-radio-group v-model="priority" row>
+                        <v-radio
                           :ripple="false"
-                          v-model="isActive"
-                          :label="isActive ? 'Active' : 'Inactive'"
+                          color="#2196f3"
+                          value="Very Low"
+                          label="Very Low"
                         />
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-form>
-                </v-col>
-              </v-row>
+                        <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
+                        <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
+                        <v-radio :ripple="false" color="#2196f3" value="High" label="High" />
+                        <v-radio
+                          :ripple="false"
+                          color="#2196f3"
+                          value="Very High"
+                          label="Very High"
+                        />
+                      </v-radio-group>
+                    </div>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item style="margin-top: 10px;">
+                  <v-list-item-content>
+                    <label>Tags</label>
+                    <v-list-item-title class="v-card-sub-header bottom-margin">
+                      Define tags for the rule
+                    </v-list-item-title>
+                    <v-combobox
+                      v-model="tags"
+                      :items="[]"
+                      chips
+                      deletable-chips
+                      :search-input.sync="tagsearch"
+                      @keyup.tab="updateTags"
+                      @paste="updateTags"
+                      outlined
+                      class="hide-caret"
+                      multiple
+                      dense
+                      placeholder="Enter tag and press enter key"
+                      persistent-hint
+                      small-chips
+                      :return-object="false"
+                      hide-details="auto"
+                    ></v-combobox>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-switch
+                      :ripple="false"
+                      v-model="isActive"
+                      :label="isActive ? 'Active' : 'Inactive'"
+                      class="playbook-rule-form__switch"
+                      color="#2196f3"
+                    />
+                  </v-list-item-content>
+                </v-list-item>
+              </v-form>
             </v-stepper-content>
             <!-- STEP 2 -->
             <v-stepper-content step="2">
@@ -137,17 +147,6 @@
                   </v-form>
                 </template>
               </vue-query-builder>
-              <v-row>
-                <v-col>
-                  <pre>{{ JSON.stringify(query, null, 2) }}</pre>
-                </v-col>
-                <v-col>
-                  <pre>{{ JSON.stringify(condition, null, 2) }}</pre>
-                </v-col>
-                <v-col>
-                  <pre>{{ JSON.stringify(newQuery, null, 2) }}</pre>
-                </v-col>
-              </v-row>
             </v-stepper-content>
             <!-- STEP 3 -->
             <v-stepper-content step="3">
@@ -166,19 +165,41 @@
     <!-- TODO: Convert footer block to common component -->
     <div class="wizard__footer">
       <div class="text-left">
-        <v-btn outlined rounded color="error" @click="cancelForm">CANCEL</v-btn>
+        <v-btn class="playbook-rule-form__button" outlined rounded color="error" @click="cancelForm"
+          >CANCEL</v-btn
+        >
       </div>
 
       <div>
-        <v-btn v-if="canPrev" class="mr-3" outlined rounded color="cyan" @click="prevStep">
-          PREVIOUS
+        <v-btn
+          v-if="canPrev"
+          class="playbook-rule-form__button mr-4"
+          outlined
+          rounded
+          color="cyan"
+          @click="prevStep"
+        >
+          BACK
         </v-btn>
 
-        <v-btn v-if="canNext" rounded color="primary" @click="nextStep">
+        <v-btn
+          v-if="canNext"
+          class="playbook-rule-form__button"
+          style="color: white;"
+          rounded
+          color="#2196f3"
+          @click="nextStep"
+        >
           NEXT
         </v-btn>
 
-        <v-btn v-if="!canNext" rounded color="primary">
+        <v-btn
+          v-if="!canNext"
+          class="playbook-rule-form__button"
+          rounded
+          color="primary"
+          @click="handleSave"
+        >
           SAVE
         </v-btn>
       </div>
@@ -192,7 +213,7 @@ import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { maxLength, required } from '../../utils/validations'
-import { createPlaybook, getPlaybook } from '../../api/playbook'
+import { createPlaybook, getPlaybook, updatePlaybook } from '../../api/playbook'
 
 export default {
   name: 'CreateOrEditRule',
@@ -374,15 +395,19 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     handleSave() {
-      this.callForCreatePlaybook()
+      if (this.playbookId) {
+        this.callForUpdatePlaybook()
+      } else {
+        this.callForCreatePlaybook()
+      }
     },
     callForCreatePlaybook() {
       const payload = {
         name: this.name,
         description: this.description,
         priority: this.priority,
-        tags: ['tag1', 'tag2'],
-        isActive: true,
+        tags: this.tags,
+        isActive: this.isActive,
         playbookAction: {
           markType: 'Clean',
           targetUser: '',
@@ -434,6 +459,75 @@ export default {
         condition: this.condition
       }
       createPlaybook(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$emit('cancelFormWithUpdate')
+        })
+        .catch((error) => {})
+    },
+    callForUpdatePlaybook() {
+      const payload = {
+        name: this.name,
+        description: this.description,
+        priority: this.priority,
+        tags: this.tags,
+        isActive: this.isActive,
+        resourceId: this.playbookId,
+        playbookAction: {
+          markType: 'Clean',
+          targetUser: '',
+          targetGroupId: '',
+          tags: ['tag11']
+        },
+        playbookActionNotifications: [
+          {
+            targetUserType: 'Groups',
+            targetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
+            emailTemplateId: 1
+          }
+        ],
+        playbookActionAnalyzers: [
+          {
+            integrationId: 'faczwHLF1Jmw',
+            isCheckHash: true,
+            isCheckFile: false,
+            isCheckUrl: true
+          }
+        ],
+        playbookActionInvestigations: [
+          {
+            isCreatedByAnalyzer: true,
+            expireDate: '2020-05-01 03:17:07.140',
+            startDate: '2020-01-01 03:17:07.140',
+            endDate: '2020-09-09 03:17:07.140',
+            scanTypes: ['Outlook'],
+            filters: [
+              'From',
+              'To',
+              'Cc',
+              'SenderIp',
+              'Subject',
+              'Keyword',
+              'Url',
+              'AttachmentName',
+              'AttachmentExtension',
+              'AttachmentHash'
+            ],
+            targetUserType: 'SpecificUsers',
+            targetUsers: ['burak2.okmen2@outlook.com', 'burak.okmen@outlook.com'],
+            actionType: 'Notify',
+            actionNotifyTargetUserType: 'Reporter',
+            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
+            emailTemplateId: 1
+          }
+        ],
+        condition: this.condition
+      }
+      updatePlaybook(payload)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             message: response.data.message,

@@ -174,7 +174,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            //width: 250,
+            width: 150,
             minWidth: 100
           },
           {
@@ -187,6 +187,7 @@ export default {
             show: true,
             type: 'popup',
             minWidth: '80',
+            width: 170,
             emptyText: 'No Match'
           },
           {
@@ -204,27 +205,27 @@ export default {
           },
           {
             property: PROPERTY_STORE.STATUS,
-            align: 'left',
+            align: 'center',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
             type: 'status',
-            width: 160,
+            width: 225,
             hasTooltip: true
             //minWidth: 80
           },
           {
             property: PROPERTY_STORE.PRIORITY,
-            align: 'left',
+            align: 'center',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.PRIORITY),
             fixed: false,
             sortable: true,
             show: true,
             type: 'priority',
-            width: 160,
+            width: 225,
             hasTooltip: true
             //minWidth: 80
           }

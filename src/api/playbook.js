@@ -18,6 +18,10 @@ export function getPlaybook(id) {
   return testRequest.get(`/playbooks/${id}`)
 }
 
+export function updatePlaybook(payload) {
+  return testRequest.put(`/playbooks/${payload.resourceId}`, payload)
+}
+
 export function deletePlaybookRule(id) {
   return testRequest.delete(`playbooks/${id}`)
 }
