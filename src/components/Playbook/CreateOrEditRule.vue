@@ -161,13 +161,6 @@
                     <ActionItem :actionData.sync="actionData" />
                   </v-col>
                 </v-row>
-                <v-row>
-                  <v-col>
-                    <v-btn text color="primary" @click="addAction()">
-                      <v-icon>mdi-plus</v-icon> Add Action
-                    </v-btn>
-                  </v-col>
-                </v-row>
               </v-container>
             </v-stepper-content>
           </v-stepper-items>
@@ -216,7 +209,7 @@ export default {
       actionList: [{ id: 0 }],
       isValid: true,
       totalStep: 3,
-      activeStep: 1,
+      activeStep: 3,
       form1: false,
       form2: false,
       form3: false,
