@@ -21,3 +21,7 @@ export function deletePlaybookRule(id) {
 export function getAnalysisEngine(payload) {
   return testRequest.post('analysis-engines/search', payload)
 }
+
+export function getTargetUsers(payload) {
+  return testRequest.post('target-users/search', payload)
+}

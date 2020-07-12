@@ -166,7 +166,18 @@
         <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
       </v-col>
       <v-col v-if="notifyType == 'A user'" md="2" class="mr-2">
-        <v-select outlined hide-details />
+        <v-autocomplete
+          :items="targetUsers"
+          :loading="isLoading"
+          :search-input.sync="search"
+          v-model="targetUsersData"
+          color="white"
+          item-text="email"
+          item-value="resourceId"
+          placeholder="Select Target User"
+          outlined
+          multiple
+        ></v-autocomplete>
       </v-col>
       <v-col v-if="notifyType == 'A group'" md="2" class="mr-2">
         <v-select outlined hide-details />
@@ -276,7 +287,7 @@
 </template>
 
 <script>
-import { getAnalysisEngine } from '../../api/playbook'
+import { getAnalysisEngine, getTargetUsers } from '../../api/playbook'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 
@@ -289,6 +300,10 @@ export default {
   },
   data() {
     return {
+      timerId: null,
+      isLoading: false,
+      search: '',
+      targetUsersData: false,
       analyzeModel: false,
       analyzeCheckbox: false,
       openEnginesModal: false,
@@ -405,6 +420,7 @@ export default {
   mounted() {
     //console.log(this)
     this.getAnalysisEngine()
+    this.getTargetUsers()
   },
   methods: {
     asd(e) {
@@ -413,17 +429,7 @@ export default {
     },
     acceptAllAnalysisEnginesClick() {},
     getAnalysisEngine() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateDate',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [{}]
-        }
-      }
-      getAnalysisEngine(payload)
+      getAnalysisEngine()
         .then((response) => {
           const data = response.data.data.results.map((item) => {
             return {
@@ -455,13 +461,56 @@ export default {
       //this.act.actionTypes.find((item) => item.name == selectedValue).selected = true
     },
     addAction() {
-      debugger
       const nextAvailableAction = this.act.actionTypes.find((item) => !item.selected)
       this.actions.push(nextAvailableAction)
       this.idCounter = this.idCounter + 1
     },
     removeAction(index) {
       this.actions.splice(index, 1)
+    },
+    getTargetUsers() {
+      const payload = {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          filterGroups: [
+            {
+              condition: 'AND',
+              filterItems: [
+                {
+                  fieldName: 'Email',
+                  operator: 'Contains',
+                  value: this.search || ''
+                }
+              ],
+              filterGroups: []
+            }
+          ]
+        }
+      }
+      getTargetUsers(payload)
+        .then((response) => {
+          this.targetUsers = response.data.data.results
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting target users data!'
+          })
+        })
+    }
+  },
+  watch: {
+    search(val) {
+      clearTimeout(this.timerId)
+
+      // delay new call 500ms
+      this.timerId = setTimeout(() => {
+        this.getTargetUsers()
+      }, 500)
     }
   }
 }
