@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <div class="action-items">
     <!-- <p>{{ id }}</p> -->
     <p>{{ actionItemType }}</p>
     <p>{{ actions }}</p>
-    <v-row v-for="(action, index) in actions" :key="index" class="vqb-rule rounded-xl">
+    <v-row
+      v-for="(action, index) in actions"
+      :key="index"
+      class="vqb-rule rounded-xl action-items__item"
+    >
       <v-col md="2" class="mr-2">
         <v-select
           v-model="actionItemType"
@@ -19,6 +23,67 @@
       </v-col>
       <v-col v-if="actionItemType == 'markAs'" md="2" class="mr-2">
         <v-select v-model="markAsOpts" :items="act.markAsOpts" outlined hide-details />
+      </v-col>
+      <v-col
+        v-if="actionItemType == 'analyze'"
+        md="auto"
+        class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
+      >
+        <v-select
+          outlined
+          hide-details
+          placeholder="Select Action Type"
+          height="40"
+          v-model="markAsOpts"
+          :items="['']"
+          @change="aaa()"
+          @click="bbb()"
+          multiple
+        >
+          <template v-slot:prepend-item>
+            <div class="analyze__main__select-row-wrap check-all">
+              <div class="checkbox-and-text">
+                <v-checkbox
+                  class="k-checkbox"
+                  color="#2196f3"
+                  v-model="acceptAllAnalysisEngines"
+                  @change="acceptAllAnalysisEnginesClick"
+                />
+                <span class="checkbox-text">Select All</span>
+              </div>
+            </div>
+          </template>
+          <template v-slot:item="{}" @click="ccc()">
+            <div class="analyze__main__select-row-wrap">
+              <div
+                v-for="(engine, index) in analysisEngines"
+                :key="index"
+                class="analyze__main__select-row-wrap__item"
+              >
+                <div class="checkbox-and-text">
+                  <v-checkbox
+                    class="k-checkbox"
+                    color="#2196f3"
+                    v-model="engine.selected"
+                    @change="engine.selected = !engine.selected"
+                  />
+                  <span class="checkbox-text">{{ engine.name }}</span>
+                </div>
+                <div class="analyze__main__select-row-inline">
+                  <label><input type="checkbox" :value="engine.isSendFileHash" />Hash</label>
+                  <label><input type="checkbox" :value="engine.isSendFile" />File</label>
+                  <label><input type="checkbox" :value="engine.isSendUrl" />Url</label>
+                </div>
+              </div>
+            </div>
+          </template>
+        </v-select>
+        <v-col class="analyze__main-checkbox">
+          <v-checkbox class="k-checkbox" color="#2196f3" v-model="acceptCheckbox3" />
+          <span class="checkbox-text"
+            >I accept <a>terms and conditions</a> for posting an incident</span
+          >
+        </v-col>
       </v-col>
       <v-col v-if="actionItemType == 'tag'" md="auto" class="mr-2 flex-grow-1">
         <v-combobox
@@ -50,7 +115,6 @@
           hide-details
         />
       </v-col>
-      <v-spacer v-if="actionItemType != 'tag'" />
       <v-col class="text-right flex-grow-0">
         <!-- Remove act button -->
         <v-btn icon @click="removeAction(index)">
@@ -69,6 +133,9 @@
 </template>
 
 <script>
+import { getAnalysisEngine } from '../../api/playbook'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+
 export default {
   name: 'ActionItem',
   props: {
@@ -77,8 +144,11 @@ export default {
   },
   data() {
     return {
+      acceptAllAnalysisEngines: false,
+      analysisEngines: [],
       actionItemType: 'markAs',
       markAsOpts: 'Clean',
+      acceptCheckbox: false,
       tagsearch: '',
       tags: [],
       notifyType: '',
@@ -179,8 +249,57 @@ export default {
   },
   mounted() {
     //console.log(this)
+    this.getAnalysisEngine()
   },
   methods: {
+    aaa() {
+      debugger
+      event.preventDefault()
+      return false
+    },
+    bbb() {
+      debugger
+      event.preventDefault()
+      return false
+    },
+    ccc() {
+      debugger
+      event.preventDefault()
+      return false
+    },
+
+    acceptAllAnalysisEnginesClick() {},
+    getAnalysisEngine() {
+      const payload = {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'CreateDate',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [{}]
+        }
+      }
+      getAnalysisEngine(payload)
+        .then((response) => {
+          const data = response.data.data.results.map((item) => {
+            return {
+              ...item,
+              isSendUrl: false,
+              isSendFileHash: true,
+              isSendFile: true,
+              selected: true
+            }
+          })
+          this.analysisEngines = data
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting analysis engines data!'
+          })
+        })
+    },
     updateTags() {
       this.$nextTick(() => {
         this.tags.push(...this.tagsearch.split(','))
@@ -205,4 +324,44 @@ export default {
 }
 </script>
 
-<style></style>
+<style type="scss">
+.action-items {
+  &__item {
+  }
+}
+.analyze__main {
+}
+.analyze__main__select {
+}
+.analyze__main-checkbox {
+  position: relative;
+  display: flex;
+  padding: 4px 0 0 24px;
+}
+.checkbox-text {
+  padding-top: 4px;
+}
+.k-checkbox {
+  z-index: 100;
+}
+
+.analyze__main__select-row-wrap {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 2px;
+}
+
+.analyze__main__select-row-inline {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 10px;
+  width: 230px;
+}
+.analyze__main__file-type-wrap {
+  display: flex;
+  justify-content: space-between;
+}
+</style>
