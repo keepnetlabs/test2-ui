@@ -1,21 +1,17 @@
 <template>
   <div flat class="playbook-rule-form">
-    <v-row class="flex-grow-0 no-gutters">
-      <v-col>
-        <v-card flat light class="header">
-          <v-list-item class="pl-0 pr-0">
-            <div class="v-btn v-btn__icon-wrapper">
-              <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>
-            </div>
-            <v-list-item-content class="pt-0 pb-0">
-              <v-list-item-title class="">Create New Rule</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-card>
-      </v-col>
-    </v-row>
+    <v-card flat light class="header">
+      <v-list-item class="pl-0 pr-0">
+        <div class="v-btn v-btn__icon-wrapper">
+          <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>
+        </div>
+        <v-list-item-content class="pt-0 pb-0">
+          <v-list-item-title class="">Create New Rule</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-card>
 
-    <v-row class="flex-grow-1 no-gutters">
+    <div class="flex-grow-1 no-gutters">
       <v-col>
         <v-stepper light v-model="activeStep" class="wizard">
           <v-stepper-header class="wizard__header">
@@ -166,30 +162,27 @@
           </v-stepper-items>
         </v-stepper>
       </v-col>
-    </v-row>
+    </div>
     <!-- TODO: Convert footer block to common component -->
-    <v-row justify="end" class="wizard__footer flex-grow-0 no-gutters">
-      <v-col cols="auto" class="justify-start">
+    <div class="wizard__footer">
+      <div class="text-left">
         <v-btn outlined rounded color="error" @click="cancelForm">CANCEL</v-btn>
-      </v-col>
-      <v-spacer />
+      </div>
 
-      <v-col cols="auto" v-if="canPrev" class="mr-3">
-        <v-btn outlined rounded color="cyan" @click="prevStep">
+      <div>
+        <v-btn v-if="canPrev" class="mr-3" outlined rounded color="cyan" @click="prevStep">
           PREVIOUS
         </v-btn>
-      </v-col>
-      <v-col cols="auto" v-if="canNext">
-        <v-btn rounded color="primary" @click="nextStep">
+
+        <v-btn v-if="canNext" rounded color="primary" @click="nextStep">
           NEXT
         </v-btn>
-      </v-col>
-      <v-col cols="auto" v-if="!canNext" @click="handleSave">
-        <v-btn rounded color="primary">
+
+        <v-btn v-if="!canNext" rounded color="primary">
           SAVE
         </v-btn>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </div>
 </template>
 
