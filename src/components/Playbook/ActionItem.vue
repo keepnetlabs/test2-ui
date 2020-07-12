@@ -226,7 +226,13 @@
             </v-list-item>
           </v-col>
           <v-col md="5">
-            <v-text-field outlined hide-details="auto" placeholder="deneme"></v-text-field>
+            <v-select
+              v-model="investigationFilter"
+              :items="act.investigateFilters"
+              outlined
+              hide-details
+              multiple
+            />
           </v-col>
         </v-row>
         <v-row align="center">
@@ -241,7 +247,12 @@
             </v-list-item>
           </v-col>
           <v-col md="5">
-            <v-text-field hide-details="auto" outlined placeholder="deneme"></v-text-field>
+            <v-select
+              v-model="investigationRange"
+              :items="act.investigateRanges"
+              outlined
+              hide-details
+            />
           </v-col>
         </v-row>
         <v-row align="center">
@@ -256,7 +267,12 @@
             </v-list-item>
           </v-col>
           <v-col md="5">
-            <v-text-field hide-details="auto" outlined placeholder="deneme"></v-text-field>
+            <v-select
+              v-model="investigationDuration"
+              :items="act.investigateDurations"
+              outlined
+              hide-details
+            />
           </v-col>
         </v-row>
         <v-row align="center">
@@ -270,8 +286,35 @@
               </v-list-item-content>
             </v-list-item>
           </v-col>
-          <v-col md="5">
-            <v-text-field hide-details="auto" outlined placeholder="deneme"></v-text-field>
+          <v-col md="7">
+            <v-row>
+              <v-col>
+                <v-select
+                  v-model="investigateAction"
+                  :items="act.investigateActions"
+                  outlined
+                  hide-details
+                />
+              </v-col>
+              <v-col v-if="investigateAction == 'Notify users'">
+                <v-select
+                  v-model="investigateActionNotification"
+                  :items="act.investigateActionNotifications"
+                  outlined
+                  hide-details
+                />
+              </v-col>
+              <v-col v-if="investigateAction == 'Notify users'">
+                <v-select
+                  v-model="investigateActionNotificationTemplate"
+                  :items="act.notifyTemplates"
+                  item-text="label"
+                  item-value="value"
+                  outlined
+                  hide-details
+                />
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-col>
@@ -320,6 +363,12 @@ export default {
       searchGroup: '',
       targets: [],
       targetUsers: '',
+      investigationFilter: ['URLs', 'Attachments'],
+      investigationRange: '3 days before and after',
+      investigationDuration: '3 days',
+      investigateAction: '',
+      investigateActionNotification: '',
+      investigateActionNotificationTemplate: '',
       act: {
         actionTypes: [
           {
@@ -358,13 +407,16 @@ export default {
           { label: 'Incident Investigation Progress Report', value: '2311' },
           { label: 'Incident Investigation Suspicious Email Analysis Report', value: '2320' }
         ],
-        investigateFilters: ['Subject', 'From', 'To', 'CC', 'Sender IP', 'URLS', 'Attachments'],
+        investigateFilters: ['Subject', 'From', 'To', 'CC', 'Sender IP', 'URLs', 'Attachments'],
         investigateRanges: [
           '1 day before and after',
           '3 days before and after',
-          '7 day before and after',
+          '7 days before and after',
           '2 weeks before and after'
         ],
+        investigateDurations: ['1 day', '3 days', '7 days'],
+        investigateActions: ['Notify users', 'Delete email', 'Quarantine'],
+        investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone'],
         playbookAction: {
           markType: 'Clean',
           targetUser: '',
