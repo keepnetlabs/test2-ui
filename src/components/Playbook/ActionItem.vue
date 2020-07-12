@@ -163,6 +163,15 @@
         ></v-combobox>
       </v-col>
       <v-col v-if="actionItemType == 'notify'" md="2" class="mr-2">
+        <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
+      </v-col>
+      <v-col v-if="notifyType == 'A user'" md="2" class="mr-2">
+        <v-select outlined hide-details />
+      </v-col>
+      <v-col v-if="notifyType == 'A group'" md="2" class="mr-2">
+        <v-select outlined hide-details />
+      </v-col>
+      <v-col v-if="actionItemType == 'notify'" md="2" class="mr-2">
         <v-select
           v-model="notifyTemplate"
           :items="act.notifyTemplates"
@@ -177,6 +186,83 @@
         <v-btn icon @click="removeAction(index)">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
+      </v-col>
+      <v-col v-if="actionItemType == 'investigate'" md="12">
+        <v-row align="center">
+          <v-col md="5">
+            <v-list-item class="py-0">
+              <v-list-item-content class="py-0">
+                <label>Target users</label>
+                <v-list-item-title class="v-card-sub-header bottom-margin">
+                  Select departments, groups or users to investigate
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col md="5">
+            <v-text-field outlined hide-details="auto" placeholder="deneme"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row align="center">
+          <v-col md="5">
+            <v-list-item class="py-0">
+              <v-list-item-content class="py-0">
+                <label>Filters</label>
+                <v-list-item-title class="v-card-sub-header bottom-margin">
+                  Select attributes of the email to investigate
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col md="5">
+            <v-text-field outlined hide-details="auto" placeholder="deneme"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row align="center">
+          <v-col md="5">
+            <v-list-item class="py-0">
+              <v-list-item-content class="py-0">
+                <label>Email Date Range</label>
+                <v-list-item-title class="v-card-sub-header bottom-margin">
+                  Select range of emails sending date according to reporting date
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col md="5">
+            <v-text-field hide-details="auto" outlined placeholder="deneme"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row align="center">
+          <v-col md="5">
+            <v-list-item class="py-0">
+              <v-list-item-content class="py-0">
+                <label>Duration</label>
+                <v-list-item-title class="v-card-sub-header bottom-margin">
+                  Select how many days the investigation will run
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col md="5">
+            <v-text-field hide-details="auto" outlined placeholder="deneme"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row align="center">
+          <v-col md="5">
+            <v-list-item class="py-0">
+              <v-list-item-content class="py-0">
+                <label>Actions</label>
+                <v-list-item-title class="v-card-sub-header bottom-margin">
+                  Select action to be executed if email is found
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col md="5">
+            <v-text-field hide-details="auto" outlined placeholder="deneme"></v-text-field>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-row>
@@ -256,6 +342,13 @@ export default {
           { label: 'About to Expire', value: '2282' },
           { label: 'Incident Investigation Progress Report', value: '2311' },
           { label: 'Incident Investigation Suspicious Email Analysis Report', value: '2320' }
+        ],
+        investigateFilters: ['Subject', 'From', 'To', 'CC', 'Sender IP', 'URLS', 'Attachments'],
+        investigateRanges: [
+          '1 day before and after',
+          '3 days before and after',
+          '7 day before and after',
+          '2 weeks before and after'
         ],
         playbookAction: {
           markType: 'Clean',
