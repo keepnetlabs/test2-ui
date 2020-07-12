@@ -230,6 +230,7 @@ export default {
         required,
         maxLength
       },
+      frontendObj: {},
       act: {
         actionTypes: ['Mark as', 'Analyse', 'Investigate', 'Notify', 'Tag'],
         notifyTypes: ['The reporter', 'A user', 'A group'],
@@ -417,7 +418,64 @@ export default {
             type: 'query-builder-group',
             query: {
               logicalOperator: 'AND',
-              children: []
+              children: [
+                {
+                  type: 'query-builder-group',
+                  query: {
+                    logicalOperator: 'OR',
+                    children: [
+                      {
+                        type: 'query-builder-rule',
+                        query: {
+                          rule: 'conditions',
+                          operator: 'contains',
+                          operand: 'From',
+                          value: 'gurkan.ugurlu@keepnetlabs.com',
+                          format: 'Email'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: 'query-builder-group',
+                  query: {
+                    logicalOperator: 'OR',
+                    children: [
+                      {
+                        type: 'query-builder-rule',
+                        query: {
+                          rule: 'conditions',
+                          operator: 'contains',
+                          operand: 'From',
+                          value: 'gurkan.ugurlu@keepnetlabs.com',
+                          format: 'Email'
+                        }
+                      },
+                      {
+                        type: 'query-builder-rule',
+                        query: {
+                          rule: 'conditions',
+                          operator: 'contains',
+                          operand: 'From',
+                          value: 'ugurlu.gurkan96@gmail.com',
+                          format: 'Email'
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  type: 'query-builder-rule',
+                  query: {
+                    rule: 'conditions',
+                    operator: 'contains',
+                    operand: 'From',
+                    value: 'gurkan.ugurlu@keepnetlabs.com',
+                    format: 'Email'
+                  }
+                }
+              ]
             }
           }
         ]
@@ -464,50 +522,55 @@ export default {
         operator: this.query.logicalOperator,
         ...this.getQuery(this.query.children)
       }
-      const a = {
-        operator: 'AND',
-        conditionGroups: [
-          {
-            operator: 'AND',
-            conditionItems: [
-              {
-                rule: 'conditions',
-                operator: 'contains',
-                operand: 'From',
-                value: null,
-                format: 'Email'
-              }
-            ]
-          }
-        ]
-      }
+      const a = this.condition
       this.newQuery = {
         logicalOperator: a.operator,
-        children: [...this.reGetQuery(a.conditionGroups, 'conditionGroups')]
+        children: [...this.refGetQuery(a.conditionGroups, 'conditionGroups')]
+      }
+      const aqsa = {
+        logicalOperator: this.newQuery.operator,
+        children: this.newQuery.children.map((item) => {})
       }
     },
-    reGetQuery(children, key) {
-      return children.map((obj) => {
-        debugger
-        if (obj.conditionGroups) {
+    refGetQuery(children, key) {
+      return children.map((item) => {
+        if (key === 'conditionGroups') {
+          let children = []
+          if (item.conditionGroups) {
+            children.push(this.refGetQuery(item.conditionGroups, 'conditionGroups'))
+          }
+          if (item.conditionItems) {
+            children.push(this.refGetQuery(item.conditionItems, 'conditionItems'))
+          }
+          let temp = []
+          if (children.length > 1) {
+            const ret = []
+            children.map((item) => {
+              let returnObj = {}
+              item.map((i) => {
+                temp.push(i)
+              })
+            })
+            console.log('temp', temp)
+          }
           return {
             type: 'query-builder-group',
             query: {
-              logicalOperator: obj.operator,
-              children: [...this.reGetQuery(obj)]
+              logicalOperator: item.operator,
+              children: children.length > 1 ? temp : children[0]
             }
           }
-        }
-        if (obj.conditionItems) {
+        } else {
           return {
             type: 'query-builder-rule',
             query: {
-              ...obj.conditionItems
+              ...item
             }
           }
         }
       })
     },
+
     getQuery(children) {
       const conditionItems = []
       const conditionGroups = []
