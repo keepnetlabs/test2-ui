@@ -150,16 +150,9 @@
             <!-- STEP 3 -->
             <v-stepper-content step="3">
               <v-container fluid class="playbook-actions">
-                <v-row :ref="`itemID-${index}`" v-for="(item, index) in actionList" :key="index">
-                  <v-col class="v-col" cols="12">
-                    <ActionItem v-bind:act.sync="act" :id="item.id" @remove="removeAction" />
-                  </v-col>
-                </v-row>
                 <v-row>
-                  <v-col>
-                    <v-btn text color="primary" @click="addAction()">
-                      <v-icon>mdi-plus</v-icon> Add Action
-                    </v-btn>
+                  <v-col class="v-col" cols="12">
+                    <ActionItem :actionData.sync="actionData" />
                   </v-col>
                 </v-row>
               </v-container>
@@ -206,10 +199,9 @@ export default {
   components: { ActionItem, VueQueryBuilder, QueryBuilderGroup },
   data() {
     return {
-      actionList: [{ id: 0 }],
       isValid: true,
       totalStep: 3,
-      activeStep: 1,
+      activeStep: 3,
       form1: false,
       form2: false,
       form3: false,
@@ -223,67 +215,7 @@ export default {
         required,
         maxLength
       },
-      act: {
-        actionTypes: ['Mark as', 'Analyse', 'Investigate', 'Notify', 'Tag'],
-        notifyTypes: ['The reporter', 'A user', 'A group'],
-        markAsOpts: ['Clean', 'Phising', 'Malicious', 'Spam'],
-        notifyTemplates: [
-          { label: 'IR User Notification', value: '18' },
-          { label: 'IR Delete Action Notification', value: '41' },
-          { label: 'Incident Investigation', value: '46' },
-          { label: 'About to Expire', value: '2282' },
-          { label: 'Incident Investigation Progress Report', value: '2311' },
-          { label: 'Incident Investigation Suspicious Email Analysis Report', value: '2320' }
-        ],
-        playbookAction: {
-          markType: 'Clean',
-          targetUser: '',
-          targetGroupId: '',
-          tags: ['']
-        },
-        playbookActionNotifications: [
-          {
-            targetUserType: 'Groups',
-            targetUsers: [],
-            emailTemplateId: 1
-          }
-        ],
-        playbookActionAnalyzers: [
-          {
-            integrationId: 'faczwHLF1Jmw',
-            isCheckHash: true,
-            isCheckFile: false,
-            isCheckUrl: true
-          }
-        ],
-        playbookActionInvestigations: [
-          {
-            isCreatedByAnalyzer: false,
-            expireDate: '2020-05-01 03:17:07.140',
-            startDate: '2020-01-01 03:17:07.140',
-            endDate: '2020-09-09 03:17:07.140',
-            scanTypes: ['Outlook'],
-            filters: [
-              'From',
-              'To',
-              'Cc',
-              'SenderIp',
-              'Subject',
-              'Keyword',
-              'Url',
-              'AttachmentName',
-              'AttachmentExtension',
-              'AttachmentHash'
-            ],
-            targetUserType: 'SpecificUsers',
-            targetUsers: ['burak@keepnetlabs.com', 'burak.okmen@outlook.com'],
-            actionType: 'Notify',
-            actionNotifyTargetUserType: 'Reporter',
-            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-            emailTemplateId: 1
-          }
-        ]
-      },
+      actionData: {},
       condition: {
         operator: 'Or',
         conditionGroups: [
@@ -443,10 +375,6 @@ export default {
     }
   },
   methods: {
-    addAction() {
-      this.actionList.push({ id: this.idCounter })
-      this.idCounter = this.idCounter + 1
-    },
     nextStep() {
       console.log(this.findHasError(this.query))
       if (this.findHasError(this.query)) {
@@ -509,10 +437,6 @@ export default {
           this.tagsearch = ''
         })
       })
-    },
-    removeAction(event) {
-      let a = this.actionList.findIndex((x, i) => x.id == event)
-      this.actionList.splice(a, 1)
     }
   }
 }
