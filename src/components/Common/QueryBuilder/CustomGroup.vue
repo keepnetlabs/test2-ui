@@ -52,72 +52,72 @@
 </template>
 
 <script>
-import QueryBuilderGroup from 'vue-query-builder/src/components/QueryBuilderGroup'
-import QueryBuilderRule from './CustomRule'
-export default {
-  name: 'QueryBuilderGroup',
-  components: {
-    // eslint-disable-next-line vue/no-unused-components
-    QueryBuilderRule: QueryBuilderRule
-  },
-  mounted() {
-    this.$nextTick(() => {
-      if (this.query && this.query.children.length === 0) {
-        this.addRule()
-      }
-    })
-  },
-  extends: QueryBuilderGroup,
-  methods: {
-    addNewGroup() {
-      this.addGroup()
+  import QueryBuilderGroup from 'vue-query-builder/src/components/QueryBuilderGroup'
+  import QueryBuilderRule from './CustomRule'
+  export default {
+    name: 'QueryBuilderGroup',
+    components: {
+      // eslint-disable-next-line vue/no-unused-components
+      QueryBuilderRule: QueryBuilderRule
     },
-    deleteGroup() {
-      this.remove()
+    mounted() {
+      this.$nextTick(() => {
+        if (this.query && this.query.children.length === 0) {
+          this.addRule()
+        }
+      })
+    },
+    extends: QueryBuilderGroup,
+    methods: {
+      addNewGroup() {
+        this.addGroup()
+      },
+      deleteGroup() {
+        this.remove()
+      }
     }
   }
-}
 </script>
 
 <style lang="scss">
-.vue-query-builder {
-  .vqb-group {
-    border-radius: 20px;
-    padding: 34px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+  .vue-query-builder {
+    .vqb-group {
+      border-radius: 20px;
+      padding: 34px;
+      background-color: #ffffff;
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
-    .rule-actions {
+      .rule-actions {
+      }
     }
   }
-}
-.vqb-rule {
-  margin-top: 15px;
-  margin-bottom: 15px;
-  background-color: #f5f5f5;
-  border-color: #ddd;
-  padding: 21px 24px 0 24px;
-}
-/*
-.vue-query-builder .vqb-group.depth-1 .vqb-rule,
-.vue-query-builder .vqb-group.depth-2 {
-  border-left: 2px solid #8bc34a;
-}
-.vue-query-builder .vqb-group.depth-2 .vqb-rule,
-.vue-query-builder .vqb-group.depth-3 {
-  border-left: 2px solid #00bcd4;
-}
-.vue-query-builder .vqb-group.depth-3 .vqb-rule,
-.vue-query-builder .vqb-group.depth-4 {
-  border-left: 2px solid #ff5722;
-}*/
-.vue-query-builder .close {
-  opacity: 1;
-  color: rgb(150, 150, 150);
-}
-@media (min-width: 768px) {
-  .vue-query-builder .vqb-rule.form-inline .form-group {
-    display: block;
+  .vqb-rule {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+    padding: 21px 24px 0 24px;
   }
-}
+  /*
+  .vue-query-builder .vqb-group.depth-1 .vqb-rule,
+  .vue-query-builder .vqb-group.depth-2 {
+    border-left: 2px solid #8bc34a;
+  }
+  .vue-query-builder .vqb-group.depth-2 .vqb-rule,
+  .vue-query-builder .vqb-group.depth-3 {
+    border-left: 2px solid #00bcd4;
+  }
+  .vue-query-builder .vqb-group.depth-3 .vqb-rule,
+  .vue-query-builder .vqb-group.depth-4 {
+    border-left: 2px solid #ff5722;
+  }*/
+  .vue-query-builder .close {
+    opacity: 1;
+    color: rgb(150, 150, 150);
+  }
+  @media (min-width: 768px) {
+    .vue-query-builder .vqb-rule.form-inline .form-group {
+      display: block;
+    }
+  }
 </style>
