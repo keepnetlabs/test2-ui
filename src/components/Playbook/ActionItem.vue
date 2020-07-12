@@ -193,7 +193,6 @@ export default {
       //this.act.actionTypes.find((item) => item.name == selectedValue).selected = true
     },
     addAction() {
-      debugger
       const nextAvailableAction = this.act.actionTypes.find((item) => !item.selected)
       this.actions.push(nextAvailableAction)
       this.idCounter = this.idCounter + 1

@@ -184,7 +184,7 @@
           NEXT
         </v-btn>
       </v-col>
-      <v-col cols="auto" v-if="!canNext">
+      <v-col cols="auto" v-if="!canNext" @click="handleSave">
         <v-btn rounded color="primary">
           SAVE
         </v-btn>
@@ -199,6 +199,7 @@ import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { maxLength, required } from '../../utils/validations'
+import { createPlaybook } from '../../api/playbook'
 
 export default {
   name: 'CreateOrEditRule',
@@ -209,7 +210,7 @@ export default {
       actionList: [{ id: 0 }],
       isValid: true,
       totalStep: 3,
-      activeStep: 3,
+      activeStep: 1,
       form1: false,
       form2: false,
       form3: false,
@@ -351,64 +352,7 @@ export default {
             type: 'query-builder-group',
             query: {
               logicalOperator: 'AND',
-              children: [
-                {
-                  type: 'query-builder-group',
-                  query: {
-                    logicalOperator: 'OR',
-                    children: [
-                      {
-                        type: 'query-builder-rule',
-                        query: {
-                          rule: 'conditions',
-                          operator: 'contains',
-                          operand: 'From',
-                          value: 'gurkan.ugurlu@keepnetlabs.com',
-                          format: 'Email'
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  type: 'query-builder-group',
-                  query: {
-                    logicalOperator: 'OR',
-                    children: [
-                      {
-                        type: 'query-builder-rule',
-                        query: {
-                          rule: 'conditions',
-                          operator: 'contains',
-                          operand: 'From',
-                          value: 'gurkan.ugurlu@keepnetlabs.com',
-                          format: 'Email'
-                        }
-                      },
-                      {
-                        type: 'query-builder-rule',
-                        query: {
-                          rule: 'conditions',
-                          operator: 'contains',
-                          operand: 'From',
-                          value: 'ugurlu.gurkan96@gmail.com',
-                          format: 'Email'
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  type: 'query-builder-rule',
-                  query: {
-                    rule: 'conditions',
-                    operator: 'contains',
-                    operand: 'From',
-                    value: 'gurkan.ugurlu@keepnetlabs.com',
-                    format: 'Email'
-                  }
-                }
-              ]
+              children: []
             }
           }
         ]
@@ -428,6 +372,77 @@ export default {
     addAction() {
       this.actionList.push({ id: this.idCounter })
       this.idCounter = this.idCounter + 1
+    },
+    handleSave() {
+      this.callForCreatePlaybook()
+    },
+    callForCreatePlaybook() {
+      const payload = {
+        name: this.name,
+        description: this.description,
+        priority: this.priority,
+        tags: ['tag1', 'tag2'],
+        isActive: true,
+        playbookAction: {
+          markType: 'Clean',
+          targetUser: '',
+          targetGroupId: '',
+          tags: ['tag11']
+        },
+        playbookActionNotifications: [
+          {
+            targetUserType: 'Groups',
+            targetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
+            emailTemplateId: 1
+          }
+        ],
+        playbookActionAnalyzers: [
+          {
+            integrationId: 'faczwHLF1Jmw',
+            isCheckHash: true,
+            isCheckFile: false,
+            isCheckUrl: true
+          }
+        ],
+        playbookActionInvestigations: [
+          {
+            isCreatedByAnalyzer: true,
+            expireDate: '2020-05-01 03:17:07.140',
+            startDate: '2020-01-01 03:17:07.140',
+            endDate: '2020-09-09 03:17:07.140',
+            scanTypes: ['Outlook'],
+            filters: [
+              'From',
+              'To',
+              'Cc',
+              'SenderIp',
+              'Subject',
+              'Keyword',
+              'Url',
+              'AttachmentName',
+              'AttachmentExtension',
+              'AttachmentHash'
+            ],
+            targetUserType: 'SpecificUsers',
+            targetUsers: ['burak2.okmen2@outlook.com', 'burak.okmen@outlook.com'],
+            actionType: 'Notify',
+            actionNotifyTargetUserType: 'Reporter',
+            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
+            emailTemplateId: 1
+          }
+        ],
+        condition: this.condition
+      }
+      createPlaybook(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$emit('cancelForm')
+        })
+        .catch((error) => {})
     },
     nextStep() {
       if (this.findHasError(this.query)) {

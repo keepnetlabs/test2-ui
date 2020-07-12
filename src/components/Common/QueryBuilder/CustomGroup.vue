@@ -62,16 +62,12 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      if (this.init) {
+      if (this.query && this.query.children.length === 0) {
         this.addRule()
-        this.init = false
       }
     })
   },
   extends: QueryBuilderGroup,
-  data: () => ({
-    init: true
-  }),
   methods: {
     addNewGroup() {
       this.addGroup()
