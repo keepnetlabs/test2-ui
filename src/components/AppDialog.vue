@@ -111,6 +111,7 @@ export default {
 <style lang="scss">
 .k-dialog {
   &__header {
+    margin-bottom: 20px;
   }
   &__card {
     padding: 24px 24px 10px 24px;
