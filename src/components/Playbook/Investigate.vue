@@ -38,6 +38,7 @@
             :return-object="false"
             v-if="targetUserType == 'AllUsers'"
             :disabled="targetUserType == 'AllUsers'"
+            hide-details
             required
           ></v-combobox>
           <v-combobox
@@ -46,7 +47,7 @@
             outlined
             class="edit-select target-users-select-multi"
             v-model="targetUsersValue"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[targetUsers.required]"
             item-text="name"
             multiple
             dense
@@ -54,6 +55,7 @@
             small-chips
             :return-object="true"
             v-if="targetUserType == 'Groups'"
+            hide-details
             required
           ></v-combobox>
           <v-combobox
@@ -63,14 +65,15 @@
             item-text="name"
             multiple
             dense
-            :rules="[(v) => validations.required(v, 'Required')]"
             persistent-hint
             small-chips
             :return-object="false"
+            :rules="[targetUsers.required]"
             required
             outlined
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
             v-model="targetUsersValue"
+            hide-details
           ></v-combobox>
         </div>
       </v-col>
@@ -183,6 +186,7 @@
 
 <script>
 import { required } from '../../utils/validations'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Investigate',
@@ -190,6 +194,11 @@ export default {
     act: {
       type: Object
     }
+  },
+  computed: {
+    ...mapGetters({
+      targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
+    })
   },
   data() {
     return {
@@ -203,8 +212,16 @@ export default {
       targetUserType: 'AllUsers',
       validations: {
         required
+      },
+
+      targetUsers: {
+        required: (v) =>
+          (!!v && v.length > 0) || 'Target users required for creating a investigation'
       }
     }
+  },
+  created() {
+    this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
   }
 }
 </script>
