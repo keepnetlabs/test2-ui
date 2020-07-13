@@ -64,6 +64,20 @@
         v-if="showDatatable"
         @onEmptyBtnClicked="isWantToAddNewCommunity = true"
       >
+        <template v-slot:datatable-custom-column="{ scope }">
+          <span v-if="scope.row.matchingPlaybooks.length === 0">
+            {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+          </span>
+          <router-link
+            tag="span"
+            :key="item.resourceId"
+            v-else
+            :to="`/playbook/${item.resourceId}`"
+            v-for="item in scope.row.matchingPlaybooks"
+            class="incident-wrapper__link"
+            >{{ item.name }}</router-link
+          >
+        </template>
       </datatable>
     </div>
   </div>
@@ -112,23 +126,6 @@ export default {
         //minWidth: 80
       },
       {
-        property: 'detected',
-        align: 'center',
-        editable: false,
-        label: getStoreValue('detected'),
-        fixed: false,
-        sortable: true,
-        show: true,
-        type: 'badge',
-        props: {
-          style: {
-            maxWidth: '150px'
-          }
-        },
-        width: 170
-        //minWidth: 80
-      },
-      {
         property: 'source',
         align: 'left',
         editable: false,
@@ -136,7 +133,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'text',
+        type: 'slot',
         width: 250
         //minWidth: 80
       },
@@ -186,7 +183,7 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 90
+        width: 130
         //minWidth: 35
       },
       {
@@ -199,7 +196,7 @@ export default {
         show: true,
         type: 'progress',
         progressType: 'stats',
-        width: 90
+        width: 120
         // minWidth: 60
       }
     ],
@@ -224,6 +221,7 @@ export default {
     addUsers: {
       show: true,
       popUp: false,
+      tooltip: 'Start an Investigation',
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
@@ -245,7 +243,8 @@ export default {
         show: true,
         seperator: '/'
       },
-      labels: ['Completed Users Count', 'Scanned Users Count'],
+      labels: ['Scanned User Count', 'Not Scanned Users Count'],
+
       colors: ['#3f51b5', '#00bcd4'],
       legend: {
         show: false
@@ -257,9 +256,7 @@ export default {
         enabled: false
       },
       plotOptions: {
-        pie: {
-          customScale: 0.75
-        }
+        pie: {}
       },
       showTooltipLine: true
     },
@@ -267,7 +264,7 @@ export default {
       // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
       pageSize: 500,
-      orderBy: 'startDate',
+      orderBy: 'createDate',
       ascending: false
     }
   }),

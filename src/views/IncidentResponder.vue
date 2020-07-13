@@ -1036,7 +1036,6 @@ export default {
           }
         } = response
         const tableData = results
-        console.log('tableData', tableData)
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
     },

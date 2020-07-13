@@ -13,14 +13,7 @@
     >
       <template v-slot:activator="{ on }">
         <div v-on="on">
-          <apexchart
-            :options="chartOptions"
-            :series="scope.row[col.property]"
-            :width="chartOptions.chart.width"
-          />
-        </div>
-        <div class="datatable-chart__text" v-if="chartOptions.summary && chartOptions.summary.show">
-          {{ getChartSummary(scope.row[col.property], chartOptions.summary.seperator) }}
+          <apexchart :options="chartOptions" :series="scope.row[col.property]" :width="56" />
         </div>
       </template>
       <div
@@ -63,6 +56,8 @@ export default {
 
 <style lang="scss">
 .datatable-chart {
+  display: flex;
+  justify-content: center;
   &__text {
     margin-top: -18px;
     margin-left: 2px;

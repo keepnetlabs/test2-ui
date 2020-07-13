@@ -200,7 +200,7 @@
                   <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Add</span>
+              <span class="tooltip-span">{{ (addUsers && addUsers.tooltip) || 'Add' }}</span>
             </v-tooltip>
 
             <slot name="addUsers">

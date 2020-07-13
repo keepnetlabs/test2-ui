@@ -588,47 +588,43 @@
           </div>
           <div class="investigation-details__container__content--right-menu">
             <div class="investigation-details__container__content--right-menu__summary">
-              <div class="investigation-details__container__content--right-menu__summary__item">
+              <div
+                class="investigation-details__container__content--right-menu__summary__item"
+                style="flex-direction: column;"
+              >
                 <div
                   class="investigation-details__container__content--right-menu__summary__item--text-header"
                 >
-                  Investigation Name:
+                  Investigation Name:<span
+                    class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
+                    >{{ investigationDetailsData.name }} -
+                    {{ investigationDetailsData.startDate }}</span
+                  >
                 </div>
                 <div
-                  class="investigation-details__container__content--right-menu__summary__item--text-content"
+                  class="investigation-details__container__content--right-menu__summary__item mt-2"
                 >
-                  {{ investigationDetailsData.name }} - {{ investigationDetailsData.startDate }}
-                </div>
-                <div
-                  class="investigation-details__container__content--right-menu__summary__item--action-button"
-                  v-if="statsAndMenuData.status == 'Running'"
-                >
-                  <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
-                    <v-icon medium left color="#2196f3">mdi-stop</v-icon>
-                    Stop
-                  </v-btn>
-                </div>
-                <div
-                  class="investigation-details__container__content--right-menu__summary__item--action-button"
-                  v-if="statsAndMenuData.status != 'Running'"
-                >
-                  <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
-                    <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
-                    Duplicate
-                  </v-btn>
+                  <div
+                    class="investigation-details__container__content--right-menu__summary__item--text-header"
+                  >
+                    Email Date Range:
+                  </div>
+                  <div
+                    class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
+                  >
+                    {{ investigationDetailsData.startDate }} -
+                    {{ investigationDetailsData.endDate }}
+                  </div>
                 </div>
               </div>
-              <div class="investigation-details__container__content--right-menu__summary__item">
-                <div
-                  class="investigation-details__container__content--right-menu__summary__item--text-header"
-                >
-                  Email Date Range:
-                </div>
-                <div
-                  class="investigation-details__container__content--right-menu__summary__item--text-content"
-                >
-                  {{ investigationDetailsData.startDate }} - {{ investigationDetailsData.endDate }}
-                </div>
+              <div
+                class="investigation-details__container__content--right-menu__summary__item--action-button"
+                v-if="statsAndMenuData.status != 'Running'"
+              >
+                <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
+                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
+                  Duplicate
+                </v-btn>
               </div>
             </div>
             <div class="investigation-details__container__content--right-menu__target-users">
@@ -642,7 +638,7 @@
                 v-if="investigationDetailsData.targetUserType != 'AllUsers'"
               >
                 <v-chip
-                  class="ma-2"
+                  class="mr-1 mt-2"
                   v-for="(item, index) in investigationDetailsData.targetUsers"
                   :key="index"
                   >{{ item.targetUser && `User: ${item.targetUser}`
@@ -657,7 +653,7 @@
                 class="investigation-details__container__content--right-menu__target-users--list"
                 v-else
               >
-                <v-chip class="ma-2">All Users</v-chip>
+                <v-chip>All Users</v-chip>
               </div>
             </div>
             <div class="investigation-details__container__content--right-menu__filters">
@@ -675,7 +671,6 @@
                   class="mr-2 investigation__attachments"
                 >
                   <v-chip
-                    class="ma-2"
                     v-for="(value, key) in item"
                     :key="key"
                     v-if="value && key !== 'resourceId'"
@@ -688,7 +683,7 @@
                   :key="index"
                   class="investigation__attachments"
                 >
-                  <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
+                  <v-chip v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
                 </div>
@@ -698,7 +693,7 @@
                   v-for="(item, index) in investigationDetailsData.attachments"
                   :key="index"
                 >
-                  <v-chip class="ma-2" v-for="(value, key) in item" v-if="value" :key="key"
+                  <v-chip v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
                 </div>
@@ -873,7 +868,7 @@ export default {
         sortable: true,
         show: true,
         type: 'attachment',
-        width: 80
+        width: 120
       },
       {
         property: 'scanType',
@@ -1448,7 +1443,9 @@ export default {
 </script>
 <style lang="scss">
 .investigation-details-wrapper {
-  //min-height: 80vh;
+  .v-navigation-drawer__border {
+    display: none;
+  }
   .investigation-details__alerts {
     &-sub-title {
       font-size: 16px;
@@ -1659,11 +1656,15 @@ export default {
           &--mail-menu {
             .v-card {
               box-shadow: none !important;
-              margin-top: 24px;
+              margin-top: 14px;
 
               .v-navigation-drawer {
                 width: 100% !important;
                 align-items: center;
+
+                @media (max-width: 1025px) {
+                  position: relative !important;
+                }
 
                 &__content {
                   width: 100% !important;
@@ -1776,24 +1777,18 @@ export default {
 
           &__summary {
             display: flex;
-            flex-flow: column;
-            width: 85%;
-
+            justify-content: space-between;
             &__item {
               display: flex;
               flex-flow: row;
-
-              &:first-child {
-                margin-bottom: 8px;
-              }
 
               &--text-header {
                 font-size: 14px;
                 font-weight: 600;
                 line-height: 1.5;
                 letter-spacing: normal;
-                color: rgba(0, 0, 0, 0.87);
-                margin-right: 8px;
+                color: rgba(0, 0, 0, 0.87) !important;
+                text-transform: uppercase;
               }
 
               &--text-content {
@@ -1802,13 +1797,11 @@ export default {
                 line-height: 1.5;
                 letter-spacing: normal;
                 color: rgba(0, 0, 0, 0.87);
+                font-weight: normal;
+                text-transform: capitalize;
               }
 
               &--action-button {
-                position: absolute;
-                right: 20px;
-                top: 20px;
-
                 button {
                   border-radius: 18px;
                   font-size: 14px;
@@ -1823,7 +1816,7 @@ export default {
 
           &__target-users {
             &--header {
-              margin-top: 25px;
+              margin-top: 20px;
               margin-bottom: 0;
               font-size: 12px;
               font-weight: 600;
@@ -1840,7 +1833,8 @@ export default {
                 color: #000000;
                 line-break: anywhere;
                 height: auto !important;
-
+                margin-top: 8px;
+                margin-right: 4px;
                 &:first-child {
                   //margin-left: 0 !important;
                 }
@@ -1867,7 +1861,9 @@ export default {
                 letter-spacing: normal;
                 text-align: center;
                 color: #000000;
-
+                height: auto !important;
+                margin-top: 8px;
+                margin-right: 4px;
                 &:first-child {
                   margin-left: 0 !important;
                 }
