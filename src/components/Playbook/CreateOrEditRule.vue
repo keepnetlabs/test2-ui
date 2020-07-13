@@ -230,7 +230,7 @@ export default {
       actionList: [{ id: 0 }],
       isValid: true,
       totalStep: 3,
-      activeStep: 1,
+      activeStep: 3,
       form1: false,
       form2: false,
       form3: false,

@@ -1,18 +1,14 @@
 <template>
   <div class="action-items">
-    <!-- <p>{{ id }}</p>
-    <p>{{ actionItemType }}</p>
-    <p>{{ actions }}</p>
-    <p>{{ openEnginesModal }}</p>
-    <p>{{ analysisEngines }}</p>
-    <p>{{ notifyTemplate }}</p>
-    -->
     {{ act.actionTypes }}
     <app-dialog
       size="big"
       :status="openEnginesModal"
       class-name="download-modal"
       @changeStatus="openEnginesModal = false"
+      icon="mdi-blur"
+      title="Select Integrations"
+      subtitle="Select Integrations and what data to send"
     >
       <template v-slot:app-dialog-body>
         <div class="bg-white">
@@ -25,16 +21,16 @@
                   v-model="acceptAllAnalysisEngines"
                   @change="acceptAllAnalysisEnginesClick"
                 />
-                <span class="checkbox-text">Select All</span>
+                <span class="checkbox-text-dialog">Select All</span>
               </div>
               <div class="analyze__main__select-row-inline">
-                <span type="button" class="analyze__main__select-row-inline__button">
+                <span type="button" class="analyze__main__select-row-inline__button__title">
                   Hash
                 </span>
-                <span type="button" class="analyze__main__select-row-inline__button">
+                <span type="button" class="analyze__main__select-row-inline__button__title">
                   File
                 </span>
-                <span type="button" class="analyze__main__select-row-inline__button">
+                <span type="button" class="analyze__main__select-row-inline__button__title">
                   Url
                 </span>
               </div>
@@ -48,8 +44,13 @@
                 class="analyze__main__select-row-wrap__item"
               >
                 <div class="checkbox-and-text">
-                  <v-checkbox class="k-checkbox" color="#2196f3" v-model="engine.selected" />
-                  <span class="checkbox-text">{{ engine.name }}</span>
+                  <v-checkbox
+                    class="k-checkbox"
+                    color="#2196f3"
+                    v-model="engine.selected"
+                    @change="analysisEnginesChange(engine, index)"
+                  />
+                  <span class="checkbox-text-dialog">{{ engine.name }}</span>
                 </div>
                 <div class="analyze__main__select-row-inline">
                   <span
@@ -59,7 +60,7 @@
                         ? 'analyze__main__select-row-inline__button-selected'
                         : ''
                     "
-                    @click="engine.isSendFileHash = !engine.isSendFileHash"
+                    @click="hashChange(engine.isSendFileHash, index)"
                   >
                     Hash
                   </span>
@@ -68,7 +69,7 @@
                     :class="
                       engine.isSendFile ? 'analyze__main__select-row-inline__button-selected' : ''
                     "
-                    @click="engine.isSendFile = !engine.isSendFile"
+                    @click="fileChange(engine.isSendFile, index)"
                   >
                     File
                   </span>
@@ -77,7 +78,7 @@
                     :class="
                       engine.isSendUrl ? 'analyze__main__select-row-inline__button-selected' : ''
                     "
-                    @click="engine.isSendUrl = !engine.isSendUrl"
+                    @click="urlChange(engine.isSendUrl, index)"
                   >
                     Url
                   </span>
@@ -95,6 +96,13 @@
             class="delete-user__footer-button"
             text
             >CANCEL</v-btn
+          >
+          <v-btn
+            text
+            color="#2196f3"
+            class="k-dialog__button"
+            @click="getSelectedIntegrations(), (openEnginesModal = false)"
+            >CONFIRM</v-btn
           >
         </div>
       </template>
@@ -127,7 +135,7 @@
       >
         <v-text-field
           outlined
-          placeholder="Select Action Type"
+          :placeholder="`${getSelectedIntegrations()} integrations selected `"
           height="40"
           @click="openEnginesModal = true"
           class="analysis-engines-select"
@@ -155,6 +163,7 @@
           persistent-hint
           small-chips
           :return-object="false"
+          placeholder="Enter tags and press enter key"
           required
         ></v-combobox>
       </v-col>
@@ -179,8 +188,25 @@
           multiple
         ></v-autocomplete>
       </v-col>
-      <v-col v-if="notifyType == 'A group'" md="2" class="mr-2">
-        <v-select outlined hide-details />
+      <v-col
+        v-if="actionsValues[index].val == 'notify' && notifyType == 'A group'"
+        md="2"
+        class="mr-2"
+      >
+        <v-combobox
+          :items="targetUsersList"
+          placeholder="Select user groups"
+          outlined
+          class="edit-select target-users-select-multi"
+          v-model="targetUsersValue"
+          item-text="name"
+          multiple
+          dense
+          persistent-hint
+          small-chips
+          :return-object="true"
+          hide-details
+        ></v-combobox>
       </v-col>
       <v-col v-if="actionsValues[index].val == 'notify'" md="2" class="mr-2">
         <v-select
@@ -216,6 +242,7 @@ import { getAnalysisEngine, getTargetUsers } from '../../api/playbook'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 import Investigate from './Investigate'
+import { mapGetters } from 'vuex'
 export default {
   components: { AppDialog, Investigate },
   name: 'ActionItem',
@@ -250,8 +277,8 @@ export default {
       investigationRange: '3 days before and after',
       investigationDuration: '3 days',
       investigateAction: 'Delete email',
-      investigateActionNotification: '',
-      investigateActionNotificationTemplate: '',
+      investigateActionNotification: 'Reporter',
+      investigateActionNotificationTemplate: '18',
       act: {
         actionTypes: [
           {
@@ -363,7 +390,44 @@ export default {
       e.preventDefault()
       this.analyzeModel = ''
     },
-    acceptAllAnalysisEnginesClick() {},
+    getSelectedIntegrations() {
+      return this.analysisEngines.filter((item) => item.selected).length
+    },
+    checkAllDataChecked(index) {
+      this.analysisEngines[index].selected =
+        this.analysisEngines[index].isSendFileHash ||
+        this.analysisEngines[index].isSendFile ||
+        this.analysisEngines[index].isSendUrl
+    },
+    hashChange(val, index) {
+      this.analysisEngines[index].isSendFileHash = !val
+      this.checkAllDataChecked(index)
+    },
+    fileChange(val, index) {
+      this.analysisEngines[index].isSendFile = !val
+      this.checkAllDataChecked(index)
+    },
+    urlChange(val, index) {
+      this.analysisEngines[index].isSendUrl = !val
+      this.checkAllDataChecked(index)
+    },
+    acceptAllAnalysisEnginesClick() {
+      const val = this.acceptAllAnalysisEngines
+      this.analysisEngines = this.analysisEngines.map((item) => {
+        return {
+          ...item,
+          isSendUrl: val,
+          isSendFileHash: val,
+          isSendFile: val,
+          selected: val
+        }
+      })
+    },
+    analysisEnginesChange(engine, index) {
+      this.analysisEngines[index].isSendUrl = engine.selected
+      this.analysisEngines[index].isSendFileHash = engine.selected
+      this.analysisEngines[index].isSendFile = engine.selected
+    },
     getAnalysisEngine() {
       const payload = {
         pageNumber: 1,
@@ -386,6 +450,7 @@ export default {
               selected: true
             }
           })
+          this.acceptAllAnalysisEngines = true
           this.analysisEngines = data
         })
         .catch((error) => {
@@ -489,11 +554,17 @@ export default {
   },
   created() {
     this.addAction()
+    this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
   },
   watch: {
     search(val) {
       this.getTargetUsers()
     }
+  },
+  computed: {
+    ...mapGetters({
+      targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
+    })
   }
 }
 </script>

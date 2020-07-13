@@ -21,6 +21,15 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.checkbox-text-dialog{
+  padding-top: 0px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 30px;
+}
+
 .k-checkbox {
   z-index: 100;
 }
@@ -57,22 +66,36 @@
   font-style: normal;
   line-height: 1.71;
   letter-spacing: normal;
-  color: #757575;
+  color: #2196f3;
+  margin-right: 32px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+.analyze__main__select-row-inline__button__title {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
   margin-right: 32px;
   cursor: pointer;
 }
 
 .analyze__main__select-row-inline__button-selected {
   color: #2196f3;
+  opacity: 1;
 }
 
 .checkbox-and-text {
   display: flex;
   width: 250px;
+  align-items: center;
 }
 
 .check-all {
-  padding: 15px 15px;
+  padding: 30px 15px 0 15px;
   display: flex;
   flex-flow: row;
   justify-content: flex-start;

@@ -10,7 +10,7 @@
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm">
-        <v-list-item class="pl-0 pr-0" v-if="icon && title && subtitle">
+        <v-list-item class="pl-0 pr-0 k-dialog__header" v-if="icon && title && subtitle">
           <div class="v-btn v-cart-icon-wrapper" v-if="icon">
             <v-icon :color="iconColor" class="ml-2" left medium>
               {{ icon }}
@@ -110,6 +110,8 @@ export default {
 
 <style lang="scss">
 .k-dialog {
+  &__header {
+  }
   &__card {
     padding: 24px 24px 10px 24px;
     border-radius: 12px !important;
@@ -138,6 +140,8 @@ export default {
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.72) !important;
     padding-bottom: 17px;
+    max-height: 350px;
+    overflow-y: auto;
   }
 
   &__button {

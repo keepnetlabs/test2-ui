@@ -206,14 +206,13 @@ export default {
       investigationRange: '3 days before and after',
       investigationDuration: '3 days',
       investigateAction: 'Delete email',
-      investigateActionNotification: '',
-      investigateActionNotificationTemplate: '',
+      investigateActionNotification: 'Reporter',
+      investigateActionNotificationTemplate: '18',
       targetUsersValue: [],
       targetUserType: 'AllUsers',
       validations: {
         required
       },
-
       targetUsers: {
         required: (v) =>
           (!!v && v.length > 0) || 'Target users required for creating a investigation'
