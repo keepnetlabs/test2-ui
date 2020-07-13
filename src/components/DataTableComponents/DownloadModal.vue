@@ -38,7 +38,12 @@
           text
           >CANCEL</v-btn
         >
-        <v-btn class="mr-n4 download-modal__button" @click="downloadEvent" color="#2196f3" text
+        <v-btn
+          class="mr-n4 download-modal__button"
+          @click="downloadEvent"
+          color="#2196f3"
+          text
+          :disabled="!downloadType.some((i) => i === true)"
           >DOWNLOAD</v-btn
         >
       </div>

@@ -619,7 +619,7 @@
               </div>
               <div
                 class="investigation-details__container__content--right-menu__summary__item--action-button"
-                v-if="statsAndMenuData.status != 'Running'"
+                v-if="statsAndMenuData.status !== 'Running'"
               >
                 <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
                   <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
@@ -658,7 +658,7 @@
             </div>
             <div class="investigation-details__container__content--right-menu__filters">
               <p class="investigation-details__container__content--right-menu__filters--header">
-                Filters:
+                Criteria:
               </p>
               <div
                 class="investigation-details__container__content--right-menu__filters--list d-flex"
