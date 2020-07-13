@@ -1,11 +1,13 @@
 <template>
   <div class="action-items">
-    <!-- <p>{{ id }}</p> -->
+    <!-- <p>{{ id }}</p>
     <p>{{ actionItemType }}</p>
     <p>{{ actions }}</p>
     <p>{{ openEnginesModal }}</p>
     <p>{{ analysisEngines }}</p>
     <p>{{ notifyTemplate }}</p>
+    -->
+    {{ act.actionTypes }}
     <app-dialog
       size="big"
       :status="openEnginesModal"
@@ -630,12 +632,7 @@ export default {
   },
   watch: {
     search(val) {
-      clearTimeout(this.timerId)
-
-      // delay new call 500ms
-      this.timerId = setTimeout(() => {
-        this.getTargetUsers()
-      }, 500)
+      this.getTargetUsers()
     }
   }
 }
