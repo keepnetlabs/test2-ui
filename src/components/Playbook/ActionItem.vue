@@ -48,12 +48,7 @@
                 class="analyze__main__select-row-wrap__item"
               >
                 <div class="checkbox-and-text">
-                  <v-checkbox
-                    class="k-checkbox"
-                    color="#2196f3"
-                    v-model="engine.selected"
-                    @change="engine.selected != engine.selected"
-                  />
+                  <v-checkbox class="k-checkbox" color="#2196f3" v-model="engine.selected" />
                   <span class="checkbox-text">{{ engine.name }}</span>
                 </div>
                 <div class="analyze__main__select-row-inline">
@@ -111,28 +106,27 @@
     >
       <v-col md="2" class="mr-2">
         <v-select
-          v-model="action.actionItemType"
+          :value="actionsValues[index]"
           :items="act.actionTypes"
+          :return-object="true"
           outlined
-          hide-details
           placeholder="Select Action Type"
           height="40"
           item-text="name"
           item-value="val"
-          @change="setAvailableItems"
+          @input="setAvailableItems($event, actionsValues[index], index)"
         />
       </v-col>
-      <v-col v-if="action.actionItemType == 'markAs'" md="2" class="mr-2">
+      <v-col v-if="actionsValues[index].val === 'markAs'" md="2" class="mr-2">
         <v-select v-model="markAsOpts" :items="act.markAsOpts" outlined hide-details />
       </v-col>
       <v-col
-        v-if="action.actionItemType == 'analyze'"
+        v-if="actionsValues[index].val == 'analyze'"
         md="auto"
         class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
       >
         <v-text-field
           outlined
-          hide-details
           placeholder="Select Action Type"
           height="40"
           @click="openEnginesModal = true"
@@ -144,7 +138,8 @@
           <span class="checkbox-text">Investigate according to analyze results</span>
         </v-col>
       </v-col>
-      <v-col v-if="action.actionItemType == 'tag'" md="auto" class="mr-2 flex-grow-1">
+
+      <v-col v-if="actionsValues[index].val == 'tag'" md="auto" class="mr-2 flex-grow-1">
         <v-combobox
           v-model="tags"
           :items="[]"
@@ -161,13 +156,16 @@
           small-chips
           :return-object="false"
           required
-          hide-details="auto"
         ></v-combobox>
       </v-col>
-      <v-col v-if="action.actionItemType == 'notify'" md="2" class="mr-2">
-        <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
+      <v-col v-if="actionsValues[index].val == 'notify'" md="2" class="mr-2">
+        <v-select v-model="notifyType" :items="act.notifyTypes" outlined />
       </v-col>
-      <v-col v-if="action.actionItemType == 'notify' && notifyType == 'A user'" md="2" class="mr-2">
+      <v-col
+        v-if="actionsValues[index].val == 'notify' && notifyType == 'A user'"
+        md="2"
+        class="mr-2"
+      >
         <v-autocomplete
           :items="targetUsers"
           :loading="isLoading"
@@ -184,7 +182,7 @@
       <v-col v-if="notifyType == 'A group'" md="2" class="mr-2">
         <v-select outlined hide-details />
       </v-col>
-      <v-col v-if="action.actionItemType == 'notify'" md="2" class="mr-2">
+      <v-col v-if="actionsValues[index].val == 'notify'" md="2" class="mr-2">
         <v-select
           v-model="notifyTemplate"
           :items="act.notifyTemplates"
@@ -194,202 +192,22 @@
           hide-details
         />
       </v-col>
-      <v-col class="text-right flex-grow-0">
+      <v-col class="text-right">
         <!-- Remove act button -->
-        <v-btn icon @click="removeAction(index)">
+        <v-btn icon @click="removeAction(index, action)">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
-      <v-col v-if="action.actionItemType == 'investigate'" md="12">
-        <v-row align="center">
-          <v-col md="5">
-            <v-list-item class="py-0">
-              <v-list-item-content class="py-0">
-                <label>Target users</label>
-                <v-list-item-title class="v-card-sub-header bottom-margin">
-                  Select departments, groups or users to investigate
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-          <v-col md="5">
-            <div class="target-users-select__radio-group">
-              <v-radio-group
-                v-model="targetUserType"
-                :mandatory="false"
-                @change="targetUsersValue = []"
-                row
-              >
-                <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
-                <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
-                <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
-              </v-radio-group>
-            </div>
-            <div class="target-users-select__input-area">
-              <v-combobox
-                :items="[]"
-                :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
-                outlined
-                class="edit-select standard-height"
-                item-text="name"
-                multiple
-                dense
-                persistent-hint
-                small-chips
-                :return-object="false"
-                @change="targetUsersListChange"
-                v-if="targetUserType == 'AllUsers'"
-                :disabled="targetUserType == 'AllUsers'"
-                required
-              ></v-combobox>
-              <v-combobox
-                :items="targetUsersList"
-                :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
-                outlined
-                class="edit-select target-users-select-multi"
-                v-model="targetUsersValue"
-                :rules="[targetUsers.required]"
-                item-text="name"
-                multiple
-                dense
-                persistent-hint
-                small-chips
-                :return-object="true"
-                @change="targetUsersListChange"
-                v-if="targetUserType == 'Groups'"
-                required
-              ></v-combobox>
-              <v-combobox
-                :items="[]"
-                v-if="targetUserType == 'SpecificUsers'"
-                placeholder="Enter Email Addresses"
-                item-text="name"
-                multiple
-                dense
-                persistent-hint
-                small-chips
-                :return-object="false"
-                :rules="[targetUsers.required]"
-                required
-                outlined
-                class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
-                v-model="targetUsersValue"
-              ></v-combobox>
-            </div>
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col md="5">
-            <v-list-item class="py-0">
-              <v-list-item-content class="py-0">
-                <label>Filters</label>
-                <v-list-item-title class="v-card-sub-header bottom-margin">
-                  Select attributes of the email to investigate
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-          <v-col md="5">
-            <v-select
-              v-model="investigationFilter"
-              :items="act.investigateFilters"
-              outlined
-              hide-details
-              multiple
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col md="5">
-            <v-list-item class="py-0">
-              <v-list-item-content class="py-0">
-                <label>Email Date Range</label>
-                <v-list-item-title class="v-card-sub-header bottom-margin">
-                  Select range of emails sending date according to reporting date
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-          <v-col md="5">
-            <v-select
-              v-model="investigationRange"
-              :items="act.investigateRanges"
-              outlined
-              hide-details
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col md="5">
-            <v-list-item class="py-0">
-              <v-list-item-content class="py-0">
-                <label>Duration</label>
-                <v-list-item-title class="v-card-sub-header bottom-margin">
-                  Select how many days the investigation will run
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-          <v-col md="5">
-            <v-select
-              v-model="investigationDuration"
-              :items="act.investigateDurations"
-              outlined
-              hide-details
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col md="5">
-            <v-list-item class="py-0">
-              <v-list-item-content class="py-0">
-                <label>Actions</label>
-                <v-list-item-title class="v-card-sub-header bottom-margin">
-                  Select action to be executed if email is found
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-          <v-col md="7">
-            <v-row>
-              <v-col>
-                <v-select
-                  v-model="investigateAction"
-                  :items="act.investigateActions"
-                  outlined
-                  hide-details
-                />
-              </v-col>
-              <v-col v-if="investigateAction == 'Notify users'">
-                <v-select
-                  v-model="investigateActionNotification"
-                  :items="act.investigateActionNotifications"
-                  outlined
-                  hide-details
-                />
-              </v-col>
-              <v-col v-if="investigateAction == 'Notify users'">
-                <v-select
-                  v-model="investigateActionNotificationTemplate"
-                  :items="act.notifyTemplates"
-                  item-text="label"
-                  item-value="value"
-                  outlined
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+      <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val == 'analyze'">
+        <investigate :act="act" />
+      </v-col>
+      <v-col v-if="actionsValues[index].val == 'investigate'" md="12">
+        <investigate :act="act" />
       </v-col>
     </v-row>
-    <v-row>
-      <v-col>
-        <v-btn text color="primary" @click="addAction()">
-          <v-icon>mdi-plus</v-icon> Add Action
-        </v-btn>
-      </v-col>
-    </v-row>
+    <v-btn class="playbook-rule-form__button" text color="#2196f3" @click="addAction()">
+      <v-icon>mdi-plus</v-icon> Add Action
+    </v-btn>
   </div>
 </template>
 
@@ -397,9 +215,9 @@
 import { getAnalysisEngine, getTargetUsers } from '../../api/playbook'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
-
+import Investigate from './Investigate'
 export default {
-  components: { AppDialog },
+  components: { AppDialog, Investigate },
   name: 'ActionItem',
   props: {
     id: Number,
@@ -439,27 +257,27 @@ export default {
           {
             name: 'Mark as',
             val: 'markAs',
-            selected: false
+            disabled: false
           },
           {
             name: 'Analyze',
             val: 'analyze',
-            selected: false
+            disabled: false
           },
           {
             name: 'Investigate',
             val: 'investigate',
-            selected: false
+            disabled: false
           },
           {
             name: 'Notify',
             val: 'notify',
-            selected: false
+            disabled: false
           },
           {
             name: 'Tag',
             val: 'tag',
-            selected: false
+            disabled: false
           }
         ],
         notifyTypes: ['The reporter', 'A user', 'A group'],
@@ -531,7 +349,8 @@ export default {
           }
         ]
       },
-      actions: [{ actionItemType: 'markAs' }]
+      actions: [],
+      actionsValues: []
     }
   },
   mounted() {
@@ -584,16 +403,53 @@ export default {
         })
       })
     },
-    setAvailableItems(selectedValue) {
-      this.act.actionTypes.find((item) => item.name == selectedValue).selected = true
+    setAvailableItems(value, oldValue, index) {
+      debugger
+      this.actionsValues[index] = value
+      this.act.actionTypes.map((item, index) => {
+        this.actionsValues.map((i) => {
+          if (item.val === i.val && item.val !== 'investigate') {
+            item.disabled = true
+          }
+          if (oldValue && oldValue.val !== value.val && item.val === oldValue.val) {
+            item.disabled = false
+          }
+        })
+      })
     },
     addAction() {
-      const nextAvailableAction = this.act.actionTypes.find((item) => !item.selected)
+      const nextAvailableAction = this.act.actionTypes.find((item) => !item.disabled)
+      this.act.actionTypes.find((item) => {
+        if (
+          JSON.stringify(item) === JSON.stringify(nextAvailableAction) &&
+          nextAvailableAction.val !== 'investigate'
+        ) {
+          item.disabled = true
+          nextAvailableAction.disabled = true
+        }
+      })
       this.actions.push(nextAvailableAction)
+
+      const length = this.actions.length
+      this.actionsValues[length - 1] = nextAvailableAction
       this.idCounter = this.idCounter + 1
     },
-    removeAction(index) {
-      this.actions.splice(index, 1)
+    removeAction(index, action) {
+      debugger
+      this.act.actionTypes.find((item) => {
+        debugger
+        if (
+          JSON.stringify(this.actionsValues[index] && item.val !== 'investigate') ===
+          JSON.stringify(item)
+        ) {
+          item.disabled = false
+        }
+      })
+      const newIndex = this.actions.findIndex((item) => {
+        return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
+      })
+      this.actions.splice(newIndex, 1)
+      this.actionsValues.splice(index, 1)
     },
     getTargetUsers() {
       const payload = {
@@ -629,6 +485,9 @@ export default {
           })
         })
     }
+  },
+  created() {
+    this.addAction()
   },
   watch: {
     search(val) {

@@ -2,6 +2,9 @@
 .action-items {
   &__item {
   }
+  .v-select .v-select__selection--disabled{
+    color:rgba(0,0,0,.87) !important;
+  }
 }
 .analyze__main {
 }

@@ -6,6 +6,7 @@
     :title="title"
     subtitle="Select file type"
     class-name="download-modal"
+    @changeStatus="changeDownloadModalStatus"
   >
     <template v-slot:app-dialog-body>
       <div class="download-modal__body">
@@ -38,7 +39,16 @@
           text
           >CANCEL</v-btn
         >
-        <v-btn class="mr-n4 download-modal__button" @click="downloadEvent" color="#2196f3" text
+        <v-btn
+          class="mr-n4 download-modal__button"
+          @click="downloadEvent"
+          color="#2196f3"
+          text
+          :disabled="
+            !downloadType.some((item) => {
+              return item === true
+            })
+          "
           >DOWNLOAD</v-btn
         >
       </div>

@@ -102,7 +102,7 @@
                 <badge
                   v-else-if="
                         ((!editMode || !col.isEditable) && (col.type === 'status' ||
-                        col.type === 'detected' || col.type==='badge') && copyOfEditedRows[0][col.property] !=='N/A' &&copyOfEditedRows[0][col.property] !=='InAnalysis')
+                        col.type === 'detected' || col.type==='badge'))
                       "
                   size="small"
                   :color="getBtnStatusColor(copyOfEditedRows[0][col.property])"
