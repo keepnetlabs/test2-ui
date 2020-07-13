@@ -404,8 +404,8 @@ export default {
       })
     },
     setAvailableItems(value, oldValue, index) {
-      debugger
       this.actionsValues[index] = value
+      this.actions[index] = value
       this.act.actionTypes.map((item, index) => {
         this.actionsValues.map((i) => {
           if (item.val === i.val && item.val !== 'investigate') {
@@ -435,12 +435,10 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     removeAction(index, action) {
-      debugger
       this.act.actionTypes.find((item) => {
-        debugger
         if (
-          JSON.stringify(this.actionsValues[index] && item.val !== 'investigate') ===
-          JSON.stringify(item)
+          JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&
+          item.val !== 'investigate'
         ) {
           item.disabled = false
         }
@@ -448,8 +446,11 @@ export default {
       const newIndex = this.actions.findIndex((item) => {
         return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
       })
-      this.actions.splice(newIndex, 1)
-      this.actionsValues.splice(index, 1)
+
+      if (newIndex !== -1) {
+        this.actions.splice(newIndex, 1)
+        this.actionsValues.splice(index, 1)
+      }
     },
     getTargetUsers() {
       const payload = {
