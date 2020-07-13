@@ -583,7 +583,7 @@ export default {
       })
     },
     setAvailableItems(selectedValue) {
-      //this.act.actionTypes.find((item) => item.name == selectedValue).selected = true
+      this.act.actionTypes.find((item) => item.name == selectedValue).selected = true
     },
     addAction() {
       const nextAvailableAction = this.act.actionTypes.find((item) => !item.selected)
