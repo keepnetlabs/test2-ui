@@ -109,7 +109,7 @@
     >
       <v-col md="2" class="mr-2">
         <v-select
-          v-model="actionItemType"
+          v-model="action.actionItemType"
           :items="act.actionTypes"
           outlined
           hide-details
@@ -120,11 +120,11 @@
           @change="setAvailableItems"
         />
       </v-col>
-      <v-col v-if="actionItemType == 'markAs'" md="2" class="mr-2">
+      <v-col v-if="action.actionItemType == 'markAs'" md="2" class="mr-2">
         <v-select v-model="markAsOpts" :items="act.markAsOpts" outlined hide-details />
       </v-col>
       <v-col
-        v-if="actionItemType == 'analyze'"
+        v-if="action.actionItemType == 'analyze'"
         md="auto"
         class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
       >
@@ -142,7 +142,7 @@
           <span class="checkbox-text">Investigate according to analyze results</span>
         </v-col>
       </v-col>
-      <v-col v-if="actionItemType == 'tag'" md="auto" class="mr-2 flex-grow-1">
+      <v-col v-if="action.actionItemType == 'tag'" md="auto" class="mr-2 flex-grow-1">
         <v-combobox
           v-model="tags"
           :items="[]"
@@ -162,10 +162,10 @@
           hide-details="auto"
         ></v-combobox>
       </v-col>
-      <v-col v-if="actionItemType == 'notify'" md="2" class="mr-2">
+      <v-col v-if="action.actionItemType == 'notify'" md="2" class="mr-2">
         <v-select v-model="notifyType" :items="act.notifyTypes" outlined hide-details />
       </v-col>
-      <v-col v-if="actionItemType == 'notify' && notifyType == 'A user'" md="2" class="mr-2">
+      <v-col v-if="action.actionItemType == 'notify' && notifyType == 'A user'" md="2" class="mr-2">
         <v-autocomplete
           :items="targetUsers"
           :loading="isLoading"
@@ -182,7 +182,7 @@
       <v-col v-if="notifyType == 'A group'" md="2" class="mr-2">
         <v-select outlined hide-details />
       </v-col>
-      <v-col v-if="actionItemType == 'notify'" md="2" class="mr-2">
+      <v-col v-if="action.actionItemType == 'notify'" md="2" class="mr-2">
         <v-select
           v-model="notifyTemplate"
           :items="act.notifyTemplates"
@@ -198,7 +198,7 @@
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
-      <v-col v-if="actionItemType == 'investigate'" md="12">
+      <v-col v-if="action.actionItemType == 'investigate'" md="12">
         <v-row align="center">
           <v-col md="5">
             <v-list-item class="py-0">
