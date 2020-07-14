@@ -197,7 +197,14 @@
               grid-auto-flow: column;
             }
           }
-
+        }
+        .el-table td > .cell:before{
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              display: block;
+              content: '';
+            }
+          }
         }
         .actions-container .cell {
           @media not all and (min-resolution:.001dpcm) {
@@ -217,11 +224,6 @@
         .cell > div {
           text-overflow: ellipsis;
           overflow: hidden;
-          @media not all and (min-resolution:.001dpcm) {
-            @supports (-webkit-appearance:none) {
-              display: grid;
-            }
-          }
         }
         .cell span {
           @media not all and (min-resolution:.001dpcm) {
