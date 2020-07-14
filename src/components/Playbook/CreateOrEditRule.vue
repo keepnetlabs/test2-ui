@@ -409,7 +409,6 @@ export default {
       }
     },
     callForCreatePlaybook() {
-      debugger
       const ref = this.$refs.refActionItem
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
@@ -514,7 +513,7 @@ export default {
           index++
         }
       }
-      debugger
+
       const payload = {
         name: this.name,
         description: this.description,
@@ -706,7 +705,7 @@ export default {
               return item.isCreatedByAnalyzer !== true
             }
           )
-          debugger
+
           const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
             return item.isCreatedByAnalyzer
           })
