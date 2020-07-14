@@ -197,41 +197,7 @@
               grid-auto-flow: column;
             }
           }
-        }
 
-        .el-table td > .cell > div {
-          &:before{
-            @media not all and (min-resolution:.001dpcm) {
-              @supports (-webkit-appearance:none) {
-                display: block;
-                content: '';
-              }
-            }
-          }
-          &:after{
-            @media not all and (min-resolution:.001dpcm) {
-              @supports (-webkit-appearance:none) {
-                display: block;
-                content: '';
-              }
-            }
-          }
-        }
-        .el-table td > .cell:before{
-          @media not all and (min-resolution:.001dpcm) {
-            @supports (-webkit-appearance:none) {
-              display: block;
-              content: '';
-            }
-          }
-        }
-        .el-table td > .cell:after{
-          @media not all and (min-resolution:.001dpcm) {
-            @supports (-webkit-appearance:none) {
-              display: block;
-              content: '';
-            }
-          }
         }
         .actions-container .cell {
           @media not all and (min-resolution:.001dpcm) {
