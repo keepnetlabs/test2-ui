@@ -21,7 +21,6 @@
               prepend-inner-icon="mdi-magnify"
               v-model="searchEnginesModelInput"
               @keyup="searchEnginesModel()"
-              ref="searchInput"
               hide-details
             />
             <div class="analyze__main__select-row-wrap check-all">
