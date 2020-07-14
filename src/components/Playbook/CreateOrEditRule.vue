@@ -148,7 +148,14 @@
               <v-container fluid class="playbook-actions">
                 <v-row>
                   <v-col class="v-col" cols="12">
-                    <ActionItem :playbookId="playbookId" :actionData.sync="actionData" />
+                    <ActionItem
+                      ref="refActionItem"
+                      :playbookId="playbookId"
+                      :actionData.sync="actionData"
+                      :editedActions="playbookAction"
+                      :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
+                      :editedNotifications="editedNotifications"
+                    />
                   </v-col>
                 </v-row>
               </v-container>
@@ -224,6 +231,7 @@ export default {
       actionData: {},
       actionList: [{ id: 0 }],
       isValid: true,
+      playbookAction: {},
       totalStep: 3,
       activeStep: 1,
       form1: false,
@@ -236,7 +244,9 @@ export default {
       tags: [],
       isActive: true,
       newQuery: null,
+      playbookActionAnalyzers: [],
       addedQuery: null,
+      editedNotifications: [],
       validations: {
         required,
         maxLength
@@ -397,33 +407,43 @@ export default {
       }
     },
     callForCreatePlaybook() {
+      const ref = this.$refs.refActionItem
+      const keys = Object.keys(ref.$refs)
+      const playbookActionInvestigations = []
+      if (keys.length > 0) {
+        keys.map((key, index) => {
+          playbookActionInvestigations[index] = ref.$refs[key][0].investigateData
+        })
+      }
+
+      const playbookAction = ref.playbookAction
+      const playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
+        return item.selected === true
+      })
+      const targetUserType = ref.targetUserType
+      const targetUsers = ref.tarUsers
+      const playbookActionNotifications = []
+      let index = 0
+      for (let i = 0; i < targetUserType.length; i++) {
+        if (targetUserType[i] !== undefined) {
+          playbookActionNotifications[index] = {
+            targetUserType: targetUserType[i],
+            targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
+            emailTemplateId: 1
+          }
+          index++
+        }
+      }
+
       const payload = {
         name: this.name,
         description: this.description,
         priority: this.priority,
         tags: this.tags,
         isActive: this.isActive,
-        playbookAction: {
-          markType: 'Clean',
-          targetUser: '',
-          targetGroupId: '',
-          tags: ['tag11']
-        },
-        playbookActionNotifications: [
-          {
-            targetUserType: 'Groups',
-            targetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-            emailTemplateId: 1
-          }
-        ],
-        playbookActionAnalyzers: [
-          {
-            integrationId: 'faczwHLF1Jmw',
-            isCheckHash: true,
-            isCheckFile: false,
-            isCheckUrl: true
-          }
-        ],
+        playbookAction,
+        playbookActionAnalyzers,
+        playbookActionNotifications,
         playbookActionInvestigations: [
           {
             isCreatedByAnalyzer: true,
@@ -465,6 +485,25 @@ export default {
         .catch((error) => {})
     },
     callForUpdatePlaybook() {
+      const ref = this.$refs.refActionItem
+      const playbookAction = ref.playbookAction
+      const playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
+        return item.selected === true
+      })
+      const targetUserType = ref.targetUserType
+      const targetUsers = ref.tarUsers
+      const playbookActionNotifications = []
+      let index = 0
+      for (let i = 0; i < targetUserType.length; i++) {
+        if (targetUserType[i] !== undefined) {
+          playbookActionNotifications[index] = {
+            targetUserType: targetUserType[i],
+            targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
+            emailTemplateId: 1
+          }
+          index++
+        }
+      }
       const payload = {
         name: this.name,
         description: this.description,
@@ -472,27 +511,9 @@ export default {
         tags: this.tags,
         isActive: this.isActive,
         resourceId: this.playbookId,
-        playbookAction: {
-          markType: 'Clean',
-          targetUser: '',
-          targetGroupId: '',
-          tags: ['tag11']
-        },
-        playbookActionNotifications: [
-          {
-            targetUserType: 'Groups',
-            targetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-            emailTemplateId: 1
-          }
-        ],
-        playbookActionAnalyzers: [
-          {
-            integrationId: 'faczwHLF1Jmw',
-            isCheckHash: true,
-            isCheckFile: false,
-            isCheckUrl: true
-          }
-        ],
+        playbookAction,
+        playbookActionNotifications,
+        playbookActionAnalyzers,
         playbookActionInvestigations: [
           {
             isCreatedByAnalyzer: true,
@@ -692,6 +713,9 @@ export default {
             logicalOperator: data.condition.operator.toUpperCase(),
             children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
           }
+          this.playbookAction = data.playbookAction
+          this.playbookActionAnalyzers = data.playbookActionAnalyzers
+          this.editedNotifications = data.playbookActionNotifications
         })
         .catch((error) => {})
     }

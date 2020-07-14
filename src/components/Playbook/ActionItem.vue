@@ -168,11 +168,11 @@
           required
         ></v-combobox>
       </v-col>
-      <v-col v-if="actionsValues[index].val == 'notify'" md="2" class="mr-2">
-        <v-select v-model="notifyType" :items="act.notifyTypes" outlined />
+      <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
+        <v-select v-model="targetUserType[index]" :items="act.notifyTypes" outlined />
       </v-col>
       <v-col
-        v-if="actionsValues[index].val == 'notify' && notifyType == 'A user'"
+        v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
         md="2"
         class="mr-2"
       >
@@ -180,17 +180,17 @@
           :items="targetUsers"
           :loading="isLoading"
           :search-input.sync="search"
-          v-model="targetUsersData"
+          v-model="tarUsers[index]"
           color="white"
           item-text="email"
-          item-value="resourceId"
+          item-value="email"
           placeholder="Select Target User"
           outlined
           multiple
         ></v-autocomplete>
       </v-col>
       <v-col
-        v-if="actionsValues[index].val == 'notify' && notifyType == 'A group'"
+        v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
         md="2"
         class="mr-2"
       >
@@ -199,17 +199,18 @@
           placeholder="Select user groups"
           outlined
           class="edit-select target-users-select-multi"
-          v-model="targetUsersValue"
+          v-model="tarUsers[index]"
           item-text="name"
+          item-value="resourceId"
           multiple
           dense
+          :return-object="false"
           persistent-hint
           small-chips
-          :return-object="true"
           hide-details
         ></v-combobox>
       </v-col>
-      <v-col v-if="actionsValues[index].val == 'notify'" md="2" class="mr-2">
+      <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
         <v-select
           v-model="notifyTemplate"
           :items="act.notifyTemplates"
@@ -225,11 +226,21 @@
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
-      <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val == 'analyze'">
-        <investigate :act="act" />
+      <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'">
+        <investigate
+          ref="refAnalyze"
+          :investigateData="playbookActionInvestigationAnalyzeData"
+          :act="act"
+        />
       </v-col>
       <v-col v-if="actionsValues[index].val == 'investigate'" md="12">
-        <investigate :act="act" />
+        <investigate
+          :investigateData="playbookActionInvestigations[index]"
+          :index="index"
+          :isCreatedByAnalyzer="true"
+          :ref="`refInvestigate${-index}`"
+          :act="act"
+        />
       </v-col>
     </v-row>
     <v-btn class="playbook-rule-form__button" text color="#2196f3" @click="addAction()">
@@ -251,11 +262,13 @@ export default {
   props: {
     id: Number,
     actionData: Object,
-    resourceId: String
+    resourceId: String,
+    editedActions: Object,
+    editedPlaybookActionAnalyzers: Array,
+    editedNotifications: Array
   },
   data() {
     return {
-      targetUserType: 'AllUsers',
       timerId: null,
       isLoading: false,
       search: '',
@@ -269,18 +282,20 @@ export default {
       markAsOpts: 'Clean',
       acceptCheckbox: false,
       tagsearch: '',
-      notifyType: 'The reporter',
+      targetUserType: [],
       notifyTemplate: '18',
       searchUser: '',
       searchGroup: '',
       targets: [],
       targetUsers: '',
+      tarUsers: [],
       investigationFilter: ['URLs', 'Attachments'],
       investigationRange: '3 days before and after',
       investigationDuration: '3 days',
       investigateAction: 'Delete email',
       investigateActionNotification: 'Reporter',
       investigateActionNotificationTemplate: '18',
+      playbookActionInvestigations: [],
       act: {
         actionTypes: [
           {
@@ -309,8 +324,8 @@ export default {
             disabled: false
           }
         ],
-        notifyTypes: ['The reporter', 'A user', 'A group'],
-        markAsOpts: ['Clean', 'Phising', 'Malicious', 'Spam'],
+        notifyTypes: ['Reporter', 'Users', 'Groups'],
+        markAsOpts: ['Clean', 'Phishing', 'Malicious', 'Spam'],
         notifyTemplates: [
           { label: 'IR User Notification', value: '18' },
           { label: 'IR Delete Action Notification', value: '41' },
@@ -328,55 +343,7 @@ export default {
         ],
         investigateDurations: ['1 day', '3 days', '7 days'],
         investigateActions: ['Notify users', 'Delete email', 'Quarantine'],
-        investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone'],
-        playbookAction: {
-          markType: 'Clean',
-          targetUser: '',
-          targetGroupId: '',
-          tags: ['']
-        },
-        playbookActionNotifications: [
-          {
-            targetUserType: 'Groups',
-            targetUsers: [],
-            emailTemplateId: 1
-          }
-        ],
-        playbookActionAnalyzers: [
-          {
-            integrationId: 'faczwHLF1Jmw',
-            isCheckHash: true,
-            isCheckFile: false,
-            isCheckUrl: true
-          }
-        ],
-        playbookActionInvestigations: [
-          {
-            isCreatedByAnalyzer: false,
-            expireDate: '2020-05-01 03:17:07.140',
-            startDate: '2020-01-01 03:17:07.140',
-            endDate: '2020-09-09 03:17:07.140',
-            scanTypes: ['Outlook'],
-            filters: [
-              'From',
-              'To',
-              'Cc',
-              'SenderIp',
-              'Subject',
-              'Keyword',
-              'Url',
-              'AttachmentName',
-              'AttachmentExtension',
-              'AttachmentHash'
-            ],
-            targetUserType: 'SpecificUsers',
-            targetUsers: ['burak@keepnetlabs.com', 'burak.okmen@outlook.com'],
-            actionType: 'Notify',
-            actionNotifyTargetUserType: 'Reporter',
-            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-            emailTemplateId: 1
-          }
-        ]
+        investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone']
       },
       actions: [],
       actionsValues: [],
@@ -384,19 +351,26 @@ export default {
         markType: '',
         tags: []
       },
+      playbookActionInvestigationAnalyzeData: {
+        isCreatedByAnalyzer: true,
+        scanTypes: [],
+        filters: [],
+        expireDate: '',
+        startDate: '',
+        endDate: '',
+        targetUserType: 'AllUsers',
+        targetUsers: [],
+        actionType: '',
+        actionNotifyTargetUserType: '',
+        actionNotifyTargetUsers: [],
+        emailTemplateId: 1
+      },
+
       playbookActionAnalyzers: []
     }
   },
-  mounted() {
-    //console.log(this)
-    this.getAnalysisEngine()
-    this.getTargetUsers()
-  },
+  mounted() {},
   methods: {
-    asd(e) {
-      e.preventDefault()
-      this.analyzeModel = ''
-    },
     getSelectedIntegrations() {
       return this.analysisEngines.filter((item) => item.selected).length
     },
@@ -420,6 +394,7 @@ export default {
     },
     acceptAllAnalysisEnginesClick() {
       const val = this.acceptAllAnalysisEngines
+
       this.analysisEngines = this.analysisEngines.map((item) => {
         return {
           ...item,
@@ -448,9 +423,12 @@ export default {
       }
       getAnalysisEngine(payload)
         .then((response) => {
+          console.log('response.data.data', response.data.data)
           const data = response.data.data.results.map((item) => {
             return {
-              ...item,
+              resourceId: item.resourceId,
+              integrationId: item.resourceId,
+              name: item.name,
               isSendUrl: true,
               isSendFileHash: true,
               isSendFile: true,
@@ -468,19 +446,22 @@ export default {
         })
     },
     updateTags() {
+      /*
       this.$nextTick(() => {
         this.tags.push(...this.tagsearch.split(','))
         this.$nextTick(() => {
           this.tagsearch = ''
         })
       })
+
+       */
     },
     setAvailableItems(value, oldValue, index) {
       this.actionsValues[index] = value
       this.actions[index] = value
       this.act.actionTypes.map((item, index) => {
         this.actionsValues.map((i) => {
-          if (item.val === i.val && item.val !== 'investigate') {
+          if (item.val === i.val && item.val !== 'investigate' && item.val !== 'notify') {
             item.disabled = true
           }
           if (oldValue && oldValue.val !== value.val && item.val === oldValue.val) {
@@ -488,18 +469,47 @@ export default {
           }
         })
       })
+      this.$forceUpdate()
     },
-    addAction() {
-      const nextAvailableAction = this.act.actionTypes.find((item) => !item.disabled)
+    addAction(actionVal = null) {
+      let nextAvailableAction
+      if (actionVal) {
+        nextAvailableAction = this.act.actionTypes.find((item) => item.val === actionVal)
+      } else {
+        nextAvailableAction = this.act.actionTypes.find((item) => !item.disabled)
+      }
+
       this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(item) === JSON.stringify(nextAvailableAction) &&
-          nextAvailableAction.val !== 'investigate'
+          nextAvailableAction.val !== 'investigate' &&
+          nextAvailableAction.val !== 'notify'
         ) {
           item.disabled = true
           nextAvailableAction.disabled = true
         }
       })
+      if (nextAvailableAction.val === 'investigate') {
+        /*
+        const index = this.actions.length
+        this.playbookActionInvestigations[index] = {
+          isCreatedByAnalyzer: false,
+          scanTypes: [],
+          filters: [],
+          expireDate: '',
+          startDate: '',
+          endDate: '',
+          targetUserType: 'Groups',
+          targetUsers: [],
+          actionType: '',
+          actionNotifyTargetUserType: '',
+          actionNotifyTargetUsers: [],
+          emailTemplateId: 1
+        }
+
+         */
+      }
+      console.log()
       this.actions.push(nextAvailableAction)
 
       const length = this.actions.length
@@ -510,7 +520,8 @@ export default {
       this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&
-          item.val !== 'investigate'
+          item.val !== 'investigate' &&
+          item.val !== 'notify'
         ) {
           item.disabled = false
         }
@@ -549,6 +560,7 @@ export default {
       }
       getTargetUsers(payload)
         .then((response) => {
+          console.log('this.targetUsers')
           this.targetUsers = response.data.data.results
         })
         .catch((error) => {
@@ -562,12 +574,47 @@ export default {
   created() {
     this.addAction()
     this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
+    this.getAnalysisEngine()
+    this.getTargetUsers()
   },
   watch: {
     search(val) {
       this.getTargetUsers()
-    }
+    },
+    editedActions(val) {
+      this.playbookAction = val
+      if (val.tags) {
+        this.addAction('tag')
+      }
+    },
+    editedNotifications(val) {
+      val.map((item) => {
+        this.addAction('notify')
+      })
+      let valIndex = 0
+      this.actions.map((item, index) => {
+        if (item.val === 'notify') {
+          this.targetUserType[index] = val[valIndex].targetUserType
+          this.tarUsers[index] = val[valIndex].targetUsers
+          valIndex++
+        }
+      })
+    },
+    editedPlaybookActionAnalyzers(val) {
+      const dizi = this.analysisEngines.filter((item) => {
+        const abc = val.find((i) => {
+          return i.resourceId === item.resourceId
+        })
+        return !!abc
+      })
+      this.analysisEngines = dizi
+      if (val) {
+        this.addAction('analyze')
+      }
+    },
+    analysisEngines(val) {}
   },
+
   computed: {
     ...mapGetters({
       targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters

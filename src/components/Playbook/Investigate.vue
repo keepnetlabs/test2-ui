@@ -14,7 +14,7 @@
       <v-col md="5">
         <div class="target-users-select__radio-group">
           <v-radio-group
-            v-model="targetUserType"
+            v-model="investigateData.targetUserType"
             :mandatory="false"
             @change="targetUsersValue = []"
             row
@@ -27,26 +27,31 @@
         <div class="target-users-select__input-area">
           <v-combobox
             :items="[]"
-            :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+            :placeholder="
+              investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
+            "
             outlined
             class="edit-select standard-height"
             item-text="name"
+            v-model="investigateData.targetUsers"
             multiple
             dense
             persistent-hint
             small-chips
             :return-object="false"
-            v-if="targetUserType == 'AllUsers'"
-            :disabled="targetUserType == 'AllUsers'"
+            v-if="investigateData.targetUserType === 'AllUsers'"
+            :disabled="investigateData.targetUserType === 'AllUsers'"
             hide-details
             required
           ></v-combobox>
           <v-combobox
             :items="targetUsersList"
-            :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+            :placeholder="
+              investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
+            "
             outlined
+            v-model="investigateData.targetUsers"
             class="edit-select target-users-select-multi"
-            v-model="targetUsersValue"
             :rules="[targetUsers.required]"
             item-text="name"
             multiple
@@ -54,13 +59,13 @@
             persistent-hint
             small-chips
             :return-object="true"
-            v-if="targetUserType == 'Groups'"
+            v-if="investigateData.targetUserType === 'Groups'"
             hide-details
             required
           ></v-combobox>
           <v-combobox
             :items="[]"
-            v-if="targetUserType == 'SpecificUsers'"
+            v-if="investigateData.targetUserType === 'SpecificUsers'"
             placeholder="Enter Email Addresses"
             item-text="name"
             multiple
@@ -72,7 +77,7 @@
             required
             outlined
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
-            v-model="targetUsersValue"
+            v-model="investigateData.targetUsers"
             hide-details
           ></v-combobox>
         </div>
@@ -91,8 +96,9 @@
       </v-col>
       <v-col md="5">
         <v-select
-          v-model="investigationFilter"
+          v-model="investigateData.filters"
           :items="act.investigateFilters"
+          placeholder="Select Filters"
           outlined
           hide-details
           multiple
@@ -160,7 +166,7 @@
               hide-details
             />
           </v-col>
-          <v-col v-if="investigateAction == 'Notify users'">
+          <v-col v-if="investigateAction === 'Notify users'">
             <v-select
               v-model="investigateActionNotification"
               :items="act.investigateActionNotifications"
@@ -193,6 +199,39 @@ export default {
   props: {
     act: {
       type: Object
+    },
+    index: {
+      type: Number
+    },
+    isCreatedByAnalyzer: {
+      type: Boolean
+    },
+    investigateData: {
+      type: Object,
+      default: () => {
+        return {
+          isCreatedByAnalyzer: false,
+          scanTypes: [],
+          filters: [],
+          expireDate: '',
+          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          targetUserType: 'AllUsers',
+          targetUsers: [],
+          actionType: '',
+          actionNotifyTargetUserType: '',
+          actionNotifyTargetUsers: [],
+          emailTemplateId: 1
+        }
+      }
     }
   },
   computed: {
@@ -200,10 +239,104 @@ export default {
       targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
     })
   },
+  watch: {
+    investigationRange(val) {
+      let date = new Date()
+      switch (val) {
+        case this.act.investigateRanges[0]:
+          date = new Date()
+          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        case this.act.investigateRanges[1]:
+          date = new Date()
+          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        case this.act.investigateRanges[2]:
+          date = new Date()
+          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 7))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 7))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        case this.act.investigateRanges[3]:
+          date = new Date()
+          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 14))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 14))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        default:
+          break
+      }
+    },
+    investigationDuration(val) {},
+    investigateData(val) {
+      let date = new Date()
+      switch (val) {
+        case this.act.investigateDurations[0]:
+          date = new Date()
+          this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        case this.act.investigateDurations[1]:
+          this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        case this.act.investigateDurations[2]:
+          this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 7))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0]
+          break
+        default:
+          break
+      }
+    }
+  },
   data() {
     return {
-      investigationFilter: ['URLs', 'Attachments'],
+      filters: ['URLs', 'Attachments'],
       investigationRange: '3 days before and after',
+      expireDate: '',
+      startDate: '',
+      endDate: '',
       investigationDuration: '3 days',
       investigateAction: 'Delete email',
       investigateActionNotification: 'Reporter',
@@ -220,6 +353,7 @@ export default {
     }
   },
   created() {
+    console.log('index', this.index)
     this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
   }
 }
