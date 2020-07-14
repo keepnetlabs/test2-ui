@@ -619,6 +619,15 @@
               </div>
               <div
                 class="investigation-details__container__content--right-menu__summary__item--action-button"
+                v-if="statsAndMenuData.status === 'Running'"
+              >
+                <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
+                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>
+                  Stop
+                </v-btn>
+              </div>
+              <div
+                class="investigation-details__container__content--right-menu__summary__item--action-button"
                 v-if="statsAndMenuData.status !== 'Running'"
               >
                 <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
@@ -664,10 +673,9 @@
                 class="investigation-details__container__content--right-menu__filters--list d-flex"
                 style="flex-wrap: wrap;"
               >
-                <div
+                <template
                   style="max-width: 100%; width: 100%;"
-                  v-for="(item, index) in investigationDetailsData.headers"
-                  :key="index"
+                  v-for="item in investigationDetailsData.headers"
                   class="mr-2 investigation__attachments"
                 >
                   <v-chip
@@ -676,27 +684,25 @@
                     v-if="value && key !== 'resourceId'"
                     >{{ key }}: {{ value }}
                   </v-chip>
-                </div>
-                <div
+                </template>
+                <template
                   style="max-width: 100%; width: 100%;"
-                  v-for="(item, index) in investigationDetailsData.bodies"
-                  :key="index"
+                  v-for="item in investigationDetailsData.bodies"
                   class="investigation__attachments"
                 >
                   <v-chip v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
-                </div>
-                <div
+                </template>
+                <template
                   style="max-width: 100%; width: 100%;"
                   class="investigation__attachments"
-                  v-for="(item, index) in investigationDetailsData.attachments"
-                  :key="index"
+                  v-for="item in investigationDetailsData.attachments"
                 >
                   <v-chip v-for="(value, key) in item" v-if="value" :key="key"
                     >{{ key }}: {{ value }}
                   </v-chip>
-                </div>
+                </template>
               </div>
             </div>
             <div v-if="activeMenu != 'targetUsers'">
