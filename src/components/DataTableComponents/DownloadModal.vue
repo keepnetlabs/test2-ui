@@ -6,6 +6,7 @@
     :title="title"
     subtitle="Select file type"
     class-name="download-modal"
+    @changeStatus="changeDownloadModalStatus"
   >
     <template v-slot:app-dialog-body>
       <div class="download-modal__body">

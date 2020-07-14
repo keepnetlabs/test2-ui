@@ -195,7 +195,7 @@
 
         <v-btn
           v-if="!canNext"
-          class="playbook-rule-form__button"
+          class="playbook-rule-form__button white--text"
           rounded
           color="#2196f3"
           @click="handleSave"
