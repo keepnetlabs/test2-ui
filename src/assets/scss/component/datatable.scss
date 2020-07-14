@@ -191,6 +191,27 @@
           font-size: 14px;
           white-space: nowrap !important;
           width: 100%;
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              display: grid;
+              grid-auto-flow: column;
+            }
+          }
+
+        }
+        .actions-container .cell {
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              justify-content: flex-end;
+            }
+          }
+        }
+        .actions-container--first .cell{
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              justify-content: flex-end;
+            }
+          }
         }
 
         .cell > div {
@@ -209,6 +230,9 @@
               overflow: hidden;
             }
           }
+        }
+        thead > tr th:nth-last-child(2){
+          border-right: 2px solid  #EBEEF5 !important;
         }
 
         .el-table th > .cell {

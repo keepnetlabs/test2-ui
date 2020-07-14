@@ -39,10 +39,6 @@
         <v-btn v-if="depth !== 1" text color="#2196f3" class="mr-2" @click="addRule">
           <v-icon>mdi-plus</v-icon> {{ labels.addRule }}
         </v-btn>
-
-        <v-btn v-if="depth < maxDepth && depth != 1" text color="#2196f3" @click="addNewGroup">
-          <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
-        </v-btn>
       </div>
     </div>
     <v-btn
@@ -105,7 +101,7 @@ export default {
     }
   }
   .elevation-1 {
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+    box-shadow: 0 1px 14px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   }
   .elevation-0 {

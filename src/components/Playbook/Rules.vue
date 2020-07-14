@@ -235,7 +235,7 @@ export default {
         empty: {
           message: 'No rules are showing',
           subMes: 'Add Rule',
-          btn: 'Add Rule',
+          btn: 'ADD A RULE',
           icon: 'mdi-account-plus'
         },
         rowActions: [
