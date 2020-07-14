@@ -72,7 +72,7 @@ const investigations = {
       let stateData = data.results.map((item) => {
         return { ...item, userStatus: [item.completedUsersCount, item.scannedUsersCount] }
       })
-      console.log('stasa', stateData)
+      console.log('stateData', stateData)
       state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
     },
     SET_IRSUMMARY(state, payload) {

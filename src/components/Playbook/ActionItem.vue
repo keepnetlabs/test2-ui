@@ -7,6 +7,7 @@
       class-name="download-modal"
       @changeStatus="openEnginesModal = false"
       icon="mdi-blur"
+      v-if="openEnginesModal"
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
     >
@@ -126,7 +127,7 @@
         />
       </v-col>
       <v-col v-if="actionsValues[index].val === 'markAs'" md="2" class="mr-2">
-        <v-select v-model="markAsOpts" :items="act.markAsOpts" outlined hide-details />
+        <v-select v-model="playbookAction.markType" :items="act.markAsOpts" outlined hide-details />
       </v-col>
       <v-col
         v-if="actionsValues[index].val == 'analyze'"
@@ -149,7 +150,7 @@
 
       <v-col v-if="actionsValues[index].val == 'tag'" md="auto" class="mr-2 flex-grow-1">
         <v-combobox
-          v-model="tags"
+          v-model="playbookAction.tags"
           :items="[]"
           chips
           deletable-chips
@@ -245,10 +246,12 @@ import Investigate from './Investigate'
 import { mapGetters } from 'vuex'
 export default {
   components: { AppDialog, Investigate },
+
   name: 'ActionItem',
   props: {
     id: Number,
-    actionData: Object
+    actionData: Object,
+    resourceId: String
   },
   data() {
     return {
@@ -266,7 +269,6 @@ export default {
       markAsOpts: 'Clean',
       acceptCheckbox: false,
       tagsearch: '',
-      tags: [],
       notifyType: 'The reporter',
       notifyTemplate: '18',
       searchUser: '',
@@ -377,7 +379,12 @@ export default {
         ]
       },
       actions: [],
-      actionsValues: []
+      actionsValues: [],
+      playbookAction: {
+        markType: '',
+        tags: []
+      },
+      playbookActionAnalyzers: []
     }
   },
   mounted() {

@@ -55,7 +55,7 @@
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">Description</label>
                     <v-textarea
-                      placeholder="Describe the role"
+                      placeholder="Describe the rule"
                       outlined
                       v-model="description"
                       :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
@@ -70,19 +70,14 @@
                     </v-list-item-title>
                     <div class="playbook-rule-form__radio-group mt-2 mb-1">
                       <v-radio-group v-model="priority" row>
-                        <v-radio
-                          :ripple="false"
-                          color="#2196f3"
-                          value="Very Low"
-                          label="Very Low"
-                        />
+                        <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
                         <v-radio :ripple="false" color="#2196f3" value="High" label="High" />
                         <v-radio
                           :ripple="false"
                           color="#2196f3"
-                          value="Very High"
+                          value="VeryHigh"
                           label="Very High"
                         />
                       </v-radio-group>
@@ -153,7 +148,7 @@
               <v-container fluid class="playbook-actions">
                 <v-row>
                   <v-col class="v-col" cols="12">
-                    <ActionItem :actionData.sync="actionData" />
+                    <ActionItem :playbookId="playbookId" :actionData.sync="actionData" />
                   </v-col>
                 </v-row>
               </v-container>
