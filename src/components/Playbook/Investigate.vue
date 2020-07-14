@@ -16,7 +16,7 @@
           <v-radio-group
             v-model="investigateData.targetUserType"
             :mandatory="false"
-            @change="targetUsersValue = []"
+            @input="investigateData.targetUsers = []"
             row
           >
             <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
@@ -54,11 +54,13 @@
             class="edit-select target-users-select-multi"
             :rules="[targetUsers.required]"
             item-text="name"
+            item-value="name"
             multiple
             dense
             persistent-hint
             small-chips
-            :return-object="true"
+            deletable-chips
+            :return-object="false"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
             required
@@ -71,6 +73,7 @@
             multiple
             dense
             persistent-hint
+            deletable-chips
             small-chips
             :return-object="false"
             :rules="[targetUsers.required]"
@@ -401,7 +404,6 @@ export default {
     }
   },
   created() {
-    console.log('index', this.index)
     this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
   }
 }
