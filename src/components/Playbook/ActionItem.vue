@@ -1,6 +1,5 @@
 <template>
   <div class="action-items">
-    {{ act.actionTypes }}
     <app-dialog
       size="small"
       :status="openEnginesModal"

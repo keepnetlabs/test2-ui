@@ -16,7 +16,7 @@
           <v-radio-group
             v-model="investigateData.targetUserType"
             :mandatory="false"
-            @input="investigateData.targetUsers = []"
+            @change="investigateData.targetUsers = []"
             row
           >
             <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
