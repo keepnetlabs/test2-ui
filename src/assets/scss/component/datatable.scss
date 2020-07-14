@@ -196,6 +196,19 @@
         .cell > div {
           text-overflow: ellipsis;
           overflow: hidden;
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              display: grid;
+            }
+          }
+        }
+        .cell span {
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+          }
         }
 
         .el-table th > .cell {
