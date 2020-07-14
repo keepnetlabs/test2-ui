@@ -19,9 +19,9 @@
             @change="targetUsersValue = []"
             row
           >
-            <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
-            <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
-            <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
+            <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
+            <v-radio value="Groups" label="User Groups" color="#2196f3"></v-radio>
+            <v-radio value="SpecificUsers" label="Specific Users" color="#2196f3"></v-radio>
           </v-radio-group>
         </div>
         <div class="target-users-select__input-area">
@@ -129,6 +129,50 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
+            <label>Select Sources</label>
+            <v-list-item-title class="v-card-sub-header bottom-margin">
+              Select sources to investigate with conditions above
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-col>
+      <v-col md="5">
+        <div class="select-sources d-flex">
+          <v-checkbox
+            class="v-input--checkbox"
+            v-model="investigateData.scanTypes"
+            label="Outlook Desktop"
+            value="Outlook"
+            color="#2196f3"
+          />
+          <v-checkbox
+            class="v-input--checkbox ml-3"
+            v-model="investigateData.scanTypes"
+            label="Office 365"
+            value="O365"
+            color="#2196f3"
+          />
+          <v-checkbox
+            class="v-input--checkbox ml-3"
+            v-model="investigateData.scanTypes"
+            label="GSuite"
+            value="GSuite"
+            color="#2196f3"
+          />
+          <v-checkbox
+            class="v-input--checkbox ml-3"
+            v-model="investigateData.scanTypes"
+            label="Exchange"
+            value="Exchange"
+            color="#2196f3"
+          />
+        </div>
+      </v-col>
+    </v-row>
+    <v-row align="center">
+      <v-col md="5">
+        <v-list-item class="py-0">
+          <v-list-item-content class="py-0">
             <label>Duration</label>
             <v-list-item-title class="v-card-sub-header bottom-margin">
               Select how many days the investigation will run
@@ -160,21 +204,21 @@
         <v-row>
           <v-col>
             <v-select
-              v-model="investigateAction"
+              v-model="investigateData.actionType"
               :items="act.investigateActions"
               outlined
               hide-details
             />
           </v-col>
-          <v-col v-if="investigateAction === 'Notify users'">
+          <v-col v-if="investigateData.actionType === 'Notify'">
             <v-select
-              v-model="investigateActionNotification"
+              v-model="investigateData.actionNotifyTargetUserType"
               :items="act.investigateActionNotifications"
               outlined
               hide-details
             />
           </v-col>
-          <v-col v-if="investigateAction == 'Notify users'">
+          <v-col v-if="investigateData.actionType === 'Notify'">
             <v-select
               v-model="investigateActionNotificationTemplate"
               :items="act.notifyTemplates"
@@ -211,9 +255,13 @@ export default {
       default: () => {
         return {
           isCreatedByAnalyzer: false,
-          scanTypes: [],
+          scanTypes: ['Outlook'],
           filters: [],
-          expireDate: '',
+          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
           startDate: new Date(new Date().setDate(new Date().getDate() - 1))
             .toISOString()
             .split('T')
@@ -226,8 +274,8 @@ export default {
             .split('.')[0],
           targetUserType: 'AllUsers',
           targetUsers: [],
-          actionType: '',
-          actionNotifyTargetUserType: '',
+          actionType: 'Notify',
+          actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTemplateId: 1
         }

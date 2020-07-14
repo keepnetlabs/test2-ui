@@ -222,7 +222,7 @@
       </v-col>
       <v-col class="text-right">
         <!-- Remove act button -->
-        <v-btn icon @click="removeAction(index, action)">
+        <v-btn icon @click="removeAction(index, action)" v-if="action.val !== 'markAs'">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
@@ -265,7 +265,8 @@ export default {
     resourceId: String,
     editedActions: Object,
     editedPlaybookActionAnalyzers: Array,
-    editedNotifications: Array
+    editedNotifications: Array,
+    editedPlaybookActionInvestigations: Array
   },
   data() {
     return {
@@ -334,7 +335,18 @@ export default {
           { label: 'Incident Investigation Progress Report', value: '2311' },
           { label: 'Incident Investigation Suspicious Email Analysis Report', value: '2320' }
         ],
-        investigateFilters: ['Subject', 'From', 'To', 'CC', 'Sender IP', 'URLs', 'Attachments'],
+        investigateFilters: [
+          'From',
+          'To',
+          'Cc',
+          'SenderIp',
+          'Subject',
+          'Keyword',
+          'Url',
+          'AttachmentName',
+          'AttachmentExtension',
+          'AttachmentHash'
+        ],
         investigateRanges: [
           '1 day before and after',
           '3 days before and after',
@@ -342,13 +354,17 @@ export default {
           '2 weeks before and after'
         ],
         investigateDurations: ['1 day', '3 days', '7 days'],
-        investigateActions: ['Notify users', 'Delete email', 'Quarantine'],
+        investigateActions: [
+          'Notify',
+          { text: 'Delete email', value: 'DeleteEmail' },
+          'Quarantine'
+        ],
         investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone']
       },
       actions: [],
       actionsValues: [],
       playbookAction: {
-        markType: '',
+        markType: 'Clean',
         tags: []
       },
       playbookActionInvestigationAnalyzeData: {
@@ -369,7 +385,6 @@ export default {
       playbookActionAnalyzers: []
     }
   },
-  mounted() {},
   methods: {
     getSelectedIntegrations() {
       return this.analysisEngines.filter((item) => item.selected).length
@@ -490,26 +505,8 @@ export default {
         }
       })
       if (nextAvailableAction.val === 'investigate') {
-        /*
-        const index = this.actions.length
-        this.playbookActionInvestigations[index] = {
-          isCreatedByAnalyzer: false,
-          scanTypes: [],
-          filters: [],
-          expireDate: '',
-          startDate: '',
-          endDate: '',
-          targetUserType: 'Groups',
-          targetUsers: [],
-          actionType: '',
-          actionNotifyTargetUserType: '',
-          actionNotifyTargetUsers: [],
-          emailTemplateId: 1
-        }
-
-         */
       }
-      console.log()
+
       this.actions.push(nextAvailableAction)
 
       const length = this.actions.length
@@ -560,7 +557,6 @@ export default {
       }
       getTargetUsers(payload)
         .then((response) => {
-          console.log('this.targetUsers')
           this.targetUsers = response.data.data.results
         })
         .catch((error) => {
@@ -612,7 +608,18 @@ export default {
         this.addAction('analyze')
       }
     },
-    analysisEngines(val) {}
+    analysisEngines(val) {},
+    editedPlaybookActionInvestigations(investigations) {
+      investigations.map((investigation) => {
+        this.addAction('investigate')
+      })
+      setTimeout(() => {
+        const keys = Object.keys(this.$refs)
+        keys.map((key, index) => {
+          this.$refs[key][0].investigateData = JSON.parse(JSON.stringify(investigations[index]))
+        })
+      }, 500)
+    }
   },
 
   computed: {

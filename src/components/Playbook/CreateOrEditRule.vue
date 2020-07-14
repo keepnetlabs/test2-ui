@@ -155,6 +155,7 @@
                       :editedActions="playbookAction"
                       :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
                       :editedNotifications="editedNotifications"
+                      :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
                     />
                   </v-col>
                 </v-row>
@@ -247,6 +248,7 @@ export default {
       playbookActionAnalyzers: [],
       addedQuery: null,
       editedNotifications: [],
+      editedPlaybookActionInvestigations: [],
       validations: {
         required,
         maxLength
@@ -415,6 +417,7 @@ export default {
           playbookActionInvestigations[index] = ref.$refs[key][0].investigateData
         })
       }
+      debugger
 
       const playbookAction = ref.playbookAction
       const playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
@@ -444,33 +447,7 @@ export default {
         playbookAction,
         playbookActionAnalyzers,
         playbookActionNotifications,
-        playbookActionInvestigations: [
-          {
-            isCreatedByAnalyzer: true,
-            expireDate: '2020-05-01 03:17:07.140',
-            startDate: '2020-01-01 03:17:07.140',
-            endDate: '2020-09-09 03:17:07.140',
-            scanTypes: ['Outlook'],
-            filters: [
-              'From',
-              'To',
-              'Cc',
-              'SenderIp',
-              'Subject',
-              'Keyword',
-              'Url',
-              'AttachmentName',
-              'AttachmentExtension',
-              'AttachmentHash'
-            ],
-            targetUserType: 'SpecificUsers',
-            targetUsers: ['burak2.okmen2@outlook.com', 'burak.okmen@outlook.com'],
-            actionType: 'Notify',
-            actionNotifyTargetUserType: 'Reporter',
-            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-            emailTemplateId: 1
-          }
-        ],
+        playbookActionInvestigations,
         condition: this.condition
       }
       createPlaybook(payload)
@@ -486,6 +463,13 @@ export default {
     },
     callForUpdatePlaybook() {
       const ref = this.$refs.refActionItem
+      const keys = Object.keys(ref.$refs)
+      const playbookActionInvestigations = []
+      if (keys.length > 0) {
+        keys.map((key, index) => {
+          playbookActionInvestigations[index] = ref.$refs[key][0].investigateData
+        })
+      }
       const playbookAction = ref.playbookAction
       const playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
         return item.selected === true
@@ -514,33 +498,7 @@ export default {
         playbookAction,
         playbookActionNotifications,
         playbookActionAnalyzers,
-        playbookActionInvestigations: [
-          {
-            isCreatedByAnalyzer: true,
-            expireDate: '2020-05-01 03:17:07.140',
-            startDate: '2020-01-01 03:17:07.140',
-            endDate: '2020-09-09 03:17:07.140',
-            scanTypes: ['Outlook'],
-            filters: [
-              'From',
-              'To',
-              'Cc',
-              'SenderIp',
-              'Subject',
-              'Keyword',
-              'Url',
-              'AttachmentName',
-              'AttachmentExtension',
-              'AttachmentHash'
-            ],
-            targetUserType: 'SpecificUsers',
-            targetUsers: ['burak2.okmen2@outlook.com', 'burak.okmen@outlook.com'],
-            actionType: 'Notify',
-            actionNotifyTargetUserType: 'Reporter',
-            actionNotifyTargetUsers: ['4B499616-1D96-4723-93F7-79B1E8F110A7'],
-            emailTemplateId: 1
-          }
-        ],
+        playbookActionInvestigations,
         condition: this.condition
       }
       updatePlaybook(payload)
@@ -716,6 +674,7 @@ export default {
           this.playbookAction = data.playbookAction
           this.playbookActionAnalyzers = data.playbookActionAnalyzers
           this.editedNotifications = data.playbookActionNotifications
+          this.editedPlaybookActionInvestigations = data.playbookActionInvestigations
         })
         .catch((error) => {})
     }
