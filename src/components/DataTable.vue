@@ -1413,7 +1413,7 @@ export default {
           this.$emit('deleteInvestigationDetailsFunction', selections)
           break
         case 'rulesListTable':
-          this.$emit('deleteFunction')
+          this.$emit('deleteFunction', selections)
           break
         default:
           break

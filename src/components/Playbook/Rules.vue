@@ -402,6 +402,7 @@ export default {
       })
     },
     deleteRule(value, multi) {
+      debugger
       let isArray = Array.isArray(value)
       this.totalSelectedItemsCount = isArray ? value.length : 1
       this.isWantToDelete = true

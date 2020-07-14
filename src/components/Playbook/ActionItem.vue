@@ -413,7 +413,7 @@ export default {
         actionType: 'Notify',
         actionNotifyTargetUserType: 'Reporter',
         actionNotifyTargetUsers: [],
-        emailTemplateId: 1
+        emailTempleditedPlaybookActionAnalyzersteId: 1
       },
 
       playbookActionAnalyzers: []
