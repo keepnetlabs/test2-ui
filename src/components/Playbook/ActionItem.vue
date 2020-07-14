@@ -1,6 +1,5 @@
 <template>
   <div class="action-items">
-    {{ act.actionTypes }}
     <app-dialog
       size="small"
       :status="openEnginesModal"
@@ -147,7 +146,7 @@
         <v-select v-model="playbookAction.markType" :items="act.markAsOpts" outlined hide-details />
       </v-col>
       <v-col
-        v-if="actionsValues[index].val == 'analyze'"
+        v-if="actionsValues[index].val === 'analyze'"
         md="auto"
         class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
       >
@@ -165,7 +164,7 @@
         </v-col>
       </v-col>
 
-      <v-col v-if="actionsValues[index].val == 'tag'" md="auto" class="mr-2 flex-grow-1">
+      <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="mr-2 flex-grow-1">
         <v-combobox
           v-model="playbookAction.tags"
           :items="[]"
@@ -186,11 +185,16 @@
         ></v-combobox>
       </v-col>
       <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
-        <v-select v-model="targetUserType[index]" :items="act.notifyTypes" outlined />
+        <v-select
+          v-model="targetUserType[index]"
+          :items="act.notifyTypes"
+          outlined
+          @input="tarUsers[index] = []"
+        />
       </v-col>
       <v-col
         v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
-        md="2"
+        md="5"
         class="mr-2"
       >
         <v-autocomplete
@@ -204,11 +208,13 @@
           placeholder="Select Target User"
           outlined
           multiple
+          small-chips
+          deletable-chips
         ></v-autocomplete>
       </v-col>
       <v-col
         v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
-        md="2"
+        md="5"
         class="mr-2"
       >
         <v-combobox
@@ -221,6 +227,7 @@
           item-value="resourceId"
           multiple
           dense
+          deletable-chips
           :return-object="false"
           persistent-hint
           small-chips
@@ -244,11 +251,7 @@
         </v-btn>
       </v-col>
       <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'">
-        <investigate
-          ref="refAnalyze"
-          :investigateData="playbookActionInvestigationAnalyzeData"
-          :act="act"
-        />
+        <investigate :investigateData="playbookActionInvestigationAnalyzeData" :act="act" />
       </v-col>
       <v-col v-if="actionsValues[index].val == 'investigate'" md="12">
         <investigate
@@ -388,15 +391,27 @@ export default {
       },
       playbookActionInvestigationAnalyzeData: {
         isCreatedByAnalyzer: true,
-        scanTypes: [],
+        scanTypes: ['Outlook'],
         filters: [],
-        expireDate: '',
-        startDate: '',
-        endDate: '',
+        expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
+          .toISOString()
+          .split('T')
+          .join(' ')
+          .split('.')[0],
+        startDate: new Date(new Date().setDate(new Date().getDate() - 1))
+          .toISOString()
+          .split('T')
+          .join(' ')
+          .split('.')[0],
+        endDate: new Date(new Date().setDate(new Date().getDate() + 1))
+          .toISOString()
+          .split('T')
+          .join(' ')
+          .split('.')[0],
         targetUserType: 'AllUsers',
         targetUsers: [],
-        actionType: '',
-        actionNotifyTargetUserType: '',
+        actionType: 'Notify',
+        actionNotifyTargetUserType: 'Reporter',
         actionNotifyTargetUsers: [],
         emailTemplateId: 1
       },
@@ -603,7 +618,14 @@ export default {
     }
   },
   created() {
-    this.addAction()
+    if (
+      this.actions.findIndex((item) => {
+        return item.val === 'markAs'
+      }) === -1
+    ) {
+      this.addAction()
+    }
+
     this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
     this.getAnalysisEngine()
     this.getTargetUsers()
@@ -639,7 +661,7 @@ export default {
         return !!abc
       })
       this.analysisEngines = dizi
-      if (val) {
+      if (val.length > 0) {
         this.addAction('analyze')
       }
     },

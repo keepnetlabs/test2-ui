@@ -412,17 +412,28 @@ export default {
       const ref = this.$refs.refActionItem
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
+      let playbookActionAnalyzers = []
       if (keys.length > 0) {
+        let valueIndex = 0
         keys.map((key, index) => {
-          playbookActionInvestigations[index] = ref.$refs[key][0].investigateData
+          if (ref.$refs[key].length > 0) {
+            playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            valueIndex++
+          }
         })
       }
-      debugger
+      if (
+        ref.actions.some((item) => {
+          return item.val === 'analyze'
+        })
+      ) {
+        playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+        playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
+          return item.selected === true
+        })
+      }
 
       const playbookAction = ref.playbookAction
-      const playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
-        return item.selected === true
-      })
       const targetUserType = ref.targetUserType
       const targetUsers = ref.tarUsers
       const playbookActionNotifications = []
@@ -465,15 +476,29 @@ export default {
       const ref = this.$refs.refActionItem
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
+      let playbookActionAnalyzers = []
       if (keys.length > 0) {
+        let valueIndex = 0
         keys.map((key, index) => {
-          playbookActionInvestigations[index] = ref.$refs[key][0].investigateData
+          if (ref.$refs[key].length > 0) {
+            playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            valueIndex++
+          }
         })
       }
       const playbookAction = ref.playbookAction
-      const playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
-        return item.selected === true
-      })
+
+      if (
+        ref.actions.some((item) => {
+          return item.val === 'analyze'
+        })
+      ) {
+        playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+        playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
+          return item.selected === true
+        })
+      }
+
       const targetUserType = ref.targetUserType
       const targetUsers = ref.tarUsers
       const playbookActionNotifications = []
@@ -488,6 +513,7 @@ export default {
           index++
         }
       }
+
       const payload = {
         name: this.name,
         description: this.description,
@@ -674,7 +700,20 @@ export default {
           this.playbookAction = data.playbookAction
           this.playbookActionAnalyzers = data.playbookActionAnalyzers
           this.editedNotifications = data.playbookActionNotifications
-          this.editedPlaybookActionInvestigations = data.playbookActionInvestigations
+          this.editedPlaybookActionInvestigations = data.playbookActionInvestigations.filter(
+            (item) => {
+              return item.isCreatedByAnalyzer !== true
+            }
+          )
+
+          const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
+            return item.isCreatedByAnalyzer
+          })
+          if (indexOfAnalyzeItem !== -1) {
+            this.$refs.refActionItem.playbookActionInvestigationAnalyzeData =
+              data.playbookActionInvestigations[indexOfAnalyzeItem]
+            this.$refs.refActionItem.analyzeCheckbox = true
+          }
         })
         .catch((error) => {})
     }

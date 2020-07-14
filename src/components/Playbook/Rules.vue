@@ -266,7 +266,7 @@ export default {
         pageNumber: 1,
         pageSize: 500,
         orderBy: 'CreateDate',
-        ascending: true,
+        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
