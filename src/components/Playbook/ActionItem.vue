@@ -2,7 +2,7 @@
   <div class="action-items">
     {{ act.actionTypes }}
     <app-dialog
-      size="big"
+      size="small"
       :status="openEnginesModal"
       class-name="download-modal"
       @changeStatus="openEnginesModal = false"
@@ -14,6 +14,17 @@
       <template v-slot:app-dialog-body>
         <div class="bg-white">
           <div class="">
+            <v-text-field
+              @mouseover.native="hover = true"
+              class="filter-field"
+              placeholder="Search"
+              outlined
+              prepend-inner-icon="mdi-magnify"
+              v-model="searchEnginesModelInput"
+              @keyup="searchEnginesModel()"
+              ref="searchInput"
+              hide-details
+            />
             <div class="analyze__main__select-row-wrap check-all">
               <div class="checkbox-and-text">
                 <v-checkbox
@@ -21,6 +32,7 @@
                   color="#2196f3"
                   v-model="acceptAllAnalysisEngines"
                   @change="acceptAllAnalysisEnginesClick"
+                  hide-details
                 />
                 <span class="checkbox-text-dialog">Select All</span>
               </div>
@@ -40,7 +52,7 @@
           <div>
             <div class="analyze__main__select-row-wrap">
               <div
-                v-for="(engine, index) in analysisEngines"
+                v-for="(engine, index) in searchEnginesData || analysisEngines"
                 :key="index"
                 class="analyze__main__select-row-wrap__item"
               >
@@ -49,9 +61,14 @@
                     class="k-checkbox"
                     color="#2196f3"
                     v-model="engine.selected"
+                    hide-details
                     @change="analysisEnginesChange(engine, index)"
                   />
-                  <span class="checkbox-text-dialog">{{ engine.name }}</span>
+                  <span
+                    class="checkbox-text-dialog"
+                    :class="engine.selected ? 'checkbox-text-dialog-selected' : ''"
+                    >{{ engine.name }}</span
+                  >
                 </div>
                 <div class="analyze__main__select-row-inline">
                   <span
@@ -270,6 +287,8 @@ export default {
   },
   data() {
     return {
+      searchEnginesData: null,
+      searchEnginesModelInput: null,
       timerId: null,
       isLoading: false,
       search: '',
@@ -386,8 +405,24 @@ export default {
     }
   },
   methods: {
+    searchEnginesModel(val) {
+      if (this.searchEnginesModelInput) {
+        this.searchEnginesData = this.analysisEngines.reduce((acc, item) => {
+          const data = Object.values(item).find(i => {
+            if (
+              typeof i === 'string' &&
+              i.toLocaleLowerCase().includes(this.searchEnginesModelInput.toLocaleLowerCase())
+            )
+              return acc.push(item)
+          })
+          return acc
+        }, [])
+      } else {
+        this.searchEnginesData = null
+      }
+    },
     getSelectedIntegrations() {
-      return this.analysisEngines.filter((item) => item.selected).length
+      return this.analysisEngines.filter(item => item.selected).length
     },
     checkAllDataChecked(index) {
       this.analysisEngines[index].selected =
@@ -410,7 +445,7 @@ export default {
     acceptAllAnalysisEnginesClick() {
       const val = this.acceptAllAnalysisEngines
 
-      this.analysisEngines = this.analysisEngines.map((item) => {
+      this.analysisEngines = this.analysisEngines.map(item => {
         return {
           ...item,
           isSendUrl: val,
@@ -437,9 +472,9 @@ export default {
         }
       }
       getAnalysisEngine(payload)
-        .then((response) => {
+        .then(response => {
           console.log('response.data.data', response.data.data)
-          const data = response.data.data.results.map((item) => {
+          const data = response.data.data.results.map(item => {
             return {
               resourceId: item.resourceId,
               integrationId: item.resourceId,
@@ -453,7 +488,7 @@ export default {
           this.acceptAllAnalysisEngines = true
           this.analysisEngines = data
         })
-        .catch((error) => {
+        .catch(error => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting analysis engines data!'
@@ -475,7 +510,7 @@ export default {
       this.actionsValues[index] = value
       this.actions[index] = value
       this.act.actionTypes.map((item, index) => {
-        this.actionsValues.map((i) => {
+        this.actionsValues.map(i => {
           if (item.val === i.val && item.val !== 'investigate' && item.val !== 'notify') {
             item.disabled = true
           }
@@ -489,12 +524,12 @@ export default {
     addAction(actionVal = null) {
       let nextAvailableAction
       if (actionVal) {
-        nextAvailableAction = this.act.actionTypes.find((item) => item.val === actionVal)
+        nextAvailableAction = this.act.actionTypes.find(item => item.val === actionVal)
       } else {
-        nextAvailableAction = this.act.actionTypes.find((item) => !item.disabled)
+        nextAvailableAction = this.act.actionTypes.find(item => !item.disabled)
       }
 
-      this.act.actionTypes.find((item) => {
+      this.act.actionTypes.find(item => {
         if (
           JSON.stringify(item) === JSON.stringify(nextAvailableAction) &&
           nextAvailableAction.val !== 'investigate' &&
@@ -514,7 +549,7 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     removeAction(index, action) {
-      this.act.actionTypes.find((item) => {
+      this.act.actionTypes.find(item => {
         if (
           JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&
           item.val !== 'investigate' &&
@@ -523,7 +558,7 @@ export default {
           item.disabled = false
         }
       })
-      const newIndex = this.actions.findIndex((item) => {
+      const newIndex = this.actions.findIndex(item => {
         return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
       })
 
@@ -556,10 +591,10 @@ export default {
         }
       }
       getTargetUsers(payload)
-        .then((response) => {
+        .then(response => {
           this.targetUsers = response.data.data.results
         })
-        .catch((error) => {
+        .catch(error => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting target users data!'
@@ -584,7 +619,7 @@ export default {
       }
     },
     editedNotifications(val) {
-      val.map((item) => {
+      val.map(item => {
         this.addAction('notify')
       })
       let valIndex = 0
@@ -597,8 +632,8 @@ export default {
       })
     },
     editedPlaybookActionAnalyzers(val) {
-      const dizi = this.analysisEngines.filter((item) => {
-        const abc = val.find((i) => {
+      const dizi = this.analysisEngines.filter(item => {
+        const abc = val.find(i => {
           return i.resourceId === item.resourceId
         })
         return !!abc
@@ -610,7 +645,7 @@ export default {
     },
     analysisEngines(val) {},
     editedPlaybookActionInvestigations(investigations) {
-      investigations.map((investigation) => {
+      investigations.map(investigation => {
         this.addAction('investigate')
       })
       setTimeout(() => {

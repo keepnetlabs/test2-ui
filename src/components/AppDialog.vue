@@ -10,13 +10,13 @@
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm">
-        <v-list-item class="pl-0 pr-0 k-dialog__header" v-if="icon && title && subtitle">
+        <v-list-item class="k-dialog__header" v-if="icon && title && subtitle">
           <div class="v-btn v-cart-icon-wrapper" v-if="icon">
             <v-icon :color="iconColor" class="ml-2" left medium>
               {{ icon }}
             </v-icon>
           </div>
-          <v-list-item-content class="pt-0 pb-0">
+          <v-list-item-content>
             <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
             <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }}</v-list-item-subtitle>
           </v-list-item-content>
@@ -26,7 +26,7 @@
             {{ body }}
           </slot>
         </div>
-        <v-card-actions class="pa-0 k-dialog__footer">
+        <v-card-actions class="k-dialog__footer">
           <slot name="app-dialog-footer"></slot>
         </v-card-actions>
       </v-form>
@@ -110,14 +110,16 @@ export default {
 
 <style lang="scss">
 .k-dialog {
-  &__header {
-    margin-bottom: 20px;
-  }
   &__card {
-    padding: 24px 24px 10px 24px;
     border-radius: 12px !important;
     box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
       0 9px 46px 8px rgba(80, 80, 80, 0.12);
+  }
+
+  &__header {
+    margin-bottom: 0;
+    border-bottom: 1px solid #ebeef5;
+    padding: 12px 24px 12px 24px;
   }
 
   &__title {
@@ -136,13 +138,13 @@ export default {
   }
 
   &__body {
-    padding-top: 34px;
     font-size: 13px;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.72) !important;
-    padding-bottom: 17px;
-    max-height: 350px;
+    max-height: 390px;
     overflow-y: auto;
+    padding: 24px 24px 24px 24px;
+    border-bottom: 1px solid #ebeef5;
   }
 
   &__button {
@@ -153,6 +155,7 @@ export default {
   }
 
   &__footer {
+    padding: 8px 24px 8px 24px;
     > * {
       width: 100%;
     }

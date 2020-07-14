@@ -15,18 +15,21 @@
           color="#2196f3"
           label="XLS"
           v-model="downloadType[0]"
+          hide-details
         />
         <v-checkbox
           class="download-modal__checkbox"
           color="#2196f3"
           label="CSV"
           v-model="downloadType[1]"
+          hide-details
         />
         <v-checkbox
           class="download-modal__checkbox"
           color="#2196f3"
           label="PDF"
           v-model="downloadType[2]"
+          hide-details
         />
       </div>
     </template>
@@ -44,7 +47,7 @@
           @click="downloadEvent"
           color="#2196f3"
           text
-          :disabled="!downloadType.some((i) => i === true)"
+          :disabled="!downloadType.some(i => i === true)"
           >DOWNLOAD</v-btn
         >
       </div>
@@ -106,17 +109,9 @@ export default {
 
 <style lang="scss">
 .download-modal {
-  .k-dialog__body {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-  }
-  &__body {
-    margin-left: 70px;
-    padding-top: 22px;
-  }
   &__checkbox {
     padding-top: 0;
-    margin-top: -5px !important;
+    margin-top: 5px !important;
   }
   &__footer {
     display: flex;

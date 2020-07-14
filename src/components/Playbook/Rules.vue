@@ -46,6 +46,8 @@
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
+      :selectEvent="tableOptions.selectEvent"
+      @deleteFunction="deleteRule($event)"
       @addAction="toggleRuleModal"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportPlaybookRules"
@@ -113,7 +115,7 @@
       </template>
     </datatable>
 
-    <v-dialog v-model="showRuleModal" fullscreen scrollable @input="(v) => v || toggleRuleModal()">
+    <v-dialog v-model="showRuleModal" fullscreen scrollable @input="v => v || toggleRuleModal()">
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
         @cancelForm="toggleRuleModal"
@@ -253,6 +255,11 @@ export default {
           show: true,
           action: 'addAction',
           tooltip: 'Add Rule'
+        },
+        selectEvent: {
+          clipboard: true,
+          edit: true,
+          delete: true
         }
       },
       tableCredientials: {
@@ -327,7 +334,6 @@ export default {
           btn: '',
           icon: 'mdi-plus'
         },
-        selectEvent: {},
         chartOptions: {}
       }
     }
@@ -360,13 +366,13 @@ export default {
         ascending: true
       }
       getMatchingIncidents(payload, match.resourceId)
-        .then((response) => {
+        .then(response => {
           const tableData = response.data.data
           this.$refs.refmatchingInvestigationPlaybookRules.loadWithDataArray(
             tableData.results || []
           )
         })
-        .catch((error) => {
+        .catch(error => {
           this.$store.dispatch('common/createSnackBar', {
             errorState: true,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -375,7 +381,7 @@ export default {
         })
     },
     exportPlaybookRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      exportTypes.map((exportType) => {
+      exportTypes.map(exportType => {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
@@ -385,17 +391,18 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType
         }
         exportPlaybookRules(payload)
-          .then((response) => {
+          .then(response => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
             link.download = `Playbook Rules.${exportType.toLocaleLowerCase()}`
             link.click()
           })
-          .catch((error) => {})
+          .catch(error => {})
       })
     },
     deleteRule(value, multi) {
+      debugger
       let isArray = Array.isArray(value)
       this.totalSelectedItemsCount = isArray ? value.length : 1
       this.isWantToDelete = true
@@ -411,9 +418,9 @@ export default {
       } else {
         values.push(this.deleteValues.resourceId)
       }
-      values.map((item) => {
+      values.map(item => {
         deletePlaybookRule(item)
-          .then((response) => {
+          .then(response => {
             _this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -424,7 +431,7 @@ export default {
               _this.$refs.refRulesList.loadWithDataArray(_this.playbookList.results)
             })
           })
-          .catch((error) => {
+          .catch(error => {
             _this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -451,7 +458,7 @@ export default {
       playbookList: 'playbook/playbookListGetter'
     }),
     ...mapState({
-      playbookList: (state) => state.playbook.playbookList
+      playbookList: state => state.playbook.playbookList
     }),
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.name}`

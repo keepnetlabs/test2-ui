@@ -27,7 +27,18 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  height: 30px;
+  height: 19px;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87);
+  max-width: 150px;
+  &-selected{
+    font-weight: 600;
+  }
 }
 
 .k-checkbox {
@@ -95,12 +106,12 @@
 }
 
 .check-all {
-  padding: 30px 15px 0 15px;
+  padding: 24px 21px 7px 15px;
   display: flex;
   flex-flow: row;
   justify-content: flex-start;
   border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .analysis-engines-select {
