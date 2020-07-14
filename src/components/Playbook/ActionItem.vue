@@ -423,7 +423,7 @@ export default {
     searchEnginesModel(val) {
       if (this.searchEnginesModelInput) {
         this.searchEnginesData = this.analysisEngines.reduce((acc, item) => {
-          const data = Object.values(item).find(i => {
+          const data = Object.values(item).find((i) => {
             if (
               typeof i === 'string' &&
               i.toLocaleLowerCase().includes(this.searchEnginesModelInput.toLocaleLowerCase())
@@ -437,30 +437,58 @@ export default {
       }
     },
     getSelectedIntegrations() {
-      return this.analysisEngines.filter(item => item.selected).length
+      return this.analysisEngines.filter((item) => item.selected).length
     },
-    checkAllDataChecked(index) {
-      this.analysisEngines[index].selected =
-        this.analysisEngines[index].isSendFileHash ||
-        this.analysisEngines[index].isSendFile ||
-        this.analysisEngines[index].isSendUrl
+    checkAllDataChecked(index, item) {
+      if (item) {
+        item.selected = item.isSendFileHash || item.isSendFile || item.isSendUrl
+      } else {
+        this.analysisEngines[index].selected =
+          this.analysisEngines[index].isSendFileHash ||
+          this.analysisEngines[index].isSendFile ||
+          this.analysisEngines[index].isSendUrl
+      }
     },
     hashChange(val, index) {
-      this.analysisEngines[index].isSendFileHash = !val
-      this.checkAllDataChecked(index)
+      if (this.searchEnginesData) {
+        let item = this.analysisEngines.find(
+          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+        )
+        item.isSendFileHash = !val
+        this.checkAllDataChecked(index, item)
+      } else {
+        this.analysisEngines[index].isSendFileHash = !val
+        this.checkAllDataChecked(index)
+      }
     },
     fileChange(val, index) {
-      this.analysisEngines[index].isSendFile = !val
-      this.checkAllDataChecked(index)
+      if (this.searchEnginesData) {
+        let item = this.analysisEngines.find(
+          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+        )
+        item.isSendFile = !val
+        this.checkAllDataChecked(index, item)
+      } else {
+        this.analysisEngines[index].isSendFile = !val
+        this.checkAllDataChecked(index)
+      }
     },
     urlChange(val, index) {
-      this.analysisEngines[index].isSendUrl = !val
-      this.checkAllDataChecked(index)
+      if (this.searchEnginesData) {
+        let item = this.analysisEngines.find(
+          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+        )
+        item.isSendUrl = !val
+        this.checkAllDataChecked(index, item)
+      } else {
+        this.analysisEngines[index].isSendUrl = !val
+        this.checkAllDataChecked(index)
+      }
     },
     acceptAllAnalysisEnginesClick() {
       const val = this.acceptAllAnalysisEngines
 
-      this.analysisEngines = this.analysisEngines.map(item => {
+      this.analysisEngines = this.analysisEngines.map((item) => {
         return {
           ...item,
           isSendUrl: val,
@@ -487,9 +515,9 @@ export default {
         }
       }
       getAnalysisEngine(payload)
-        .then(response => {
+        .then((response) => {
           console.log('response.data.data', response.data.data)
-          const data = response.data.data.results.map(item => {
+          const data = response.data.data.results.map((item) => {
             return {
               resourceId: item.resourceId,
               integrationId: item.resourceId,
@@ -503,7 +531,7 @@ export default {
           this.acceptAllAnalysisEngines = true
           this.analysisEngines = data
         })
-        .catch(error => {
+        .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting analysis engines data!'
@@ -525,7 +553,7 @@ export default {
       this.actionsValues[index] = value
       this.actions[index] = value
       this.act.actionTypes.map((item, index) => {
-        this.actionsValues.map(i => {
+        this.actionsValues.map((i) => {
           if (item.val === i.val && item.val !== 'investigate' && item.val !== 'notify') {
             item.disabled = true
           }
@@ -539,12 +567,12 @@ export default {
     addAction(actionVal = null) {
       let nextAvailableAction
       if (actionVal) {
-        nextAvailableAction = this.act.actionTypes.find(item => item.val === actionVal)
+        nextAvailableAction = this.act.actionTypes.find((item) => item.val === actionVal)
       } else {
-        nextAvailableAction = this.act.actionTypes.find(item => !item.disabled)
+        nextAvailableAction = this.act.actionTypes.find((item) => !item.disabled)
       }
 
-      this.act.actionTypes.find(item => {
+      this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(item) === JSON.stringify(nextAvailableAction) &&
           nextAvailableAction.val !== 'investigate' &&
@@ -564,7 +592,7 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     removeAction(index, action) {
-      this.act.actionTypes.find(item => {
+      this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&
           item.val !== 'investigate' &&
@@ -573,7 +601,7 @@ export default {
           item.disabled = false
         }
       })
-      const newIndex = this.actions.findIndex(item => {
+      const newIndex = this.actions.findIndex((item) => {
         return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
       })
 
@@ -606,10 +634,10 @@ export default {
         }
       }
       getTargetUsers(payload)
-        .then(response => {
+        .then((response) => {
           this.targetUsers = response.data.data.results
         })
-        .catch(error => {
+        .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting target users data!'
@@ -641,7 +669,7 @@ export default {
       }
     },
     editedNotifications(val) {
-      val.map(item => {
+      val.map((item) => {
         this.addAction('notify')
       })
       let valIndex = 0
@@ -654,8 +682,8 @@ export default {
       })
     },
     editedPlaybookActionAnalyzers(val) {
-      const dizi = this.analysisEngines.filter(item => {
-        const abc = val.find(i => {
+      const dizi = this.analysisEngines.filter((item) => {
+        const abc = val.find((i) => {
           return i.resourceId === item.resourceId
         })
         return !!abc
@@ -667,7 +695,7 @@ export default {
     },
     analysisEngines(val) {},
     editedPlaybookActionInvestigations(investigations) {
-      investigations.map(investigation => {
+      investigations.map((investigation) => {
         this.addAction('investigate')
       })
       setTimeout(() => {

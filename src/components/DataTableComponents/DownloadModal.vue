@@ -47,7 +47,7 @@
           @click="downloadEvent"
           color="#2196f3"
           text
-          :disabled="!downloadType.some(i => i === true)"
+          :disabled="!downloadType.some((i) => i === true)"
           >DOWNLOAD</v-btn
         >
       </div>

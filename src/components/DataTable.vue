@@ -657,9 +657,9 @@
                     <v-btn
                       :disabled="
                         scope.row.status === 'Cancelled' ||
-                          scope.row.status === 'Expired' ||
-                          scope.row.status === 'Finished' ||
-                          scope.row.status === 'NoMatch'
+                        scope.row.status === 'Expired' ||
+                        scope.row.status === 'Finished' ||
+                        scope.row.status === 'NoMatch'
                       "
                       @click.native="rowAct(rowActions[1].action, scope.row)"
                       class="btn-hover"
@@ -961,13 +961,13 @@ export default {
     isRowActionsMenuOpen(val) {},
     firstColFixed(val) {
       if (!val) {
-        const fixedCol = this.columns.filter(c => c.fixed === 'left')
+        const fixedCol = this.columns.filter((c) => c.fixed === 'left')
         if (fixedCol && fixedCol.length) {
           fixedCol[0].fixed = false
           this.firstColFixed = false
         }
       } else {
-        const disabledCol = this.columns.filter(c => c.fixed === false)
+        const disabledCol = this.columns.filter((c) => c.fixed === false)
         disabledCol[0].fixed = 'left'
         this.firstColFixed = true
       }
@@ -992,7 +992,7 @@ export default {
     columns: {
       deep: true,
       handler(val) {
-        if (!val.some(col => col.show)) this.allHidden = true
+        if (!val.some((col) => col.show)) this.allHidden = true
         else this.allHidden = false
       }
     }
@@ -1021,12 +1021,12 @@ export default {
     this.init = true
     if (window.outerWidth < 1023) {
       this.actionFixed = false
-      const leftFixed = this.columns.filter(col => col.fixed === 'left')
+      const leftFixed = this.columns.filter((col) => col.fixed === 'left')
       if (leftFixed && leftFixed.length) {
         leftFixed[0].fixed = false
         this.firstColFixed = false
       }
-      const rightFixed = this.columns.filter(col => col.fixed === 'right')
+      const rightFixed = this.columns.filter((col) => col.fixed === 'right')
       if (rightFixed && rightFixed.length) {
         rightFixed[0].fixed = false
       }
@@ -1034,7 +1034,7 @@ export default {
       this.actionFixed = false
     }
     const _this = this
-    setTimeout(function() {
+    setTimeout(function () {
       _this.setDatatableUI = true
     }, 1)
   },
@@ -1108,7 +1108,7 @@ export default {
     },
 
     sortFunction(data, sortProps) {
-      const isDate = function() {
+      const isDate = function () {
         const isDate = data.reduce((acc, item) => {
           acc.push(
             new Date(item[sortProps.prop]) !== 'Invalid Date' &&
@@ -1120,7 +1120,7 @@ export default {
       }
       let sortData = []
       if (!isDate()) {
-        sortData = data.sort(function(a, b) {
+        sortData = data.sort(function (a, b) {
           if (sortProps.order === 'descending' && sortProps.prop) {
             return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop])
           } else {
@@ -1128,7 +1128,7 @@ export default {
           }
         })
       } else {
-        sortData = data.sort(function(a, b) {
+        sortData = data.sort(function (a, b) {
           if (a === b) {
             return 0
           }
@@ -1159,7 +1159,7 @@ export default {
     searchChangedEvent() {
       if (this.isServerSide) {
         const filterItems = this.columns
-          .filter(column => column.isFilterable)
+          .filter((column) => column.isFilterable)
           .reduce((acc, filterItem) => {
             acc.push({
               FieldName: filterItem.property,
@@ -1184,7 +1184,7 @@ export default {
         const searchValue = this.search
         this.showfilteredData = !!searchValue.length
         this.filteredData = this.initialData.reduce((acc, item) => {
-          const data = Object.values(item).find(i => {
+          const data = Object.values(item).find((i) => {
             if (
               typeof i === 'string' &&
               i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
@@ -1226,7 +1226,7 @@ export default {
       }
     },
     getColumnLabel(key, value) {
-      const answer = this.columns.find(item => {
+      const answer = this.columns.find((item) => {
         return item['property'] === key
       })
 
@@ -1236,7 +1236,7 @@ export default {
       this.$emit(action, row)
     },
     tableRowClassName(row) {
-      const ans = this.multipleSelection.some(r => JSON.stringify(r) === JSON.stringify(row.row))
+      const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row))
       if (ans) {
         return 'selected-row'
       }
