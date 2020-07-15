@@ -1360,9 +1360,10 @@ export default {
         return acc
       }, [])
 
-      const columnsLength = []
+      let columnsLength = []
       let text = ''
-      selections.forEach((item, index) => {
+      let selectionsCopy = JSON.parse(JSON.stringify(selections))
+      selectionsCopy.forEach((item, index) => {
         headerKeys.forEach((a, i) => {
           if (!item[a]) item[a] = 'Empty'
           let lengthOfItem = item[a].toString().length || 0
