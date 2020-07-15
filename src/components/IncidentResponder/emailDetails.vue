@@ -532,8 +532,11 @@ export default {
       this.downloadModalStatus = true
     },
     getDetailsLink(scope, col, parentRow) {
+      debugger
       switch (scope.row.analysisEngine) {
         case 'Virus Total Engine':
+          return `https://www.virustotal.com/gui/file/${parentRow.md5}`
+        default:
           return `https://www.virustotal.com/gui/file/${parentRow.md5}`
       }
     },
