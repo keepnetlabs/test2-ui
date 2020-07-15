@@ -686,6 +686,9 @@
           line-height: 1.71;
           letter-spacing: normal;
           height: 36px !important;
+          .v-btn__content{
+            text-transform: uppercase;
+          }
         }
       }
     }
