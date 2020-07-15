@@ -249,11 +249,10 @@ export default {
         addButton: {
           show: true,
           action: 'addAction',
-          tooltip: 'Add Rule'
+          tooltip: 'Add a Rule'
         },
         selectEvent: {
           clipboard: true,
-          edit: true,
           delete: true
         }
       },
@@ -410,7 +409,7 @@ export default {
           values.push(value.resourceId)
         }
       } else {
-        values.push(this.deleteValues.resourceId)
+        values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
       }
       values.map((item) => {
         deletePlaybookRule(item)
