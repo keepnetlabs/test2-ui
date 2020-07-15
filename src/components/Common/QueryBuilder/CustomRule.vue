@@ -18,14 +18,21 @@
         class="mr-2"
         v-if="
           typeof rule.operators !== 'undefined' &&
-          query.operand !== 'Sender IP' &&
+          query.operand !== 'SenderIp' &&
           rule.operators.length > 1
         "
       >
         <!-- List of operators (e.g. =, !=, >, <) -->
-        <v-select v-model="query.operator" :items="rule.operators" outlined hide-details />
+        <v-select
+          v-model="query.operator"
+          :items="rule.operators"
+          outlined
+          hide-details
+          item-value="value"
+          item-text="text"
+        />
       </v-col>
-      <v-col md="2" v-if="query.operand === 'Sender IP'">
+      <v-col md="2" v-if="query.operand === 'SenderIp'">
         <!-- List of "From" operands-->
         <v-select
           v-model.trim="query.operator"
@@ -78,12 +85,12 @@
         v-if="
           rule.type === 'conditions' &&
           query.operand !== 'Analysis result' &&
-          query.operand !== 'Sender IP' &&
+          query.operand !== 'SenderIp' &&
           query.operand !== 'Subject' &&
           query.operand !== 'Keyword' &&
-          query.operand !== 'Attachment name' &&
-          query.operand !== 'Attachment extension' &&
-          query.operand !== 'Attachment hash'
+          query.operand !== 'AttachmentName' &&
+          query.operand !== 'AttachmentExtension' &&
+          query.operand !== 'AttachmentHash'
         "
       >
         <!-- Condition text input-->
@@ -92,15 +99,17 @@
           :placeholder="getPlaceholder()"
           outlined
           :rules="getRules()"
+          autocomplete="disabled"
         />
       </v-col>
-      <v-col v-if="query.operand === 'Sender IP'">
+      <v-col v-if="query.operand === 'SenderIp'">
         <!-- Condition text input-->
         <v-text-field
           v-model.trim="query.value"
           placeholder="Enter IP or a regular expression"
           outlined
           :rules="getSenderIpRules()"
+          autocomplete="disabled"
         />
       </v-col>
       <v-col v-if="query.operand === 'Subject'">
@@ -110,6 +119,7 @@
           placeholder="Enter subject or a regular expression"
           outlined
           :rules="getSubjectRules()"
+          autocomplete="disabled"
         />
       </v-col>
       <v-col v-if="query.operand === 'Keyword'">
@@ -119,31 +129,35 @@
           placeholder="Enter keywords or a regular expression to search in email body"
           outlined
           :rules="getKeywordRules()"
+          autocomplete="disabled"
         />
       </v-col>
-      <v-col v-if="query.operand === 'Attachment name'">
+      <v-col v-if="query.operand === 'AttachmentName'">
         <!-- Condition text input-->
         <v-text-field
           v-model.trim="query.value"
           placeholder="Enter file name or a regular expression"
           outlined
           :rules="getAttachmentNameRules()"
+          autocomplete="disabled"
         />
       </v-col>
-      <v-col v-if="query.operand === 'Attachment extension'">
+      <v-col v-if="query.operand === 'AttachmentExtension'">
         <v-text-field
           v-model.trim="query.value"
           placeholder="Enter file extension"
           outlined
           :rules="getAttachmentExtensionRules()"
+          autocomplete="disabled"
         />
       </v-col>
-      <v-col v-if="query.operand === 'Attachment hash'">
+      <v-col v-if="query.operand === 'AttachmentHash'">
         <v-text-field
           v-model.trim="query.value"
           placeholder="Enter SHA512 or MD5 hash"
           outlined
           :rules="getAttachmentHashRules()"
+          autocomplete="disabled"
         />
       </v-col>
       <v-col
@@ -238,8 +252,8 @@ export default {
       ]
     },
     handleOperandChange(value) {
-      if (value === 'Sender IP') {
-        this.query.operator = 'is equal to'
+      if (value === 'SenderIp') {
+        this.query.operator = 'Equal'
         this.query.format = 'Ip'
       } else if (value === 'Analysis result') {
         this.query.value = 'Phishing'

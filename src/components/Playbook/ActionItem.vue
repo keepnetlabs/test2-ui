@@ -7,6 +7,7 @@
       @changeStatus="openEnginesModal = false"
       icon="mdi-blur"
       v-if="openEnginesModal"
+      max-height
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
     >

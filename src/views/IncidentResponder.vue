@@ -287,11 +287,7 @@
                   <span v-if="scope.row[col.property] === 0">
                     No Matches
                   </span>
-                  <span
-                    v-else
-                    @click="matchingPopupClick(scope.row)"
-                    style="cursor: pointer; color: #2196f3;"
-                  >
+                  <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
                     {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
@@ -534,7 +530,7 @@ export default {
         },
         {
           property: 'matchCount',
-          align: 'right',
+          align: 'left',
           editable: false,
           label: 'Matching Incidents',
           fixed: false,
@@ -1690,5 +1686,13 @@ export default {
     color: rgba(0, 0, 0, 0.87) !important;
     margin-bottom: 8px !important;
   }
+}
+.popup-link {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.29;
+  letter-spacing: normal;
+  color: #2196f3;
 }
 </style>

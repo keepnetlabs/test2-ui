@@ -1,9 +1,12 @@
 <template>
   <div class="datatable-progress">
     <template v-if="scope.row && parseInt(scope.row.progress) >= 0">
-      <span v-if="col.progressType !== 'plain'" class="datatable-progress__per">{{
-        scope.row.progress === 100 ? 'Completed' : scope.row.progress + '%'
-      }}</span>
+      <span
+        :class="[scope.row.progress !== 100 && 'ml-1']"
+        v-if="col.progressType !== 'plain'"
+        class="datatable-progress__per"
+        >{{ scope.row.progress === 100 ? 'Completed' : scope.row.progress + '%' }}</span
+      >
       <v-progress-linear
         :value="scope.row.progress"
         background-color="#b3d4fc"
@@ -62,7 +65,6 @@ export default {
     letter-spacing: normal;
     text-align: center;
     color: rgba(0, 0, 0, 0.87) !important;
-    margin-left: 3px;
   }
   &__stats {
     opacity: 0.64;

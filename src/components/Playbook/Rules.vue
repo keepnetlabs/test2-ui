@@ -58,11 +58,7 @@
         <span v-if="scope.row[col.property] === 0">
           No Matches
         </span>
-        <span
-          v-else
-          @click="matchingPopupClick(scope.row)"
-          style="cursor: pointer; color: #2196f3;"
-        >
+        <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
         </span>
         <app-dialog
@@ -233,10 +229,9 @@ export default {
           }
         ],
         empty: {
-          message: 'No rules are showing',
-          subMes: 'Add Rule',
+          message: 'You do not have any rules, yet',
           btn: 'ADD A RULE',
-          icon: 'mdi-account-plus'
+          icon: 'mdi-plus'
         },
         rowActions: [
           {
@@ -402,7 +397,6 @@ export default {
       })
     },
     deleteRule(value, multi) {
-      debugger
       let isArray = Array.isArray(value)
       this.totalSelectedItemsCount = isArray ? value.length : 1
       this.isWantToDelete = true

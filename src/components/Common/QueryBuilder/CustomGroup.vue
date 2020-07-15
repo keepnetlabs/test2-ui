@@ -56,6 +56,7 @@
 <script>
 import QueryBuilderGroup from 'vue-query-builder/src/components/QueryBuilderGroup'
 import QueryBuilderRule from './CustomRule'
+import deepClone from 'vue-query-builder/src/utilities'
 export default {
   name: 'QueryBuilderGroup',
   components: {
@@ -76,6 +77,27 @@ export default {
     },
     deleteGroup() {
       this.remove()
+    },
+    addRule() {
+      let updated_query = deepClone(this.query)
+      let child = {
+        type: 'query-builder-rule',
+        query: {
+          rule: this.selectedRule.id,
+          operator: this.selectedRule.operators[0].value || this.selectedRule.operators[0],
+          operand:
+            typeof this.selectedRule.operands === 'undefined'
+              ? this.selectedRule.label
+              : this.selectedRule.operands[0].value || this.selectedRule.operands[0],
+          value: null
+        }
+      }
+      // A bit hacky, but `v-model` on `select` requires an array.
+      if (this.ruleById(child.query.rule).type === 'multi-select') {
+        child.query.value = []
+      }
+      updated_query.children.push(child)
+      this.$emit('update:query', updated_query)
     }
   }
 }
