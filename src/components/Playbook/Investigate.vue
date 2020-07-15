@@ -297,52 +297,56 @@ export default {
     investigationRange(val) {
       let date = new Date()
       switch (val) {
-        case this.act.investigateRanges[0]:
+        case this.act.investigateRanges[0].value:
           date = new Date()
           this.investigateData.startDate = new Date(date.setDate(date.getDate() - 1))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
+          date = new Date()
           this.investigateData.endDate = new Date(date.setDate(date.getDate() + 1))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
           break
-        case this.act.investigateRanges[1]:
+        case this.act.investigateRanges[1].value:
           date = new Date()
           this.investigateData.startDate = new Date(date.setDate(date.getDate() - 3))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
+          date = new Date()
           this.investigateData.endDate = new Date(date.setDate(date.getDate() + 3))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
           break
-        case this.act.investigateRanges[2]:
+        case this.act.investigateRanges[2].value:
           date = new Date()
           this.investigateData.startDate = new Date(date.setDate(date.getDate() - 7))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
+          date = new Date()
           this.investigateData.endDate = new Date(date.setDate(date.getDate() + 7))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
           break
-        case this.act.investigateRanges[3]:
+        case this.act.investigateRanges[3].value:
           date = new Date()
           this.investigateData.startDate = new Date(date.setDate(date.getDate() - 14))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
+          date = new Date()
           this.investigateData.endDate = new Date(date.setDate(date.getDate() + 14))
             .toISOString()
             .split('T')
@@ -357,7 +361,7 @@ export default {
     investigateData(val) {
       let date = new Date()
       switch (val) {
-        case this.act.investigateDurations[0]:
+        case this.act.investigateDurations[0].value:
           date = new Date()
           this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 1))
             .toISOString()
@@ -365,14 +369,14 @@ export default {
             .join(' ')
             .split('.')[0]
           break
-        case this.act.investigateDurations[1]:
+        case this.act.investigateDurations[1].value:
           this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 3))
             .toISOString()
             .split('T')
             .join(' ')
             .split('.')[0]
           break
-        case this.act.investigateDurations[2]:
+        case this.act.investigateDurations[2].value:
           this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 7))
             .toISOString()
             .split('T')
@@ -387,11 +391,11 @@ export default {
   data() {
     return {
       filters: ['URLs', 'Attachments'],
-      investigationRange: '3 days before and after',
+      investigationRange: 3,
       expireDate: '',
       startDate: '',
       endDate: '',
-      investigationDuration: '3 days',
+      investigationDuration: 3,
       investigateAction: 'Delete email',
       investigateActionNotification: 'Reporter',
       investigateActionNotificationTemplate: '18',

@@ -377,12 +377,16 @@ export default {
           'AttachmentHash'
         ],
         investigateRanges: [
-          '1 day before and after',
-          '3 days before and after',
-          '7 days before and after',
-          '2 weeks before and after'
+          { text: '1 day before and after', value: 1 },
+          { text: '3 days before and after', value: 3 },
+          { text: '7 days before and after', value: 7 },
+          { text: '2 weeks before and after', value: 14 }
         ],
-        investigateDurations: ['1 day', '3 days', '7 days'],
+        investigateDurations: [
+          { text: '1 day', value: 1 },
+          { text: '3 days', value: 3 },
+          { text: '7 days', value: 7 }
+        ],
         investigateActions: [
           'Notify',
           { text: 'Delete email', value: 'DeleteEmail' },
