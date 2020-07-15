@@ -84,6 +84,7 @@ const investigations = {
       //set target list data to vuex store
       let data = payload.data
       //data.unshift({ name: 'All', groupId: 'all' })
+      console.log('groups', data)
       state.targetUsersList = data
     }
   },

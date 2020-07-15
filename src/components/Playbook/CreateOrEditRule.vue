@@ -43,6 +43,7 @@
                     <v-text-field
                       placeholder="Enter a name for the rule"
                       outlined
+                      autocomplete="off"
                       v-model="name"
                       :rules="[
                         (v) => validations.required(v, 'Required'),
@@ -59,6 +60,7 @@
                       outlined
                       v-model="description"
                       :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
+                      autocomplete="disabled"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -349,12 +351,12 @@ export default {
             'From',
             'To',
             'CC',
-            'Sender IP',
+            { text: 'Sender IP', value: 'SenderIp' },
             'Subject',
             'Keyword',
-            'Attachment name',
-            'Attachment hash',
-            'Attachment extension',
+            { text: 'Attachment name', value: 'AttachmentName' },
+            { text: 'Attachment hash', value: 'AttachmentHash' },
+            { text: 'Attachment extension', value: 'AttachmentExtension' },
             'Custom syntax',
             'Analysis result'
           ],
@@ -362,14 +364,19 @@ export default {
           operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
           operandsCC: ['Email', 'Group', 'Domain', 'Regex'],
           operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
-          operandsSenderIP: ['is equal to', 'is not equal to', 'exist', 'does not exist'],
+          operandsSenderIP: [
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' },
+            { text: 'exist', value: 'Exists' },
+            { text: 'does not exist', value: 'DoesNotExist' }
+          ],
           operators: [
-            'contains',
-            'does not contain',
-            'is equal to',
-            'is not equal to',
-            'exist',
-            'does not exist'
+            { text: 'contains', value: 'Contains' },
+            { text: 'does not contain', value: 'DoesNotContain' },
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' },
+            { text: 'exist', value: 'Exist' },
+            { text: 'does not exist', value: 'DoesNotExist' }
           ]
         }
       ],
@@ -461,6 +468,7 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
+      console.log('payload', JSON.stringify(payload))
       createPlaybook(payload)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {

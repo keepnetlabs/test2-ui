@@ -139,7 +139,7 @@ export default {
         empty: {
           message: 'No integrations are showing',
           subMes: 'Add Integrations',
-          btn: 'Add Integrations',
+          btn: 'ADD AN INTEGRATION',
           icon: 'mdi-account-plus'
         },
         addButton: {

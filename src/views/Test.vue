@@ -413,7 +413,7 @@ export default {
     iEmpty: {
       message: 'You do not have any users added, yet',
       subMes: 'Start now',
-      btn: 'Add Users',
+      btn: 'ADD A USER',
       icon: 'mdi-account-plus'
     },
     title: {

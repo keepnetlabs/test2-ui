@@ -54,7 +54,7 @@
             class="edit-select target-users-select-multi"
             :rules="[targetUsers.required]"
             item-text="name"
-            item-value="name"
+            item-value="resourceId"
             multiple
             dense
             persistent-hint
@@ -105,6 +105,8 @@
           outlined
           hide-details
           multiple
+          small-chips
+          deletable-chips
         />
       </v-col>
     </v-row>

@@ -7,6 +7,7 @@
       @changeStatus="openEnginesModal = false"
       icon="mdi-blur"
       v-if="openEnginesModal"
+      max-height
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
     >
@@ -21,7 +22,6 @@
               prepend-inner-icon="mdi-magnify"
               v-model="searchEnginesModelInput"
               @keyup="searchEnginesModel()"
-              ref="searchInput"
               hide-details
             />
             <div class="analyze__main__select-row-wrap check-all">
@@ -187,7 +187,7 @@
       <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
         <v-select
           v-model="targetUserType[index]"
-          :items="act.notifyTypes"
+          :items="getNotifyTypes()"
           outlined
           @input="tarUsers[index] = []"
         />
@@ -434,6 +434,18 @@ export default {
         }, [])
       } else {
         this.searchEnginesData = null
+      }
+    },
+    getNotifyTypes() {
+      const notifyTypes = this.targetUserType.some((item) => {
+        return item && item === 'Reporter'
+      })
+      if (notifyTypes) {
+        return this.act.notifyTypes.map((item) => {
+          return { text: item, value: item, disabled: item === 'Reporter' }
+        })
+      } else {
+        return this.act.notifyTypes
       }
     },
     getSelectedIntegrations() {

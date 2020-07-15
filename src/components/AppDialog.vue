@@ -21,7 +21,7 @@
             <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <div class="k-dialog__body">
+        <div class="k-dialog__body" :style="[maxHeight && { maxHeight: '400px' }]">
           <slot name="app-dialog-body">
             {{ body }}
           </slot>
@@ -73,6 +73,10 @@ export default {
     },
     body: {
       type: String
+    },
+    maxHeight: {
+      type: Boolean,
+      default: false
     },
     size: {
       type: String,
@@ -141,10 +145,13 @@ export default {
     font-size: 13px;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.72) !important;
-    max-height: 390px;
+
     overflow-y: auto;
     padding: 24px 24px 24px 24px;
     border-bottom: 1px solid #ebeef5;
+    .k-table__wrapper {
+      width: 100%;
+    }
   }
 
   &__button {
