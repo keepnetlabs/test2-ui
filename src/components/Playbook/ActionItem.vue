@@ -4,12 +4,12 @@
       size="small"
       :status="openEnginesModal"
       class-name="download-modal"
-      @changeStatus="openEnginesModal = false"
       icon="mdi-blur"
       v-if="openEnginesModal"
       max-height
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
+      @changeStatus="closeEngineModal"
     >
       <template v-slot:app-dialog-body>
         <div class="bg-white">
@@ -107,18 +107,10 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="delete-user__footer">
-          <v-btn
-            @click="openEnginesModal = false"
-            color="#f56c6c"
-            class="delete-user__footer-button"
-            text
+          <v-btn @click="closeEngineModal" color="#f56c6c" class="delete-user__footer-button" text
             >CANCEL</v-btn
           >
-          <v-btn
-            text
-            color="#2196f3"
-            class="k-dialog__button"
-            @click="getSelectedIntegrations(), (openEnginesModal = false)"
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmEngineModalFucn"
             >CONFIRM</v-btn
           >
         </div>
@@ -154,7 +146,7 @@
           outlined
           :placeholder="`${getSelectedIntegrations()} integrations selected `"
           height="40"
-          @click="openEnginesModal = true"
+          @click="openEngineModalFunc"
           class="analysis-engines-select"
         >
         </v-text-field>
@@ -308,6 +300,7 @@ export default {
       openEnginesModal: false,
       acceptAllAnalysisEngines: false,
       analysisEngines: [],
+      initialAnalysisEngines: [],
       actionItemType: 'markAs',
       markAsOpts: 'Clean',
       acceptCheckbox: false,
@@ -431,6 +424,18 @@ export default {
     }
   },
   methods: {
+    confirmEngineModalFucn() {
+      this.openEnginesModal = false
+      this.getSelectedIntegrations()
+    },
+    openEngineModalFunc() {
+      this.initialAnalysisEngines = JSON.parse(JSON.stringify(this.analysisEngines))
+      this.openEnginesModal = true
+    },
+    closeEngineModal() {
+      this.analysisEngines = this.initialAnalysisEngines
+      this.openEnginesModal = false
+    },
     searchEnginesModel(val) {
       if (this.searchEnginesModelInput) {
         this.searchEnginesData = this.analysisEngines.reduce((acc, item) => {
@@ -522,9 +527,19 @@ export default {
       })
     },
     analysisEnginesChange(engine, index) {
-      this.analysisEngines[index].isSendUrl = engine.selected
-      this.analysisEngines[index].isSendFileHash = engine.selected
-      this.analysisEngines[index].isSendFile = engine.selected
+      if (this.searchEnginesData) {
+        let item = this.analysisEngines.find(
+          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+        )
+        item.isSendUrl = engine.selected
+        item.isSendFileHash = engine.selected
+        item.isSendFile = engine.selected
+        this.checkAllDataChecked(index, item)
+      } else {
+        this.analysisEngines[index].isSendUrl = engine.selected
+        this.analysisEngines[index].isSendFileHash = engine.selected
+        this.analysisEngines[index].isSendFile = engine.selected
+      }
     },
     getAnalysisEngine() {
       const payload = {
