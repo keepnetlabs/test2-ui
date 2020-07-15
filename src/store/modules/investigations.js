@@ -72,19 +72,19 @@ const investigations = {
       let stateData = data.results.map((item) => {
         return { ...item, userStatus: [item.completedUsersCount, item.scannedUsersCount] }
       })
-      console.log('stateData', stateData)
+
       state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
     },
     SET_IRSUMMARY(state, payload) {
       let data = payload.data
-      console.log('summary', data)
+
       state.irSummary = data
     },
     SET_TARGETUSERSLIST(state, payload) {
       //set target list data to vuex store
       let data = payload.data
       //data.unshift({ name: 'All', groupId: 'all' })
-      console.log('groups', data)
+      console.log('data', data)
       state.targetUsersList = data
     }
   },

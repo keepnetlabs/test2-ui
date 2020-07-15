@@ -101,8 +101,6 @@ export default {
       const stringBadges = this.scope.row[this.col.property]
       if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
         this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
-        console.log('this.scope.column.width ', this.scope.column.width)
-        console.log('this.scope.column.realWidth ', this.scope.column.realWidth)
         if (this.unRenderedBadgeCount > 0) {
           const totalWidth = this.scope.column.width - 35
           this.maximumRenderedBadgeCount = Math.floor(totalWidth / 65)

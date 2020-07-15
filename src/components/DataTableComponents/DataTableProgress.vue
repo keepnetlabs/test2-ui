@@ -40,9 +40,7 @@ export default {
       type: Object
     }
   },
-  created() {
-    console.log('col', this.col)
-  }
+  created() {}
 }
 </script>
 

@@ -44,7 +44,7 @@
             hide-details
             required
           ></v-combobox>
-          <v-combobox
+          <v-select
             :items="targetUsersList"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -63,8 +63,8 @@
             :return-object="false"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
-            required
-          ></v-combobox>
+          >
+          </v-select>
           <v-combobox
             :items="[]"
             v-if="investigateData.targetUserType === 'SpecificUsers'"
@@ -79,6 +79,7 @@
             :rules="[targetUsers.required]"
             required
             outlined
+            autocomplete="disabled"
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
             v-model="investigateData.targetUsers"
             hide-details

@@ -1087,7 +1087,7 @@ export default {
           isNotifyUser: this.extendedView.isNotify,
           customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : ''
         }
-        console.log('payload', payload)
+
         updateNotifiedEmail(item.resourceId, payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {

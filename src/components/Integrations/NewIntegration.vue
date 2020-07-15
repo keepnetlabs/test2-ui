@@ -421,7 +421,6 @@ export default {
           data: { data, status }
         } = response
         this.integrationTypes = data
-        console.log(this.integrationTypes)
       })
       .catch((error) => {
         this.$store.dispatch('common/createSnackBar', {

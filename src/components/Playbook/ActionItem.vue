@@ -217,7 +217,7 @@
         md="5"
         class="mr-2"
       >
-        <v-combobox
+        <v-select
           :items="targetUsersList"
           placeholder="Select user groups"
           outlined
@@ -232,7 +232,7 @@
           persistent-hint
           small-chips
           hide-details
-        ></v-combobox>
+        ></v-select>
       </v-col>
       <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
         <v-select
@@ -246,7 +246,11 @@
       </v-col>
       <v-col class="text-right">
         <!-- Remove act button -->
-        <v-btn icon @click="removeAction(index, action)" v-if="action.val !== 'markAs'">
+        <v-btn
+          icon
+          @click="removeAction(index, actionsValues[index].val)"
+          v-if="action.val !== 'markAs'"
+        >
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
@@ -284,7 +288,10 @@ export default {
     actionData: Object,
     resourceId: String,
     editedActions: Object,
-    editedPlaybookActionAnalyzers: Array,
+    editedPlaybookActionAnalyzers: {
+      type: Array,
+      default: null
+    },
     editedNotifications: Array,
     editedPlaybookActionInvestigations: Array
   },
@@ -526,9 +533,9 @@ export default {
           FilterGroups: [{}]
         }
       }
+
       getAnalysisEngine(payload)
         .then((response) => {
-          console.log('response.data.data', response.data.data)
           const data = response.data.data.results.map((item) => {
             return {
               resourceId: item.resourceId,
@@ -541,7 +548,10 @@ export default {
             }
           })
           this.acceptAllAnalysisEngines = true
-          this.analysisEngines = data
+
+          if (this.analysisEngines.length === 0) {
+            this.analysisEngines = data
+          }
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -603,7 +613,7 @@ export default {
       this.actionsValues[length - 1] = nextAvailableAction
       this.idCounter = this.idCounter + 1
     },
-    removeAction(index, action) {
+    removeAction(index, actionVal) {
       this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&
@@ -620,6 +630,10 @@ export default {
       if (newIndex !== -1) {
         this.actions.splice(newIndex, 1)
         this.actionsValues.splice(index, 1)
+      }
+      if (actionVal === 'notify') {
+        this.targetUserType.splice(index, 1)
+        this.tarUsers.splice(index, 1)
       }
     },
     getTargetUsers() {
@@ -676,7 +690,7 @@ export default {
     },
     editedActions(val) {
       this.playbookAction = val
-      if (val.tags) {
+      if (val.tags.length > 0) {
         this.addAction('tag')
       }
     },
@@ -694,16 +708,15 @@ export default {
       })
     },
     editedPlaybookActionAnalyzers(val) {
-      const dizi = this.analysisEngines.filter((item) => {
-        const abc = val.find((i) => {
-          return i.resourceId === item.resourceId
+      setTimeout(() => {
+        const dizi = this.analysisEngines.filter((item) => {
+          const valuesItem = val.find((i) => {
+            return i.integrationId === item.resourceId
+          })
+          return valuesItem
         })
-        return !!abc
-      })
-      this.analysisEngines = dizi
-      if (val.length > 0) {
-        this.addAction('analyze')
-      }
+        this.analysisEngines = dizi
+      }, 1000)
     },
     analysisEngines(val) {},
     editedPlaybookActionInvestigations(investigations) {

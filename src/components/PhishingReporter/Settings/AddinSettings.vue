@@ -279,7 +279,6 @@ export default {
     },
     onFileChanged(e) {
       this.formValues.file = e.target.files[0]
-      console.log('this.formValues.file', this.formValues.file)
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {

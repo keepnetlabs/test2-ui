@@ -1002,7 +1002,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
-    console.log('this.columns', this.columns)
+
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
     const browser = navigator.userAgent.toLowerCase()

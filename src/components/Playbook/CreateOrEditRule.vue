@@ -247,7 +247,7 @@ export default {
       tags: [],
       isActive: true,
       newQuery: null,
-      playbookActionAnalyzers: [],
+      playbookActionAnalyzers: null,
       addedQuery: null,
       editedNotifications: [],
       editedPlaybookActionInvestigations: [],
@@ -434,7 +434,9 @@ export default {
           return item.val === 'analyze'
         })
       ) {
-        playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+        if (ref.analyzeCheckbox) {
+          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+        }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           return item.selected === true
         })
@@ -485,6 +487,7 @@ export default {
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
       let playbookActionAnalyzers = []
+
       if (keys.length > 0) {
         let valueIndex = 0
         keys.map((key, index) => {
@@ -501,7 +504,9 @@ export default {
           return item.val === 'analyze'
         })
       ) {
-        playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+        if (ref.analyzeCheckbox) {
+          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
+        }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           return item.selected === true
         })
@@ -535,6 +540,7 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
+
       updatePlaybook(payload)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -601,7 +607,6 @@ export default {
                 temp.push(i)
               })
             })
-            console.log('temp', temp)
           }
           return {
             type: 'query-builder-group',
@@ -700,7 +705,6 @@ export default {
           this.description = data.description
           this.priority = data.priority
           this.tags = data.tags
-
           this.query = {
             logicalOperator: data.condition.operator.toUpperCase(),
             children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
@@ -714,13 +718,25 @@ export default {
             }
           )
 
+          console.log('playbookActionAnalyzers', this.playbookActionAnalyzers)
+
           const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
             return item.isCreatedByAnalyzer
           })
           if (indexOfAnalyzeItem !== -1) {
             this.$refs.refActionItem.playbookActionInvestigationAnalyzeData =
               data.playbookActionInvestigations[indexOfAnalyzeItem]
+            const hasAnalyze = this.$refs.refActionItem.actions.some((item) => {
+              return item.val === 'analyze'
+            })
+            if (!hasAnalyze) {
+              this.$refs.refActionItem.addAction('analyze')
+            }
             this.$refs.refActionItem.analyzeCheckbox = true
+          } else {
+            if (this.playbookActionAnalyzers.length > 0) {
+              this.$refs.refActionItem.addAction('analyze')
+            }
           }
         })
         .catch((error) => {})
