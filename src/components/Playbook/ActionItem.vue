@@ -705,7 +705,13 @@ export default {
   },
   watch: {
     search(val) {
-      this.getTargetUsers()
+      if (!val) return false
+      clearTimeout(this._timerId)
+
+      // delay new call 500ms
+      this._timerId = setTimeout(() => {
+        this.getTargetUsers()
+      }, 500)
     },
     editedActions(val) {
       this.playbookAction = val
