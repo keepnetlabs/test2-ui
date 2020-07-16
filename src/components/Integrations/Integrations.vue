@@ -23,7 +23,6 @@
       :filterable="true"
       :options="true"
       :sizeable="true"
-      :row-actions="tableOptions.rowActions"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
@@ -38,7 +37,83 @@
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
       :isServerSide="false"
-    />
+    >
+      <template v-slot:rowActions="{}">
+        <el-table-column
+          fixed="right"
+          :min-width="150"
+          align="right"
+          class-name="actions-container"
+          label="Actions"
+          label-class-name="actions-label"
+        >
+          <template slot-scope="scope">
+            <template v-if="rowActions[0].action === 'edit'">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
+                    <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ tableOptions.rowActions[0].name }}</span>
+              </v-tooltip>
+            </template>
+            <template v-else>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn class="btn-hover" icon v-on="on">
+                    <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+                  </v-btn>
+                </template>
+                <span> {{ tableOptions.rowActions[0].name }} </span>
+              </v-tooltip>
+            </template>
+            <v-menu bottom left offset-y transition="scale-transition">
+              <template v-slot:activator="{ on }">
+                <v-btn class="btn-hover" icon v-on="on">
+                  <v-icon @click.native="selectedMenuIndex = scope.$index"
+                    >mdi-dots-vertical</v-icon
+                  >
+                </v-btn>
+              </template>
+              <v-list class="v-cart-dropdown-list el-table__action-buttons">
+                <v-list-item
+                  :key="ind"
+                  class="sub-menu-el"
+                  v-for="(act, ind) of rowActions"
+                  v-if="!act.subElements && !act.isNotShow"
+                >
+                  <v-list-item-title>
+                    <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                    <span>{{ act.name }}</span>
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item
+                  :key="ind + 'sub-item'"
+                  v-for="(act, ind) of rowActions"
+                  v-if="act.subElements && act.subElements.length"
+                >
+                  <v-menu :content-class="'sub-menu-sub'" open-on-hover>
+                    <template v-slot:activator="{ on }">
+                      <v-list-item-title class="sub-element-wrapper" v-on="on">
+                        <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                        <span>{{ act.name }}</span>
+                        <v-icon style="float: right;">mdi-chevron-right</v-icon>
+                      </v-list-item-title>
+                    </template>
+                    <v-list>
+                      <v-list-item :key="item" v-for="item of act.subElements">
+                        {{ item }}
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
+        </el-table-column>
+      </template>
+    </data-table>
   </div>
 </template>
 
