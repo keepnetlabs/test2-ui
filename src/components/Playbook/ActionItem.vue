@@ -73,29 +73,27 @@
                   <span
                     class="analyze__main__select-row-inline__button"
                     :class="
-                      engine.isSendFileHash
-                        ? 'analyze__main__select-row-inline__button-selected'
-                        : ''
+                      engine.isCheckHash ? 'analyze__main__select-row-inline__button-selected' : ''
                     "
-                    @click="hashChange(engine.isSendFileHash, index)"
+                    @click="hashChange(engine.isCheckHash, index)"
                   >
                     Hash
                   </span>
                   <span
                     class="analyze__main__select-row-inline__button"
                     :class="
-                      engine.isSendFile ? 'analyze__main__select-row-inline__button-selected' : ''
+                      engine.isCheckFile ? 'analyze__main__select-row-inline__button-selected' : ''
                     "
-                    @click="fileChange(engine.isSendFile, index)"
+                    @click="fileChange(engine.isCheckFile, index)"
                   >
                     File
                   </span>
                   <span
                     class="analyze__main__select-row-inline__button"
                     :class="
-                      engine.isSendUrl ? 'analyze__main__select-row-inline__button-selected' : ''
+                      engine.isCheckUrl ? 'analyze__main__select-row-inline__button-selected' : ''
                     "
-                    @click="urlChange(engine.isSendUrl, index)"
+                    @click="urlChange(engine.isCheckUrl, index)"
                   >
                     Url
                   </span>
@@ -469,12 +467,12 @@ export default {
     },
     checkAllDataChecked(index, item) {
       if (item) {
-        item.selected = item.isSendFileHash || item.isSendFile || item.isSendUrl
+        item.selected = item.isCheckHash || item.isCheckFile || item.isCheckUrl
       } else {
         this.analysisEngines[index].selected =
-          this.analysisEngines[index].isSendFileHash ||
-          this.analysisEngines[index].isSendFile ||
-          this.analysisEngines[index].isSendUrl
+          this.analysisEngines[index].isCheckHash ||
+          this.analysisEngines[index].isCheckFile ||
+          this.analysisEngines[index].isCheckUrl
       }
     },
     hashChange(val, index) {
@@ -482,10 +480,10 @@ export default {
         let item = this.analysisEngines.find(
           (item) => item.resourceId == this.searchEnginesData[index].resourceId
         )
-        item.isSendFileHash = !val
+        item.isCheckHash = !val
         this.checkAllDataChecked(index, item)
       } else {
-        this.analysisEngines[index].isSendFileHash = !val
+        this.analysisEngines[index].isCheckHash = !val
         this.checkAllDataChecked(index)
       }
     },
@@ -494,10 +492,10 @@ export default {
         let item = this.analysisEngines.find(
           (item) => item.resourceId == this.searchEnginesData[index].resourceId
         )
-        item.isSendFile = !val
+        item.isCheckFile = !val
         this.checkAllDataChecked(index, item)
       } else {
-        this.analysisEngines[index].isSendFile = !val
+        this.analysisEngines[index].isCheckFile = !val
         this.checkAllDataChecked(index)
       }
     },
@@ -506,10 +504,10 @@ export default {
         let item = this.analysisEngines.find(
           (item) => item.resourceId == this.searchEnginesData[index].resourceId
         )
-        item.isSendUrl = !val
+        item.isCheckUrl = !val
         this.checkAllDataChecked(index, item)
       } else {
-        this.analysisEngines[index].isSendUrl = !val
+        this.analysisEngines[index].isCheckUrl = !val
         this.checkAllDataChecked(index)
       }
     },
@@ -519,9 +517,9 @@ export default {
       this.analysisEngines = this.analysisEngines.map((item) => {
         return {
           ...item,
-          isSendUrl: val,
-          isSendFileHash: val,
-          isSendFile: val,
+          isCheckUrl: val,
+          isCheckHash: val,
+          isCheckFile: val,
           selected: val
         }
       })
@@ -531,14 +529,14 @@ export default {
         let item = this.analysisEngines.find(
           (item) => item.resourceId == this.searchEnginesData[index].resourceId
         )
-        item.isSendUrl = engine.selected
-        item.isSendFileHash = engine.selected
-        item.isSendFile = engine.selected
+        item.isCheckUrl = engine.selected
+        item.isCheckHash = engine.selected
+        item.isCheckFile = engine.selected
         this.checkAllDataChecked(index, item)
       } else {
-        this.analysisEngines[index].isSendUrl = engine.selected
-        this.analysisEngines[index].isSendFileHash = engine.selected
-        this.analysisEngines[index].isSendFile = engine.selected
+        this.analysisEngines[index].isCheckUrl = engine.selected
+        this.analysisEngines[index].isCheckHash = engine.selected
+        this.analysisEngines[index].isCheckFile = engine.selected
       }
     },
     getAnalysisEngine() {
@@ -560,19 +558,21 @@ export default {
               resourceId: item.resourceId,
               integrationId: item.resourceId,
               name: item.name,
-              isSendUrl: true,
-              isSendFileHash: true,
-              isSendFile: true,
+              isCheckUrl: false,
+              isCheckHash: false,
+              isCheckFile: false,
               selected: false
             }
           })
-          this.acceptAllAnalysisEngines = true
+          this.acceptAllAnalysisEngines = false
 
           if (this.analysisEngines.length === 0) {
             this.analysisEngines = data
+            this.updateAnalysisEngines()
           }
         })
         .catch((error) => {
+          debugger
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting analysis engines data!'
@@ -688,6 +688,21 @@ export default {
             message: 'Error when getting target users data!'
           })
         })
+    },
+    updateAnalysisEngines() {
+      if (this.analysisEngines.length > 0 && this.editedPlaybookActionAnalyzers) {
+        const dizi = this.analysisEngines.map((item) => {
+          const valuesItem = this.editedPlaybookActionAnalyzers.find((i) => {
+            return i.integrationId === item.resourceId
+          })
+          if (valuesItem) {
+            return { ...item, ...valuesItem, resourceId: item.resourceId, selected: true }
+          } else {
+            return item
+          }
+        })
+        this.analysisEngines = dizi
+      }
     }
   },
   created() {
@@ -727,15 +742,7 @@ export default {
       })
     },
     editedPlaybookActionAnalyzers(val) {
-      setTimeout(() => {
-        const dizi = this.analysisEngines.filter((item) => {
-          const valuesItem = val.find((i) => {
-            return i.integrationId === item.resourceId
-          })
-          return valuesItem
-        })
-        this.analysisEngines = dizi
-      }, 1000)
+      this.updateAnalysisEngines()
     },
     analysisEngines(val) {},
     editedPlaybookActionInvestigations(investigations) {

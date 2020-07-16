@@ -596,14 +596,14 @@ export default {
           minWidth: '30'
         },
         {
-          property: 'priority',
+          property: 'status',
           align: 'center',
           editable: false,
-          label: getStoreValue('priority'),
+          label: getStoreValue('status'),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
+          type: 'status',
           minWidth: '30'
         }
       ],
