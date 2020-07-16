@@ -66,8 +66,8 @@ export default {
   name: 'SessionExpired',
   data() {
     return {
-      userName: 'test@test.com',
-      password: 'gerqI9-xyvbaz-dudwyd',
+      userName: '',
+      password: '',
       verificationCode: '',
       resePasswordModel: '',
       pageNumber: 1,
