@@ -165,12 +165,13 @@
         </app-dialog>
 
         <div class="investigation-details__container__stats">
-          <div class="investigation-details__container__stats__cards">
-            <div class="investigation-details__container__stats__cards__card">
-              <div class="investigation-details__container__stats__cards__card-left">
-                <div
-                  class="investigation-details__container__stats__cards__card-left__icon"
-                  :class="
+          <div class="investigation-details__container__stats-left-col">
+            <div class="investigation-details__container__stats__cards">
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon"
+                    :class="
                     statsAndMenuData.status == 'Running'
                       ? 'bg-blue'
                       : statsAndMenuData.status == 'Finished'
@@ -179,43 +180,43 @@
                       ? 'bg-salmon'
                       : 'bg-salmon'
                   "
-                >
-                  <v-icon medium left color="white">{{ statusIcon }}</v-icon>
+                  >
+                    <v-icon medium left color="white">{{ statusIcon }}</v-icon>
+                  </div>
                 </div>
-              </div>
-              <div class="investigation-details__container__stats__cards__card-right">
-                <h3 class="investigation-details__container__stats__cards__card-right__title">
-                  {{ statsAndMenuData.status }}
-                </h3>
-                <p class="investigation-details__container__stats__cards__card-right__stats">
-                  <v-tooltip
-                    v-if="
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{ statsAndMenuData.status }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    <v-tooltip
+                      v-if="
                       this.statsAndMenuData.status == 'Running' &&
                       this.statsAndMenuData.estimatedTime
                     "
-                    bottom
-                    opacity="1"
-                    max-width="230"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <div v-on="on">{{ statsAndMenuData.estimatedTime }} remaining</div>
-                    </template>
-                    <p class="tooltip-wrapper">
-                      Actual remaining time may be different from estimated time and is depended on
-                      conditions such as online user count, mailbox size, etc.
-                    </p>
+                      bottom
+                      opacity="1"
+                      max-width="230"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <div v-on="on">{{ statsAndMenuData.estimatedTime }} remaining</div>
+                      </template>
+                  <p class="tooltip-wrapper">
+                    Actual remaining time may be different from estimated time and is depended on
+                    conditions such as online user count, mailbox size, etc.
+                  </p>
                   </v-tooltip>
                   <span v-else>{{ getStatusText('statusTime', null) }}</span>
-                </p>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="investigation-details__container__stats__cards">
-            <div class="investigation-details__container__stats__cards__card">
-              <div class="investigation-details__container__stats__cards__card-left">
-                <div
-                  class="investigation-details__container__stats__cards__card-left__icon"
-                  :class="
+            <div class="investigation-details__container__stats__cards" >
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon"
+                    :class="
                     statsAndMenuData.status == 'Running'
                       ? 'bg-turquoise'
                       : statsAndMenuData.status == 'Finished'
@@ -224,59 +225,66 @@
                       ? 'bg-macaroni'
                       : 'bg-macaroni'
                   "
-                >
-                  <v-icon medium left color="white">mdi-account</v-icon>
+                  >
+                    <v-icon medium left color="white">mdi-account</v-icon>
+                  </div>
                 </div>
-              </div>
-              <div class="investigation-details__container__stats__cards__card-right">
-                <h3 class="investigation-details__container__stats__cards__card-right__title">
-                  {{ getStatusText('notScannedUserCount', statsAndMenuData.notScannedUserCount) }}
-                </h3>
-                <p class="investigation-details__container__stats__cards__card-right__stats">
-                  {{ getStatusText('totalUserCount', statsAndMenuData.totalUserCount) }}
-                </p>
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{ getStatusText('notScannedUserCount', statsAndMenuData.notScannedUserCount) }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    {{ getStatusText('totalUserCount', statsAndMenuData.totalUserCount) }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <div class="investigation-details__container__stats__cards">
-            <div class="investigation-details__container__stats__cards__card">
-              <div class="investigation-details__container__stats__cards__card-left">
-                <div
-                  class="investigation-details__container__stats__cards__card-left__icon bg-green"
-                >
-                  <v-icon medium left color="white">mdi-account-circle</v-icon>
+          <div class="investigation-details__container__stats-right-col">
+            <div class="investigation-details__container__stats__cards" >
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon bg-green"
+                  >
+                    <v-icon medium left color="white">mdi-account-circle</v-icon>
+                  </div>
+                </div>
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{ getStatusText('scannedUserCount', statsAndMenuData.scannedUserCount) }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    {{ getStatusText('totalUserCountScannedUser', statsAndMenuData.totalUserCount) }}
+                  </p>
                 </div>
               </div>
-              <div class="investigation-details__container__stats__cards__card-right">
-                <h3 class="investigation-details__container__stats__cards__card-right__title">
-                  {{ getStatusText('scannedUserCount', statsAndMenuData.scannedUserCount) }}
-                </h3>
-                <p class="investigation-details__container__stats__cards__card-right__stats">
-                  {{ getStatusText('totalUserCountScannedUser', statsAndMenuData.totalUserCount) }}
-                </p>
+            </div>
+            <div class="investigation-details__container__stats__cards" >
+              <div class="investigation-details__container__stats__cards__card">
+                <div class="investigation-details__container__stats__cards__card-left">
+                  <div
+                    class="investigation-details__container__stats__cards__card-left__icon bg-blue"
+                  >
+                    <v-icon medium left color="white">mdi-email</v-icon>
+                  </div>
+                </div>
+                <div class="investigation-details__container__stats__cards__card-right">
+                  <h3 class="investigation-details__container__stats__cards__card-right__title">
+                    {{ getStatusText('scannedEmailCount', statsAndMenuData.scannedEmailCount) }}
+                  </h3>
+                  <p class="investigation-details__container__stats__cards__card-right__stats">
+                    {{ getStatusText('totalEmailCount', statsAndMenuData.totalEmailCount) }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <div class="investigation-details__container__stats__cards">
-            <div class="investigation-details__container__stats__cards__card">
-              <div class="investigation-details__container__stats__cards__card-left">
-                <div
-                  class="investigation-details__container__stats__cards__card-left__icon bg-blue"
-                >
-                  <v-icon medium left color="white">mdi-email</v-icon>
-                </div>
-              </div>
-              <div class="investigation-details__container__stats__cards__card-right">
-                <h3 class="investigation-details__container__stats__cards__card-right__title">
-                  {{ getStatusText('scannedEmailCount', statsAndMenuData.scannedEmailCount) }}
-                </h3>
-                <p class="investigation-details__container__stats__cards__card-right__stats">
-                  {{ getStatusText('totalEmailCount', statsAndMenuData.totalEmailCount) }}
-                </p>
-              </div>
-            </div>
-          </div>
+
         </div>
+
+
+
         <div class="investigation-details__container__content card v-card v-sheet theme--light">
           <div class="investigation-details__container__content--left-menu">
             <div class="investigation-details__container__content--left-menu--time">
@@ -680,9 +688,9 @@
                 >
                   <v-chip
                     v-for="(value, key) in item"
-                    :key="key"
+                    :key="value"
                     v-if="value && key !== 'resourceId'"
-                    >{{ key }}: {{ value }}
+                    >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
                   </v-chip>
                 </template>
                 <template
@@ -690,8 +698,8 @@
                   v-for="item in investigationDetailsData.bodies"
                   class="investigation__attachments"
                 >
-                  <v-chip v-for="(value, key) in item" v-if="value" :key="key"
-                    >{{ key }}: {{ value }}
+                  <v-chip v-for="(value, key) in item" v-if="value && key !== 'resourceId'" :key="value"
+                    >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
                   </v-chip>
                 </template>
                 <template
@@ -699,8 +707,17 @@
                   class="investigation__attachments"
                   v-for="item in investigationDetailsData.attachments"
                 >
-                  <v-chip v-for="(value, key) in item" v-if="value" :key="key"
-                    >{{ key }}: {{ value }}
+                  <v-chip v-for="(value, key) in item"  v-if="value && key !== 'resourceId'  && key !== 'sha512'" :key="value"
+                    >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
+                  </v-chip>
+                </template>
+                <template
+                  style="max-width: 100%; width: 100%;"
+                  class="investigation__attachments"
+                  v-for="item in investigationDetailsData.attachments"
+                >
+                  <v-chip v-for="(value, key) in item"  v-if="key === 'sha512'" :key="value"
+                  >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
                   </v-chip>
                 </template>
               </div>
@@ -1452,6 +1469,9 @@ export default {
   .v-navigation-drawer__border {
     display: none;
   }
+  .v-navigation-drawer{
+    z-index:3;
+  }
   .investigation-details__alerts {
     &-sub-title {
       font-size: 16px;
@@ -1529,20 +1549,52 @@ export default {
 
     &__container {
       &__stats {
+        @media (max-width:768px) {
+          justify-content:space-around;
+        }
+        &-left-col{
+          display: flex;
+          @media (max-width: 768px){
+            flex-direction: column;
+          }
+          @media (max-width:1600px){
+            flex-basis: 50%;
+          }
+          flex-basis: 40%;
+          justify-content: space-between;
+
+        }
+        &-right-col{
+          display: flex;
+          flex-basis: 65%;
+          justify-content: space-evenly;
+          @media (max-width: 768px){
+            flex-direction: column;
+          }
+          @media (max-width:1400px){
+            flex-basis: 55%;
+          }
+
+        }
         border-radius: 20px;
         box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
         background-color: #ffffff;
         padding: 24px;
         margin-bottom: 34px;
         display: flex;
-        flex-wrap: wrap;
-        flex-flow: row;
+
+
 
         &__cards {
           display: flex;
-          flex-basis: 25%;
-          flex-grow: 0;
+          justify-content: space-between;
 
+          @media (max-width: 768px){
+            margin-left: 0 !important;
+            &:first-child {
+              margin-bottom: 10px !important;
+            }
+          }
           &__card {
             display: flex;
             flex-flow: row;

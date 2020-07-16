@@ -5,7 +5,7 @@ export function getNotifiedEmail(id) {
 }
 export function downloadAttachment(attachmentId) {
   return testRequest.get(`/notified-emails/attachments/${attachmentId}`, {
-    type: 'blob'
+    responseType: 'blob'
   })
 }
 
