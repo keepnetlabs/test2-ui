@@ -45,12 +45,11 @@ const investigations = {
   mutations: {
     SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
       let data = payload.data
-
       state.getInvestigationDetailsTargetUsersListData = data
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
       let data = payload.data
-
+      console.log('detailsList', data)
       state.getInvestigationDetailsListData = data
     },
     SET_INVESTIGATIONLISTEMPY(state, payload) {

@@ -52,7 +52,7 @@
             outlined
             v-model="investigateData.targetUsers"
             class="edit-select target-users-select-multi"
-            :rules="[targetUsers.required]"
+            :rules="[(v) => v.length > 0 || 'Required']"
             item-text="name"
             item-value="resourceId"
             multiple
@@ -61,6 +61,7 @@
             small-chips
             deletable-chips
             :return-object="false"
+            autocomplete="disabled"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
           >
@@ -76,7 +77,7 @@
             deletable-chips
             small-chips
             :return-object="false"
-            :rules="[targetUsers.required]"
+            :rules="[(v) => v.length > 0 || 'Required']"
             required
             outlined
             autocomplete="disabled"

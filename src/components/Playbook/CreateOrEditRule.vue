@@ -423,7 +423,7 @@ export default {
       if (keys.length > 0) {
         let valueIndex = 0
         keys.map((key, index) => {
-          if (ref.$refs[key].length > 0) {
+          if (ref.$refs[key].length > 0 && key !== 'refForm') {
             playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
             valueIndex++
           }
@@ -470,17 +470,19 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
-      console.log('payload', JSON.stringify(payload))
-      createPlaybook(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
+
+      if (ref.$refs.refForm.validate()) {
+        createPlaybook(payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+            this.$emit('cancelFormWithUpdate')
           })
-          this.$emit('cancelFormWithUpdate')
-        })
-        .catch((error) => {})
+          .catch((error) => {})
+      }
     },
     callForUpdatePlaybook() {
       const ref = this.$refs.refActionItem
@@ -491,7 +493,7 @@ export default {
       if (keys.length > 0) {
         let valueIndex = 0
         keys.map((key, index) => {
-          if (ref.$refs[key].length > 0) {
+          if (ref.$refs[key].length > 0 && key !== 'refForm') {
             playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
             valueIndex++
           }
@@ -540,17 +542,19 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
-
-      updatePlaybook(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
+      debugger
+      if (ref.$refs.refForm.validate()) {
+        updatePlaybook(payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+            this.$emit('cancelFormWithUpdate')
           })
-          this.$emit('cancelFormWithUpdate')
-        })
-        .catch((error) => {})
+          .catch((error) => {})
+      }
     },
     nextStep() {
       if (this.findHasError(this.query)) {

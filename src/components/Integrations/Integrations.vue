@@ -39,8 +39,7 @@
       :requestParams="bodyData"
       :isServerSide="false"
     >
-
-      <template v-slot:datatable-row-actions="{scope}">
+      <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
@@ -49,32 +48,29 @@
           </template>
           <span>{{ tableOptions.rowActions[0].name }}</span>
         </v-tooltip>
-        <v-menu
-          bottom
-          left
-          offset-y
-          transition="scale-transition"
-        >
+        <v-menu bottom left offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
             <v-btn class="btn-hover" icon v-on="on">
-              <v-icon @click.native="selectedMenuIndex = scope.$index"
-              >mdi-dots-vertical</v-icon
-              >
+              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
           <v-list class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions">
-            <v-list-item
-              class="sub-menu-el"
-            >
-              <v-list-item-title @click="scope.row.status==='Active' ?  handleDisable(scope.row) : handleEnable(scope.row)" >
-                <v-icon class="pr-3">{{scope.row.status === 'Active' ? 'mdi-minus-circle-outline': 'mdi-check-circle-outline'}}</v-icon>
-                <span>{{scope.row.status === 'Active' ? 'Disable': 'Active'}}</span>
+            <v-list-item class="sub-menu-el">
+              <v-list-item-title
+                @click="
+                  scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
+                "
+              >
+                <v-icon class="pr-3">{{
+                  scope.row.status === 'Active'
+                    ? 'mdi-minus-circle-outline'
+                    : 'mdi-check-circle-outline'
+                }}</v-icon>
+                <span>{{ scope.row.status === 'Active' ? 'Disable' : 'Active' }}</span>
               </v-list-item-title>
             </v-list-item>
-            <v-list-item
-              class="sub-menu-el"
-            >
-              <v-list-item-title @click="handleDelete(scope.row)" >
+            <v-list-item class="sub-menu-el">
+              <v-list-item-title @click="handleDelete(scope.row)">
                 <v-icon class="pr-3">mdi-delete</v-icon>
                 <span>Delete</span>
               </v-list-item-title>
@@ -82,7 +78,6 @@
           </v-list>
         </v-menu>
       </template>
-
     </data-table>
   </div>
 </template>
@@ -256,9 +251,7 @@ export default {
           })
         })
     },
-    handleEnable(row){
-
-    },
+    handleEnable(row) {},
     handleAdd() {},
     changeModalStatus(status, restart) {
       this.integrationId = null
@@ -313,10 +306,10 @@ export default {
 </script>
 
 <style lang="scss">
-  .integrations__row-actions{
-     .v-list-item__title{
-       display:flex;
-       align-items:center;
-    }
+.integrations__row-actions {
+  .v-list-item__title {
+    display: flex;
+    align-items: center;
   }
+}
 </style>

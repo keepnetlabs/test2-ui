@@ -114,149 +114,158 @@
         </div>
       </template>
     </app-dialog>
-    <v-row
-      v-for="(action, index) in actions"
-      :key="index"
-      class="vqb-rule rounded-xl action-items__item"
-    >
-      <v-col md="2" class="mr-2">
-        <v-select
-          :value="actionsValues[index]"
-          :items="act.actionTypes"
-          :return-object="true"
-          outlined
-          placeholder="Select Action Type"
-          height="40"
-          item-text="name"
-          item-value="val"
-          @input="setAvailableItems($event, actionsValues[index], index)"
-        />
-      </v-col>
-      <v-col v-if="actionsValues[index].val === 'markAs'" md="2" class="mr-2">
-        <v-select v-model="playbookAction.markType" :items="act.markAsOpts" outlined hide-details />
-      </v-col>
-      <v-col
-        v-if="actionsValues[index].val === 'analyze'"
-        md="auto"
-        class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
+    <v-form ref="refForm" v-model="isFormValid" lazy-validation>
+      <v-row
+        v-for="(action, index) in actions"
+        :key="index"
+        class="vqb-rule rounded-xl action-items__item"
       >
-        <v-text-field
-          outlined
-          :placeholder="`${getSelectedIntegrations()} integrations selected `"
-          height="40"
-          @click="openEngineModalFunc"
-          class="analysis-engines-select"
-        >
-        </v-text-field>
-        <v-col class="analyze__main-checkbox">
-          <v-checkbox class="k-checkbox" color="#2196f3" v-model="analyzeCheckbox" />
-          <span class="checkbox-text">Investigate according to analyze results</span>
+        <v-col md="2" class="mr-2">
+          <v-select
+            :value="actionsValues[index]"
+            :items="act.actionTypes"
+            :return-object="true"
+            outlined
+            placeholder="Select Action Type"
+            height="40"
+            item-text="name"
+            item-value="val"
+            @input="setAvailableItems($event, actionsValues[index], index)"
+          />
         </v-col>
-      </v-col>
-
-      <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="mr-2 flex-grow-1">
-        <v-combobox
-          v-model="playbookAction.tags"
-          :items="[]"
-          chips
-          deletable-chips
-          :search-input.sync="tagsearch"
-          @keyup.tab="updateTags"
-          @paste="updateTags"
-          outlined
-          class="hide-caret"
-          multiple
-          dense
-          persistent-hint
-          small-chips
-          :return-object="false"
-          placeholder="Enter tags and press enter key"
-          required
-        ></v-combobox>
-      </v-col>
-      <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
-        <v-select
-          v-model="targetUserType[index]"
-          :items="getNotifyTypes()"
-          outlined
-          @input="tarUsers[index] = []"
-        />
-      </v-col>
-      <v-col
-        v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
-        md="5"
-        class="mr-2"
-      >
-        <v-autocomplete
-          :items="targetUsers"
-          :loading="isLoading"
-          :search-input.sync="search"
-          v-model="tarUsers[index]"
-          color="white"
-          item-text="email"
-          item-value="email"
-          placeholder="Select Target User"
-          outlined
-          multiple
-          small-chips
-          deletable-chips
-        ></v-autocomplete>
-      </v-col>
-      <v-col
-        v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
-        md="5"
-        class="mr-2"
-      >
-        <v-select
-          :items="targetUsersList"
-          placeholder="Select user groups"
-          outlined
-          class="edit-select target-users-select-multi"
-          v-model="tarUsers[index]"
-          item-text="name"
-          item-value="resourceId"
-          multiple
-          dense
-          deletable-chips
-          :return-object="false"
-          persistent-hint
-          small-chips
-          hide-details
-        ></v-select>
-      </v-col>
-      <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
-        <v-select
-          v-model="notifyTemplate"
-          :items="act.notifyTemplates"
-          item-value="value"
-          item-text="label"
-          outlined
-          hide-details
-        />
-      </v-col>
-      <v-col class="text-right">
-        <!-- Remove act button -->
-        <v-btn
-          icon
-          @click="removeAction(index, actionsValues[index].val)"
-          v-if="action.val !== 'markAs'"
+        <v-col v-if="actionsValues[index].val === 'markAs'" md="2" class="mr-2">
+          <v-select
+            v-model="playbookAction.markType"
+            :items="act.markAsOpts"
+            outlined
+            hide-details
+          />
+        </v-col>
+        <v-col
+          v-if="actionsValues[index].val === 'analyze'"
+          md="auto"
+          class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
         >
-          <v-icon>mdi-close-circle</v-icon>
-        </v-btn>
-      </v-col>
-      <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'">
-        <investigate :investigateData="playbookActionInvestigationAnalyzeData" :act="act" />
-      </v-col>
-      <v-col v-if="actionsValues[index].val == 'investigate'" md="12">
-        <investigate
-          :investigateData="playbookActionInvestigations[index]"
-          :index="index"
-          :isCreatedByAnalyzer="true"
-          :ref="`refInvestigate${-index}`"
-          :act="act"
-        />
-      </v-col>
-    </v-row>
+          <v-text-field
+            outlined
+            :placeholder="`${getSelectedIntegrations()} integrations selected `"
+            height="40"
+            :rules="[validateIntegrations]"
+            @click="openEngineModalFunc"
+            class="analysis-engines-select"
+          >
+          </v-text-field>
+          <v-col class="analyze__main-checkbox">
+            <v-checkbox class="k-checkbox" color="#2196f3" v-model="analyzeCheckbox" />
+            <span class="checkbox-text">Investigate according to analyze results</span>
+          </v-col>
+        </v-col>
+
+        <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="mr-2 flex-grow-1">
+          <v-combobox
+            v-model="playbookAction.tags"
+            :items="[]"
+            chips
+            deletable-chips
+            :search-input.sync="tagsearch"
+            @keyup.tab="updateTags"
+            @paste="updateTags"
+            outlined
+            class="hide-caret"
+            multiple
+            dense
+            persistent-hint
+            small-chips
+            :return-object="false"
+            placeholder="Enter tags and press enter key"
+            required
+          ></v-combobox>
+        </v-col>
+        <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
+          <v-select
+            v-model="targetUserType[index]"
+            :items="getNotifyTypes()"
+            outlined
+            :rules="[(v) => validations.required(v, 'Required')]"
+            @input="tarUsers[index] = []"
+          />
+        </v-col>
+        <v-col
+          v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
+          md="5"
+          class="mr-2"
+        >
+          <v-autocomplete
+            :items="targetUsers"
+            :loading="isLoading"
+            :search-input.sync="search"
+            v-model="tarUsers[index]"
+            color="white"
+            item-text="email"
+            item-value="email"
+            placeholder="Select Target User"
+            outlined
+            multiple
+            small-chips
+            deletable-chips
+          ></v-autocomplete>
+        </v-col>
+        <v-col
+          v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
+          md="5"
+          class="mr-2"
+        >
+          <v-select
+            :items="targetUsersList"
+            placeholder="Select user groups"
+            outlined
+            class="edit-select target-users-select-multi"
+            v-model="tarUsers[index]"
+            item-text="name"
+            item-value="resourceId"
+            multiple
+            dense
+            deletable-chips
+            :return-object="false"
+            persistent-hint
+            small-chips
+            hide-details
+          ></v-select>
+        </v-col>
+        <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
+          <v-select
+            v-model="notifyTemplate"
+            :items="act.notifyTemplates"
+            item-value="value"
+            item-text="label"
+            outlined
+            hide-details
+          />
+        </v-col>
+        <v-col class="text-right">
+          <!-- Remove act button -->
+          <v-btn
+            icon
+            @click="removeAction(index, actionsValues[index].val)"
+            v-if="action.val !== 'markAs'"
+          >
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
+        </v-col>
+        <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'">
+          <investigate :investigateData="playbookActionInvestigationAnalyzeData" :act="act" />
+        </v-col>
+        <v-col v-if="actionsValues[index].val == 'investigate'" md="12">
+          <investigate
+            :investigateData="playbookActionInvestigations[index]"
+            :index="index"
+            :isCreatedByAnalyzer="true"
+            :ref="`refInvestigate${-index}`"
+            :act="act"
+          />
+        </v-col>
+      </v-row>
+    </v-form>
     <v-btn class="playbook-rule-form__button" text color="#2196f3" @click="addAction()">
       <v-icon>mdi-plus</v-icon> Add Action
     </v-btn>
@@ -269,6 +278,7 @@ import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 import Investigate from './Investigate'
 import { mapGetters } from 'vuex'
+import { required } from '../../utils/validations'
 export default {
   components: { AppDialog, Investigate },
 
@@ -293,6 +303,9 @@ export default {
       isLoading: false,
       search: '',
       targetUsersData: false,
+      validations: {
+        required
+      },
       analyzeModel: false,
       analyzeCheckbox: false,
       openEnginesModal: false,
@@ -300,6 +313,7 @@ export default {
       analysisEngines: [],
       initialAnalysisEngines: [],
       actionItemType: 'markAs',
+      isFormValid: true,
       markAsOpts: 'Clean',
       acceptCheckbox: false,
       tagsearch: '',
@@ -424,7 +438,11 @@ export default {
   methods: {
     confirmEngineModalFucn() {
       this.openEnginesModal = false
+      this.$refs.refForm.validate()
       this.getSelectedIntegrations()
+    },
+    validateIntegrations(v) {
+      return this.getSelectedIntegrations() || 'Required'
     },
     openEngineModalFunc() {
       this.initialAnalysisEngines = JSON.parse(JSON.stringify(this.analysisEngines))
@@ -433,6 +451,7 @@ export default {
     closeEngineModal() {
       this.analysisEngines = this.initialAnalysisEngines
       this.openEnginesModal = false
+      this.$refs.refForm.validate()
     },
     searchEnginesModel(val) {
       if (this.searchEnginesModelInput) {
@@ -463,6 +482,10 @@ export default {
       }
     },
     getSelectedIntegrations() {
+      console.log(
+        'this.analysisEngines.filter((item) => item.selected).length',
+        this.analysisEngines.filter((item) => item.selected).length
+      )
       return this.analysisEngines.filter((item) => item.selected).length
     },
     checkAllDataChecked(index, item) {
@@ -751,8 +774,14 @@ export default {
       })
       setTimeout(() => {
         const keys = Object.keys(this.$refs)
+        let valueIndex = 0
         keys.map((key, index) => {
-          this.$refs[key][0].investigateData = JSON.parse(JSON.stringify(investigations[index]))
+          if (key !== 'refForm') {
+            this.$refs[key][0].investigateData = JSON.parse(
+              JSON.stringify(investigations[valueIndex])
+            )
+            valueIndex++
+          }
         })
       }, 500)
     }

@@ -384,6 +384,9 @@
           width: 100%;
           min-height: 50px;
           padding-left: 24px;
+          @media (max-width:1023px){
+            flex-direction: column;
+          }
           &-disable{
             opacity: .5;
             pointer-events: none;
@@ -397,12 +400,13 @@
             }
           }
 
+
           .table-search {
             display: flex;
             flex-direction: row;
             align-items: center;
             height: 40px;
-            width: 328px;
+            min-width: 328px;
 
             .v-text-field.v-text-field--enclosed {
               height: 40px !important;
@@ -415,6 +419,9 @@
             @media only screen and (max-width: 500px) {
               padding-right: 0;
               padding-top: 13px;
+            }
+            @media (max-width:1023px){
+              margin-top:12px
             }
           }
 

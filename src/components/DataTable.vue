@@ -414,6 +414,10 @@
                   v-if="col.type === 'colorfulText'"
                   :text="getDataTableFieldLabel(scope.row[col.property])"
                 />
+                <div v-if="col.type === 'textWithBadge'">
+                  <datatable-text-with-badge :scope="scope" :col="col" />
+                </div>
+
                 <data-table-array :col="col" :scope="scope" v-if="col.type === 'array'" />
                 <data-table-attachment
                   :col="col"
@@ -561,7 +565,7 @@
                     <template v-slot:activator="{ on }">
                       <v-btn class="btn-hover" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
-                        >mdi-dots-vertical</v-icon
+                          >mdi-dots-vertical</v-icon
                         >
                       </v-btn>
                     </template>
@@ -743,6 +747,7 @@ import DownloadModal from './DataTableComponents/DownloadModal'
 import Badge from './Badge'
 import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
+import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -771,7 +776,8 @@ export default {
     DataTableTooltip,
     DownloadModal,
     ExtendedView,
-    DataTableSmallBadge
+    DataTableSmallBadge,
+    DatatableTextWithBadge
   },
   props: {
     columns: {

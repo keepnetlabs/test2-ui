@@ -1,12 +1,12 @@
 <template>
-  <app-modal :status="status" iconName="mdi-magnify" :title="`New Investigation`">
+  <app-modal :status="status" iconName="mdi-magnify" :title="`Start New Manual Investigation`">
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
         <v-card flat light style="max-width: 554px;">
-          <v-list-item class="pl-0 pr-0 pt-4 pb-4">
-            <v-list-item-content class="pt-4 pb-0">
-              <v-list-item-title class="v-card-headline">Start New Investigation</v-list-item-title>
-              <v-list-item-title class="v-card-sub-header"
+          <v-list-item  class="my-8">
+            <v-list-item-content>
+              <v-list-item-title class="new-investigation-wrapper__header">Start New Investigation</v-list-item-title>
+              <v-list-item-title class="new-investigation-wrapper__sub-header"
                 >Select filters and date options to start an investigation</v-list-item-title
               >
             </v-list-item-content>
@@ -14,7 +14,7 @@
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-list-item class="edit-name-area pt-1 0 pa-0 investigation-name">
               <v-list-item-content class>
-                <label class="pb-3 edit-labels">Investigation Name</label>
+                <label class="pb-2 edit-labels">Investigation Name</label>
                 <v-text-field
                   placeholder="Manual Investigation - 09.09.2019  16:25"
                   outlined
@@ -25,7 +25,7 @@
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
+            <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
               <v-list-item-content class>
                 <label class="edit-labels">Target Users</label>
                 <label class="edit-sub-labels"
@@ -98,8 +98,11 @@
             </v-list-item>
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class="filter-container">
-                <label class="edit-labels">Filters</label>
-                <label class="edit-sub-labels">Define filters for the investigation</label>
+                <label class="edit-labels">Search Criteria</label>
+                <label class="edit-sub-labels"
+                  >Define criteria for the investigation. Emails that match any of the criteria will
+                  be found</label
+                >
                 <div class="filter-item" v-for="(list, index) in filterList" :key="index">
                   <div class="filter-item__selectbox">
                     <v-select
@@ -141,7 +144,7 @@
                   </div>
                 </div>
                 <button class="filter-item__button" type="button" @click="addNewFilterListOption()">
-                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD FILTER
+                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD CRITERIA
                 </button>
               </v-list-item-content>
             </v-list-item>
@@ -152,17 +155,20 @@
                 <div class="date-row">
                   <el-date-picker
                     v-model="date"
-                    type="daterange"
+                    type="datetimerange"
                     range-separator="To"
+                    format="yyyy-MM-dd HH:mm:ss"
                     start-placeholder="Start date"
                     end-placeholder="End date"
+                    value-format="yyyy-MM-dd HH:mm:ss"
                     :picker-options="pickerOptions"
+                    :rules="[]"
                   >
                   </el-date-picker>
                 </div>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item class="edit-industry-area pb-0 pa-0">
+            <v-list-item class="edit-industry-area mt-2 pb-0 pa-0">
               <v-list-item-content class>
                 <label class="edit-labels">Select Sources</label>
                 <label class="edit-sub-labels"
@@ -188,7 +194,7 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item class="edit-industry-area pb-4 pa-0">
+            <v-list-item class="edit-industry-area mt-2 pb-4 pa-0">
               <v-list-item-content class>
                 <label class="edit-labels">Duration</label>
                 <label class="edit-sub-labels"
@@ -206,7 +212,7 @@
                 ></v-select>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item class="edit-industry-area pa-0">
+            <v-list-item class="edit-industry-area mt-2 pa-0">
               <v-list-item-content class>
                 <label class="edit-labels">Action</label>
                 <label class="edit-sub-labels"
@@ -242,6 +248,11 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   components: {
     AppModal
+  },
+  watch: {
+    date(val) {
+      debugger
+    }
   },
   data() {
     return {
@@ -880,11 +891,13 @@ export default {
     checkIsEdit() {
       if (this.isEdit) {
         let _this = this
+        debugger
         this.investgationName = this.investigationDetailsData.name
-        this.startDate = this.investigationDetailsData.startDate
+        this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
-        this.endDate = this.investigationDetailsData.endDate
+
+        this.date.push(this.investigationDetailsData.endDate)
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -
           new Date(this.investigationDetailsData.createTime).getDate()
@@ -974,6 +987,21 @@ export default {
 </script>
 <style lang="scss">
 .new-investigation-wrapper {
+  &__header{
+    font-size: 24px;
+    font-weight: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  &__sub-header{
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
   .target-users-select {
     &__radio-group {
       padding: 0px !important;
@@ -2836,5 +2864,12 @@ export default {
     background-color: #2196f3 !important;
     color: #fff !important;
   }
+}
+.checkbox-error {
+  left: 3px !important;
+  bottom: -3px !important;
+ .v-messages__message{
+   font-size:9px !important;
+ }
 }
 </style>

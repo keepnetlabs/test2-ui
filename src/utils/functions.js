@@ -23,7 +23,7 @@ export function getBtnStatusColor(type) {
     case 'phishing':
       return '#f56c6c'
     case 'idle':
-      return '#f56c6c'
+      return '#757575'
     case 'disabled':
       return '#f56c6c'
     case 'network error':
@@ -46,6 +46,10 @@ export function getBtnStatusColor(type) {
       return '#757575'
     case 'user unavailable':
       return '#757575'
+    case 'completedwitherror':
+      return '#6d6d6d'
+    case 'itemnotfound':
+      return '#fafafa'
     case 'n/a':
       return '#00bcd4'
     case 'stopped':
@@ -121,6 +125,8 @@ export function getDataTableFieldLabel(field) {
       return 'Very High'
     case 'verylow':
       return 'Very Low'
+    case 'completedwitherror':
+      return 'Completed With Error'
     default:
       return field.substring(0, 1).toUpperCase() + field.substring(1, field.length)
   }

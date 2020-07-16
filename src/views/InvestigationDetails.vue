@@ -172,14 +172,14 @@
                   <div
                     class="investigation-details__container__stats__cards__card-left__icon"
                     :class="
-                    statsAndMenuData.status == 'Running'
-                      ? 'bg-blue'
-                      : statsAndMenuData.status == 'Finished'
-                      ? 'bg-green'
-                      : statsAndMenuData.status == 'Expired'
-                      ? 'bg-salmon'
-                      : 'bg-salmon'
-                  "
+                      statsAndMenuData.status == 'Running'
+                        ? 'bg-blue'
+                        : statsAndMenuData.status == 'Finished'
+                        ? 'bg-green'
+                        : statsAndMenuData.status == 'Expired'
+                        ? 'bg-salmon'
+                        : 'bg-salmon'
+                    "
                   >
                     <v-icon medium left color="white">{{ statusIcon }}</v-icon>
                   </div>
@@ -191,9 +191,9 @@
                   <p class="investigation-details__container__stats__cards__card-right__stats">
                     <v-tooltip
                       v-if="
-                      this.statsAndMenuData.status == 'Running' &&
-                      this.statsAndMenuData.estimatedTime
-                    "
+                        this.statsAndMenuData.status == 'Running' &&
+                        this.statsAndMenuData.estimatedTime
+                      "
                       bottom
                       opacity="1"
                       max-width="230"
@@ -201,30 +201,30 @@
                       <template v-slot:activator="{ on }">
                         <div v-on="on">{{ statsAndMenuData.estimatedTime }} remaining</div>
                       </template>
-                  <p class="tooltip-wrapper">
-                    Actual remaining time may be different from estimated time and is depended on
-                    conditions such as online user count, mailbox size, etc.
-                  </p>
-                  </v-tooltip>
-                  <span v-else>{{ getStatusText('statusTime', null) }}</span>
+                      <p class="tooltip-wrapper">
+                        Actual remaining time may be different from estimated time and is depended
+                        on conditions such as online user count, mailbox size, etc.
+                      </p>
+                    </v-tooltip>
+                    <span v-else>{{ getStatusText('statusTime', null) }}</span>
                   </p>
                 </div>
               </div>
             </div>
-            <div class="investigation-details__container__stats__cards" >
+            <div class="investigation-details__container__stats__cards">
               <div class="investigation-details__container__stats__cards__card">
                 <div class="investigation-details__container__stats__cards__card-left">
                   <div
                     class="investigation-details__container__stats__cards__card-left__icon"
                     :class="
-                    statsAndMenuData.status == 'Running'
-                      ? 'bg-turquoise'
-                      : statsAndMenuData.status == 'Finished'
-                      ? 'bg-turquoise'
-                      : statsAndMenuData.status == 'Expired'
-                      ? 'bg-macaroni'
-                      : 'bg-macaroni'
-                  "
+                      statsAndMenuData.status == 'Running'
+                        ? 'bg-turquoise'
+                        : statsAndMenuData.status == 'Finished'
+                        ? 'bg-turquoise'
+                        : statsAndMenuData.status == 'Expired'
+                        ? 'bg-macaroni'
+                        : 'bg-macaroni'
+                    "
                   >
                     <v-icon medium left color="white">mdi-account</v-icon>
                   </div>
@@ -241,7 +241,7 @@
             </div>
           </div>
           <div class="investigation-details__container__stats-right-col">
-            <div class="investigation-details__container__stats__cards" >
+            <div class="investigation-details__container__stats__cards">
               <div class="investigation-details__container__stats__cards__card">
                 <div class="investigation-details__container__stats__cards__card-left">
                   <div
@@ -255,12 +255,14 @@
                     {{ getStatusText('scannedUserCount', statsAndMenuData.scannedUserCount) }}
                   </h3>
                   <p class="investigation-details__container__stats__cards__card-right__stats">
-                    {{ getStatusText('totalUserCountScannedUser', statsAndMenuData.totalUserCount) }}
+                    {{
+                      getStatusText('totalUserCountScannedUser', statsAndMenuData.totalUserCount)
+                    }}
                   </p>
                 </div>
               </div>
             </div>
-            <div class="investigation-details__container__stats__cards" >
+            <div class="investigation-details__container__stats__cards">
               <div class="investigation-details__container__stats__cards__card">
                 <div class="investigation-details__container__stats__cards__card-left">
                   <div
@@ -280,10 +282,7 @@
               </div>
             </div>
           </div>
-
         </div>
-
-
 
         <div class="investigation-details__container__content card v-card v-sheet theme--light">
           <div class="investigation-details__container__content--left-menu">
@@ -688,9 +687,10 @@
                 >
                   <v-chip
                     v-for="(value, key) in item"
-                    :key="value"
+                    :key="value + key"
                     v-if="value && key !== 'resourceId'"
-                    >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
+                    >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
+                    {{ value }}
                   </v-chip>
                 </template>
                 <template
@@ -698,8 +698,12 @@
                   v-for="item in investigationDetailsData.bodies"
                   class="investigation__attachments"
                 >
-                  <v-chip v-for="(value, key) in item" v-if="value && key !== 'resourceId'" :key="value"
-                    >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
+                  <v-chip
+                    v-for="(value, key) in item"
+                    v-if="value && key !== 'resourceId'"
+                    :key="value + key"
+                    >{{ key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
+                    {{ value }}
                   </v-chip>
                 </template>
                 <template
@@ -707,8 +711,11 @@
                   class="investigation__attachments"
                   v-for="item in investigationDetailsData.attachments"
                 >
-                  <v-chip v-for="(value, key) in item"  v-if="value && key !== 'resourceId'  && key !== 'sha512'" :key="value"
-                    >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
+                  <v-chip
+                    v-for="(value, key) in item"
+                    v-if="value && key !== 'resourceId' && key !== 'sha512'"
+                    :key="value + key"
+                    >{{ key.toUpperCase() }}: {{ value }}
                   </v-chip>
                 </template>
                 <template
@@ -716,13 +723,14 @@
                   class="investigation__attachments"
                   v-for="item in investigationDetailsData.attachments"
                 >
-                  <v-chip v-for="(value, key) in item"  v-if="key === 'sha512'" :key="value"
-                  >{{ key.substring(0,1).toUpperCase()+key.substring(1,key.length) }}: {{ value }}
+                  <v-chip v-for="(value, key) in item" v-if="key === 'sha512'" :key="value + key"
+                    >{{ key.toUpperCase() }}:
+                    {{ value }}
                   </v-chip>
                 </template>
               </div>
             </div>
-            <div v-if="activeMenu != 'targetUsers'">
+            <div v-if="activeMenu !== 'targetUsers'">
               <datatable
                 id="investigationDetailsList"
                 :refName="'investigationDetailsListTable'"
@@ -868,8 +876,8 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'array',
-        minWidth: 208
+        type: 'textWithBadge',
+        width: 300
       },
       {
         property: 'subject',
@@ -903,6 +911,33 @@ export default {
         show: true,
         type: 'service',
         width: 110
+      },
+      {
+        property: 'analyzeActionTypeStatus',
+        align: 'center',
+        sortable: true,
+        label: 'Action Status',
+        show: true,
+        width: 180,
+        type: 'badge'
+      },
+      {
+        property: 'warningActionTypeStatus',
+        align: 'center',
+        sortable: true,
+        label: 'Warning Status',
+        show: true,
+        width: 180,
+        type: 'badge'
+      },
+      {
+        property: 'deleteActionTypeStatus',
+        align: 'center',
+        sortable: true,
+        label: 'Delete Status',
+        show: true,
+        width: 180,
+        type: 'badge'
       }
     ],
     columnsTargetUsers: [
@@ -1079,6 +1114,9 @@ export default {
           link.click()
         })
       })
+    },
+    getId() {
+      return `key-${Math.random()}`
     },
     exportTargetUsers({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {
@@ -1469,8 +1507,8 @@ export default {
   .v-navigation-drawer__border {
     display: none;
   }
-  .v-navigation-drawer{
-    z-index:3;
+  .v-navigation-drawer {
+    z-index: 3;
   }
   .investigation-details__alerts {
     &-sub-title {
@@ -1549,32 +1587,30 @@ export default {
 
     &__container {
       &__stats {
-        @media (max-width:768px) {
-          justify-content:space-around;
+        @media (max-width: 768px) {
+          justify-content: space-around;
         }
-        &-left-col{
+        &-left-col {
           display: flex;
-          @media (max-width: 768px){
+          @media (max-width: 768px) {
             flex-direction: column;
           }
-          @media (max-width:1600px){
+          @media (max-width: 1600px) {
             flex-basis: 50%;
           }
           flex-basis: 40%;
           justify-content: space-between;
-
         }
-        &-right-col{
+        &-right-col {
           display: flex;
           flex-basis: 65%;
           justify-content: space-evenly;
-          @media (max-width: 768px){
+          @media (max-width: 768px) {
             flex-direction: column;
           }
-          @media (max-width:1400px){
+          @media (max-width: 1400px) {
             flex-basis: 55%;
           }
-
         }
         border-radius: 20px;
         box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
@@ -1583,13 +1619,11 @@ export default {
         margin-bottom: 34px;
         display: flex;
 
-
-
         &__cards {
           display: flex;
           justify-content: space-between;
 
-          @media (max-width: 768px){
+          @media (max-width: 768px) {
             margin-left: 0 !important;
             &:first-child {
               margin-bottom: 10px !important;
