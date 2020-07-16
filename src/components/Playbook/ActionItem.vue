@@ -322,7 +322,7 @@ export default {
       searchUser: '',
       searchGroup: '',
       targets: [],
-      targetUsers: '',
+      targetUsers: [],
       tarUsers: [],
       investigationFilter: ['URLs', 'Attachments'],
       investigationRange: '3 days before and after',
@@ -681,7 +681,7 @@ export default {
     getTargetUsers() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 20,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -739,11 +739,16 @@ export default {
 
     this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
     this.getAnalysisEngine()
-    this.getTargetUsers()
   },
   watch: {
     search(val) {
-      this.getTargetUsers()
+      if (!val) return false
+      clearTimeout(this._timerId)
+
+      // delay new call 500ms
+      this._timerId = setTimeout(() => {
+        this.getTargetUsers()
+      }, 500)
     },
     editedActions(val) {
       this.playbookAction = val
