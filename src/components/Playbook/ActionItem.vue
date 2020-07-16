@@ -559,7 +559,7 @@ export default {
               isSendUrl: true,
               isSendFileHash: true,
               isSendFile: true,
-              selected: true
+              selected: false
             }
           })
           this.acceptAllAnalysisEngines = true
