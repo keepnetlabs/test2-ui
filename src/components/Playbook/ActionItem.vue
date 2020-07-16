@@ -658,7 +658,7 @@ export default {
     getTargetUsers() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 20,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
