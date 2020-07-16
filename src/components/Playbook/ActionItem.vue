@@ -310,7 +310,7 @@ export default {
       searchUser: '',
       searchGroup: '',
       targets: [],
-      targetUsers: '',
+      targetUsers: [],
       tarUsers: [],
       investigationFilter: ['URLs', 'Attachments'],
       investigationRange: '3 days before and after',
