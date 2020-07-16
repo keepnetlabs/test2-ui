@@ -701,7 +701,6 @@ export default {
 
     this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
     this.getAnalysisEngine()
-    this.getTargetUsers()
   },
   watch: {
     search(val) {
