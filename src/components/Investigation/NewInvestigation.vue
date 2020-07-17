@@ -165,6 +165,15 @@
                     :rules="[]"
                   >
                   </el-date-picker>
+
+                    <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+                      <div class="v-messages theme--light error--text" role="alert">
+                        <div class="v-messages__wrapper">
+                          <div class="v-messages__message">Date required</div>
+                        </div>
+                      </div>
+                    </div>
+
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -251,7 +260,13 @@ export default {
   },
   watch: {
     date(val) {
-      debugger
+debugger
+      if(val&& val.length>0){
+        this.isDateValid=true
+      }
+      else{
+        this.isDateValid=false
+      }
     }
   },
   data() {
@@ -305,6 +320,7 @@ export default {
       },
       checkboxError: false,
       investgationName: '',
+      isDateValid:false,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
       date: [],

@@ -142,6 +142,11 @@ export default {
     CreateOrEditRule,
     AppDialog
   },
+  props:{
+    playbookId:{
+      type: String
+    }
+  },
   data() {
     return {
       showRuleModal: false,
@@ -445,7 +450,13 @@ export default {
     this.getPlaybookList(this.tableCredientials).then(() => {
       this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
     })
+
+    if(this.playbookId){
+      this.selectedPlaybookId = this.playbookId
+      this.showRuleModal = true
+    }
   },
+
   computed: {
     ...mapGetters({
       playbookList: 'playbook/playbookListGetter'

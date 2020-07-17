@@ -1,7 +1,7 @@
 <template>
   <span>
     <router-link
-      :to="`${col.href}/${scope.row[col.hrefKey]}`"
+      :to="getRouterLink"
       class="datatable-link"
       v-if="scope.row && scope.row[col.property] && col.href"
     >
@@ -30,6 +30,9 @@ export default {
   computed: {
     getEmptyText() {
       return this.col['emptyText'] || ''
+    },
+    getRouterLink(){
+      return this.col.custom ? '' : `${this.col.href}/${this.scope.row[this.col.hrefKey]}`
     }
   }
 }

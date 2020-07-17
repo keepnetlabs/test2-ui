@@ -16,7 +16,7 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
-              <Rules />
+              <Rules :playbook-id="playbookId" />
             </v-tab-item>
           </v-tabs-items>
         </v-card>
@@ -33,6 +33,11 @@ export default {
   components: {
     Rules
   },
+  props: {
+    playbookId:{
+      type: String
+    }
+  },
   data() {
     return {
       tab: 0
@@ -44,7 +49,9 @@ export default {
     }
   },
 
-  mounted() {}
+  mounted() {
+    console.log("this.playbookId",this.playbookId)
+  }
 }
 </script>
 

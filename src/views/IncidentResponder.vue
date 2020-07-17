@@ -428,7 +428,7 @@
                 tag="span"
                 :key="item.resourceId"
                 v-else
-                :to="`/playbook/${item.resourceId}`"
+                :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
                 v-for="item in scope.row.matchingPlaybooks"
                 class="incident-wrapper__link"
                 >{{ item.name }}</router-link
@@ -1008,6 +1008,7 @@ export default {
           const {
             data: { data, status }
           } = response
+          console.log("datatop",data)
           this.$refs.refTopRules.loadWithDataArray(data || [])
         })
         .catch((error) => {
