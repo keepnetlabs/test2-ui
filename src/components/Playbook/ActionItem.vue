@@ -187,7 +187,6 @@
             :items="getNotifyTypes()"
             outlined
             :rules="[(v) => validations.required(v, 'Required')]"
-            @input="tarUsers[index] = []"
           />
         </v-col>
         <v-col
@@ -206,6 +205,7 @@
             placeholder="Select Target User"
             outlined
             multiple
+            :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             deletable-chips
           ></v-autocomplete>
@@ -228,6 +228,7 @@
             deletable-chips
             :return-object="false"
             persistent-hint
+            :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
           ></v-select>
@@ -595,7 +596,6 @@ export default {
           }
         })
         .catch((error) => {
-          debugger
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting analysis engines data!'
@@ -768,6 +768,7 @@ export default {
           valIndex++
         }
       })
+      this.getTargetUsers()
     },
     editedPlaybookActionAnalyzers(val) {
       this.updateAnalysisEngines()

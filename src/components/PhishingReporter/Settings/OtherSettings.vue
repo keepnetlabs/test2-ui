@@ -1,6 +1,6 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
-    <v-list-item class="pl-0 other-settings__list-item" v-if="showHeader">
+    <v-list-item class="pl-0 other-settings__list-item" style="max-width: 100%;" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="other-settings__title">
           Other Settings
@@ -8,6 +8,15 @@
         <v-list-item-subtitle class="other-settings__sub-title mb-6">
           Extra settings
         </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-content>
+        <a
+          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          class="other-settings__link"
+          target="_blank"
+        >
+          Installation and configuration guide
+        </a>
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm">
@@ -20,14 +29,6 @@
       </v-list-item>
       <v-list-item class="px-0 other-settings__list-item mt-1" :class="[inModal ? 'mb-3' : '']">
         <v-list-item-content>
-          <div>
-            <v-checkbox
-              v-model="formValues.isDeleteEmailBeforeAnalysis"
-              class="other-settings__checkbox k-checkbox mt-3"
-              color="#2196f3"
-              label="Delete Original Email"
-            ></v-checkbox>
-          </div>
           <div>
             <v-checkbox
               v-model="formValues.isEnableProxy"
@@ -325,7 +326,6 @@ export default {
           enterpriseVaultUrl,
           apiUrl,
           isOnPremise,
-          isDeleteEmailBeforeAnalysis,
           isEnableProxy,
           emailSelectionErrorMessage,
           apiKey,
@@ -345,7 +345,6 @@ export default {
         this.formValues.apiUrl = apiUrl || ''
         this.formValues.isEnableProxy = isEnableProxy || false
         this.formValues.isOnPremise = !!apiUrl
-        this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
         this.formValues.apiKey = apiKey || ''
         this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
       }
@@ -354,7 +353,6 @@ export default {
   data() {
     return {
       formValues: {
-        isDeleteEmailBeforeAnalysis: false,
         isEnableProxy: false,
         isOnPremise: false,
         apiUrl: '',
@@ -410,7 +408,6 @@ export default {
         enterpriseVaultUrl,
         apiUrl,
         isOnPremise,
-        isDeleteEmailBeforeAnalysis,
         isEnableProxy,
         emailSelectionErrorMessage,
         apiKey,
@@ -430,7 +427,6 @@ export default {
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isEnableProxy = isEnableProxy || false
       this.formValues.isOnPremise = !!apiUrl
-      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis || ''
       this.formValues.apiKey = apiKey || ''
       this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
     } else {
@@ -444,7 +440,6 @@ export default {
       this.formValues.msgBoxBtnOkText = 'Okay'
       this.formValues.emailSendingErrorMessage = 'Email cannot be sent'
       this.formValues.emailSelectionErrorMessage = 'Email error'
-      this.formValues.isDeleteEmailBeforeAnalysis = false
       this.formValues.apiKey = ''
       this.formValues.badFormatEmailMessage = 'Bad Format Email Message'
     }
@@ -461,7 +456,7 @@ export default {
     text-decoration: none;
     line-height: 1.71;
     letter-spacing: normal;
-    color: #2196f3;
+    color: #2196f3 !important;
     flex-basis: 100%;
     display: flex;
     justify-content: flex-end;

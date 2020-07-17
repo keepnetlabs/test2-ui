@@ -5,7 +5,7 @@
       @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
       v-if="versionHistoryModalStatus"
     />
-    <v-list-item class="pl-0 add-in-settings__list-item" v-if="showHeader">
+    <v-list-item class="pl-0 add-in-settings__list-item" style="max-width: 100%;" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
           Add-in Settings
@@ -13,6 +13,15 @@
         <v-list-item-subtitle class="add-in-settings__subtitle mb-6">
           General add-in settings
         </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-content>
+        <a
+          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          class="other-settings__link"
+          target="_blank"
+        >
+          Installation and configuration guide
+        </a>
       </v-list-item-content>
     </v-list-item>
     <v-form lazy-validation ref="refForm" v-model="isValid">
@@ -155,8 +164,17 @@
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label" for="delete-text">Delete Warning</label>
+
+          <v-checkbox
+            v-model="formValues.isDeleteEmailBeforeAnalysis"
+            class="other-settings__checkbox k-checkbox"
+            style="margin-top: 12px !important; margin-bottom: 2px;"
+            color="#2196f3"
+            label="Delete Original Email"
+          ></v-checkbox>
+
           <v-text-field
-            class="k-textfield mt-2"
+            class="k-textfield"
             dense
             id="delete-text"
             outlined
@@ -220,6 +238,8 @@
 import { maxLength, required } from '../../../utils/validations'
 import { getPhishingReporterImg } from '../../../api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
+import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
+import imageToBlob from 'image-to-blob'
 export default {
   name: 'AddinSettings',
   components: {
@@ -260,7 +280,8 @@ export default {
         analysisThankYouMessage: '',
         analysisEmailDeleteMessage: '',
         warningLabel: '',
-        hiddenFileUploadValue: ''
+        hiddenFileUploadValue: '',
+        isDeleteEmailBeforeAnalysis: null
       },
       versionHistoryModalStatus: false,
       marginStatus: true,
@@ -307,7 +328,8 @@ export default {
         isConfirmationBeforeAnalysis,
         analysisConfirmationMessage,
         analysisThankYouMessage,
-        analysisEmailDeleteMessage
+        analysisEmailDeleteMessage,
+        isDeleteEmailBeforeAnalysis
       } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -317,6 +339,7 @@ export default {
       this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
       this.formValues.analysisThankYouMessage = analysisThankYouMessage
       this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
+      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
@@ -330,6 +353,11 @@ export default {
       this.formValues.analysisThankYouMessage =
         'Thank you for reporting this email. Our organisation is more secure thanks to you.'
       this.formValues.warningLabel = 'Suspicious E-Mail'
+      this.formValues.isDeleteEmailBeforeAnalysis = true
+
+      imageToBlob(PhishingReporterLogo, (err, blob) => {
+        this.formValues.file = blob
+      })
     }
   }
 }

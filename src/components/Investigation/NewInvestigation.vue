@@ -3,9 +3,11 @@
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
         <v-card flat light style="max-width: 554px;">
-          <v-list-item  class="my-8">
+          <v-list-item class="my-8">
             <v-list-item-content>
-              <v-list-item-title class="new-investigation-wrapper__header">Start New Investigation</v-list-item-title>
+              <v-list-item-title class="new-investigation-wrapper__header"
+                >Start New Investigation</v-list-item-title
+              >
               <v-list-item-title class="new-investigation-wrapper__sub-header"
                 >Select filters and date options to start an investigation</v-list-item-title
               >
@@ -54,6 +56,8 @@
                     dense
                     persistent-hint
                     small-chips
+                    deletable-chips
+                    autocomplete="disabled"
                     :return-object="false"
                     @change="targetUsersListChange"
                     v-if="targetUserType == 'AllUsers'"
@@ -64,7 +68,7 @@
                     :items="targetUsersList"
                     :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
-                    class="edit-select target-users-select-multi"
+                    class="edit-select new-investigation__combo target-users-select-multi"
                     v-model="targetUsersValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
@@ -72,8 +76,10 @@
                     dense
                     persistent-hint
                     small-chips
+                    deletable-chips
                     :return-object="true"
                     @change="targetUsersListChange"
+                    autocomplete="disabled"
                     v-if="targetUserType == 'Groups'"
                     required
                   ></v-combobox>
@@ -85,12 +91,14 @@
                     multiple
                     dense
                     persistent-hint
+                    deletable-chips
+                    autocomplete="disabled"
                     small-chips
                     :return-object="false"
                     :rules="[targetUsers.required]"
                     required
                     outlined
-                    class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
+                    class="edit-name-textfield new-investigation__combo edit-select target-users-select__specific-user-input target-users-select-multi"
                     v-model="targetUsersValue"
                   ></v-combobox>
                 </div>
@@ -166,14 +174,13 @@
                   >
                   </el-date-picker>
 
-                    <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-                      <div class="v-messages theme--light error--text" role="alert">
-                        <div class="v-messages__wrapper">
-                          <div class="v-messages__message">Date required</div>
-                        </div>
+                  <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message">Date required</div>
                       </div>
                     </div>
-
+                  </div>
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -260,12 +267,10 @@ export default {
   },
   watch: {
     date(val) {
-debugger
-      if(val&& val.length>0){
-        this.isDateValid=true
-      }
-      else{
-        this.isDateValid=false
+      if (val && val.length > 0) {
+        this.isDateValid = true
+      } else {
+        this.isDateValid = false
       }
     }
   },
@@ -320,7 +325,7 @@ debugger
       },
       checkboxError: false,
       investgationName: '',
-      isDateValid:false,
+      isDateValid: false,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
       date: [],
@@ -542,6 +547,9 @@ debugger
           return false
         } else {
           this.checkboxError = false
+        }
+        if (!this.isDateValid) {
+          return false
         }
         let headersData = [
           {
@@ -907,7 +915,7 @@ debugger
     checkIsEdit() {
       if (this.isEdit) {
         let _this = this
-        debugger
+
         this.investgationName = this.investigationDetailsData.name
         this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
@@ -1003,7 +1011,7 @@ debugger
 </script>
 <style lang="scss">
 .new-investigation-wrapper {
-  &__header{
+  &__header {
     font-size: 24px;
     font-weight: normal;
     line-height: 1.29;
@@ -1011,7 +1019,7 @@ debugger
     color: rgba(0, 0, 0, 0.87);
   }
 
-  &__sub-header{
+  &__sub-header {
     font-size: 14px;
     font-weight: normal;
     line-height: 1.5;
@@ -2884,8 +2892,14 @@ debugger
 .checkbox-error {
   left: 3px !important;
   bottom: -3px !important;
- .v-messages__message{
-   font-size:9px !important;
- }
+  .v-messages__message {
+    font-size: 9px !important;
+  }
+  .new-investigation__combo {
+    .v-chip__content {
+      overflow: initial !important;
+      display: inline-flex !important;
+    }
+  }
 }
 </style>

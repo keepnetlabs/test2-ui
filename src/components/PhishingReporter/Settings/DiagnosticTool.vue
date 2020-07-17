@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height fluid tag="div">
-    <v-list-item class="pl-0 other-settings__list-item" v-if="showHeader">
+    <v-list-item class="pl-0 other-settings__list-item" style="max-width: 100%;" v-if="showHeader">
       <v-list-item-content>
         <v-list-item-title class="diagnostic-tool__title">
           Diagnostic Tool
@@ -8,6 +8,15 @@
         <v-list-item-subtitle class="diagnostic-tool__sub-title mb-6">
           Helper tool for checking status of add-in and diagnose problems
         </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-content>
+        <a
+          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          class="other-settings__link"
+          target="_blank"
+        >
+          Installation and configuration guide
+        </a>
       </v-list-item-content>
     </v-list-item>
     <div class="diagnostic-tool" id="diagnostic-tool">
@@ -50,15 +59,6 @@
       <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
         >Download link is generating...</span
       >
-      <div class="diagnostic-tool__link-container">
-        <a
-          class="diagnostic-tool__link"
-          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-          target="_blank"
-        >
-          Installation and configuration guide
-        </a>
-      </div>
     </div>
   </v-container>
 </template>

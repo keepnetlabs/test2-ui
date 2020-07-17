@@ -723,7 +723,10 @@
                   class="investigation__attachments"
                   v-for="item in investigationDetailsData.attachments"
                 >
-                  <v-chip v-for="(value, key) in item" v-if="key === 'sha512'" :key="value + key"
+                  <v-chip
+                    v-for="(value, key) in item"
+                    v-if="key === 'sha512' && value"
+                    :key="value + key"
                     >{{ key.toUpperCase() }}:
                     {{ value }}
                   </v-chip>

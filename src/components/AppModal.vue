@@ -134,7 +134,7 @@ export default {
     @media (max-width: 500px) {
       padding: 16px 24px !important;
     }
-    z-index: 9;
+    z-index: 999;
   }
 }
 </style>

@@ -374,6 +374,7 @@ export default {
       Object.keys(payload).map((key) => {
         formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
       })
+
       createPhishingReporter(formData)
         .then((response) => {
           if (response && response.data && response.data.status === 'FAILED') {
