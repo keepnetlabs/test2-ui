@@ -34,7 +34,7 @@ export default {
     Rules
   },
   props: {
-    playbookId:{
+    playbookId: {
       type: String
     }
   },
@@ -50,7 +50,7 @@ export default {
   },
 
   mounted() {
-    console.log("this.playbookId",this.playbookId)
+    console.log('this.playbookId', this.playbookId)
   }
 }
 </script>

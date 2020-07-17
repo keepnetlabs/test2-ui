@@ -142,8 +142,8 @@ export default {
     CreateOrEditRule,
     AppDialog
   },
-  props:{
-    playbookId:{
+  props: {
+    playbookId: {
       type: String
     }
   },
@@ -451,7 +451,7 @@ export default {
       this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
     })
 
-    if(this.playbookId){
+    if (this.playbookId) {
       this.selectedPlaybookId = this.playbookId
       this.showRuleModal = true
     }

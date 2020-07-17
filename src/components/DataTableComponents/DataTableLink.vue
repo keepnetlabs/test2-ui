@@ -31,7 +31,7 @@ export default {
     getEmptyText() {
       return this.col['emptyText'] || ''
     },
-    getRouterLink(){
+    getRouterLink() {
       return this.col.custom ? '' : `${this.col.href}/${this.scope.row[this.col.hrefKey]}`
     }
   }

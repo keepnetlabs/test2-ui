@@ -1008,7 +1008,7 @@ export default {
           const {
             data: { data, status }
           } = response
-          console.log("datatop",data)
+          console.log('datatop', data)
           this.$refs.refTopRules.loadWithDataArray(data || [])
         })
         .catch((error) => {

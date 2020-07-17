@@ -3,9 +3,11 @@
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
         <v-card flat light style="max-width: 554px;">
-          <v-list-item  class="my-8">
+          <v-list-item class="my-8">
             <v-list-item-content>
-              <v-list-item-title class="new-investigation-wrapper__header">Start New Investigation</v-list-item-title>
+              <v-list-item-title class="new-investigation-wrapper__header"
+                >Start New Investigation</v-list-item-title
+              >
               <v-list-item-title class="new-investigation-wrapper__sub-header"
                 >Select filters and date options to start an investigation</v-list-item-title
               >
@@ -166,14 +168,13 @@
                   >
                   </el-date-picker>
 
-                    <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-                      <div class="v-messages theme--light error--text" role="alert">
-                        <div class="v-messages__wrapper">
-                          <div class="v-messages__message">Date required</div>
-                        </div>
+                  <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+                    <div class="v-messages theme--light error--text" role="alert">
+                      <div class="v-messages__wrapper">
+                        <div class="v-messages__message">Date required</div>
                       </div>
                     </div>
-
+                  </div>
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -260,12 +261,11 @@ export default {
   },
   watch: {
     date(val) {
-debugger
-      if(val&& val.length>0){
-        this.isDateValid=true
-      }
-      else{
-        this.isDateValid=false
+      debugger
+      if (val && val.length > 0) {
+        this.isDateValid = true
+      } else {
+        this.isDateValid = false
       }
     }
   },
@@ -320,7 +320,7 @@ debugger
       },
       checkboxError: false,
       investgationName: '',
-      isDateValid:false,
+      isDateValid: false,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
       date: [],
@@ -1003,7 +1003,7 @@ debugger
 </script>
 <style lang="scss">
 .new-investigation-wrapper {
-  &__header{
+  &__header {
     font-size: 24px;
     font-weight: normal;
     line-height: 1.29;
@@ -1011,7 +1011,7 @@ debugger
     color: rgba(0, 0, 0, 0.87);
   }
 
-  &__sub-header{
+  &__sub-header {
     font-size: 14px;
     font-weight: normal;
     line-height: 1.5;
@@ -2884,8 +2884,8 @@ debugger
 .checkbox-error {
   left: 3px !important;
   bottom: -3px !important;
- .v-messages__message{
-   font-size:9px !important;
- }
+  .v-messages__message {
+    font-size: 9px !important;
+  }
 }
 </style>
