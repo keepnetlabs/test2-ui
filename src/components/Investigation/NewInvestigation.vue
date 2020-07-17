@@ -56,6 +56,8 @@
                     dense
                     persistent-hint
                     small-chips
+                    deletable-chips
+                    autocomplete="disabled"
                     :return-object="false"
                     @change="targetUsersListChange"
                     v-if="targetUserType == 'AllUsers'"
@@ -66,7 +68,7 @@
                     :items="targetUsersList"
                     :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
-                    class="edit-select target-users-select-multi"
+                    class="edit-select new-investigation__combo target-users-select-multi"
                     v-model="targetUsersValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
@@ -74,8 +76,10 @@
                     dense
                     persistent-hint
                     small-chips
+                    deletable-chips
                     :return-object="true"
                     @change="targetUsersListChange"
+                    autocomplete="disabled"
                     v-if="targetUserType == 'Groups'"
                     required
                   ></v-combobox>
@@ -87,12 +91,14 @@
                     multiple
                     dense
                     persistent-hint
+                    deletable-chips
+                    autocomplete="disabled"
                     small-chips
                     :return-object="false"
                     :rules="[targetUsers.required]"
                     required
                     outlined
-                    class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
+                    class="edit-name-textfield new-investigation__combo edit-select target-users-select__specific-user-input target-users-select-multi"
                     v-model="targetUsersValue"
                   ></v-combobox>
                 </div>
@@ -261,7 +267,6 @@ export default {
   },
   watch: {
     date(val) {
-      debugger
       if (val && val.length > 0) {
         this.isDateValid = true
       } else {
@@ -542,6 +547,9 @@ export default {
           return false
         } else {
           this.checkboxError = false
+        }
+        if (!this.isDateValid) {
+          return false
         }
         let headersData = [
           {
@@ -907,7 +915,7 @@ export default {
     checkIsEdit() {
       if (this.isEdit) {
         let _this = this
-        debugger
+
         this.investgationName = this.investigationDetailsData.name
         this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
@@ -2886,6 +2894,12 @@ export default {
   bottom: -3px !important;
   .v-messages__message {
     font-size: 9px !important;
+  }
+  .new-investigation__combo {
+    .v-chip__content {
+      overflow: initial !important;
+      display: inline-flex !important;
+    }
   }
 }
 </style>

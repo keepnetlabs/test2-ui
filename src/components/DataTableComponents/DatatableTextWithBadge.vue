@@ -73,10 +73,9 @@ export default {
     getTooltipText() {
       const unRenderedBadges = this.badges.slice(this.maximumRenderedBadgeCount, this.badges.length)
       const text = unRenderedBadges.reduce((acc, item, index) => {
-        acc += `${index + 1}.${item}\n`
+        acc += `${item}\n`
         return acc
       }, '')
-      console.log(text)
       return text
     }
   },
@@ -127,6 +126,7 @@ export default {
 
   &__tooltip {
     white-space: pre-line;
+    line-height: 1.6;
   }
 }
 </style>

@@ -155,11 +155,9 @@ export default {
       text-align: center;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
-      color: #2196f3;
+      color: #2196f3 !important;
       text-transform: uppercase;
       text-decoration: none;
     }
@@ -215,15 +213,15 @@ export default {
   }
 
   &__btn-util {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
-    text-align: right;
     color: #ffffff;
+    box-shadow: none !important;
+    &:focus {
+      box-shadow: none;
+    }
   }
 }
 </style>

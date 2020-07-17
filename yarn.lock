@@ -7182,6 +7182,17 @@ ignore@^5.1.2:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
 
+image-to-blob@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/image-to-blob/-/image-to-blob-0.2.0.tgz#9b55a7ce1b5e7805b0d6ed94a912690646124eff"
+  integrity sha1-m1WnzhteeAWw1u2UqRJpBkYSTv8=
+  dependencies:
+    image-to-data-uri jcblw/image-to-data-uri.js
+
+"image-to-data-uri@git+https://github.com/jcblw/image-to-data-uri.js":
+  version "0.0.1"
+  resolved "git+https://github.com/jcblw/image-to-data-uri.js#bcd2218a4fe1531080fd2fdb81e96b0c7d8909a6"
+
 immediate@~3.0.5:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"

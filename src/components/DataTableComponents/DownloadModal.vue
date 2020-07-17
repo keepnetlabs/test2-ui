@@ -113,6 +113,9 @@ export default {
     padding-top: 0;
     margin-top: 5px !important;
   }
+  &__checkbox:first-child {
+    margin-top: 0 !important;
+  }
   &__footer {
     display: flex;
     justify-content: space-between;
@@ -125,6 +128,9 @@ export default {
   }
 
   &__confirm {
+  }
+  .k-dialog__body {
+    padding: 12px 12px 12px 96px;
   }
 }
 </style>

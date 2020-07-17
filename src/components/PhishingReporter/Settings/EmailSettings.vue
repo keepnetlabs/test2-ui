@@ -1,14 +1,27 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
-    <v-list-item class="px-0 email-settings__list-item mt-n1" v-if="showHeader">
+    <v-list-item
+      class="px-0 email-settings__list-item mt-n1"
+      style="max-width: 100%;"
+      v-if="showHeader"
+    >
       <v-list-item-content>
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
-          >Send Suspicious Emails To
+          >Email Settings
         </v-list-item-title>
         <v-list-item-subtitle
           class="email-settings__list-item--text email-settings__sub-header mb-6"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-content>
+        <a
+          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          class="other-settings__link"
+          target="_blank"
+        >
+          Installation and configuration guide
+        </a>
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>

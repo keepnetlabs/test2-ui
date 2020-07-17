@@ -197,6 +197,16 @@
               grid-auto-flow: column;
             }
           }
+          @media not all and (min-resolution:.001dpcm) {
+            @supports (-webkit-appearance:none) {
+              .datatable-progress{
+                width: 100%
+              }
+            }
+          }
+
+
+
 
         }
         .actions-container .cell {
@@ -895,4 +905,11 @@
 
 .el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed{
   border-right: 1.5px solid #EBEEF5;
+}
+.el-table__header-wrapper tr th:nth-last-child(3){
+  border-right: 2.5px solid #EBEEF5 !important;
+}
+
+.no-sub-border-datatable .el-table__header-wrapper tr th:nth-last-child(3){
+  border-right: none !important
 }
