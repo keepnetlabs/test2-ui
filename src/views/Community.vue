@@ -1,32 +1,50 @@
 <template>
   <div id="community-page-wrapper" class="page-wrapper">
-    <v-layout wrap>
-      <v-col class="main-column pr-0" cols="12" md="8">
-        <v-card id="community-tabs" class="pl-1 pt-2 pr-1">
-          <v-tabs v-model="tab" background-color="transparent" color="basil">
-            <v-tab id="incidents-tab">Incidents</v-tab>
-            <v-tab id="members-tab" @click="getMembers">Members</v-tab>
-            <div class="tablet-info-btn">
-              <v-btn id="info-btn" class="create-com-btn" @click="mobileInfoClicked" block rounded>
-                <v-icon class="pr-1">mdi-information</v-icon>
-                INFO
-              </v-btn>
-            </div>
-          </v-tabs>
-          <v-tabs-items v-model="tab">
-            <v-tab-item>
-              <incidents ref="refIncidents" :posts="[]" :incidentsCommunityName="''" />
-            </v-tab-item>
-            <v-tab-item>
-              <members />
-            </v-tab-item>
-          </v-tabs-items>
-        </v-card>
-      </v-col>
-      <v-col class="right-column" cols="12" md="4">
-        <right-column class="right-col-desktop" />
-      </v-col>
-    </v-layout>
+    <div id="" class="component-threat-sharing page-wrapper">
+      <v-overlay
+        id="new-community-overlay"
+        :value="showPostIncident"
+        :class="{ newCommunityOverlay: showPostIncident }"
+        :opacity="1"
+        :z-index="999"
+        color="white"
+      >
+        <post-incident @closeIncidentModal="closeIncidentModal" />
+      </v-overlay>
+      <v-layout wrap>
+        <v-col class="main-column pr-0" cols="12" md="8">
+          <v-card id="community-tabs" class="pl-1 pt-2 pr-1">
+            <v-tabs v-model="tab" background-color="transparent" color="basil">
+              <v-tab id="incidents-tab">Incidents</v-tab>
+              <v-tab id="members-tab" @click="getMembers">Members</v-tab>
+              <div class="tablet-info-btn">
+                <v-btn
+                  id="info-btn"
+                  class="create-com-btn"
+                  @click="mobileInfoClicked"
+                  block
+                  rounded
+                >
+                  <v-icon class="pr-1">mdi-information</v-icon>
+                  INFO
+                </v-btn>
+              </div>
+            </v-tabs>
+            <v-tabs-items v-model="tab">
+              <v-tab-item>
+                <incidents ref="refIncidents" :posts="[]" :incidentsCommunityName="''" />
+              </v-tab-item>
+              <v-tab-item>
+                <members />
+              </v-tab-item>
+            </v-tabs-items>
+          </v-card>
+        </v-col>
+        <v-col class="right-column" cols="12" md="4">
+          <right-column @postIncident="showPostIncidentFunc" class="right-col-desktop" />
+        </v-col>
+      </v-layout>
+    </div>
   </div>
 </template>
 
@@ -42,11 +60,13 @@ import RightColumn from '../components/ThreadSharing/RightColumn'
 export default {
   name: 'ThreatSharing',
   components: {
+    PostIncident,
     Incidents,
     Members,
     RightColumn
   },
   data: () => ({
+    showPostIncident: false,
     communityDetails: {},
     search: '',
     itemsPerPageOptions: [5, 10, 20],
@@ -132,6 +152,12 @@ export default {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    closeIncidentModal() {
+      this.showPostIncident = false
+    },
+    showPostIncidentFunc() {
+      this.showPostIncident = true
+    },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
     },

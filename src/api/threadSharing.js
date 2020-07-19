@@ -45,3 +45,21 @@ export function createCommunity(payload) {
 export function listBusinessCategories() {
   return testRequest.get(`lookups/2`)
 }
+
+export function searchNotifiedMail(payload) {
+  return testRequest.post(`notified-emails/search`, payload)
+}
+
+export function getSelectedEmailPreview(id) {
+  return testRequest.get(`/community-posts/notified-email-preview/${id}`)
+}
+
+export function uploadEmlOrMsg(file) {
+  const formData = new FormData()
+  formData.append('File', file)
+  return testRequest.post(`community-posts/message-file-preview`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}

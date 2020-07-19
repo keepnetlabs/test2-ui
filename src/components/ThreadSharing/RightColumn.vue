@@ -12,7 +12,7 @@
     <v-btn
       v-if="$route.name == 'Community'"
       class="create-com-btn"
-      @click="postIncident()"
+      @click="postIncident"
       block
       rounded
       id="post-inc-btn"

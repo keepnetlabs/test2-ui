@@ -92,7 +92,7 @@
                   :rules="[checkboxRulex.required]"
                   @change="checkCheckboxValidation()"
                 />
-                <span class="checkbox-text"
+                <span class="k-checkbox__checkbox-text"
                   >I accept <a>terms and conditions</a> for posting an incident</span
                 >
               </div>
@@ -233,17 +233,19 @@ export default {
     bottom: 0;
     width: 100%;
   }
-  .checkbox-text {
-    position: absolute;
-    top: 9px;
-    left: 45px;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
+  .k-checkbox {
+    &__checkbox-text {
+      position: absolute;
+      top: 9px;
+      left: 45px;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
   }
   .v-list-item__content {
     padding: 12px 10px;
