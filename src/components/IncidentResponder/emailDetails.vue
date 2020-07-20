@@ -149,6 +149,15 @@
               </v-card>
               <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Received Header</v-card-title>
+                <div class="email-details__received-header">
+                  <div :key="item.value + item.key" v-for="item in headersTable.data">
+                    {{
+                      item.key.substring(0, 1).toUpperCase() +
+                      item.key.substring(1, item.key.length)
+                    }}:
+                    {{ item.value }}
+                  </div>
+                </div>
               </v-card>
             </div>
           </v-tab-item>
@@ -530,6 +539,12 @@ export default {
     },
     handleDownloadEmail() {
       this.downloadModalStatus = true
+    },
+    getHeaderRow(key, value) {
+      let outputValue = ''
+      if (value.includes(',')) {
+        outputValue = value.split(',')
+      }
     },
     getDetailsLink(scope, col, parentRow) {
       switch (scope.row.analysisEngine) {
@@ -1900,6 +1915,15 @@ export default {
     letter-spacing: normal;
     color: #2196f3;
   }
+}
+
+.email-details__received-header {
+  margin-top: 40px;
+  border-radius: 8px;
+  border: solid 1px #dcdfe6;
+  padding: 10px 15px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.54);
 }
 .email-details__download-modal {
   .v-list-item__title,

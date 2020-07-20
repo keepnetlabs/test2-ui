@@ -27,7 +27,7 @@
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item mt-1" :class="[inModal ? 'mb-3' : '']">
+      <v-list-item class="px-0 other-settings__list-item" :class="[inModal ? 'mb-3' : '']">
         <v-list-item-content>
           <div>
             <v-checkbox
@@ -37,59 +37,57 @@
               label="Enable proxy"
             ></v-checkbox>
           </div>
-          <div>
-            <v-checkbox
-              v-model="formValues.isOnPremise"
-              color="#2196f3"
-              class="other-settings__checkbox k-checkbox"
-              label="On-premise settings"
-            ></v-checkbox>
-          </div>
-          <template v-if="formValues.isOnPremise">
-            <transition appear name="fade">
-              <div>
-                <div class="site-url__container mt-n3">
-                  <span class="site-url__message site-url__message--1">Site URL</span>
-                  <v-text-field
-                    placeholder="https://dashboard.abc.com/"
-                    outlined
-                    dense
-                    :disabled="!formValues.isOnPremise"
-                    class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
-                    v-model="formValues.apiUrl"
-                    :rules="[(v) => validations.required(v, 'Required')]"
-                    height="40"
-                  ></v-text-field>
-                </div>
-                <div class="site-url__container">
-                  <span class="site-url__message">Company ID</span>
-                  <v-text-field
-                    placeholder="Company ID"
-                    :disabled="!formValues.isOnPremise"
-                    outlined
-                    dense
-                    class="k-textfield site-url__textfield site-url__textfield--2"
-                    v-model="formValues.companyKey"
-                    :rules="[(v) => validations.required(v, 'Required')]"
-                    height="40"
-                  ></v-text-field>
-                </div>
-                <div class="site-url__container mt-n4">
-                  <span class="site-url__message site-url__message--1 mr-13">Api Key</span>
-                  <v-text-field
-                    placeholder="Api Key"
-                    outlined
-                    dense
-                    :disabled="!formValues.isOnPremise"
-                    class="k-textfield site-url__textfield site-url__textfield--1 mt-2"
-                    v-model="formValues.apiKey"
-                    :rules="[(v) => validations.required(v, 'Required')]"
-                    height="40"
-                  ></v-text-field>
-                </div>
-              </div>
-            </transition>
-          </template>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content>
+          <label class="other-settings__list-item-header" for="no-internet-connection-message"
+            >Site URL</label
+          >
+          <v-text-field
+            placeholder="https://dashboard.abc.com/"
+            outlined
+            dense
+            class="mt-2"
+            v-model="formValues.apiUrl"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content>
+          <label class="other-settings__list-item-header" for="no-internet-connection-message"
+            >Company ID</label
+          >
+          <v-text-field
+            placeholder="Company ID"
+            outlined
+            dense
+            class="mt-2"
+            v-model="formValues.companyKey"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="px-0 other-settings__list-item">
+        <v-list-item-content>
+          <label class="other-settings__list-item-header" for="no-internet-connection-message"
+            >Api Key</label
+          >
+          <v-text-field
+            placeholder="Api Key"
+            outlined
+            dense
+            class="mt-2"
+            v-model="formValues.apiKey"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            height="40"
+          ></v-text-field>
         </v-list-item-content>
       </v-list-item>
 
@@ -236,7 +234,10 @@
           >
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item mt-1" style="min-height: auto;">
+      <v-list-item
+        class="px-0 other-settings__list-item"
+        style="min-height: auto; margin-top: 5px;"
+      >
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
             v-model="formValues.enableEnterpriseVault"
@@ -325,10 +326,10 @@ export default {
           emailSendingErrorMessage,
           enterpriseVaultUrl,
           apiUrl,
-          isOnPremise,
           isEnableProxy,
           emailSelectionErrorMessage,
           apiKey,
+          enableEnterpriseVault,
           badFormatEmailMessage
         } = data
         this.formValues.companyKey = companyKey
@@ -340,11 +341,10 @@ export default {
         this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
         this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage || ''
         this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
-        this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
+        this.formValues.enableEnterpriseVault = enableEnterpriseVault || false
         this.enterpriseVaultDisabled = !enterpriseVaultUrl
         this.formValues.apiUrl = apiUrl || ''
         this.formValues.isEnableProxy = isEnableProxy || false
-        this.formValues.isOnPremise = !!apiUrl
         this.formValues.apiKey = apiKey || ''
         this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
       }
@@ -354,7 +354,6 @@ export default {
     return {
       formValues: {
         isEnableProxy: false,
-        isOnPremise: false,
         apiUrl: '',
         companyKey: '',
         enableEnterpriseVault: null,
@@ -407,11 +406,11 @@ export default {
         emailSendingErrorMessage,
         enterpriseVaultUrl,
         apiUrl,
-        isOnPremise,
         isEnableProxy,
         emailSelectionErrorMessage,
         apiKey,
-        badFormatEmailMessage
+        badFormatEmailMessage,
+        enableEnterpriseVault
       } = this.formData
       this.formValues.companyKey = companyKey
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
@@ -422,11 +421,10 @@ export default {
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage || ''
       this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
-      this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl
+      this.formValues.enableEnterpriseVault = enableEnterpriseVault || false
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isEnableProxy = isEnableProxy || false
-      this.formValues.isOnPremise = !!apiUrl
       this.formValues.apiKey = apiKey || ''
       this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
     } else {

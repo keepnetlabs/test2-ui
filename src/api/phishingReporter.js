@@ -51,3 +51,7 @@ export function downloadDiagnosticTool(id) {
     responseType: 'blob'
   })
 }
+
+export function searchGeneratedApplicationHistory(payload) {
+  return testRequest.post(`/phishing-reporter/history/search`, payload)
+}

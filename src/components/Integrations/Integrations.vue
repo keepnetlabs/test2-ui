@@ -88,6 +88,7 @@ import NewIntegration from './NewIntegration'
 import {
   deleteIntegration,
   disableIntegration,
+  enableIntegration,
   exportReportedEmails,
   getIntegrationList
 } from '../../api/integrations'
@@ -251,7 +252,22 @@ export default {
           })
         })
     },
-    handleEnable(row) {},
+    handleEnable(row) {
+      enableIntegration(row.resourceId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Integration has been enabled successfully!'
+          })
+          this.getDatatableList()
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when enable integration!'
+          })
+        })
+    },
     handleAdd() {},
     changeModalStatus(status, restart) {
       this.integrationId = null
