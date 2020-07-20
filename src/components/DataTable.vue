@@ -988,6 +988,7 @@ export default {
       }
     },
     multipleSelection(selecteds) {
+      this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
       if (selecteds.length === this.tableData.length) {
         this.selectionCheckbox = true
         this.selectionRowCheckboxDeterminate = false
@@ -1411,6 +1412,16 @@ export default {
       // selections property is an array and has the selected row object data
       if (selections) {
         this.$refs.elTableRef.toggleRowSelection(selections, true)
+        let tempArray = []
+        if (selections.constructor.name !== 'Array') {
+          tempArray.push(selections)
+        } else {
+          tempArray = selections
+        }
+        this.$emit('onEditClick', {
+          selected: tempArray,
+          isEditPopupOpen: true
+        })
         this.isWantToEditRow = true
       } else {
         // Nothing selected

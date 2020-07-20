@@ -6,7 +6,7 @@
     subtitle="Last 5 versions of the add-in"
     @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
     size="maximum"
-    class-name="matching-modal"
+    class-name="matching-modal version-history"
   >
     <template v-slot:app-dialog-body>
       <v-card light>
@@ -49,6 +49,7 @@
 import AppDialog from '../../AppDialog'
 import DataTable from '../../DataTable'
 import { getStoreValue, PROPERTY_STORE } from '../../../model/constants/commonConstants'
+import { searchGeneratedApplicationHistory } from '../../../api/phishingReporter'
 export default {
   name: 'VersionHistoryModal',
   components: {
@@ -66,35 +67,35 @@ export default {
       table: {
         columns: [
           {
-            property: PROPERTY_STORE.ADDINVERSION,
-            align: 'center',
+            property: 'applicationType',
+            align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.ADDINVERSION),
+            label: 'Application Type',
             fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
-            width: 140
+            minWidth: 33
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.STATUS,
             align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            sortable: true,
+            show: true,
+            type: 'badge',
+            minWidth: 33
+          },
+          {
+            property: 'createTime',
+            align: 'center',
+            editable: false,
+            label: 'Date Created',
             sortable: true,
             show: true,
             type: 'text',
-            width: 140
-          },
-          {
-            property: PROPERTY_STORE.CREATEDBY,
-            align: 'center',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDBY),
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 140
+            minWidth: 34
           }
         ],
         rowActions: [],
@@ -104,8 +105,33 @@ export default {
       }
     }
   },
-  mounted() {}
+  created() {
+    const searchPayload = {
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: []
+      }
+    }
+    searchGeneratedApplicationHistory(searchPayload).then((response) => {
+      const {
+        data: { data }
+      } = response
+      this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
+    })
+  }
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.matching-modal.version-history {
+  .k-table__wrapper {
+    .card .table-wrapper .el-table td > .cell {
+      padding-left: 38px !important;
+    }
+  }
+}
+</style>

@@ -26,6 +26,10 @@ export function disableIntegration(id) {
   return testRequest.put(`${API_URL}/${id}/disable`)
 }
 
+export function enableIntegration(id) {
+  return testRequest.put(`${API_URL}/${id}/enable`)
+}
+
 export function deleteIntegration(id) {
   return testRequest.delete(`${API_URL}/${id}`)
 }

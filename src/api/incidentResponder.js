@@ -37,3 +37,7 @@ export function searchNotifiedMail(payload) {
 export function updateNotifiedEmail(id, payload) {
   return testRequest.put(`/notified-emails/${id}`, payload)
 }
+
+export function getRoiSettings() {
+  return testRequest.get('/companies/roi-settings')
+}

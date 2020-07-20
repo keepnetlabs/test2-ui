@@ -236,7 +236,10 @@
 
 <script>
 import { maxLength, required } from '../../../utils/validations'
-import { getPhishingReporterImg } from '../../../api/phishingReporter'
+import {
+  getPhishingReporterImg,
+  searchGeneratedApplicationHistory
+} from '../../../api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'

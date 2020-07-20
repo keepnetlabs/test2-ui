@@ -325,7 +325,7 @@ export default {
       },
       checkboxError: false,
       investgationName: '',
-      isDateValid: false,
+      isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
       date: [],
@@ -537,6 +537,10 @@ export default {
     onCreateClicked() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
+
+      if (this.date.length < 1) {
+        this.isDateValid = false
+      }
       if (this.$refs.form.validate()) {
         let isCheckboxEmpty = this.sources.reduce((acc, i) => {
           if (i.value) acc.push(i.name)
