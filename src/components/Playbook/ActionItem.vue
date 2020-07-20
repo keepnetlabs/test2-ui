@@ -3,7 +3,6 @@
     <app-dialog
       size="small"
       :status="openEnginesModal"
-      class-name="download-modal"
       icon="mdi-blur"
       v-if="openEnginesModal"
       max-height
