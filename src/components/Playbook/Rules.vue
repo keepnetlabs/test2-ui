@@ -111,7 +111,7 @@
       </template>
     </datatable>
 
-    <v-dialog v-model="showRuleModal" fullscreen scrollable @input="(v) => v || toggleRuleModal()">
+    <v-dialog v-model="showRuleModal" fullscreen scrollable>
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
         @cancelForm="toggleRuleModal"

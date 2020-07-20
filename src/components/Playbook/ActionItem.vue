@@ -626,6 +626,10 @@ export default {
           }
         })
       })
+      if (oldValue.val === 'notify') {
+        this.targetUserType.splice(index, 1)
+        this.tarUsers.splice(index, 1)
+      }
       this.$forceUpdate()
     },
     addAction(actionVal = null) {
