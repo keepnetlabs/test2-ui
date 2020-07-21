@@ -236,7 +236,12 @@
   </div>
 </template>
 <script>
-import { getAllCommunityList, getMyCommunityList, joinCommunity } from '../../api/threadSharing'
+import {
+  getAllCommunityList,
+  getInvitations,
+  getMyCommunityList,
+  joinCommunity
+} from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
 import { isOwnerOrMember } from '../../utils/functions'
@@ -287,6 +292,20 @@ export default {
     },
     onAddClose() {
       this.isWantToAddNewCommunity = false
+      this.getAllCommunitiesListData()
+    },
+    getInvitions() {
+      getInvitations()
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting all community list data'
+          })
+        })
     },
     getAllCommunitiesListData() {
       const payload = {
@@ -409,6 +428,7 @@ export default {
         this.getAllCommunitiesListData()
       } else {
         this.selectedTab = 'tab-2'
+        this.getInvitions()
         this.listData = []
         return
       }

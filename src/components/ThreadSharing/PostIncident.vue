@@ -1457,7 +1457,8 @@ import {
   uploadEmlOrMsg,
   listThreatCategories,
   createCommunityPost,
-  updateCommunityPost
+  updateCommunityPost,
+  getCommunityPost
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
@@ -1930,35 +1931,53 @@ export default {
     },
     getSelectedEmailPreview(selectedItem) {
       let _this = this
-      getSelectedEmailPreview(selectedItem.resourceId)
-        .then((response) => {
-          const { data } = response
-          _this.uploadRespond = data.data
-          if (_this.editItem) {
-            _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
-            _this.uploadRespond.Title = _this.editItem.title
-            _this.uploadRespond.Description = _this.editItem.description
-            _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection
-            _this.uploadRespond.Scope = _this.editItem.scope
-            _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray
-            _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName
-            _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName
-            _this.uploadRespond.PostedTime = _this.editItem.postedTime
-            _this.uploadRespond.LikeCount = _this.editItem.likeCount
-            _this.uploadRespond.CommentCount = _this.editItem.commentCount
-            _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount
-            _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
-            _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
-            _this.uploadRespond.CommunityName = this.editItem.communityName
-          }
-          //this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
+      if (_this.editItem) {
+        getCommunityPost(_this.editItem.communityPostResourceId)
+          .then((response) => {
+            const { data } = response
+            _this.uploadRespond = data.data.communityPostEmail
+            if (_this.editItem) {
+              _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
+              _this.uploadRespond.Title = _this.editItem.title
+              _this.uploadRespond.Description = _this.editItem.description
+              _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection
+              _this.uploadRespond.Scope = _this.editItem.scope
+              _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray
+              _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName
+              _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName
+              _this.uploadRespond.PostedTime = _this.editItem.postedTime
+              _this.uploadRespond.LikeCount = _this.editItem.likeCount
+              _this.uploadRespond.CommentCount = _this.editItem.commentCount
+              _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount
+              _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
+              _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
+              _this.uploadRespond.CommunityName = this.editItem.communityName
+            }
+            if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = []
+            if (!_this.uploadRespond.cc) _this.uploadRespond.cc = []
+            if (!_this.uploadRespond.to) _this.uploadRespond.to = []
+            //this.listData = data.data.results
           })
-        })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting all community list data'
+            })
+          })
+      } else {
+        getSelectedEmailPreview(selectedItem.resourceId)
+          .then((response) => {
+            const { data } = response
+            _this.uploadRespond = data.data
+            //this.listData = data.data.results
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting all community list data'
+            })
+          })
+      }
     },
     onCancelClicked() {
       this.$emit('closeIncidentModal')
@@ -2012,42 +2031,43 @@ export default {
     },
     onFinish() {
       //CommunityResourceId: this.$route.params.id,
-      const payload = {
-        CommunityResourceId: 'Fu4VXjXl6nxM',
-        Title: this.uploadRespond.Title,
-        Description: this.uploadRespond.Description,
-        CategoryResourceIdArray: this.uploadRespond.CategoryResourceIdArray,
-        DiscoveryAndDetection: this.uploadRespond.DiscoveryAndDetection,
-        AffectArea: this.uploadRespond.AffectArea,
-        Scope: this.uploadRespond.Scope,
-        IsAnonymous: this.isAnonym,
-        EmailPreview: {
-          body: this.uploadRespond.body,
-          from: this.uploadRespond.from,
-          isFromHidden: this.uploadRespond.isFromHidden,
-          isFromFlagged: this.uploadRespond.isFromFlagged,
-          subject: this.uploadRespond.subject,
-          isSubjectHidden: this.uploadRespond.isSubjectHidden,
-          isSubjectFlagged: this.uploadRespond.isSubjectFlagged,
-          to: this.uploadRespond.to,
-          isToHidden: this.uploadRespond.isToHidden,
-          isToFlagged: this.uploadRespond.isToFlagged,
-          cc: this.uploadRespond.cc,
-          isCcHidden: this.uploadRespond.isCcHidden,
-          isCcFlagged: this.uploadRespond.isCcFlagged,
-          bcc: this.uploadRespond.bcc,
-          isBccHidden: this.uploadRespond.isBccHidden,
-          isBccFlagged: this.uploadRespond.isBccFlagged,
-          sentTime: this.uploadRespond.sentTime,
-          urls: this.uploadRespond.urls,
-          attachments: this.uploadRespond.attachments,
-          emailTexts: []
-        }
-      }
 
       if (this.editItem) {
-        //CommunityResourceId: this.$route.params.id,
-        updateCommunityPost('Fu4VXjXl6nxM', payload)
+        const payload = {
+          CommunityResourceId: this.$route.params.id || this.editItem.communityResourceId,
+          Title: this.uploadRespond.Title,
+          Description: this.uploadRespond.Description,
+          CategoryResourceIdArray: this.uploadRespond.CategoryResourceIdArray,
+          DiscoveryAndDetection: this.uploadRespond.DiscoveryAndDetection,
+          AffectArea: this.uploadRespond.AffectArea,
+          Scope: this.uploadRespond.Scope,
+          IsAnonymous: this.isAnonym,
+          CommunityPostEmail: {
+            resourceId: this.uploadRespond.resourceId,
+            from: this.uploadRespond.from,
+            isFromHidden: this.uploadRespond.isFromHidden,
+            isFromFlagged: this.uploadRespond.isFromFlagged,
+            subject: this.uploadRespond.subject,
+            isSubjectHidden: this.uploadRespond.isSubjectHidden,
+            isSubjectFlagged: this.uploadRespond.isSubjectFlagged,
+            to: this.uploadRespond.to,
+            isToHidden: this.uploadRespond.isToHidden,
+            isToFlagged: this.uploadRespond.isToFlagged,
+            cc: this.uploadRespond.cc,
+            isCcHidden: this.uploadRespond.isCcHidden,
+            isCcFlagged: this.uploadRespond.isCcFlagged,
+            bcc: this.uploadRespond.bcc,
+            isBccHidden: this.uploadRespond.isBccHidden,
+            isBccFlagged: this.uploadRespond.isBccFlagged,
+            sentTime: this.uploadRespond.sentTime,
+            urls: this.uploadRespond.urls,
+            attachments: this.uploadRespond.attachments,
+            emailTexts: []
+          }
+        }
+        //CommunityResourceId:this.$route.params.id ,
+        debugger
+        updateCommunityPost(this.$route.params.id || this.editItem.communityResourceId, payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -2061,12 +2081,45 @@ export default {
             })
           })
       } else {
+        const payload = {
+          CommunityResourceId: this.$route.params.id,
+          Title: this.uploadRespond.Title,
+          Description: this.uploadRespond.Description,
+          CategoryResourceIdArray: this.uploadRespond.CategoryResourceIdArray,
+          DiscoveryAndDetection: this.uploadRespond.DiscoveryAndDetection,
+          AffectArea: this.uploadRespond.AffectArea,
+          Scope: this.uploadRespond.Scope,
+          IsAnonymous: this.isAnonym,
+          EmailPreview: {
+            body: this.uploadRespond.body,
+            from: this.uploadRespond.from,
+            isFromHidden: this.uploadRespond.isFromHidden,
+            isFromFlagged: this.uploadRespond.isFromFlagged,
+            subject: this.uploadRespond.subject,
+            isSubjectHidden: this.uploadRespond.isSubjectHidden,
+            isSubjectFlagged: this.uploadRespond.isSubjectFlagged,
+            to: this.uploadRespond.to,
+            isToHidden: this.uploadRespond.isToHidden,
+            isToFlagged: this.uploadRespond.isToFlagged,
+            cc: this.uploadRespond.cc,
+            isCcHidden: this.uploadRespond.isCcHidden,
+            isCcFlagged: this.uploadRespond.isCcFlagged,
+            bcc: this.uploadRespond.bcc,
+            isBccHidden: this.uploadRespond.isBccHidden,
+            isBccFlagged: this.uploadRespond.isBccFlagged,
+            sentTime: this.uploadRespond.sentTime,
+            urls: this.uploadRespond.urls,
+            attachments: this.uploadRespond.attachments,
+            emailTexts: []
+          }
+        }
         createCommunityPost(payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Community has been created'
             })
+            this.$emit('closeIncidentModal')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -2191,7 +2244,8 @@ export default {
   mounted() {
     if (this.editItem) {
       this.selectedEmail = this.editItem.communityPostResourceId
-      let val = { resourceId: '4pDtxLYSG0mb' }
+      //let val = { resourceId: '4pDtxLYSG0mb' }
+      let val = { resourceId: this.editItem.communityPostResourceId }
       this.getSelectedEmailPreview(val)
     }
     this.searchNotifiedMail()

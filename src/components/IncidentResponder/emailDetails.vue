@@ -162,7 +162,101 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
+            <div class="preview-header pt-0">
+              <h2
+                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                v-if="!mailDetails.isSubjectHidden && !!mailDetails.subject"
+              >
+                Subject: {{ mailDetails.subject }}
+              </h2>
+              <h2
+                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                v-else-if="mailDetails.isSubjectHidden"
+              >
+                Subject: Hidden by owner
+              </h2>
+              <div class="header-info pb-5">
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!mailDetails.isFromHidden && !!mailDetails.from"
+                >
+                  From: {{ mailDetails.from }}
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="mailDetails.isFromHidden"
+                >
+                  From: Hidden by owner
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!mailDetails.isToHidden && mailDetails.to && !!mailDetails.to.toString()"
+                >
+                  To: {{ mailDetails.to && mailDetails.to.toString() }}
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="mailDetails.isToHidden"
+                >
+                  To: Hidden by owner
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!mailDetails.isCcHidden && mailDetails.cc && !!mailDetails.cc.toString()"
+                >
+                  CC: {{ mailDetails.cc && mailDetails.cc.toString() }}
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="mailDetails.isCcHidden"
+                >
+                  CC: Hidden by owner
+                </div>
+                <div>
+                  Date: {{ mailDetails.receivedDate }}
+                  <br />
+                </div>
+              </div>
+            </div>
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
+            <div
+              id="preview-footer-container"
+              class="preview-footer"
+              v-if="!!mailDetails.attachments.length"
+            >
+              <h2>Attachments</h2>
+              <div class="attachment-wrapper">
+                <div
+                  v-for="(att, ind) of mailDetails.attachments"
+                  :key="ind + att.id"
+                  :id="'attachment-' + att.name"
+                  class="attachment red-attach"
+                  :class="[
+                    att.isFlagged ? 'red-attach' : '',
+                    !att.isFlagged ? 'blue-attach' : '',
+                    !att.isHidden ? 'clean-attach' : ''
+                  ]"
+                >
+                  <div v-if="att.isFlagged" class="attach-icon red-icon">
+                    <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
+                  </div>
+                  <div v-else class="attach-icon blue-icon">
+                    <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
+                  </div>
+                  <v-tooltip bottom opacity="1" z-index="9999">
+                    <template v-slot:activator="{ on }">
+                      <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
+                        {{ att.name }}
+                      </div>
+                      <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
+                        hidden by owner
+                      </div>
+                    </template>
+                    <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
+                  </v-tooltip>
+                </div>
+              </div>
+            </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
             <div>
@@ -659,6 +753,17 @@ export default {
 
 <style lang="scss">
 .single-wrapper {
+  .incident-wrapper .preview-body,
+  .incident-wrapper .preview-header .header-info {
+    font-family: Open Sans, sans-serif !important;
+    font-size: 14px;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
   min-height: 80vh;
   .empty-attachment {
     display: flex;

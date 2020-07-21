@@ -48,10 +48,10 @@ export function updateCommunity(id, payload) {
 }
 
 export function updateCommunityPost(id, payload) {
-  return testRequest.put(`}/community-posts/${id}`, payload, {
+  return testRequest.put(`community-posts/${id}`, payload, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -151,6 +151,10 @@ export function getMyLastPosts() {
 
 export function getMyTopPosts() {
   return testRequest.get(`community-posts/top-posts`, {})
+}
+
+export function getInvitations() {
+  return testRequest.get(`communities/my-invitations`, {})
 }
 
 export function getsuggestedCommunities() {
