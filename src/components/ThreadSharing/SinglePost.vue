@@ -733,14 +733,16 @@
                 v-if="!userLiked"
                 :disabled="!isJoined(post.communityResourceId)"
                 @click="userLikePost(post.communityPostResourceId, post.communityResourceId)"
-                :class="{ 'active-act': userLiked }"
+                :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
                 :id="'like-btn' + post.communityPostResourceId"
               >
-                <v-icon>mdi-thumb-up</v-icon>
+                <v-icon :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
+                  >mdi-thumb-up</v-icon
+                >
                 Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
               </v-btn>
               <v-btn
-                v-else-if="userLiked"
+                v-else-if="postDetails && postDetails.isLikedByUser"
                 :disabled="!isJoined(post.communityResourceId)"
                 @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
                 color="#2196f3"
@@ -755,7 +757,7 @@
                 @click="commentOpened = !commentOpened"
               >
                 <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
-                Comments ({{ post.commentCount }})
+                Comments ({{ (comments && comments.length) || post.commentCount }})
               </v-btn>
             </div>
             <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
