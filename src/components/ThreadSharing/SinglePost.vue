@@ -824,6 +824,7 @@ import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
 import {
   createComments,
+  deleteCommunityPost,
   getComments,
   getCommunityPost,
   getSelectedEmailPreview,
@@ -1096,7 +1097,22 @@ export default {
     editIncident(post, communityName) {
       this.$emit('openEditPopupItem', post)
     },
-    deleteIncident(postId, name, postCommunityId) {},
+    deleteIncident(postId, name, postCommunityId) {
+      deleteCommunityPost(postId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Community post has been deleted successfuly'
+          })
+          this.$emit('refreshData')
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when delete community post'
+          })
+        })
+    },
     isJoined(communId) {
       /*if (this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some((cId) => cId.CommunityId === communId)
@@ -1121,7 +1137,7 @@ export default {
     regexChar(val) {
       return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
     },
-    canDelete(compId) {
+    canDelete(postId) {
       /*if (
         this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
         localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
@@ -1131,6 +1147,7 @@ export default {
       } else {
         return false
       }*/
+      return true
     },
     canEdit(compId) {
       /* if (

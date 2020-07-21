@@ -177,3 +177,12 @@ export function createCommunityPost(payload) {
 export function systemUser(systemUserData) {
   return testRequest.post('system-users', systemUserData)
 }
+
+export function deleteCommunityPost(id) {
+  return testRequest.delete(`community-posts/${id}`, {
+    headers: {
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+    }
+  })
+}

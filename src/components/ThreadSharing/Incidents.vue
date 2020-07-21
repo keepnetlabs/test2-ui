@@ -120,7 +120,9 @@ export default {
     closeIncidentModal() {
       this.showPostIncident = false
     },
-    refreshDataFunc() {},
+    refreshDataFunc() {
+      this.getIncidentList()
+    },
     getIncidentList() {
       const payload = {
         pageNumber: 1,
