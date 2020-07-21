@@ -11,13 +11,13 @@
         <template v-slot:app-dialog-body>
           <v-form ref="form" lazy-validation>
             <v-list-item class="roi-modal__list-item">
-              <v-list-item-content class>
+              <v-list-item-content>
                 <label class="roi-modal__label">Hourly Rate ($)</label>
                 <v-text-field
                   placeholder="Hourly Rate"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="roiRate"
+                  v-model="baseManHourCost"
                   required
                   type="number"
                 ></v-text-field>
@@ -30,7 +30,7 @@
                   placeholder="Saved Time"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="roiTask"
+                  v-model="baseManHour"
                   type="number"
                   required
                 ></v-text-field>
@@ -416,8 +416,8 @@
             @irPreview="irPreviewOnClick"
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
+            @onEditClick="onEditClick"
             @handleEdit="handleEdit"
-            @handleSelectionChange="handleReportedEmailsChange"
             titleKey="subject"
           >
             <template v-slot:datatable-custom-column="{ scope }">
@@ -435,6 +435,35 @@
               >
             </template>
             <template v-slot:extended-view-slot>
+              <div class="row-edit-div">
+                <div>
+                  <label>Notes</label>
+                  <v-textarea
+                    outlined
+                    dense
+                    v-model="extendedView.note"
+                    rows="2"
+                    row-height="20"
+                    :placeholder="
+                      selectedReportedMails.length > 1 ? 'Multiple Values' : 'Enter notes'
+                    "
+                    :readonly="hasMultipleNoteValue"
+                  >
+                    <template
+                      v-slot:append
+                      v-if="selectedReportedMails.length > 1 && hasMultipleNoteValue"
+                    >
+                      <v-btn
+                        @click="hasMultipleNoteValue = false"
+                        text
+                        class="edit-popup__edit-component"
+                      >
+                        EDIT
+                      </v-btn>
+                    </template>
+                  </v-textarea>
+                </div>
+              </div>
               <div class="row-edit-div">
                 <v-checkbox
                   color="#2196f3"
@@ -477,7 +506,7 @@
   </div>
 </template>
 <script>
-import { updateNotifiedEmail } from '../api/incidentResponder'
+import { getRoiSettings, updateNotifiedEmail } from '../api/incidentResponder'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
@@ -507,11 +536,12 @@ export default {
     isShowRoi: false,
     openInvestigationOverlay: false,
     investigationListData: [],
-    notes: '',
-    isNotifyMail: true,
-    isCustomMessage: false,
     showMatchingModal: false,
     selectedRowsOfReportedEmailsLength: 0,
+    selectedReportedMails: null,
+    noteDisableStatus: false,
+    baseManHour: null,
+    baseManHourCost: null,
     topRules: {
       table: [],
       columns: [
@@ -814,21 +844,6 @@ export default {
             }
           },
           width: '150'
-        },
-
-        {
-          property: 'note',
-          label: 'Notes',
-          isEditable: true,
-          showOnlyPreview: true,
-          editOptions: {
-            component: 'textarea',
-            props: {
-              placeholder: 'Write notes for this incident'
-            }
-          },
-          show: false,
-          hideOnSettingsPopup: true
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -894,10 +909,12 @@ export default {
     },
     isWantToAddNewInvestigation: false,
     extendedView: {
+      note: '',
       isNotify: true,
       isMessage: false,
       customMessage: ''
-    }
+    },
+    hasMultipleNoteValue: false
   }),
   computed: {
     ...mapGetters({
@@ -965,17 +982,67 @@ export default {
     this.callForGetRunningInvestigations()
     this.callForGetTopRules()
     this.callForSearchNotifiedMail()
+    this.callForGetRoiSettings()
   },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-    getSlot() {},
-    handleReportedEmailsChange(val) {
-      this.selectedRowsOfReportedEmailsLength = val.length
-      if (this.selectedRowsOfReportedEmailsLength > 1) {
-        this.extendedView.isNotify = true
-        this.extendedView.isMessage = false
+    callForGetRoiSettings() {
+      getRoiSettings().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.baseManHour = data.baseManHour
+        this.baseManHourCost = data.baseManHourCost
+      })
+    },
+    onEditClick({ selected: selections, isEditPopupOpen }) {
+      if (isEditPopupOpen) {
+        this.selectedRowsOfReportedEmailsLength = selections.length
+        this.selectedReportedMails = selections
+        if (selections.length === 1) {
+          getNotifiedEmail(selections[0].resourceId).then((response) => {
+            const selectedItem = response.data.data
+            this.extendedView.note = selectedItem.note
+            this.extendedView.isNotify = selectedItem.isNotifyUser
+            this.extendedView.customMessage = selectedItem.customMessage
+            this.extendedView.isMessage = selectedItem.customMessage ? true : false
+          })
+          this.hasMultipleNoteValue = false
+        } else if (selections.length > 1) {
+          const rows = []
+          let index = 0
+          this.extendedView.isNotify = true
+          this.extendedView.isMessage = false
+          this.extendedView.customMessage = ''
+          selections.map((a) => {
+            getNotifiedEmail(selections[index].resourceId).then((response) => {
+              const selectedItem = response.data.data
+              rows.push(selectedItem)
+              if (index === selections.length) {
+                const note = rows[0].note
+                rows.map((item, i) => {
+                  if (item.note !== note) {
+                    this.hasMultipleNoteValue = true
+                  }
+                })
+                if (!this.hasMultipleNoteValue) {
+                  this.extendedView.note = rows[0].note
+                } else {
+                  this.extendedView.note = ''
+                }
+              }
+            })
+            index++
+          })
+        } else {
+          this.extendedView.note = ''
+          this.extendedView.customMessage = ''
+          this.extendedView.isMessage = false
+          this.extendedView.isNotify = true
+          this.hasMultipleNoteValue = false
+        }
       }
     },
     closeNewInvestigationModal(value) {
@@ -1084,7 +1151,7 @@ export default {
           result: item.result,
           status: item.status,
           tag: item.resultTag || '',
-          note: item.note || '',
+          note: this.extendedView.note || '',
           isNotifyUser: this.extendedView.isNotify,
           customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : ''
         }

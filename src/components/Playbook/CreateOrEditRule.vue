@@ -448,7 +448,7 @@ export default {
       const playbookActionNotifications = []
       let index = 0
       for (let i = 0; i < targetUserType.length; i++) {
-        if (targetUsers[i] !== undefined || targetUserType[i] === 'Reporter') {
+        if ((targetUsers[i] && targetUsers[i] !== null) || targetUserType[i] === 'Reporter') {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
             targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
@@ -519,7 +519,7 @@ export default {
       const playbookActionNotifications = []
       let index = 0
       for (let i = 0; i < targetUserType.length; i++) {
-        if (targetUsers[i] !== undefined || targetUserType[i] === 'Reporter') {
+        if ((targetUsers[i] && targetUsers[i] !== null) || targetUserType[i] === 'Reporter') {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
             targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],

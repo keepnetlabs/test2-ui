@@ -56,7 +56,7 @@
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
-          No Matches
+          No Match
         </span>
         <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
@@ -111,7 +111,13 @@
       </template>
     </datatable>
 
-    <v-dialog v-model="showRuleModal" fullscreen scrollable @input="(v) => v || toggleRuleModal()">
+    <v-dialog
+      v-model="showRuleModal"
+      fullscreen
+      scrollable
+      @input="showRuleModal = true"
+      persistent
+    >
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
         @cancelForm="toggleRuleModal"
@@ -181,7 +187,7 @@ export default {
             minWidth: 100
           },
           {
-            property: 'matchCount',
+            property: 'matchingCount',
             align: 'left',
             editable: false,
             label: 'Matching Incidents',
@@ -356,6 +362,7 @@ export default {
       })
     },
     matchingPopupClick(match) {
+      debugger
       this.selectedMatch = match
       this.showMatchingModal = true
       const payload = {

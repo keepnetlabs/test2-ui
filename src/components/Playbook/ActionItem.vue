@@ -3,7 +3,6 @@
     <app-dialog
       size="small"
       :status="openEnginesModal"
-      class-name="download-modal"
       icon="mdi-blur"
       v-if="openEnginesModal"
       max-height
@@ -626,6 +625,10 @@ export default {
           }
         })
       })
+      if (oldValue.val === 'notify') {
+        this.targetUserType[index] = null
+        this.tarUsers[index] = null
+      }
       this.$forceUpdate()
     },
     addAction(actionVal = null) {

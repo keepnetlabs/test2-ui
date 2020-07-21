@@ -80,7 +80,7 @@
                     tag="span"
                     :key="item.resourceId"
                     v-else
-                    :to="`/playbook/${item.resourceId}`"
+                    :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
                     v-for="item in copyOfEditedRows[0].matchingPlaybooks"
                     class="incident-wrapper__link"
                     >{{ item.name }}</router-link
