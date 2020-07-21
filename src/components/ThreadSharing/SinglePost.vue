@@ -779,25 +779,72 @@
                   SEND
                 </v-btn>
               </div>
-              <div v-if="!seeComments && comments && comments.length" class="hidden-comments">
+              <!--<div v-if="!seeComments && comments && comments.length" class="hidden-comments">
                 <div class="comment-row">
-                  <div class="user-wrapper">
+                  <div class="user-wrapper" v-if="!comments[0].isEdit">
                     <span class="username">{{ comments[0].commenterFullName }}</span>
                     from
                     <span class="company-name">{{ comments[0].commenterCompanyName }}</span>
                     <p class="the-comment">
                       {{ comments[0].comment }}
                     </p>
+                    <v-btn @click="comments[0].isEdit = true">
+                      <v-icon class="close-icon">mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn @click="deleteComment(comments[0].resourceId)" icon>
+                      <v-icon class="close-icon">mdi-delete</v-icon>
+                    </v-btn>
                   </div>
                 </div>
-              </div>
-              <div v-if="seeComments && comments && comments.length" class="hidden-comments">
+              </div>-->
+              <div v-if="comments && comments.length" class="hidden-comments">
                 <div v-for="(com, ind) of comments" :key="ind + com.resourceId" class="comment-row">
-                  <div class="user-wrapper">
-                    <span class="username">{{ com.commenterFullName }}</span>
-                    from
-                    <span class="company-name">{{ com.commenterCompanyName }}</span>
-                    <p class="the-comment">{{ com.comment }}</p>
+                  <div class="user-wrapper w-100" v-if="!com.isEdit">
+                    <div class="d-flex align-center w-100">
+                      <div style="width: 80%;">
+                        <span class="username">{{ com.commenterFullName }}</span>
+                        from
+                        <span class="company-name">{{ com.commenterCompanyName }}</span>
+                        <p class="the-comment">{{ com.comment }}</p>
+                      </div>
+                      <div style="width: 20%; text-align: right;">
+                        <button @click="editRelativeComment(com)">
+                          <v-icon class="close-icon">mdi-pencil</v-icon>
+                        </button>
+                        <button @click="deleteComment(com)" icon>
+                          <v-icon class="close-icon">mdi-delete</v-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="add-comment-row w-100" v-else>
+                    <div class="d-flex align-center w-100">
+                      <div style="width: 80%;" class="d-flex">
+                        <v-text-field
+                          :id="'single-post-comment-' + com.resourceId"
+                          class="comment-input"
+                          placeholder="Write your comment here"
+                          outlined
+                          v-model="com.commentValue"
+                          validate-on-blur
+                          :rules="[rules.regex, rules.required]"
+                          hide-details
+                        />
+                        <v-btn
+                          :disabled="!isJoined || !regexChar()"
+                          @click="updateComments(com)"
+                          class="send-btn"
+                        >
+                          <v-icon>mdi-send</v-icon>
+                          SEND
+                        </v-btn>
+                      </div>
+                      <div style="width: 20%; text-align: right;">
+                        <button @click="editRelativeComment(com)">
+                          <v-icon class="close-icon">mdi-close</v-icon>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -824,11 +871,13 @@ import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
 import {
   createComments,
+  deleteComments,
   deleteCommunityPost,
   getComments,
   getCommunityPost,
   getSelectedEmailPreview,
-  likePost
+  likePost,
+  updateComments
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
@@ -974,6 +1023,65 @@ export default {
     this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    editRelativeComment(comment) {
+      comment.isEdit = !comment.isEdit
+      comment.commentValue = comment.comment
+      this.$forceUpdate()
+    },
+    updateComments(comment) {
+      const payload = { comment: comment.commentValue }
+      updateComments(comment.resourceId, payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Comment has been updated succesfully'
+          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: 'Error when getting comments'
+              })
+            })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when update a comment'
+          })
+        })
+    },
+    deleteComment(comment) {
+      deleteComments(comment.resourceId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Comment has been deleted succesfully'
+          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+            .catch((error) => {
+              this.comments = []
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: 'Error when getting comments'
+              })
+            })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when delete a comment'
+          })
+        })
+    },
     findCategory(id) {
       switch (id) {
         case 'Ps0SSyl7rVNe':
@@ -1006,6 +1114,9 @@ export default {
         .then((response) => {
           const { data } = response
           this.comments = data.data
+          this.comments = this.comments.map((item) => {
+            return { ...item, isEdit: false, commentValue: null }
+          })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

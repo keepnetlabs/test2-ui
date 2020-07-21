@@ -186,3 +186,19 @@ export function deleteCommunityPost(id) {
     }
   })
 }
+export function updateComments(id, payload) {
+  return testRequest.put(`community-posts/comments/${id}`, payload, {
+    headers: {
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+    }
+  })
+}
+export function deleteComments(id) {
+  return testRequest.delete(`community-posts/comments/${id}`, {
+    headers: {
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+    }
+  })
+}
