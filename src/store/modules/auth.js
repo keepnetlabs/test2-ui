@@ -1,4 +1,5 @@
 import { profile, getCurrentUser } from '../../api/auth'
+import { systemUser } from '../../api/threadSharing'
 
 const auth = {
   namespaced: true,
@@ -31,6 +32,15 @@ const auth = {
         localStorage.setItem('businessCatId', response.data.userCompany.businessCategoryId)
         dispatch('dashboard/selectCompany', datas, { root: true })
         commit('SET_CURRENTUSER', response.data)
+        let systemUserData = {
+          UserId: response.data.id,
+          FirstName: response.data.name,
+          LastName: response.data.surname,
+          Email: response.data.email,
+          CompanyId: response.data.userCompany.id,
+          CompanyName: response.data.userCompany.name
+        }
+        systemUser(systemUserData).then()
         return response.data // Permission_Administrator
       })
     },

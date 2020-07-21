@@ -1,59 +1,82 @@
 <template>
-  <v-card id="component-incidents" flat color="basil">
-    <v-card-text id="incidents-component-card" class="pt-0">
-      <v-data-iterator
-        :items="incidentList"
-        :items-per-page.sync="itemsPerPage"
-        :footer-props="{ itemsPerPageOptions }"
-        :search="search"
-        :page.sync="page"
-      >
-        <template v-slot:header>
-          <div class="search-wrapper">
-            <v-text-field
-              @mouseover.native="hover = true"
-              placeholder="Filter by attributes or keywords"
-              outlined
-              class="filter-field pt-6"
-              v-model="search"
-              id="incidents-search-textfield"
-            ></v-text-field>
-            <v-icon class="filter-icon">mdi-filter-variant</v-icon>
-          </div>
-        </template>
-        <template v-slot:default="props">
-          <v-expansion-panels :multiple="false">
-            <v-expansion-panel
-              v-for="(item, ind) of props.items"
-              :key="ind + item.CommunityPostId"
-              style="border-image: none !important;"
-              class="mb-4 mt-0"
-              id="edit-incident-post"
-              popout
-            >
-              <singlePost :post="props" :postIndex="ind" :totalPostCount="props.items.length" />
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </template>
-        <template slot="no-data">
-          <div class="empty-communities">
-            <div class="empty-communities-inline">
-              <span class="no-community pt-4">
-                No incident has been posted in your communities, yet
-              </span>
+  <div>
+    <v-overlay
+      id="new-community-overlay"
+      :value="showPostIncident"
+      :class="{ newCommunityOverlay: showPostIncident }"
+      :opacity="1"
+      :z-index="999"
+      color="white"
+    >
+      <post-incident :editItem="editItem" @closeIncidentModal="closeIncidentModal" />
+    </v-overlay>
+
+    <v-card id="component-incidents" flat color="basil">
+      <v-card-text id="incidents-component-card" class="pt-0">
+        <v-data-iterator
+          :items="incidentList"
+          :items-per-page.sync="itemsPerPage"
+          :footer-props="{ itemsPerPageOptions }"
+          :search="search"
+          :page.sync="page"
+        >
+          <template v-slot:header>
+            <div class="search-wrapper">
+              <v-text-field
+                @mouseover.native="hover = true"
+                placeholder="Filter by attributes or keywords"
+                outlined
+                class="filter-field pt-6"
+                v-model="search"
+                id="incidents-search-textfield"
+              ></v-text-field>
+              <v-icon class="filter-icon">mdi-filter-variant</v-icon>
             </div>
-          </div>
-        </template>
-      </v-data-iterator>
-    </v-card-text>
-  </v-card>
+          </template>
+          <template v-slot:default="props">
+            <v-expansion-panels :multiple="false">
+              <v-expansion-panel
+                v-for="(item, ind) of props.items"
+                :key="ind + item.communityPostResourceId"
+                style="border-image: none !important;"
+                class="mb-4 mt-0"
+                id="edit-incident-post"
+                popout
+              >
+                <singlePost
+                  @refreshData="refreshDataFunc"
+                  :post="item"
+                  :postIndex="ind"
+                  :totalPostCount="props.items.length"
+                  @openEditPopupItem="openEditPopupItemFunc"
+                />
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </template>
+          <template slot="no-data">
+            <div class="empty-communities">
+              <div class="empty-communities-inline">
+                <span class="no-community pt-4">
+                  No incident has been posted in your communities, yet
+                </span>
+              </div>
+            </div>
+          </template>
+        </v-data-iterator>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>
 import SinglePost from '../ThreadSharing/SinglePost'
+import { getCOmmunityIncidentList, getIncidentList } from '../../api/threadSharing'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import PostIncident from '../ThreadSharing/PostIncident'
 
 export default {
   components: {
+    PostIncident,
     SinglePost
   },
   props: {
@@ -66,6 +89,13 @@ export default {
     }
   },
   data: () => ({
+    editItem: null,
+    openEditPopupItem: null,
+    showPostIncident: false,
+    status: 'SUCCESS',
+    code: 'RESOURCE_RETRIEVED',
+    message: 'Resource retrieved',
+    validationMessages: [],
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
@@ -75,9 +105,73 @@ export default {
     tab: null,
     incidentList: []
   }),
-  watch: {},
-  methods: {},
-  mounted() {}
+  watch: {
+    openEditPopupItem: function (newVal, oldVal) {
+      if (oldVal != newVal) {
+        this.showPostIncident = true
+      }
+    }
+  },
+  methods: {
+    openEditPopupItemFunc(post) {
+      this.editItem = post
+      this.showPostIncident = true
+    },
+    closeIncidentModal() {
+      this.showPostIncident = false
+    },
+    refreshDataFunc() {},
+    getIncidentList() {
+      const payload = {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'PostedTime',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      if (this.$router.currentRoute.name === 'Community') {
+        getCOmmunityIncidentList(this.$route.params.id, payload)
+          .then((response) => {
+            this.incidentList = response.data.data.results
+            this.incidentList = this.incidentList.map((item) => {
+              return { ...item, isToggle: false }
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting incident list'
+            })
+          })
+      } else {
+        getIncidentList(payload)
+          .then((response) => {
+            this.incidentList = response.data.data.results
+            this.incidentList = this.incidentList.map((item) => {
+              return { ...item, isToggle: false }
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting incident list'
+            })
+          })
+      }
+    }
+  },
+  mounted() {
+    this.getIncidentList()
+  }
 }
 </script>
 

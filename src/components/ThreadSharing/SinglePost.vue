@@ -1,842 +1,819 @@
 <template>
-  <div id="component-single-post" class="single-post">
-    <div class="threat-sharing-content">
-      <div class="ts-header">
-        <div class="ts-title">
-          <v-tooltip bottom opacity="1">
-            <template v-slot:activator="{ on }">
-              <v-clamp autoresize :max-lines="2" v-if="post.Title" v-on="on">
-                {{ post.Title }}
-              </v-clamp>
-              <v-clamp autoresize :max-lines="2" v-else v-on="on">Post Title</v-clamp>
-            </template>
-            <span class="tooltip-span">{{ post.Title }}</span>
-          </v-tooltip>
-        </div>
-        <div class="flex-grow-1"></div>
-        <div class="ts-header-btn-1">
-          <v-expansion-panel-header
-            class="pa-0"
-            style="min-height: 36px;"
-            disable-icon-rotate
-            id="single-post-expansion-header"
-          >
-            <template v-slot:actions mandatory="true">
-              <v-btn
-                v-if="toggle[postIndex]"
-                @click.native="getPostDetails(post.CommunityPostId, postIndex, false)"
-                :id="'single-post-collapse' + post.CommunityPostId"
-                :key="'single-post-collapse' + post.CommunityPostId"
-                outlined
-                rounded
-                medium
-                color="blue"
-                >COLLAPSE
-              </v-btn>
-              <v-btn
-                v-else
-                @click.native="getPostDetails(post.CommunityPostId, postIndex, true)"
-                :id="'single-post-details' + post.CommunityPostId"
-                :key="'single-post-details' + post.CommunityPostId"
-                outlined
-                rounded
-                medium
-                color="blue"
-                >DETAILS
-              </v-btn>
-            </template>
-          </v-expansion-panel-header>
-        </div>
-        <v-menu v-if="post.IsPreview" offset-y transition="scale-transition">
-          <template v-slot:activator="{ on }">
-            <v-btn :id="'single-post-dots' + post.CommunityPostId" icon color="blue" v-on="on">
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-          <div :id="'notifications' + post.Id" class="notification-wrapper">
-            <v-list dense flat>
-              <v-list-item-group color="primary">
-                <v-list-item
-                  :id="'edit-btn' + post.CommunityPostId"
-                  v-if="canEdit(post.CompanyId)"
-                  @click="editIncident(post.CommunityPostId, post.CommunityName)"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Edit</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item
-                  :id="'investigate-btn' + post.CommunityPostId"
-                  @click="openInvestigate()"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-magnify</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Investigate</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item
-                  style="cursor: not-allowed;"
-                  v-if="$route.name == 'Community' && fetchedCommunity.IsPrivate"
-                  :id="'share-btn' + post.CommunityPostId"
-                >
-                  <v-tooltip bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-list-item-icon v-on="on">
-                        <v-icon>mdi-send</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content v-on="on">
-                        <v-list-item-title>
-                          Share
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </template>
-                    <span class="tooltip-span">
-                      You cannot share incident from private communities
-                    </span>
-                  </v-tooltip>
-                </v-list-item>
-                <v-list-item
-                  v-else
-                  :id="'share-btn' + post.CommunityPostId"
-                  @click="shareIncident(post.CommunityPostId, post.CreateUserId)"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-send</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      Share
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item
-                  :id="'delete-btn' + post.CommunityPostId"
-                  v-if="canDelete(post.CompanyId)"
-                  @click="deleteIncident(post.CommunityPostId, post.Title, post.CommunityId)"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-delete</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Delete</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
+  <div class="component-single-post">
+    <div id="" class="single-post">
+      <div class="threat-sharing-content">
+        <div class="ts-header">
+          <div class="ts-title">
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on }">
+                <v-clamp autoresize :max-lines="2" v-if="post.title" v-on="on">
+                  {{ post.title }}
+                </v-clamp>
+                <v-clamp autoresize :max-lines="2" v-else v-on="on">Post Title</v-clamp>
+              </template>
+              <span class="tooltip-span">{{ post.title }}</span>
+            </v-tooltip>
           </div>
-        </v-menu>
-      </div>
-      <div class="ts-user-comp">
-        <div :id="'post-details' + post.CommunityPostId" class="ts-user-comp-detail">
-          by
-          <a :id="post.CreateUserName" v-if="post.CreateUserName" href="#" class="pl-1 pr-1">{{
-            post.CreateUserName
-          }}</a>
-          <a v-else href="#" class="pl-1 pr-1">Okan Yıldız</a> from
-          <a :id="post.CompanyName" v-if="post.CompanyName" href="#" class="pl-1 pr-1">{{
-            post.CompanyName
-          }}</a>
-          <a v-else class="pl-1 pr-1">Company Name</a> on
-          <a :id="post.CommunityName" v-if="post.CommunityName" href="#" class="pl-1">{{
-            post.CommunityName
-          }}</a>
-          <a v-else class="pl-1 pr-1">Community Name</a>
+          <div class="flex-grow-1"></div>
+          <div class="ts-header-btn-1">
+            <v-expansion-panel-header
+              class="pa-0"
+              style="min-height: 36px;"
+              disable-icon-rotate
+              id="single-post-expansion-header"
+            >
+              <template v-slot:actions mandatory="true">
+                <v-btn
+                  v-if="post.isToggle"
+                  @click.native="getPostDetails(post.communityPostResourceId, postIndex, false)"
+                  :id="'single-post-collapse' + post.communityPostResourceId"
+                  :key="'single-post-collapse' + post.communityPostResourceId"
+                  outlined
+                  rounded
+                  medium
+                  color="blue"
+                  >COLLAPSE
+                </v-btn>
+                <v-btn
+                  v-else
+                  @click.native="
+                    getPostDetails(post.communityPostResourceId, postIndex, true, post)
+                  "
+                  :id="'single-post-details' + post.communityPostResourceId"
+                  :key="'single-post-details' + post.communityPostResourceId"
+                  outlined
+                  rounded
+                  medium
+                  color="blue"
+                  >DETAILS
+                </v-btn>
+              </template>
+            </v-expansion-panel-header>
+          </div>
+          <v-menu offset-y transition="scale-transition">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :id="'single-post-dots' + post.communityPostResourceId"
+                icon
+                color="blue"
+                v-on="on"
+              >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <div
+              :id="'notifications' + post.communityPostResourceId"
+              class="notification-wrapper-single-post"
+            >
+              <v-list dense flat>
+                <v-list-item-group color="primary">
+                  <v-list-item
+                    :id="'edit-btn' + post.communityPostResourceId"
+                    v-if="canEdit(post)"
+                    @click="editIncident(post, post.communityPostResourceId, post.communityName)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Edit</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item
+                    :id="'investigate-btn' + post.communityPostResourceId"
+                    @click="openInvestigate()"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-magnify</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Investigate</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item
+                    style="cursor: not-allowed;"
+                    v-if="$route.name == 'Community'"
+                    :id="'share-btn' + post.communityPostResourceId"
+                  >
+                    <v-tooltip bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-list-item-icon v-on="on">
+                          <v-icon>mdi-send</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content v-on="on">
+                          <v-list-item-title>
+                            Share
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </template>
+                      <span class="tooltip-span">
+                        You cannot share incident from private communities
+                      </span>
+                    </v-tooltip>
+                  </v-list-item>
+                  <v-list-item
+                    v-else
+                    :id="'share-btn' + post.communityPostResourceId"
+                    @click="shareIncident(post.communityPostResourceId, userIdFromStorage)"
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-send</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        Share
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item
+                    :id="'delete-btn' + post.communityPostResourceId"
+                    v-if="canDelete(post)"
+                    @click="
+                      deleteIncident(
+                        post.communityPostResourceId,
+                        post.title,
+                        post.communityResourceId
+                      )
+                    "
+                  >
+                    <v-list-item-icon>
+                      <v-icon>mdi-delete</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Delete</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </div>
+          </v-menu>
         </div>
-        <div class="ts-user-date">
-          <span :id="'date' + post.CreateDate" v-if="post.CreateDate">{{
-            post.CreateDate | moment('dddd, MMMM Do YYYY HH:mm')
-          }}</span>
-          <span v-else>04.05.2019</span>
+        <div class="ts-user-comp">
+          <div :id="'post-details' + post.communityPostResourceId" class="ts-user-comp-detail">
+            by
+            <a
+              :id="post.postedUserFullName"
+              v-if="post.postedUserFullName"
+              href="#"
+              class="pl-1 pr-1"
+              >{{ post.postedUserFullName }}</a
+            >
+            <a v-else href="#" class="pl-1 pr-1">Okan Yıldız</a> from
+            <a
+              :id="post.postedUserCompanyName"
+              v-if="post.postedUserCompanyName"
+              href="#"
+              class="pl-1 pr-1"
+              >{{ post.postedUserCompanyName }}</a
+            >
+            <a v-else class="pl-1 pr-1">Company Name</a> on
+            <a :id="post.communityName" v-if="post.communityName" href="#" class="pl-1">{{
+              post.communityName
+            }}</a>
+            <a v-else class="pl-1 pr-1">Community Name</a>
+          </div>
+          <div class="ts-user-date">
+            <span :id="'date' + post.postedTime" v-if="post.postedTime">{{ post.postedTime }}</span>
+            <span v-else>04.05.2019</span>
+          </div>
         </div>
-      </div>
-      <div class="ts-body">
-        <v-clamp
-          :id="'single-post-description-body' + post.CommunityPostId"
-          v-if="post.Description"
-          autoresize
-          :max-lines="3"
-          >{{ post.Description }}
-        </v-clamp>
-        <v-clamp v-else autoresize :max-lines="3">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </v-clamp>
-      </div>
-      <div :id="'single-post-footer' + post.CommunityPostId" class="ts-footer d-flex row wrap">
-        <div class="ts-like mt-1">
-          <v-btn
-            :id="'single-post-like' + post.CommunityPostId"
-            v-if="!post.UserLiked"
-            disabled
-            text
-            x-small
-            icon
-            color="grey"
-          >
-            <v-icon>mdi-thumb-up</v-icon>
-          </v-btn>
-          <v-btn
-            :id="'single-post-unlike' + post.CommunityPostId"
-            v-else-if="post.UserLiked"
-            disabled
-            text
-            x-small
-            icon
-            color="grey"
-          >
-            <v-icon>mdi-thumb-down</v-icon>
-          </v-btn>
-          <span class="ts-action-counter">{{ post.LikeCount }}</span>
+        <div class="ts-body">
+          <v-clamp
+            :id="'single-post-description-body' + post.communityPostResourceId"
+            v-if="post.description"
+            autoresize
+            :max-lines="3"
+            >{{ post.description }}
+          </v-clamp>
+          <v-clamp v-else autoresize :max-lines="3">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          </v-clamp>
         </div>
-        <div class="ts-message mt-1">
-          <v-btn
-            :id="'single-post-reply' + post.CommunityPostId"
-            text
-            x-small
-            icon
-            color="grey"
-            disabled
-          >
-            <v-icon>mdi-message-reply-text</v-icon>
-          </v-btn>
-          <span class="ts-action-counter">{{ post.CommentCount }}</span>
-        </div>
-        <div :id="'single-post-harmful' + post.CommunityPostId" class="ts-harmful mt-1">
-          <v-btn readonly v-if="post.HarmfulItems" text x-small icon color="red">
-            <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
-          </v-btn>
-          <span class="ts-actions">{{ post.HarmfulItems }} harmful items</span>
-        </div>
-        <!-- solution field missing for now
-        <div class="ts-success mt-1">
-          <v-btn text x-small icon color="grey">
-            <v-icon style="font-size: 14px" color="#43a047">mdi-check-circle</v-icon>
-          </v-btn>
-          <span class="ts-actions">Solution</span>
-        </div>
-        -->
-        <div class="flex-grow-1"></div>
-        <div class="ts-tags">
-          <v-btn
-            v-if="post.AttachmentCount"
-            text
-            small
-            rounded
-            outlined
-            class="tag-btn text-none"
-            id="incident-badge"
-          >
-            <span v-if="post.AttachmentCount === 1">Attachment</span>
-            <span v-else-if="post.AttachmentCount > 1">Attachments</span>
-          </v-btn>
-          <v-btn
-            v-if="post.CommunityPostCategory && post.CommunityPostCategory.length"
-            text
-            small
-            rounded
-            outlined
-            class="tag-btn ml-1 text-none"
-            id="incident-badge"
-            >{{ post.CommunityPostCategory[0] }}
-          </v-btn>
-          <v-btn
-            v-if="
-              post.CommunityPostCategory &&
-              post.CommunityPostCategory.length > 1 &&
-              !post.AttachmentCount
-            "
-            text
-            small
-            rounded
-            outlined
-            class="tag-btn ml-1 text-none"
-            id="incident-badge"
-            >{{ post.CommunityPostCategory[1] }}
-          </v-btn>
-          <div style="position: relative;">
+        <div
+          :id="'single-post-footer' + post.communityPostResourceId"
+          class="ts-footer d-flex row wrap"
+        >
+          <div class="ts-like mt-1">
+            <v-btn
+              :id="'single-post-like' + post.communityPostResourceId"
+              disabled
+              text
+              x-small
+              icon
+              color="grey"
+            >
+              <v-icon>mdi-thumb-up</v-icon>
+            </v-btn>
+            <v-btn
+              :id="'single-post-unlike' + post.communityPostResourceId"
+              v-if="false"
+              disabled
+              text
+              x-small
+              icon
+              color="grey"
+            >
+              <v-icon>mdi-thumb-down</v-icon>
+            </v-btn>
+            <span class="ts-action-counter">{{
+              (postDetails && postDetails.likeCount) || post.likeCount
+            }}</span>
+          </div>
+          <div class="ts-message mt-1">
+            <v-btn
+              :id="'single-post-reply' + post.communityPostResourceId"
+              text
+              x-small
+              icon
+              color="grey"
+              disabled
+            >
+              <v-icon>mdi-message-reply-text</v-icon>
+            </v-btn>
+            <span class="ts-action-counter">{{ post.commentCount }}</span>
+          </div>
+          <div :id="'single-post-harmful' + post.communityPostResourceId" class="ts-harmful mt-1">
+            <v-btn readonly v-if="post.harmfulItemCount" text x-small icon color="red">
+              <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
+            </v-btn>
+            <span class="ts-actions">{{ post.harmfulItemCount }} harmful items</span>
+          </div>
+          <!-- solution field missing for now
+          <div class="ts-success mt-1">
+            <v-btn text x-small icon color="grey">
+              <v-icon style="font-size: 14px" color="#43a047">mdi-check-circle</v-icon>
+            </v-btn>
+            <span class="ts-actions">Solution</span>
+          </div>
+          -->
+          <div class="flex-grow-1"></div>
+          <div class="ts-tags">
+            <v-btn
+              v-if="post.hasAttachment"
+              text
+              small
+              rounded
+              outlined
+              class="tag-btn text-none"
+              id="incident-badge-att"
+            >
+              <span>Attachment</span>
+            </v-btn>
+            <v-btn
+              v-if="post.categoryResourceIdArray && post.categoryResourceIdArray.length"
+              text
+              small
+              rounded
+              outlined
+              class="tag-btn ml-1 text-none"
+              id="incident-badge--cat"
+              >{{
+                categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]).name
+              }}
+            </v-btn>
             <v-btn
               v-if="
-                (post.AttachmentCount &&
-                  post.CommunityPostCategory &&
-                  post.CommunityPostCategory.length > 1) ||
-                (post.CommunityPostCategory && post.CommunityPostCategory.length > 2)
+                post.categoryResourceIdArray &&
+                post.categoryResourceIdArray.length > 1 &&
+                !post.hasAttachment
               "
               text
               small
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              :id="'tooltip-btn' + post.CommunityPostCategory[0]"
-              @mouseover="hoverTool = true"
-              @mouseleave="hoverTool = false"
-            >
-              <span v-if="post.AttachmentCount">+{{ post.CommunityPostCategory.length - 1 }}</span>
-              <span v-else>+{{ post.CommunityPostCategory.length - 2 }}</span>
+              id="incident-badge"
+              >{{
+                categories.find((item) => item.resourceId === post.categoryResourceIdArray[1]).name
+              }}
             </v-btn>
-            <div
-              v-if="
-                hoverTool && post.CommunityPostCategory && post.CommunityPostCategory.length >= 1
-              "
-              class="tooltip-wrapper"
-            >
-              <div v-if="post.AttachmentCount">
-                <span>{{ post.CommunityPostCategory[1] }}</span>
-                <span>{{ post.CommunityPostCategory[2] }}</span>
-              </div>
-              <div
-                v-else-if="
-                  post.AttachmentCount &&
-                  post.CommunityPostCategory &&
-                  post.CommunityPostCategory.length === 1
+            <div style="position: relative;">
+              <v-btn
+                v-if="
+                  (post.hasAttachment &&
+                    post.categoryResourceIdArray &&
+                    post.categoryResourceIdArray.length > 1) ||
+                  (post.categoryResourceIdArray && post.categoryResourceIdArray.length > 2)
                 "
+                text
+                small
+                rounded
+                outlined
+                class="tag-btn ml-1 text-none"
+                :id="'tooltip-btn' + post.categoryResourceIdArray[0]"
+                @mouseover="hoverTool = true"
+                @mouseleave="hoverTool = false"
               >
-                <span>{{ post.CommunityPostCategory[1] }}</span>
-              </div>
-              <div v-else-if="!post.AttachmentCount">
-                <span>{{ post.CommunityPostCategory[2] }}</span>
+                <span v-if="post.hasAttachment"
+                  >+{{ post.categoryResourceIdArray.length - 1 }}</span
+                >
+                <span v-else>+{{ post.categoryResourceIdArray.length - 2 }}</span>
+              </v-btn>
+              <div
+                v-if="
+                  hoverTool &&
+                  post.categoryResourceIdArray &&
+                  post.categoryResourceIdArray.length >= 1
+                "
+                class="tooltip-wrapper"
+              >
+                <div v-if="post.hasAttachment">
+                  <span>{{ findCategory(post.categoryResourceIdArray[1]) }}</span>
+                  <span>{{ findCategory(post.categoryResourceIdArray[2]) }}</span>
+                </div>
+                <div
+                  v-else-if="
+                    post.hasAttachment &&
+                    post.categoryResourceIdArray &&
+                    post.categoryResourceIdArray.length === 1
+                  "
+                >
+                  <span>{{ findCategory(post.categoryResourceIdArray[1]) }}</span>
+                </div>
+                <div v-else-if="!post.hasAttachment">
+                  <span>{{ findCategory(post.categoryResourceIdArray[2]) }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <v-expansion-panel-content
-      v-if="postDetail.Data && postDetail.IsSuccess && toggle[postIndex]"
-      eager
-      class="expand-body member-company-body pa-0"
-    >
-      <v-tabs v-model="tab" background-color="transparent" color="basil" class="tab-bar">
-        <v-tab id="expansion-details">Details</v-tab>
-        <v-tab id="expansion-preview">Email Preview</v-tab>
-      </v-tabs>
+      <v-expansion-panel-content
+        v-if="emailData && post.isToggle"
+        eager
+        class="expand-body member-company-body pa-0"
+      >
+        <v-tabs v-model="tab" background-color="transparent" color="basil" class="tab-bar">
+          <v-tab id="expansion-details">Details</v-tab>
+          <v-tab id="expansion-preview">Email Preview</v-tab>
+        </v-tabs>
 
-      <v-tabs-items v-show="postDetail.Data && postDetail.IsSuccess" v-model="tab">
-        <v-tab-item>
-          <h1
-            v-if="
-              (shareSettings &&
-                shareSettings.senderInfo &&
-                shareSettings.senderInfo[0] &&
-                shareSettings.senderInfo[0].IsMalicious) ||
-              (shareSettings.receiverInfo &&
-                shareSettings.receiverInfo[0] &&
-                shareSettings.receiverInfo[0].IsMalicious) ||
-              (shareSettings.links && shareSettings.links.some((a) => a.IsMalicious)) ||
-              (shareSettings.attachments && shareSettings.attachments.some((a) => a.IsMalicious))
-            "
-            class="detected-items"
-          >
-            Detected Items
-          </h1>
-          <div class="detail-parts">
-            <p
+        <v-tabs-items v-show="emailData" v-model="tab">
+          <v-tab-item>
+            <h1
               v-if="
-                (shareSettings &&
-                  shareSettings.senderInfo &&
-                  shareSettings.senderInfo[0] &&
-                  shareSettings.senderInfo[0].IsShow &&
-                  shareSettings.senderInfo[0].IsMalicious) ||
-                (shareSettings.receiverInfo &&
+                (emailData && emailData.subject && emailData.isSubjectFlagged) ||
+                (emailData.from && emailData.from.isFromFlagged) ||
+                (emailData.urls && emailData.urls.some((a) => a.isFlagged)) ||
+                (emailData.attachments && emailData.attachments.some((a) => a.isFlagged))
+              "
+              class="detected-items"
+            >
+              Detected Items
+            </h1>
+            <div class="detail-parts">
+              <p
+                v-if="
+                (emailData &&
+                  emailData.subject &&
+                  !emailData.subject.isSubjectHidden &&
+                  emailData.subject.isFlagged)
+              "
+                class="detail-black"
+              >
+                Header
+              </p>
+              <p
+                v-if="
+                (emailData &&
+                  emailData.from &&
+                  !emailData.from.isFromHidden &&
+                  emailData.from.isFromFlagged)
+              "
+                :id="'from' + emailData.from"
+                class="detail-black detail-red"
+              >
+                From: {{ emailData.from }}
+              </p>
+              <p
+                v-if="
+                 (emailData &&
+                  emailData.from &&
+                  !emailData.from.isFromHidden &&
+                  emailData.from.isFromFlagged)
+              "
+                class="detail-black"
+              >
+                The sender email address has been reported as harmful email sender.
+              </p>
+            </div>
+            <div class="detail-parts">
+              <p
+                v-if="
+                 (emailData &&
+                  emailData.to &&
+                  !emailData.isToHidden &&
+                  emailData.to.isToFlagged)
+              "
+                :id="'from' + emailData.to[0]"
+                class="detail-black detail-red"
+              >
+                To: {{ emailData.to.toString() }}
+              </p>
+              <!--<p
+                v-if="
+                  shareSettings &&
+                  shareSettings.receiverInfo &&
                   shareSettings.receiverInfo[0] &&
                   shareSettings.receiverInfo[0].IsShow &&
-                  shareSettings.receiverInfo[0].IsMalicious)
-              "
-              class="detail-black"
-            >
-              Header
-            </p>
-            <p
-              v-if="
-                shareSettings &&
-                shareSettings.senderInfo &&
-                shareSettings.senderInfo[0] &&
-                shareSettings.senderInfo[0].IsShow &&
-                shareSettings.senderInfo[0].IsMalicious
-              "
-              :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
-              class="detail-black detail-red"
-            >
-              From: {{ postDetail.Data.CommunityPostEmails[0].From }}
-            </p>
-            <p
-              v-if="
-                shareSettings &&
-                shareSettings.senderInfo &&
-                shareSettings.senderInfo[0] &&
-                shareSettings.senderInfo[0].IsShow &&
-                shareSettings.senderInfo[0].IsMalicious
-              "
-              class="detail-black"
-            >
-              The sender email address has been reported as harmful email sender.
-            </p>
-          </div>
-          <div class="detail-parts">
-            <p
-              v-if="
-                shareSettings &&
-                shareSettings.receiverInfo &&
-                shareSettings.receiverInfo[0] &&
-                shareSettings.receiverInfo[0].IsShow &&
-                shareSettings.receiverInfo[0].IsMalicious
-              "
-              :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
-              class="detail-black detail-red"
-            >
-              To: {{ postDetail.Data.CommunityPostEmails[0].From }}
-            </p>
-            <p
-              v-if="
-                shareSettings &&
-                shareSettings.receiverInfo &&
-                shareSettings.receiverInfo[0] &&
-                shareSettings.receiverInfo[0].IsShow &&
-                shareSettings.receiverInfo[0].IsMalicious
-              "
-              class="detail-black"
-            >
-              The receiver email address has been reported as harmful email sender.
-            </p>
-          </div>
-          <div
-            v-if="shareSettings && shareSettings.links && shareSettings.links.length"
-            class="preview-attch-wrapper detail-parts"
-          >
-            <p
-              v-if="
-                shareSettings &&
-                shareSettings.links &&
-                shareSettings.links.some((a) => a.IsShow && a.IsMalicious)
-              "
-              class="detail-black"
-            >
-              Body
-            </p>
-            <p
-              v-for="(el, ind) of shareSettings.links"
-              :key="ind + el.Id"
-              v-if="el && el.Type == 'Link' && el.IsShow && el.IsMalicious"
-              :id="'detail-links-' + el.Id"
-              class="detail-black detail-red"
-            >
-              Link: {{ el.Value }} <br />
-            </p>
-            <div
-              v-for="(att, ind) of shareSettings.attachments"
-              :key="ind + att.Id"
-              :id="'detail-malicious-' + att.Id"
-              v-if="att.IsMalicious"
-            >
-              <p class="attach-found-malicious" v-if="ind === 0">
-                This link<span v-if="shareSettings.links.length > 1">s</span> has been reported as a
-                phising link
-              </p>
+                  shareSettings.receiverInfo[0].IsMalicious
+                "
+                class="detail-black"
+              >
+                The receiver email address has been reported as harmful email sender.
+              </p>-->
             </div>
-          </div>
-          <div
-            class="details-attchments-wrapper preview-footer"
-            v-if="shareSettings.attachments && shareSettings.attachments.length"
-          >
             <div
-              v-for="(att, ind) of shareSettings.attachments"
-              :key="ind + att.Id"
-              v-if="att.IsMalicious"
-              class="preview-attch-wrapper details-attachments"
+              v-if="emailData && emailData.urls && emailData.urls.length"
+              class="preview-attch-wrapper detail-parts"
             >
-              <h2 v-if="ind === 0">Attachments</h2>
-              <div>
-                <div :id="'detail-attachs-' + att.Id" class="attachment">
-                  <div :id="'detail-name-' + att.Id" v-if="att.IsShow" class="file-name max-char">
-                    {{ att.Name }}
+              <p
+                v-if="
+                  emailData &&
+                  emailData.urls &&
+                  emailData.urls.some((a) => !a.isHidden && a.isFlagged)
+                "
+                class="detail-black"
+              >
+                Body
+              </p>
+              <p
+                v-for="(el, ind) of emailData.urls"
+                :key="ind + el.url"
+                v-if="el && !el.isHidden && el.isFlagged"
+                :id="'detail-links-' + el.name"
+                class="detail-black detail-red"
+              >
+                Link: {{ el.url }} <br />
+              </p>
+              <div
+                v-for="(att, ind) of emailData.urls"
+                :key="ind + att.name"
+                :id="'detail-malicious-' + att.name"
+                v-if="att.isFlagged"
+              >
+                <p class="attach-found-malicious" v-if="ind === 0">
+                  This link<span v-if="emailData.urls.length > 1">s</span> has been reported as a
+                  phising link
+                </p>
+              </div>
+            </div>
+            <div
+              class="details-attchments-wrapper preview-footer"
+              v-if="emailData.attachments && emailData.attachments.length"
+            >
+              <div
+                v-for="(att, ind) of emailData.attachments"
+                :key="ind + att.name"
+                v-if="att.isFlagged"
+                class="preview-attch-wrapper details-attachments"
+              >
+                <h2 v-if="ind === 0">Attachments</h2>
+                <div>
+                  <div :id="'detail-attachs-' + att.name" class="attachment">
+                    <div
+                      :id="'detail-name-' + att.name"
+                      v-if="!att.isHidden"
+                      class="file-name max-char"
+                    >
+                      {{ att.name }}
+                    </div>
+                    <div
+                      :id="'detail-name-' + att.name"
+                      v-if="att.isHidden"
+                      class="file-name max-char"
+                    >
+                      hidden by owner
+                    </div>
                   </div>
-                  <div :id="'detail-name-' + att.Id" v-if="!att.IsShow" class="file-name max-char">
-                    hidden by owner
+                </div>
+              </div>
+              <div
+                v-for="(att, ind) of emailData.attachments"
+                :key="ind + att.name"
+                :id="'detail-malicious-' + att.name"
+                v-if="att.isFlagged"
+              >
+                <p class="attach-found-malicious detail-black" v-if="ind === 0">
+                  This file<span v-if="emailData.attachments.length > 1">s</span> has been reported
+                  as a malicious
+                </p>
+              </div>
+            </div>
+            <div class="detail-discovery pb-4">
+              <div
+                :id="'detail-discovery-empty'"
+                v-if="postDetails && postDetails.discoveryAndDetection"
+                class="disc-header"
+              >
+                Discovery and Detection
+              </div>
+              <p
+                :id="'detail-discovery'"
+                v-if="postDetails && postDetails.discoveryAndDetection"
+                class="discovery-p"
+              >
+                {{ postDetails && postDetails.discoveryAndDetection }}
+              </p>
+              <div v-if="postDetails && postDetails.affectArea" class="disc-header mb-1">
+                Impact Range
+              </div>
+              <div
+                :id="'detail-effect-area'"
+                v-if="postDetails && postDetails.affectArea"
+                class="impact-row"
+              >
+                <div class="impact-left">Effect area:</div>
+                <div style="width: max-content; padding-right: 13px;" class="impact-right">
+                  {{ postDetails && postDetails.affectArea.toString() }}
+                </div>
+              </div>
+              <div
+                :id="'detail-scope' + postDetails"
+                v-if="postDetails && postDetails.scope"
+                class="impact-row"
+              >
+                <div class="impact-left">Scope:</div>
+                <div class="impact-right">{{ postDetails && postDetails.scope }}</div>
+              </div>
+            </div>
+          </v-tab-item>
+          <v-tab-item>
+            <div class="preview-header pt-0">
+              <h2 v-if="emailData && emailData.subject && !emailData.isSubjectHidden">
+                <span :class="[emailData.isSubjectFlagged ? 'malicious-style' : '']"
+                  >Subject: {{ emailData.subject }}</span
+                >
+                <v-tooltip v-if="emailData.isSubjectFlagged" bottom opacity="1">
+                  <template v-slot:activator="{ on }">
+                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
+                  </template>
+                  <span>The subject has been reported as a threat source</span>
+                </v-tooltip>
+              </h2>
+              <h2
+                v-else-if="emailData && emailData.subject && emailData.isSubjectHidden"
+                :id="'detail-subject-' + emailData.subject"
+              >
+                <span :class="[emailData.isSubjectFlagged ? 'malicious-style' : '']"
+                  >Subject: hidden by owner</span
+                >
+                <v-tooltip v-if="emailData.isSubjectFlagged" bottom opacity="1">
+                  <template v-slot:activator="{ on }">
+                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
+                  </template>
+                  <span>This email address has been reported as a threat source</span>
+                </v-tooltip>
+              </h2>
+              <div class="header-info pb-5">
+                <div v-if="emailData && emailData.from && !emailData.isFromHidden">
+                  <span :class="[emailData.isFromFlagged ? 'malicious-style' : '']"
+                    >From: {{ emailData.from }}</span
+                  >
+                  <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                  <br />
+                </div>
+                <div v-if="emailData && emailData.from && emailData.isFromHidden">
+                  <span :class="[emailData.isFromFlagged ? 'malicious-style' : '']"
+                    >From: hidden by owner</span
+                  >
+                  <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div v-if="emailData && emailData.to.length && !emailData.isToHidden">
+                  <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
+                    >To: {{ emailData.to }}</span
+                  >
+                  <v-tooltip v-if="emailData.isToFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div v-if="emailData && emailData.to.length && !emailData.isToHidden">
+                  <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
+                    >To: hidden by owner</span
+                  >
+                  <v-tooltip v-if="emailData.isToFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div v-if="emailData && emailData.cc.length && !emailData.isCcHidden">
+                  <span :class="[emailData.isCcFlagged ? 'malicious-style' : '']"
+                    >CC: {{ emailData.cc.toString() }}</span
+                  >
+                  <v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div v-if="emailData && emailData.cc && emailData.isCcHidden">
+                  <span :class="[emailData.isCcFlagged ? 'malicious-style' : '']"
+                    >CC: hidden by owner</span
+                  >
+                  <v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div v-if="emailData && emailData.bcc.length && !emailData.isBccHidden">
+                  <span :class="[emailData.isBccFlagged ? 'malicious-style' : '']"
+                    >CC: {{ emailData.bcc.toString() }}</span
+                  >
+                  <v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div v-if="emailData && emailData.bcc && emailData.isBccHidden">
+                  <span :class="[emailData.isBccFlagged ? 'malicious-style' : '']"
+                    >BCC: hidden by owner</span
+                  >
+                  <v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>This email address has been reported as a threat source</span>
+                  </v-tooltip>
+                </div>
+                <div id="details-post-date" v-if="emailData.sentTime">
+                  Date:
+                  {{ emailData.sentTime }}
+                  <br />
+                </div>
+              </div>
+            </div>
+            <div id="single-post-body" class="preview-body">
+              <k-shadow-frame id="sframe" v-bind:content="emailData.body" />
+            </div>
+            <div
+              class="preview-footer"
+              v-if="emailData.attachments && emailData.attachments.length"
+            >
+              <h2>Attachments</h2>
+              <div
+                v-for="(att, ind) of emailData.attachments"
+                :key="ind + att.name"
+                class="preview-attch-wrapper"
+              >
+                <div class="attachment-wrapper">
+                  <div
+                    class="attachment red-attach"
+                    :id="'single-post-attachments-' + att.name"
+                    :class="[
+                      att.isFlagged ? 'red-attach malicious-style' : '',
+                      !att.isFlagged ? 'blue-attach' : ''
+                    ]"
+                  >
+                    <v-tooltip v-if="att.isFlagged" bottom opacity="1" z-index="9999">
+                      <template v-slot:activator="{ on }">
+                        <div v-on="on" class="attach-icon red-icon">
+                          <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
+                        </div>
+                      </template>
+                      <span>This attachment has been reported as a malicious file</span>
+                    </v-tooltip>
+                    <div v-else class="attach-icon blue-icon">
+                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
+                    </div>
+                    <v-tooltip bottom opacity="1" z-index="9999">
+                      <template v-slot:activator="{ on }">
+                        <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
+                          {{ att.name }}
+                        </div>
+                        <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
+                          hidden by owner
+                        </div>
+                      </template>
+                      <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
+                    </v-tooltip>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              v-for="(att, ind) of shareSettings.attachments"
-              :key="ind + att.Id"
-              :id="'detail-malicious-' + att.Id"
-              v-if="att.IsMalicious"
-            >
-              <p class="attach-found-malicious detail-black" v-if="ind === 0">
-                This file<span v-if="shareSettings.attachments.length > 1">s</span> has been
-                reported as a malicious
-              </p>
-            </div>
-          </div>
-          <div class="detail-discovery pb-4">
-            <div
-              :id="'detail-discovery-empty'"
-              v-if="postDetail.Data.DiscoveryAndDetection"
-              class="disc-header"
-            >
-              Discovery and Detection
-            </div>
-            <p
-              :id="'detail-discovery'"
-              v-if="postDetail.Data.DiscoveryAndDetection"
-              class="discovery-p"
-            >
-              {{ postDetail.Data.DiscoveryAndDetection }}
-            </p>
-            <div v-if="postDetail.Data.AffectArea" class="disc-header mb-1">Impact Range</div>
-            <div :id="'detail-effect-area'" v-if="postDetail.Data.AffectArea" class="impact-row">
-              <div class="impact-left">Effect area:</div>
-              <div style="width: max-content; padding-right: 13px;" class="impact-right">
-                {{ postDetail.Data.AffectArea }}
-              </div>
-            </div>
-            <div
-              :id="'detail-scope' + postDetail.Data.Scope"
-              v-if="postDetail.Data.Scope"
-              class="impact-row"
-            >
-              <div class="impact-left">Scope:</div>
-              <div class="impact-right">{{ postDetail.Data.Scope }}</div>
-            </div>
-          </div>
-        </v-tab-item>
-        <v-tab-item>
-          <div class="preview-header pt-0">
-            <h2
-              v-for="(el, ind) of shareSettings.subject"
-              :key="ind + el.Id"
-              :id="'detail-subject-' + el.Id"
-              v-if="
-                postDetail.Data.CommunityPostEmails[0] &&
-                postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                el.IsShow
-              "
-            >
-              <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                >Subject: {{ postDetail.Data.CommunityPostEmails[0].Subject }}</span
-              >
-              <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                <template v-slot:activator="{ on }">
-                  <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                </template>
-                <span>The subject has been reported as a threat source</span>
-              </v-tooltip>
-            </h2>
-            <h2
-              v-for="(el, ind) of shareSettings.subject"
-              :key="ind + el.Id"
-              v-else-if="
-                postDetail.Data.CommunityPostEmails[0] &&
-                postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                !el.IsShow
-              "
-              :id="'detail-subject-' + el.Id"
-            >
-              <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                >Subject: hidden by owner</span
-              >
-              <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                <template v-slot:activator="{ on }">
-                  <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                </template>
-                <span>This email address has been reported as a threat source</span>
-              </v-tooltip>
-            </h2>
-            <div class="header-info pb-5">
-              <div
-                v-for="(el, ind) of shareSettings.senderInfo"
-                :key="ind + el.Id"
-                :id="'detail-sender-' + el.Id"
-                v-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].From.length &&
-                  el.IsShow
-                "
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >From: {{ postDetail.Data.CommunityPostEmails[0].From }}</span
-                >
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-                <br />
-              </div>
-              <div
-                v-for="(el, ind) of shareSettings.senderInfo"
-                :key="ind + el.Id"
-                v-else-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].From.length &&
-                  !el.IsShow
-                "
-                :id="'detail-from-' + el.Id"
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >From: hidden by owner</span
-                >
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-              </div>
-              <div
-                v-for="(el, ind) of shareSettings.receiverInfo"
-                :key="ind + el.Id"
-                :id="'detail-to-' + el.Id"
-                v-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].To.length &&
-                  el.IsShow
-                "
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >To: {{ postDetail.Data.CommunityPostEmails[0].To }}</span
-                >
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-              </div>
-              <div
-                v-for="(el, ind) of shareSettings.receiverInfo"
-                :key="ind + el.Id"
-                v-else-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].To.length &&
-                  !el.IsShow
-                "
-                :id="'detail-to-' + el.Id"
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']">To: hidden by owner</span>
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-              </div>
-              <div
-                v-for="(el, ind) of shareSettings.receiverInfo"
-                :key="ind + el.Id"
-                v-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                  el.IsShow
-                "
-                :id="'detail-cc-' + el.Id"
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                  >CC: {{ postDetail.Data.CommunityPostEmails[0].Cc }}</span
-                >
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-              </div>
-              <div
-                v-for="(el, ind) of shareSettings.receiverInfo"
-                :key="ind + el.Id"
-                v-else-if="
-                  postDetail.Data.CommunityPostEmails[0] &&
-                  postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                  !el.IsShow
-                "
-                :id="'detail-cc-' + el.Id"
-              >
-                <span :class="[el.IsMalicious ? 'malicious-style' : '']">CC: hidden by owner</span>
-                <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span>This email address has been reported as a threat source</span>
-                </v-tooltip>
-              </div>
-              <div id="details-post-date" v-if="postDetail.Data.CommunityPostEmails[0]">
-                Date:
-                {{ postDetail.Data.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
-                {{ postDetail.Data.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                <br />
-              </div>
-            </div>
-          </div>
-          <div id="single-post-body" class="preview-body">
-            <k-shadow-frame
-              id="sframe"
-              v-bind:content="postDetail.Data.CommunityPostEmails[0].Body"
-            />
-          </div>
-          <div
-            class="preview-footer"
-            v-if="shareSettings.attachments && shareSettings.attachments.length"
-          >
-            <h2>Attachments</h2>
-            <div
-              v-for="(att, ind) of shareSettings.attachments"
-              :key="ind + att.Id"
-              class="preview-attch-wrapper"
-            >
-              <div class="attachment-wrapper">
-                <div
-                  class="attachment red-attach"
-                  :id="'single-post-attachments-' + att.Id"
-                  :class="[
-                    att.IsMalicious ? 'red-attach malicious-style' : '',
-                    !att.IsMalicious ? 'blue-attach' : ''
-                  ]"
-                >
-                  <v-tooltip v-if="att.IsMalicious" bottom opacity="1" z-index="9999">
-                    <template v-slot:activator="{ on }">
-                      <div v-on="on" class="attach-icon red-icon">
-                        <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                      </div>
-                    </template>
-                    <span>This attachment has been reported as a malicious file</span>
-                  </v-tooltip>
-                  <div v-else class="attach-icon blue-icon">
-                    <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                  </div>
-                  <v-tooltip bottom opacity="1" z-index="9999">
-                    <template v-slot:activator="{ on }">
-                      <div v-on="on" v-if="att.IsShow" class="file-name max-char pl-2">
-                        {{ att.Name }}
-                      </div>
-                      <div v-on="on" v-if="!att.IsShow" class="file-name max-char pl-2">
-                        hidden by owner
-                      </div>
-                    </template>
-                    <span>{{ att.IsShow ? att.Name : 'hidden by owner' }}</span>
-                  </v-tooltip>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="preview-buttons">
-            <v-btn
-              v-if="!postDetail.Data.UserLiked"
-              :disabled="!isJoined(postDetail.Data.CommunityId)"
-              @click="userLikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
-              :class="{ 'active-act': userLiked }"
-              :id="'like-btn' + postDetail.Data.CommunityPostId"
-            >
-              <v-icon>mdi-thumb-up</v-icon>
-              Useful {{ postDetail.Data.LikeCount }}
-            </v-btn>
-            <v-btn
-              v-else-if="postDetail.Data.UserLiked"
-              :disabled="!isJoined(postDetail.Data.CommunityId)"
-              @click="userUnlikePost(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)"
-              color="#2196f3"
-              :id="'unlike-btn' + postDetail.Data.CommunityPostId"
-            >
-              <v-icon class="active-act">mdi-thumb-up</v-icon>
-              Useful {{ postDetail.Data.LikeCount }}
-            </v-btn>
-            <v-btn
-              :id="'comments-btn' + postDetail.Data.CommunityPostId"
-              :class="{ 'active-act': commentOpened }"
-              @click="commentOpened = !commentOpened"
-            >
-              <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
-              Comments ({{ postDetail.Data.CommentCount }})
-            </v-btn>
-          </div>
-          <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
-            <div class="add-comment-row">
-              <v-text-field
-                :id="'single-post-comment-' + postDetail.Data.CommunityPostId"
-                class="comment-input"
-                label="Write your comment here"
-                outlined
-                v-model="addCommentValue"
-                validate-on-blur
-                :rules="[rules.regex, rules.required]"
-              />
+            <div class="preview-buttons">
               <v-btn
-                :id="'single-post-send-comment' + postDetail.Data.CommunityPostId"
-                :disabled="!isJoined(postDetail.Data.CommunityId) || !regexChar(addCommentValue)"
-                @click="
-                  addPostComment(postDetail.Data.CommunityPostId, postDetail.Data.CommunityId)
-                "
-                class="send-btn"
+                v-if="!userLiked"
+                :disabled="!isJoined(post.communityResourceId)"
+                @click="userLikePost(post.communityPostResourceId, post.communityResourceId)"
+                :class="{ 'active-act': userLiked }"
+                :id="'like-btn' + post.communityPostResourceId"
               >
-                <v-icon>mdi-send</v-icon>
-                SEND
+                <v-icon>mdi-thumb-up</v-icon>
+                Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
+              </v-btn>
+              <v-btn
+                v-else-if="userLiked"
+                :disabled="!isJoined(post.communityResourceId)"
+                @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
+                color="#2196f3"
+                :id="'unlike-btn' + post.communityPostResourceId"
+              >
+                <v-icon class="active-act">mdi-thumb-up</v-icon>
+                Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
+              </v-btn>
+              <v-btn
+                :id="'comments-btn' + post.communityPostResourceId"
+                :class="{ 'active-act': commentOpened }"
+                @click="commentOpened = !commentOpened"
+              >
+                <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
+                Comments ({{ post.commentCount }})
               </v-btn>
             </div>
-            <div
-              v-if="
-                !seeComments &&
-                postDetail.Data.CommunityPostComments &&
-                postDetail.Data.CommunityPostComments.length
-              "
-              class="hidden-comments"
-            >
-              <div class="comment-row">
-                <div class="user-wrapper">
-                  <span class="username">{{
-                    postDetail.Data.CommunityPostComments[0].NameSurname
-                  }}</span>
-                  from
-                  <span class="company-name">{{
-                    postDetail.Data.CommunityPostComments[0].CompanyName
-                  }}</span>
-                  <p class="the-comment">
-                    {{ postDetail.Data.CommunityPostComments[0].Comment }}
-                  </p>
+            <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
+              <div class="add-comment-row">
+                <v-text-field
+                  :id="'single-post-comment-' + post.communityPostResourceId"
+                  class="comment-input"
+                  placeholder="Write your comment here"
+                  outlined
+                  v-model="addCommentValue"
+                  validate-on-blur
+                  :rules="[rules.regex, rules.required]"
+                />
+                <v-btn
+                  :id="'single-post-send-comment' + post.communityPostResourceId"
+                  :disabled="!isJoined(post.communityResourceId) || !regexChar(addCommentValue)"
+                  @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
+                  class="send-btn"
+                >
+                  <v-icon>mdi-send</v-icon>
+                  SEND
+                </v-btn>
+              </div>
+              <div v-if="!seeComments && comments && comments.length" class="hidden-comments">
+                <div class="comment-row">
+                  <div class="user-wrapper">
+                    <span class="username">{{ comments[0].commenterFullName }}</span>
+                    from
+                    <span class="company-name">{{ comments[0].commenterCompanyName }}</span>
+                    <p class="the-comment">
+                      {{ comments[0].comment }}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div
-              v-if="
-                seeComments &&
-                postDetail.Data.CommunityPostComments &&
-                postDetail.Data.CommunityPostComments.length
-              "
-              class="hidden-comments"
-            >
+              <div v-if="seeComments && comments && comments.length" class="hidden-comments">
+                <div v-for="(com, ind) of comments" :key="ind + com.resourceId" class="comment-row">
+                  <div class="user-wrapper">
+                    <span class="username">{{ com.commenterFullName }}</span>
+                    from
+                    <span class="company-name">{{ com.commenterCompanyName }}</span>
+                    <p class="the-comment">{{ com.comment }}</p>
+                  </div>
+                </div>
+              </div>
               <div
-                v-for="(com, ind) of postDetail.Data.CommunityPostComments.slice().reverse()"
-                :key="ind + com.CommunityPostCommentId"
-                class="comment-row"
+                v-if="!seeComments && comments && comments.length > 1"
+                id="single-post-see-all-comments"
+                class="see-all-comments"
+                @click="seeComments = true"
               >
-                <div class="user-wrapper">
-                  <span class="username">{{ com.NameSurname }}</span>
-                  from
-                  <span class="company-name">{{ com.CompanyName }}</span>
-                  <p class="the-comment">{{ com.Comment }}</p>
-                </div>
+                <span>See all {{ comments.length }} comments</span>
               </div>
             </div>
-            <div
-              v-if="
-                !seeComments &&
-                postDetail.Data.CommunityPostComments &&
-                postDetail.Data.CommunityPostComments.length > 1
-              "
-              id="single-post-see-all-comments"
-              class="see-all-comments"
-              @click="seeComments = true"
-            >
-              <span>See all {{ postDetail.Data.CommunityPostComments.length }} comments</span>
-            </div>
-          </div>
-        </v-tab-item>
-      </v-tabs-items>
-    </v-expansion-panel-content>
+          </v-tab-item>
+        </v-tabs-items>
+      </v-expansion-panel-content>
+    </div>
   </div>
 </template>
 
@@ -845,6 +822,14 @@ import VClamp from 'vue-clamp'
 import { mapGetters } from 'vuex'
 import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
+import {
+  createComments,
+  getComments,
+  getCommunityPost,
+  getSelectedEmailPreview,
+  likePost
+} from '../../api/threadSharing'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -917,6 +902,10 @@ export default {
     VClamp
   },
   props: {
+    openEditPopupItem: {
+      type: Object,
+      required: false
+    },
     post: {
       type: Object,
       required: false,
@@ -929,19 +918,31 @@ export default {
     totalPostCount: {
       type: Number,
       required: true
+    },
+    refreshData: {
+      required: false
     }
   },
-  computed: {
-    ...mapGetters({
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      userGetter: 'auth/userGetter',
-      postDetail: 'threadSharing/postDetailGetter',
-      myCommunities: 'threadSharing/myCommunitiesGetter',
-      getSelectedCompany: 'dashboard/getSelectedCompany',
-      toggle: 'threadSharing/collapsesGetter'
-    })
-  },
+  computed: {},
   data: () => ({
+    postDetails: {},
+    comments: [],
+    emailData: null,
+    categories: [
+      {
+        resourceId: 'Ps0SSyl7rVNe',
+        name: 'Malicious'
+      },
+      {
+        resourceId: 'bEuAD1pdbRXF',
+        name: 'Non-Malicious'
+      },
+      {
+        resourceId: 'NGLCc9UCxJvw',
+        name: 'Phishing'
+      }
+    ],
+    userIdFromStorage: null,
     expanded: false,
     commentOpened: false,
     isWantToShareIncident: false,
@@ -962,67 +963,28 @@ export default {
     hasPermission: false,
     valid: false,
     userComment: '',
-    comments: [],
     hoverTool: false,
     details: {},
     shareSettings: {},
     addCommentValue: ''
   }),
-  watch: {
-    postDetail(val) {
-      const datas = val.Data
-      if (
-        datas &&
-        datas.CommunityPostEmails[0] &&
-        datas.CommunityPostEmails[0].ShareSettings.length
-      ) {
-        const ShareSettings = {
-          senderInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'SenderInfo'
-          ),
-          subject: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Subject'),
-          receiverInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'ReceiverInfo'
-          ),
-          attachments: datas.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'Attachment'
-          ),
-          links: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Link')
-        }
-        if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function () {
-            for (let a of ShareSettings.links) {
-              var els = document
-                .getElementById('sframe')
-                .shadowRoot.querySelectorAll('[href="' + a.Value + '"]')
-              for (var i = 0, l = els.length; i < l; i++) {
-                var el = els[i]
-                el.setAttribute('target', '_blank')
-                el.setAttribute('data-title', 'This link has been reported as a phishing')
-                if (!a.IsShow) {
-                  if (!el.hasChildNodes()) {
-                    el.innerHTML = 'hidden by owner'
-                  } else {
-                    el.lastChild.innerHTML = 'hidden by owner'
-                  }
-                  el.setAttribute('href', '#')
-                }
-                if (a.IsMalicious) {
-                  el.classList.add('malicious-style')
-                  var iEl = document.createElement('i')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
-                }
-              }
-            }
-          }, 0)
-        }
-        this.shareSettings = ShareSettings
-      }
-    }
+  watch: {},
+  mounted() {
+    this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    findCategory(id) {
+      switch (id) {
+        case 'Ps0SSyl7rVNe':
+          return 'Malicious'
+        case 'bEuAD1pdbRXF':
+          return 'Non-Malicious'
+        case 'NGLCc9UCxJvw':
+          return 'Phishing'
+        default:
+          return ''
+      }
+    },
     openInvestigate() {
       this.$emit('openInvestigateModal', { status: true, title: this.post.Title })
     },
@@ -1031,140 +993,120 @@ export default {
       this.$store.state.threadSharing.sharedPost = postId
       this.$store.state.threadSharing.postCreatorId = creatorUserId
     },
-    userLike() {
-      this.userLiked = !this.userLiked
-      this.userLiked ? (this.likeCount = this.likeCount + 1) : (this.likeCount = this.likeCount - 1)
-    },
-    addComment() {
-      if (this.$refs.comment.validate()) {
-        const commentObj = {
-          comment: this.userComment,
-          name: this.$store.state.auth.user.fullName,
-          company: this.$store.state.auth.user.currentCompany.name
-        }
-        this.comments.push(commentObj)
-        this.userComment = ''
-      }
-    },
+    userLike() {},
+    addComment() {},
     openDetails() {
       this.panel.push(0)
     },
     getPostDetails(postId, ind, bool) {
-      const postDetailObj = {
-        companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
-        communPostId: postId
-      }
-      this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
-
-      if (this.toggle && this.toggle.length < 1) {
-        let arr = []
-        for (let a = 0; a < this.totalPostCount; a++) {
-          arr.push(false)
-        }
-        arr[ind] = bool
-        this.$store.commit('threadSharing/SET_COLLAPSES', arr)
-      } else {
-        let newToggle = this.toggle
-        for (let b = 0; b < newToggle.length; b++) {
-          newToggle[b] = false
-        }
-        newToggle[ind] = bool
-        this.$store.commit('threadSharing/SET_COLLAPSES', newToggle)
-      }
-      if (this.bool === true) {
-      }
+      this.post.isToggle = bool
+      //postId = '4pDtxLYSG0mb'
+      getComments(this.post.communityPostResourceId)
+        .then((response) => {
+          const { data } = response
+          this.comments = data.data
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting comments'
+          })
+        })
+      getCommunityPost(this.post.communityPostResourceId).then((response) => {
+        this.postDetails = response.data.data
+      })
+      //getSelectedEmailPreview(postId)
+      getSelectedEmailPreview('4pDtxLYSG0mb')
+        .then((response) => {
+          const { data } = response
+          this.emailData = data.data
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting all community list data'
+          })
+        })
     },
     userLikePost(postId, communId) {
-      if (this.isJoined(communId)) {
-        const likeObj = {
-          communPostId: postId,
-          createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
-          communId: communId
-        }
-        this.$store.dispatch('threadSharing/likePost', likeObj)
-        this.post.LikeCount = this.post.LikeCount + 1
-        this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount + 1
-        const refThis = this
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
+      likePost(postId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Like request success message'
+          })
+          getCommunityPost(this.post.communityPostResourceId).then((response) => {
+            this.postDetails = response.data.data
+          })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when like a comment'
+          })
+        })
     },
     userUnlikePost(postId, communId) {
-      if (this.isJoined(communId)) {
-        const unlikeObj = {
-          communPostId: postId,
-          createUserId: this.userGetter.id || localStorage.getItem('userId'),
-          companyId: this.getSelectedCompany.companyId || localStorage.getItem('companyId'),
-          communId: communId
-        }
-        this.$store.dispatch('threadSharing/unlikePost', unlikeObj)
-        this.post.LikeCount = this.post.LikeCount - 1
-        this.postDetail.Data.LikeCount = this.postDetail.Data.LikeCount - 1
-        const refThis = this
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
+      likePost(postId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'UnlLike request success message'
+          })
+          getCommunityPost(this.post.communityPostResourceId).then((response) => {
+            this.postDetails = response.data.data
+          })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when unlike a comments'
+          })
+        })
     },
     addPostComment(postId, communId) {
-      const commentObj = {
-        communPostId: postId,
-        comment: this.addCommentValue,
-        createUserId: this.userGetter.id || localStorage.getItem('userId'),
-        companyId: this.getSelectedCompany.companyId,
-        communId: communId
+      const payload = {
+        comment: this.addCommentValue
       }
-      if (
-        this.addCommentValue.length >= 5 &&
-        this.addCommentValue.length <= 300 &&
-        this.isJoined(communId) &&
-        this.regexChar(this.addCommentValue)
-      ) {
-        this.$store.dispatch('threadSharing/addComment', commentObj)
-        this.addCommentValue = ''
-        const refThis = this
-        this.post.CommentCount = this.post.CommentCount + 1
-        setTimeout(() => {
-          refThis.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-          const yourPostsObj = {
-            compId: localStorage.getItem('companyId'),
-            userId: localStorage.getItem('userId')
-          }
-          refThis.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-        }, 500)
-      }
+      createComments(postId, payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Comment added has been succesfully'
+          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: 'Error when getting comments'
+              })
+            })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when creating a comment'
+          })
+        })
     },
-    editIncident(postId, communityName) {
-      this.$store.commit('threadSharing/SET_INCIDENT_EDIT_STATUS', true)
-      this.$emit('edit-incident', { postId, communityName })
+    editIncident(post, communityName) {
+      this.$emit('openEditPopupItem', post)
     },
-    deleteIncident(postId, name, postCommunityId) {
-      this.$emit('delete-incident', {
-        postId: postId,
-        name: name,
-        postCommunityId: postCommunityId
-      })
-    },
+    deleteIncident(postId, name, postCommunityId) {},
     isJoined(communId) {
-      if (this.myCommunities && this.myCommunities.length) {
+      /*if (this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some((cId) => cId.CommunityId === communId)
       } else {
         return false
-      }
+      }*/
+      return true
     },
     isOwnerOfTheCommunity() {
+      /*
       const creator = localStorage.getItem('communityCompanyId')
       const user = localStorage.getItem('companyId')
       if (
@@ -1174,13 +1116,13 @@ export default {
         return true
       } else {
         return false
-      }
+      }*/
     },
     regexChar(val) {
       return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
     },
     canDelete(compId) {
-      if (
+      /*if (
         this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
         localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
         this.getSelectedCompany.companyId === compId
@@ -1188,10 +1130,10 @@ export default {
         return true
       } else {
         return false
-      }
+      }*/
     },
     canEdit(compId) {
-      if (
+      /* if (
         this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
         localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
         this.getSelectedCompany.companyId === compId
@@ -1199,7 +1141,8 @@ export default {
         return true
       } else {
         return false
-      }
+      }*/
+      return true
     },
     maliciousFound() {
       return this.shareSettings.attachments.some((at) => at.IsMalicious === true)
@@ -1209,7 +1152,13 @@ export default {
 </script>
 
 <style lang="scss">
-#component-single-post {
+.notification-wrapper-single-post {
+  padding: 0 !important;
+  width: 100%;
+  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
+    0 3px 14px 2px rgba(255, 255, 255, 0.12);
+}
+.component-single-post {
   // Threat sharing Content
   .threat-sharing-content {
     min-height: 200px;
@@ -1661,7 +1610,7 @@ export default {
     flex-direction: column;
 
     .details-attachments {
-      width: auto !important;
+      width: 100% !important;
 
       h2 {
         font-family: 'Open Sans', sans-serif !important;
@@ -2231,6 +2180,11 @@ export default {
     .red-malicious-alert:not(:first-child) {
       display: none !important;
     }
+  }
+  .user-wrapper {
+    width: 100%;
+    height: auto;
+    margin: auto;
   }
 }
 </style>

@@ -21,7 +21,6 @@
                 v-model="name"
                 :rules="[nameRules.regex, nameRules.required]"
                 required
-                @blur="checkCommunName()"
               >
               </v-text-field>
             </v-list-item-content>
@@ -103,7 +102,9 @@
     </div>
     <div class="footer-actions">
       <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
-      <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">CREATE</v-btn>
+      <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">{{
+        resourceId ? 'Update' : 'Create'
+      }}</v-btn>
     </div>
   </div>
 </template>
@@ -112,11 +113,20 @@ import { mapGetters } from 'vuex'
 import {
   createCommunity,
   getMyCommunityList,
-  listBusinessCategories
+  listBusinessCategories,
+  updateCommunity
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
+  props: {
+    resourceId: {
+      required: false
+    },
+    communityItem: {
+      required: false
+    }
+  },
   data() {
     return {
       name: '',
@@ -177,34 +187,59 @@ export default {
           privacystatusid: this.privacystatusid,
           industryresourceid: this.selectedCategory.resourceId
         }
-        createCommunity(payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Community created succesfully'
+        if (!!this.resourceId) {
+          updateCommunity(this.resourceId, payload)
+            .then((response) => {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                message: 'Community updated succesfully'
+              })
+              refThis.$emit('closeAdd')
             })
-            refThis.$emit('closeAdd')
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when create community'
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: 'Error when update community'
+              })
             })
-          })
+        } else {
+          createCommunity(payload)
+            .then((response) => {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                message: 'Community created succesfully'
+              })
+              refThis.$emit('closeAdd')
+            })
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: 'Error when create community'
+              })
+            })
+        }
+
         //this.$store.dispatch('threadSharing/createCommunity', newCommunityObj).then(() => {
         //const refThis = this
         //refThis.$emit('closeAdd')
         //})
       }
     },
-    checkCommunName() {
-      if (this.name.length && !this.name.startsWith(' '))
-        this.$store.dispatch('threadSharing/checkName', this.name)
-    },
     getBusinessCategories() {
       listBusinessCategories()
         .then((response) => {
           this.categories = response.data.data
+          if (!!this.resourceId) {
+            this.name = this.communityItem.communityName
+            this.description = this.communityItem.communityDescription
+            this.privacystatusid = this.communityItem.privacyStatusId.toString()
+            this.selectedCategory = {
+              resourceId: this.communityItem.industryResourceId,
+              name: this.categories.find(
+                (item) => item.resourceId == this.communityItem.industryResourceId
+              ).name
+            }
+          }
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

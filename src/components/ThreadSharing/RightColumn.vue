@@ -136,59 +136,56 @@
         </div>
       </div>
       <div v-if="$route.name !== 'Community'" class="right-side-title pt-1">Your Posts</div>
-      <div
-        class="pb-4"
-        v-if="$route.name !== 'Community' && yourPosts.Data && yourPosts.Data.length > 0"
-      >
-        <div v-for="(post, ind) of yourPosts.Data" :key="ind + Math.floor(Math.random() * 10000)">
+      <div class="pb-4" v-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0">
+        <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
           <div class="pt-2">
             <div class="right-side-sub-title pb-1">
-              <a href="#">{{ post.Title }}</a>
+              <a href="#">{{ post.title }}</a>
             </div>
             <div class="right-side-desc pb-1">
               by
-              <a href="#">{{ post.CompanyName }}</a>
+              <a href="#">{{ post.communityName }}</a>
             </div>
             <div class="right-side-like-comment-wrapper">
               <div class="right-side-like">
                 <v-btn disabled text x-small icon color="grey">
                   <v-icon>mdi-thumb-up</v-icon>
                 </v-btn>
-                <span class="like-count">{{ post.LikeCount }}</span>
+                <span class="like-count">{{ post.likeCount }}</span>
               </div>
               <div class="right-side-message pl-2">
                 <v-btn disabled text x-small icon color="grey">
                   <v-icon>mdi-message-reply-text</v-icon>
                 </v-btn>
-                <span class="comment-count">{{ post.CommentCount }}</span>
+                <span class="comment-count">{{ post.commentCount }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="right-side-title pt-4">Top Posts from your communities</div>
-      <div v-if="topPosts.Data && topPosts.Data.length">
-        <div v-for="(post, ind) of topPosts.Data" :key="ind + Math.floor(Math.random() * 10000)">
+      <div v-if="topPosts && topPosts.length">
+        <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
           <div class="right-side-post-container pt-2">
             <div class="right-side-sub-title pb-1">
-              <a href="#">{{ post.Title }}</a>
+              <a href="#">{{ post.postTitle }}</a>
             </div>
             <div class="right-side-desc pb-1">
               by
-              <a href="#">{{ post.CompanyName }}</a>
+              <a href="#">{{ post.communityName }}</a>
             </div>
             <div class="right-side-like-comment-wrapper">
               <div class="right-side-like">
                 <v-btn disabled text x-small icon color="grey">
                   <v-icon>mdi-thumb-up</v-icon>
                 </v-btn>
-                <span class="like-count">{{ post.LikeCount }}</span>
+                <span class="like-count">{{ post.likeCount }}</span>
               </div>
               <div class="right-side-message pl-2">
                 <v-btn disabled text x-small icon color="grey">
                   <v-icon>mdi-message-reply-text</v-icon>
                 </v-btn>
-                <span class="comment-count">{{ post.CommentCount }}</span>
+                <span class="comment-count">{{ post.commentCount }}</span>
               </div>
             </div>
           </div>
@@ -197,435 +194,87 @@
       <div v-else class="empty-posts pt-1">
         No incident has been posted in your communities, yet
       </div>
+      <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
+      <div v-if="suggestedCommunities && suggestedCommunities.length">
+        <v-card
+          v-for="(commun, ind) of suggestedCommunities"
+          :key="ind + commun.communityName"
+          class="suggested-card"
+        >
+          <div class="suggested-row">
+            <div class="suggested-com-name" cols="12">
+              <div class="suggested-title">{{ commun.communityName }}</div>
+              <div class="suggested-com-detail">
+                <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
+                {{ commun.memberCount }}
+                <span class="suggested-industry pl-2">Industry -&nbsp;</span>
+                <span class="suggested-company">{{ commun.industryName }}</span>
+              </div>
+            </div>
+            <div class="suggested-right-action">
+              <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
+                <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
+                <span class="pr-2">Member</span>
+              </v-btn>
+              <v-btn
+                @click="joinCommunity(commun.resourceId)"
+                class="suggested-btn"
+                block
+                rounded
+                v-else
+                :disabled="commun.isJoined"
+                style="background-color: #2196f3 !important;"
+              >
+                <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
+                <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
+                  >mdi-account-clock
+                </v-icon>
+                <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
+                  Join
+                </div>
+                <div v-else-if="commun.isJoined" :key="commun.resourceId">
+                  Request Sent
+                </div>
+                <div v-else :key="commun.resourceId">Request to join</div>
+              </v-btn>
+            </div>
+          </div>
+        </v-card>
+      </div>
+      <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
+        There is no suggested community available, yet
+      </div>
+      <div class="empty-suggested" v-else>
+        <v-btn
+          class="create-first-btn create-com-btn mt-3 mb-6"
+          @click="createNewCommunity()"
+          block
+          rounded
+          >Create A New Community
+        </v-btn>
+      </div>
     </div>
   </v-card>
 </template>
 <script>
 import { mapState, mapGetters } from 'vuex'
-import { getCommunityDetails } from '../../api/threadSharing'
+import {
+  getCommunityDetails,
+  getMyLastPosts,
+  getMyTopPosts,
+  getsuggestedCommunities,
+  joinCommunity
+} from '../../api/threadSharing'
 
 export default {
   data() {
     return {
+      suggestedCommunities: [],
       communityDetails: {},
+      myLastPosts: [],
+      topPosts: [],
       ownerDetails: null,
-      yourPosts: {
-        Data: [
-          {
-            CommunityPostId: '28636006-8bca-4841-9264-458ac5c1f723',
-            CommunityId: '14d05964-3bb1-4e4f-b332-dd80d33d1eff',
-            CompanyId: 'f4a5cd1b-6eb2-4be8-80e1-f70f266f4da5',
-            CompanyName: 'Keepnet Labs',
-            Title: 'IncidentTitle--qvcDeKGatC',
-            Description: 'IncidentDescription--qvcDeKGatC',
-            AttachmentStream: null,
-            AttachmentPath: 'C:\\Attachments\\Temp\\6fdc03ac-a215-4c38-9ab1-6db1649a4c9e.eml',
-            DiscoveryAndDetection: 'IncidentDiscoverqvcDeKGatC',
-            AffectArea: null,
-            Scope: 'IncidentScopeqvcDeKGatC',
-            CounterMeasures: null,
-            IsActive: true,
-            CreateDate: '2020-05-20T20:43:19.173',
-            ModifyDate: null,
-            CreateUserId: 'e960d8c1-ede4-4b50-a5bc-afd2ac848712',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 3,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 3,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 3,
-            AttachmentCount: 1,
-            MaliciousAttachmentCount: 1,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 1,
-            IsAnonymous: false,
-            HarmfulItems: 3,
-            IsPreview: true,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: '2e540f19-e035-4de6-90ce-585c73493bc8',
-            CommunityId: '1476360d-860d-4015-ae81-a11925f2716e',
-            CompanyId: 'f4a5cd1b-6eb2-4be8-80e1-f70f266f4da5',
-            CompanyName: 'Anonymous',
-            Title: 'Anonim Test Muss 1',
-            Description: 'Anonim Test Muss 1',
-            AttachmentStream: null,
-            AttachmentPath:
-              'C:\\Users\\Public\\Keepnetlabs\\Api\\e7102163-c63c-40a2-b832-423d82e2f890\\e7102163-c63c-40a2-b832-423d82e2f890.msg',
-            DiscoveryAndDetection: 'Anonim Test Muss 1',
-            AffectArea: null,
-            Scope: 'Anonim Test Muss 1',
-            CounterMeasures: null,
-            IsActive: true,
-            CreateDate: '2020-05-20T17:16:13.397',
-            ModifyDate: null,
-            CreateUserId: 'e960d8c1-ede4-4b50-a5bc-afd2ac848712',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 4,
-            LinkCount: 12,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 12,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 12,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: true,
-            HarmfulItems: 2,
-            IsPreview: true,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: '6faca0be-a90c-4215-b4e9-706aa82302af',
-            CommunityId: 'd21df83e-c8fc-4df4-961a-364785ce61f2',
-            CompanyId: 'f4a5cd1b-6eb2-4be8-80e1-f70f266f4da5',
-            CompanyName: 'Keepnet Labs',
-            Title: 'Facebook Scam',
-            Description: 'Facebook Scam',
-            AttachmentStream: null,
-            AttachmentPath:
-              'C:\\Users\\Public\\Keepnetlabs\\Api\\e7102163-c63c-40a2-b832-423d82e2f890\\e7102163-c63c-40a2-b832-423d82e2f890.msg',
-            DiscoveryAndDetection: 'asdasda asdasda',
-            AffectArea: 'enduser, computer',
-            Scope: 'adasdaadadad',
-            CounterMeasures: null,
-            IsActive: true,
-            CreateDate: '2020-06-10T16:06:48.987',
-            ModifyDate: null,
-            CreateUserId: 'e960d8c1-ede4-4b50-a5bc-afd2ac848712',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 0,
-            LinkCount: 12,
-            MaliciousLinkCount: 1,
-            UnMaliciousLinkCount: 11,
-            HiddenLinkCount: 2,
-            ShownLinkCount: 10,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 2,
-            IsPreview: true,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: '9160a7af-9529-4d37-a009-7679ab0bc299',
-            CommunityId: '3c7ad830-3c6e-48cc-8478-a0441a917b51',
-            CompanyId: 'f4a5cd1b-6eb2-4be8-80e1-f70f266f4da5',
-            CompanyName: 'Keepnet Labs',
-            Title: 'Preview Bugs',
-            Description: 'Preview Bugs',
-            AttachmentStream: null,
-            AttachmentPath:
-              'C:\\Users\\Public\\Keepnetlabs\\Api\\e7102163-c63c-40a2-b832-423d82e2f890\\e7102163-c63c-40a2-b832-423d82e2f890.msg',
-            DiscoveryAndDetection: 'Preview Bugs',
-            AffectArea: null,
-            Scope: 'Preview Bugs',
-            CounterMeasures: null,
-            IsActive: true,
-            CreateDate: '2020-05-13T12:08:37.11',
-            ModifyDate: null,
-            CreateUserId: 'e960d8c1-ede4-4b50-a5bc-afd2ac848712',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 12,
-            MaliciousLinkCount: 2,
-            UnMaliciousLinkCount: 10,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 12,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 4,
-            IsPreview: true,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: '6b2d89a8-54ed-470d-8d82-800d6c87401f',
-            CommunityId: '1476360d-860d-4015-ae81-a11925f2716e',
-            CompanyId: 'f4a5cd1b-6eb2-4be8-80e1-f70f266f4da5',
-            CompanyName: 'Keepnet Labs',
-            Title: 'ffsafdffadf',
-            Description: 'fafdadfdfadf',
-            AttachmentStream: null,
-            AttachmentPath: 'C:\\Attachments\\Temp\\86a5f75e-0acc-4c63-86e1-182b8a4b653c.eml',
-            DiscoveryAndDetection: 'dfasdf',
-            AffectArea: 'dfadfa',
-            Scope: 'fafadfasd',
-            CounterMeasures: null,
-            IsActive: true,
-            CreateDate: '2020-05-16T00:12:47.48',
-            ModifyDate: null,
-            CreateUserId: 'e960d8c1-ede4-4b50-a5bc-afd2ac848712',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 3,
-            MaliciousLinkCount: 1,
-            UnMaliciousLinkCount: 2,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 3,
-            AttachmentCount: 1,
-            MaliciousAttachmentCount: 1,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 1,
-            IsAnonymous: false,
-            HarmfulItems: 4,
-            IsPreview: true,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          }
-        ],
-        IsSuccess: true,
-        ResultType: 1,
-        Message: ''
-      },
-      topPosts: {
-        Data: [
-          {
-            CommunityPostId: '9b9b578e-dffe-4fff-a57c-fe7d44cfb995',
-            CommunityId: '00000000-0000-0000-0000-000000000000',
-            CompanyId: '00000000-0000-0000-0000-000000000000',
-            CompanyName: 'Anonymous',
-            Title: 'Anonymious Test',
-            Description: null,
-            AttachmentStream: null,
-            AttachmentPath: null,
-            DiscoveryAndDetection: null,
-            AffectArea: null,
-            Scope: null,
-            CounterMeasures: null,
-            IsActive: false,
-            CreateDate: '0001-01-01T00:00:00',
-            ModifyDate: null,
-            CreateUserId: '00000000-0000-0000-0000-000000000000',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 2,
-            CommentCount: 3,
-            LinkCount: 0,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 0,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 0,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 0,
-            IsPreview: false,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: 'cf519747-7b6e-4060-a170-fe7f1f82d992',
-            CommunityId: '00000000-0000-0000-0000-000000000000',
-            CompanyId: '00000000-0000-0000-0000-000000000000',
-            CompanyName: 'Keepnet Labs',
-            Title: 'asdasda',
-            Description: null,
-            AttachmentStream: null,
-            AttachmentPath: null,
-            DiscoveryAndDetection: null,
-            AffectArea: null,
-            Scope: null,
-            CounterMeasures: null,
-            IsActive: false,
-            CreateDate: '0001-01-01T00:00:00',
-            ModifyDate: null,
-            CreateUserId: '00000000-0000-0000-0000-000000000000',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 0,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 0,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 0,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 0,
-            IsPreview: false,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: 'a529f67d-4ec5-438c-8f08-9d87eb3d4f35',
-            CommunityId: '00000000-0000-0000-0000-000000000000',
-            CompanyId: '00000000-0000-0000-0000-000000000000',
-            CompanyName: 'Keepnet Labs',
-            Title: 'Popup Deneme',
-            Description: null,
-            AttachmentStream: null,
-            AttachmentPath: null,
-            DiscoveryAndDetection: null,
-            AffectArea: null,
-            Scope: null,
-            CounterMeasures: null,
-            IsActive: false,
-            CreateDate: '0001-01-01T00:00:00',
-            ModifyDate: null,
-            CreateUserId: '00000000-0000-0000-0000-000000000000',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 0,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 0,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 0,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 0,
-            IsPreview: false,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: '871a293c-8fa5-4e17-87cf-fdd68047669a',
-            CommunityId: '00000000-0000-0000-0000-000000000000',
-            CompanyId: '00000000-0000-0000-0000-000000000000',
-            CompanyName: 'Okan CM',
-            Title: 'asdadsdasd',
-            Description: null,
-            AttachmentStream: null,
-            AttachmentPath: null,
-            DiscoveryAndDetection: null,
-            AffectArea: null,
-            Scope: null,
-            CounterMeasures: null,
-            IsActive: false,
-            CreateDate: '0001-01-01T00:00:00',
-            ModifyDate: null,
-            CreateUserId: '00000000-0000-0000-0000-000000000000',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 0,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 0,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 0,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 0,
-            IsPreview: false,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          },
-          {
-            CommunityPostId: 'e6334b82-7752-45cd-bb57-a3a991504ae4',
-            CommunityId: '00000000-0000-0000-0000-000000000000',
-            CompanyId: '00000000-0000-0000-0000-000000000000',
-            CompanyName: 'Keepnet Labs',
-            Title: 'asaasas',
-            Description: null,
-            AttachmentStream: null,
-            AttachmentPath: null,
-            DiscoveryAndDetection: null,
-            AffectArea: null,
-            Scope: null,
-            CounterMeasures: null,
-            IsActive: false,
-            CreateDate: '0001-01-01T00:00:00',
-            ModifyDate: null,
-            CreateUserId: '00000000-0000-0000-0000-000000000000',
-            CreateUserName: null,
-            ModifyUserId: null,
-            CommunityName: null,
-            LikeCount: 1,
-            CommentCount: 1,
-            LinkCount: 0,
-            MaliciousLinkCount: 0,
-            UnMaliciousLinkCount: 0,
-            HiddenLinkCount: 0,
-            ShownLinkCount: 0,
-            AttachmentCount: 0,
-            MaliciousAttachmentCount: 0,
-            UnMaliciousAttachmentCount: 0,
-            HiddenAttachmentCount: 0,
-            ShownAttachmentCount: 0,
-            IsAnonymous: false,
-            HarmfulItems: 0,
-            IsPreview: false,
-            UserLiked: false,
-            CommunityPostEmails: null,
-            CommunityPostComments: null,
-            CommunityPostCategory: null
-          }
-        ],
-        IsSuccess: true,
-        ResultType: 1,
-        Message: ''
-      }
+      yourPosts: []
     }
   },
   props: {
@@ -637,16 +286,14 @@ export default {
   },
   created() {
     this.getCommunityDetails()
+    this.getMyLastPosts()
+    this.getMyTopPosts()
+    this.getsuggestedCommunities()
   },
   computed: {
     ...mapGetters({
-      suggestedCommunities: 'threadSharing/suggestedCommunGetter',
-      myCommunities: 'threadSharing/myCommunitiesGetter',
-      communityGetter: 'threadSharing/communityGetter',
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
       getSelectedCompany: 'dashboard/getSelectedCompany',
-      userGetter: 'auth/userGetter',
-      requests: 'threadSharing/requestsGetter'
+      userGetter: 'auth/userGetter'
     }),
     ...mapState({
       companyInformation: (state) => state.dashboard.companyInformation
@@ -666,6 +313,24 @@ export default {
           this.communityDetails = response.data.data
         })
       }
+    },
+    getMyLastPosts() {
+      getMyLastPosts().then((response) => {
+        this.yourPosts = response.data.data
+      })
+    },
+    getMyTopPosts() {
+      getMyTopPosts().then((response) => {
+        this.topPosts = response.data.data
+      })
+    },
+    getsuggestedCommunities() {
+      getsuggestedCommunities().then((response) => {
+        this.suggestedCommunities = response.data.data
+        this.suggestedCommunities = this.suggestedCommunities.map((item) => {
+          return { ...item, isJoined: false }
+        })
+      })
     },
     closeCommunityInfo() {
       // this.$emit('closeCommunity')
@@ -687,29 +352,9 @@ export default {
       this.closeCommunityInfo()
     },
     joinCommunity(communityId, creatorId, name, isPrivate) {
-      if (!communityId && !creatorId) {
-        this.$store
-          .dispatch('threadSharing/joinCommunity', {
-            CommunityId: localStorage.getItem('communityId'),
-            CreatorId: localStorage.getItem('creatorId')
-          })
-          .then(() => {
-            this.refreshCommunities()
-            this.refreshRequests()
-          })
-      } else {
-        this.$store
-          .dispatch('threadSharing/joinCommunity', {
-            CommunityId: communityId,
-            CreatorId: creatorId,
-            Name: name,
-            IsPrivate: isPrivate
-          })
-          .then(() => {
-            this.refreshCommunities()
-            this.refreshRequests()
-          })
-      }
+      joinCommunity(communityId).then((response) => {
+        this.suggestedCommunities = response.data.data
+      })
     },
     isOwnerOfTheCommunity() {},
     openNotifications() {
@@ -718,9 +363,9 @@ export default {
       this.closeCommunityInfo()
     },
     isJoined(id) {
-      if (id && id != null && this.myCommunities && this.myCommunities.length) {
+      /*if (id && id != null && this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some((cId) => cId.CommunityId == id)
-      }
+      }*/
     },
     leaveCommunity() {
       this.$emit('leaveCommunity')
@@ -729,9 +374,6 @@ export default {
     deleteCommunity() {
       this.$emit('deleteCommunity')
       this.closeCommunityInfo()
-    },
-    isRequestSent(communId) {
-      return this.requests.some((cId) => cId.CommunityId == communId)
     },
     refreshCommunities() {
       this.$store.dispatch('threadSharing/getCommunities')

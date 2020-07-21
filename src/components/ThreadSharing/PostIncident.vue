@@ -197,6 +197,7 @@
                           id="upload-file-input"
                           type="file"
                           @change="uploadFile"
+                          accept=".eml,.msg"
                         />
                       </div>
                     </div>
@@ -221,7 +222,7 @@
                 <div class="mail-preview pt-0">
                   <v-icon
                     id="post-first-preview-close"
-                    :disabled="isEditMode"
+                    :disabled="!!editItem"
                     class="close-incident"
                     @click="closePreview()"
                     >mdi-close-circle
@@ -375,7 +376,7 @@
                   row-height="15"
                   solo
                   validate-on-blur
-                  :rules="[descRule.default, descRule.regex, descRule.required, descRule.empty]"
+                  :rules="[descRule.required, descRule.regex, descRule.empty]"
                   v-model="uploadRespond.Description"
                 ></v-textarea>
               </v-form>
@@ -386,8 +387,10 @@
                 <v-select
                   id="post-category-select"
                   class="cat-select"
-                  v-model="uploadRespond.CommunityPostCategory"
+                  v-model="uploadRespond.CategoryResourceIdArray"
                   :items="categories"
+                  item-value="resourceId"
+                  item-text="name"
                   requied
                   solo
                   multiple
@@ -396,8 +399,8 @@
                   :rules="category"
                   :class="{
                     'errored-selectbox':
-                      uploadRespond.CommunityPostCategory &&
-                      uploadRespond.CommunityPostCategory.length < 1
+                      uploadRespond.CategoryResourceIdArray &&
+                      uploadRespond.CategoryResourceIdArray.length < 1
                   }"
                 >
                   <template v-slot:append-item></template>
@@ -503,185 +506,121 @@
             </div>
             <div class="investigation-content">
               <div class="mail-preview">
-                <div class="preview-header">
+                <div class="preview-header pt-0">
                   <h2
-                    v-for="(el, ind) of shareSettings.subject"
-                    :key="ind + el.Id"
-                    :id="'subject-preview' + ind + el.Id"
-                    v-if="
-                      uploadRespond.CommunityPostEmails[0] &&
-                      uploadRespond.CommunityPostEmails[0].Subject.length &&
-                      el.IsShow
-                    "
-                    :class="[
-                      el.IsShow ? 'text-selected' : '',
-                      el.IsMalicious ? 'malicious-style' : ''
-                    ]"
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                    v-if="!uploadRespond.isSubjectHidden && !!uploadRespond.subject"
                   >
-                    <span class="share-setting-text"
-                      >Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}</span
-                    >
+                    Subject: {{ uploadRespond.subject }}
                   </h2>
                   <h2
-                    v-else-if="
-                      uploadRespond.CommunityPostEmails[0] &&
-                      uploadRespond.CommunityPostEmails[0].Subject.length &&
-                      !el.IsShow
-                    "
-                    id="subject-hidden-by-owner"
-                    :class="[
-                      el.IsShow ? 'text-selected' : '',
-                      el.IsMalicious ? 'malicious-style' : ''
-                    ]"
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                    v-else-if="uploadRespond.isSubjectHidden && !!uploadRespond.subject"
                   >
-                    <span class="share-setting-text">Subject: hidden by owner</span>
+                    Subject: Hidden by owner
                   </h2>
                   <div class="header-info pb-5">
                     <div
-                      v-for="(el, ind) of shareSettings.senderInfo"
-                      :key="ind + el.Id"
-                      :id="'sender-' + ind + el.Id"
+                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                      v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
+                    >
+                      From: {{ uploadRespond.from }}
+                    </div>
+                    <div
+                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                      v-else-if="uploadRespond.isFromHidden && !!uploadRespond.from"
+                    >
+                      From: Hidden by owner
+                    </div>
+                    <div
+                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-if="
-                        uploadRespond.CommunityPostEmails[0] &&
-                        uploadRespond.CommunityPostEmails[0].From.length &&
-                        el.IsShow
+                        !uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length
                       "
-                      :class="[
-                        el.IsShow ? 'text-selected' : '',
-                        el.IsMalicious ? 'malicious-style' : ''
-                      ]"
                     >
-                      <span class="share-setting-text"
-                        >From: {{ uploadRespond.CommunityPostEmails[0].From }}</span
-                      >
-                      <br />
+                      To: {{ uploadRespond.to && uploadRespond.to.toString() }}
                     </div>
                     <div
-                      v-else-if="
-                        uploadRespond.CommunityPostEmails[0] &&
-                        uploadRespond.CommunityPostEmails[0].From.length &&
-                        !el.IsShow
-                      "
-                      id="from-hidden-by-owner"
-                      :class="[
-                        el.IsShow ? 'text-selected' : '',
-                        el.IsMalicious ? 'malicious-style' : ''
-                      ]"
+                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                      v-else-if="uploadRespond.isToHidden && !!uploadRespond.to.length"
                     >
-                      <span class="share-setting-text">From: hidden by owner</span>
+                      To: Hidden by owner
                     </div>
                     <div
-                      v-for="(el, ind) of shareSettings.receiverInfo"
-                      :key="ind + el.Id"
-                      :id="'receiver-' + ind + el.Id"
+                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-if="
-                        uploadRespond.CommunityPostEmails[0] &&
-                        uploadRespond.CommunityPostEmails[0].To.length &&
-                        el.IsShow
+                        !uploadRespond.isCcHidden && uploadRespond.cc && !!uploadRespond.cc.length
                       "
-                      :class="[
-                        el.IsShow ? 'text-selected' : '',
-                        el.IsMalicious ? 'malicious-style' : ''
-                      ]"
-                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
                     >
-                      <span class="share-setting-text"
-                        >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
-                      >
+                      CC: {{ uploadRespond.cc && uploadRespond.cc.toString() }}
                     </div>
                     <div
-                      v-else-if="
-                        uploadRespond.CommunityPostEmails[0] &&
-                        uploadRespond.CommunityPostEmails[0].To.length &&
-                        !el.IsShow
-                      "
-                      :class="[
-                        el.IsShow ? 'text-selected' : '',
-                        el.IsMalicious ? 'malicious-style' : ''
-                      ]"
-                      id="to-hidden-by-owner"
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                      v-else-if="uploadRespond.isCcHidden && !!uploadRespond.cc.length"
                     >
-                      <span class="share-setting-text">To: hidden by owner</span>
+                      CC: Hidden by owner
                     </div>
                     <div
-                      v-for="(el, ind) of shareSettings.receiverInfo"
-                      :key="ind + el.Id"
-                      :id="'cc-' + ind + el.Id"
+                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-if="
-                        uploadRespond.CommunityPostEmails[0] &&
-                        uploadRespond.CommunityPostEmails[0].Cc.length &&
-                        el.IsShow
+                        !uploadRespond.isCcHidden && uploadRespond.bcc && !!uploadRespond.bcc.length
                       "
-                      :class="[
-                        el.IsShow ? 'text-selected' : '',
-                        el.IsMalicious ? 'malicious-style' : ''
-                      ]"
-                      style="padding: 0 2px; border-bottom: 1px solid transparent;"
                     >
-                      <span class="share-setting-text"
-                        >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
-                      >
+                      CC: {{ uploadRespond.bcc && uploadRespond.bcc.toString() }}
                     </div>
                     <div
-                      v-else-if="
-                        uploadRespond.CommunityPostEmails[0] &&
-                        uploadRespond.CommunityPostEmails[0].Cc.length &&
-                        !el.IsShow
-                      "
-                      id="cc-hidden-by-owner"
-                      :class="[
-                        el.IsShow ? 'text-selected' : '',
-                        el.IsMalicious ? 'malicious-style' : ''
-                      ]"
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                      v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length"
                     >
-                      <span class="share-setting-text">CC: hidden by owner</span>
+                      BCC: Hidden by owner
                     </div>
-                    <div
-                      :id="uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10)"
-                      v-if="uploadRespond.CommunityPostEmails[0]"
-                    >
-                      Date:
-                      {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
-                      {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
+                    <div>
+                      Date: {{ uploadRespond.sentTime }}
                       <br />
                     </div>
                   </div>
                 </div>
+                <div id="last-preview-body" class="preview-body">
+                  <k-shadow-frame
+                    id="last-preview-body-shadow-root"
+                    :content="uploadRespond.body"
+                  />
+                </div>
                 <div
-                  id="last-preview-body"
-                  class="preview-body"
-                  v-html="uploadRespond.CommunityPostEmails[0].Body"
-                ></div>
-                <div
-                  id="last-preview-footer"
+                  id="preview-footer-container-att"
                   class="preview-footer"
-                  v-if="shareSettings.attachments && shareSettings.attachments.length"
+                  v-if="!!uploadRespond.attachments.length"
                 >
                   <h2>Attachments</h2>
                   <div class="attachment-wrapper">
                     <div
-                      v-for="(att, ind) of shareSettings.attachments"
-                      :key="ind + att.Id"
-                      :id="'attachment-' + att.Name"
+                      v-for="(att, ind) of uploadRespond.attachments"
+                      :key="ind + att.id"
+                      :id="'attachment-' + att.name"
                       class="attachment red-attach"
                       :class="[
-                        att.IsMalicious ? 'red-attach' : '',
-                        !att.IsMalicious ? 'blue-attach' : '',
-                        att.IsShow ? 'clean-attach' : ''
+                        att.isFlagged ? 'red-attach' : '',
+                        !att.isFlagged ? 'blue-attach' : '',
+                        !att.isHidden ? 'clean-attach' : ''
                       ]"
                     >
-                      <div v-if="att.IsMalicious" class="attach-icon red-icon">
+                      <div v-if="att.isFlagged" class="attach-icon red-icon">
                         <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
                       </div>
                       <div v-else class="attach-icon blue-icon">
                         <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                       </div>
-                      <div v-if="att.IsShow" class="file-name max-char">{{ att.Name }}</div>
-                      <div v-if="!att.IsShow" class="file-name max-char">hidden by owner</div>
+                      <v-tooltip bottom opacity="1" z-index="9999">
+                        <template v-slot:activator="{ on }">
+                          <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
+                            {{ att.name }}
+                          </div>
+                          <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
+                            hidden by owner
+                          </div>
+                        </template>
+                        <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
+                      </v-tooltip>
                     </div>
                   </div>
                 </div>
@@ -701,266 +640,93 @@
                   </v-icon>
                 </div>
                 <div :class="{ 'minify-part': !filterOpened }" class="filter-part">
-                  <div
-                    v-for="(s, ind) of shareSettings.allHeader"
-                    :key="ind + s.Id"
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                  >
+                  <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/header-all.svg" />
                     </div>
-                    <v-switch
-                      :id="'attachment-switch-' + s.Id"
-                      v-if="shareSettings.allHeader && shareSettings.allHeader.length < 1"
-                      :disabled="true"
-                      :value="false"
-                    ></v-switch>
-                    <v-switch
-                      :id="'all-header-switch-' + s.Id"
-                      v-else
-                      v-model="allHeader"
-                    ></v-switch>
+                    <v-switch v-model="allHeader" @change="headerValChange"></v-switch>
                     <label v-if="filterOpened">All Header</label>
                   </div>
                   <div
-                    v-for="(s, ind) of shareSettings.subject"
-                    :key="ind + s.Id"
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
-                    v-if="s && s.Id && s.Value"
+                    v-if="uploadRespond.from"
                   >
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
-                    <v-switch :id="'subject-switch-' + s.Id" v-model="s.IsShow"></v-switch>
-                    <label v-if="filterOpened">Subject</label>
-                    <v-menu v-model="subChevron" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': subChevron }"
-                            v-on="on"
-                            @click="subChevron = !subChevron"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            Flagged Subject
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <v-switch
+                      v-model="uploadRespond.isFromHidden"
+                      @change="fromValChange"
+                    ></v-switch>
+                    <label v-if="filterOpened">From</label>
                   </div>
                   <div
-                    v-for="(s, ind) of shareSettings.senderInfo"
-                    :key="ind + s.Id"
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
-                    v-if="s && s.Id && s.Value"
+                    v-if="!!uploadRespond.to.length"
                   >
                     <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                      <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
-                    <v-switch :id="'sender-switch-' + s.Id" v-model="s.IsShow"></v-switch>
-                    <label v-if="filterOpened">Sender Info</label>
-                    <v-menu v-model="fromChevron" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': fromChevron }"
-                            v-on="on"
-                            @click="fromChevron = !fromChevron"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            Flagged Sender
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <v-switch v-model="uploadRespond.isToHidden" @change="toValChange"></v-switch>
+                    <label v-if="filterOpened">To</label>
                   </div>
                   <div
-                    v-for="(s, ind) of shareSettings.receiverInfo"
-                    :key="ind + s.Id"
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
-                    v-if="s && s.Id && s.Value"
+                    v-if="!!uploadRespond.cc.length"
                   >
                     <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/user-in.svg" />
+                      <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
-                    <v-switch :id="'receiver-switch-' + s.Id" v-model="s.IsShow"></v-switch>
-                    <label v-if="filterOpened">Receiver Info</label>
-                    <v-menu v-model="toChevron" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': toChevron }"
-                            v-on="on"
-                            @click="toChevron = !toChevron"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            Flagged Sender
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                    <v-switch v-model="uploadRespond.isCcHidden" @change="ccValChange"></v-switch>
+                    <label v-if="filterOpened">CC</label>
+                  </div>
+                  <div
+                    :class="{ 'minify-switch': !filterOpened }"
+                    class="switch-row"
+                    v-if="!!uploadRespond.bcc.length"
+                  >
+                    <div class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    </div>
+                    <v-switch v-model="uploadRespond.isBccHidden" @change="bccValChange"></v-switch>
+                    <label v-if="filterOpened">BCC</label>
                   </div>
                 </div>
-                <div
-                  :class="{ 'minify-part': !filterOpened }"
-                  class="filter-part pt-4"
-                  id="share-settings-links"
-                >
-                  <div
-                    v-for="(s, ind) of shareSettings.allLinks"
-                    :key="ind + s.Id"
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                  >
+                <div :class="{ 'minify-part': !filterOpened }" class="filter-part pt-5">
+                  <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/link.svg" />
                     </div>
-                    <v-switch
-                      :id="'link-switch-' + s.Id"
-                      v-if="shareSettings.links && shareSettings.links.length < 1"
-                      :disabled="true"
-                      :value="false"
-                    ></v-switch>
-                    <v-switch :id="'all-links-switch-' + s.Id" v-else v-model="allLinks"></v-switch>
+                    <v-switch v-model="allLinks" @change="allUrlsValChange"></v-switch>
                     <label v-if="filterOpened">All Links</label>
                   </div>
                   <div
-                    v-for="(s, ind) of shareSettings.links"
-                    :key="ind + s.Id"
+                    v-for="(s, ind) of uploadRespond.urls"
+                    :key="ind + s.url + 'url'"
+                    :id="ind + s.url + 'url'"
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
                   >
-                    <div class="img-wrapper">
+                    <div v-if="!s.isFlagged" class="img-wrapper">
                       <img src="../../assets/img/filter-icons/link.svg" />
                     </div>
-                    <v-switch
-                      :id="'phishing-switch-' + s.Id"
-                      class="phishing-switchs"
-                      v-model="s.IsShow"
-                    ></v-switch>
-                    <label v-if="filterOpened">“{{ s.Name }}”</label>
-                    <v-menu v-model="linkChevron[ind]" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': linkChevron[ind] }"
-                            v-on="on"
-                            @click="linkChevron[ind] = !linkChevron[ind]"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
-                            </div>
-                            Phishing Link
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-                </div>
-
-                <div :class="{ 'minify-part': !filterOpened }" class="filter-part pt-5">
-                  <div
-                    v-for="(s, ind) of shareSettings.allAttachments"
-                    :key="ind + s.Id"
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                  >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/attachment-all.svg" />
-                    </div>
-                    <v-switch
-                      :id="'attachment-switch-' + s.Id"
-                      v-if="shareSettings.attachments && shareSettings.attachments.length < 1"
-                      :disabled="true"
-                      :value="false"
-                    ></v-switch>
-                    <v-switch
-                      :id="'all-attachments-switch-' + s.Id"
-                      v-else
-                      v-model="allAttachments"
-                    ></v-switch>
-                    <label v-if="filterOpened">All Attachments</label>
-                  </div>
-                  <div
-                    v-for="(s, ind) of shareSettings.attachments"
-                    :key="ind + s.Id"
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                  >
-                    <div v-if="s.Type === 'Attachment'" class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/attach-file.svg" />
-                    </div>
                     <div v-else class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/attach-red.svg" />
+                      <img src="../../assets/img/filter-icons/link-red.svg" />
                     </div>
-                    <v-switch :id="'attach-switch-' + s.Id" v-model="s.IsShow"></v-switch>
-                    <label v-if="filterOpened">{{ s.Name }}</label>
+                    <v-switch
+                      :id="'attach-switch-' + s.url"
+                      v-model="s.isHidden"
+                      @change="urlSwitchChange(s, ind)"
+                    ></v-switch>
+                    <v-tooltip bottom opacity="1" z-index="9999">
+                      <template v-slot:activator="{ on }">
+                        <label v-on="on" v-if="filterOpened">{{ s.url }}</label>
+                      </template>
+                      <span>{{ s.url }}</span>
+                    </v-tooltip>
                     <v-menu v-model="attcChevron[ind]" right offset-x transition="scale-transition">
                       <template v-slot:activator="{ on }">
                         <v-btn class="chevron-btn-menu" icon>
@@ -973,18 +739,81 @@
                         </v-btn>
                       </template>
                       <v-list>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = false">
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="s.isFlagged = false"
+                          @change="urlSwitchChange(s, ind)"
+                        >
                           <v-list-item-title class="mal-list-row">
                             <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.IsMalicious">mdi-check</v-icon>
+                              <v-icon v-if="!s.isFlagged">mdi-check</v-icon>
                             </div>
                             None
                           </v-list-item-title>
                         </v-list-item>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.IsMalicious = true">
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="s.isFlagged = true"
+                          @change="urlSwitchChange(s, ind)"
+                        >
                           <v-list-item-title class="mal-list-row">
                             <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.IsMalicious">mdi-check</v-icon>
+                              <v-icon v-if="s.isFlagged">mdi-check</v-icon>
+                            </div>
+                            Malicious File
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </div>
+                </div>
+
+                <div :class="{ 'minify-part': !filterOpened }" class="filter-part pt-5">
+                  <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
+                    <div class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/header-all.svg" />
+                    </div>
+                    <v-switch v-model="allAttachments" @change="allAttachmentsValChange"></v-switch>
+                    <label v-if="filterOpened">All Attachments</label>
+                  </div>
+                  <div
+                    v-for="(s, ind) of uploadRespond.attachments"
+                    :key="ind + s.name"
+                    :class="{ 'minify-switch': !filterOpened }"
+                    class="switch-row"
+                  >
+                    <div v-if="!s.isFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/attach-file.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/attach-red.svg" />
+                    </div>
+                    <v-switch :id="'attach-switch-' + s.name" v-model="s.isHidden"></v-switch>
+                    <label v-if="filterOpened">{{ s.name }}</label>
+                    <v-menu v-model="urls[ind]" right offset-x transition="scale-transition">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="chevron-btn-menu" icon>
+                          <v-icon
+                            :class="{ 'chevron-down': urls[ind] }"
+                            v-on="on"
+                            @click="urls[ind] = !urls[ind]"
+                            >mdi-chevron-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.isFlagged = false">
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="!s.isFlagged">mdi-check</v-icon>
+                            </div>
+                            None
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.isFlagged = true">
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="s.isFlagged">mdi-check</v-icon>
                             </div>
                             Malicious File
                           </v-list-item-title>
@@ -1012,17 +841,12 @@
               id="anonym-check"
             ></v-checkbox>
             <div id="last-preview-post" class="post-wrapper">
-              <v-expansion-panels
-                :multiple="false"
-                v-model="panel"
-                :disabled="disabled"
-                class="mb-4"
-              >
+              <v-expansion-panels :multiple="false" v-model="panel" class="mb-4">
                 <v-expansion-panel>
                   <div class="threat-sharing-content">
                     <div class="ts-header">
                       <div id="last-preview-title" class="ts-title">
-                        <span v-if="uploadRespond.Title">{{ uploadRespond.Title }}</span>
+                        <span v-if="uploadRespond.subject">{{ uploadRespond.subject }}</span>
                         <span v-else>Post Title</span>
                       </div>
                       <div class="flex-grow-1"></div>
@@ -1062,39 +886,31 @@
                     <div class="ts-user-comp">
                       <div id="last-prev-user-comp" class="ts-user-comp-detail">
                         by
-                        <a v-if="userGetter.fullName" href="#" class="pl-1 pr-1">
-                          <span v-if="!isAnonym">{{ userGetter.fullName }}</span>
+                        <a v-if="uploadRespond.from" href="#" class="pl-1 pr-1">
+                          <span v-if="!isAnonym">{{ uploadRespond.from }}</span>
                           <span v-else>Anonymous</span>
                         </a>
-                        <a v-else href="#" class="pl-1 pr-1">{{ userGetter.fullName }}</a> from
-                        <a
-                          v-if="userGetter.currentCompany && userGetter.currentCompany.name"
-                          :id="userGetter.currentCompany.name"
-                          href="#"
-                          class="pl-1 pr-1"
-                        >
-                          <span v-if="!isAnonym">{{ userGetter.currentCompany.name }}</span>
+                        <a v-else href="#" class="pl-1 pr-1">{{ uploadRespond.from }}</a> from
+                        <a v-if="currentCompany" :id="currentCompany" href="#" class="pl-1 pr-1">
+                          <span v-if="!isAnonym">{{ currentCompany }}</span>
                           <span v-else>Anonymous</span>
                         </a>
                         <a v-else class="pl-1 pr-1">Company Name</a> on
                         <a class="pl-1 pr-1">
-                          {{
-                            (postDetail && postDetail.Data && postDetail.Data.CommunityName) ||
-                            communityName
-                          }}
+                          {{ currentCommunityName }}
                         </a>
                       </div>
                       <div class="ts-user-date">
-                        <span>{{ date }}</span>
+                        <span>{{ uploadRespond.sentTime }}</span>
                       </div>
                     </div>
                     <div class="ts-body">
                       <v-clamp
-                        v-if="uploadRespond.Description"
-                        :id="uploadRespond.Description"
+                        v-if="uploadRespond.description"
+                        :id="uploadRespond.description"
                         autoresize
                         :max-lines="3"
-                        >{{ uploadRespond.Description }}
+                        >{{ uploadRespond.description }}
                       </v-clamp>
                       <v-clamp v-else autoresize :max-lines="3">
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -1108,32 +924,24 @@
                         <v-btn text x-small icon color="grey">
                           <v-icon>mdi-thumb-up</v-icon>
                         </v-btn>
-                        <span class="ts-action-counter">{{ uploadRespond.LikeCount }}</span>
+                        <span class="ts-action-counter">0</span>
                       </div>
                       <div class="ts-message mt-1">
                         <v-btn text x-small icon color="grey">
                           <v-icon>mdi-message-reply-text</v-icon>
                         </v-btn>
-                        <span class="ts-action-counter">{{ uploadRespond.CommentCount }}</span>
+                        <span class="ts-action-counter">0</span>
                       </div>
                       <div class="ts-harmful mt-1">
-                        <v-btn v-if="uploadRespond.HarmfulItems" text x-small icon color="red">
+                        <v-btn v-if="maliciousCount" text x-small icon color="red">
                           <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
                         </v-btn>
                         <span class="ts-actions">{{ maliciousCount }} harmful items</span>
                       </div>
-                      <!-- solution field missing for now
-                    <div class="ts-success mt-1">
-                      <v-btn text x-small icon color="grey">
-                        <v-icon style="font-size: 14px" color="#43a047">mdi-check-circle</v-icon>
-                      </v-btn>
-                      <span class="ts-actions">Solution</span>
-                    </div>
-                    -->
                       <div class="flex-grow-1"></div>
                       <div class="ts-tags">
                         <v-btn
-                          v-if="shareSettings.attachments && shareSettings.attachments.length"
+                          v-if="uploadRespond.attachments && uploadRespond.attachments.length"
                           text
                           small
                           rounded
@@ -1141,13 +949,13 @@
                           class="tag-btn text-none"
                           id="post-inc-last-prev-attach"
                         >
-                          <span v-if="shareSettings.attachments.length === 1">Attachment</span>
-                          <span v-else-if="shareSettings.attachments.length > 1">Attachments</span>
+                          <span v-if="uploadRespond.attachments.length === 1">Attachment</span>
+                          <span v-else-if="uploadRespond.attachments.length > 1">Attachments</span>
                         </v-btn>
                         <v-btn
                           v-if="
-                            uploadRespond.CommunityPostCategory &&
-                            uploadRespond.CommunityPostCategory.length
+                            uploadRespond.CategoryResourceIdArray &&
+                            uploadRespond.CategoryResourceIdArray.length
                           "
                           text
                           small
@@ -1155,14 +963,14 @@
                           outlined
                           class="tag-btn ml-1 text-none"
                           id="incident-badge"
-                          >{{ uploadRespond.CommunityPostCategory[0] }}
+                          >{{ findCategory(uploadRespond.CategoryResourceIdArray[0]) }}
                         </v-btn>
                         <v-btn
                           v-if="
-                            uploadRespond.CommunityPostCategory &&
-                            uploadRespond.CommunityPostCategory.length > 1 &&
-                            shareSettings.attachments &&
-                            !shareSettings.attachments.length
+                            uploadRespond.CategoryResourceIdArray &&
+                            uploadRespond.CategoryResourceIdArray.length > 1 &&
+                            uploadRespond.attachments &&
+                            !uploadRespond.attachments.length
                           "
                           text
                           small
@@ -1170,17 +978,17 @@
                           outlined
                           class="tag-btn ml-1 text-none"
                           id="incident-badge"
-                          >{{ uploadRespond.CommunityPostCategory[1] }}
+                          >{{ findCategory(uploadRespond.CategoryResourceIdArray[1]) }}
                         </v-btn>
                         <div style="position: relative;">
                           <v-btn
                             v-if="
-                              (shareSettings.attachments &&
-                                shareSettings.attachments.length &&
-                                uploadRespond.CommunityPostCategory &&
-                                uploadRespond.CommunityPostCategory.length > 1) ||
-                              (uploadRespond.CommunityPostCategory &&
-                                uploadRespond.CommunityPostCategory.length > 2)
+                              (uploadRespond.attachments &&
+                                uploadRespond.attachments.length &&
+                                uploadRespond.CategoryResourceIdArray &&
+                                uploadRespond.CategoryResourceIdArray.length > 1) ||
+                              (uploadRespond.CategoryResourceIdArray &&
+                                uploadRespond.CategoryResourceIdArray.length > 2)
                             "
                             text
                             small
@@ -1192,41 +1000,49 @@
                             id="post-inc-last-prev-with-tooltip"
                           >
                             <span
-                              v-if="shareSettings.attachments && shareSettings.attachments.length"
-                              >+{{ uploadRespond.CommunityPostCategory.length - 1 }}</span
+                              v-if="uploadRespond.attachments && uploadRespond.attachments.length"
+                              >+{{ uploadRespond.CategoryResourceIdArray.length - 1 }}</span
                             >
                             <span v-else
-                              >+{{ uploadRespond.CommunityPostCategory.length - 2 }}</span
+                              >+{{ uploadRespond.CategoryResourceIdArray.length - 2 }}</span
                             >
                           </v-btn>
                           <div
                             v-if="
-                              uploadRespond.CommunityPostCategory &&
-                              uploadRespond.CommunityPostCategory.length >= 1
+                              uploadRespond.CategoryResourceIdArray &&
+                              uploadRespond.CategoryResourceIdArray.length >= 1
                             "
                             v-show="hoverTool"
                             class="tooltip-wrapper"
                           >
                             <div
-                              v-if="shareSettings.attachments && shareSettings.attachments.length"
+                              v-if="uploadRespond.attachments && uploadRespond.attachments.length"
                             >
-                              <span>{{ uploadRespond.CommunityPostCategory[1] }}</span>
-                              <span>{{ uploadRespond.CommunityPostCategory[2] }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[1])
+                              }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[2])
+                              }}</span>
                             </div>
                             <div
                               v-if="
-                                uploadRespond.CommunityPostCategory &&
-                                uploadRespond.CommunityPostCategory.length === 1
+                                uploadRespond.CategoryResourceIdArray &&
+                                uploadRespond.CategoryResourceIdArray.length === 1
                               "
                             >
-                              <span>{{ uploadRespond.CommunityPostCategory[1] }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[1])
+                              }}</span>
                             </div>
                             <div
                               v-else-if="
-                                shareSettings.attachments && !shareSettings.attachments.length
+                                uploadRespond.attachments && !uploadRespond.attachments.length
                               "
                             >
-                              <span>{{ uploadRespond.CommunityPostCategory[2] }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[2])
+                              }}</span>
                             </div>
                           </div>
                         </div>
@@ -1250,68 +1066,54 @@
                     <v-tabs-items v-model="tab">
                       <v-tab-item>
                         <div id="last-detail-parts" class="detail-parts">
-                          <!-- <p class="detail-black">Header</p> -->
                           <p
                             v-if="
-                              shareSettings.senderInfo &&
-                              shareSettings.senderInfo[0] &&
-                              shareSettings.senderInfo[0].IsShow &&
-                              shareSettings.senderInfo[0].IsMalicious
+                              uploadRespond.subject &&
+                              !uploadRespond.isSubjectHidden &&
+                              uploadRespond.isSubjectFlagged
                             "
                             class="detail-black"
                           >
                             Header
                           </p>
                           <p
-                            v-if="
-                              shareSettings.senderInfo &&
-                              shareSettings.senderInfo[0] &&
-                              shareSettings.senderInfo[0].IsShow &&
-                              shareSettings.senderInfo[0].IsMalicious
-                            "
-                            :id="uploadRespond.CommunityPostEmails[0].From"
+                            v-if="uploadRespond.from && uploadRespond.isFromFlagged"
+                            :id="uploadRespond.from"
                             class="detail-black detail-red"
                           >
-                            From: {{ uploadRespond.CommunityPostEmails[0].From }}
+                            From:
+                            {{
+                              !uploadRespond.isFromHidden ? uploadRespond.from : 'hidden by owner'
+                            }}
                           </p>
-                          <!-- <p v-else class="detail-black detail-red">
-                          From: hidden by owner
-                        </p>-->
                           <p
                             v-if="
-                              shareSettings.senderInfo &&
-                              shareSettings.senderInfo[0] &&
-                              shareSettings.senderInfo[0].IsShow &&
-                              shareSettings.senderInfo[0].IsMalicious
+                              uploadRespond && uploadRespond.from && uploadRespond.isFromFlagged
                             "
                             id="harmful-sender"
                             class="detail-black"
                           >
                             The sender email address has been reported as harmful email sender.
                           </p>
-                          <!--
-                          <p class="detail-black">
-                            The sender email address has been reported as harmful email sender.
-                          </p>
-                        --></div>
+                        </div>
                         <div
-                          v-if="shareSettings && shareSettings.links && shareSettings.links.length"
+                          v-if="uploadRespond && uploadRespond.urls && uploadRespond.urls.length"
                           class="detail-parts"
                           id="last-part-detail-links"
                         >
                           <p
-                            v-if="shareSettings.links.some((a) => a.IsShow && a.IsMalicious)"
+                            v-if="uploadRespond.urls.some((a) => !a.isHidden && a.isFlagged)"
                             class="detail-black"
                           >
-                            {{ shareSettings.links.some((a) => a.IsShow && a.IsMalicious) }}Body
+                            {{ uploadRespond.urls.some((a) => !a.isHidden && a.isFlagged) }}Body
                           </p>
                           <p
-                            v-for="(el, ind) of shareSettings.links"
-                            :key="ind + el.Id"
-                            v-if="el && el.Type == 'Link' && el.IsShow && el.IsMalicious"
+                            v-for="(el, ind) of uploadRespond.urls"
+                            :key="ind + el.url"
+                            v-if="el && !el.isHidden && el.isFlagged"
                             class="detail-black detail-red"
                           >
-                            Link: {{ el.Value }}
+                            Link: {{ el.url }}
                             <br />
                             <span style="color: #000 !important;"
                               >This link has been reported as a phising link</span
@@ -1321,21 +1123,21 @@
                         <div id="last-part-preview-footer" class="detail-parts">
                           <div
                             class="preview-footer"
-                            v-if="shareSettings.attachments && shareSettings.attachments.length"
+                            v-if="uploadRespond.attachments && uploadRespond.attachments.length"
                           >
                             <h2>Attachments</h2>
                             <div class="attachment-wrapper">
                               <div
-                                v-for="(att, ind) of shareSettings.attachments"
-                                :key="ind + att.Id"
+                                v-for="(att, ind) of uploadRespond.attachments"
+                                :key="ind + att.name"
                                 class="attachment red-attach"
-                                :id="'attachment-wrapper-' + att.Id"
+                                :id="'attachment-wrapper-' + att.name"
                                 :class="[
-                                  att.IsMalicious ? 'red-attach' : '',
-                                  !att.IsMalicious ? 'blue-attach' : ''
+                                  att.isFlagged ? 'red-attach' : '',
+                                  !att.isFlagged ? 'blue-attach' : ''
                                 ]"
                               >
-                                <div v-if="att.IsMalicious" class="attach-icon red-icon">
+                                <div v-if="att.isFlagged" class="attach-icon red-icon">
                                   <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
                                 </div>
                                 <div v-else class="attach-icon blue-icon">
@@ -1344,42 +1146,42 @@
                                   >
                                 </div>
                                 <div
-                                  :id="'name-' + att.Id"
-                                  v-if="att.IsShow"
+                                  :id="'name-' + att.name"
+                                  v-if="!att.isHidden"
                                   class="file-name max-char"
                                 >
-                                  {{ att.Name }}
+                                  {{ att.name }}
                                 </div>
                                 <div
-                                  :id="'hidden-' + att.Id"
-                                  v-if="!att.IsShow"
+                                  :id="'hidden-' + att.name"
+                                  v-if="att.isHidden"
                                   class="file-name max-char"
                                 >
                                   hidden by owner
                                 </div>
                                 <p
                                   id="harmful-attachment"
-                                  v-if="att.IsMalicious"
+                                  v-if="att.isFlagged"
                                   class="detail-black"
                                   style="position: absolute; max-width: 185px; bottom: -38px;"
                                 >
-                                  The sender email address has been reported as harmful email
-                                  sender.
+                                  <!--The sender email address has been reported as harmful email
+                                  sender.-->
                                 </p>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div id="post-last-detail" class="detail-discovery">
+                        <div class="detail-discovery pb-4">
                           <div
-                            id="post-last-discovery-empty"
+                            :id="'detail-discovery-empty'"
                             v-if="uploadRespond.DiscoveryAndDetection"
                             class="disc-header"
                           >
                             Discovery and Detection
                           </div>
                           <p
-                            id="post-last-discovery"
+                            :id="'detail-discovery'"
                             v-if="uploadRespond.DiscoveryAndDetection"
                             class="discovery-p"
                           >
@@ -1389,217 +1191,166 @@
                             Impact Range
                           </div>
                           <div
-                            id="post-last-affect"
+                            :id="'detail-effect-area'"
                             v-if="uploadRespond.AffectArea"
                             class="impact-row"
                           >
                             <div class="impact-left">Effect area:</div>
                             <div
-                              v-for="(a, ind) of uploadRespond.AffectArea"
-                              :key="ind + a"
                               style="width: max-content; padding-right: 13px;"
                               class="impact-right"
                             >
-                              {{ a }}
+                              {{ uploadRespond.AffectArea.toString() }}
                             </div>
                           </div>
-                          <div id="post-last-scope" v-if="uploadRespond.Scope" class="impact-row">
+                          <div
+                            :id="'detail-scope' + uploadRespond.Scope"
+                            v-if="uploadRespond.Scope"
+                            class="impact-row"
+                          >
                             <div class="impact-left">Scope:</div>
                             <div class="impact-right">{{ uploadRespond.Scope }}</div>
                           </div>
                         </div>
                       </v-tab-item>
                       <v-tab-item>
-                        <div class="preview-header pt-0">
-                          <h2
-                            v-for="(el, ind) of shareSettings.subject"
-                            :key="ind + el.Id"
-                            v-if="
-                              uploadRespond.CommunityPostEmails[0] &&
-                              uploadRespond.CommunityPostEmails[0].Subject.length &&
-                              el.IsShow
-                            "
-                            :id="'subject-post-last-' + el.Id"
-                            style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                            :class="[el.IsMalicious ? 'malicious-style' : '']"
-                          >
-                            Subject: {{ uploadRespond.CommunityPostEmails[0].Subject }}
-                          </h2>
-                          <h2
-                            v-else-if="
-                              uploadRespond.CommunityPostEmails[0] &&
-                              uploadRespond.CommunityPostEmails[0].Subject.length &&
-                              !el.IsShow
-                            "
-                            :id="'hidden-subj-' + el.Id"
-                            style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                            :class="[el.IsMalicious ? 'malicious-style' : '']"
-                          >
-                            Subject: hidden by owner
-                          </h2>
-                          <div class="header-info pb-5">
-                            <span
-                              v-for="(el, ind) of shareSettings.senderInfo"
-                              :key="ind + el.Id"
-                              :id="'sender' + el.Id"
-                              v-if="
-                                uploadRespond.CommunityPostEmails[0] &&
-                                uploadRespond.CommunityPostEmails[0].From.length &&
-                                el.IsShow
-                              "
-                              :class="[el.IsMalicious ? 'malicious-style' : '']"
-                            >
-                              From: {{ uploadRespond.CommunityPostEmails[0].From }}
-                              <br />
-                            </span>
-                            <span
-                              v-else-if="
-                                uploadRespond.CommunityPostEmails[0] &&
-                                uploadRespond.CommunityPostEmails[0].From.length &&
-                                !el.IsShow
-                              "
-                              :id="'hidden-sender' + uploadRespond.CommunityPostEmails[0].From"
-                              >From: hidden by owner</span
-                            >
-                            <div
-                              v-for="(el, ind) of shareSettings.receiverInfo"
-                              :key="ind + el"
-                              v-if="
-                                uploadRespond.CommunityPostEmails[0] &&
-                                uploadRespond.CommunityPostEmails[0].To.length &&
-                                el.IsShow
-                              "
-                              :id="'receiver-info' + uploadRespond.CommunityPostEmails[0].To"
+                        <div class="mail-preview">
+                          <div class="preview-header pt-0">
+                            <h2
                               style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                              v-if="!uploadRespond.isSubjectHidden && !!uploadRespond.subject"
                             >
-                              <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                                >To: {{ uploadRespond.CommunityPostEmails[0].To }}</span
-                              >
-                              <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                                <template v-slot:activator="{ on }">
-                                  <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                    >mdi-alert
-                                  </v-icon>
-                                </template>
-                                <span>This email address has been reported as a threat source</span>
-                              </v-tooltip>
-                            </div>
-                            <div
-                              v-else-if="
-                                uploadRespond.CommunityPostEmails[0] &&
-                                uploadRespond.CommunityPostEmails[0].To.length &&
-                                !el.IsShow
-                              "
-                              :id="'hidden-to' + uploadRespond.CommunityPostEmails[0].To"
+                              Subject: {{ uploadRespond.subject }}
+                            </h2>
+                            <h2
                               style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                              v-else-if="uploadRespond.isSubjectHidden && !!uploadRespond.subject"
                             >
-                              <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                                >To: hidden by owner</span
+                              Subject: Hidden by owner
+                            </h2>
+                            <div class="header-info pb-5">
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
                               >
-                              <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                                <template v-slot:activator="{ on }">
-                                  <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                    >mdi-alert
-                                  </v-icon>
-                                </template>
-                                <span>This email address has been reported as a threat source</span>
-                              </v-tooltip>
-                            </div>
-                            <div
-                              v-for="(el, ind) of shareSettings.receiverInfo"
-                              :key="ind + el"
-                              :id="'cc' + uploadRespond.CommunityPostEmails[0].Cc"
-                              v-if="
-                                uploadRespond.CommunityPostEmails[0] &&
-                                uploadRespond.CommunityPostEmails[0].Cc.length &&
-                                el.IsShow
-                              "
-                              style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                            >
-                              <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                                >CC: {{ uploadRespond.CommunityPostEmails[0].Cc }}</span
-                              >
-                              <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                                <template v-slot:activator="{ on }">
-                                  <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                    >mdi-alert
-                                  </v-icon>
-                                </template>
-                                <span>This email address has been reported as a threat source</span>
-                              </v-tooltip>
-                            </div>
-                            <div
-                              v-else-if="
-                                uploadRespond.CommunityPostEmails[0] &&
-                                uploadRespond.CommunityPostEmails[0].Cc.length &&
-                                !el.IsShow
-                              "
-                              :id="'hidden-cc' + uploadRespond.CommunityPostEmails[0].Cc"
-                              style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                            >
-                              <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                                >CC: hidden by owner</span
-                              >
-                              <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
-                                <template v-slot:activator="{ on }">
-                                  <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                                    >mdi-alert
-                                  </v-icon>
-                                </template>
-                                <span>This email address has been reported as a threat source</span>
-                              </v-tooltip>
-                            </div>
-                            <div id="last-step-dates" v-if="uploadRespond.CommunityPostEmails[0]">
-                              Date:
-                              {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(0, 10) }}
-                              {{ uploadRespond.CommunityPostEmails[0].ReceivedDate.slice(11, 16) }}
-                              <br />
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          id="last-step-preview-body"
-                          class="preview-body"
-                          v-html="uploadRespond.CommunityPostEmails[0].Body"
-                        ></div>
-                        <div
-                          id="last-step-preview-footer"
-                          class="preview-footer"
-                          v-if="shareSettings.attachments && shareSettings.attachments.length"
-                        >
-                          <h2>Attachments</h2>
-                          <div class="attachment-wrapper">
-                            <div
-                              v-for="(att, ind) of shareSettings.attachments"
-                              :key="ind + att.Id"
-                              class="attachment red-attach"
-                              :id="'attachment' + att.Id"
-                              :class="[
-                                att.IsMalicious ? 'red-attach' : '',
-                                !att.IsMalicious ? 'blue-attach' : ''
-                              ]"
-                            >
-                              <div v-if="att.IsMalicious" class="attach-icon red-icon">
-                                <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                              </div>
-                              <div v-else class="attach-icon blue-icon">
-                                <v-icon color="white" style="font-size: 20px;"
-                                  >mdi-paperclip</v-icon
-                                >
+                                From: {{ uploadRespond.from }}
                               </div>
                               <div
-                                :id="'last-prev' + att.Name"
-                                v-if="att.IsShow"
-                                class="file-name max-char"
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-else-if="uploadRespond.isFromHidden && !!uploadRespond.from"
                               >
-                                {{ att.Name }}
+                                From: Hidden by owner
                               </div>
-                              <div v-if="!att.IsShow" class="file-name max-char">
-                                hidden by owner
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-if="
+                                  !uploadRespond.isToHidden &&
+                                  uploadRespond.to &&
+                                  !!uploadRespond.to.length
+                                "
+                              >
+                                To: {{ uploadRespond.to && uploadRespond.to.toString() }}
+                              </div>
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-else-if="uploadRespond.isToHidden && !!uploadRespond.to.length"
+                              >
+                                To: Hidden by owner
+                              </div>
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-if="
+                                  !uploadRespond.isCcHidden &&
+                                  uploadRespond.cc &&
+                                  !!uploadRespond.cc.length
+                                "
+                              >
+                                CC: {{ uploadRespond.cc && uploadRespond.cc.toString() }}
+                              </div>
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-else-if="uploadRespond.isCcHidden && !!uploadRespond.cc.length"
+                              >
+                                CC: Hidden by owner
+                              </div>
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-if="
+                                  !uploadRespond.isCcHidden &&
+                                  uploadRespond.bcc &&
+                                  !!uploadRespond.bcc.length
+                                "
+                              >
+                                CC: {{ uploadRespond.bcc && uploadRespond.bcc.toString() }}
+                              </div>
+                              <div
+                                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                                v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length"
+                              >
+                                BCC: Hidden by owner
+                              </div>
+                              <div>
+                                Date: {{ uploadRespond.sentTime }}
+                                <br />
+                              </div>
+                            </div>
+                          </div>
+                          <div id="last-preview-body-step-5" class="preview-body">
+                            <k-shadow-frame
+                              id="last-preview-body-shadow-root"
+                              :content="uploadRespond.body"
+                            />
+                          </div>
+                          <div
+                            id="preview-footer-container-att-step-5"
+                            class="preview-footer"
+                            v-if="!!uploadRespond.attachments.length"
+                          >
+                            <h2>Attachments</h2>
+                            <div class="attachment-wrapper">
+                              <div
+                                v-for="(att, ind) of uploadRespond.attachments"
+                                :key="ind + att.id"
+                                :id="'attachment-' + att.name"
+                                class="attachment red-attach"
+                                :class="[
+                                  att.isFlagged ? 'red-attach' : '',
+                                  !att.isFlagged ? 'blue-attach' : '',
+                                  !att.isHidden ? 'clean-attach' : ''
+                                ]"
+                              >
+                                <div v-if="att.isFlagged" class="attach-icon red-icon">
+                                  <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
+                                </div>
+                                <div v-else class="attach-icon blue-icon">
+                                  <v-icon color="white" style="font-size: 20px;"
+                                    >mdi-paperclip</v-icon
+                                  >
+                                </div>
+                                <v-tooltip bottom opacity="1" z-index="9999">
+                                  <template v-slot:activator="{ on }">
+                                    <div
+                                      v-on="on"
+                                      v-if="!att.isHidden"
+                                      class="file-name max-char pl-2"
+                                    >
+                                      {{ att.name }}
+                                    </div>
+                                    <div
+                                      v-on="on"
+                                      v-if="att.isHidden"
+                                      class="file-name max-char pl-2"
+                                    >
+                                      hidden by owner
+                                    </div>
+                                  </template>
+                                  <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
+                                </v-tooltip>
                               </div>
                             </div>
                           </div>
                         </div>
+
                         <div id="last-step-preview-buttons" class="preview-buttons">
                           <v-btn id="last-step-useful-btn">
                             <v-icon>mdi-thumb-up</v-icon>
@@ -1613,65 +1364,6 @@
                             <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
                             Comments (0)
                           </v-btn>
-                        </div>
-                        <div
-                          id="last-step-prev-comments"
-                          class="preview-comments"
-                          :class="{ 'open-comments': commentOpened }"
-                        >
-                          <div v-if="comments.length">
-                            <div v-for="(com, ind) of comments" :key="ind" class="comment-row">
-                              <div class="user-wrapper">
-                                <span class="username">{{ com.name }}</span>
-                                from
-                                <span class="company-name">{{ com.company }}</span>
-                                <p class="the-comment">{{ com.comment }}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div id="last-step-comments" v-if="seeComments" class="hidden-comments">
-                            <!-- Post Incident Dummy Comments
-                          <div class="comment-row">
-                            <div class="user-wrapper">
-                              <span class="username">User Name</span>
-                              from
-                              <span class="company-name">Company Name</span>
-                              <p class="the-comment">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                              </p>
-                            </div>
-                          </div>
-                          <div class="comment-row">
-                            <div class="user-wrapper">
-                              <span class="username">User Name</span>
-                              from
-                              <span class="company-name">Company Name</span>
-                              <p class="the-comment">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                              </p>
-                            </div>
-                          </div>
-                          <div class="comment-row">
-                            <div class="user-wrapper">
-                              <span class="username">User Name</span>
-                              from
-                              <span class="company-name">Company Name</span>
-                              <p class="the-comment">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                                eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                              </p>
-                            </div>
-                          </div>
-                          --></div>
-                          <!--<div
-                          v-if="!seeComments"
-                          class="see-all-comments"
-                          @click="seeComments = true"
-                        >
-                          <span>See all 3 comments</span>
-                        </div>-->
                         </div>
                       </v-tab-item>
                     </v-tabs-items>
@@ -1762,15 +1454,109 @@ import VClamp from 'vue-clamp'
 import {
   getSelectedEmailPreview,
   searchNotifiedMail,
-  uploadEmlOrMsg
+  uploadEmlOrMsg,
+  listThreatCategories,
+  createCommunityPost,
+  updateCommunityPost
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import KShadowFrame from '../KShadowFrame'
+
+Vue.customElement('k-shadow-frame', KShadowFrame, {
+  shadow: true,
+  shadowCss: `
+ @import url('https://fonts.googleapis.com/css?family=Material+Icons');
+ @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
+ @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
+
+.malicious-style,
+.malicious-link {
+  border-bottom: 1px solid #bb2a45 !important;
+  border-color: #bb2a45 !important;
+  background-color: #f3e1e5 !important;
+  color: #bb2a45 !important;
+
+  .share-setting-text {
+    text-decoration: none !important;
+    text-decoration-color: transparent !important;
+    text-decoration-style: unset !important;
+    border: none !important;
+    border-bottom: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+  }
+}
+[data-title]:hover:after {
+    opacity: 1;
+    transition: all 0.1s ease 0.5s;
+    visibility: visible;
+}
+[data-title]:after {
+    content: attr(data-title);
+    position: absolute;
+    padding: 5px 16px 5px 36px;
+    bottom: -1.6em;
+    left: 100%;
+    white-space: nowrap;
+    opacity: 0;
+    z-index: 99999;
+    visibility: hidden;
+    border-radius: 4px;
+    background: #6d6d6d !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 12px;
+    text-decoration:none;
+}
+[data-title] {
+    position: relative;
+}
+.malicious-style {
+
+  color: #bb2a45 !important;
+  text-decoration: underline !important;
+}
+
+.malicious-icon {
+  margin: 4px;
+  font-size: 18px !important;
+  color: #bb2a45 !important;
+  caret-color: #bb2a45 !important;
+}
+
+.red-malicious-alert {
+  border: unset !important;
+  border-color: transparent !important;
+  border-bottom-color: transparent !important;
+  border-image: none !important;
+  border-image-width: 0 !important;
+  color: #bb2a45 !important;
+  caret-color: #bb2a45 !important;
+  text-decoration: unset !important;
+  text-decoration-color: transparent !important;
+  font-size: 18px !important;
+  margin-top: -2px;
+  padding-right: 3px;
+  height: 16px !important;
+  overflow: hidden;
+}
+
+.red-malicious-alert::before {
+  border: unset !important;
+}
+ `
+})
 
 export default {
   components: {
     VClamp
   },
   props: {
+    editItem: {
+      type: Object,
+      required: false
+    },
     updatePost: {
       type: String,
       required: false
@@ -1785,14 +1571,42 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      userGetter: 'auth/userGetter'
-    })
+    maliciousCount() {
+      let count = 0
+      if (this.uploadRespond.isFromFlagged) {
+        count = count + 1
+      }
+      if (this.uploadRespond.isSubjectFlagged) {
+        count = count + 1
+      }
+      if (this.uploadRespond.isToFlagged) {
+        count = count + 1
+      }
+      if (this.uploadRespond.isCcFlagged) {
+        count = count + 1
+      }
+      if (this.uploadRespond.isBccFlagged) {
+        count = count + 1
+      }
+      count =
+        count +
+        this.uploadRespond.urls.reduce((acc, item) => {
+          if (item.isFlagged) acc = acc + 1
+          return acc
+        }, 0)
+      count =
+        count +
+        this.uploadRespond.attachments.reduce((acc, item) => {
+          if (item.isFlagged) acc = acc + 1
+          return acc
+        }, 0)
+      return count
+    }
   },
   data: () => ({
+    currentCompany: null,
     listData: [],
     step: 1,
-    maliciousCount: 0,
     search: '',
     searchIncident: '',
     items: [],
@@ -1866,13 +1680,18 @@ export default {
     },
     descRule: {
       default: (v) => !!v || 'Description is required',
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) ||
-        'Description should be between 5 - 300 characters long',
+      required: (v) => {
+        if (!v) return true
+        return (v && v.length <= 300) || 'Description should not be more than 300 characters long'
+      },
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      empty: (v) => {
+        if (!v) return true
+
+        return (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      }
     },
     explanationRules: {
       default: (v) => !!v || 'Explanation is required',
@@ -1929,6 +1748,7 @@ export default {
     toChevron: false,
     linkChevron: [],
     attcChevron: [],
+    urls: [],
     msgEmlFile: null,
     toggle: false,
     panel: 0,
@@ -1955,18 +1775,139 @@ export default {
     }*/
   },
   methods: {
-    uploadFile(e) {
-      this.msgEmlFile = e.target.files || e.dataTransfer.files
-      uploadEmlOrMsg(this.msgEmlFile[0])
+    findCategory(id) {
+      switch (id) {
+        case 'Ps0SSyl7rVNe':
+          return 'Malicious'
+        case 'bEuAD1pdbRXF':
+          return 'Non-Malicious'
+        case 'NGLCc9UCxJvw':
+          return 'Phishing'
+        default:
+          return ''
+      }
+    },
+    urlSwitchChange(url) {
+      let els = document
+        .getElementById('last-preview-body-shadow-root')
+        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+      /*if (!els.length) {
+        els = document
+          .getElementById('last-preview-body-shadow-root')
+          .shadowRoot.querySelectorAll('[src="' + url.url + '"]')
+      }*/
+      if (els && els.length) {
+        for (let i = 0, l = els.length; i < l; i++) {
+          let el = els[i]
+          el.setAttribute('target', '_blank')
+          if (url.isHidden) {
+            el.innerHTML = 'hidden by owner'
+          } else {
+            el.innerHTML = url.url
+          }
+          if (url.isFlagged) {
+            const el = els[i]
+            el.setAttribute('target', '_blank')
+            el.setAttribute('data-title', 'This link has been reported as a phishing')
+            /*if (!a.IsShow) {
+                if (!el.hasChildNodes()) {
+                  el.innerHTML = 'hidden by owner'
+                } else {
+                  el.lastChild.innerHTML = 'hidden by owner'
+                }
+                el.setAttribute('href', '#')
+              }*/
+            //if (a) {
+            el.classList.add('malicious-style')
+            const iEl = document.createElement('i')
+            iEl.className +=
+              'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+            el.appendChild(iEl)
+            // }
+          } else {
+            const el = els[i]
+            el.classList.remove('malicious-style')
+          }
+        }
+      }
+      let hiddenEls = document.getElementsByClassName(url.url)
+      if (hiddenEls && hiddenEls.length) {
+        for (let i = 0, l = hiddenEls.length; i < l; i++) {
+          let hiddenEl = hiddenEls[i]
+          hiddenEl.setAttribute('target', '_blank')
+          if (url.isHidden) {
+            hiddenEl.innerHTML = 'hidden by owner'
+            hiddenEl.setAttribute('href', '#')
+          } else {
+            hiddenEl.innerHTML = url.url
+            hiddenEl.setAttribute('href', url.url)
+          }
+          if (url.isFalgged) {
+            hiddenEl.classList.add('malicious-link')
+            let iEl = document.createElement('span')
+            iEl.className +=
+              'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+            hiddenEl.appendChild(iEl)
+          }
+        }
+      }
+    },
+    allUrlsValChange(val) {
+      this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
+        item.isHidden = val
+        this.urlSwitchChange(item)
+        return { ...item, isHidden: val }
+      })
+    },
+    allAttachmentsValChange(val) {
+      this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {
+        return { ...item, isHidden: val }
+      })
+    },
+    headerValChange(val) {
+      this.uploadRespond.isFromHidden = val
+      this.uploadRespond.isToHidden = val
+      this.uploadRespond.isCcHidden = val
+      this.uploadRespond.isBccHidden = val
+    },
+    fromValChange(val) {},
+    toValChange(val) {},
+    ccValChange(val) {},
+    bccValChange(val) {},
+    getListThreatCategories() {
+      listThreatCategories()
         .then((response) => {
-          this.uploadRespond = response.data.data
+          this.categories = response.data.data
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting details of uploaded file'
+            message: 'Error when getting threat categories'
           })
         })
+    },
+    uploadFile(e) {
+      this.msgEmlFile = e.target.files || e.dataTransfer.files
+      const extensionName = this.msgEmlFile[0].name.slice(-3)
+      if (extensionName != 'msg' && extensionName != 'eml') {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: 'Error when getting details of uploaded file'
+        })
+      } else {
+        uploadEmlOrMsg(this.msgEmlFile[0])
+          .then((response) => {
+            this.selectedEmail = response.data.data.from
+            this.uploadRespond = response.data.data
+            this.uploadRespond.body = unescape(response.data.data.body)
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting details of uploaded file'
+            })
+          })
+      }
     },
     searchNotifiedMail() {
       const payload = {
@@ -1988,10 +1929,29 @@ export default {
         })
     },
     getSelectedEmailPreview(selectedItem) {
+      let _this = this
       getSelectedEmailPreview(selectedItem.resourceId)
         .then((response) => {
           const { data } = response
-          this.uploadRespond = data.data
+          _this.uploadRespond = data.data
+          if (_this.editItem) {
+            debugger
+            _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
+            _this.uploadRespond.Title = _this.editItem.title
+            _this.uploadRespond.Description = _this.editItem.description
+            _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection
+            _this.uploadRespond.Scope = _this.editItem.scope
+            _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray
+            _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName
+            _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName
+            _this.uploadRespond.PostedTime = _this.editItem.postedTime
+            _this.uploadRespond.LikeCount = _this.editItem.likeCount
+            _this.uploadRespond.CommentCount = _this.editItem.commentCount
+            _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount
+            _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
+            _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
+            _this.uploadRespond.CommunityName = this.editItem.communityName
+          }
           //this.listData = data.data.results
         })
         .catch((error) => {
@@ -2036,14 +1996,10 @@ export default {
         return false
       } else {
         this.step++
-        const refThis = this
-        setTimeout(function () {
-          refThis.previewHideShow()
-        }, 0)
       }
     },
     onBeforeLastStep() {
-      if (!this.allFiltersClosed()) {
+      /*if (!this.allFiltersClosed()) {
         this.createInc.createUser = this.$store.state.auth.user.fullName
         this.createInc.createCompany = this.$store.state.auth.user.currentCompany.name
         this.createInc.onPreview = true
@@ -2052,42 +2008,74 @@ export default {
         setTimeout(function () {
           refThis.previewHideShow()
         }, 0)
-      }
+      }*/
+      this.step++
     },
     onFinish() {
-      const newSettings = []
-      newSettings.push(this.shareSettings.senderInfo[0])
-      newSettings.push(this.shareSettings.subject[0])
-      newSettings.push(this.shareSettings.receiverInfo[0])
-      this.shareSettings.allHeader[0].IsShow = this.allHeader
-      newSettings.push(this.shareSettings.allHeader[0])
-      this.shareSettings.allLinks[0].IsShow = this.allLinks
-      newSettings.push(this.shareSettings.allLinks[0])
-      this.shareSettings.allAttachments[0].IsShow = this.allAttachments
-      newSettings.push(this.shareSettings.allAttachments[0])
-      for (let a of this.shareSettings.attachments) {
-        newSettings.push(a)
+      //CommunityResourceId: this.$route.params.id,
+      const payload = {
+        CommunityResourceId: 'Fu4VXjXl6nxM',
+        Title: this.uploadRespond.Title,
+        Description: this.uploadRespond.Description,
+        CategoryResourceIdArray: this.uploadRespond.CategoryResourceIdArray,
+        DiscoveryAndDetection: this.uploadRespond.DiscoveryAndDetection,
+        AffectArea: this.uploadRespond.AffectArea,
+        Scope: this.uploadRespond.Scope,
+        IsAnonymous: this.isAnonym,
+        EmailPreview: {
+          body: this.uploadRespond.body,
+          from: this.uploadRespond.from,
+          isFromHidden: this.uploadRespond.isFromHidden,
+          isFromFlagged: this.uploadRespond.isFromFlagged,
+          subject: this.uploadRespond.subject,
+          isSubjectHidden: this.uploadRespond.isSubjectHidden,
+          isSubjectFlagged: this.uploadRespond.isSubjectFlagged,
+          to: this.uploadRespond.to,
+          isToHidden: this.uploadRespond.isToHidden,
+          isToFlagged: this.uploadRespond.isToFlagged,
+          cc: this.uploadRespond.cc,
+          isCcHidden: this.uploadRespond.isCcHidden,
+          isCcFlagged: this.uploadRespond.isCcFlagged,
+          bcc: this.uploadRespond.bcc,
+          isBccHidden: this.uploadRespond.isBccHidden,
+          isBccFlagged: this.uploadRespond.isBccFlagged,
+          sentTime: this.uploadRespond.sentTime,
+          urls: this.uploadRespond.urls,
+          attachments: this.uploadRespond.attachments,
+          emailTexts: []
+        }
       }
-      for (let b of this.shareSettings.links) {
-        newSettings.push(b)
-      }
-      this.uploadRespond.IsPreview = true
-      this.uploadRespond.CommunityPostEmails[0].body = null
-      if (
-        this.uploadRespond.AffectArea != null &&
-        typeof this.uploadRespond.AffectArea !== 'string'
-      ) {
-        this.uploadRespond.AffectArea = this.uploadRespond.AffectArea.join(',')
-      }
-      this.uploadRespond.CommunityPostEmails[0].ShareSettings = newSettings
-      this.uploadRespond.IsAnonymous = this.isAnonym
 
-      this.$store.dispatch('threadSharing/publishPostIncident', this.uploadRespond).then(() => {
-        this.updateRightCol()
-      })
-      this.createInc.onPreview = false
-      this.$store.commit('common/SET_IS_LOADING', false, { root: true })
-      this.$emit('closePostIncident')
+      if (this.editItem) {
+        //CommunityResourceId: this.$route.params.id,
+        updateCommunityPost('Fu4VXjXl6nxM', payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Community has been updated'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when updated a community post'
+            })
+          })
+      } else {
+        createCommunityPost(payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Community has been created'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when creating a new community post'
+            })
+          })
+      }
     },
     updateTags() {
       /*
@@ -2122,104 +2110,17 @@ export default {
       this.uploadRespond = {}
       this.msgEmlFile = null
       this.shareSettings = {}
-      this.$store.dispatch('threadSharing/postAnIncident', false)
-    },
-    handleIncident(val) {
-      if (
-        val &&
-        val.CommunityPostEmails &&
-        val.CommunityPostEmails[0] &&
-        val.CommunityPostEmails[0].ShareSettings.length
-      ) {
-        this.uploadRespond = val
-
-        const ShareSettings = {
-          senderInfo: val.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'SenderInfo'
-          ),
-          subject: val.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Subject'),
-          receiverInfo: val.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'ReceiverInfo'
-          ),
-          attachments: val.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'Attachment'
-          ),
-          links: val.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Link'),
-          allHeader: val.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'AllHeader'),
-          allLinks: val.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'AllLinks'),
-          allAttachments: val.CommunityPostEmails[0].ShareSettings.filter(
-            (f) => f.Type === 'AllAttachments'
-          )
-        }
-        if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function () {
-            for (let a of ShareSettings.links) {
-              var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
-              // val.CommunityPostEmails[0].Body.includes(`a[href="${a.Value}"]`);
-              for (var i = 0, l = els.length; i < l; i++) {
-                var el = els[i]
-                el.setAttribute('target', '_blank')
-                if (!a.IsShow) {
-                  el.innerHTML = 'hidden by owner'
-                  el.setAttribute('href', '#')
-                }
-                if (a.IsMalicious) {
-                  el.classList.add('malicious-link')
-                  var iEl = document.createElement('span')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
-                }
-              }
-            }
-          }, 0)
-        }
-        if (val.AffectArea != null && val.AffectArea.length > 1) {
-          this.uploadRespond.AffectArea = val.AffectArea.split(',')
-        }
-        this.shareSettings = ShareSettings
-      }
-    },
-    previewHideShow() {
-      if (this.uploadRespond && this.uploadRespond.CommunityPostEmails[0]) {
-        this.uploadRespond.CommunityPostEmails[0].Body = unescape(
-          this.uploadRespond.CommunityPostEmails[0].Body
-        )
-      }
-      if (this.shareSettings.links && this.shareSettings.links.length) {
-        for (let a of this.shareSettings.links) {
-          var els = document.querySelectorAll('[href="' + decodeURI(a.Value) + '"]')
-          for (var i = 0, l = els.length; i < l; i++) {
-            var el = els[i]
-            el.setAttribute('target', '_blank')
-            if (!a.IsShow) {
-              el.innerHTML = 'hidden by owner'
-              el.setAttribute('href', '#')
-            }
-            if (a.IsMalicious) {
-              el.classList.add('malicious-link')
-              var iEl = document.createElement('span')
-              iEl.className +=
-                'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-              el.appendChild(iEl)
-            }
-          }
-        }
-      }
     },
     stepTwoDisabled() {
       if (
         this.uploadRespond &&
-        this.uploadRespond.Description &&
-        this.uploadRespond.Description.length >= 5 &&
-        this.uploadRespond.Description.length <= 300 &&
-        this.regexChar(this.uploadRespond.Description) &&
         this.uploadRespond.Title &&
         this.uploadRespond.Title.length >= 4 &&
         this.uploadRespond.Title.length <= 80 &&
         this.regexChar(this.uploadRespond.Title) &&
-        this.uploadRespond.CommunityPostCategory &&
-        this.uploadRespond.CommunityPostCategory.length > 0
+        this.uploadRespond.CategoryResourceIdArray &&
+        this.uploadRespond.CategoryResourceIdArray &&
+        this.uploadRespond.CategoryResourceIdArray.length > 0
       ) {
         return true
       } else {
@@ -2270,6 +2171,7 @@ export default {
       }, 300)
     },
     allFiltersClosed() {
+      /*
       if (
         this.shareSettings.subject[0].IsShow === false &&
         this.shareSettings.senderInfo[0].IsShow === false &&
@@ -2284,30 +2186,19 @@ export default {
         return true
       } else {
         return false
-      }
+      }*/
     }
   },
   mounted() {
+    if (this.editItem) {
+      this.selectedEmail = this.editItem.communityPostResourceId
+      let val = { resourceId: '4pDtxLYSG0mb' }
+      this.getSelectedEmailPreview(val)
+    }
     this.searchNotifiedMail()
-    // be
-    let businessCats = []
-    for (let cat of this.businessCategories) {
-      businessCats.push(cat.IDESC)
-    }
-    this.items = businessCats
-    if (this.postDetail && this.postDetail.Data) {
-      this.isAnonym = this.postDetail.Data.IsAnonymous
-    }
-
-    // If user wants to edit the post
-    if (this.updatePost && this.updatePost.length) {
-      const postDetailObj = {
-        communId: this.selectedCommunity.id || localStorage.getItem('communityId'),
-        companyId: this.userGetter.userCompany.id || localStorage.getItem('companyId'),
-        communPostId: this.updatePost
-      }
-      this.$store.dispatch('threadSharing/getPostDetail', postDetailObj)
-    }
+    this.getListThreatCategories()
+    this.currentCompany = localStorage.getItem('companyName')
+    this.currentCommunityName = localStorage.getItem('communityName')
   }
 }
 </script>
@@ -3322,43 +3213,6 @@ export default {
     max-width: 100%;
   }
 
-  .text-selected {
-    border-radius: 1px !important;
-    background-color: #d1e9fc !important;
-    border-bottom: 1px solid #2196f3 !important;
-    color: rgba(0, 0, 0, 0.87) !important;
-    width: max-content;
-    max-width: 100%;
-  }
-
-  .clean-link {
-    padding: 0 2px !important;
-    border-radius: 1px !important;
-    border-bottom: 1px solid #2196f3 !important;
-    color: #2196f3 !important;
-  }
-
-  .selected-link {
-    background-color: #d1e9fc !important;
-  }
-
-  .phishing-link {
-    background-color: #f3e1e5 !important;
-    border-bottom: 1px solid #bb2a45 !important;
-    color: #bb2a45 !important;
-    width: max-content;
-  }
-
-  .clean-attach {
-    background-color: #f1f8fe;
-    border: 1px solid transparent !important;
-  }
-
-  .malicious-attach {
-    background-color: #f3e1e5;
-    border: 1px solid transparent !important;
-  }
-
   .v-input > .v-input__control > .v-text-field__details {
     // error messages.
   }
@@ -3639,29 +3493,6 @@ export default {
   }
 
   // Details css
-  .detail-parts:first-child {
-    margin-top: 24px !important;
-  }
-
-  .detail-parts {
-    margin-top: 16px;
-
-    .detail-black {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      margin-bottom: 4px !important;
-    }
-
-    .detail-red {
-      color: rgba(219, 37, 37, 0.87) !important;
-    }
-  }
 
   .detail-discovery {
     margin-top: 24px;
@@ -4366,46 +4197,6 @@ input[type=file]::-webkit-file-upload-button {
     }
   }
 
-  .mal-list-wrapper {
-    .mal-list-row {
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-
-      .mal-icon-wrapper {
-        height: 35px;
-        width: 35px;
-        padding-top: 5px;
-      }
-    }
-  }
-
-  .mal-list-wrapper:hover,
-  .mal-list-wrapper:active,
-  .mal-list-wrapper:focus {
-    background-color: #f2f2f2;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .malicious-style,
-  .malicious-link {
-    border-bottom: 1px solid #bb2a45 !important;
-    border-color: #bb2a45 !important;
-    background-color: #f3e1e5 !important;
-    color: #bb2a45 !important;
-
-    .share-setting-text {
-      text-decoration: none !important;
-      text-decoration-color: transparent !important;
-      text-decoration-style: unset !important;
-      border: none !important;
-      border-bottom: transparent !important;
-      border-bottom-color: transparent !important;
-      border-image: none !important;
-      border-image-width: 0 !important;
-    }
-  }
-
   .v-btn--icon.v-size--default.chevron-btn-menu {
     height: 30px !important;
     width: 30px !important;
@@ -4558,6 +4349,106 @@ input[type=file]::-webkit-file-upload-button {
       display: flex;
       justify-content: space-between;
     }
+  }
+}
+.malicious-style,
+.malicious-link {
+  border-bottom: 1px solid #bb2a45 !important;
+  border-color: #bb2a45 !important;
+  background-color: #f3e1e5 !important;
+  color: #bb2a45 !important;
+
+  .share-setting-text {
+    text-decoration: none !important;
+    text-decoration-color: transparent !important;
+    text-decoration-style: unset !important;
+    border: none !important;
+    border-bottom: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+  }
+}
+
+.text-selected {
+  border-radius: 1px !important;
+  background-color: #d1e9fc !important;
+  border-bottom: 1px solid #2196f3 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  width: max-content;
+  max-width: 100%;
+}
+
+.clean-link {
+  padding: 0 2px !important;
+  border-radius: 1px !important;
+  border-bottom: 1px solid #2196f3 !important;
+  color: #2196f3 !important;
+}
+
+.selected-link {
+  background-color: #d1e9fc !important;
+}
+
+.phishing-link {
+  background-color: #f3e1e5 !important;
+  border-bottom: 1px solid #bb2a45 !important;
+  color: #bb2a45 !important;
+  width: max-content;
+}
+
+.clean-attach {
+  background-color: #f1f8fe;
+  border: 1px solid transparent !important;
+}
+
+.malicious-attach {
+  background-color: #f3e1e5;
+  border: 1px solid transparent !important;
+}
+
+.mal-list-wrapper {
+  .mal-list-row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+
+    .mal-icon-wrapper {
+      height: 35px;
+      width: 35px;
+      padding-top: 5px;
+    }
+  }
+}
+
+.mal-list-wrapper:hover,
+.mal-list-wrapper:active,
+.mal-list-wrapper:focus {
+  background-color: #f2f2f2;
+  transition: all 0.2s ease-in-out;
+}
+
+.detail-parts:first-child {
+  margin-top: 24px !important;
+}
+
+.detail-parts {
+  margin-top: 16px;
+
+  .detail-black {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px !important;
+  }
+
+  .detail-red {
+    color: rgba(219, 37, 37, 0.87) !important;
   }
 }
 </style>
