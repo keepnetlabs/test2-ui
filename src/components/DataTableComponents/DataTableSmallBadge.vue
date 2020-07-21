@@ -32,6 +32,7 @@
             :full-width="col.fullWidth"
             :listeners="on"
             size="mini"
+            className="unrendered"
             :text="`+${unRenderedBadgeCount}`"
           />
         </template>
@@ -124,5 +125,29 @@ export default {
       margin-right: 5px;
     }
   }
+  .small-badge__container .unrendered {
+    border-radius: 4px !important;
+  }
+}
+
+.k-badge.k-badge__sizes--small.v-btn--contained {
+  border-radius: 4px !important;
+}
+.incident-wrapper .k-badge__sizes--small.v-btn:not(.v-btn--round).v-size--default,
+.incident-wrapper .v-btn--icon.v-size--default {
+  height: auto !important;
+}
+
+.items-wrapper .incident-wrapper .v-autocomplete .v-input__slot {
+  height: auto !important;
+}
+
+.incident-wrapper .k-badge.unrendered.v-btn:not(.v-btn--round).v-size--default,
+.incident-wrapper .v-btn--icon.v-size--default {
+  height: 24px !important;
+}
+.incident-wrapper .table-settings .v-btn--icon.v-size--default {
+  height: 36px !important;
+  width: 60px !important;
 }
 </style>
