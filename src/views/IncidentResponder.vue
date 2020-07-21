@@ -1,5 +1,5 @@
 <template>
-  <div class="incident-wrapper">
+  <div class="incident-responder-parent">
     <div class="incident-responder">
       <app-dialog
         size="big"
@@ -430,7 +430,7 @@
                 v-else
                 :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
                 v-for="item in scope.row.matchingPlaybooks"
-                class="incident-wrapper__link"
+                class="incident-responder-parent__link"
                 >{{ item.name }}</router-link
               >
             </template>
@@ -1256,7 +1256,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.incident-wrapper {
+.incident-responder-parent {
   .incident-responder {
     ::v-deep .edit-labels {
       font-size: 20px;
