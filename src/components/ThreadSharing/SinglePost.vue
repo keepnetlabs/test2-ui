@@ -798,7 +798,11 @@
                 </div>
               </div>-->
               <div v-if="comments && comments.length" class="hidden-comments">
-                <div v-for="(com, ind) of comments" :key="ind + com.resourceId" class="comment-row">
+                <div
+                  v-for="(com, ind) of seeComments ? comments : comments.slice(0, 1)"
+                  :key="ind + com.resourceId"
+                  class="comment-row"
+                >
                   <div class="user-wrapper w-100" v-if="!com.isEdit">
                     <div class="d-flex align-center w-100">
                       <div style="width: 80%;">
