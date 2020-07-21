@@ -1935,7 +1935,6 @@ export default {
           const { data } = response
           _this.uploadRespond = data.data
           if (_this.editItem) {
-            debugger
             _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
             _this.uploadRespond.Title = _this.editItem.title
             _this.uploadRespond.Description = _this.editItem.description

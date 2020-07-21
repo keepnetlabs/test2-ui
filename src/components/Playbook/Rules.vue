@@ -362,7 +362,6 @@ export default {
       })
     },
     matchingPopupClick(match) {
-      debugger
       this.selectedMatch = match
       this.showMatchingModal = true
       const payload = {
