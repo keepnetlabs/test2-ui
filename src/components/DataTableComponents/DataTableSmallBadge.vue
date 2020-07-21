@@ -138,7 +138,7 @@ export default {
   height: auto !important;
 }
 
-.items-wrapper .incident-wrapper .v-autocomplete .v-input__slot {
+.incident-wrapper .row-edit-div .v-autocomplete .v-input__slot {
   height: auto !important;
 }
 
