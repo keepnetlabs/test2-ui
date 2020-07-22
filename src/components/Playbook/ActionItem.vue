@@ -788,6 +788,7 @@ export default {
             this.targetUserType[j - 1] = this.targetUserType[j]
             this.tarUsers[j - 1] = this.tarUsers[j]
             this.tarUsers[j] = null
+            this.targetUserType[j] = null
           }
         }
       }
