@@ -528,6 +528,8 @@ export default {
         }
       }
 
+      debugger
+
       const payload = {
         name: this.name,
         description: this.description,

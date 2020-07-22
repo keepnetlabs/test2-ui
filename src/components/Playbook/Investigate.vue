@@ -63,7 +63,7 @@
             deletable-chips
             auto-select-first
             :return-object="false"
-            autocomplete="disabled"
+            autocomplete="off"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
           >

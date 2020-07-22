@@ -166,9 +166,7 @@
             :items="[]"
             chips
             deletable-chips
-            :search-input.sync="tagsearch"
-            @keyup.tab="updateTags"
-            @paste="updateTags"
+            :rules="[(v) => v.length > 0 || 'Required']"
             outlined
             class="hide-caret"
             multiple
@@ -682,8 +680,8 @@ export default {
 
      */
       if (oldValue.val === 'notify') {
-        this.targetUserType.splice(index, 1)
-        this.tarUsers.splice(index, 1)
+        this.targetUserType[index] = null
+        this.tarUsers[index] = null
       }
       if (value.val === 'investigate') {
         this.playbookActionInvestigations[index] = {
@@ -789,6 +787,7 @@ export default {
           if (j > index) {
             this.targetUserType[j - 1] = this.targetUserType[j]
             this.tarUsers[j - 1] = this.tarUsers[j]
+            this.tarUsers[j] = null
           }
         }
       }
