@@ -207,6 +207,7 @@
             dense
             deletable-chips
             auto-select-first
+            :return-object="false"
             persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
@@ -284,7 +285,12 @@
           />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'investigate'" md="12">
-          <investigate :index="index" :ref="`refInvestigate-${index}`" :act="act" />
+          <investigate
+            :investigate-data="playbookActionInvestigations[index]"
+            :index="index"
+            :ref="`refInvestigate-${index}`"
+            :act="act"
+          />
         </v-col>
       </v-row>
     </v-form>
@@ -473,8 +479,6 @@ export default {
       this.$refs.refForm.validate()
       this.getSelectedIntegrations()
     },
-    tempFonk(data) {},
-
     validateIntegrations(v) {
       return this.getSelectedIntegrations() || 'Required'
     },
@@ -542,10 +546,6 @@ export default {
       }
     },
     getSelectedIntegrations() {
-      console.log(
-        'this.analysisEngines.filter((item) => item.selected).length',
-        this.analysisEngines.filter((item) => item.selected).length
-      )
       return this.analysisEngines.filter((item) => item.selected).length
     },
     checkAllDataChecked(index, item) {
@@ -661,17 +661,6 @@ export default {
           })
         })
     },
-    updateTags() {
-      /*
-      this.$nextTick(() => {
-        this.tags.push(...this.tagsearch.split(','))
-        this.$nextTick(() => {
-          this.tagsearch = ''
-        })
-      })
-
-       */
-    },
     setAvailableItems(value, oldValue, index) {
       this.actionsValues[index] = value
       this.actions[index] = value
@@ -685,9 +674,44 @@ export default {
           }
         })
       })
+      /*
       if (oldValue.val === 'notify') {
         this.targetUserType[index] = null
         this.tarUsers[index] = null
+      }
+
+     */
+      if (oldValue.val === 'notify') {
+        this.targetUserType.splice(index, 1)
+        this.tarUsers.splice(index, 1)
+      }
+      if (value.val === 'investigate') {
+        this.playbookActionInvestigations[index] = {
+          isCreatedByAnalyzer: false,
+          scanTypes: ['Outlook'],
+          filters: [],
+          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          targetUserType: 'AllUsers',
+          targetUsers: [],
+          actionType: 'Notify',
+          actionNotifyTargetUserType: 'Reporter',
+          actionNotifyTargetUsers: [],
+          emailTempleditedPlaybookActionAnalyzersteId: 1
+        }
       }
       this.$forceUpdate()
     },
@@ -710,6 +734,35 @@ export default {
         }
       })
 
+      if (nextAvailableAction.val === 'investigate') {
+        this.playbookActionInvestigations[this.actions.length] = {
+          isCreatedByAnalyzer: false,
+          scanTypes: ['Outlook'],
+          filters: [],
+          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          targetUserType: 'AllUsers',
+          targetUsers: [],
+          actionType: 'Notify',
+          actionNotifyTargetUserType: 'Reporter',
+          actionNotifyTargetUsers: [],
+          emailTempleditedPlaybookActionAnalyzersteId: 1
+        }
+      }
+
       this.actions.push(nextAvailableAction)
 
       const length = this.actions.length
@@ -727,18 +780,29 @@ export default {
           item.disabled = false
         }
       })
-      const newIndex = this.actions.findIndex((item) => {
-        return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
-      })
 
-      if (newIndex !== -1) {
-        this.actions.splice(index, 1)
-        this.actionsValues.splice(index, 1)
-      }
       if (actionVal === 'notify') {
         this.targetUserType.splice(index, 1)
         this.tarUsers.splice(index, 1)
+      } else {
+        for (let j = 0; j <= this.targetUserType.length - 1; j++) {
+          if (j > index) {
+            this.targetUserType[j - 1] = this.targetUserType[j]
+            this.tarUsers[j - 1] = this.tarUsers[j]
+          }
+        }
       }
+
+      if (actionVal === 'investigate') {
+        this.playbookActionInvestigations.splice(index, 1)
+      } else {
+        for (let count = 0; count <= this.playbookActionInvestigations.length - 1; count++) {
+          if (count > index) {
+            this.playbookActionInvestigations[count - 1] = this.playbookActionInvestigations[count]
+          }
+        }
+      }
+
       if (actionVal === 'tag') {
         this.playbookAction.tags = []
       }
@@ -771,6 +835,14 @@ export default {
         }
         this.analyzeCheckbox = false
         this.analysisEngines = this.analysisEngines.map((item) => ({ ...item, selected: false }))
+      }
+      const newIndex = this.actions.findIndex((item) => {
+        return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
+      })
+
+      if (newIndex !== -1) {
+        this.actions.splice(newIndex, 1)
+        this.actionsValues.splice(index, 1)
       }
     },
     updateAnalysisEngines() {
@@ -901,8 +973,10 @@ export default {
 
        */
       investigations.map((investigation) => {
-        this.addAction('investigate')
+        const lastLength = this.addAction('investigate')
+        this.playbookActionInvestigations[lastLength - 1] = investigation
       })
+      /*
       setTimeout(() => {
         const keys = Object.keys(this.$refs)
         let valueIndex = 0
@@ -915,6 +989,8 @@ export default {
           }
         })
       }, 1000)
+
+       */
     }
   }
 }

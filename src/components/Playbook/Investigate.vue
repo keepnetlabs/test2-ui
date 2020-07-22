@@ -16,7 +16,7 @@
           <v-radio-group
             v-model="investigateData.targetUserType"
             :mandatory="false"
-            @change="investigateData.targetUsers = []"
+            @change="handleRadioGroup"
             row
           >
             <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
@@ -386,6 +386,7 @@ export default {
     },
     investigationDuration(val) {},
     investigateData(val) {
+      /*
       let date = new Date()
       switch (val) {
         case this.act.investigateDurations[0].value:
@@ -413,6 +414,8 @@ export default {
         default:
           break
       }
+
+       */
     },
     searchUserGroup(val) {
       if (val && val.length >= 3) {
@@ -513,6 +516,10 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
+    },
+    handleRadioGroup() {
+      this.investigateData.targetUsers = []
+      this.$forceUpdate()
     }
   },
   created() {

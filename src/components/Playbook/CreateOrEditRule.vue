@@ -542,6 +542,8 @@ export default {
         condition: this.condition
       }
 
+      console.log('payload', payload)
+
       if (ref.$refs.refForm.validate()) {
         updatePlaybook(payload)
           .then((response) => {
@@ -742,9 +744,6 @@ export default {
         })
         .catch((error) => {})
     }
-  },
-  beforeDestroy() {
-    console.log('iam modal')
   },
   created() {
     if (this.playbookId) {
