@@ -2066,7 +2066,7 @@ export default {
           }
         }
         //CommunityResourceId:this.$route.params.id ,
-        debugger
+
         updateCommunityPost(this.$route.params.id || this.editItem.communityResourceId, payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {

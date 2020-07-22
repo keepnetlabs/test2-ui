@@ -47,7 +47,7 @@
                   <v-card style="border-radius: 20px;">
                     <div
                       class="switch-account-wrapper d-flex flex-wrap flex-row"
-                      v-on:click="onClickSelectedAccount(item)"
+                      @click="onClickSelectedAccount(item)"
                     >
                       <div class="switch-account-logo">
                         <v-img
@@ -104,17 +104,14 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
     onClickSelectedAccount(account) {
-      //this.$store.dispatch('common/activateLoader', true)
-      const refThis = this
-      setTimeout(() => {
-        //refThis.$store.dispatch('common/activateLoader', false)
-      }, 1000)
+      console.log('account', account)
       this.setDialogBar(false)
-      this.selectCompany(account)
-      this.$store.dispatch('threadSharing/getCommunities', account.companyId)
-      localStorage.setItem('companyId', account.companyId)
-      localStorage.setItem('companyManager', account.manager)
-      this.$router.go(0) // refresh page after company id changed
+      this.selectCompany(account).then((response) => {
+        localStorage.setItem('companyId', account.companyId)
+        localStorage.setItem('companyManager', account.manager)
+        this.$router.go(0)
+      })
+
       this.search = ''
     }
   },

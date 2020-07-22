@@ -1452,7 +1452,7 @@ export default {
     loadWithDataArray(data, responseParams) {
       this.initialData = data
       this.dataLength = responseParams && responseParams.totalNumberOfRecords
-      this.tableData = data.slice(0, this.rowCount || this.countRow)
+      this.tableData = (data && data.slice(0, this.rowCount || this.countRow)) || []
     }
   }
 }

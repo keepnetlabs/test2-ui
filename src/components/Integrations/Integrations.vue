@@ -13,6 +13,12 @@
         :integrationId="integrationId"
       />
     </v-overlay>
+    <delete-integration-modal
+      :status="showDeleteModal"
+      @handleCloseModal="showDeleteModal = false"
+      @handleDelete="handleDelete($event)"
+      :selected-integration="selectedIntegration"
+    />
     <data-table
       id="integrationsList"
       ref="refIntegrationsList"
@@ -27,9 +33,10 @@
       :empty="tableOptions.empty"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
-      @deleteAction="handleDelete"
+      @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @disable="handleDisable"
+      @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeModalStatus(true)"
       @downloadEvent="exportIntegrationList"
       @sortChangedEvent="sortChangedEvent($event)"
@@ -66,11 +73,11 @@
                     ? 'mdi-minus-circle-outline'
                     : 'mdi-check-circle-outline'
                 }}</v-icon>
-                <span>{{ scope.row.status === 'Active' ? 'Disable' : 'Active' }}</span>
+                <span>{{ scope.row.status === 'Active' ? 'Disable' : 'Enable' }}</span>
               </v-list-item-title>
             </v-list-item>
             <v-list-item class="sub-menu-el">
-              <v-list-item-title @click="handleDelete(scope.row)">
+              <v-list-item-title @click="handleActionDelete(scope.row)">
                 <v-icon class="pr-3">mdi-delete</v-icon>
                 <span>Delete</span>
               </v-list-item-title>
@@ -85,6 +92,7 @@
 <script>
 import DataTable from '../DataTable'
 import NewIntegration from './NewIntegration'
+import DeleteIntegrationModal from './DeleteIntegrationModal'
 import {
   deleteIntegration,
   disableIntegration,
@@ -102,12 +110,15 @@ export default {
   name: 'Integrations',
   components: {
     DataTable,
-    NewIntegration
+    NewIntegration,
+    DeleteIntegrationModal
   },
   data() {
     return {
       integrationId: null,
       tableData: [],
+      showDeleteModal: false,
+      selectedIntegration: {},
       tableOptions: {
         columns: [
           {
@@ -231,6 +242,7 @@ export default {
             message: 'Error when deleting integration!'
           })
         })
+      this.showDeleteModal = false
     },
     handleEdit(row) {
       this.modalStatus = true
@@ -307,12 +319,11 @@ export default {
           this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
           this.$refs.refIntegrationsList.loadWithDataArray(data.results || [], this.bodyData)
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the integrations!'
-          })
-        })
+        .catch((error) => {})
+    },
+    handleActionDelete(row) {
+      this.selectedIntegration = row
+      this.showDeleteModal = true
     }
   },
   mounted() {

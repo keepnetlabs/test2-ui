@@ -8,6 +8,10 @@ export function getTargetUser(resourceId) {
   return testRequest.get(`/target-users/${resourceId}`)
 }
 
+export function getTargetUsersByEmail(payload) {
+  return testRequest.post('/target-users/search-email', payload)
+}
+
 export function deleteTargetUser(resourceId) {
   return testRequest.delete(`/target-users/${resourceId}`)
 }
@@ -23,6 +27,11 @@ export function createTargetUser(payload) {
 export function getTargetGroups() {
   return testRequest.get(`/target-groups`)
 }
+
+export function getTargetGroupsByName(payload) {
+  return testRequest.post('/target-groups/search-name', payload)
+}
+
 export function getTargetGroup(id) {
   return testRequest.get(`/target-groups/${id}`)
 }

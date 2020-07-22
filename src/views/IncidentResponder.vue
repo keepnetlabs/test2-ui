@@ -877,7 +877,7 @@ export default {
       iEmpty: {
         message: "There isn't any reported mail, yet",
         subMes:
-          'Emails that are reported by your users via Keepnet Phishing Reporter add-in analysed and listed here',
+          'Emails that are reported by your users via Phishing Reporter add-in analysed and listed here',
         btn: 'PHISHING REPORTER SETTINGS',
         icon: 'mdi-arrow-right'
       },

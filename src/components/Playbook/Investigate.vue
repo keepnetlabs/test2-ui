@@ -16,7 +16,7 @@
           <v-radio-group
             v-model="investigateData.targetUserType"
             :mandatory="false"
-            @change="investigateData.targetUsers = []"
+            @change="handleRadioGroup"
             row
           >
             <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
@@ -44,13 +44,14 @@
             hide-details
             required
           ></v-combobox>
-          <v-select
-            :items="targetUsersList"
+          <v-combobox
+            :items="userGroupsItems"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
             "
             outlined
             v-model="investigateData.targetUsers"
+            :search-input.sync="searchUserGroup"
             class="edit-select target-users-select-multi"
             :rules="[(v) => v.length > 0 || 'Required']"
             item-text="name"
@@ -60,22 +61,43 @@
             persistent-hint
             small-chips
             deletable-chips
+            auto-select-first
             :return-object="false"
-            autocomplete="disabled"
+            autocomplete="off"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
           >
-          </v-select>
+            <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
+              <v-chip
+                :key="JSON.stringify(data.item)"
+                v-bind="data.attrs"
+                :input-value="data.selected"
+                small
+              >
+                {{
+                  userGroupsItems.find((item) => {
+                    return item.resourceId === data.item
+                  }).name
+                }}
+                <v-icon right @click="data.parent.selectItem(data.item)" style="font-size: 18px;"
+                  >mdi-close-circle</v-icon
+                >
+              </v-chip>
+            </template>
+          </v-combobox>
           <v-combobox
-            :items="[]"
+            :items="specificUserItems"
             v-if="investigateData.targetUserType === 'SpecificUsers'"
             placeholder="Enter Email Addresses"
-            item-text="name"
+            item-text="email"
+            item-value="email"
             multiple
             dense
             persistent-hint
             deletable-chips
             small-chips
+            :search-input.sync="searchUser"
+            auto-select-first
             :return-object="false"
             :rules="[(v) => v.length > 0 || 'Required']"
             required
@@ -244,7 +266,11 @@
 <script>
 import { required } from '../../utils/validations'
 import { mapGetters } from 'vuex'
-
+import {
+  getTargetGroups,
+  getTargetGroupsByName,
+  getTargetUsersByEmail
+} from '../../api/targetUsers'
 export default {
   name: 'Investigate',
   props: {
@@ -360,6 +386,7 @@ export default {
     },
     investigationDuration(val) {},
     investigateData(val) {
+      /*
       let date = new Date()
       switch (val) {
         case this.act.investigateDurations[0].value:
@@ -387,7 +414,44 @@ export default {
         default:
           break
       }
+
+       */
+    },
+    searchUserGroup(val) {
+      if (val && val.length >= 3) {
+        this.debounce(() => {
+          const payload = {
+            pageNumber: 1,
+            pageSize: 10,
+            orderBy: 'Name',
+            ascending: false,
+            groupName: val
+          }
+          this.callForGetTargetGroupItems(payload)
+        }, 500)
+      } else {
+        this.userGroupsItems = this.defaultUserGroupItems
+      }
+    },
+    searchUser(val) {
+      if (val && val.length >= 3) {
+        this.debounce(() => {
+          const payload = {
+            pageNumber: 1,
+            pageSize: 10,
+            orderBy: 'Email',
+            ascending: false,
+            email: val
+          }
+          this.callForGetTargetUsersItems(payload)
+        }, 500)
+      } else {
+        this.specificUserItems = this.defaultSpecificUserItems
+      }
     }
+  },
+  beforeDestroy() {
+    console.log('iam destroyed')
   },
   data() {
     return {
@@ -401,6 +465,8 @@ export default {
       investigateActionNotification: 'Reporter',
       investigateActionNotificationTemplate: '18',
       targetUsersValue: [],
+      defaultUserGroupItems: [],
+      timeout: null,
       targetUserType: 'AllUsers',
       validations: {
         required
@@ -408,11 +474,70 @@ export default {
       targetUsers: {
         required: (v) =>
           (!!v && v.length > 0) || 'Target users required for creating a investigation'
+      },
+      searchUserGroup: '',
+      userGroupsItems: [],
+      specificUserItems: [],
+      searchUser: '',
+      defaultSpecificUserItems: []
+    }
+  },
+  methods: {
+    callForGetTargetGroupItems(payload, isDefault = false) {
+      getTargetGroupsByName(payload).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+        if (isDefault) {
+          this.defaultUserGroupItems = results
+        }
+        this.userGroupsItems = results || []
+      })
+    },
+    callForGetTargetUsersItems(payload, isDefault = false) {
+      getTargetUsersByEmail(payload).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+        if (isDefault) {
+          this.defaultSpecificUserItems = results
+        }
+        this.specificUserItems = results || []
+      })
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
       }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
+    handleRadioGroup() {
+      this.investigateData.targetUsers = []
+      this.$forceUpdate()
     }
   },
   created() {
-    this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
+    console.log('iam created')
+    getTargetGroups().then((response) => {
+      this.userGroupsItems = response.data.data
+      this.defaultUserGroupItems = response.data.data
+    })
+    this.callForGetTargetUsersItems(
+      {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'Email',
+        ascending: false,
+        email: ''
+      },
+      true
+    )
   }
 }
 </script>

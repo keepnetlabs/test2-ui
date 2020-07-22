@@ -19,27 +19,9 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'AccountDropdown',
-  data: () => ({
-    selectedItems: ['Company 1', 'Company 2', 'Company 3'],
-    drop: [
-      {
-        companyId: 'b3b48bd1-2625-45f4-b841-0791ddfca7fb',
-        Manager: ''
-      },
-      {
-        companyId: '68abe717-0602-4a27-ae6c-6ed7a681f8d1',
-        Manager: 'A BANK'
-      },
-      {
-        companyId: 'e3f890ac-4cd7-459b-a4e0-0f0ed41733c7',
-        Manager: 'Abdi İbrahim'
-      },
-      {
-        companyId: 'ac02a0e8-23de-478c-ac4f-450166771c57',
-        Manager: 'Abdulkerim'
-      }
-    ]
-  }),
+  data() {
+    return {}
+  },
   methods: {
     ...mapActions({
       selectCompany: 'dashboard/selectCompany',
@@ -59,8 +41,6 @@ export default {
       set(newValue) {
         if (newValue.companyId == 'default') {
           this.setDialogSwitch(true)
-        } else {
-          this.selectCompany(newValue)
         }
       }
     }

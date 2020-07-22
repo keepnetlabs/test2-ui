@@ -333,7 +333,7 @@ const dashboard = {
       commit('SET_SWITCH_DIALOG', payload)
     },
     selectCompany({ commit, dispatch }, payload) {
-      selectCompany(payload).then(() => {
+      return selectCompany(payload).then(() => {
         commit('SET_SELECTED_COMPANY', payload)
         dispatch('getLastFiveCompaignsStats')
         dispatch('getPhishingCampaigns', 999)
