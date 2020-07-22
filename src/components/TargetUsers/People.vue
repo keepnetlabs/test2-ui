@@ -393,9 +393,13 @@ export default {
         .then((response) => {
           const { data } = response.data
           console.log('data', data)
-          this.$refs.refPeopleTable.loadWithDataArray(data.results || [])
+          this.$refs.refPeopleTable.loadWithDataArray(
+            data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
+          )
         })
-        .catch((error) => {})
+        .catch((error) => {
+          this.$refs.refPeopleTable.loadWithDataArray([])
+        })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       getTargetUserCustomFieldsByCompanyId()
