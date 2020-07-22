@@ -26,6 +26,7 @@
       @syncWithLDAP="handleSyncWithLDAP"
       @handleEdit="handleEdit"
       @delete="handleDelete"
+      @onEmptyBtnClicked="showNewUserGroupModal = true"
       titleKey="name"
     >
       <template v-slot:addUsers>
