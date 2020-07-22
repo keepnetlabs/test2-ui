@@ -114,7 +114,7 @@ export default {
     isWantToShowDeleteUserModal: false,
     selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
-    selectedRow: {},
+    selectedRow: null,
     customFields: [],
     isWantToShowAddUsersModal: false,
     showPopupModal: false,
