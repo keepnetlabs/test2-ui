@@ -81,7 +81,11 @@
                     </v-row>
                     <v-row align="center" justify="center">
                       <v-col class="pt-0 pl-0 pr-0" md="6" sm="12">
-                        <v-form v-model="validPassword" ref="password">
+                        <v-form
+                          @submit="(event) => event.preventDefault()"
+                          v-model="validPassword"
+                          ref="password"
+                        >
                           <label class="login-label" for="password">Password</label>
                           <v-text-field
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
@@ -93,7 +97,7 @@
                             v-model="password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
-                            v-on:keyup.enter="onLoginClicked"
+                            v-on:keyup.enter="onLoginClicked()"
                             placeholder="Password"
                             outlined
                           ></v-text-field>
