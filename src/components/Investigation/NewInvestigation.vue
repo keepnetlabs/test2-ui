@@ -48,7 +48,9 @@
                 <div class="target-users-select__input-area">
                   <v-combobox
                     :items="[]"
-                    :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                    :placeholder="
+                      targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
+                    "
                     outlined
                     class="edit-select standard-height"
                     item-text="name"
@@ -59,29 +61,28 @@
                     deletable-chips
                     autocomplete="disabled"
                     :return-object="false"
-                    @change="targetUsersListChange"
-                    v-if="targetUserType == 'AllUsers'"
-                    :disabled="targetUserType == 'AllUsers'"
+                    v-if="targetUserType === 'AllUsers'"
+                    :disabled="targetUserType === 'AllUsers'"
                     required
                   ></v-combobox>
                   <v-combobox
-                    :items="targetUsersList"
+                    :items="userGroupsItems"
                     :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi"
                     v-model="targetUsersValue"
+                    :search-input.sync="searchTargetUsersGroupsValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
                     multiple
                     dense
                     persistent-hint
+                    auto-select-first
                     small-chips
                     deletable-chips
                     :return-object="true"
-                    @change="targetUsersListChange"
                     autocomplete="disabled"
-                    v-if="targetUserType == 'Groups'"
-                    required
+                    v-if="targetUserType === 'Groups'"
                   ></v-combobox>
                   <v-combobox
                     :items="[]"
@@ -261,6 +262,7 @@
 <script>
 import AppModal from '../AppModal'
 import { mapGetters, mapActions } from 'vuex'
+import { getTargetGroupsByName } from '../../api/targetUsers'
 export default {
   components: {
     AppModal
@@ -272,10 +274,33 @@ export default {
       } else {
         this.isDateValid = false
       }
+    },
+    searchTargetUsersGroupsValue(val) {
+      if (val && val.length >= 3) {
+        this.debounce(() => {
+          const payload = {
+            pageNumber: 1,
+            pageSize: 10,
+            orderBy: 'Name',
+            ascending: false,
+            groupName: val
+          }
+          getTargetGroupsByName(payload).then((response) => {
+            const {
+              data: {
+                data: { results }
+              }
+            } = response
+            this.userGroupsItems = results || []
+          })
+        }, 500)
+      }
     }
   },
+
   data() {
     return {
+      timeout: null,
       pickerOptions: {
         shortcuts: [
           {
@@ -307,6 +332,7 @@ export default {
           }
         ]
       },
+      searchTargetUsersGroupsValue: '',
       placeholders: {
         ip: '1.1.1.1',
         from: 'Email address',
@@ -339,6 +365,7 @@ export default {
       categories: [],
       selectedCategory: '',
       isAllSelected: false,
+      userGroupsItems: [],
       durations: [
         { durationLabel: '1 Day', durationValue: 1 },
         { durationLabel: '3 Days', durationValue: 3 },
@@ -508,26 +535,14 @@ export default {
         this.checkboxError = false
       }
     },
-    targetUsersListChange(value, e, c) {
-      /*if (this.targetUsersValue.find(item => item === "All")) {
-        this.targetUsersValue = ["All"];
-      }*/
-      /*if (
-        value[value.length - 1] === "All" &&
-        this.targetUsersValue.find(item => item === "All") && !this.isAllSelected
-      ) {
-        this.targetUsersValue = [];
-        this.isAllSelected = true;
-        this.targetUsersValue = this.targetUsersList.reduce((acc, item) => {
-          acc.push(item);
-          return acc;
-        }, []);
-      } else if (!this.targetUsersValue.find(item => item === "All") && this.isAllSelected) {
-        this.isAllSelected = false;
-        this.targetUsersValue = [];
-      }*/
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
     },
-
     addNewFilterListOption() {
       this.filterList.push({ option: '', text: '' })
     },
@@ -915,7 +930,6 @@ export default {
     allowedDates(val) {
       // return val < this.endDate;
     },
-    fillForm(row) {},
     checkIsEdit() {
       if (this.isEdit) {
         let _this = this

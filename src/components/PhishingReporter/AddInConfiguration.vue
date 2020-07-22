@@ -342,8 +342,10 @@ export default {
       ret = null
     },
     submit() {
-      this.otherSettings = this.$refs.refOtherSettings.submit()
-      this.callForCreatePhishingReporter()
+      const isOtherSettingsValid = this.$refs.refOtherSettings.submit()
+      if (isOtherSettingsValid) {
+        this.callForCreatePhishingReporter()
+      }
     },
     getEmailSettingsValues(formValues) {
       this.addingSettings = formValues
@@ -378,11 +380,6 @@ export default {
       createPhishingReporter(formData)
         .then((response) => {
           if (response && response.data && response.data.status === 'FAILED') {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert'
-            })
           } else {
             this.$store.dispatch('common/createSnackBar', {
               message: 'Phishing Reporter Saved Succesfully!',

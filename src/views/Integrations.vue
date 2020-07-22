@@ -13,17 +13,12 @@
             <v-tab id="pr-tab-users" class="k-tab p-2" @click="changeTabStatus(0)">
               Integrations
             </v-tab>
-            <v-tab id="pr-tab-settings" class="k-tab p-2" @click="changeTabStatus(1)"
-              >Clients
-            </v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
               <integration />
             </v-tab-item>
-            <v-tab-item>
-              <clients />
-            </v-tab-item>
+            <v-tab-item> </v-tab-item>
           </v-tabs-items>
         </v-card>
       </v-col>
@@ -38,8 +33,7 @@ import Clients from '../components/Integrations/Clients'
 export default {
   name: 'Integrations',
   components: {
-    integration: Integrations,
-    clients: Clients
+    integration: Integrations
   },
   data() {
     return {

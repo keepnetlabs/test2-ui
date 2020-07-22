@@ -171,7 +171,13 @@
                       >mdi-close</v-icon
                     >
                     <div v-if="item.status == 'failed' && !loadingState.length">
-                      <button class="retry-button" @click="retryTestConnection(item)">
+                      <button
+                        class="retry-button"
+                        @click="retryTestConnection(item)"
+                        :class="{
+                          'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                        }"
+                      >
                         RETRY
                       </button>
                     </div>
@@ -199,8 +205,9 @@
                 </div>
                 <div
                   class="new-integration__api-key__text"
-                  :disabled="isTestConnectionDisabled"
-                  :class="{ 'new-integration__api-key__test-text': isTestConnectionDisabled }"
+                  :class="{
+                    'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                  }"
                   @click="testConnection"
                 >
                   <div v-if="loadingState.length" class="test-connection">
@@ -209,7 +216,15 @@
                     >
                     TESTING CONNECTION
                   </div>
-                  <div v-else class="test-connection">TEST CONNECTION</div>
+                  <div
+                    v-else
+                    class="test-connection"
+                    :class="{
+                      'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                    }"
+                  >
+                    TEST CONNECTION
+                  </div>
                 </div>
               </div>
             </v-list-item-content>
@@ -476,6 +491,17 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay', false, true)
     },
+    getTestConnectionDisableStatus() {
+      if (
+        this.formValues.apiUrl &&
+        this.formValues.apiKeys[0].value.length > 0 &&
+        typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
+      ) {
+        return false
+      } else {
+        return true
+      }
+    },
     saveButtonClickOnConfirmModal() {
       if (!this.uploadFileTypes.length) this.getFileTypes()
       this.showConfirmModal = false
@@ -563,15 +589,21 @@ export default {
       this.loadingState.push('loading')
       testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
         .then((response) => {
+          if (response.data.status === 'FAILED') {
+            item.status = 'failed'
+            this.formValues.apiKeys[i].errorMessage = response.data.message
+          } else {
+            item.status = 'success'
+          }
           item.status = 'success'
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when testing connections!'
-          })
           item.status = 'failed'
-          item.errorMessage = error.response.data.message || error.response.data.Message
+          if (error.response.data.Message === 'Internal server error') {
+            item.errorMessage = 'Error when testing connections!'
+          } else {
+            item.errorMessage = error.response.data.message || error.response.data.Message
+          }
         })
         .finally(() => this.loadingState.shift('loading'))
     },
@@ -582,16 +614,21 @@ export default {
         this.loadingState.push('loading')
         testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
           .then((response) => {
-            this.formValues.apiKeys[i].status = 'success'
+            if (response.data.status === 'FAILED') {
+              this.formValues.apiKeys[i].status = 'failed'
+              this.formValues.apiKeys[i].errorMessage = response.data.message
+            } else {
+              this.formValues.apiKeys[i].status = 'success'
+            }
           })
           .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when testing connections!'
-            })
             this.formValues.apiKeys[i].status = 'failed'
-            this.formValues.apiKeys[i].errorMessage =
-              error.response.data.message || error.response.data.Message
+            if (error.response.data.Message === 'Internal server error') {
+              this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
+            } else {
+              this.formValues.apiKeys[i].errorMessage =
+                error.response.data.message || error.response.data.Message
+            }
           })
           .finally(() => this.loadingState.shift('loading'))
       }
@@ -854,16 +891,23 @@ export default {
     }
 
     &__test-text {
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       text-align: center;
       color: #757575 !important;
       opacity: 0.8;
+    }
+    &__disabled-text {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center;
+      color: #757575 !important;
+      opacity: 0.8;
+      pointer-events: none !important;
     }
   }
 

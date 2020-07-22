@@ -29,7 +29,20 @@ testService.interceptors.request.use(
 testService.interceptors.response.use(
   (response) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
-    return response
+    if (response.data.code === 'FAILED') {
+      store.dispatch(
+        'common/createSnackBar',
+        {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: response.data.message || response.data.Message,
+          icon: 'mdi-alert'
+        },
+        { root: true }
+      )
+      return response
+    } else {
+      return response
+    }
   },
   (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
