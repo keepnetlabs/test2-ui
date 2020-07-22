@@ -85,21 +85,24 @@
                     v-if="targetUserType === 'Groups'"
                   ></v-combobox>
                   <v-combobox
-                    :items="[]"
+                    :items="specificUserItems"
                     v-if="targetUserType == 'SpecificUsers'"
-                    placeholder="Enter Email Addresses"
-                    item-text="name"
+                    placeholder="Enter user email Addresses"
+                    item-text="email"
+                    item-value="email"
+                    :search-input.sync="searchTargetUsersSpecificValue"
                     multiple
                     dense
                     persistent-hint
+                    auto-select-first
                     deletable-chips
                     autocomplete="disabled"
                     small-chips
                     :return-object="false"
                     :rules="[targetUsers.required]"
-                    required
+                    :no-data-text="'no data'"
                     outlined
-                    class="edit-name-textfield new-investigation__combo edit-select target-users-select__specific-user-input target-users-select-multi"
+                    class="edit-select new-investigation__combo target-users-select-multi"
                     v-model="targetUsersValue"
                   ></v-combobox>
                 </div>
@@ -261,8 +264,11 @@
 </template>
 <script>
 import AppModal from '../AppModal'
-import { mapGetters, mapActions } from 'vuex'
-import { getTargetGroupsByName } from '../../api/targetUsers'
+import {
+  getTargetGroups,
+  getTargetGroupsByName,
+  getTargetUsersByEmail
+} from '../../api/targetUsers'
 export default {
   components: {
     AppModal
@@ -285,15 +291,26 @@ export default {
             ascending: false,
             groupName: val
           }
-          getTargetGroupsByName(payload).then((response) => {
-            const {
-              data: {
-                data: { results }
-              }
-            } = response
-            this.userGroupsItems = results || []
-          })
+          this.callForGetTargetGroupItems(payload)
         }, 500)
+      } else {
+        this.userGroupsItems = this.defaultUserGroupItems
+      }
+    },
+    searchTargetUsersSpecificValue(val) {
+      if (val && val.length >= 3) {
+        this.debounce(() => {
+          const payload = {
+            pageNumber: 1,
+            pageSize: 10,
+            orderBy: 'Email',
+            ascending: false,
+            email: val
+          }
+          this.callForGetTargetUsersItems(payload)
+        }, 500)
+      } else {
+        this.specificUserItems = this.defaultSpecificUserItems
       }
     }
   },
@@ -301,6 +318,9 @@ export default {
   data() {
     return {
       timeout: null,
+      defaultUserGroupItems: [],
+      searchTargetUsersSpecificValue: '',
+      specificUserItems: [],
       pickerOptions: {
         shortcuts: [
           {
@@ -503,18 +523,6 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters({
-      targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
-    })
-    /*categoryRule() {
-      if (this.selectedCategory && this.selectedCategory.length) {
-        return true;
-      } else {
-        return "Category required for creating a investigation";
-      }
-    }*/
-  },
   props: [
     'isEdit',
     'statsAndMenuData',
@@ -534,6 +542,32 @@ export default {
       } else {
         this.checkboxError = false
       }
+    },
+    callForGetTargetUsersItems(payload, isDefault = false) {
+      getTargetUsersByEmail(payload).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+        if (isDefault) {
+          this.defaultSpecificUserItems = results
+        }
+        this.specificUserItems = results || []
+      })
+    },
+    callForGetTargetGroupItems(payload, isDefault = false) {
+      getTargetGroupsByName(payload).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+        if (isDefault) {
+          this.defaultUserGroupItems = results
+        }
+        this.userGroupsItems = results || []
+      })
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -854,6 +888,7 @@ export default {
           }
         }
         // cerate new body data for api call
+
         const newInvestigationObj = {
           headers: headersData,
           bodies: bodyData,
@@ -867,7 +902,7 @@ export default {
           targetUserType: this.targetUserType,
           targetUsers:
             this.targetUserType == 'Groups'
-              ? this.targetUsersValue.map((item) => item.groupId)
+              ? this.targetUsersValue.map((item) => item.resourceId)
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
           action: this.selectedAction,
@@ -935,11 +970,11 @@ export default {
         let _this = this
 
         this.investgationName = this.investigationDetailsData.name
-        this.date.push(this.investigationDetailsData.startDate)
+        //this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
 
-        this.date.push(this.investigationDetailsData.endDate)
+        //this.date.push(this.investigationDetailsData.endDate)
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -
           new Date(this.investigationDetailsData.createTime).getDate()
@@ -997,8 +1032,26 @@ export default {
     }
   },
   created() {
-    // when the page is created ( vue life cylce) get target users list via vuex
-    this.$store.dispatch('investigations/getTargetUsersList').then(() => this.checkIsEdit()) //module name than method name
+    this.callForGetTargetUsersItems(
+      {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'Email',
+        ascending: false,
+        email: ''
+      },
+      true
+    )
+    getTargetGroups().then((response) => {
+      this.userGroupsItems = response.data.data
+      this.defaultUserGroupItems = response.data.data
+    })
+    /*
+    this.callForGetTargetGroupItems(
+      { pageNumber: 1, pageSize: 10, orderBy: 'Name', ascending: false, groupName: '' },
+      true
+    )*/
+    this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
       this.selectedMail.attachments.map((item) => {
@@ -1076,6 +1129,9 @@ export default {
     &__specific-user-input {
       .v-input__append-inner {
         display: none !important;
+      }
+      .v-chip {
+        margin: 3px !important;
       }
     }
   }

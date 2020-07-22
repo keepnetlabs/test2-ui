@@ -214,6 +214,7 @@ const investigations = {
       await getInvestigationDetailsDataFunction(id)
         .then((response) => {
           const result = response.data
+          console.log('result', result)
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
         .catch(() => {

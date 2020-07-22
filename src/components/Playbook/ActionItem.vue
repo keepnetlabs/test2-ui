@@ -185,6 +185,7 @@
             v-model="targetUserType[index]"
             :items="getNotifyTypes()"
             outlined
+            @input="tarUsers[index] = []"
             :rules="[(v) => validations.required(v, 'Required')]"
           />
         </v-col>
@@ -193,44 +194,67 @@
           md="5"
           class="mr-2"
         >
-          <v-autocomplete
-            :items="targetUsers"
-            :loading="isLoading"
-            :search-input.sync="search"
+          <v-combobox
+            :items="specificUserItems"
+            placeholder="Select target users"
+            outlined
+            class="edit-select target-users-select-multi"
             v-model="tarUsers[index]"
-            color="white"
             item-text="email"
             item-value="email"
-            placeholder="Select Target User"
-            outlined
+            :search-input.sync="search[index]"
             multiple
+            dense
+            deletable-chips
+            auto-select-first
+            persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
-            deletable-chips
-          ></v-autocomplete>
+            hide-details
+          ></v-combobox>
         </v-col>
         <v-col
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
           md="5"
           class="mr-2"
         >
-          <v-select
-            :items="targetUsersList"
+          <v-combobox
+            :items="userGroupsItems"
             placeholder="Select user groups"
             outlined
             class="edit-select target-users-select-multi"
             v-model="tarUsers[index]"
             item-text="name"
             item-value="resourceId"
+            :search-input.sync="searchInput[index]"
             multiple
             dense
             deletable-chips
             :return-object="false"
+            auto-select-first
             persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
-          ></v-select>
+          >
+            <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
+              <v-chip
+                :key="JSON.stringify(data.item)"
+                v-bind="data.attrs"
+                :input-value="data.selected"
+                small
+              >
+                {{
+                  userGroupsItems.find((item) => {
+                    return item.resourceId === data.item
+                  }).name
+                }}
+                <v-icon right @click="data.parent.selectItem(data.item)" style="font-size: 18px;"
+                  >mdi-close-circle</v-icon
+                >
+              </v-chip>
+            </template>
+          </v-combobox>
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
           <v-select
@@ -253,16 +277,14 @@
           </v-btn>
         </v-col>
         <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'">
-          <investigate :investigateData="playbookActionInvestigationAnalyzeData" :act="act" />
-        </v-col>
-        <v-col v-if="actionsValues[index].val == 'investigate'" md="12">
           <investigate
-            :investigateData="playbookActionInvestigations[index]"
-            :index="index"
             :isCreatedByAnalyzer="true"
-            :ref="`refInvestigate${-index}`"
+            :investigateData="playbookActionInvestigationAnalyzeData"
             :act="act"
           />
+        </v-col>
+        <v-col v-if="actionsValues[index].val === 'investigate'" md="12">
+          <investigate :index="index" :ref="`refInvestigate-${index}`" :act="act" />
         </v-col>
       </v-row>
     </v-form>
@@ -277,8 +299,12 @@ import { getAnalysisEngine, getTargetUsers } from '../../api/playbook'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 import Investigate from './Investigate'
-import { mapGetters } from 'vuex'
 import { required } from '../../utils/validations'
+import {
+  getTargetGroups,
+  getTargetGroupsByName,
+  getTargetUsersByEmail
+} from '../../api/targetUsers'
 export default {
   components: { AppDialog, Investigate },
 
@@ -301,11 +327,17 @@ export default {
       searchEnginesModelInput: null,
       timerId: null,
       isLoading: false,
-      search: '',
+      search: [],
       targetUsersData: false,
+      searchInput: [],
+      timeout: null,
+      defaultUserGroupItems: [],
+      defaultSpecificUserItems: [],
+      specificUserItems: [],
       validations: {
         required
       },
+      userGroupsItems: [],
       analyzeModel: false,
       analyzeCheckbox: false,
       openEnginesModal: false,
@@ -441,6 +473,8 @@ export default {
       this.$refs.refForm.validate()
       this.getSelectedIntegrations()
     },
+    tempFonk(data) {},
+
     validateIntegrations(v) {
       return this.getSelectedIntegrations() || 'Required'
     },
@@ -452,6 +486,32 @@ export default {
       this.analysisEngines = this.initialAnalysisEngines
       this.openEnginesModal = false
       this.$refs.refForm.validate()
+    },
+    callForGetTargetGroupItems(payload, isDefault = false) {
+      getTargetGroupsByName(payload).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+        if (isDefault) {
+          this.defaultUserGroupItems = results
+        }
+        this.userGroupsItems = results || []
+      })
+    },
+    callForGetTargetUsersItems(payload, isDefault = false) {
+      getTargetUsersByEmail(payload).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+        if (isDefault) {
+          this.defaultSpecificUserItems = results
+        }
+        this.specificUserItems = results || []
+      })
     },
     searchEnginesModel(val) {
       if (this.searchEnginesModelInput) {
@@ -649,14 +709,13 @@ export default {
           nextAvailableAction.disabled = true
         }
       })
-      if (nextAvailableAction.val === 'investigate') {
-      }
 
       this.actions.push(nextAvailableAction)
 
       const length = this.actions.length
       this.actionsValues[length - 1] = nextAvailableAction
-      this.idCounter = this.idCounter + 1
+      this.$forceUpdate()
+      return this.actions.length
     },
     removeAction(index, actionVal) {
       this.act.actionTypes.find((item) => {
@@ -673,47 +732,46 @@ export default {
       })
 
       if (newIndex !== -1) {
-        this.actions.splice(newIndex, 1)
+        this.actions.splice(index, 1)
         this.actionsValues.splice(index, 1)
       }
       if (actionVal === 'notify') {
         this.targetUserType.splice(index, 1)
         this.tarUsers.splice(index, 1)
       }
-    },
-    getTargetUsers() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 20,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          filterGroups: [
-            {
-              condition: 'AND',
-              filterItems: [
-                {
-                  fieldName: 'Email',
-                  operator: 'Contains',
-                  value: this.search || ''
-                }
-              ],
-              filterGroups: []
-            }
-          ]
-        }
+      if (actionVal === 'tag') {
+        this.playbookAction.tags = []
       }
-      getTargetUsers(payload)
-        .then((response) => {
-          this.targetUsers = response.data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting target users data!'
-          })
-        })
+      if (actionVal === 'analyze') {
+        this.playbookActionInvestigationAnalyzeData = {
+          isCreatedByAnalyzer: true,
+          scanTypes: ['Outlook'],
+          filters: [],
+          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
+            .toISOString()
+            .split('T')
+            .join(' ')
+            .split('.')[0],
+          targetUserType: 'AllUsers',
+          targetUsers: [],
+          actionType: 'Notify',
+          actionNotifyTargetUserType: 'Reporter',
+          actionNotifyTargetUsers: [],
+          emailTempleditedPlaybookActionAnalyzersteId: 1
+        }
+        this.analyzeCheckbox = false
+        this.analysisEngines = this.analysisEngines.map((item) => ({ ...item, selected: false }))
+      }
     },
     updateAnalysisEngines() {
       if (this.analysisEngines.length > 0 && this.editedPlaybookActionAnalyzers) {
@@ -729,6 +787,14 @@ export default {
         })
         this.analysisEngines = dizi
       }
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
     }
   },
   created() {
@@ -739,19 +805,67 @@ export default {
     ) {
       this.addAction()
     }
+    /*
+    this.callForGetTargetGroupItems(
+      { pageNumber: 1, pageSize: 10, orderBy: 'Name', ascending: false, groupName: '' },
+      true
+    ) */
+    getTargetGroups().then((response) => {
+      this.userGroupsItems = response.data.data
+      this.defaultUserGroupItems = response.data.data
+    })
 
-    this.$store.dispatch('investigations/getTargetUsersList').then() //module name than method name
+    this.callForGetTargetUsersItems(
+      {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'Email',
+        ascending: false,
+        email: ''
+      },
+      true
+    )
+
     this.getAnalysisEngine()
   },
   watch: {
     search(val) {
-      if (!val) return false
-      clearTimeout(this._timerId)
-
-      // delay new call 500ms
-      this._timerId = setTimeout(() => {
-        this.getTargetUsers()
-      }, 500)
+      const value = val.find((item) => {
+        return item
+      })
+      if (value && value.length >= 3) {
+        this.debounce(() => {
+          const payload = {
+            pageNumber: 1,
+            pageSize: 10,
+            orderBy: 'Email',
+            ascending: false,
+            email: value
+          }
+          this.callForGetTargetUsersItems(payload)
+        }, 500)
+      } else {
+        this.specificUserItems = this.defaultSpecificUserItems
+      }
+    },
+    searchInput(val) {
+      const value = val.find((item) => {
+        return item
+      })
+      if (value && value.length >= 3) {
+        this.debounce(() => {
+          const payload = {
+            pageNumber: 1,
+            pageSize: 10,
+            orderBy: 'Name',
+            ascending: false,
+            groupName: value
+          }
+          this.callForGetTargetGroupItems(payload)
+        }, 500)
+      } else {
+        this.userGroupsItems = this.defaultUserGroupItems
+      }
     },
     editedActions(val) {
       this.playbookAction = val
@@ -759,6 +873,7 @@ export default {
         this.addAction('tag')
       }
     },
+
     editedNotifications(val) {
       val.map((item) => {
         this.addAction('notify')
@@ -771,13 +886,20 @@ export default {
           valIndex++
         }
       })
-      this.getTargetUsers()
     },
     editedPlaybookActionAnalyzers(val) {
       this.updateAnalysisEngines()
     },
     analysisEngines(val) {},
     editedPlaybookActionInvestigations(investigations) {
+      /*
+      investigations.map((investigation, index) => {
+        const lastLength = this.addAction('investigate')
+
+        this.playbookActionInvestigations[lastLength - 1] = investigation
+      })
+
+       */
       investigations.map((investigation) => {
         this.addAction('investigate')
       })
@@ -792,14 +914,8 @@ export default {
             valueIndex++
           }
         })
-      }, 500)
+      }, 1000)
     }
-  },
-
-  computed: {
-    ...mapGetters({
-      targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
-    })
   }
 }
 </script>

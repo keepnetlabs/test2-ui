@@ -500,7 +500,6 @@ export default {
         })
       }
       const playbookAction = ref.playbookAction
-
       if (
         ref.actions.some((item) => {
           return item.val === 'analyze'
@@ -722,8 +721,6 @@ export default {
             }
           )
 
-          console.log('playbookActionAnalyzers', this.playbookActionAnalyzers)
-
           const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
             return item.isCreatedByAnalyzer
           })
@@ -745,6 +742,9 @@ export default {
         })
         .catch((error) => {})
     }
+  },
+  beforeDestroy() {
+    console.log('iam modal')
   },
   created() {
     if (this.playbookId) {

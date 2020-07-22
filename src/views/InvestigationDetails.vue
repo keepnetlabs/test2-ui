@@ -1985,6 +1985,12 @@ export default {
       width: 100%;
     }
   }
+}
+.investigation__attachments .v-chip:last-child {
+  margin-left: 0 !important;
+}
+
+.investigation-details__container__content--right-menu {
   .v-chip__content {
     text-overflow: ellipsis !important;
     overflow: hidden !important;
@@ -1993,11 +1999,9 @@ export default {
     white-space: pre-wrap;
     text-align: left;
   }
+
   .v-chip {
     padding: 4px 12px !important;
   }
-}
-.investigation__attachments .v-chip:last-child {
-  margin-left: 0 !important;
 }
 </style>
