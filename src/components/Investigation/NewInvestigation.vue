@@ -1054,16 +1054,19 @@ export default {
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
-      this.selectedMail.attachments.map((item) => {
-        this.filterList.push({ option: 'md5', text: item.md5 })
-        this.filterList.push({ option: 'sha512', text: item.sha512 })
-      })
-      this.selectedMail.bcc.map((item) => {
-        this.filterList.push({ option: 'bcc', item })
-      })
-      this.selectedMail.cc.map((item) => {
-        this.filterList.push({ option: 'cc', item })
-      })
+      this.selectedMail.attachments &&
+        this.selectedMail.attachments.map((item) => {
+          this.filterList.push({ option: 'md5', text: item.md5 })
+          this.filterList.push({ option: 'sha512', text: item.sha512 })
+        })
+      this.selectedMail.bcc &&
+        this.selectedMail.bcc.map((item) => {
+          this.filterList.push({ option: 'bcc', item })
+        })
+      this.selectedMail.cc &&
+        this.selectedMail.cc.map((item) => {
+          this.filterList.push({ option: 'cc', item })
+        })
       this.selectedMail.from &&
         this.filterList.push({ option: 'from', text: this.selectedMail.from })
       this.selectedMail.subject &&
@@ -1071,9 +1074,10 @@ export default {
       this.selectedMail.to.map((item) => {
         this.filterList.push({ option: 'to', text: item })
       })
-      this.selectedMail.urls.map((item) => {
-        this.filterList.push({ option: 'url', text: item.url })
-      })
+      this.selectedMail.urls &&
+        this.selectedMail.urls.map((item) => {
+          this.filterList.push({ option: 'url', text: item.url })
+        })
       this.investgationName = 'Manuel Investigation'
     }
   },
@@ -1203,6 +1207,7 @@ export default {
       line-height: normal;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.72);
+      height: 20px !important;
     }
   }
 

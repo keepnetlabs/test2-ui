@@ -226,6 +226,7 @@ export default {
 
 <style lang="scss">
 #component-incidents {
+  z-index: 8;
   .search-wrapper {
     align-items: center;
     display: flex;
