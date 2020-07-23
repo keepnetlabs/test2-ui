@@ -8,7 +8,11 @@
       :z-index="999"
       color="white"
     >
-      <post-incident :editItem="editItem" @closeIncidentModal="closeIncidentModal" />
+      <post-incident
+        :editItem="editItem"
+        @closeIncidentModal="closeIncidentModal"
+        @refreshData="refreshDataFunc"
+      />
     </v-overlay>
 
     <v-card id="component-incidents" flat color="basil">
@@ -17,7 +21,6 @@
           :items="incidentList"
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
-          :search="search"
           :page.sync="page"
         >
           <template v-slot:header>
@@ -85,7 +88,12 @@ export default {
       required: false
     },
     incidentsCommunityName: {
-      type: Boolean
+      type: Boolean,
+      required: false
+    },
+    refreshIncidents: {
+      type: Boolean,
+      required: false
     }
   },
   data: () => ({
@@ -110,9 +118,27 @@ export default {
       if (oldVal != newVal) {
         this.showPostIncident = true
       }
+    },
+    refreshIncidents: function (newVal, oldVal) {
+      if (newVal) this.getIncidentList()
+    },
+    search: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.debounce(() => {
+          this.getIncidentList()
+        }, 500)
+      }
     }
   },
   methods: {
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     openEditPopupItemFunc(post) {
       this.editItem = post
       this.showPostIncident = true
@@ -134,7 +160,28 @@ export default {
           FilterGroups: [
             {
               Condition: 'OR',
-              FilterItems: [],
+              FilterItems: [
+                {
+                  Value: this.search,
+                  FieldName: 'Title',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: this.search,
+                  FieldName: 'Description',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: this.search,
+                  FieldName: 'DiscoveryAndDetection',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: this.search,
+                  FieldName: 'Scope',
+                  Operator: 'Contains'
+                }
+              ],
               FilterGroups: []
             }
           ]

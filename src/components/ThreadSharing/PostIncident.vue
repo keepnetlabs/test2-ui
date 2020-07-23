@@ -1569,6 +1569,9 @@ export default {
     },
     communityName: {
       type: String
+    },
+    refreshData: {
+      required: false
     }
   },
   computed: {
@@ -2072,6 +2075,8 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Community has been updated'
             })
+            this.onCancelClicked()
+            this.$emit('refreshData')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -2119,6 +2124,7 @@ export default {
               message: 'Community has been created'
             })
             this.$emit('closeIncidentModal')
+            this.$emit('refreshData')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {

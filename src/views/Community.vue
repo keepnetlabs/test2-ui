@@ -9,7 +9,7 @@
         :z-index="999"
         color="white"
       >
-        <post-incident @closeIncidentModal="closeIncidentModal" />
+        <post-incident @closeIncidentModal="closeIncidentModal" @refreshData="refreshDataFunc" />
       </v-overlay>
       <v-layout wrap>
         <v-col class="main-column pr-0" cols="12" md="8">
@@ -32,7 +32,12 @@
             </v-tabs>
             <v-tabs-items v-model="tab">
               <v-tab-item>
-                <incidents ref="refIncidents" :posts="[]" :incidentsCommunityName="''" />
+                <incidents
+                  ref="refIncidents"
+                  :posts="[]"
+                  :incidentsCommunityName="''"
+                  :refreshIncidents="refreshIncidentsData"
+                />
               </v-tab-item>
               <v-tab-item>
                 <members />
@@ -66,6 +71,7 @@ export default {
     RightColumn
   },
   data: () => ({
+    refreshIncidentsData: false,
     showPostIncident: false,
     communityDetails: {},
     search: '',
@@ -152,6 +158,9 @@ export default {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    refreshDataFunc() {
+      this.refreshIncidentsData = true
+    },
     closeIncidentModal() {
       this.showPostIncident = false
     },
