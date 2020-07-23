@@ -26,7 +26,6 @@
             :items="members"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
-            :search="search"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
             <template v-slot:header>
@@ -159,7 +158,6 @@
             :items="requestMembers"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
-            :search="search"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
             <template v-slot:header>
@@ -364,6 +362,14 @@ export default {
     this.getCommunityDetails()
   },
   methods: {
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     getCommunityDetails() {
       getCommunityDetails(this.$route.params.id).then((response) => {
         this.communityDetails = response.data.data
@@ -424,7 +430,7 @@ export default {
                 {
                   FieldName: 'CompanyName',
                   Operator: 'Contains',
-                  Value: ''
+                  Value: this.search
                 }
               ],
               FilterGroups: []
@@ -463,7 +469,7 @@ export default {
                   {
                     FieldName: 'CompanyName',
                     Operator: 'Contains',
-                    Value: ''
+                    Value: this.search
                   }
                 ],
                 FilterGroups: []
@@ -483,6 +489,18 @@ export default {
   watch: {
     getSelectedCompany(val) {
       if (val) this.getMembers()
+    },
+    search: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.debounce(() => {
+          debugger
+          if (this.tab === 0) {
+            this.getMembers()
+          } else {
+            this.getRequestMembers()
+          }
+        }, 500)
+      }
     }
   }
 }

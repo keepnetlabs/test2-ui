@@ -1569,6 +1569,9 @@ export default {
     },
     communityName: {
       type: String
+    },
+    refreshData: {
+      required: false
     }
   },
   computed: {
@@ -2066,13 +2069,14 @@ export default {
           }
         }
         //CommunityResourceId:this.$route.params.id ,
-
-        updateCommunityPost(this.$route.params.id || this.editItem.communityResourceId, payload)
+        updateCommunityPost(this.editItem.communityPostResourceId, payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Community has been updated'
             })
+            this.onCancelClicked()
+            this.$emit('refreshData')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -2120,6 +2124,7 @@ export default {
               message: 'Community has been created'
             })
             this.$emit('closeIncidentModal')
+            this.$emit('refreshData')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {

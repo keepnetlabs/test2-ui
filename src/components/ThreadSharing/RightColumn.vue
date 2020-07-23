@@ -99,7 +99,7 @@
               <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
                 {{ communityDetails.memberCount }}
                 <a
-                  v-if="ownerDetails && ownerDetails.membershipStatusId === 1"
+                  v-if="!!communityDetails && communityDetails.myMembershipStatusId === 1"
                   href="#"
                   class="pl-4"
                   @click="isWantToAddMembers()"
@@ -124,7 +124,6 @@
               </v-col>
             </v-row>
             <v-row v-if="false">
-              <!-- Made by Burak Turan Ülker -->
               <v-col cols="12" sm="6" class="about-community-table-td pb-0">You investigated</v-col>
               <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">21</v-col>
             </v-row>
