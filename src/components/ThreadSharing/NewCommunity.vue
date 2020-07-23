@@ -1,5 +1,27 @@
 <template>
   <div class="new-community-container">
+    <app-dialog
+      :status="isWantToAccept"
+      icon="mdi-account-plus"
+      title="Accept all requests?"
+      subtitle=""
+      body="You are changing the privacy settings for community from private to public. All member requests will be accepted?"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn
+            text
+            color="#f56c6c"
+            class="k-dialog__button"
+            @click=";(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="isWantToAccept = false"
+            >Accept All</v-btn
+          >
+        </div>
+      </template>
+    </app-dialog>
     <div class="new-community-inner">
       <v-card flat light class="pa-6" style="width: 600px;">
         <v-list-item class="pl-0 pr-0">
@@ -117,8 +139,12 @@ import {
   updateCommunity
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import AppDialog from '../AppDialog'
 
 export default {
+  components: {
+    AppDialog
+  },
   props: {
     resourceId: {
       required: false
@@ -129,6 +155,8 @@ export default {
   },
   data() {
     return {
+      isWantToAccept: false,
+      oldPrivacyValue: null,
       name: '',
       description: '',
       privacy: false,
@@ -159,6 +187,18 @@ export default {
       },
       categoryRules: {
         required: (v) => (!!v && v.length < 1) || 'Category required for creating a community'
+      }
+    }
+  },
+  watch: {
+    privacystatusid: function (newVal, oldVal) {
+      this.oldPrivacyValue = oldVal
+      if (this.resourceId) {
+        if (newVal == 1 && oldVal == 2) {
+          this.isWantToAccept = true
+        } else {
+          this.isWantToAccept = false
+        }
       }
     }
   },

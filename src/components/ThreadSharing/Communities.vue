@@ -149,7 +149,9 @@
                               <v-icon>mdi-exit-to-app</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title>Leave</v-list-item-title>
+                              <v-list-item-title @click="leaveFromCommunity(item)"
+                                >Leave</v-list-item-title
+                              >
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item>
@@ -290,6 +292,7 @@ export default {
     this.getAllCommunitiesListData()
   },
   methods: {
+    leaveFromCommunity() {},
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)
