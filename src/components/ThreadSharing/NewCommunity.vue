@@ -19,7 +19,7 @@
                 outlined
                 class="edit-name-textfield"
                 v-model="name"
-                :rules="[nameRules.regex, nameRules.required]"
+                :rules="[nameRules.empty, nameRules.required]"
                 required
               >
               </v-text-field>
