@@ -103,7 +103,7 @@ const investigations = {
             {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigations Details Item Has Been Deleted Succesfully'
+              message: 'Investigations Details Item Has Been Deleted Successfully'
             },
             { root: true }
           )
@@ -130,7 +130,7 @@ const investigations = {
             {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'User Warning Message Has Been Sent Succesfully'
+              message: 'User Warning Message Has Been Sent Successfully'
             },
             { root: true }
           )
@@ -157,7 +157,7 @@ const investigations = {
             {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigation Stopped Succesfully'
+              message: 'Investigation Stopped Successfully'
             },
             { root: true }
           )
@@ -312,7 +312,7 @@ const investigations = {
             'common/createSnackBar',
             {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigation Created Succesfully'
+              message: 'Investigation Created Successfully'
             },
             { root: true }
           )
@@ -352,7 +352,7 @@ const investigations = {
             'common/createSnackBar',
             {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Saved Succesfully'
+              message: 'Saved Successfully'
             },
             { root: true }
           )

@@ -1055,7 +1055,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been updated succesfully'
+            message: 'Comment has been updated successfully'
           })
           getComments(this.post.communityPostResourceId)
             .then((response) => {
@@ -1081,7 +1081,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been deleted succesfully'
+            message: 'Comment has been deleted successfully'
           })
           getComments(this.post.communityPostResourceId)
             .then((response) => {
@@ -1199,7 +1199,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment added has been succesfully'
+            message: 'Comment added has been successfully'
           })
           getComments(this.post.communityPostResourceId)
             .then((response) => {

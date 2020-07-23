@@ -232,7 +232,7 @@ export default {
             .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Community updated succesfully'
+                message: 'Community updated successfully'
               })
               refThis.$emit('closeAdd')
             })
@@ -247,7 +247,7 @@ export default {
             .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Community created succesfully'
+                message: 'Community created successfully'
               })
               refThis.$emit('closeAdd')
             })
