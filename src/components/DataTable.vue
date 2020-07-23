@@ -401,7 +401,7 @@
               :maxWidth="col.maxWidth || ''"
               :minWidth="col.minWidth || ''"
               :prop="col.property"
-              :sortable="'custom'"
+              :sortable="col.hideSort ? false : 'custom'"
               :width="col.width || ''"
               v-for="(col, ind) of columns"
               v-if="col.show"
