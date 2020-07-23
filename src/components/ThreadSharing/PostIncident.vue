@@ -2066,8 +2066,7 @@ export default {
           }
         }
         //CommunityResourceId:this.$route.params.id ,
-
-        updateCommunityPost(this.$route.params.id || this.editItem.communityResourceId, payload)
+        updateCommunityPost(this.editItem.communityPostResourceId, payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
