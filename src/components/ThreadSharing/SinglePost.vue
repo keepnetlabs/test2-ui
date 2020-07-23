@@ -1218,7 +1218,7 @@ export default {
       deleteCommunityPost(postId)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Community post has been deleted successfuly'
           })
           this.$emit('refreshData')

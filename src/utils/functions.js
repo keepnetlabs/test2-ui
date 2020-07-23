@@ -144,5 +144,5 @@ export function isOwnerOrMember(membershipStatusId) {
 }
 
 export function isOwner(membershipStatusId) {
-  return membershipStatusId === 1 ? true : false
+  return membershipStatusId === 1
 }
