@@ -245,6 +245,11 @@
                   dense
                   outlined
                   v-bind="col.editOptions.props"
+                  :disabled="
+                    col.editOptions.getDisabledValue
+                      ? col.editOptions.getDisabledValue(copyOfEditedRows[0])
+                      : false
+                  "
                   v-if="
                     !multipleValues(col.property) &&
                     editMode &&

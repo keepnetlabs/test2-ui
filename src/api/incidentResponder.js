@@ -41,3 +41,7 @@ export function updateNotifiedEmail(id, payload) {
 export function getRoiSettings() {
   return testRequest.get('/companies/roi-settings')
 }
+
+export function updateRoiSettings(payload) {
+  return testRequest.put('/companies/roi-settings', payload)
+}

@@ -78,7 +78,7 @@ const investigations = {
     },
     SET_IRSUMMARY(state, payload) {
       let data = payload.data
-
+      console.log('irSummary', data)
       state.irSummary = data
     },
     SET_TARGETUSERSLIST(state, payload) {
@@ -194,6 +194,7 @@ const investigations = {
       await investigationDetailsListFunction(obj.data, obj.id)
         .then((response) => {
           const result = response.data
+          console.log('investigationDetailsListFunction', result)
           commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
         })
         .catch((error) => {
@@ -214,7 +215,7 @@ const investigations = {
       await getInvestigationDetailsDataFunction(id)
         .then((response) => {
           const result = response.data
-          console.log('result', result)
+          console.log('getInvestigationDetailsData', result)
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
         .catch(() => {

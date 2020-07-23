@@ -164,12 +164,11 @@ export default {
   },
   computed: {
     getAddOnStatus() {
-      return (
-        this.phishingReportSummary &&
-        `${this.phishingReportSummary.onlineUsersCount || 0} of ${
-          this.phishingReportSummary.totalUsersCount || 0
-        }`
-      )
+      return this.phishingReportSummary
+        ? `${this.phishingReportSummary.onlineUsersCount || 0} of ${
+            this.phishingReportSummary.totalUsersCount || 0
+          }`
+        : 0
     }
   },
   methods: {

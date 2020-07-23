@@ -179,11 +179,13 @@
                   </el-date-picker>
 
                   <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
-                    <div class="v-messages theme--light error--text" role="alert">
-                      <div class="v-messages__wrapper">
-                        <div class="v-messages__message">Date required</div>
+                    <transition appear name="bounce">
+                      <div class="v-messages theme--light error--text" role="alert">
+                        <div class="v-messages__wrapper">
+                          <div class="v-messages__message">Date required</div>
+                        </div>
                       </div>
-                    </div>
+                    </transition>
                   </div>
                 </div>
               </v-list-item-content>
@@ -2974,6 +2976,18 @@ export default {
       overflow: initial !important;
       display: inline-flex !important;
     }
+  }
+}
+.bounce-enter-active {
+  animation: bounce 0.5s;
+}
+@keyframes bounce {
+  0% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translate(0, 0);
   }
 }
 </style>

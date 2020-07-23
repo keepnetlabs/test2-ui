@@ -5,7 +5,7 @@
         size="big"
         :status="isShowRoi"
         icon="mdi-cog"
-        :title="'\ROI Summary Settings'"
+        :title="'ROI Summary Settings'"
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
@@ -18,7 +18,7 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHourCost"
-                  required
+                  :rules="[(v) => validations.required(v, 'Required')]"
                   type="number"
                 ></v-text-field>
               </v-list-item-content>
@@ -31,8 +31,8 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHour"
+                  :rules="[(v) => validations.required(v, 'Required')]"
                   type="number"
-                  required
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -47,11 +47,7 @@
               text
               >CANCEL</v-btn
             >
-            <v-btn
-              class="mr-n2 download-modal__button"
-              @click="isShowRoi = false"
-              color="#2196f3"
-              text
+            <v-btn class="mr-n2 download-modal__button" @click="submitRoiModal" color="#2196f3" text
               >Save</v-btn
             >
           </div>
@@ -83,7 +79,11 @@
         >
           <div class="card-header">
             <span class="head">Phishing Reporter</span>
-            <v-icon color="#fff">mdi-open-in-new</v-icon>
+            <router-link to="/phishing-reporter">
+              <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
+                >mdi-open-in-new</v-icon
+              >
+            </router-link>
           </div>
           <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
             <div class="card-body">
@@ -111,15 +111,21 @@
             <div class="card-footer no-data-text">
               Add-in isn’t installed at any users’ account, yet
             </div>
-            <button
+            <v-btn
               class="btn-action btn-playbook btn-playbook__no-data"
               rounded
+              color="white"
+              style="box-shadow: none !important;"
               @click="emptyPhishingButtonClick"
             >
               Start Now
-            </button>
+            </v-btn>
           </div>
-          <div class="bg-image" style="bottom: 10px; right: 0;">
+          <div
+            class="bg-image"
+            style="bottom: 10px; right: 0;"
+            :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
+          >
             <img src="../assets/img/shape.svg" />
           </div>
         </div>
@@ -131,7 +137,6 @@
         >
           <div class="card-header">
             <span class="head">Incident Analysis</span>
-            <v-icon color="#fff">mdi-open-in-new</v-icon>
           </div>
           <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
             <div class="card-body">
@@ -161,31 +166,25 @@
             Start Now
           </button>-->
           </div>
-          <div class="bg-image">
+          <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
             <img src="../assets/img/ic-warning.svg" />
           </div>
         </div>
         <div
           class="dashboard-cards investigations mr-2"
           :class="{
-            'no-data__opacity-green':
-              irSummary &&
-              irSummary.investigationTypeCount &&
-              JSON.stringify(irSummary.investigationTypeCount) === '{}'
+            'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
           }"
         >
           <div class="card-header">
             <span class="head">Investigations</span>
-            <v-icon color="#fff">mdi-open-in-new</v-icon>
+            <router-link :to="'/investigations'">
+              <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
+                >mdi-open-in-new</v-icon
+              >
+            </router-link>
           </div>
-          <div
-            class="columns-row__body"
-            v-if="
-              irSummary &&
-              irSummary.investigationTypeCount &&
-              JSON.stringify(irSummary.investigationTypeCount) !== '{}'
-            "
-          >
+          <div class="columns-row__body" v-if="isInvestigationsEmpty(irSummary)">
             <div class="card-body">
               <div class="body-row">
                 {{
@@ -210,23 +209,31 @@
           </div>
           <div class="columns-row__body" v-else>
             <div class="card-footer no-data-text">You haven’t started any investigations, yet</div>
-            <button
+            <v-btn
               class="btn-action btn-playbook btn-playbook__no-data"
-              block
               rounded
-              @click="emptyInvestigationButtonClick"
+              color="white"
+              style="box-shadow: none !important;"
+              @click="emptyPhishingButtonClick"
             >
               Start Now
-            </button>
+            </v-btn>
           </div>
-          <div class="bg-image">
+          <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
             <img src="../assets/img/ic-check-box.svg" />
           </div>
         </div>
-        <div class="dashboard-cards roi-summary">
+        <div
+          class="dashboard-cards roi-summary"
+          :class="{
+            'no-data__opacity-purple': isPhishingEmpty(irSummary)
+          }"
+        >
           <div class="card-header">
             <span class="head">ROI Summary</span>
-            <v-icon color="#fff" @click="isShowRoi = true">mdi-cog</v-icon>
+            <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
+              >mdi-cog</v-icon
+            >
           </div>
           <div class="card-body">
             <div class="body-row">
@@ -310,7 +317,6 @@
                               :columns="matchingInvestigation.columns"
                               :countRow="5"
                               :pageSizes="[5, 10, 20, 50, 100]"
-                              :border="false"
                               :showHeader="true"
                               :defaultSort="'subject'"
                               :selectable="false"
@@ -318,7 +324,6 @@
                               :options="true"
                               :rowActions="[]"
                               :cell-padding="15"
-                              class="no-sub-border-datatable"
                               :empty="matchingInvestigation.iEmpty"
                             />
                           </v-list-item-content>
@@ -420,19 +425,40 @@
             @handleEdit="handleEdit"
             titleKey="subject"
           >
-            <template v-slot:datatable-custom-column="{ scope }">
-              <span v-if="scope.row.matchingPlaybooks.length === 0">
-                {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
-              </span>
-              <router-link
-                tag="span"
-                :key="item.resourceId"
-                v-else
-                :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
-                v-for="item in scope.row.matchingPlaybooks"
-                class="incident-responder-parent__link"
-                >{{ item.name }}</router-link
-              >
+            <template v-slot:datatable-custom-column="{ scope, col }">
+              <template v-if="scope.column.property === 'source'">
+                <span v-if="scope.row.matchingPlaybooks.length === 0">
+                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                </span>
+                <router-link
+                  tag="span"
+                  :key="item.resourceId"
+                  v-else
+                  :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
+                  v-for="item in scope.row.matchingPlaybooks"
+                  class="incident-responder-parent__link"
+                  >{{ item.name }}</router-link
+                >
+              </template>
+              <template v-if="scope.column.property === 'status'">
+                <template v-if="scope.row.status === 'InAnalysis'">
+                  <span class="analysis-link">
+                    <div>
+                      In Analysis..
+                    </div>
+                    <div>
+                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                    </div>
+                  </span>
+                </template>
+                <template v-else>
+                  <data-table-colorful-text
+                    :col="col"
+                    :scope="scope"
+                    :text="getDataTableFieldLabel(scope.row.status)"
+                  />
+                </template>
+              </template>
             </template>
             <template v-slot:extended-view-slot>
               <div class="row-edit-div">
@@ -506,7 +532,9 @@
   </div>
 </template>
 <script>
-import { getRoiSettings, updateNotifiedEmail } from '../api/incidentResponder'
+import { getRoiSettings, updateNotifiedEmail, updateRoiSettings } from '../api/incidentResponder'
+import { getDataTableFieldLabel } from '../utils/functions'
+import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
@@ -519,13 +547,14 @@ import {
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { exportPhishingReporterUserList } from '../api/phishingReporter'
+import { maxLength, required } from '../utils/validations'
 
 export default {
   components: {
     Datatable,
     NewInvestigation,
-    AppDialog
+    AppDialog,
+    DataTableColorfulText
   },
 
   data: () => ({
@@ -542,6 +571,9 @@ export default {
     noteDisableStatus: false,
     baseManHour: null,
     baseManHourCost: null,
+    validations: {
+      required
+    },
     topRules: {
       table: [],
       columns: [
@@ -776,6 +808,13 @@ export default {
           isEditable: true,
           editOptions: {
             component: 'select',
+            getDisabledValue(row) {
+              if (row.status === 'InAnalysis') {
+                return true
+              } else {
+                return false
+              }
+            },
             props: {
               items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
             }
@@ -795,11 +834,18 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
-          type: 'colorfulText',
+          type: 'slot',
           width: '150',
           fullWidth: true,
           editOptions: {
             component: 'select',
+            getDisabledValue(row) {
+              if (row.status === 'InAnalysis') {
+                return true
+              } else {
+                return false
+              }
+            },
             props: {
               items: [
                 'Open',
@@ -988,6 +1034,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    getDataTableFieldLabel(text) {
+      return getDataTableFieldLabel(text)
+    },
     callForGetRoiSettings() {
       getRoiSettings().then((response) => {
         const {
@@ -996,6 +1045,40 @@ export default {
         this.baseManHour = data.baseManHour
         this.baseManHourCost = data.baseManHourCost
       })
+    },
+    submitRoiModal() {
+      updateRoiSettings({
+        baseManHour: this.baseManHour,
+        baseManHourCost: this.baseManHourCost
+      }).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+      })
+      this.isShowRoi = false
+    },
+    isRoiSummaryEmpty(summary) {
+      return !!summary
+    },
+    isInvestigationsEmpty(summary) {
+      if (summary && summary.investigationTypeCount) {
+        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount)
+        if (investigationTypeCountKeys.length > 0) {
+          let hasValue = false
+          for (let key of investigationTypeCountKeys) {
+            if (summary.investigationTypeCount[key]) {
+              hasValue = true
+            }
+          }
+          return hasValue
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen) {
@@ -1351,8 +1434,12 @@ export default {
           letter-spacing: normal;
         }
 
+        a {
+          text-decoration: none !important;
+        }
+
         i {
-          font-size: 20px !important;
+          font-size: 24px !important;
         }
       }
 
@@ -1743,6 +1830,10 @@ export default {
       padding: 0;
     }
   }
+  .k-dialog__header {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
   .k-dialog__body {
     padding-bottom: 0;
   }
@@ -1762,5 +1853,25 @@ export default {
   line-height: 1.29;
   letter-spacing: normal;
   color: #2196f3;
+}
+.no-data__opacity-green {
+  background-image: linear-gradient(to bottom, #268a50, #265229);
+}
+.no-data__opacity-purple {
+  background-image: linear-gradient(to bottom, #72517b, #431d4e) !important;
+}
+
+.incident-responder .analysis-link {
+  display: flex;
+  text-align: left;
+  color: #212121;
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.29;
+  letter-spacing: normal;
+  align-items: center;
+  justify-content: center;
 }
 </style>
