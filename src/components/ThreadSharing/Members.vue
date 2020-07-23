@@ -493,7 +493,6 @@ export default {
     search: function (newVal, oldVal) {
       if (newVal !== oldVal) {
         this.debounce(() => {
-          debugger
           if (this.tab === 0) {
             this.getMembers()
           } else {
