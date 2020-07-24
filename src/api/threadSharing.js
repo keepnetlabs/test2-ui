@@ -206,3 +206,9 @@ export function deleteComments(id) {
 export function removeFromCommunities(id) {
   return testRequest.delete(`communities/${id}/leave`)
 }
+
+export function removeFromCommunity(id, value) {
+  return testRequest.delete(`communities/${id}/remove-member`, {
+    data: { RemovedCompanyResourceId: value }
+  })
+}

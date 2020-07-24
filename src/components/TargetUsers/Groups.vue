@@ -8,7 +8,7 @@
     <delete-group-modal
       :status="showDeleteGroupModal"
       @changeDeleteGroupModalStatus="changeDeleteGroupModalStatus"
-      @handleDelete="callForDeleteGroup"
+      @handleDelete="handleDeleteGroup"
       :selected-row="selectedRow"
     />
     <datatable
@@ -50,7 +50,13 @@
 
 <script>
 import DataTable from '../DataTable'
-import { getTargetGroups, createTargetGroup, updateTargetGroup } from '../../api/targetUsers'
+import {
+  getTargetGroups,
+  createTargetGroup,
+  updateTargetGroup,
+  deleteTargetUser,
+  deleteTargetGroup
+} from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 
 import DeleteGroupModal from './DeleteGroupModal'
@@ -220,10 +226,14 @@ export default {
       })
     },
     callForTargetGroups() {
-      getTargetGroups().then((response) => {
-        const { data } = response.data
-        this.$refs.refGroupsTable.loadWithDataArray(data)
-      })
+      getTargetGroups()
+        .then((response) => {
+          const { data } = response.data
+          this.$refs.refGroupsTable.loadWithDataArray(data)
+        })
+        .catch((error) => {
+          this.$refs.refGroupsTable.loadWithDataArray([])
+        })
     },
     callForDeleteGroup() {
       //TODO
@@ -241,7 +251,22 @@ export default {
         })
     },
     handleDelete(selectedRow) {
+      this.changeDeleteGroupModalStatus(true)
       this.selectedRow = selectedRow
+    },
+    handleDeleteGroup(selectedRow) {
+      deleteTargetGroup(selectedRow.resourceId)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.callForTargetGroups()
+          }
+        })
+        .catch((error) => {})
     }
   },
   created() {

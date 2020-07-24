@@ -93,17 +93,14 @@
                                   <v-list-item-title>See posted incidents</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
-                              <!--<v-list-item
-                                v-if="setRemoveFromCommunityVisibility(member)"
-                                @click="removeFromCommunity(member.CompanyId)"
-                              >
+                              <v-list-item @click="removeFromCommunity(member.companyResourceId)">
                                 <v-list-item-icon>
                                   <v-icon>mdi-delete</v-icon>
                                 </v-list-item-icon>
                                 <v-list-item-content>
                                   <v-list-item-title>Remove from community</v-list-item-title>
                                 </v-list-item-content>
-                              </v-list-item>-->
+                              </v-list-item>
                             </v-list-item-group>
                           </v-list>
                         </div>
@@ -268,7 +265,8 @@ import {
   getCommunityDetails,
   getCommunityMembers,
   getCommunityMembersRequest,
-  refuseCommunityMembershipRequest
+  refuseCommunityMembershipRequest,
+  removeFromCommunity
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 export default {
@@ -413,7 +411,21 @@ export default {
         })
     },
     isOwnerOfTheCommunity() {},
-    removeFromCommunity(compId) {},
+    removeFromCommunity(compId) {
+      removeFromCommunity(this.$route.params.id, compId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: '' // @atakan @nejat mesaj
+          })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when remove a community member'
+          })
+        })
+    },
     onRemoveMember() {},
     getMembers() {
       const payload = {
