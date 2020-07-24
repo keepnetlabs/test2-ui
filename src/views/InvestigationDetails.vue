@@ -916,28 +916,19 @@ export default {
         width: 110
       },
       {
-        property: 'analyzeActionTypeStatus',
-        align: 'center',
-        sortable: true,
-        label: 'Action Status',
+        property: 'filterTags',
+        align: 'left',
+        isEditable: false,
+        type: 'textWithBadge',
         show: true,
-        width: 180,
-        type: 'badge'
+        label: 'Filtered By',
+        width: 150
       },
       {
-        property: 'warningActionTypeStatus',
+        property: 'status',
         align: 'center',
         sortable: true,
-        label: 'Warning Status',
-        show: true,
-        width: 180,
-        type: 'badge'
-      },
-      {
-        property: 'deleteActionTypeStatus',
-        align: 'center',
-        sortable: true,
-        label: 'Delete Status',
+        label: 'Status',
         show: true,
         width: 180,
         type: 'badge'

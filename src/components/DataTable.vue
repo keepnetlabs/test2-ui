@@ -752,7 +752,6 @@ window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
-import VueApexCharts from 'vue-apexcharts'
 import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
@@ -1091,7 +1090,19 @@ export default {
       const spanWidth = span.getBoundingClientRect().width + 15 + this.cellPadding
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
-        this.overFlowTooltipContent = row[column.property]
+        const typeOfProp = typeof row[column.property]
+        let text
+        switch (typeOfProp) {
+          case 'object':
+            text = row[column.property].join(',')
+            break
+          case 'string':
+            text = row[column.property]
+            break
+          default:
+            break
+        }
+        this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + 60}px`,
           left: `${parentRect.left + this.cellPadding}px`
