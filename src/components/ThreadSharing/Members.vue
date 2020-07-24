@@ -450,17 +450,10 @@ export default {
           ]
         }
       }
-      getCommunityMembers(this.$route.params.id, payload)
-        .then((response) => {
-          const { data } = response
-          this.members = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting community members'
-          })
-        })
+      getCommunityMembers(this.$route.params.id, payload).then((response) => {
+        const { data } = response
+        this.members = data.data.results
+      })
     },
     getRequestMembers() {
       if (

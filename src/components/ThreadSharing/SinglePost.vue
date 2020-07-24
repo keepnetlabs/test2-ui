@@ -1057,17 +1057,10 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been updated successfully'
           })
-          getComments(this.post.communityPostResourceId)
-            .then((response) => {
-              const { data } = response
-              this.comments = data.data
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when getting comments'
-              })
-            })
+          getComments(this.post.communityPostResourceId).then((response) => {
+            const { data } = response
+            this.comments = data.data
+          })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1083,18 +1076,10 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been deleted successfully'
           })
-          getComments(this.post.communityPostResourceId)
-            .then((response) => {
-              const { data } = response
-              this.comments = data.data
-            })
-            .catch((error) => {
-              this.comments = []
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when getting comments'
-              })
-            })
+          getComments(this.post.communityPostResourceId).then((response) => {
+            const { data } = response
+            this.comments = data.data
+          })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1125,20 +1110,13 @@ export default {
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
-      getComments(this.post.communityPostResourceId)
-        .then((response) => {
-          const { data } = response
-          this.comments = data.data
-          this.comments = this.comments.map((item) => {
-            return { ...item, isEdit: false, commentValue: null }
-          })
+      getComments(this.post.communityPostResourceId).then((response) => {
+        const { data } = response
+        this.comments = data.data
+        this.comments = this.comments.map((item) => {
+          return { ...item, isEdit: false, commentValue: null }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting comments'
-          })
-        })
+      })
       getCommunityPost(this.post.communityPostResourceId).then((response) => {
         this.postDetails = response.data.data
       })
@@ -1201,17 +1179,10 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment added has been successfully'
           })
-          getComments(this.post.communityPostResourceId)
-            .then((response) => {
-              const { data } = response
-              this.comments = data.data
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when getting comments'
-              })
-            })
+          getComments(this.post.communityPostResourceId).then((response) => {
+            const { data } = response
+            this.comments = data.data
+          })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

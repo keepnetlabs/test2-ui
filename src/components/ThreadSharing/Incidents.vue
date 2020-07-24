@@ -188,33 +188,19 @@ export default {
         }
       }
       if (this.$router.currentRoute.name === 'Community') {
-        getCOmmunityIncidentList(this.$route.params.id, payload)
-          .then((response) => {
-            this.incidentList = response.data.data.results
-            this.incidentList = this.incidentList.map((item) => {
-              return { ...item, isToggle: false }
-            })
+        getCOmmunityIncidentList(this.$route.params.id, payload).then((response) => {
+          this.incidentList = response.data.data.results
+          this.incidentList = this.incidentList.map((item) => {
+            return { ...item, isToggle: false }
           })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting incident list'
-            })
-          })
+        })
       } else {
-        getIncidentList(payload)
-          .then((response) => {
-            this.incidentList = response.data.data.results
-            this.incidentList = this.incidentList.map((item) => {
-              return { ...item, isToggle: false }
-            })
+        getIncidentList(payload).then((response) => {
+          this.incidentList = response.data.data.results
+          this.incidentList = this.incidentList.map((item) => {
+            return { ...item, isToggle: false }
           })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting incident list'
-            })
-          })
+        })
       }
     }
   },

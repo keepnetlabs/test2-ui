@@ -331,17 +331,10 @@ export default {
       this.getAllCommunitiesListData()
     },
     getInvitions() {
-      getInvitations()
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
-          })
-        })
+      getInvitations().then((response) => {
+        const { data } = response
+        this.listData = data.data.results
+      })
     },
     getAllCommunitiesListData() {
       const payload = {
@@ -371,17 +364,10 @@ export default {
           ]
         }
       }
-      getAllCommunityList(payload)
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
-          })
-        })
+      getAllCommunityList(payload).then((response) => {
+        const { data } = response
+        this.listData = data.data.results
+      })
     },
     getMyCommunitiesListData() {
       const payload = {
@@ -411,17 +397,10 @@ export default {
           ]
         }
       }
-      getMyCommunityList(payload)
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting my community list'
-          })
-        })
+      getMyCommunityList(payload).then((response) => {
+        const { data } = response
+        this.listData = data.data.results
+      })
     },
     communityDetails(item) {
       if (isOwnerOrMember(item.membershipStatusId)) {
