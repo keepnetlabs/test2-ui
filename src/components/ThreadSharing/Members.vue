@@ -8,7 +8,7 @@
           v-if="
             communityDetails &&
             communityDetails.myMembershipStatusId &&
-            communityDetails.myMembershipStatusId === 1 &&
+            communityDetails.myMembershipStatusId == 1 &&
             communityDetails.privacyStatusId &&
             communityDetails.privacyStatusId === 2
           "
@@ -464,8 +464,8 @@ export default {
     },
     getRequestMembers() {
       if (
-        this.communityDetails.myMembershipStatusId === 1 &&
-        this.communityDetails.privacyStatusId === 2
+        this.communityDetails.myMembershipStatusId == 1 &&
+        this.communityDetails.privacyStatusId == 2
       ) {
         const payload = {
           pageNumber: 1,

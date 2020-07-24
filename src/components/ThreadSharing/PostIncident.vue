@@ -2121,7 +2121,7 @@ export default {
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Community has been created'
+              message: 'Post has been created'
             })
             this.$emit('closeIncidentModal')
             this.$emit('refreshData')
