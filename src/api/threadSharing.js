@@ -216,3 +216,7 @@ export function removeFromCommunity(id, value) {
 export function inviteToCommunity(id, payload) {
   return testRequest.post(`communities/${id}/invite`, payload)
 }
+
+export function appointNewOwner(id, payload) {
+  return testRequest.post(`communities/${id}/appoint-owner`, payload)
+}

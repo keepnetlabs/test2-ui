@@ -93,6 +93,17 @@
                                   <v-list-item-title>See posted incidents</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
+                              <v-list-item>
+                                <v-list-item-icon>
+                                  <v-icon>mdi-account-multiple-plus</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                  <v-list-item-title
+                                    @click="appointANewOwner(member.companyResourceId)"
+                                    >Appoint a new owner</v-list-item-title
+                                  >
+                                </v-list-item-content>
+                              </v-list-item>
                               <v-list-item @click="removeFromCommunity(member.companyResourceId)">
                                 <v-list-item-icon>
                                   <v-icon>mdi-delete</v-icon>
@@ -262,6 +273,7 @@
 import VueApexCharts from 'vue-apexcharts'
 import {
   acceptCommunityMembershipRequest,
+  appointNewOwner,
   getCommunityDetails,
   getCommunityMembers,
   getCommunityMembersRequest,
@@ -269,11 +281,17 @@ import {
   removeFromCommunity
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+
 export default {
   components: {
     apexchart: VueApexCharts
   },
   data: () => ({
+    newOwnerRule: {
+      limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
+    },
+    AppointedCompanyResourceId: null,
+    openNewOwnerModal: false,
     communityDetails: null,
     tab: null,
     members: [],
@@ -360,6 +378,17 @@ export default {
     this.getCommunityDetails()
   },
   methods: {
+    appointANewOwner(item) {
+      const payload = {
+        AppointedCompanyResourceId: item
+      }
+      appointNewOwner(this.$route.params.id, payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'New community owner request has been sent successfully'
+        })
+      })
+    },
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)
