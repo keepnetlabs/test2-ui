@@ -424,11 +424,13 @@ export default {
         })
     },
     communityDetails(item) {
-      localStorage.setItem('communityName', item.communityName)
-      this.$router.push({
-        name: `Community`,
-        params: { id: item.communityResourceId, item: item }
-      })
+      if (isOwnerOrMember(item.membershipStatusId)) {
+        localStorage.setItem('communityName', item.communityName)
+        this.$router.push({
+          name: `Community`,
+          params: { id: item.communityResourceId, item: item }
+        })
+      }
     },
     updateCommunities() {
       switch (this.selectedTab) {
