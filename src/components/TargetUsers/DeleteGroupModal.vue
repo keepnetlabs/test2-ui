@@ -6,7 +6,7 @@
     subtitle="Do you want to delete this group?"
     @changeStatus="changeDeleteGroupStatus"
   >
-    <template v-slot:app-dialog-body> {{ getGroupName }} will be deleted ! </template>
+    <template v-slot:app-dialog-body> {{ getGroupName }} will be permanently deleted. </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
         <v-btn class="users__button" text color="#f56c6c" @click="changeDeleteGroupStatus(false)"

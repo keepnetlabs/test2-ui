@@ -226,10 +226,14 @@ export default {
       })
     },
     callForTargetGroups() {
-      getTargetGroups().then((response) => {
-        const { data } = response.data
-        this.$refs.refGroupsTable.loadWithDataArray(data)
-      })
+      getTargetGroups()
+        .then((response) => {
+          const { data } = response.data
+          this.$refs.refGroupsTable.loadWithDataArray(data)
+        })
+        .catch((error) => {
+          this.$refs.refGroupsTable.loadWithDataArray([])
+        })
     },
     callForDeleteGroup() {
       //TODO
