@@ -111,6 +111,10 @@ export default {
         if (this.maximumRenderedBadgeCount > this.badges.length) {
           this.maximumRenderedBadgeCount = this.badges.length
         }
+        if (this.maximumRenderedBadgeCount < 0) {
+          this.maximumRenderedBadgeCount = 0
+        }
+
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
       }
     }

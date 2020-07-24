@@ -34,7 +34,10 @@ export default {
   name: 'ShowMore',
   props: {
     data: {
-      type: Array
+      type: Array,
+      default: () => {
+        return []
+      }
     }
   },
   data() {
@@ -55,9 +58,9 @@ export default {
     },
     getIconName() {
       if (this.status) {
-        return 'mdi-arrow-up'
+        return 'mdi-arrow-up-drop-circle-outline'
       } else {
-        return 'mdi-arrow-down'
+        return 'mdi-arrow-down-drop-circle-outline'
       }
     }
   },
@@ -72,26 +75,10 @@ export default {
   },
   methods: {
     getChips() {
-      console.log('this.computedData', this.computedData)
       const containerWidth =
         Math.floor(
           this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
         ) || 0
-      /*
-      const averageChipWidth =
-        this.computedData.reduce((acc, item) => {
-          const keys = Object.keys(item)
-          let avgItemWidth = 0
-          for (let key of keys) {
-            avgItemWidth += key.length
-            avgItemWidth += item[key].length
-          }
-          avgItemWidth *= 9
-          acc = acc + avgItemWidth
-          return acc
-        }, 0) / this.computedData.length
-
-       */
       const averageChipWidth = 250
       console.log('averageChipWidth', averageChipWidth)
       this.renderedBadgeCount = Math.floor(containerWidth / averageChipWidth)
@@ -113,7 +100,6 @@ export default {
     },
     changeStatus() {
       this.status = this.status ? 0 : 1
-      console.log('this.status', this.status)
     },
     getRenderStatusOfButton() {
       return !(
@@ -157,7 +143,7 @@ export default {
       line-height: 1.17;
       letter-spacing: 0.3px;
       color: #ffffff;
-      text-transform: lowercase;
+      text-transform: initial;
     }
   }
   &__hidden {

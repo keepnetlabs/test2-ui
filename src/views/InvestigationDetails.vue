@@ -653,19 +653,7 @@
                 class="investigation-details__container__content--right-menu__target-users--list"
                 v-if="investigationDetailsData.targetUserType !== 'AllUsers'"
               >
-                <show-more :data="investigationDetailsData.targetUsers" />
-                <v-chip
-                  v-if="false"
-                  class="mr-1 mt-2"
-                  v-for="(item, index) in investigationDetailsData.targetUsers"
-                  :key="index"
-                  >{{ item.targetUser && `User: ${item.targetUser}`
-                  }}{{
-                    item.targetGroup &&
-                    `Group:
-                ${item.targetGroup}`
-                  }}
-                </v-chip>
+                <show-more :data="targetUserChips" />
               </div>
               <div
                 class="investigation-details__container__content--right-menu__target-users--list"
@@ -685,63 +673,6 @@
                   ...investigationDetailsData.attachments
                 ]"
               />
-              <div
-                v-if="false"
-                class="investigation-details__container__content--right-menu__filters--list d-flex"
-                style="flex-wrap: wrap;"
-              >
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  v-for="item in investigationDetailsData.headers"
-                  class="mr-2 investigation__attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    :key="value + key"
-                    v-if="value && key !== 'resourceId'"
-                    >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
-                    {{ value }}
-                  </v-chip>
-                </template>
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  v-for="item in investigationDetailsData.bodies"
-                  class="investigation__attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    v-if="value && key !== 'resourceId'"
-                    :key="value + key"
-                    >{{ key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
-                    {{ value }}
-                  </v-chip>
-                </template>
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  class="investigation__attachments"
-                  v-for="item in investigationDetailsData.attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    v-if="value && key !== 'resourceId' && key !== 'sha512'"
-                    :key="value + key"
-                    >{{ key.toUpperCase() }}: {{ value }}
-                  </v-chip>
-                </template>
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  class="investigation__attachments"
-                  v-for="item in investigationDetailsData.attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    v-if="key === 'sha512' && value"
-                    :key="value + key"
-                    >{{ key.toUpperCase() }}:
-                    {{ value }}
-                  </v-chip>
-                </template>
-              </div>
             </div>
             <div v-if="activeMenu !== 'targetUsers'">
               <datatable
@@ -809,7 +740,7 @@
 <script>
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { getStoreValue } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
@@ -836,6 +767,7 @@ export default {
     isWantToDelete: false,
     isWantToWarn: false,
     isWantToStop: false,
+    targetUserChips: [],
     isWantToWarnAndDelete: false,
     totalSelectedItemsCount: [],
     investigationListBodyData: {
@@ -1491,6 +1423,22 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     })
+  },
+  watch: {
+    investigationDetailsData(val) {
+      const tempArr = []
+      if (val.targetUserType === 'Groups') {
+        for (let user of val.targetUsers) {
+          tempArr.push({ Group: user.targetUser })
+        }
+      } else {
+        for (let user of val.targetUsers) {
+          tempArr.push({ User: user.targetUser })
+        }
+      }
+      this.targetUserChips = tempArr
+      this.$forceUpdate()
+    }
   },
   created() {},
   mounted() {
