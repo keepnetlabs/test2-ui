@@ -212,3 +212,7 @@ export function removeFromCommunity(id, value) {
     data: { RemovedCompanyResourceId: value }
   })
 }
+
+export function inviteToCommunity(id, payload) {
+  return testRequest.post(`communities/${id}/invite`, payload)
+}

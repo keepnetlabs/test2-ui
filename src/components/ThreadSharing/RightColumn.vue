@@ -1,5 +1,39 @@
 <template>
   <v-card class="pop-up-card pt-4 pl-6 pr-6" light min-height="300">
+    <app-dialog
+      :status="openInviteModal"
+      icon="mdi-account-multiple-plus"
+      title="Invite Members"
+      subtitle="Bring new members to the community"
+      size="big"
+    >
+      <template v-slot:app-dialog-body>
+        <v-combobox
+          :items="[]"
+          placeholder="Enter email addresses of the companies to be invited (max. 5)"
+          multiple
+          dense
+          deletable-chips
+          autocomplete="disabled"
+          small-chips
+          outlined
+          :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
+          v-model="emailarray"
+          :rules="[inviteMembers.limit]"
+          class="pop-up-card__invite-member"
+        ></v-combobox>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openInviteModal = false"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="inviteMember"
+            >Accept All</v-btn
+          >
+        </div>
+      </template>
+    </app-dialog>
     <v-btn
       v-if="$route.path == '/threat-sharing'"
       class="create-com-btn"
@@ -91,7 +125,7 @@
               {{ communityDetails.ownerCompanyName }}
             </v-col>
           </v-row>
-          <div class="about-community-table pt-8">
+          <div class="about-community-table">
             <v-row>
               <v-col cols="12" sm="6" class="about-community-table-td pb-0">
                 <span class="right-col-semibold-label">Members</span>
@@ -102,7 +136,7 @@
                   v-if="!!communityDetails && communityDetails.myMembershipStatusId == 1"
                   href="#"
                   class="pl-4"
-                  @click="isWantToAddMembers()"
+                  @click="openInviteModal = true"
                   >+Invite</a
                 >
               </v-col>
@@ -229,7 +263,7 @@
                   >mdi-account-clock
                 </v-icon>
                 <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
-                  Join
+                  JOIN
                 </div>
                 <div v-else-if="commun.isJoined" :key="commun.resourceId">
                   Request Sent
@@ -262,18 +296,26 @@ import {
   getMyLastPosts,
   getMyTopPosts,
   getsuggestedCommunities,
+  inviteToCommunity,
   joinCommunity
 } from '../../api/threadSharing'
+import AppDialog from '../AppDialog'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   data() {
     return {
+      emailarray: [],
+      openInviteModal: false,
       suggestedCommunities: [],
       communityDetails: {},
       myLastPosts: [],
       topPosts: [],
       ownerDetails: null,
-      yourPosts: []
+      yourPosts: [],
+      inviteMembers: {
+        limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
+      }
     }
   },
   props: {
@@ -282,6 +324,9 @@ export default {
       required: false,
       default: false
     }
+  },
+  components: {
+    AppDialog
   },
   created() {
     this.getCommunityDetails()
@@ -305,6 +350,33 @@ export default {
     }
   },
   methods: {
+    inviteMember() {
+      setTimeout(() => {
+        const payload = {
+          emailarray: this.emailarray
+        }
+        inviteToCommunity(this.$route.params.id, payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Members are invited to community successfully'
+            })
+          })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response &&
+              !!error.response.data.validationMessages &&
+              error.response.data.validationMessages.length
+            ) {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: error.response.data.validationMessages[0]
+              })
+            }
+          })
+      }, 200)
+    },
     getCommunityDetails() {
       if (this.$route.name == 'Community') {
         this.ownerDetails = this.$route.params.item
@@ -383,7 +455,15 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+.pop-up-card__invite-member {
+  .v-select__selections input {
+    min-height: 32px;
+  }
+  .v-input__append-inner {
+    display: none;
+  }
+}
 .notification-wrapper {
   padding: 0 !important;
   width: 100%;
