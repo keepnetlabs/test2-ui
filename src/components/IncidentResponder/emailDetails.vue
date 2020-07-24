@@ -286,42 +286,44 @@
                 v-for="(attachment, index) in mailDetails.attachments"
                 :key="attachment.resourceId"
               >
-                <div class="ed-title">
-                  <div class="d-flex" style="align-items: center;">
-                    <p class="mr-6 attachment-name">Attachment Name</p>
-                    <p class="mr-6 wrf">{{ attachment.name }}</p>
-                    <div
-                      @click="handleDownloadAttachment(attachment)"
-                      class="mr-6 cursor-pointer download"
-                    >
-                      <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                      DOWNLOAD FILE
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div class="ed-title">
+                    <div class="d-flex" style="align-items: center;">
+                      <p class="mr-6 attachment-name">Attachment Name</p>
+                      <p class="mr-6 wrf">{{ attachment.name }}</p>
+                      <div
+                        @click="handleDownloadAttachment(attachment)"
+                        class="mr-6 cursor-pointer download"
+                      >
+                        <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                        DOWNLOAD FILE
+                      </div>
+                      <p
+                        class="mr-6 cursor-pointer not-found"
+                        v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
+                      >
+                        *This file was not uploaded to any integration
+                      </p>
                     </div>
-                    <p
-                      class="mr-6 cursor-pointer not-found"
-                      v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
-                    >
-                      *This file was not uploaded to any integration
-                    </p>
                   </div>
-                </div>
-                <div class="ed-header-btn-1 collapse-details">
-                  <v-expansion-panel-header
-                    class="pa-0"
-                    style="min-height: 36px;"
-                    disable-icon-rotate
-                  >
-                    <template v-slot:actions mandatory="true">
-                      <v-btn
-                        @click.native="setSecondCollapse($event, index)"
-                        outlined
-                        rounded
-                        medium
-                        color="blue"
-                        >{{ showSecondCollapse === index ? 'COLLAPSE' : 'EXPAND' }}
-                      </v-btn>
-                    </template>
-                  </v-expansion-panel-header>
+                  <div class="ed-header-btn-1 collapse-details">
+                    <v-expansion-panel-header
+                      class="pa-0"
+                      style="min-height: 36px;"
+                      disable-icon-rotate
+                    >
+                      <template v-slot:actions mandatory="true">
+                        <v-btn
+                          @click.native="setSecondCollapse($event, index)"
+                          outlined
+                          rounded
+                          medium
+                          color="blue"
+                          >{{ showSecondCollapse === index ? 'COLLAPSE' : 'EXPAND' }}
+                        </v-btn>
+                      </template>
+                    </v-expansion-panel-header>
+                  </div>
                 </div>
                 <v-expansion-panel-content
                   v-if="showSecondCollapse === index"
@@ -330,24 +332,42 @@
                   class="pa-0 no-shadow"
                 >
                   <div class="details-content">
-                    <div class="details-content--item mt-4">
-                      <div class="details-content--item--key text-right">
+                    <div class="details-content--item mt-2">
+                      <div class="details-content--item--key attachment-item text-right">
                         SHA512
                       </div>
                       <div class="details-content--item--value">
                         {{ attachment.sha512 }}
                       </div>
+                      <v-btn
+                        @click="writeToNavigator(attachment.sha512)"
+                        text
+                        color="#2196f3"
+                        class="details-content--item--clipboard"
+                      >
+                        COPY TO CLIPBOARD
+                      </v-btn>
                     </div>
                     <div class="details-content--item">
-                      <div class="details-content--item--key text-right">
+                      <div
+                        class="details-content--item--key details-content--item--key--md5 attachment-item text-right"
+                      >
                         MD5
                       </div>
                       <div class="details-content--item--value">
                         {{ attachment.md5 }}
                       </div>
+                      <v-btn
+                        @click="writeToNavigator(attachment.md5)"
+                        text
+                        color="#2196f3"
+                        class="details-content--item--clipboard"
+                      >
+                        COPY TO CLIPBOARD
+                      </v-btn>
                     </div>
                     <div class="details-content--item">
-                      <div class="details-content--item--key text-right">
+                      <div class="details-content--item--key attachment-item text-right">
                         Content Type
                       </div>
                       <div class="details-content--item--value">
@@ -364,7 +384,6 @@
                       :table="attachmentTableOptions.tableData[index].analysisList"
                       :pageSizes="pageSizes"
                       :options="false"
-                      :border="false"
                       :empty="attachmentTableOptions.iEmpty"
                     >
                       <template v-slot:datatable-custom-column="{ scope, col }">
@@ -524,7 +543,8 @@ export default {
           align: 'left',
           label: getStoreValue(PROPERTY_STORE.DETAILS),
           show: true,
-          type: 'slot'
+          type: 'slot',
+          hideSort: true
         }
       ]
     },
@@ -631,6 +651,9 @@ export default {
         const data = attachments.filter((item) => item.isSendFile || item.isSendFileHash)
         return !!data.length
       }
+    },
+    writeToNavigator(value) {
+      navigator.clipboard.writeText(value)
     },
     handleDownloadEmail() {
       this.downloadModalStatus = true
@@ -855,12 +878,6 @@ export default {
 
   .wrap-padding {
     padding: 28px !important;
-  }
-
-  .collapse-details {
-    position: absolute;
-    top: 19px;
-    right: 24px;
   }
 
   .attachment-name {
@@ -1998,8 +2015,17 @@ export default {
   }
 }
 .details-content--item--value {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-break: anywhere;
+}
+.details-content--item--clipboard {
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.71;
+  letter-spacing: normal;
+  color: #2196f3;
+  margin-left: 24px;
 }
 .email-details__header {
   &-card {
@@ -2047,5 +2073,25 @@ export default {
   letter-spacing: normal;
   color: #2196f3;
   text-transform: uppercase !important;
+}
+
+.details-content--item {
+  align-items: center;
+}
+.details-content--item--key--md5 {
+  @media (max-width: 1300px) {
+    margin-right: 43px !important;
+  }
+}
+
+.attachment-item {
+  @media (min-width: 1380px) {
+    min-width: 125px !important;
+    max-width: 150px !important;
+  }
+
+  @media (max-width: 1300px) {
+    min-width: auto !important;
+  }
 }
 </style>

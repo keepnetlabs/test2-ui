@@ -836,6 +836,7 @@ export default {
           show: true,
           type: 'slot',
           width: '150',
+          showColorfulText: true,
           fullWidth: true,
           editOptions: {
             component: 'select',

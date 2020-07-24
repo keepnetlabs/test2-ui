@@ -89,7 +89,7 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
-                    col.type === 'colorfulText' &&
+                    (col.type === 'colorfulText' || col.showColorfulText) &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdate'
                   "

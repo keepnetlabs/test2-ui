@@ -179,6 +179,7 @@ const investigations = {
       await investigationDetailsTargetUsersListFunction(obj.data, obj.id)
         .then((response) => {
           const result = response.data
+          console.log('getInvestigationDetailsTargetUsersListData', result)
           commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
         })
         .catch(() => {
