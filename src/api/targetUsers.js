@@ -44,8 +44,8 @@ export function updateTargetGroup(payload) {
   return testRequest.put(`/target-groups/${payload.resourceId}`, payload)
 }
 
-export function deleteTargetGroup(payload) {
-  return testRequest.delete('/target-groups/n2sdsbsPU4Yt')
+export function deleteTargetGroup(resourceId) {
+  return testRequest.delete(`/target-groups/${resourceId}`)
 }
 
 export function getTargetUserCustomFieldsByCompanyId() {
