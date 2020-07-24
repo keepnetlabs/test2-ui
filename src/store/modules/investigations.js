@@ -78,7 +78,7 @@ const investigations = {
     },
     SET_IRSUMMARY(state, payload) {
       let data = payload.data
-
+      console.log('irSummary', data)
       state.irSummary = data
     },
     SET_TARGETUSERSLIST(state, payload) {
@@ -103,7 +103,7 @@ const investigations = {
             {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigations Details Item Has Been Deleted Succesfully'
+              message: 'Investigations Details Item Has Been Deleted Successfully'
             },
             { root: true }
           )
@@ -130,7 +130,7 @@ const investigations = {
             {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'User Warning Message Has Been Sent Succesfully'
+              message: 'User Warning Message Has Been Sent Successfully'
             },
             { root: true }
           )
@@ -157,7 +157,7 @@ const investigations = {
             {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigation Stopped Succesfully'
+              message: 'Investigation Stopped Successfully'
             },
             { root: true }
           )
@@ -194,6 +194,7 @@ const investigations = {
       await investigationDetailsListFunction(obj.data, obj.id)
         .then((response) => {
           const result = response.data
+          console.log('investigationDetailsListFunction', result)
           commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
         })
         .catch((error) => {
@@ -214,7 +215,7 @@ const investigations = {
       await getInvestigationDetailsDataFunction(id)
         .then((response) => {
           const result = response.data
-          console.log('result', result)
+          console.log('getInvestigationDetailsData', result)
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
         .catch(() => {
@@ -311,7 +312,7 @@ const investigations = {
             'common/createSnackBar',
             {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigation Created Succesfully'
+              message: 'Investigation Created Successfully'
             },
             { root: true }
           )
@@ -351,7 +352,7 @@ const investigations = {
             'common/createSnackBar',
             {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Saved Succesfully'
+              message: 'Saved Successfully'
             },
             { root: true }
           )

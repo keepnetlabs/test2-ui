@@ -10,7 +10,7 @@
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm">
-        <v-list-item class="k-dialog__header" v-if="icon && title && subtitle">
+        <v-list-item class="k-dialog__header" v-if="icon && title">
           <div class="v-btn v-cart-icon-wrapper" v-if="icon">
             <v-icon :color="iconColor" class="ml-2" left medium>
               {{ icon }}
@@ -18,7 +18,9 @@
           </div>
           <v-list-item-content>
             <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
-            <v-list-item-subtitle class="k-dialog__sub-title">{{ subtitle }}</v-list-item-subtitle>
+            <v-list-item-subtitle class="k-dialog__sub-title" v-if="subtitle">{{
+              subtitle
+            }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <div class="k-dialog__body" :style="[maxHeight && { maxHeight: '400px' }]">

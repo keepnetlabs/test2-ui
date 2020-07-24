@@ -305,7 +305,7 @@ const threadSharing = {
         .then(() => {
           commit('SET_NOTIFICATIONS', obj)
           dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Saved Succesfully', { root: true })
+          dispatch('common/setErrorMessage', 'Saved Successfully', { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
         })
         .catch(() => {
@@ -392,7 +392,7 @@ const threadSharing = {
       await leaveFromCommun(exitObj)
         .then(() => {
           dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Succesfully leaved from Community', { root: true })
+          dispatch('common/setErrorMessage', 'Successfully leaved from Community', { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           dispatch('getCommunities')
         })
@@ -414,7 +414,7 @@ const threadSharing = {
       await deleteTheCommun(deleteObj)
         .then(() => {
           dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Community succesfully deleted.', { root: true })
+          dispatch('common/setErrorMessage', 'Community successfully deleted.', { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
           dispatch('getCommunities')
         })
@@ -464,7 +464,7 @@ const threadSharing = {
           dispatch('getCommunities')
           dispatch('getCommunityInfo')
           dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Community succesfully updated.', { root: true })
+          dispatch('common/setErrorMessage', 'Community successfully updated.', { root: true })
           commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
         })
         .catch(() => {

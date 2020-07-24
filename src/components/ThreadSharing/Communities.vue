@@ -21,7 +21,6 @@
           :page="page"
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
-          :search="filter"
           :no-data-text="'Sorry, we couldn\'t find any results matching your criteria'"
         >
           <template v-slot:header>
@@ -52,7 +51,6 @@
                 dense
                 class="filter-field pt-6"
                 v-model="filter"
-                @input="updateCommunities()"
               ></v-text-field>
               <v-icon class="filter-icon" @click.native="updateCommunities()"
                 >mdi-filter-variant
@@ -151,7 +149,9 @@
                               <v-icon>mdi-exit-to-app</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title>Leave</v-list-item-title>
+                              <v-list-item-title @click="leaveFromCommunity(item)"
+                                >Leave</v-list-item-title
+                              >
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item>
@@ -159,7 +159,9 @@
                               <v-icon>mdi-delete</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title>Delete</v-list-item-title>
+                              <v-list-item-title @click="deleteACommunity()"
+                                >Delete</v-list-item-title
+                              >
                             </v-list-item-content>
                           </v-list-item>
                         </v-list-item-group>
@@ -240,7 +242,8 @@ import {
   getAllCommunityList,
   getInvitations,
   getMyCommunityList,
-  joinCommunity
+  joinCommunity,
+  removeFromCommunities
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
@@ -277,6 +280,13 @@ export default {
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
       }
+    },
+    filter: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.debounce(() => {
+          this.updateCommunities()
+        }, 500)
+      }
     }
   },
   created() {},
@@ -285,6 +295,32 @@ export default {
     this.getAllCommunitiesListData()
   },
   methods: {
+    deleteACommunity(item) {},
+    leaveFromCommunity(item) {
+      removeFromCommunities(item.communityResourceId)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'You have been removed from the community successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to leave from a community'
+          })
+        })
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     editCommunity(item) {
       this.resourceId = item.communityResourceId
       this.communityItem = item
@@ -322,12 +358,12 @@ export default {
                 {
                   FieldName: 'CommunityName',
                   Operator: 'Contains',
-                  Value: ''
+                  Value: this.filter
                 },
                 {
                   FieldName: 'CommunityDescription',
                   Operator: 'Contains',
-                  Value: ''
+                  Value: this.filter
                 }
               ],
               FilterGroups: []
@@ -362,12 +398,12 @@ export default {
                 {
                   FieldName: 'CommunityName',
                   Operator: 'Contains',
-                  Value: ''
+                  Value: this.filter
                 },
                 {
                   FieldName: 'CommunityDescription',
                   Operator: 'Contains',
-                  Value: ''
+                  Value: this.filter
                 }
               ],
               FilterGroups: []
@@ -395,9 +431,20 @@ export default {
       })
     },
     updateCommunities() {
-      clearTimeout(this.debounce)
-      const refThis = this
-      this.debounce = setTimeout(function () {}, 300)
+      switch (this.selectedTab) {
+        case 'tab-0':
+          this.getMyCommunitiesListData()
+          break
+        case 'tab-1':
+          this.getAllCommunitiesListData()
+
+          break
+        case 'tab-2':
+          this.getInvitions()
+          break
+        default:
+          return false
+      }
     },
     requestJoin(communityId) {
       joinCommunity(communityId)
@@ -412,12 +459,12 @@ export default {
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attemping to send join request'
+            message: 'Error when attempting to send join request'
           })
         })
     },
     createNewCommunity() {
-      this.$emit('create-community')
+      this.isWantToAddNewCommunity = true
     },
     subTabSelected(name) {
       if (name == 'Your Communities') {

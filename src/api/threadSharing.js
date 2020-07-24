@@ -85,8 +85,8 @@ export function listThreatCategories() {
 export function getIncidentList(payload) {
   return testRequest.post(`community-posts/search`, payload, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -94,8 +94,8 @@ export function getIncidentList(payload) {
 export function getCOmmunityIncidentList(id, payload) {
   return testRequest.post(`community-posts/search/${id}`, payload, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -103,8 +103,8 @@ export function getCOmmunityIncidentList(id, payload) {
 export function getComments(id) {
   return testRequest.get(`community-posts/${id}/comments`, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -112,8 +112,8 @@ export function getComments(id) {
 export function createComments(id, payload) {
   return testRequest.post(`community-posts/${id}/comments`, payload, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -124,8 +124,8 @@ export function likePost(id) {
     {},
     {
       headers: {
-        //'X-IR-USER-ID': localStorage.getItem('userId')
-        'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+        'X-IR-USER-ID': localStorage.getItem('userId')
+        //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
       }
     }
   )
@@ -134,8 +134,8 @@ export function likePost(id) {
 export function getCommunityPost(id) {
   return testRequest.get(`community-posts/${id}`, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -143,8 +143,8 @@ export function getCommunityPost(id) {
 export function getMyLastPosts() {
   return testRequest.get(`community-posts/my-last-posts`, {
     headers: {
-      //'X-IR-USER-ID': localStorage.getItem('userId')
-      'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
+      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
 }
@@ -160,7 +160,7 @@ export function getInvitations() {
 export function getsuggestedCommunities() {
   return testRequest.get(`/communities/suggested`, {
     headers: {
-      'X-IR-COMPANY-ID': 'TEST-COMPANY-2'
+      'X-IR-COMPANY-ID': localStorage.getItem('companyId')
     }
   })
 }
@@ -200,5 +200,15 @@ export function deleteComments(id) {
       'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
+  })
+}
+
+export function removeFromCommunities(id) {
+  return testRequest.delete(`communities/${id}/leave`)
+}
+
+export function removeFromCommunity(id, value) {
+  return testRequest.delete(`communities/${id}/remove-member`, {
+    data: { RemovedCompanyResourceId: value }
   })
 }

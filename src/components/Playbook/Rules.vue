@@ -81,7 +81,6 @@
                     :columns="matchingInvestigationPlaybookRules.columns"
                     :countRow="5"
                     :pageSizes="[5, 10, 20, 50, 100]"
-                    :border="false"
                     :showHeader="true"
                     :defaultSort="'subject'"
                     :selectable="false"
@@ -89,7 +88,6 @@
                     :options="true"
                     :rowActions="[]"
                     :cell-padding="15"
-                    class="no-sub-border-datatable"
                     :empty="matchingInvestigationPlaybookRules.iEmpty"
                   />
                 </v-list-item-content>

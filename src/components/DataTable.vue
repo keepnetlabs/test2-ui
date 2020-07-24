@@ -505,7 +505,7 @@
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
                 </div>
                 <div v-if="col.type === 'slot' || col.type === 'analysisSource'">
-                  <slot name="datatable-custom-column" :col="col" :scope="scope"></slot>
+                  <slot name="datatable-custom-column" :scope="scope" :col="col"></slot>
                 </div>
               </template>
               <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">
