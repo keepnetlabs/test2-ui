@@ -4,6 +4,7 @@
       <template v-for="index in renderedBadgeCount" v-if="renderedBadgeCount > 0 && status === 0">
         <v-chip
           v-for="(value, key) in computedData[index - 1]"
+          class="show-more__hidden"
           :key="value + key"
           v-if="value && key !== 'resourceId'"
           >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
@@ -76,6 +77,7 @@ export default {
         Math.floor(
           this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
         ) || 0
+      /*
       const averageChipWidth =
         this.computedData.reduce((acc, item) => {
           const keys = Object.keys(item)
@@ -88,7 +90,9 @@ export default {
           acc = acc + avgItemWidth
           return acc
         }, 0) / this.computedData.length
-      debugger
+
+       */
+      const averageChipWidth = 250
       console.log('averageChipWidth', averageChipWidth)
       this.renderedBadgeCount = Math.floor(containerWidth / averageChipWidth)
       this.unRenderedBadgeCount =
@@ -154,6 +158,15 @@ export default {
       letter-spacing: 0.3px;
       color: #ffffff;
       text-transform: lowercase;
+    }
+  }
+  &__hidden {
+    &.v-chip {
+      max-width: 300px !important;
+    }
+
+    .v-chip__content {
+      white-space: nowrap !important;
     }
   }
 }
