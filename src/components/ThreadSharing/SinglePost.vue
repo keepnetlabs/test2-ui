@@ -1,5 +1,12 @@
 <template>
   <div class="component-single-post">
+    <new-investigation
+      @closeAdd="closeNewInvestigationModal($event)"
+      ref="refNewInvestigation"
+      :status="isWantToAddNewInvestigation"
+      v-if="isWantToAddNewInvestigation"
+      :selectedMail="selectedEmail"
+    />
     <div id="" class="single-post">
       <div class="threat-sharing-content">
         <div class="ts-header">
@@ -81,7 +88,7 @@
                   </v-list-item>
                   <v-list-item
                     :id="'investigate-btn' + post.communityPostResourceId"
-                    @click="openInvestigate()"
+                    @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
                       <v-icon>mdi-magnify</v-icon>
@@ -872,6 +879,7 @@
 
 <script>
 import VClamp from 'vue-clamp'
+import NewInvestigation from '../Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
@@ -886,6 +894,7 @@ import {
   updateComments
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { getNotifiedEmail } from '../../api/notifiedEmail'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -955,7 +964,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 })
 export default {
   components: {
-    VClamp
+    VClamp,
+    NewInvestigation
   },
   props: {
     openEditPopupItem: {
@@ -981,6 +991,7 @@ export default {
   },
   computed: {},
   data: () => ({
+    isWantToAddNewInvestigation: false,
     postDetails: {},
     comments: [],
     emailData: null,
@@ -1029,6 +1040,10 @@ export default {
     this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    closeNewInvestigationModal(value) {
+      this.$emit('refreshData')
+      this.isWantToAddNewInvestigation = false
+    },
     editRelativeComment(comment) {
       comment.isEdit = !comment.isEdit
       comment.commentValue = comment.comment
@@ -1040,7 +1055,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been updated succesfully'
+            message: 'Comment has been updated successfully'
           })
           getComments(this.post.communityPostResourceId)
             .then((response) => {
@@ -1066,7 +1081,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been deleted succesfully'
+            message: 'Comment has been deleted successfully'
           })
           getComments(this.post.communityPostResourceId)
             .then((response) => {
@@ -1100,19 +1115,13 @@ export default {
           return ''
       }
     },
-    openInvestigate() {
-      this.$emit('openInvestigateModal', { status: true, title: this.post.Title })
+    openInvestigate(post) {
+      getCommunityPost(post.communityPostResourceId).then((response) => {
+        this.selectedEmail = response.data.data.communityPostEmail
+        this.isWantToAddNewInvestigation = true
+      })
     },
-    shareIncident(postId, creatorUserId) {
-      this.$store.state.threadSharing.isWantToShareIncident = true
-      this.$store.state.threadSharing.sharedPost = postId
-      this.$store.state.threadSharing.postCreatorId = creatorUserId
-    },
-    userLike() {},
-    addComment() {},
-    openDetails() {
-      this.panel.push(0)
-    },
+    shareIncident(postId, creatorUserId) {},
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
@@ -1190,7 +1199,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment added has been succesfully'
+            message: 'Comment added has been successfully'
           })
           getComments(this.post.communityPostResourceId)
             .then((response) => {

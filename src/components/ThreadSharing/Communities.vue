@@ -149,7 +149,9 @@
                               <v-icon>mdi-exit-to-app</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title>Leave</v-list-item-title>
+                              <v-list-item-title @click="leaveFromCommunity(item)"
+                                >Leave</v-list-item-title
+                              >
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item>
@@ -157,7 +159,9 @@
                               <v-icon>mdi-delete</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title>Delete</v-list-item-title>
+                              <v-list-item-title @click="deleteACommunity()"
+                                >Delete</v-list-item-title
+                              >
                             </v-list-item-content>
                           </v-list-item>
                         </v-list-item-group>
@@ -238,7 +242,8 @@ import {
   getAllCommunityList,
   getInvitations,
   getMyCommunityList,
-  joinCommunity
+  joinCommunity,
+  removeFromCommunities
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
@@ -290,6 +295,24 @@ export default {
     this.getAllCommunitiesListData()
   },
   methods: {
+    deleteACommunity(item) {},
+    leaveFromCommunity(item) {
+      removeFromCommunities(item.communityResourceId)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'You have been removed from the community successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to leave from a community'
+          })
+        })
+    },
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)
@@ -436,12 +459,12 @@ export default {
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attemping to send join request'
+            message: 'Error when attempting to send join request'
           })
         })
     },
     createNewCommunity() {
-      this.$emit('create-community')
+      this.isWantToAddNewCommunity = true
     },
     subTabSelected(name) {
       if (name == 'Your Communities') {

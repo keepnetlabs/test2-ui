@@ -202,3 +202,7 @@ export function deleteComments(id) {
     }
   })
 }
+
+export function removeFromCommunities(id) {
+  return testRequest.delete(`communities/${id}/leave`)
+}
