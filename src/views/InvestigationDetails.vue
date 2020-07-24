@@ -651,9 +651,11 @@
               </p>
               <div
                 class="investigation-details__container__content--right-menu__target-users--list"
-                v-if="investigationDetailsData.targetUserType != 'AllUsers'"
+                v-if="investigationDetailsData.targetUserType !== 'AllUsers'"
               >
+                <show-more :data="investigationDetailsData.targetUsers" />
                 <v-chip
+                  v-if="false"
                   class="mr-1 mt-2"
                   v-for="(item, index) in investigationDetailsData.targetUsers"
                   :key="index"
@@ -676,7 +678,15 @@
               <p class="investigation-details__container__content--right-menu__filters--header">
                 Criteria:
               </p>
+              <show-more
+                :data="[
+                  ...investigationDetailsData.headers,
+                  ...investigationDetailsData.bodies,
+                  ...investigationDetailsData.attachments
+                ]"
+              />
               <div
+                v-if="false"
                 class="investigation-details__container__content--right-menu__filters--list d-flex"
                 style="flex-wrap: wrap;"
               >
@@ -804,11 +814,13 @@ import moment from 'moment'
 import { getStoreValue } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
+import ShowMore from '../components/Common/ShowMore/ShowMore'
 export default {
   components: {
     Datatable,
     newInvestigation,
-    AppDialog
+    AppDialog,
+    ShowMore
   },
   data: () => ({
     isWantToAddNewCommunity: false,
