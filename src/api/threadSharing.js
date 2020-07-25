@@ -220,3 +220,11 @@ export function inviteToCommunity(id, payload) {
 export function appointNewOwner(id, payload) {
   return testRequest.post(`communities/${id}/appoint-owner`, payload)
 }
+
+export function acceptInvitation(id) {
+  return testRequest.put(`/communities/invitations/${id}/accept`)
+}
+
+export function refuseInvitation(id) {
+  return testRequest.put(`/communities/invitations/${id}/decline`)
+}

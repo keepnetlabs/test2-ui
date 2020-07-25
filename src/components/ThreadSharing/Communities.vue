@@ -199,6 +199,49 @@
                 </div>
               </div>
             </div>
+            <div v-if="selectedTab === 'tab-2'">
+              <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
+                <div class="ts-header">
+                  <div class="ts-title" @click="communityDetails(item)">
+                    {{ item.name }}
+                  </div>
+                  <div class="flex-grow-1"></div>
+                  <div class="ts-header-btn-1">
+                    <div class="request-btns flex-grow-1">
+                      <v-btn class="refuse-btn" block rounded medium @click="refuseRequest(item)">
+                        CANCEL
+                      </v-btn>
+                      <v-btn class="accept-btn" block rounded medium @click="acceptRequest(item)">
+                        JOIN
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+                <div class="ts-user-comp">
+                  <div class="ts-user-comp-detail">
+                    <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
+                    <span class="pr-2">{{ item.memberCount }}</span>
+                    &bull;
+                    <span class="ts-community-industry pl-2 pr-2">
+                      {{ item.industryName || 'Industry' }}
+                    </span>
+                    &bull;
+                    <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
+                      item.privacyStatusName
+                    }}</span>
+                  </div>
+                  <div v-if="item && item.lastPostTime" class="ts-community-date pt-1">
+                    Last update:
+                    {{ item.lastPostTime }}
+                  </div>
+                </div>
+                <div class="ts-body">
+                  <v-clamp autoresize :max-lines="3">
+                    {{ item.description }}
+                  </v-clamp>
+                </div>
+              </div>
+            </div>
           </template>
           <template v-if="!filter || filter.length < 1" slot="no-data">
             <div class="empty-communities" v-if="selectedTab === 'tab-1'">
@@ -239,10 +282,12 @@
 </template>
 <script>
 import {
+  acceptInvitation,
   getAllCommunityList,
   getInvitations,
   getMyCommunityList,
   joinCommunity,
+  refuseInvitation,
   removeFromCommunities
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
@@ -295,6 +340,42 @@ export default {
     this.getAllCommunitiesListData()
   },
   methods: {
+    refuseRequest() {
+      refuseInvitation()
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Invitation request has been cancelled successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+          this.getInvitions()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to cancel invitation request'
+          })
+        })
+    },
+    acceptRequest() {
+      acceptInvitation()
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Invitation request has been accepted successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+          this.getInvitions()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to accept an invitation request'
+          })
+        })
+    },
     deleteACommunity(item) {},
     leaveFromCommunity(item) {
       removeFromCommunities(item.communityResourceId)
@@ -333,7 +414,7 @@ export default {
     getInvitions() {
       getInvitations().then((response) => {
         const { data } = response
-        this.listData = data.data.results
+        this.listData = data.data
       })
     },
     getAllCommunitiesListData() {
@@ -471,6 +552,39 @@ export default {
   width: 100%;
   box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
     0 3px 14px 2px rgba(255, 255, 255, 0.12);
+}
+.request-btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+
+  .refuse-btn {
+    color: #fff !important;
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(248, 162, 162, 0.5) !important;
+    background-color: #f56c6c !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    height: 36px !important;
+    margin-right: 14px;
+    text-transform: capitalize !important;
+  }
+
+  .accept-btn {
+    color: #fff !important;
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+    background-color: #2196f3 !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    height: 36px !important;
+    text-transform: capitalize !important;
+  }
+
+  @media only screen and (max-width: 950px) {
+    justify-content: center;
+    padding-top: 20px;
+  }
 }
 .search-wrapper {
   align-items: center;
