@@ -386,12 +386,10 @@
                       :options="false"
                       :empty="attachmentTableOptions.iEmpty"
                     >
-                      <template v-slot:datatable-custom-column="{ scope, col }">
+                      <template v-slot:datatable-custom-column="{ scope }">
                         <span @click="showPopupModal = true" style="cursor: pointer;">
                           <a
-                            :href="
-                              getDetailsLink(scope, col, attachmentTableOptions.tableData[index])
-                            "
+                            :href="scope.row.analysisEnginePermalink"
                             target="_blank"
                             class="attachments-table__link"
                             >See Details</a
@@ -664,14 +662,7 @@ export default {
         outputValue = value.split(',')
       }
     },
-    getDetailsLink(scope, col, parentRow) {
-      switch (scope.row.analysisEngine) {
-        case 'Virus Total Engine':
-          return `https://www.virustotal.com/gui/file/${parentRow.md5}`
-        default:
-          return `https://www.virustotal.com/gui/file/${parentRow.md5}`
-      }
-    },
+
     setSecondCollapse(event, index) {
       if (event.target.textContent.startsWith('COLLAPSE')) {
         this.showSecondCollapse = -1

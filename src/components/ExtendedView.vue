@@ -33,7 +33,7 @@
               class="row-edit-div"
               v-for="col in options"
               v-if="
-                !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdate'
+                !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdateDate'
               "
             >
               <div v-if="!col.showOnlyPreview || editMode">
@@ -45,7 +45,7 @@
                     (!editMode || !col.isEditable) &&
                     multipleValues(col.property) &&
                     col.property !== 'createDate' &&
-                    col.property !== 'lastUpdate'
+                    col.property !== 'lastUpdateDate'
                   "
                   :class="[multipleValues(col.property) ? 'font-italic' : '']"
                 >
@@ -56,7 +56,7 @@
                     (!editMode || !col.isEditable) &&
                     col.type === 'text' &&
                     col.property !== 'createDate' &&
-                    col.property !== 'lastUpdate'
+                    col.property !== 'lastUpdateDate'
                   "
                 >
                   {{ copyOfEditedRows[0][col.property] }}
@@ -66,7 +66,7 @@
                     (!editMode || !col.isEditable) &&
                     col.type === 'analysisSource' &&
                     col.property !== 'createDate' &&
-                    col.property !== 'lastUpdate'
+                    col.property !== 'lastUpdateDate'
                   "
                 >
                   <span v-if="copyOfEditedRows[0].matchingPlaybooks.length === 0">
@@ -91,7 +91,7 @@
                     (!editMode || !col.isEditable) &&
                     (col.type === 'colorfulText' || col.showColorfulText) &&
                     col.property !== 'createDate' &&
-                    col.property !== 'lastUpdate'
+                    col.property !== 'lastUpdateDate'
                   "
                   :style="[
                     { color: getTextColor(copyOfEditedRows[0][col.property]), fontWeight: 600 }
@@ -435,13 +435,13 @@
                 </div>
                 <div
                   class="edit-date-created"
-                  v-if="copyOfEditedRows[0]['lastUpdate'] !== undefined"
+                  v-if="copyOfEditedRows[0]['lastUpdateDate'] !== undefined"
                 >
                   <label>Last update</label>
                   <span>{{
-                    multipleValues('lastUpdate')
+                    multipleValues('lastUpdateDate')
                       ? 'Multiple Values'
-                      : copyOfEditedRows[0]['lastUpdate']
+                      : copyOfEditedRows[0]['lastUpdateDate']
                   }}</span>
                 </div>
               </div>
@@ -656,7 +656,7 @@ export default {
     },
     hasEditPopupFooter() {
       return this.copyOfEditedRows.some((item) => {
-        return item['createDate'] || item['lastUpdate']
+        return item['createDate'] || item['lastUpdateDate']
       })
     },
     handleMultipleEdits(item, key, value) {
