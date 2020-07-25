@@ -109,6 +109,14 @@ export default {
     getRenderStatusOfLeftContainer() {
       return true
     }
+  },
+  watch: {
+    data(value) {
+      if (value.length > 0) {
+        this.produceData()
+        this.getChips()
+      }
+    }
   }
 }
 </script>

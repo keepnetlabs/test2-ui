@@ -82,7 +82,7 @@
                     v-else
                     :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
                     v-for="item in copyOfEditedRows[0].matchingPlaybooks"
-                    class="incident-wrapper__link"
+                    class="incident-responder-parent__link"
                     >{{ item.name }}</router-link
                   >
                 </span>

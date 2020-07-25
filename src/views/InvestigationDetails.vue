@@ -666,13 +666,7 @@
               <p class="investigation-details__container__content--right-menu__filters--header">
                 Criteria:
               </p>
-              <show-more
-                :data="[
-                  ...investigationDetailsData.headers,
-                  ...investigationDetailsData.bodies,
-                  ...investigationDetailsData.attachments
-                ]"
-              />
+              <show-more :data="criteriaChips" />
             </div>
             <div v-if="activeMenu !== 'targetUsers'">
               <datatable
@@ -768,6 +762,7 @@ export default {
     isWantToWarn: false,
     isWantToStop: false,
     targetUserChips: [],
+    criteriaChips: [],
     isWantToWarnAndDelete: false,
     totalSelectedItemsCount: [],
     investigationListBodyData: {
@@ -1437,7 +1432,11 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      this.$forceUpdate()
+      this.criteriaChips = [
+        ...this.investigationDetailsData.headers,
+        ...this.investigationDetailsData.bodies,
+        ...this.investigationDetailsData.attachments
+      ]
     }
   },
   created() {},
