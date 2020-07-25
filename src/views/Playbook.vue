@@ -49,9 +49,7 @@ export default {
     }
   },
 
-  mounted() {
-    console.log('this.playbookId', this.playbookId)
-  }
+  mounted() {}
 }
 </script>
 
