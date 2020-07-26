@@ -184,7 +184,7 @@
               </div>
               <div class="right-side-desc pb-1">
                 by
-                <a href="#">{{ post.communityName }}</a>
+                <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
               </div>
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">
@@ -212,7 +212,7 @@
               </div>
               <div class="right-side-desc pb-1">
                 by
-                <a href="#">{{ post.communityName }}</a>
+                <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
               </div>
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">
@@ -358,6 +358,13 @@ export default {
     }
   },
   methods: {
+    goToCommunityDetails(post) {
+      if (post.communityResourceId) {
+        localStorage.setItem('communityName', post.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
+        this.$router.push(`/community/${post.communityResourceId}`)
+      }
+    },
     inviteMember() {
       setTimeout(() => {
         const payload = {

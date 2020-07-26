@@ -318,7 +318,14 @@
       <template v-slot:extension>
         <div class="page-header__content">
           <div class="page-header__title">
-            <h1 v-if="routerName === 'Community'">{{ communityName || $route.params.name }}</h1>
+            <h1 v-if="routerName === 'Community'">
+              <router-link
+                :to="`/threat-sharing?detailsId=${communityId}`"
+                v-if="communityId"
+                class="page-header__title-link"
+                >{{ communityName || $route.params.name }}</router-link
+              ><span v-else>{{ communityName || $route.params.name }}</span>
+            </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
@@ -477,6 +484,7 @@ export default {
   },
   data() {
     return {
+      communityId: null,
       sessionCheck: false,
       communityName: null,
       tour: {
@@ -842,6 +850,7 @@ export default {
     }),
 
     getCommunityName() {
+      this.communityId = localStorage.getItem('communityResourceIdForRedirect')
       this.communityName = localStorage.getItem('communityName')
     },
     onNotificationSeen(notification) {
@@ -972,6 +981,12 @@ export default {
         @media (max-width: 1024px) {
           font-size: 22px;
         }
+        font-weight: bold;
+        margin: 0;
+      }
+      &-link {
+        color: white;
+        font-size: 34px;
         font-weight: bold;
         margin: 0;
       }

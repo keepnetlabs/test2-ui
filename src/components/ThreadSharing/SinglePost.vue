@@ -174,9 +174,13 @@
               >{{ post.postedUserCompanyName }}</a
             >
             <a v-else class="pl-1 pr-1">Company Name</a> on
-            <a :id="post.communityName" v-if="post.communityName" href="#" class="pl-1">{{
-              post.communityName
-            }}</a>
+            <a
+              :id="post.communityName"
+              v-if="post.communityName"
+              @click="goToCommunityDetails(post)"
+              class="pl-1"
+              >{{ post.communityName }}</a
+            >
             <a v-else class="pl-1 pr-1">Community Name</a>
           </div>
           <div class="ts-user-date">
@@ -1060,6 +1064,13 @@ export default {
     this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    goToCommunityDetails(post) {
+      if (post.communityResourceId) {
+        localStorage.setItem('communityName', post.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
+        this.$router.push(`/community/${post.communityResourceId}`)
+      }
+    },
     closeNewInvestigationModal(value) {
       this.$emit('refreshData')
       this.isWantToAddNewInvestigation = false
