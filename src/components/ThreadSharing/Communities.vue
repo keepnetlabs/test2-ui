@@ -202,7 +202,7 @@
             <div v-if="selectedTab === 'tab-2'">
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <div class="ts-header">
-                  <div class="ts-title" @click="communityDetails(item)">
+                  <div class="ts-title" @click="community(item)">
                     {{ item.name }}
                   </div>
                   <div class="flex-grow-1"></div>
@@ -501,7 +501,7 @@ export default {
       })
     },
     communityDetails(item) {
-      if (isOwnerOrMember(item.xhipStatusId)) {
+      if (isOwnerOrMember(item.membershipStatusId)) {
         localStorage.setItem('communityName', item.communityName)
         this.$router.push({
           name: `Community`,
