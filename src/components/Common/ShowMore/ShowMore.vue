@@ -20,8 +20,8 @@
     </div>
     <div class="show-more__right" v-if="getRenderStatusOfButton()">
       <v-btn @click="changeStatus" small rounded color="#409eff" class="show-more__button">
-        <v-icon small color="white">{{ getIconName }}</v-icon>
-        <span class="ml-1">
+        <v-icon class="show-more__icon" color="white">{{ getIconName }}</v-icon>
+        <span>
           {{ getButtonText }}
         </span>
       </v-btn>
@@ -137,12 +137,19 @@ export default {
     }
   }
 
+  &__icon {
+    font-size: 29px !important;
+    margin-right: -3px;
+    margin-top: -1px;
+  }
+
   &__right {
   }
   &__button {
     border-radius: 12px !important;
     box-shadow: none !important;
     height: 24px !important;
+    padding-left: 7px !important;
     margin-top: 10px;
     .v-btn__content {
       font-size: 12px;
@@ -160,6 +167,7 @@ export default {
 
     .v-chip__content {
       white-space: nowrap !important;
+      padding-right: 3.5px !important;
     }
   }
 }

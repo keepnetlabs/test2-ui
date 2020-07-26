@@ -722,7 +722,7 @@
                 </template>
               </datatable>
             </div>
-            <div v-if="activeMenu == 'targetUsers' && showTargetUsersDetails">
+            <div v-if="activeMenu === 'targetUsers' && showTargetUsersDetails">
               <datatable
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
