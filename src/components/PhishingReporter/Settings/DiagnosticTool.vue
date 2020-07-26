@@ -49,7 +49,7 @@
         :disabled="spinnerStatus"
       >
         <v-icon left>mdi-download</v-icon>
-        Download diagnostic tool
+        Save And Download
       </v-btn>
       <img
         src="../../../assets/img/spinner.png"

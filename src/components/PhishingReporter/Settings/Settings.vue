@@ -1,5 +1,10 @@
 <template>
   <div class="settings" id="settings">
+    <download-add-in-modal
+      :status="downloadAddInModalStatus"
+      v-if="downloadAddInModalStatus"
+      @handleClose="downloadAddInModalStatus = false"
+    />
     <v-tabs
       id="settings-tabs"
       class="k-sub-tabs"
@@ -60,6 +65,7 @@ import {
   downloadOutlookAddIn
 } from '../../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
+import DownloadAddInModal from '../DownloadAddInModal'
 
 export default {
   name: 'Settings',
@@ -70,6 +76,7 @@ export default {
     }
   },
   components: {
+    DownloadAddInModal,
     AddinSettings,
     EmailSettings,
     OtherSettings,
@@ -78,33 +85,13 @@ export default {
   data() {
     return {
       tab: 0,
-      spinnerStatus: false
+      spinnerStatus: false,
+      downloadAddInModalStatus: false
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
-    },
-    callForDownloadOutlookAddIn(transactionId) {
-      downloadOutlookAddIn(transactionId)
-        .then((response) => {
-          this.spinnerStatus = false
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `OutlookPhishingReporter.msi`
-          link.click()
-        })
-        .catch((error) => {
-          if (error.response.status === 404) {
-            this.spinnerStatus = true
-            const timeout = setTimeout(() => {
-              this.callForDownloadOutlookAddIn(transactionId)
-            }, 7500)
-          } else {
-            this.spinnerStatus = false
-          }
-        })
     },
     callForCreatePhishingReporter(updatedValues) {
       const addinSettings =
@@ -141,11 +128,7 @@ export default {
           })
           this.$emit('getPhishingReport')
           if (updatedValues.isAddIn) {
-            generateOutlookAddIn()
-              .then((response) => {
-                this.callForDownloadOutlookAddIn(response.data.data.transactionId)
-              })
-              .catch((error) => {})
+            this.downloadAddInModalStatus = true
           }
         })
         .catch((error) => {

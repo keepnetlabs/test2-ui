@@ -7,93 +7,12 @@
       title="Phishing Reporter Add-in Configuration"
     >
       <template v-slot:overlay-body>
-        <v-overlay :value="showModal" :z-index="9999" absolute fixed class="download-add-in">
-          <v-card
-            class="overlay__container"
-            light
-            style="border-radius: 12px !important; padding: 24px 24px 16px 24px !important;"
-          >
-            <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-              <div class="v-btn v-cart-icon-wrapper">
-                <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline">Download Add-in</v-list-item-title>
-                <v-list-item-subtitle class="v-card-sub-header"
-                  >You can download the add-in below
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-              <div class="logos-buttons__container">
-                <logos wrapperClasses="mt-10 logos" />
-                <div class="buttons__container">
-                  <v-btn class="white--text btn-util" color="#2196f3" rounded>
-                    <v-icon left>mdi-download</v-icon>
-                    Download
-                  </v-btn>
-                  <v-btn
-                    class="white--text btn-util"
-                    color="#2196f3"
-                    rounded
-                    :loading="outlookSpinnerStatus"
-                    @click="callForGenerateOutlookAddIn"
-                  >
-                    <v-icon left>mdi-download</v-icon>
-                    Download
-                  </v-btn>
-                  <v-btn class="white--text btn-util" color="#2196f3" rounded>
-                    <v-icon left>mdi-download</v-icon>
-                    Download
-                  </v-btn>
-                </div>
-              </div>
-            </v-list-item>
-            <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
-              <div class="link__container">
-                <img src="../../assets/img/copy-icon.png" />
-                <div class="link__text ml-2">Copy Link</div>
-              </div>
-            </v-list-item>
-
-            <v-list-item class="px-0 d-flex align-end mt-6 add-in-configuration__list-item">
-              <div class="link__header">Diagnostic Tool</div>
-            </v-list-item>
-            <v-list-item class="px-0 d-flex align-start add-in-configuration__list-item">
-              <div class="link__sub-header">Only for Outlook Desktop (Windows OS only)</div>
-            </v-list-item>
-            <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
-              <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
-            </v-list-item>
-            <v-list-item class="px-0 add-in-configuration__list-item">
-              <v-btn
-                @click="callForGenerateDiagnosticTool"
-                class="white--text btn-util mt-n2"
-                color="#2196f3"
-                rounded
-                :disabled="diagnosticToolSpinnerStatus"
-              >
-                <v-icon left>mdi-download</v-icon>
-                Download
-              </v-btn>
-            </v-list-item>
-            <v-list-item class="px-0 mt-7 add-in-configuration__list-item">
-              <div class="px-0 overlay__footer">
-                <a
-                  class="overlay__footer-text"
-                  href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-                  target="_blank"
-                >
-                  Installation and configuration guide
-                </a>
-                <div @click="handleContinue" class="overlay__footer-text">
-                  Close
-                </div>
-              </div>
-            </v-list-item>
-          </v-card>
-        </v-overlay>
-
+        <download-add-in-modal
+          :status="showModal"
+          @generateOutlookAddIn="callForGenerateOutlookAddIn"
+          @generateDiagnosticTool="callForGenerateDiagnosticTool"
+          @handleClose="handleContinue"
+        />
         <v-stepper v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
             <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
@@ -207,8 +126,7 @@
 import AddinSettings from './Settings/AddinSettings'
 import EmailSettings from './Settings/EmailSettings'
 import OtherSettings from './Settings/OtherSettings'
-import Logos from './Logos'
-import DiagnosticTool from './Settings/DiagnosticTool'
+import DownloadAddInModal from './DownloadAddInModal'
 import {
   createPhishingReporter,
   downloadDiagnosticTool,
@@ -224,9 +142,8 @@ export default {
     AddinSettings,
     EmailSettings,
     OtherSettings,
-    Logos,
-    DiagnosticTool,
-    AppModal
+    AppModal,
+    DownloadAddInModal
   },
   props: {
     status: {
@@ -239,7 +156,7 @@ export default {
       addingSettings: {},
       emailSettings: {},
       otherSettings: {},
-      showModal: false,
+      showModal: true,
       outlookSpinnerStatus: false,
       diagnosticToolSpinnerStatus: false
     }
@@ -714,6 +631,21 @@ export default {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0) !important;
+    height: 100%;
+  }
+  &__title {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: #2196f3 !important;
+  }
+  &__link {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #2196f3 !important;
   }
 }
 </style>

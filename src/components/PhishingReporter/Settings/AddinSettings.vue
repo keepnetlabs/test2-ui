@@ -213,19 +213,10 @@
           class="white--text btn-util ml-3"
           color="#00bcd4"
           rounded
-          :disabled="spinnerStatus"
         >
           <v-icon left>mdi-download</v-icon>
-          Save and Download Add-in
+          Save and Download
         </v-btn>
-        <img
-          src="../../../assets/img/spinner.png"
-          class="add-in-settings__spinner"
-          v-if="spinnerStatus"
-        />
-        <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
-          >Download link is generating...</span
-        >
         <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
           Version History
         </div>
@@ -236,10 +227,7 @@
 
 <script>
 import { maxLength, required } from '../../../utils/validations'
-import {
-  getPhishingReporterImg,
-  searchGeneratedApplicationHistory
-} from '../../../api/phishingReporter'
+import { getPhishingReporterImg } from '../../../api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'
