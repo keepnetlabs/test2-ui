@@ -374,10 +374,6 @@ export default {
       return this.$store.state.auth.user.currentCompany.id
     }
   },
-  mounted() {
-    this.getCommunityDetails()
-    this.getRequestMembers()
-  },
   methods: {
     appointANewOwner(item) {
       const payload = {

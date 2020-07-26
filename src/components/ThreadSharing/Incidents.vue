@@ -187,6 +187,7 @@ export default {
           ]
         }
       }
+      const _this = this
       if (this.$router.currentRoute.name === 'Community') {
         getCOmmunityIncidentList(this.$route.params.id, payload).then((response) => {
           this.incidentList = response.data.data.results

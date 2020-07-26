@@ -40,7 +40,7 @@
                 />
               </v-tab-item>
               <v-tab-item>
-                <members />
+                <members ref="refMembers" />
               </v-tab-item>
             </v-tabs-items>
           </v-card>
@@ -151,9 +151,7 @@ export default {
   computed: {},
   watch: {},
   created() {},
-  mounted() {
-    this.communityDetails = this.$route.params.item
-  },
+  mounted() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize)
   },
@@ -170,7 +168,11 @@ export default {
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
     },
-    getMembers() {},
+    getMembers() {
+      setTimeout(() => {
+        this.$refs.refMembers.getCommunityDetails()
+      }, 50)
+    },
     onAddClose() {
       this.isWantToAddNewCommunity = false
     },

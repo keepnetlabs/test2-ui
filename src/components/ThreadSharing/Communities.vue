@@ -503,6 +503,7 @@ export default {
     communityDetails(item) {
       if (isOwnerOrMember(item.membershipStatusId)) {
         localStorage.setItem('communityName', item.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', item.communityResourceId)
         this.$router.push({
           name: `Community`,
           params: { id: item.communityResourceId, item: item }

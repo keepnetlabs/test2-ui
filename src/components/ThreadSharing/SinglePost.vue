@@ -309,14 +309,22 @@
                 rounded
                 outlined
                 class="tag-btn ml-1 text-none"
-                :id="'tooltip-btn' + post.categoryResourceIdArray[0]"
+                :id="
+                  'tooltip-btn' + post.categoryResourceIdArray && post.categoryResourceIdArray[0]
+                "
                 @mouseover="hoverTool = true"
                 @mouseleave="hoverTool = false"
               >
                 <span v-if="post.hasAttachment"
-                  >+{{ post.categoryResourceIdArray.length - 1 }}</span
+                  >+{{
+                    post.categoryResourceIdArray && post.categoryResourceIdArray.length - 1
+                  }}</span
                 >
-                <span v-else>+{{ post.categoryResourceIdArray.length - 2 }}</span>
+                <span v-else
+                  >+{{
+                    post.categoryResourceIdArray.length && post.categoryResourceIdArray.length - 2
+                  }}</span
+                >
               </v-btn>
               <div
                 v-if="
@@ -414,7 +422,7 @@
                   !emailData.isToHidden &&
                   emailData.to.isToFlagged)
               "
-                :id="'from' + emailData.to[0]"
+                :id="'from' + emailData.to"
                 class="detail-black detail-red"
               >
                 To: {{ emailData.to.toString() }}
@@ -462,8 +470,8 @@
                 v-if="att.isFlagged"
               >
                 <p class="attach-found-malicious" v-if="ind === 0">
-                  This link<span v-if="emailData.urls.length > 1">s</span> has been reported as a
-                  phising link
+                  This link<span v-if="emailData.urls && emailData.urls.length > 1">s</span> has
+                  been reported as a phising link
                 </p>
               </div>
             </div>
@@ -504,8 +512,10 @@
                 v-if="att.isFlagged"
               >
                 <p class="attach-found-malicious detail-black" v-if="ind === 0">
-                  This file<span v-if="emailData.attachments.length > 1">s</span> has been reported
-                  as a malicious
+                  This file<span v-if="emailData.attachments && emailData.attachments.length > 1"
+                    >s</span
+                  >
+                  has been reported as a malicious
                 </p>
               </div>
             </div>
@@ -602,7 +612,9 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.to.length && !emailData.isToHidden">
+                <div
+                  v-if="emailData && emailData.to && emailData.to.length && !emailData.isToHidden"
+                >
                   <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
                     >To: {{ emailData.to }}</span
                   >
@@ -615,7 +627,9 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.to.length && !emailData.isToHidden">
+                <div
+                  v-if="emailData && emailData.to && emailData.to.length && !emailData.isToHidden"
+                >
                   <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
                     >To: hidden by owner</span
                   >
@@ -628,7 +642,9 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.cc.length && !emailData.isCcHidden">
+                <div
+                  v-if="emailData && emailData.cc && emailData.cc.length && !emailData.isCcHidden"
+                >
                   <span :class="[emailData.isCcFlagged ? 'malicious-style' : '']"
                     >CC: {{ emailData.cc.toString() }}</span
                   >
@@ -654,7 +670,11 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.bcc.length && !emailData.isBccHidden">
+                <div
+                  v-if="
+                    emailData && emailData.bcc && emailData.bcc.length && !emailData.isBccHidden
+                  "
+                >
                   <span :class="[emailData.isBccFlagged ? 'malicious-style' : '']"
                     >CC: {{ emailData.bcc.toString() }}</span
                   >
@@ -1117,21 +1137,11 @@ export default {
           return { ...item, isEdit: false, commentValue: null }
         })
       })
+      //getSelectedEmailPreview('4pDtxLYSG0mb')
       getCommunityPost(this.post.communityPostResourceId).then((response) => {
         this.postDetails = response.data.data
+        this.emailData = response.data.data.communityPostEmail
       })
-      //getSelectedEmailPreview(postId)
-      getSelectedEmailPreview('4pDtxLYSG0mb')
-        .then((response) => {
-          const { data } = response
-          this.emailData = data.data
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
-          })
-        })
     },
     userLikePost(postId, communId) {
       likePost(postId)

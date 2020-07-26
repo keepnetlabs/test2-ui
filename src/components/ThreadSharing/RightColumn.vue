@@ -388,10 +388,15 @@ export default {
       }, 200)
     },
     getCommunityDetails() {
+      const _this = this
       if (this.$route.name == 'Community') {
         this.ownerDetails = this.$route.params.item
         getCommunityDetails(this.$route.params.id).then((response) => {
           this.communityDetails = response.data.data
+          if (_this.$route.query && _this.$route.query.postId) {
+            localStorage.setItem('communityName', response.data.data.name)
+            localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
+          }
         })
       }
     },
