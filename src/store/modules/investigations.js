@@ -78,7 +78,6 @@ const investigations = {
     },
     SET_IRSUMMARY(state, payload) {
       let data = payload.data
-      console.log('irSummary', data)
       state.irSummary = data
     },
     SET_TARGETUSERSLIST(state, payload) {

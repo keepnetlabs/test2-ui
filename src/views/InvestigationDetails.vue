@@ -694,7 +694,33 @@
                 "
                 @downloadEvent="exportInvestigationEmails"
                 v-if="showEmails"
-              />
+              >
+                <template v-slot:datatable-custom-column="{ scope }">
+                  <template v-if="scope.row.emailLastAction">
+                    <div class="d-flex align-center">
+                      <span>{{ scope.row.emailLastAction.status }}</span>
+                      <span v-if="scope.row.emailLastAction.status === 'Completed'" class="ml-2">
+                        <v-icon color="#43a047">mdi-check-circle</v-icon>
+                      </span>
+                      <span
+                        v-else-if="scope.row.emailLastAction.status === 'CompletedWithError'"
+                        class="ml-2"
+                      >
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on" color="#f56c6c">mdi-alert-circle </v-icon>
+                          </template>
+                          <span>{{ scope.row.emailLastAction.actionResultErrorMessage }} </span>
+                        </v-tooltip>
+                      </span>
+                      <span v-else>
+                        {{ scope.row.emailLastAction.status }}
+                      </span>
+                    </div>
+                  </template>
+                  <span v-else> </span>
+                </template>
+              </datatable>
             </div>
             <div v-if="activeMenu == 'targetUsers' && showTargetUsersDetails">
               <datatable
@@ -865,12 +891,12 @@ export default {
       },
       {
         property: 'status',
-        align: 'center',
+        align: 'left',
         sortable: true,
         label: 'Status',
         show: true,
-        width: 180,
-        type: 'badge'
+        width: 230,
+        type: 'slot'
       }
     ],
     columnsTargetUsers: [

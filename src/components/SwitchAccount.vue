@@ -104,7 +104,6 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
     onClickSelectedAccount(account) {
-      console.log('account', account)
       this.setDialogBar(false)
       this.selectCompany(account).then((response) => {
         localStorage.setItem('companyId', account.companyId)

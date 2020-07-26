@@ -1159,7 +1159,7 @@ export default {
           const {
             data: { data, status }
           } = response
-          console.log('datatop', data)
+
           this.$refs.refTopRules.loadWithDataArray(data || [])
         })
         .catch((error) => {
@@ -1292,7 +1292,7 @@ export default {
     handleReportedEmailInvestigate(row) {
       getNotifiedEmail(row.resourceId).then((response) => {
         this.selectedEmail = response.data.data
-        console.log('this.selectedEmail', this.selectedEmail)
+
         this.isWantToAddNewInvestigation = true
       })
     },

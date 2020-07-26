@@ -58,9 +58,9 @@ export default {
     },
     getIconName() {
       if (this.status) {
-        return 'mdi-arrow-up-drop-circle-outline'
+        return 'mdi-menu-up'
       } else {
-        return 'mdi-arrow-down-drop-circle-outline'
+        return 'mdi-menu-down'
       }
     }
   },
@@ -80,7 +80,6 @@ export default {
           this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
         ) || 0
       const averageChipWidth = 250
-      console.log('averageChipWidth', averageChipWidth)
       this.renderedBadgeCount = Math.floor(containerWidth / averageChipWidth)
       this.unRenderedBadgeCount =
         this.computedData.length - this.renderedBadgeCount < 0

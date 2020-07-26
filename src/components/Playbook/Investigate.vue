@@ -523,7 +523,6 @@ export default {
     }
   },
   created() {
-    console.log('iam created')
     getTargetGroups().then((response) => {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
