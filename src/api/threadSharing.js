@@ -228,3 +228,7 @@ export function acceptInvitation(id) {
 export function refuseInvitation(id) {
   return testRequest.put(`/communities/invitations/${id}/decline`)
 }
+
+export function getInvitationCount() {
+  return testRequest.get(`communities/my-invitations-count`, {})
+}

@@ -376,6 +376,7 @@ export default {
   },
   mounted() {
     this.getCommunityDetails()
+    this.getRequestMembers()
   },
   methods: {
     appointANewOwner(item) {
