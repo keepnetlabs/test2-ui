@@ -7,6 +7,110 @@
       v-if="isWantToAddNewInvestigation"
       :selectedMail="selectedEmail"
     />
+    <app-dialog
+      :status="isWantToDelete"
+      @changeStatus="isWantToDelete = false"
+      icon="mdi-delete"
+      title="Delete Incident?"
+      :subtitle="deleteIncidentName"
+      :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDelete = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="deleteIncidentConfirm()"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="isWantToDeleteComment"
+      @changeStatus="isWantToDeleteComment = false"
+      icon="mdi-delete"
+      title="Delete Comment?"
+      body="This comment will be deleted from the post"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDeleteComment = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="deleteCommentConfirm()"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="openShareModal"
+      subtitle="Share this incident via email"
+      icon="mdi-send"
+      title="Share incident"
+      size="big"
+    >
+      <template v-slot:app-dialog-body>
+        <span
+          style="
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.87);
+          "
+          >Recipients</span
+        >
+        <v-combobox
+          :items="[]"
+          placeholder="Enter emails (max. 10)"
+          multiple
+          dense
+          deletable-chips
+          autocomplete="disabled"
+          small-chips
+          outlined
+          :no-data-text="'Enter emails (max. 10)'"
+          v-model="shareEmail"
+          :rules="[shareEmailRules.limit]"
+          class="pop-up-card__invite-member"
+        ></v-combobox>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openShareModal = false"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="shareIncident">Send</v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <div id="" class="single-post">
       <div class="threat-sharing-content">
         <div class="ts-header">
@@ -121,7 +225,7 @@
                   <v-list-item
                     v-else
                     :id="'share-btn' + post.communityPostResourceId"
-                    @click="shareIncident(post.communityPostResourceId, userIdFromStorage)"
+                    @click="openShareModalFunc(post)"
                   >
                     <v-list-item-icon>
                       <v-icon>mdi-send</v-icon>
@@ -135,13 +239,7 @@
                   <v-list-item
                     :id="'delete-btn' + post.communityPostResourceId"
                     v-if="canDelete(post)"
-                    @click="
-                      deleteIncident(
-                        post.communityPostResourceId,
-                        post.title,
-                        post.communityResourceId
-                      )
-                    "
+                    @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>
                       <v-icon>mdi-delete</v-icon>
@@ -243,7 +341,9 @@
             >
               <v-icon>mdi-message-reply-text</v-icon>
             </v-btn>
-            <span class="ts-action-counter">{{ post.commentCount }}</span>
+            <span class="ts-action-counter">{{
+              (comments && comments.length) || post.commentCount
+            }}</span>
           </div>
           <div :id="'single-post-harmful' + post.communityPostResourceId" class="ts-harmful mt-1">
             <v-btn readonly v-if="post.harmfulItemCount" text x-small icon color="red">
@@ -907,6 +1007,7 @@ import NewInvestigation from '../Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
+import AppDialog from '../AppDialog'
 import {
   createComments,
   deleteComments,
@@ -989,7 +1090,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 export default {
   components: {
     VClamp,
-    NewInvestigation
+    NewInvestigation,
+    AppDialog
   },
   props: {
     openEditPopupItem: {
@@ -1015,6 +1117,17 @@ export default {
   },
   computed: {},
   data: () => ({
+    openShareModal: false,
+    shareEmail: [],
+    shareEmailRules: {
+      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit'
+    },
+    deleteCommentId: null,
+    isWantToDeleteComment: false,
+    deleteIncidentId: null,
+    deleteIncidentName: null,
+    deleteIncidentCommunityName: null,
+    isWantToDelete: false,
     isWantToAddNewInvestigation: false,
     postDetails: {},
     comments: [],
@@ -1064,6 +1177,14 @@ export default {
     this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    openShareModalFunc(post) {
+      debugger
+      this.sharedIncitedId = post.communityPostResourceId
+      this.openShareModal = true
+    },
+    shareIncident() {
+      let id = this.sharedIncitedId
+    },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
         localStorage.setItem('communityName', post.communityName)
@@ -1101,12 +1222,17 @@ export default {
         })
     },
     deleteComment(comment) {
-      deleteComments(comment.resourceId)
+      this.deleteCommentId = comment.resourceId
+      this.isWantToDeleteComment = true
+    },
+    deleteCommentConfirm() {
+      deleteComments(this.deleteCommentId)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been deleted successfully'
           })
+          this.isWantToDeleteComment = false
           getComments(this.post.communityPostResourceId).then((response) => {
             const { data } = response
             this.comments = data.data
@@ -1116,6 +1242,23 @@ export default {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when delete a comment'
+          })
+        })
+    },
+    deleteIncidentConfirm() {
+      deleteCommunityPost(this.deleteIncidentId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Community post has been deleted successfuly'
+          })
+          this.$emit('refreshData')
+          this.isWantToDelete = false
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when delete community post'
           })
         })
     },
@@ -1137,7 +1280,6 @@ export default {
         this.isWantToAddNewInvestigation = true
       })
     },
-    shareIncident(postId, creatorUserId) {},
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
@@ -1215,21 +1357,11 @@ export default {
     editIncident(post, communityName) {
       this.$emit('openEditPopupItem', post)
     },
-    deleteIncident(postId, name, postCommunityId) {
-      deleteCommunityPost(postId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Community post has been deleted successfuly'
-          })
-          this.$emit('refreshData')
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when delete community post'
-          })
-        })
+    deleteIncident(post) {
+      this.deleteIncidentId = post.communityPostResourceId
+      this.deleteIncidentName = post.title
+      this.deleteIncidentCommunityName = post.communityName
+      this.isWantToDelete = true
     },
     isJoined(communId) {
       /*if (this.myCommunities && this.myCommunities.length) {

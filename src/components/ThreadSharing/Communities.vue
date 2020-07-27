@@ -14,6 +14,176 @@
         @closeAdd="onAddClose"
       />
     </v-overlay>
+    <app-dialog
+      :status="isWantToDelete"
+      @changeStatus="isWantToDelete = false"
+      icon="mdi-delete"
+      title="Delete Community?"
+      :subtitle="deleteCommunityName"
+      :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDelete = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="deleteCommunityConfirm()"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="isWantToToLeaveFromCommunity"
+      @changeStatus="isWantToToLeaveFromCommunity = false"
+      icon="mdi-exit-to-app"
+      title="Leave Community?"
+      :subtitle="leaveCommunityName"
+      :body="`You are leaving ${leaveCommunityName}. You won’t be able to post incidents to this community`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToToLeaveFromCommunity = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="leaveFromCommunityConfirm"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="showNeedPermissionModal"
+      @changeStatus="showNeedPermissionModal = false"
+      icon="mdi-exit-to-app"
+      title="Cannot Leave Community"
+      :subtitle="leaveCommunityName"
+      :body="`You have to give admin privileges to at least 1 other person`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="showNeedPermissionModal = false"
+              >I UNDERSTAND
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="openNotificationModal"
+      icon="mdi-bell"
+      title="Community Notification Settings"
+    >
+      <template v-slot:app-dialog-body>
+        <v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              Notifications
+            </div>
+            <div>
+              <v-switch
+                id="general-notif-switch"
+                v-model="notifications.isNotifications"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+        <v-list-item class="pa-0">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              Dashboard notifications
+            </div>
+            <div>
+              <v-switch
+                id="dashboard-notif-switch"
+                v-model="notifications.isDashboard"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+        <v-list-item class="pa-0">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              Email notifications
+            </div>
+            <div>
+              <v-switch
+                id="email-notif-switch"
+                v-model="notifications.isEmail"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+        <v-list-item class="pa-0">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              SMS notifications
+            </div>
+            <div>
+              <v-switch
+                id="whatsapp-notif-switch"
+                v-model="notifications.isSms"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn
+            text
+            color="#f56c6c"
+            class="k-dialog__button"
+            @click="openNotificationModal = false"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="saveNotificationSetting"
+            >Save</v-btn
+          >
+        </div>
+      </template>
+    </app-dialog>
     <v-card flat color="basil">
       <v-card-text class="pt-2">
         <v-data-iterator
@@ -63,20 +233,16 @@
                 <div class="ts-header">
                   <div class="ts-title" @click="communityDetails(item)">
                     {{ item.communityName }}
+                    {{ item.membershipStatusId }}
+                    {{ item.privacyStatusName }}
                   </div>
                   <div class="flex-grow-1"></div>
                   <div class="ts-header-btn-1">
-                    <v-btn
-                      v-if="item.membershipStatusName == 'Owner'"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                    >
+                    <v-btn v-if="item.membershipStatusId == 1" outlined rounded medium color="blue">
                       OWNER
                     </v-btn>
                     <v-btn
-                      v-else-if="item.membershipStatusName == 'RequestSent'"
+                      v-else-if="item.membershipStatusId == 3"
                       outlined
                       rounded
                       medium
@@ -86,7 +252,7 @@
                       REQUEST SENT
                     </v-btn>
                     <v-btn
-                      v-else-if="item.membershipStatusName == 'Member'"
+                      v-else-if="item.membershipStatusId == 2"
                       outlined
                       rounded
                       medium
@@ -95,7 +261,7 @@
                       MEMBER
                     </v-btn>
                     <v-btn
-                      v-else-if="!item.membershipStatusName && item.privacyStatusName == 'Private'"
+                      v-else-if="!item.membershipStatusId && item.privacyStatusName == 'Private'"
                       outlined
                       rounded
                       medium
@@ -106,7 +272,7 @@
                       REQUEST TO JOIN
                     </v-btn>
                     <v-btn
-                      v-else-if="!item.membershipStatusName && item.privacyStatusName == 'Public'"
+                      v-else-if="!item.membershipStatusId && item.privacyStatusName == 'Public'"
                       outlined
                       rounded
                       medium
@@ -116,6 +282,16 @@
                       <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                       JOIN
                     </v-btn>
+                    <v-btn
+                      v-else-if="item.membershipStatusId == 4"
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                      @click="subTabSelected"
+                    >
+                      INVITED
+                    </v-btn>
                   </div>
                   <v-menu offset-y transition="scale-transition">
                     <template v-slot:activator="{ on }">
@@ -123,20 +299,18 @@
                         <v-icon>mdi-dots-vertical</v-icon>
                       </v-btn>
                     </template>
-                    <div class="notification-wrapper">
-                      <v-list dense flat>
+                    <div class="communities__notification-wrapper">
+                      <v-list dense flat class="notification-wrapper__v-list">
                         <v-list-item-group color="primary">
-                          <v-list-item>
+                          <v-list-item @click="editCommunity(item)">
                             <v-list-item-icon>
                               <v-icon>mdi-pencil</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title @click="editCommunity(item)"
-                                >Edit Community</v-list-item-title
-                              >
+                              <v-list-item-title>Edit Community</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item>
+                          <v-list-item @click="openNotificationModal = true">
                             <v-list-item-icon>
                               <v-icon>mdi-bell</v-icon>
                             </v-list-item-icon>
@@ -144,24 +318,20 @@
                               <v-list-item-title>Notification Settings</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item>
+                          <v-list-item @click="leaveFromCommunity(item)">
                             <v-list-item-icon>
                               <v-icon>mdi-exit-to-app</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title @click="leaveFromCommunity(item)"
-                                >Leave</v-list-item-title
-                              >
+                              <v-list-item-title>Leave</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item>
+                          <v-list-item @click="deleteCommunity(item)">
                             <v-list-item-icon>
                               <v-icon>mdi-delete</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                              <v-list-item-title @click="deleteACommunity()"
-                                >Delete</v-list-item-title
-                              >
+                              <v-list-item-title>Delete</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
                         </v-list-item-group>
@@ -295,13 +465,27 @@ import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
 import { isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
-
+import AppDialog from '../AppDialog'
 export default {
   components: {
     VClamp,
-    NewCommunity
+    NewCommunity,
+    AppDialog
   },
   data: () => ({
+    notifications: {
+      isNotifications: false,
+      isDashboard: false,
+      isEmail: false,
+      isSms: false
+    },
+    openNotificationModal: false,
+    showNeedPermissionModal: false,
+    leaveCommunityName: null,
+    isWantToToLeaveFromCommunity: false,
+    isWantToDelete: false,
+    deleteCommunityName: null,
+    deleteCommunityId: null,
     invitationsCount: 0,
     resourceId: null,
     communityItem: null,
@@ -344,6 +528,13 @@ export default {
     this.getInvitationCount()
   },
   methods: {
+    saveNotificationSetting() {},
+    deleteCommunity(item) {
+      this.deleteCommunityName = item.communityName
+      this.deleteCommunityId = item.communityResourceId
+      this.isWantToDelete = true
+    },
+    deleteCommunityConfirm() {},
     getInvitationCount() {
       getInvitationCount()
         .then((response) => {
@@ -392,22 +583,31 @@ export default {
           })
         })
     },
-    deleteACommunity(item) {},
     leaveFromCommunity(item) {
-      removeFromCommunities(item.communityResourceId)
+      this.leaveCommunityId = item.communityResourceId
+      this.leaveCommunityName = item.communityName
+      this.isWantToToLeaveFromCommunity = true
+    },
+    leaveFromCommunityConfirm() {
+      removeFromCommunities(this.leaveCommunityId)
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'You have been removed from the community successfully'
           })
+          this.isWantToToLeaveFromCommunity = false
           this.getAllCommunitiesListData()
           this.getAllCommunityList()
         })
-        .catch(() => {
+        .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to leave from a community'
           })
+          if (error.response.data.code === 'CANNOT_LEAVE_COMMUNITY') {
+            this.isWantToToLeaveFromCommunity = false
+            this.showNeedPermissionModal = true
+          }
         })
     },
     debounce(fn, delay) {
@@ -429,12 +629,14 @@ export default {
       this.getAllCommunitiesListData()
     },
     getInvitions() {
+      this.listData = []
       getInvitations().then((response) => {
         const { data } = response
         this.listData = data.data
       })
     },
     getAllCommunitiesListData() {
+      this.listData = []
       const payload = {
         pageNumber: 1,
         pageSize: 100,
@@ -468,6 +670,7 @@ export default {
       })
     },
     getMyCommunitiesListData() {
+      this.listData = []
       const payload = {
         pageNumber: 1,
         pageSize: 100,
@@ -557,7 +760,6 @@ export default {
         this.selectedTab = 'tab-2'
         this.getInvitions()
         this.getInvitationCount()
-        this.listData = []
         return
       }
     }
@@ -869,6 +1071,21 @@ export default {
     right: -13px;
     height: 16px;
     width: 16px;
+  }
+}
+.communities-wrapper__community-notification-row {
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+  .community-notification__text {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
   }
 }
 </style>
