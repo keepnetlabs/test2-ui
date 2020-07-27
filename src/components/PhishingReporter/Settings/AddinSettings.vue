@@ -218,7 +218,7 @@
           Save and Download
         </v-btn>
         <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
-          Version History
+          DOWNLOAD History
         </div>
       </div>
     </v-form>

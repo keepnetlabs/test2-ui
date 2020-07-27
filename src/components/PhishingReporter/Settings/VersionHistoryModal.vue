@@ -2,8 +2,8 @@
   <app-dialog
     :status="status"
     icon="mdi-timer-sand-full"
-    title="Version History"
-    subtitle="Last 5 versions of the add-in"
+    title="Download History"
+    subtitle="Download past versions of the add-in"
     @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
     :custom-size="'800'"
     class-name="matching-modal version-history"
@@ -81,7 +81,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200
+            width: 250
           },
           {
             property: 'version',
@@ -92,7 +92,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200
+            width: 250
           },
           {
             property: 'createTime',
@@ -102,14 +102,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200
-          }
-        ],
-        rowActions: [
-          {
-            name: 'Details',
-            icon: 'mdi-text-box',
-            action: 'handleDetails'
+            width: 250
           }
         ],
         iEmpty: {

@@ -700,8 +700,10 @@
                   <template
                     v-if="scope.row.emailLastAction && scope.row.emailLastAction.status !== 'Idle'"
                   >
-                    <div class="d-flex align-center">
-                      <span>{{ scope.row.emailLastAction.status }}</span>
+                    <span class="d-flex align-center">
+                      <span style="text-overflow: ellipsis; overflow: hidden;">{{
+                        scope.row.emailLastAction.status
+                      }}</span>
                       <span class="ml-2">
                         <v-tooltip bottom content-class="investigation-details__tooltip">
                           <template v-slot:activator="{ on }">
@@ -714,7 +716,7 @@
                           <span>{{ getTooltipText(scope.row.emailLastAction) }} </span>
                         </v-tooltip>
                       </span>
-                    </div>
+                    </span>
                   </template>
                   <span v-else> </span>
                 </template>
