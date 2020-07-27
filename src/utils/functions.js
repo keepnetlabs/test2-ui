@@ -135,14 +135,14 @@ export function getDataTableFieldLabel(field) {
 export function isOwnerOrMember(membershipStatusId) {
   switch (membershipStatusId) {
     case 1:
-      return 'Being Analyzed'
+      return true
     case 2:
-      return 'In Progress'
+      return true
     default:
       return false
   }
 }
 
 export function isOwner(membershipStatusId) {
-  return membershipStatusId === 1
+  return membershipStatusId == 1
 }

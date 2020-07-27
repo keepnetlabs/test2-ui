@@ -264,7 +264,15 @@ export default {
   },
   created() {
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
-      if (this.$route.query && !!this.$route.query.CommunityRequestId) {
+      if (
+        this.$route.query &&
+        !!this.$route.query.communityResourceId &&
+        !!this.$route.query.communityPostResourceId
+      ) {
+        this.$router.push(
+          `/community/${this.$route.query.communityResourceId}?postId=${this.$route.query.communityPostResourceId}`
+        )
+      } else if (this.$route.query && !!this.$route.query.CommunityRequestId) {
         this.$router.push(
           `/threat-sharing?CommunityRequestId=${this.$route.query.CommunityRequestId}`
         )

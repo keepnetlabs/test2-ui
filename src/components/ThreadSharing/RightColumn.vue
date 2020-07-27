@@ -1,259 +1,301 @@
 <template>
-  <v-card class="pop-up-card pt-4 pl-6 pr-6" light min-height="300">
-    <v-btn
-      v-if="$route.path == '/threat-sharing'"
-      class="create-com-btn"
-      @click="createNewCommunity"
-      block
-      rounded
-      id="create-community-btn"
-      >CREATE COMMUNITY
-    </v-btn>
-    <v-btn
-      v-if="$route.name == 'Community'"
-      class="create-com-btn"
-      @click="postIncident"
-      block
-      rounded
-      id="post-inc-btn"
-      >POST INCIDENT
-    </v-btn>
-    <v-btn
-      v-else-if="false"
-      class="create-com-btn"
-      @click="joinCommunity()"
-      block
-      rounded
-      id="join-community-btn"
-      >JOIN
-    </v-btn>
-    <div class="right-side-content wrapper pt-8 pb-4">
-      <div v-if="$route.name == 'Community'">
-        <div class="about-community right-side-title">
-          About Community
-          <v-menu content-class="right-col-commun-settings" offset-y transition="scale-transition">
-            <template v-slot:activator="{ on }">
-              <v-icon v-on="on">mdi-cog</v-icon>
-            </template>
-            <div class="notification-wrapper">
-              <v-list dense flat>
-                <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
-                  <v-list-item id="right-col-edit-commun" @click="editCommunity()">
-                    <v-list-item-icon>
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>Edit Community</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-                <v-list-item-group color="primary">
-                  <v-list-item id="right-col-notification-settings" @click="openNotifications()">
-                    <v-list-item-icon>
-                      <v-icon>mdi-bell</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>Notification Settings</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-                <v-list-item-group color="primary">
-                  <v-list-item id="right-col-leave-commun" @click="leaveCommunity()">
-                    <v-list-item-icon>
-                      <v-icon>mdi-exit-to-app</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>Leave</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-                <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
-                  <v-list-item id="right-col-delete-commun" @click="deleteCommunity()">
-                    <v-list-item-icon>
-                      <v-icon>mdi-delete</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>Delete</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list-item-group>
-              </v-list>
-            </div>
-          </v-menu>
-        </div>
-        <div class="right-side-post-container pt-2 pb-9">
-          <span class="about-community-statement">{{ communityDetails.description }}</span>
-          <v-row>
-            <v-col cols="12" sm="6" class="about-community-table-td pb-0">
-              <span class="right-col-semibold-label">Owner</span>
-            </v-col>
-            <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
-              {{ communityDetails.ownerCompanyName }}
-            </v-col>
-          </v-row>
-          <div class="about-community-table pt-8">
+  <div class="right-column">
+    <v-card class="pop-up-card right-column pt-4 pl-6 pr-6" light min-height="300">
+      <app-dialog
+        :status="openInviteModal"
+        icon="mdi-account-multiple-plus"
+        title="Invite Members"
+        subtitle="Bring new members to the community"
+        size="big"
+      >
+        <template v-slot:app-dialog-body>
+          <v-combobox
+            :items="[]"
+            placeholder="Enter email addresses of the companies to be invited (max. 5)"
+            multiple
+            dense
+            deletable-chips
+            autocomplete="disabled"
+            small-chips
+            outlined
+            :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
+            v-model="emailarray"
+            :rules="[inviteMembers.limit]"
+            class="pop-up-card__invite-member"
+          ></v-combobox>
+        </template>
+        <template v-slot:app-dialog-footer>
+          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+            <v-btn text color="#f56c6c" class="k-dialog__button" @click="openInviteModal = false"
+              >CANCEL</v-btn
+            >
+            <v-btn text color="#2196f3" class="k-dialog__button" @click="inviteMember"
+              >Accept All</v-btn
+            >
+          </div>
+        </template>
+      </app-dialog>
+      <v-btn
+        v-if="$route.path == '/threat-sharing'"
+        class="create-com-btn"
+        @click="createNewCommunity"
+        block
+        rounded
+        id="create-community-btn"
+        >CREATE COMMUNITY
+      </v-btn>
+      <v-btn
+        v-if="$route.name == 'Community'"
+        class="create-com-btn"
+        @click="postIncident"
+        block
+        rounded
+        id="post-inc-btn"
+        >POST INCIDENT
+      </v-btn>
+      <v-btn
+        v-else-if="false"
+        class="create-com-btn"
+        @click="joinCommunity()"
+        block
+        rounded
+        id="join-community-btn"
+        >JOIN
+      </v-btn>
+      <div class="right-side-content wrapper pt-8 pb-4">
+        <div v-if="$route.name == 'Community'">
+          <div class="about-community right-side-title">
+            About Community
+            <v-menu
+              content-class="right-col-commun-settings"
+              offset-y
+              transition="scale-transition"
+            >
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on">mdi-cog</v-icon>
+              </template>
+              <div class="notification-wrapper">
+                <v-list dense flat>
+                  <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
+                    <v-list-item id="right-col-edit-commun" @click="editCommunity()">
+                      <v-list-item-icon>
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>Edit Community</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                  <v-list-item-group color="primary">
+                    <v-list-item id="right-col-notification-settings" @click="openNotifications()">
+                      <v-list-item-icon>
+                        <v-icon>mdi-bell</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>Notification Settings</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                  <v-list-item-group color="primary">
+                    <v-list-item id="right-col-leave-commun" @click="leaveCommunity()">
+                      <v-list-item-icon>
+                        <v-icon>mdi-exit-to-app</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>Leave</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                  <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
+                    <v-list-item id="right-col-delete-commun" @click="deleteCommunity()">
+                      <v-list-item-icon>
+                        <v-icon>mdi-delete</v-icon>
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>Delete</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </div>
+            </v-menu>
+          </div>
+          <div class="right-side-post-container pt-2 pb-9">
+            <span class="about-community-statement">{{ communityDetails.description }}</span>
             <v-row>
               <v-col cols="12" sm="6" class="about-community-table-td pb-0">
-                <span class="right-col-semibold-label">Members</span>
+                <span class="right-col-semibold-label">Owner</span>
               </v-col>
               <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
-                {{ communityDetails.memberCount }}
-                <a
-                  v-if="!!communityDetails && communityDetails.myMembershipStatusId === 1"
-                  href="#"
-                  class="pl-4"
-                  @click="isWantToAddMembers()"
-                  >+Invite</a
+                {{ communityDetails.ownerCompanyName }}
+              </v-col>
+            </v-row>
+            <div class="about-community-table">
+              <v-row>
+                <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+                  <span class="right-col-semibold-label">Members</span>
+                </v-col>
+                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
+                  {{ communityDetails.memberCount }}
+                  <a
+                    v-if="!!communityDetails && communityDetails.myMembershipStatusId == 1"
+                    href="#"
+                    class="pl-4"
+                    @click="openInviteModal = true"
+                    >+Invite</a
+                  >
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+                  <span class="right-col-semibold-label">Industry</span>
+                </v-col>
+                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
+                  {{ communityDetails.industryName }}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+                  <span class="right-col-semibold-label">Total Incidents</span>
+                </v-col>
+                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0"
+                  >{{ communityDetails.incidentCount }}
+                </v-col>
+              </v-row>
+              <v-row v-if="false">
+                <v-col cols="12" sm="6" class="about-community-table-td pb-0"
+                  >You investigated</v-col
                 >
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6" class="about-community-table-td pb-0">
-                <span class="right-col-semibold-label">Industry</span>
-              </v-col>
-              <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
-                {{ communityDetails.industryName }}
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" sm="6" class="about-community-table-td pb-0">
-                <span class="right-col-semibold-label">Total Incidents</span>
-              </v-col>
-              <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0"
-                >{{ communityDetails.incidentCount }}
-              </v-col>
-            </v-row>
-            <v-row v-if="false">
-              <v-col cols="12" sm="6" class="about-community-table-td pb-0">You investigated</v-col>
-              <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">21</v-col>
-            </v-row>
-            <v-row v-if="false">
-              <v-col cols="12" sm="6" class="about-community-table-td pb-0">Eliminated</v-col>
-              <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">48 threats</v-col>
-            </v-row>
-          </div>
-        </div>
-      </div>
-      <div v-if="$route.name !== 'Community'" class="right-side-title pt-1">Your Posts</div>
-      <div class="pb-4" v-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0">
-        <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
-          <div class="pt-2">
-            <div class="right-side-sub-title pb-1">
-              <a href="#">{{ post.title }}</a>
-            </div>
-            <div class="right-side-desc pb-1">
-              by
-              <a href="#">{{ post.communityName }}</a>
-            </div>
-            <div class="right-side-like-comment-wrapper">
-              <div class="right-side-like">
-                <v-btn disabled text x-small icon color="grey">
-                  <v-icon>mdi-thumb-up</v-icon>
-                </v-btn>
-                <span class="like-count">{{ post.likeCount }}</span>
-              </div>
-              <div class="right-side-message pl-2">
-                <v-btn disabled text x-small icon color="grey">
-                  <v-icon>mdi-message-reply-text</v-icon>
-                </v-btn>
-                <span class="comment-count">{{ post.commentCount }}</span>
-              </div>
+                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">21</v-col>
+              </v-row>
+              <v-row v-if="false">
+                <v-col cols="12" sm="6" class="about-community-table-td pb-0">Eliminated</v-col>
+                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">48 threats</v-col>
+              </v-row>
             </div>
           </div>
         </div>
-      </div>
-      <div class="right-side-title pt-4">Top Posts from your communities</div>
-      <div v-if="topPosts && topPosts.length">
-        <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
-          <div class="right-side-post-container pt-2">
-            <div class="right-side-sub-title pb-1">
-              <a href="#">{{ post.postTitle }}</a>
-            </div>
-            <div class="right-side-desc pb-1">
-              by
-              <a href="#">{{ post.communityName }}</a>
-            </div>
-            <div class="right-side-like-comment-wrapper">
-              <div class="right-side-like">
-                <v-btn disabled text x-small icon color="grey">
-                  <v-icon>mdi-thumb-up</v-icon>
-                </v-btn>
-                <span class="like-count">{{ post.likeCount }}</span>
+        <div v-if="$route.name !== 'Community'" class="right-side-title pt-1">Your Posts</div>
+        <div class="pb-4" v-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0">
+          <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
+            <div class="pt-2">
+              <div class="right-side-sub-title pb-1">
+                <a href="#">{{ post.title }}</a>
               </div>
-              <div class="right-side-message pl-2">
-                <v-btn disabled text x-small icon color="grey">
-                  <v-icon>mdi-message-reply-text</v-icon>
-                </v-btn>
-                <span class="comment-count">{{ post.commentCount }}</span>
+              <div class="right-side-desc pb-1">
+                by
+                <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else class="empty-posts pt-1">
-        No incident has been posted in your communities, yet
-      </div>
-      <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
-      <div v-if="suggestedCommunities && suggestedCommunities.length">
-        <v-card
-          v-for="(commun, ind) of suggestedCommunities"
-          :key="ind + commun.communityName"
-          class="suggested-card"
-        >
-          <div class="suggested-row">
-            <div class="suggested-com-name" cols="12">
-              <div class="suggested-title">{{ commun.communityName }}</div>
-              <div class="suggested-com-detail">
-                <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                {{ commun.memberCount }}
-                <span class="suggested-industry pl-2">Industry -&nbsp;</span>
-                <span class="suggested-company">{{ commun.industryName }}</span>
-              </div>
-            </div>
-            <div class="suggested-right-action">
-              <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
-                <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
-                <span class="pr-2">Member</span>
-              </v-btn>
-              <v-btn
-                @click="joinCommunity(commun.resourceId)"
-                class="suggested-btn"
-                block
-                rounded
-                v-else
-                :disabled="commun.isJoined"
-                style="background-color: #2196f3 !important;"
-              >
-                <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
-                <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
-                  >mdi-account-clock
-                </v-icon>
-                <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
-                  Join
+              <div class="right-side-like-comment-wrapper">
+                <div class="right-side-like">
+                  <v-btn disabled text x-small icon color="grey">
+                    <v-icon>mdi-thumb-up</v-icon>
+                  </v-btn>
+                  <span class="like-count">{{ post.likeCount }}</span>
                 </div>
-                <div v-else-if="commun.isJoined" :key="commun.resourceId">
-                  Request Sent
+                <div class="right-side-message pl-2">
+                  <v-btn disabled text x-small icon color="grey">
+                    <v-icon>mdi-message-reply-text</v-icon>
+                  </v-btn>
+                  <span class="comment-count">{{ post.commentCount }}</span>
                 </div>
-                <div v-else :key="commun.resourceId">Request to join</div>
-              </v-btn>
+              </div>
             </div>
           </div>
-        </v-card>
+        </div>
+        <div class="right-side-title pt-4">Top Posts from your communities</div>
+        <div v-if="topPosts && topPosts.length">
+          <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
+            <div class="right-side-post-container pt-2">
+              <div class="right-side-sub-title pb-1">
+                <a href="#">{{ post.postTitle }}</a>
+              </div>
+              <div class="right-side-desc pb-1">
+                by
+                <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
+              </div>
+              <div class="right-side-like-comment-wrapper">
+                <div class="right-side-like">
+                  <v-btn disabled text x-small icon color="grey">
+                    <v-icon>mdi-thumb-up</v-icon>
+                  </v-btn>
+                  <span class="like-count">{{ post.likeCount }}</span>
+                </div>
+                <div class="right-side-message pl-2">
+                  <v-btn disabled text x-small icon color="grey">
+                    <v-icon>mdi-message-reply-text</v-icon>
+                  </v-btn>
+                  <span class="comment-count">{{ post.commentCount }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="empty-posts pt-1">
+          No incident has been posted in your communities, yet
+        </div>
+        <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
+        <div v-if="suggestedCommunities && suggestedCommunities.length">
+          <v-card
+            v-for="(commun, ind) of suggestedCommunities"
+            :key="ind + commun.communityName"
+            class="suggested-card"
+          >
+            <div class="suggested-row">
+              <div class="suggested-com-name" cols="12">
+                <div class="suggested-title">{{ commun.communityName }}</div>
+                <div class="suggested-com-detail">
+                  <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
+                  {{ commun.memberCount }}
+                  <span class="suggested-industry pl-2">Industry -&nbsp;</span>
+                  <span class="suggested-company">{{ commun.industryName }}</span>
+                </div>
+              </div>
+              <div class="suggested-right-action">
+                <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
+                  <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
+                  <span class="pr-2">Member</span>
+                </v-btn>
+                <v-btn
+                  @click="joinCommunity(commun.resourceId)"
+                  class="suggested-btn"
+                  block
+                  rounded
+                  v-else
+                  :disabled="commun.isJoined"
+                  style="background-color: #2196f3 !important;"
+                >
+                  <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
+                  <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
+                    >mdi-account-clock
+                  </v-icon>
+                  <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
+                    JOIN
+                  </div>
+                  <div v-else-if="commun.isJoined" :key="commun.resourceId">
+                    Request Sent
+                  </div>
+                  <div v-else :key="commun.resourceId">Request to join</div>
+                </v-btn>
+              </div>
+            </div>
+          </v-card>
+        </div>
+        <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
+          There is no suggested community available, yet
+        </div>
+        <div class="empty-suggested" v-else>
+          <v-btn
+            class="create-first-btn create-com-btn mt-3 mb-6"
+            @click="createNewCommunity()"
+            block
+            rounded
+            >Create A New Community
+          </v-btn>
+        </div>
       </div>
-      <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
-        There is no suggested community available, yet
-      </div>
-      <div class="empty-suggested" v-else>
-        <v-btn
-          class="create-first-btn create-com-btn mt-3 mb-6"
-          @click="createNewCommunity()"
-          block
-          rounded
-          >Create A New Community
-        </v-btn>
-      </div>
-    </div>
-  </v-card>
+    </v-card>
+  </div>
 </template>
 <script>
 import { mapState, mapGetters } from 'vuex'
@@ -262,18 +304,26 @@ import {
   getMyLastPosts,
   getMyTopPosts,
   getsuggestedCommunities,
+  inviteToCommunity,
   joinCommunity
 } from '../../api/threadSharing'
+import AppDialog from '../AppDialog'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   data() {
     return {
+      emailarray: [],
+      openInviteModal: false,
       suggestedCommunities: [],
       communityDetails: {},
       myLastPosts: [],
       topPosts: [],
       ownerDetails: null,
-      yourPosts: []
+      yourPosts: [],
+      inviteMembers: {
+        limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
+      }
     }
   },
   props: {
@@ -282,6 +332,9 @@ export default {
       required: false,
       default: false
     }
+  },
+  components: {
+    AppDialog
   },
   created() {
     this.getCommunityDetails()
@@ -305,11 +358,52 @@ export default {
     }
   },
   methods: {
+    goToCommunityDetails(post) {
+      if (post.communityResourceId) {
+        localStorage.setItem('communityName', post.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
+        this.$router.push(`/community/${post.communityResourceId}`)
+      }
+    },
+    inviteMember() {
+      setTimeout(() => {
+        const payload = {
+          emailarray: this.emailarray
+        }
+        inviteToCommunity(this.$route.params.id, payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Members are invited to community successfully'
+            })
+            this.emailarray = []
+            this.openInviteModal = false
+          })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response &&
+              !!error.response.data.validationMessages &&
+              !!error.response.data.validationMessages.length
+            ) {
+              this.$store.dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: error.response.data.validationMessages[0]
+              })
+            }
+          })
+      }, 200)
+    },
     getCommunityDetails() {
+      const _this = this
       if (this.$route.name == 'Community') {
         this.ownerDetails = this.$route.params.item
         getCommunityDetails(this.$route.params.id).then((response) => {
           this.communityDetails = response.data.data
+          if (_this.$route.query && _this.$route.query.postId) {
+            localStorage.setItem('communityName', response.data.data.name)
+            localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
+          }
         })
       }
     },
@@ -383,718 +477,697 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.notification-wrapper {
-  padding: 0 !important;
-  width: 100%;
-  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
-    0 3px 14px 2px rgba(255, 255, 255, 0.12);
+<style lang="scss">
+.pop-up-card__invite-member {
+  .v-select__selections input {
+    min-height: 32px;
+  }
+  .v-input__append-inner {
+    display: none;
+  }
 }
+.right-column {
+  .notification-wrapper {
+    padding: 0 !important;
+    width: 100%;
+    box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
+      0 3px 14px 2px rgba(255, 255, 255, 0.12);
+  }
 
-.right-column-header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0 !important;
+  .right-column-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0 !important;
 
-  .header-p {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
+    .header-p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: #2196f3 !important;
+      margin-bottom: 0 !important;
+    }
+  }
+
+  .right-col-sub-header {
+    font-family: Helvetica;
+    font-size: 16px;
+    font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.15;
+    line-height: 1.5;
     letter-spacing: normal;
-    color: #2196f3 !important;
-    margin-bottom: 0 !important;
-  }
-}
-
-.right-col-sub-header {
-  font-family: Helvetica;
-  font-size: 16px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: #000;
-  padding-bottom: 20px !important;
-}
-
-.pop-up-card {
-  width: 100%;
-  border-radius: 20px !important;
-  box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
-  background-color: #fff;
-}
-
-@media only screen and (max-width: 1023px) {
-  ::-webkit-scrollbar {
-    -webkit-overflow-scrolling: auto;
-    -webkit-appearance: none;
-    width: 7px;
+    color: #000;
+    padding-bottom: 20px !important;
   }
 
-  ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  .pop-up-card {
+    width: 100%;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+    background-color: #fff;
   }
-}
 
-.create-com-btn {
-  background-color: #2196f3 !important;
-  color: #fff;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  height: 36px !important;
-  text-transform: unset !important;
-}
+  @media only screen and (max-width: 1023px) {
+    ::-webkit-scrollbar {
+      -webkit-overflow-scrolling: auto;
+      -webkit-appearance: none;
+      width: 7px;
+    }
 
-::v-deep .suggested-card > .suggested-row {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+    }
+  }
 
-.right-side- {
-  &title {
+  .create-com-btn {
+    background-color: #2196f3 !important;
+    color: #fff;
     font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    height: 36px !important;
+    text-transform: unset !important;
+  }
+
+  ::v-deep .suggested-card > .suggested-row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .right-side- {
+    &title {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+
+  .ts-tags {
+    align-items: center;
+  }
+
+  .ts-footer {
+    display: flex;
+    margin-top: 10px;
+    margin-left: 0px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: bold;
     font-style: normal;
     font-stretch: normal;
-    line-height: 1.15;
+    line-height: 1.58;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
-}
 
-.ts-tags {
-  align-items: center;
-}
+  .ts-like {
+    margin-right: 10px;
+    display: flex;
 
-.ts-footer {
-  display: flex;
-  margin-top: 10px;
-  margin-left: 0px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: bold;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.ts-like {
-  margin-right: 10px;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-
-.ts-message {
-  margin-right: 40px;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-
-.ts-harmful {
-  margin-right: 15px;
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-
-.ts-success {
-  display: flex;
-
-  span {
-    align-items: center;
-    font-size: inherit;
-    line-height: unset;
-    line-height: 2;
-  }
-}
-
-.ts-body {
-  margin-top: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.ts-user-comp {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  a {
-    text-decoration: none;
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
   }
 
-  .ts-user-date {
-    font-weight: bold;
+  .ts-message {
+    margin-right: 40px;
+    display: flex;
+
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
   }
-}
 
-// Threat sharing Content
-.threat-sharing-content {
-  min-height: 200px;
-  width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12);
-  background-color: #ffffff;
-  padding: 29px 32px 16px 32px;
-}
+  .ts-harmful {
+    margin-right: 15px;
+    display: flex;
 
-.ts-header {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
 
-.ts-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
+  .ts-success {
+    display: flex;
 
-// Threat sharing Content End
+    span {
+      align-items: center;
+      font-size: inherit;
+      line-height: unset;
+      line-height: 2;
+    }
+  }
 
-.v-tab {
-  padding: 0 !important;
-  font-size: 20px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
-  text-align: left !important;
-}
-
-::v-deep .v-slide-group__wrapper {
-  padding-left: 20px !important;
-}
-
-.v-card.v-sheet.theme--light {
-  padding-top: 0;
-  padding-left: 3px;
-  padding-right: 3px;
-  border-radius: 20px;
-}
-
-//search Input css
-::v-deep .v-label--active {
-  transform: translateY(-15px) scale(0.75);
-}
-
-::v-deep .v-text-field--outlined .v-label {
-  top: 11px;
-}
-
-::v-deep .v-input__slot {
-  -webkit-box-align: stretch;
-  -ms-flex-align: stretch;
-  align-items: stretch;
-  min-height: 40px !important;
-}
-
-::v-deep label.v-label.theme--light {
-  font-size: 12px;
-}
-
-.v-input {
-  font-size: 13px !important;
-  font-weight: 600;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.54);
-}
-
-// end search input
-
-::v-deep .v-slide-group__content {
-  border-bottom: 2px solid #e4e7ed;
-  margin-right: 20px;
-}
-
-::v-deep .v-tabs-slider-wrapper {
-  bottom: -1px !important;
-  color: #0486fe !important;
-}
-
-::v-deep .v-tabs-bar {
-  height: 60px !important;
-
-  .v-tab {
+  .ts-body {
+    margin-top: 8px;
     font-family: 'Open Sans', sans-serif !important;
-    font-weight: 400;
-    font-weight: 600;
-    margin-right: 48px;
-  }
-}
-
-::v-deep .community-selector {
-  .v-tabs-bar {
-    height: 44px !important;
-  }
-}
-
-::v-deep .community-selector .v-slide-group__wrapper {
-  background-color: #f5f7fa !important;
-  height: 44px !important;
-  padding-left: 0 !important;
-
-  .v-tab {
-    font-weight: 400;
-    font-size: 14px !important;
-    margin-top: 6px;
-    margin-right: 32px !important;
-  }
-}
-
-::v-deep .community-selector .v-slide-group__wrapper > div {
-  height: 100%;
-  margin-right: 0 !important;
-}
-
-::v-deep .v-text-field--outlined fieldset {
-  border-radius: 6px !important;
-}
-
-.search-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  > div {
-    padding-right: 10px;
-  }
-
-  .filter-icon {
-    color: rgba(0, 0, 0, 0.34) !important;
-    cursor: pointer;
-  }
-}
-
-.filter-field {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.create-com-btn {
-  background-color: #2196f3 !important;
-  color: #fff;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  height: 36px !important;
-  text-transform: unset !important;
-}
-
-.ts-community-industry {
-  color: rgba(0, 0, 0, 0.87) !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-}
-
-.ts-people-icon {
-  font-size: 16px;
-}
-
-.notification-wrapper {
-  background-color: #fff;
-}
-
-.v-menu__content {
-  border-radius: 8px !important;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
-
-  .v-list-item {
-    padding-left: 29px !important;
-    padding-right: 16px !important;
-  }
-
-  .v-list-item__title {
     font-size: 14px;
     font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .ts-user-comp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+
+    a {
+      text-decoration: none;
+    }
+
+    .ts-user-date {
+      font-weight: bold;
+    }
+  }
+
+  // Threat sharing Content
+  .threat-sharing-content {
+    min-height: 200px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    background-color: #ffffff;
+    padding: 29px 32px 16px 32px;
+  }
+
+  .ts-header {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
+  .ts-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  // Threat sharing Content End
+
+  .v-tab {
+    padding: 0 !important;
+    font-size: 20px;
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    text-transform: none;
+    color: rgba(0, 0, 0, 0.87);
+    text-align: left !important;
+  }
+
+  ::v-deep .v-slide-group__wrapper {
+    padding-left: 20px !important;
+  }
+
+  .v-card.v-sheet.theme--light {
+    padding-top: 0;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 20px;
+  }
+
+  //search Input css
+  ::v-deep .v-label--active {
+    transform: translateY(-15px) scale(0.75);
+  }
+
+  ::v-deep .v-text-field--outlined .v-label {
+    top: 11px;
+  }
+
+  ::v-deep .v-input__slot {
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+    min-height: 40px !important;
+  }
+
+  ::v-deep label.v-label.theme--light {
+    font-size: 12px;
+  }
+
+  .v-input {
+    font-size: 13px !important;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  // end search input
+
+  ::v-deep .v-slide-group__content {
+    border-bottom: 2px solid #e4e7ed;
+    margin-right: 20px;
+  }
+
+  ::v-deep .v-tabs-slider-wrapper {
+    bottom: -1px !important;
+    color: #0486fe !important;
+  }
+
+  ::v-deep .v-tabs-bar {
+    height: 60px !important;
+
+    .v-tab {
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 400;
+      font-weight: 600;
+      margin-right: 48px;
+    }
+  }
+
+  ::v-deep .community-selector {
+    .v-tabs-bar {
+      height: 44px !important;
+    }
+  }
+
+  ::v-deep .community-selector .v-slide-group__wrapper {
+    background-color: #f5f7fa !important;
+    height: 44px !important;
+    padding-left: 0 !important;
+
+    .v-tab {
+      font-weight: 400;
+      font-size: 14px !important;
+      margin-top: 6px;
+      margin-right: 32px !important;
+    }
+  }
+
+  ::v-deep .community-selector .v-slide-group__wrapper > div {
+    height: 100%;
+    margin-right: 0 !important;
+  }
+
+  ::v-deep .v-text-field--outlined fieldset {
+    border-radius: 6px !important;
+  }
+
+  .search-wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    > div {
+      padding-right: 10px;
+    }
+
+    .filter-icon {
+      color: rgba(0, 0, 0, 0.34) !important;
+      cursor: pointer;
+    }
+  }
+
+  .filter-field {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: 600;
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: var(--black-87);
-  }
-}
-
-.v-application--is-ltr .v-list-item__icon:first-child {
-  margin-right: 10px !important;
-}
-
-.ts-user-comp-detail {
-  align-items: center;
-  display: flex;
-}
-
-::v-deep .v-btn:not(.v-btn--round).v-size--default,
-::v-deep .v-btn--icon.v-size--default {
-  height: 36px !important;
-}
-
-::v-deep .v-btn--icon.v-size--default {
-  margin-left: 4px;
-  width: 36px !important;
-}
-
-// Right Column
-.right-side-content {
-  a {
-    text-decoration: none !important;
+    color: rgba(0, 0, 0, 0.54);
   }
 
-  a:hover {
-    text-decoration: underline !important;
-  }
-}
-
-.right-side-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.right-side-sub-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #2196f3;
-}
-
-.about-community {
-  display: flex;
-  justify-content: space-between;
-}
-
-.about-community-statement {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.about-community-table-td {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 16px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.about-community-table-td-sec {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-::v-deep .right-side-like .v-icon,
-::v-deep .right-side-message .v-icon {
-  height: 14px !important;
-  width: 14px !important;
-  font-size: 14px !important;
-}
-
-.right-side-like-comment-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-}
-
-.like-count,
-.comment-count {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-  padding-left: 2px;
-}
-
-.suggested-card {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  min-height: 76px;
-  margin-bottom: 8px;
-  border-radius: 4px !important;
-  border: none !important;
-  box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-
-  .suggested-row {
-    align-items: stretch;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    flex-wrap: wrap;
-    height: auto;
-    max-height: 220px;
-    width: 100%;
-    padding: 16px;
-    padding-bottom: 4px;
+  .create-com-btn {
+    background-color: #2196f3 !important;
+    color: #fff;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    height: 36px !important;
+    text-transform: unset !important;
   }
 
-  .suggested-com-name {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    max-width: 100%;
+  .ts-community-industry {
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+  }
 
-    .suggested-title {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 16px;
+  .ts-people-icon {
+    font-size: 16px;
+  }
+
+  .notification-wrapper {
+    background-color: #fff;
+  }
+
+  .v-menu__content {
+    border-radius: 8px !important;
+    box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
+
+    .v-list-item {
+      padding-left: 29px !important;
+      padding-right: 16px !important;
+    }
+
+    .v-list-item__title {
+      font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      margin-top: 0;
-      padding-bottom: 8px;
-      text-align: left;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      display: block;
-      max-width: 100%;
+      color: var(--black-87);
+    }
+  }
+
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 10px !important;
+  }
+
+  .ts-user-comp-detail {
+    align-items: center;
+    display: flex;
+  }
+
+  ::v-deep .v-btn:not(.v-btn--round).v-size--default,
+  ::v-deep .v-btn--icon.v-size--default {
+    height: 36px !important;
+  }
+
+  ::v-deep .v-btn--icon.v-size--default {
+    margin-left: 4px;
+    width: 36px !important;
+  }
+
+  // Right Column
+  .right-side-content {
+    a {
+      text-decoration: none !important;
     }
 
-    .suggested-com-detail {
-      font-size: 12px;
+    a:hover {
+      text-decoration: underline !important;
+    }
+  }
 
-      .suggested-people-icon {
-        font-size: 14px !important;
-      }
+  .right-side-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
 
-      .suggested-industry {
+  .right-side-sub-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+
+  .about-community {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .about-community-statement {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .about-community-table-td {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .about-community-table-td-sec {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  ::v-deep .right-side-like .v-icon,
+  ::v-deep .right-side-message .v-icon {
+    height: 14px !important;
+    width: 14px !important;
+    font-size: 14px !important;
+  }
+
+  .right-side-like-comment-wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .like-count,
+  .comment-count {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    padding-left: 2px;
+  }
+
+  .suggested-card {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    min-height: 76px;
+    margin-bottom: 8px;
+    border-radius: 4px !important;
+    border: none !important;
+    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
+
+    .suggested-row {
+      align-items: stretch;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      flex-wrap: wrap;
+      height: auto;
+      max-height: 220px;
+      width: 100%;
+      padding: 16px;
+      padding-bottom: 4px;
+    }
+
+    .suggested-com-name {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      max-width: 100%;
+
+      .suggested-title {
         font-family: 'Open Sans', sans-serif !important;
-        font-size: 12px;
+        font-size: 16px;
         font-weight: normal;
         font-stretch: normal;
         font-style: normal;
-        line-height: 1.58;
+        line-height: normal;
         letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87) !important;
+        color: rgba(0, 0, 0, 0.87);
+        margin-top: 0;
+        padding-bottom: 8px;
+        text-align: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        max-width: 100%;
+      }
+
+      .suggested-com-detail {
+        font-size: 12px;
+
+        .suggested-people-icon {
+          font-size: 14px !important;
+        }
+
+        .suggested-industry {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87) !important;
+        }
       }
     }
-  }
 
-  .suggested-right-action {
-    align-items: center;
-    display: flex;
-    justify-content: flex-end;
-    margin: 13px 0;
-    width: min-content;
-
-    .suggested-btn {
+    .suggested-right-action {
       align-items: center;
-      background-color: #2196f3 !important;
-      color: #fff !important;
-      text-transform: capitalize;
+      display: flex;
+      justify-content: flex-end;
+      margin: 13px 0;
       width: min-content;
 
-      @media only screen and (max-width: 500px) {
-        padding: 0 3px !important;
+      .suggested-btn {
+        align-items: center;
+        background-color: #2196f3 !important;
+        color: #fff !important;
+        text-transform: capitalize;
+        width: min-content;
+
+        @media only screen and (max-width: 500px) {
+          padding: 0 3px !important;
+        }
       }
     }
   }
-}
 
-.community-notification-header {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  color: #000;
-}
-
-.community-notification-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 25px !important;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  .community-notification-switch {
-    align-items: center;
-    display: flex;
-    height: 25px !important;
-    margin-top: 10px !important;
+  .community-notification-header {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.15;
+    letter-spacing: normal;
+    color: #000;
   }
-}
 
-.community-notification-row:first-child {
-  border-bottom: 1px solid gray !important;
-}
+  .community-notification-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 25px !important;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
 
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #2196f3;
-}
+    .community-notification-switch {
+      align-items: center;
+      display: flex;
+      height: 25px !important;
+      margin-top: 10px !important;
+    }
+  }
 
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
+  .community-notification-row:first-child {
+    border-bottom: 1px solid gray !important;
+  }
 
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
 
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #000 !important;
+  }
 
-.delete-info {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-}
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
+  }
 
-.invite-sub-header {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
 
-::v-deep .invite-input > .v-input__control > .v-input__slot {
-  align-items: center;
-  border-radius: 8px;
-  border: solid 1px rgba(0, 0, 0, 0.16);
-  background-color: #fff;
-  box-shadow: unset !important;
-  display: flex;
-
-  .v-label {
+  .delete-info {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
     font-weight: normal;
@@ -1102,94 +1175,125 @@ export default {
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-    display: flex;
-    align-items: center;
+    color: rgba(0, 0, 0, 0.72);
   }
 
-  .invite-chip {
-    border-radius: 18px !important;
+  .invite-sub-header {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
 
-    > span > span {
+  ::v-deep .invite-input > .v-input__control > .v-input__slot {
+    align-items: center;
+    border-radius: 8px;
+    border: solid 1px rgba(0, 0, 0, 0.16);
+    background-color: #fff;
+    box-shadow: unset !important;
+    display: flex;
+
+    .v-label {
       font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.71;
+      line-height: normal;
       letter-spacing: normal;
-      text-align: center;
-      color: #000000;
+      color: rgba(0, 0, 0, 0.54);
+      display: flex;
+      align-items: center;
+    }
+
+    .invite-chip {
+      border-radius: 18px !important;
+
+      > span > span {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+        text-align: center;
+        color: #000000;
+      }
+    }
+
+    .mdi-menu-down {
+      display: none !important;
     }
   }
 
-  .mdi-menu-down {
-    display: none !important;
-  }
-}
+  .newCommunityOverlay {
+    background-color: #fff !important;
+    overflow: auto !important;
+    height: 100% !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    display: block !important;
+    justify-content: center !important;
+    align-items: center !important;
 
-.newCommunityOverlay {
-  background-color: #fff !important;
-  overflow: auto !important;
-  height: 100% !important;
-  max-width: 100vw !important;
-  width: 100% !important;
-  display: block !important;
-  justify-content: center !important;
-  align-items: center !important;
-
-  > ::v-deep .v-overlay__content {
-    height: auto;
-    width: 100%;
-  }
-}
-
-.empty-posts {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: #212121;
-  display: block;
-}
-
-.empty-suggested-span {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-}
-
-.create-first-btn {
-  min-width: 70% !important;
-  width: 221px !important;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 400 !important;
-  font-stretch: normal !important;
-  font-style: normal !important;
-  line-height: 1.71 !important;
-  letter-spacing: normal !important;
-}
-
-.right-col-semibold-label {
-  color: rgba(0, 0, 0, 0.87);
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-@media only screen and (max-width: 1023px) {
-  ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
+    > ::v-deep .v-overlay__content {
+      height: auto;
+      width: 100%;
+    }
   }
 
-  ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  .empty-posts {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #212121;
+    display: block;
+  }
+
+  .empty-suggested-span {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+  }
+
+  .create-first-btn {
+    min-width: 70% !important;
+    width: 221px !important;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    line-height: 1.71 !important;
+    letter-spacing: normal !important;
+  }
+
+  .right-col-semibold-label {
+    color: rgba(0, 0, 0, 0.87);
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  @media only screen and (max-width: 1023px) {
+    ::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 7px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+    }
   }
 }
 </style>

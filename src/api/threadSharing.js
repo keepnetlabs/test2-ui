@@ -212,3 +212,23 @@ export function removeFromCommunity(id, value) {
     data: { RemovedCompanyResourceId: value }
   })
 }
+
+export function inviteToCommunity(id, payload) {
+  return testRequest.post(`communities/${id}/invite`, payload)
+}
+
+export function appointNewOwner(id, payload) {
+  return testRequest.post(`communities/${id}/appoint-owner`, payload)
+}
+
+export function acceptInvitation(id) {
+  return testRequest.put(`/communities/invitations/${id}/accept`)
+}
+
+export function refuseInvitation(id) {
+  return testRequest.put(`/communities/invitations/${id}/decline`)
+}
+
+export function getInvitationCount() {
+  return testRequest.get(`communities/my-invitations-count`, {})
+}

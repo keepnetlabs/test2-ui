@@ -651,19 +651,9 @@
               </p>
               <div
                 class="investigation-details__container__content--right-menu__target-users--list"
-                v-if="investigationDetailsData.targetUserType != 'AllUsers'"
+                v-if="investigationDetailsData.targetUserType !== 'AllUsers'"
               >
-                <v-chip
-                  class="mr-1 mt-2"
-                  v-for="(item, index) in investigationDetailsData.targetUsers"
-                  :key="index"
-                  >{{ item.targetUser && `User: ${item.targetUser}`
-                  }}{{
-                    item.targetGroup &&
-                    `Group:
-                ${item.targetGroup}`
-                  }}
-                </v-chip>
+                <show-more :data="targetUserChips" />
               </div>
               <div
                 class="investigation-details__container__content--right-menu__target-users--list"
@@ -676,62 +666,7 @@
               <p class="investigation-details__container__content--right-menu__filters--header">
                 Criteria:
               </p>
-              <div
-                class="investigation-details__container__content--right-menu__filters--list d-flex"
-                style="flex-wrap: wrap;"
-              >
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  v-for="item in investigationDetailsData.headers"
-                  class="mr-2 investigation__attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    :key="value + key"
-                    v-if="value && key !== 'resourceId'"
-                    >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
-                    {{ value }}
-                  </v-chip>
-                </template>
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  v-for="item in investigationDetailsData.bodies"
-                  class="investigation__attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    v-if="value && key !== 'resourceId'"
-                    :key="value + key"
-                    >{{ key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
-                    {{ value }}
-                  </v-chip>
-                </template>
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  class="investigation__attachments"
-                  v-for="item in investigationDetailsData.attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    v-if="value && key !== 'resourceId' && key !== 'sha512'"
-                    :key="value + key"
-                    >{{ key.toUpperCase() }}: {{ value }}
-                  </v-chip>
-                </template>
-                <template
-                  style="max-width: 100%; width: 100%;"
-                  class="investigation__attachments"
-                  v-for="item in investigationDetailsData.attachments"
-                >
-                  <v-chip
-                    v-for="(value, key) in item"
-                    v-if="key === 'sha512' && value"
-                    :key="value + key"
-                    >{{ key.toUpperCase() }}:
-                    {{ value }}
-                  </v-chip>
-                </template>
-              </div>
+              <show-more :data="criteriaChips" />
             </div>
             <div v-if="activeMenu !== 'targetUsers'">
               <datatable
@@ -799,16 +734,18 @@
 <script>
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import moment from 'moment'
 import { getStoreValue } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
+import ShowMore from '../components/Common/ShowMore/ShowMore'
 export default {
   components: {
     Datatable,
     newInvestigation,
-    AppDialog
+    AppDialog,
+    ShowMore
   },
   data: () => ({
     isWantToAddNewCommunity: false,
@@ -824,6 +761,8 @@ export default {
     isWantToDelete: false,
     isWantToWarn: false,
     isWantToStop: false,
+    targetUserChips: [],
+    criteriaChips: [],
     isWantToWarnAndDelete: false,
     totalSelectedItemsCount: [],
     investigationListBodyData: {
@@ -916,28 +855,19 @@ export default {
         width: 110
       },
       {
-        property: 'analyzeActionTypeStatus',
-        align: 'center',
-        sortable: true,
-        label: 'Action Status',
+        property: 'filterTags',
+        align: 'left',
+        isEditable: false,
+        type: 'textWithBadge',
         show: true,
-        width: 180,
-        type: 'badge'
+        label: 'Filtered By',
+        width: 150
       },
       {
-        property: 'warningActionTypeStatus',
+        property: 'status',
         align: 'center',
         sortable: true,
-        label: 'Warning Status',
-        show: true,
-        width: 180,
-        type: 'badge'
-      },
-      {
-        property: 'deleteActionTypeStatus',
-        align: 'center',
-        sortable: true,
-        label: 'Delete Status',
+        label: 'Status',
         show: true,
         width: 180,
         type: 'badge'
@@ -1488,6 +1418,26 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     })
+  },
+  watch: {
+    investigationDetailsData(val) {
+      const tempArr = []
+      if (val.targetUserType === 'Groups') {
+        for (let user of val.targetUsers) {
+          tempArr.push({ Group: user.targetUser })
+        }
+      } else {
+        for (let user of val.targetUsers) {
+          tempArr.push({ User: user.targetUser })
+        }
+      }
+      this.targetUserChips = tempArr
+      this.criteriaChips = [
+        ...this.investigationDetailsData.headers,
+        ...this.investigationDetailsData.bodies,
+        ...this.investigationDetailsData.attachments
+      ]
+    }
   },
   created() {},
   mounted() {

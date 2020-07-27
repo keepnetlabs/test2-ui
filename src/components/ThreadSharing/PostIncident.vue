@@ -1920,17 +1920,10 @@ export default {
         orderBy: 'createDate',
         ascending: false
       }
-      searchNotifiedMail(payload)
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting incidents'
-          })
-        })
+      searchNotifiedMail(payload).then((response) => {
+        const { data } = response
+        this.listData = data.data.results
+      })
     },
     getSelectedEmailPreview(selectedItem) {
       let _this = this
@@ -2121,7 +2114,7 @@ export default {
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Community has been created'
+              message: 'Post has been created'
             })
             this.$emit('closeIncidentModal')
             this.$emit('refreshData')

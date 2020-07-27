@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="communities-wrapper">
     <v-overlay
       id="new-community-overlay"
       :value="isWantToAddNewCommunity"
@@ -34,9 +34,9 @@
               >
                 <template v-if="ind === 2">
                   {{ tab }}
-                  <!--<span v-if="invitations.length" class="invitations-count">
-                  {{ invitations.length }}
-                </span>-->
+                  <span v-if="invitationsCount" class="invitations-count">
+                    {{ invitationsCount }}
+                  </span>
                 </template>
                 <template v-else>
                   {{ tab }}
@@ -199,6 +199,49 @@
                 </div>
               </div>
             </div>
+            <div v-if="selectedTab === 'tab-2'">
+              <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
+                <div class="ts-header">
+                  <div class="ts-title" @click="community(item)">
+                    {{ item.name }}
+                  </div>
+                  <div class="flex-grow-1"></div>
+                  <div class="ts-header-btn-1">
+                    <div class="request-btns flex-grow-1">
+                      <v-btn class="refuse-btn" block rounded medium @click="refuseRequest(item)">
+                        CANCEL
+                      </v-btn>
+                      <v-btn class="accept-btn" block rounded medium @click="acceptRequest(item)">
+                        JOIN
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+                <div class="ts-user-comp">
+                  <div class="ts-user-comp-detail">
+                    <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
+                    <span class="pr-2">{{ item.memberCount }}</span>
+                    &bull;
+                    <span class="ts-community-industry pl-2 pr-2">
+                      {{ item.industryName || 'Industry' }}
+                    </span>
+                    &bull;
+                    <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
+                      item.privacyStatusName
+                    }}</span>
+                  </div>
+                  <div v-if="item && item.lastPostTime" class="ts-community-date pt-1">
+                    Last update:
+                    {{ item.lastPostTime }}
+                  </div>
+                </div>
+                <div class="ts-body">
+                  <v-clamp autoresize :max-lines="3">
+                    {{ item.description }}
+                  </v-clamp>
+                </div>
+              </div>
+            </div>
           </template>
           <template v-if="!filter || filter.length < 1" slot="no-data">
             <div class="empty-communities" v-if="selectedTab === 'tab-1'">
@@ -239,10 +282,13 @@
 </template>
 <script>
 import {
+  acceptInvitation,
   getAllCommunityList,
+  getInvitationCount,
   getInvitations,
   getMyCommunityList,
   joinCommunity,
+  refuseInvitation,
   removeFromCommunities
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
@@ -256,6 +302,7 @@ export default {
     NewCommunity
   },
   data: () => ({
+    invitationsCount: 0,
     resourceId: null,
     communityItem: null,
     isWantToAddNewCommunity: false,
@@ -277,6 +324,7 @@ export default {
   watch: {
     refresh: function (newVal, oldVal) {
       if (oldVal != newVal) {
+        this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
       }
@@ -293,8 +341,57 @@ export default {
   mounted() {
     this.selectedTab = 'tab-1'
     this.getAllCommunitiesListData()
+    this.getInvitationCount()
   },
   methods: {
+    getInvitationCount() {
+      getInvitationCount()
+        .then((response) => {
+          this.invitationsCount = response.data.data.count
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to get invitation counts'
+          })
+        })
+    },
+    refuseRequest() {
+      refuseInvitation()
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Invitation request has been cancelled successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+          this.getInvitions()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to cancel invitation request'
+          })
+        })
+    },
+    acceptRequest() {
+      acceptInvitation()
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Invitation request has been accepted successfully'
+          })
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+          this.getInvitions()
+        })
+        .catch(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when attempting to accept an invitation request'
+          })
+        })
+    },
     deleteACommunity(item) {},
     leaveFromCommunity(item) {
       removeFromCommunities(item.communityResourceId)
@@ -328,20 +425,14 @@ export default {
     },
     onAddClose() {
       this.isWantToAddNewCommunity = false
+      this.selectedTab = 'tab-1'
       this.getAllCommunitiesListData()
     },
     getInvitions() {
-      getInvitations()
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
-          })
-        })
+      getInvitations().then((response) => {
+        const { data } = response
+        this.listData = data.data
+      })
     },
     getAllCommunitiesListData() {
       const payload = {
@@ -371,17 +462,10 @@ export default {
           ]
         }
       }
-      getAllCommunityList(payload)
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
-          })
-        })
+      getAllCommunityList(payload).then((response) => {
+        const { data } = response
+        this.listData = data.data.results
+      })
     },
     getMyCommunitiesListData() {
       const payload = {
@@ -411,24 +495,20 @@ export default {
           ]
         }
       }
-      getMyCommunityList(payload)
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data.results
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting my community list'
-          })
-        })
+      getMyCommunityList(payload).then((response) => {
+        const { data } = response
+        this.listData = data.data.results
+      })
     },
     communityDetails(item) {
-      localStorage.setItem('communityName', item.communityName)
-      this.$router.push({
-        name: `Community`,
-        params: { id: item.communityResourceId, item: item }
-      })
+      if (isOwnerOrMember(item.membershipStatusId)) {
+        localStorage.setItem('communityName', item.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', item.communityResourceId)
+        this.$router.push({
+          name: `Community`,
+          params: { id: item.communityResourceId, item: item }
+        })
+      }
     },
     updateCommunities() {
       switch (this.selectedTab) {
@@ -476,6 +556,7 @@ export default {
       } else {
         this.selectedTab = 'tab-2'
         this.getInvitions()
+        this.getInvitationCount()
         this.listData = []
         return
       }
@@ -484,275 +565,310 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.notification-wrapper {
-  padding: 0 !important;
-  width: 100%;
-  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
-    0 3px 14px 2px rgba(255, 255, 255, 0.12);
-}
-.search-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  > div {
-    padding-right: 10px;
+<style lang="scss">
+.communities-wrapper {
+  .notification-wrapper {
+    padding: 0 !important;
+    width: 100%;
+    box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
+      0 3px 14px 2px rgba(255, 255, 255, 0.12);
   }
-
-  .filter-icon {
-    color: rgba(0, 0, 0, 0.34) !important;
-    cursor: pointer;
-  }
-}
-
-.threat-sharing-content {
-  min-height: 150px;
-  width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12);
-  background-color: #ffffff;
-  padding: 24px;
-  margin-bottom: 16px;
-}
-
-.ts-header {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-}
-
-.ts-title {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 24px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.29;
-  letter-spacing: normal;
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.87);
-  max-height: 70px;
-  max-width: 60%;
-  display: block;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.ts-body {
-  margin-top: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.ts-user-comp {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-
-  a {
-    text-decoration: none;
-  }
-
-  .ts-user-date {
-    font-weight: bold;
-  }
-}
-
-.ts-user-comp-detail {
-  align-items: center;
-  display: flex;
-}
-
-.ts-community-industry {
-  font-family: 'Open Sans', sans-serif !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-}
-
-.ts-people-icon {
-  font-size: 16px;
-}
-
-.v-application--is-ltr .v-list-item__icon:first-child {
-  margin-right: 10px !important;
-}
-
-.empty-communities {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  position: relative;
-  min-height: 171px;
-  width: 100%;
-
-  .empty-communities-inline {
-    align-items: center;
+  .request-btns {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 420px;
+    flex-direction: row;
+    justify-content: flex-end;
 
-    span {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 24px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.29;
-      letter-spacing: normal;
-      color: #000;
-      text-align: center;
-      width: 100%;
-      padding-top: 50px;
-      padding-bottom: 16px;
+    .refuse-btn {
+      color: #fff !important;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(248, 162, 162, 0.5) !important;
+      background-color: #f56c6c !important;
+      min-width: 78px !important;
+      max-width: 78px !important;
+      height: 36px !important;
+      margin-right: 14px;
+      text-transform: capitalize !important;
+    }
+
+    .accept-btn {
+      color: #fff !important;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+      background-color: #2196f3 !important;
+      min-width: 78px !important;
+      max-width: 78px !important;
+      height: 36px !important;
+      text-transform: capitalize !important;
+    }
+
+    @media only screen and (max-width: 950px) {
+      justify-content: center;
+      padding-top: 20px;
     }
   }
-}
+  .search-wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-.create-com-btn {
-  align-items: center;
-  background-color: #2196f3 !important;
-  color: #fff;
-  display: flex;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-  letter-spacing: normal;
-  height: 36px !important;
-  text-transform: unset !important;
-}
+    > div {
+      padding-right: 10px;
+    }
 
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
+    .filter-icon {
+      color: rgba(0, 0, 0, 0.34) !important;
+      cursor: pointer;
+    }
+  }
 
-.delete-info {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px !important;
-  font-weight: normal !important;
-  font-stretch: normal !important;
-  font-style: normal !important;
-  line-height: normal !important;
-  letter-spacing: normal !important;
-  color: rgba(0, 0, 0, 0.72) !important;
-}
+  .threat-sharing-content {
+    min-height: 150px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    background-color: #ffffff;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
 
-.invite-sub-header {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px !important;
-  font-weight: normal !important;
-  font-stretch: normal !important;
-  font-style: normal !important;
-  line-height: 1.5 !important;
-  letter-spacing: normal !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-}
+  .ts-header {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
 
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #2196f3;
-}
+  .ts-title {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.87);
+    max-height: 70px;
+    max-width: 60%;
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
+  .ts-body {
+    margin-top: 8px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
 
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
+  .ts-user-comp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
 
-.delete-dialog-body {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-  margin-top: 38px;
-  margin-bottom: 24px;
-}
+    a {
+      text-decoration: none;
+    }
 
-.join-button {
-  color: #fff !important;
-  background-color: #2196f3 !important;
-  font-family: 'Open Sans', sans-serif !important;
-  box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-  border: none !important;
-}
+    .ts-user-date {
+      font-weight: bold;
+    }
+  }
 
-.invitation-cancel {
-  color: #fff;
-  background-color: #f56c6c;
-}
+  .ts-user-comp-detail {
+    align-items: center;
+    display: flex;
+  }
 
-.invitation-accept {
-  color: #fff;
-  background-color: #2196f3;
-}
+  .ts-community-industry {
+    font-family: 'Open Sans', sans-serif !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+  }
 
-::v-deep .text-decoration-none {
-  text-decoration: none !important;
-  text-decoration-line: none !important;
-}
+  .ts-people-icon {
+    font-size: 16px;
+  }
 
-.invitations-count {
-  align-items: center;
-  background-color: #d32f2f;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  font-size: 12px;
-  line-height: 18px;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  right: -13px;
-  height: 16px;
-  width: 16px;
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 10px !important;
+  }
+
+  .empty-communities {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    min-height: 171px;
+    width: 100%;
+
+    .empty-communities-inline {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 420px;
+
+      span {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 24px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.29;
+        letter-spacing: normal;
+        color: #000;
+        text-align: center;
+        width: 100%;
+        padding-top: 50px;
+        padding-bottom: 16px;
+      }
+    }
+  }
+
+  .create-com-btn {
+    align-items: center;
+    background-color: #2196f3 !important;
+    color: #fff;
+    display: flex;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    height: 36px !important;
+    text-transform: unset !important;
+  }
+
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
+
+  .delete-info {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    line-height: normal !important;
+    letter-spacing: normal !important;
+    color: rgba(0, 0, 0, 0.72) !important;
+  }
+
+  .invite-sub-header {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    line-height: 1.5 !important;
+    letter-spacing: normal !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  .v-card-headline {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #000 !important;
+  }
+
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
+  }
+
+  .delete-dialog-body {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+    margin-top: 38px;
+    margin-bottom: 24px;
+  }
+
+  .join-button {
+    color: #fff !important;
+    background-color: #2196f3 !important;
+    font-family: 'Open Sans', sans-serif !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+    border: none !important;
+  }
+
+  .invitation-cancel {
+    color: #fff;
+    background-color: #f56c6c;
+  }
+
+  .invitation-accept {
+    color: #fff;
+    background-color: #2196f3;
+  }
+
+  ::v-deep .text-decoration-none {
+    text-decoration: none !important;
+    text-decoration-line: none !important;
+  }
+
+  .invitations-count {
+    align-items: center;
+    background-color: #d32f2f;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    font-size: 12px;
+    line-height: 18px;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    right: -13px;
+    height: 16px;
+    width: 16px;
+  }
 }
 </style>
