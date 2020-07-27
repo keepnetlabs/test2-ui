@@ -204,7 +204,7 @@ export function deleteComments(id) {
 }
 
 export function removeFromCommunities(id) {
-  return testRequest.delete(`communities/${id}/leave`)
+  return testRequest.post(`communities/${id}/leave`)
 }
 
 export function removeFromCommunity(id, value) {
