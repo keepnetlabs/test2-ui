@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
+    "@fullstory/browser": "^1.4.5",
     "@mdi/font": "^5.4.55",
     "apexcharts": "^3.10.1",
     "axios": "^0.19.0",
