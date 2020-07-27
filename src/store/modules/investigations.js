@@ -269,6 +269,7 @@ const investigations = {
       await irSummary(obj)
         .then((response) => {
           const result = response.data
+          console.log('irSummary', result)
           commit('SET_IRSUMMARY', result)
         })
         .catch(() => {

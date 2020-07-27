@@ -47,6 +47,7 @@
 import AppDialog from '../AppDialog'
 import { required } from '../../utils/validations'
 import { downloadMsgFiles } from '../../api/notifiedEmail'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   name: 'DownloadModal',
@@ -81,7 +82,13 @@ export default {
           link.click()
           this.$emit('changeDownloadModalStatus', false)
         })
-        .catch((error) => {})
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.response.statusText,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
     }
   }
 }

@@ -122,10 +122,7 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
-            <div class="email-details__header" v-if="false">
-              <v-card light class="email-details__header-card">
-                <v-card-title class="email-details__header-title">Relay Information</v-card-title>
-              </v-card>
+            <div class="email-details__header">
               <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Headers Found</v-card-title>
                 <div class="email-details__header-content">
@@ -147,7 +144,11 @@
                   />
                 </div>
               </v-card>
-              <v-card light class="email-details__header-card">
+              <v-card light class="email-details__header-card" v-if="false">
+                <v-card-title class="email-details__header-title">Relay Information</v-card-title>
+              </v-card>
+
+              <v-card light class="email-details__header-card" v-if="false">
                 <v-card-title class="email-details__header-title">Received Header</v-card-title>
                 <div class="email-details__received-header">
                   <div :key="item.value + item.key" v-for="item in headersTable.data">
@@ -2030,6 +2031,9 @@ export default {
   }
   &-content {
     margin-top: 40px;
+    .k-table__wrapper .card .table-wrapper .el-table td > .cell {
+      white-space: inherit !important;
+    }
   }
   &-title {
     padding: 0;
