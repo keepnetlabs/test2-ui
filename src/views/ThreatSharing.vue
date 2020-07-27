@@ -62,6 +62,11 @@ export default {
     isWantToAddNewCommunity: false,
     refreshMemberTable: false
   }),
+  mounted() {
+    if (this.$route.query.detailsId) {
+      this.tab = 1
+    }
+  },
   methods: {
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true

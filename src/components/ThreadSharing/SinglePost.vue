@@ -7,6 +7,110 @@
       v-if="isWantToAddNewInvestigation"
       :selectedMail="selectedEmail"
     />
+    <app-dialog
+      :status="isWantToDelete"
+      @changeStatus="isWantToDelete = false"
+      icon="mdi-delete"
+      title="Delete Incident?"
+      :subtitle="deleteIncidentName"
+      :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDelete = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="deleteIncidentConfirm()"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="isWantToDeleteComment"
+      @changeStatus="isWantToDeleteComment = false"
+      icon="mdi-delete"
+      title="Delete Comment?"
+      body="This comment will be deleted from the post"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isWantToDeleteComment = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="deleteCommentConfirm()"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="openShareModal"
+      subtitle="Share this incident via email"
+      icon="mdi-send"
+      title="Share incident"
+      size="big"
+    >
+      <template v-slot:app-dialog-body>
+        <span
+          style="
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.87);
+          "
+          >Recipients</span
+        >
+        <v-combobox
+          :items="[]"
+          placeholder="Enter emails (max. 10)"
+          multiple
+          dense
+          deletable-chips
+          autocomplete="disabled"
+          small-chips
+          outlined
+          :no-data-text="'Enter emails (max. 10)'"
+          v-model="shareEmail"
+          :rules="[shareEmailRules.limit]"
+          class="pop-up-card__invite-member"
+        ></v-combobox>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openShareModal = false"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="shareIncident">Send</v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <div id="" class="single-post">
       <div class="threat-sharing-content">
         <div class="ts-header">
@@ -121,7 +225,7 @@
                   <v-list-item
                     v-else
                     :id="'share-btn' + post.communityPostResourceId"
-                    @click="shareIncident(post.communityPostResourceId, userIdFromStorage)"
+                    @click="openShareModalFunc(post)"
                   >
                     <v-list-item-icon>
                       <v-icon>mdi-send</v-icon>
@@ -135,13 +239,7 @@
                   <v-list-item
                     :id="'delete-btn' + post.communityPostResourceId"
                     v-if="canDelete(post)"
-                    @click="
-                      deleteIncident(
-                        post.communityPostResourceId,
-                        post.title,
-                        post.communityResourceId
-                      )
-                    "
+                    @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>
                       <v-icon>mdi-delete</v-icon>
@@ -174,9 +272,13 @@
               >{{ post.postedUserCompanyName }}</a
             >
             <a v-else class="pl-1 pr-1">Company Name</a> on
-            <a :id="post.communityName" v-if="post.communityName" href="#" class="pl-1">{{
-              post.communityName
-            }}</a>
+            <a
+              :id="post.communityName"
+              v-if="post.communityName"
+              @click="goToCommunityDetails(post)"
+              class="pl-1"
+              >{{ post.communityName }}</a
+            >
             <a v-else class="pl-1 pr-1">Community Name</a>
           </div>
           <div class="ts-user-date">
@@ -239,7 +341,9 @@
             >
               <v-icon>mdi-message-reply-text</v-icon>
             </v-btn>
-            <span class="ts-action-counter">{{ post.commentCount }}</span>
+            <span class="ts-action-counter">{{
+              (comments && comments.length) || post.commentCount
+            }}</span>
           </div>
           <div :id="'single-post-harmful' + post.communityPostResourceId" class="ts-harmful mt-1">
             <v-btn readonly v-if="post.harmfulItemCount" text x-small icon color="red">
@@ -309,14 +413,22 @@
                 rounded
                 outlined
                 class="tag-btn ml-1 text-none"
-                :id="'tooltip-btn' + post.categoryResourceIdArray[0]"
+                :id="
+                  'tooltip-btn' + post.categoryResourceIdArray && post.categoryResourceIdArray[0]
+                "
                 @mouseover="hoverTool = true"
                 @mouseleave="hoverTool = false"
               >
                 <span v-if="post.hasAttachment"
-                  >+{{ post.categoryResourceIdArray.length - 1 }}</span
+                  >+{{
+                    post.categoryResourceIdArray && post.categoryResourceIdArray.length - 1
+                  }}</span
                 >
-                <span v-else>+{{ post.categoryResourceIdArray.length - 2 }}</span>
+                <span v-else
+                  >+{{
+                    post.categoryResourceIdArray.length && post.categoryResourceIdArray.length - 2
+                  }}</span
+                >
               </v-btn>
               <div
                 v-if="
@@ -414,7 +526,7 @@
                   !emailData.isToHidden &&
                   emailData.to.isToFlagged)
               "
-                :id="'from' + emailData.to[0]"
+                :id="'from' + emailData.to"
                 class="detail-black detail-red"
               >
                 To: {{ emailData.to.toString() }}
@@ -462,8 +574,8 @@
                 v-if="att.isFlagged"
               >
                 <p class="attach-found-malicious" v-if="ind === 0">
-                  This link<span v-if="emailData.urls.length > 1">s</span> has been reported as a
-                  phising link
+                  This link<span v-if="emailData.urls && emailData.urls.length > 1">s</span> has
+                  been reported as a phising link
                 </p>
               </div>
             </div>
@@ -504,8 +616,10 @@
                 v-if="att.isFlagged"
               >
                 <p class="attach-found-malicious detail-black" v-if="ind === 0">
-                  This file<span v-if="emailData.attachments.length > 1">s</span> has been reported
-                  as a malicious
+                  This file<span v-if="emailData.attachments && emailData.attachments.length > 1"
+                    >s</span
+                  >
+                  has been reported as a malicious
                 </p>
               </div>
             </div>
@@ -602,7 +716,9 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.to.length && !emailData.isToHidden">
+                <div
+                  v-if="emailData && emailData.to && emailData.to.length && !emailData.isToHidden"
+                >
                   <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
                     >To: {{ emailData.to }}</span
                   >
@@ -615,7 +731,9 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.to.length && !emailData.isToHidden">
+                <div
+                  v-if="emailData && emailData.to && emailData.to.length && !emailData.isToHidden"
+                >
                   <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
                     >To: hidden by owner</span
                   >
@@ -628,7 +746,9 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.cc.length && !emailData.isCcHidden">
+                <div
+                  v-if="emailData && emailData.cc && emailData.cc.length && !emailData.isCcHidden"
+                >
                   <span :class="[emailData.isCcFlagged ? 'malicious-style' : '']"
                     >CC: {{ emailData.cc.toString() }}</span
                   >
@@ -654,7 +774,11 @@
                     <span>This email address has been reported as a threat source</span>
                   </v-tooltip>
                 </div>
-                <div v-if="emailData && emailData.bcc.length && !emailData.isBccHidden">
+                <div
+                  v-if="
+                    emailData && emailData.bcc && emailData.bcc.length && !emailData.isBccHidden
+                  "
+                >
                   <span :class="[emailData.isBccFlagged ? 'malicious-style' : '']"
                     >CC: {{ emailData.bcc.toString() }}</span
                   >
@@ -883,6 +1007,7 @@ import NewInvestigation from '../Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
+import AppDialog from '../AppDialog'
 import {
   createComments,
   deleteComments,
@@ -965,7 +1090,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 export default {
   components: {
     VClamp,
-    NewInvestigation
+    NewInvestigation,
+    AppDialog
   },
   props: {
     openEditPopupItem: {
@@ -991,6 +1117,17 @@ export default {
   },
   computed: {},
   data: () => ({
+    openShareModal: false,
+    shareEmail: [],
+    shareEmailRules: {
+      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit'
+    },
+    deleteCommentId: null,
+    isWantToDeleteComment: false,
+    deleteIncidentId: null,
+    deleteIncidentName: null,
+    deleteIncidentCommunityName: null,
+    isWantToDelete: false,
     isWantToAddNewInvestigation: false,
     postDetails: {},
     comments: [],
@@ -1040,6 +1177,21 @@ export default {
     this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    openShareModalFunc(post) {
+      debugger
+      this.sharedIncitedId = post.communityPostResourceId
+      this.openShareModal = true
+    },
+    shareIncident() {
+      let id = this.sharedIncitedId
+    },
+    goToCommunityDetails(post) {
+      if (post.communityResourceId) {
+        localStorage.setItem('communityName', post.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
+        this.$router.push(`/community/${post.communityResourceId}`)
+      }
+    },
     closeNewInvestigationModal(value) {
       this.$emit('refreshData')
       this.isWantToAddNewInvestigation = false
@@ -1070,12 +1222,17 @@ export default {
         })
     },
     deleteComment(comment) {
-      deleteComments(comment.resourceId)
+      this.deleteCommentId = comment.resourceId
+      this.isWantToDeleteComment = true
+    },
+    deleteCommentConfirm() {
+      deleteComments(this.deleteCommentId)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been deleted successfully'
           })
+          this.isWantToDeleteComment = false
           getComments(this.post.communityPostResourceId).then((response) => {
             const { data } = response
             this.comments = data.data
@@ -1085,6 +1242,23 @@ export default {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when delete a comment'
+          })
+        })
+    },
+    deleteIncidentConfirm() {
+      deleteCommunityPost(this.deleteIncidentId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Community post has been deleted successfuly'
+          })
+          this.$emit('refreshData')
+          this.isWantToDelete = false
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when delete community post'
           })
         })
     },
@@ -1106,7 +1280,6 @@ export default {
         this.isWantToAddNewInvestigation = true
       })
     },
-    shareIncident(postId, creatorUserId) {},
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
@@ -1117,21 +1290,11 @@ export default {
           return { ...item, isEdit: false, commentValue: null }
         })
       })
+      //getSelectedEmailPreview('4pDtxLYSG0mb')
       getCommunityPost(this.post.communityPostResourceId).then((response) => {
         this.postDetails = response.data.data
+        this.emailData = response.data.data.communityPostEmail
       })
-      //getSelectedEmailPreview(postId)
-      getSelectedEmailPreview('4pDtxLYSG0mb')
-        .then((response) => {
-          const { data } = response
-          this.emailData = data.data
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting all community list data'
-          })
-        })
     },
     userLikePost(postId, communId) {
       likePost(postId)
@@ -1194,21 +1357,11 @@ export default {
     editIncident(post, communityName) {
       this.$emit('openEditPopupItem', post)
     },
-    deleteIncident(postId, name, postCommunityId) {
-      deleteCommunityPost(postId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Community post has been deleted successfuly'
-          })
-          this.$emit('refreshData')
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when delete community post'
-          })
-        })
+    deleteIncident(post) {
+      this.deleteIncidentId = post.communityPostResourceId
+      this.deleteIncidentName = post.title
+      this.deleteIncidentCommunityName = post.communityName
+      this.isWantToDelete = true
     },
     isJoined(communId) {
       /*if (this.myCommunities && this.myCommunities.length) {

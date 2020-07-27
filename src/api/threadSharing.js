@@ -204,7 +204,7 @@ export function deleteComments(id) {
 }
 
 export function removeFromCommunities(id) {
-  return testRequest.delete(`communities/${id}/leave`)
+  return testRequest.post(`communities/${id}/leave`)
 }
 
 export function removeFromCommunity(id, value) {
@@ -227,4 +227,8 @@ export function acceptInvitation(id) {
 
 export function refuseInvitation(id) {
   return testRequest.put(`/communities/invitations/${id}/decline`)
+}
+
+export function getInvitationCount() {
+  return testRequest.get(`communities/my-invitations-count`, {})
 }

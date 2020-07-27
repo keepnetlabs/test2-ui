@@ -113,7 +113,7 @@
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
         @cancelForm="toggleRuleModal"
-        @cancelFormWithUpdate="updateTable"
+        @closeFormWithUpdate="updateTable"
         v-if="showRuleModal"
       />
     </v-dialog>

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
+    "@mdi/font": "^5.4.55",
     "apexcharts": "^3.10.1",
     "axios": "^0.19.0",
     "babel-polyfill": "^6.26.0",
@@ -30,6 +31,7 @@
     "vue-clamp": "^0.2.2",
     "vue-custom-element": "^3.2.14",
     "vue-echarts": "^4.0.4",
+    "vue-hotjar": "^1.2.0",
     "vue-moment": "^4.1.0",
     "vue-query-builder": "^0.8.2",
     "vue-recaptcha": "^1.2.0",
