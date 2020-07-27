@@ -479,7 +479,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
-            this.$emit('cancelFormWithUpdate')
+            this.$emit('closeFormWithUpdate')
           })
           .catch((error) => {})
       }
@@ -551,7 +551,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
-            this.$emit('cancelFormWithUpdate')
+            this.$emit('closeFormWithUpdate')
           })
           .catch((error) => {})
       }

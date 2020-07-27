@@ -430,14 +430,13 @@
                 <span v-if="scope.row.matchingPlaybooks.length === 0">
                   {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
                 </span>
-                <router-link
-                  tag="span"
-                  :key="item.resourceId"
+                <span
                   v-else
-                  :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
                   v-for="item in scope.row.matchingPlaybooks"
+                  :key="item.resourceId"
                   class="incident-responder-parent__link"
-                  >{{ item.name }}</router-link
+                  @click="togglePlaybookModalWithSelected(item.resourceId)"
+                  >{{ item.name }}</span
                 >
               </template>
               <template v-if="scope.column.property === 'status'">
@@ -529,6 +528,13 @@
         </v-card>
       </div>
     </div>
+    <v-dialog v-model="showPlaybookModal" fullscreen scrollable persistent no-click-animation>
+      <CreateOrEditRule
+        :playbookId="selectedPlaybookId"
+        @cancelForm="togglePlaybookModal"
+        v-if="showPlaybookModal"
+      />
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -548,16 +554,20 @@ import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { maxLength, required } from '../utils/validations'
+import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 
 export default {
   components: {
     Datatable,
     NewInvestigation,
     AppDialog,
-    DataTableColorfulText
+    DataTableColorfulText,
+    CreateOrEditRule
   },
 
   data: () => ({
+    showPlaybookModal: false,
+    selectedPlaybookId: null,
     roiRate: '',
     selectedEmail: null,
     roiTask: '',
@@ -1035,6 +1045,14 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    togglePlaybookModal() {
+      this.selectedPlaybookId = null
+      return (this.showPlaybookModal = !this.showPlaybookModal)
+    },
+    togglePlaybookModalWithSelected(selectedPlaybookId) {
+      this.selectedPlaybookId = selectedPlaybookId
+      return (this.showPlaybookModal = !this.showPlaybookModal)
+    },
     getDataTableFieldLabel(text) {
       return getDataTableFieldLabel(text)
     },
@@ -1305,7 +1323,6 @@ export default {
     emptyInvestigationButtonClick() {
       this.$router.push('/investigations')
     },
-
     exportReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
