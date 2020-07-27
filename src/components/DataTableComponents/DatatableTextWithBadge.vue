@@ -97,13 +97,18 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
+    
       if (this.badges.length > 0) {
         const textAverageWidth =
           this.badges.reduce((acc, item) => {
-            return acc + item.length * 7.5
-          }, 0) / this.badges.length
-        if (this.unRenderedBadgeCount > 0) {
-          const totalWidth = this.scope.column.width - 80
+            return acc + item.length * 9
+          }, 0) /
+            this.badges.length +
+          10
+        let totalWidth
+
+        if (this.unRenderedBadgeCount > 0 && this.badges.length > 1) {
+          totalWidth = Math.floor(this.scope.column.width - 40)
           this.maximumRenderedBadgeCount = Math.floor(totalWidth / textAverageWidth)
         } else {
           this.maximumRenderedBadgeCount = Math.floor(this.scope.column.width / textAverageWidth)

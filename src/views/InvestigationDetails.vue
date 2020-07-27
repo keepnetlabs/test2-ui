@@ -885,7 +885,7 @@ export default {
         type: 'textWithBadge',
         show: true,
         label: 'Filtered By',
-        width: 150
+        width: 200
       },
       {
         property: 'status',
