@@ -419,7 +419,7 @@
                 <span class="no-community">
                   No community has been created, yet
                 </span>
-                <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" block rounded>
+                <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
                   Create Community
                 </v-btn>
               </div>
@@ -536,52 +536,48 @@ export default {
     },
     deleteCommunityConfirm() {},
     getInvitationCount() {
-      getInvitationCount()
-        .then((response) => {
-          this.invitationsCount = response.data.data.count
-        })
+      getInvitationCount().then((response) => {
+        this.invitationsCount = response.data.data.count
+      })
+      /*
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to get invitation counts'
           })
-        })
+        })*/
     },
-    refuseRequest() {
-      refuseInvitation()
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Invitation request has been cancelled successfully'
-          })
-          this.getAllCommunitiesListData()
-          this.getAllCommunityList()
-          this.getInvitions()
+    refuseRequest(item) {
+      refuseInvitation(item.resourceId).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Invitation request has been cancelled successfully'
         })
+        this.getInvitions()
+      })
+      /*
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to cancel invitation request'
           })
-        })
+        })*/
     },
-    acceptRequest() {
-      acceptInvitation()
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Invitation request has been accepted successfully'
-          })
-          this.getAllCommunitiesListData()
-          this.getAllCommunityList()
-          this.getInvitions()
+    acceptRequest(item) {
+      acceptInvitation(item.resourceId).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Invitation request has been accepted successfully'
         })
+        this.getInvitions()
+      })
+      /*
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to accept an invitation request'
           })
-        })
+        })*/
     },
     leaveFromCommunity(item) {
       this.leaveCommunityId = item.communityResourceId
@@ -600,10 +596,10 @@ export default {
           this.getAllCommunityList()
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          /*this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to leave from a community'
-          })
+          })*/
           if (error.response.data.code === 'CANNOT_LEAVE_COMMUNITY') {
             this.isWantToToLeaveFromCommunity = false
             this.showNeedPermissionModal = true
@@ -730,21 +726,20 @@ export default {
       }
     },
     requestJoin(communityId) {
-      joinCommunity(communityId)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Join request has been sent successfully'
-          })
-          this.getAllCommunitiesListData()
-          this.getAllCommunityList()
+      joinCommunity(communityId).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Join request has been sent successfully'
         })
-        .catch(() => {
+        this.getAllCommunitiesListData()
+        this.getAllCommunityList()
+      })
+      /*.catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to send join request'
           })
-        })
+        })*/
     },
     createNewCommunity() {
       this.isWantToAddNewCommunity = true
@@ -928,7 +923,7 @@ export default {
       justify-content: center;
       min-width: 420px;
 
-      span {
+      .no-community {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 24px;
         font-weight: normal;

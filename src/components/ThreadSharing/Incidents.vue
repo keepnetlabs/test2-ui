@@ -380,7 +380,7 @@ export default {
       justify-content: center;
       min-width: 420px;
 
-      span {
+      .no-community {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 24px;
         font-weight: normal;

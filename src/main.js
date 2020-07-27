@@ -26,6 +26,11 @@ if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
   Vue.use(Hotjar, {
     id: '1724870' // Hotjar Site ID
   })
+
+  const FullStory = require('@fullstory/browser')
+
+  FullStory.init({ orgId: 'TRDZX' })
+  Vue.prototype.$FullStory = FullStory
 }
 Vue.use(VueTour)
 Vue.component('v-chart', ECharts)
