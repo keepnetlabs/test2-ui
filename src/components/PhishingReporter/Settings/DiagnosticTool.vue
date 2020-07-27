@@ -34,7 +34,7 @@
     </div>
     <div class="diagnostic-tool__footer" v-if="showFooter">
       <v-btn
-        @click="submit"
+        @click="submit()"
         class="white--text diagnostic-tool__btn-util diagnostic-tool__btn-save-changes"
         color="#2196f3"
         rounded
@@ -42,23 +42,14 @@
         SAVE CHANGES
       </v-btn>
       <v-btn
-        @click="callForGenerateDiagnosticTool"
+        @click="submit(true)"
         class="white--text diagnostic-tool__btn-util ml-3"
         color="#00bcd4"
         rounded
-        :disabled="spinnerStatus"
       >
         <v-icon left>mdi-download</v-icon>
         Save And Download
       </v-btn>
-      <img
-        src="../../../assets/img/spinner.png"
-        class="add-in-settings__spinner"
-        v-if="spinnerStatus"
-      />
-      <span class="add-in-settings__spinner-text" v-if="spinnerStatus"
-        >Download link is generating...</span
-      >
     </div>
   </v-container>
 </template>
@@ -102,27 +93,15 @@ export default {
   computed: {
     ...mapGetters({
       timezones: 'common/getTimezones'
-    }),
-    getDiagnosticToolFormStyle() {
-      return this.isInModal && { flexWrap: 'wrap', marginLeft: '16px' }
-    }
+    })
   },
   methods: {
-    submit() {
-      this.$emit('updateForm', this.formValues)
+    submit(isAddIn = false) {
+      this.$emit('updateForm', { ...this.formValues, isAddIn })
       return this.formValues
     },
     getFormValues() {
       return this.formValues
-    },
-    handleTimePickerChange(value) {
-      const period = this.$refs.refTimePicker.period
-      this.formValues.time2 = `${
-        period === 'pm'
-          ? Number(this.formValues.time.slice(0, 2)) - 12 + this.formValues.time.slice(2)
-          : this.formValues.time
-      } ${period.toUpperCase()}`
-      //this.$refs.menu.save(this.formValues.time)
     },
     callForGenerateDiagnosticTool() {
       generateDiagnosticTool().then((response) => {
@@ -153,7 +132,6 @@ export default {
     }
   },
   created() {
-    //this.$store.dispatch('common/getTimezone')
     if (this.formData) {
       this.formValues.isEnableAddIn = this.formData.isEnableAddIn
     }

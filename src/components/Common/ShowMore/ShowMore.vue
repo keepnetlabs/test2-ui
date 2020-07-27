@@ -5,6 +5,7 @@
         <v-chip
           v-for="(value, key) in computedData[index - 1]"
           class="show-more__hidden"
+          :class="[unRenderedBadgeCount !== 0 && 'show-more__hidden--1']"
           :key="value + key"
           v-if="value && key !== 'resourceId'"
           >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
@@ -165,9 +166,11 @@ export default {
       max-width: 300px !important;
     }
 
-    .v-chip__content {
-      white-space: nowrap !important;
-      padding-right: 3.5px !important;
+    &--1 {
+      .v-chip__content {
+        white-space: nowrap !important;
+        padding-right: 3.5px !important;
+      }
     }
   }
 }

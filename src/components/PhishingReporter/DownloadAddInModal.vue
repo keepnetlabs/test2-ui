@@ -36,7 +36,7 @@
               <v-icon left>mdi-download</v-icon>
               Download
               <template v-slot:loader>
-                <img src="../../assets/img/spinner.png" class="add-in-settings__spinner" />
+                <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" />
                 <span style="font-size: 15px; text-transform: capitalize;">
                   Generating...
                 </span>
@@ -76,7 +76,7 @@
           <v-icon left>mdi-download</v-icon>
           Download
           <template v-slot:loader>
-            <img src="../../assets/img/spinner.png" class="add-in-settings__spinner" />
+            <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" />
             <span style="font-size: 15px; text-transform: capitalize;">
               Generating...
             </span>

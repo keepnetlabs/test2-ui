@@ -59,11 +59,7 @@ import AddinSettings from './AddinSettings'
 import DiagnosticTool from './DiagnosticTool'
 import EmailSettings from './EmailSettings'
 import OtherSettings from './OtherSettings'
-import {
-  createPhishingReporter,
-  generateOutlookAddIn,
-  downloadOutlookAddIn
-} from '../../../api/phishingReporter'
+import { createPhishingReporter } from '../../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import DownloadAddInModal from '../DownloadAddInModal'
 
