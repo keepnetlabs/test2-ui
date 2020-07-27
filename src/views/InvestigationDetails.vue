@@ -61,6 +61,7 @@
           icon="mdi-alert"
           :title="warningMessage"
           subtitle="Type a message to reporting user"
+          class-name="investigation-details__warning-modal"
         >
           <template v-slot:app-dialog-body>
             <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
@@ -117,12 +118,12 @@
           icon="mdi-alert"
           title="Delete Emails and Notify Users?"
           :subtitle="deleteMessage()"
+          class-name="investigation-details__warning-modal"
         >
           <template v-slot:app-dialog-body>
             <v-list-item
               class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
             >
-              <p class="mb-0">Type a message to users</p>
               <v-text-field
                 placeholder="Dangerous Email"
                 outlined
@@ -696,25 +697,22 @@
                 v-if="showEmails"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
-                  <template v-if="scope.row.emailLastAction">
+                  <template
+                    v-if="scope.row.emailLastAction && scope.row.emailLastAction.status !== 'Idle'"
+                  >
                     <div class="d-flex align-center">
                       <span>{{ scope.row.emailLastAction.status }}</span>
-                      <span v-if="scope.row.emailLastAction.status === 'Completed'" class="ml-2">
-                        <v-icon color="#43a047">mdi-check-circle</v-icon>
-                      </span>
-                      <span
-                        v-else-if="scope.row.emailLastAction.status === 'CompletedWithError'"
-                        class="ml-2"
-                      >
-                        <v-tooltip bottom>
+                      <span class="ml-2">
+                        <v-tooltip bottom content-class="investigation-details__tooltip">
                           <template v-slot:activator="{ on }">
-                            <v-icon v-on="on" color="#f56c6c">mdi-alert-circle </v-icon>
+                            <v-icon
+                              v-on="on"
+                              :color="getIconColor(scope.row.emailLastAction.status)"
+                              >{{ getIconName(scope.row.emailLastAction.status) }}</v-icon
+                            >
                           </template>
-                          <span>{{ scope.row.emailLastAction.actionResultErrorMessage }} </span>
+                          <span>{{ getTooltipText(scope.row.emailLastAction) }} </span>
                         </v-tooltip>
-                      </span>
-                      <span v-else>
-                        {{ scope.row.emailLastAction.status }}
                       </span>
                     </div>
                   </template>
@@ -1054,6 +1052,50 @@ export default {
     }
   }),
   methods: {
+    getIconColor(status) {
+      let retValue
+      switch (status) {
+        case 'Running':
+        case 'Completed':
+          retValue = '#43a047'
+          break
+        case 'CompletedWithError':
+        case 'ItemNotFound':
+          retValue = '#f56c6c'
+          break
+        default:
+          break
+      }
+      return retValue
+    },
+    getIconName(status) {
+      let retValue
+      switch (status) {
+        case 'Running':
+          retValue = 'mdi-check-circle'
+          break
+        case 'Completed':
+          retValue = 'mdi-check-underline-circle'
+          break
+        case 'CompletedWithError':
+        case 'ItemNotFound':
+          retValue = 'mdi-alert-circle'
+          break
+        default:
+          break
+      }
+      return retValue
+    },
+    getTooltipText(action) {
+      let retValue = ''
+      if (action.warningMessage) {
+        retValue += action.warningMessage
+      }
+      if (action.actionResultErrorMessage) {
+        retValue = `${retValue}\n\n"${action.actionResultErrorMessage}"`
+      }
+      return retValue
+    },
     exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
@@ -1369,6 +1411,12 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     sendInvestigationdetailsWarningMessage(value, multi) {
+      if (value && value.emailLastAction && value.emailLastAction.actionType === 'Warning') {
+        this.notifyMessage = value.emailLastAction.warningMessage
+      } else {
+        this.notifyMessage = ''
+      }
+
       this.isWantToWarn = true
       this.warningMessage =
         Array.isArray(value) && value.length && value.length > 1
@@ -1424,6 +1472,11 @@ export default {
         })
     },
     deleteAndNotifyInvestigationDetailsFunction(value) {
+      if (value && value.emailLastAction && value.emailLastAction.actionType === 'Delete') {
+        this.notifyMessageWithDelete = value.emailLastAction.warningMessage
+      } else {
+        this.notifyMessageWithDelete = ''
+      }
       let isArray = Array.isArray(value)
       this.totalSelectedItemsCount = isArray ? value.length : 1
       this.isWantToWarnAndDelete = true
@@ -1978,6 +2031,14 @@ export default {
 
   .v-chip {
     padding: 4px 12px !important;
+  }
+}
+.investigation-details__tooltip {
+  white-space: pre-wrap;
+}
+.investigation-details__warning-modal {
+  .k-dialog__body {
+    padding: 24px 24px 2px 24px;
   }
 }
 </style>

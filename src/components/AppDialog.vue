@@ -70,6 +70,9 @@ export default {
     title: {
       type: String
     },
+    customSize: {
+      type: String
+    },
     subtitle: {
       type: String
     },
@@ -100,8 +103,12 @@ export default {
           break
         case 'maximum':
           retValue = '650'
+          break
         default:
           break
+      }
+      if (this.customSize) {
+        retValue = this.customSize
       }
       return retValue
     }

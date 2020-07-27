@@ -5,7 +5,7 @@
     title="Version History"
     subtitle="Last 5 versions of the add-in"
     @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
-    size="maximum"
+    :custom-size="'800'"
     class-name="matching-modal version-history"
   >
     <template v-slot:app-dialog-body>
@@ -17,15 +17,15 @@
               ref="refVersionHistory"
               :columns="table.columns"
               :countRow="5"
-              :border="false"
               :showHeader="true"
               :selectable="false"
               :pageSizes="[5, 10, 20, 50, 100]"
               :filterable="true"
               :options="true"
               :rowActions="table.rowActions"
-              class="no-sub-border-datatable"
               :empty="table.iEmpty"
+              @handleDetails="handleDetails"
+              @handleDownload="handleDownload"
             />
           </v-list-item-content>
         </v-list-item>
@@ -62,6 +62,12 @@ export default {
       default: false
     }
   },
+  methods: {
+    handleDetails(row) {
+      console.log('row', row)
+    },
+    handleDownload(row) {}
+  },
   data() {
     return {
       table: {
@@ -70,35 +76,42 @@ export default {
             property: 'applicationType',
             align: 'left',
             editable: false,
-            label: 'Application Type',
+            label: 'Item Name',
             fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
-            minWidth: 33
+            width: 200
           },
           {
-            property: PROPERTY_STORE.STATUS,
-            align: 'center',
+            property: 'version',
+            align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            label: 'Version',
+            fixed: 'left',
             sortable: true,
             show: true,
-            type: 'badge',
-            minWidth: 33
+            type: 'text',
+            width: 200
           },
           {
             property: 'createTime',
-            align: 'center',
+            align: 'left',
             editable: false,
             label: 'Date Created',
             sortable: true,
             show: true,
             type: 'text',
-            minWidth: 34
+            width: 200
           }
         ],
-        rowActions: [],
+        rowActions: [
+          {
+            name: 'Details',
+            icon: 'mdi-text-box',
+            action: 'handleDetails'
+          }
+        ],
         iEmpty: {
           message: 'You do not have any versions, yet'
         }
@@ -120,6 +133,7 @@ export default {
       const {
         data: { data }
       } = response
+      console.log('data.results', data.results)
       this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
     })
   }
@@ -131,6 +145,9 @@ export default {
   .k-table__wrapper {
     .card .table-wrapper .el-table td > .cell {
       padding-left: 38px !important;
+    }
+    .card .table-wrapper .el-table th > .cell.actions-label {
+      margin-left: 0 !important;
     }
   }
 }
