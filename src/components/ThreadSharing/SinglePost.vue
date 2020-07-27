@@ -1751,48 +1751,6 @@ export default {
     border: unset !important;
   }
 
-  .tab-bar {
-    width: 100%;
-    height: 48px;
-    padding: 0;
-    background-color: #f5f7fa;
-    border-radius: 0 !important;
-
-    .v-slide-group__wrapper {
-      padding-left: 0 !important;
-    }
-
-    .v-slide-group__content {
-      margin-right: 0 !important;
-    }
-
-    .v-tab--active {
-      color: #2196f3 !important;
-    }
-
-    .v-tab {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      text-transform: uppercase;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center !important;
-      margin-right: 32px !important;
-      padding: 0 !important;
-      padding-right: 3px !important;
-      min-width: auto !important;
-    }
-
-    .v-tabs-bar {
-      padding: 0 24px;
-      height: 48px !important;
-      border-radius: 0 !important;
-    }
-  }
-
   .v-window {
     border-radius: 20px !important;
     margin: 0 24px !important;
