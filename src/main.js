@@ -12,15 +12,25 @@ import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 import 'echarts-gl'
-import VueAnalytics from 'vue-analytics'
+import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
 
+if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
+  console.log('process.env.VUE_APP_SAAS_STATUS: ', process.env.VUE_APP_SAAS_STATUS)
+  const VueAnalytics = require('vue-analytics').default
+  Vue.use(VueAnalytics, {
+    id: 'UA-131042304-2'
+  })
+
+  const Hotjar = require('vue-hotjar').default
+  Vue.use(Hotjar, {
+    id: '1724870' // Hotjar Site ID
+  })
+}
 Vue.use(VueTour)
 Vue.component('v-chart', ECharts)
 Vue.use(require('vue-moment'))
-Vue.use(VueAnalytics, {
-  id: 'UA-131042304-2'
-})
+
 Vue.config.productionTip = false
 
 const vm = new Vue({

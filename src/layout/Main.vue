@@ -63,7 +63,7 @@
               </div>
             </div>
           </div>
-          <offline @detected-condition="handleConnectivityChange">
+          <offline @detected-condition="handleConnectivityChange" :ping-url="baseUrl">
             <div slot="online"></div>
             <!-- Only renders when the device is offline -->
             <div slot="offline"></div>
@@ -477,6 +477,7 @@ export default {
   },
   data() {
     return {
+      baseUrl: null,
       sessionCheck: false,
       communityName: null,
       tour: {
@@ -816,6 +817,7 @@ export default {
     }
   },
   mounted() {
+    this.baseUrl = `${window.location.origin}`
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         this.getMenus()
