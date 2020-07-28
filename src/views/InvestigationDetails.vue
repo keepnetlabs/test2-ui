@@ -897,7 +897,8 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
-        width: 300
+        width: 200,
+        cellPadding: 8
       },
       {
         property: 'subject',
@@ -939,7 +940,8 @@ export default {
         type: 'textWithBadge',
         show: true,
         label: 'Filtered By',
-        width: 200
+        width: 150,
+        cellPadding: 13
       },
       {
         property: 'status',

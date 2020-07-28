@@ -1483,7 +1483,7 @@ export default {
 
   .v-navigation-drawer {
     overflow: visible !important;
-    z-index: 8;
+    z-index: 12;
 
     @media only screen and (max-width: 1025px) {
       position: fixed !important;
