@@ -370,20 +370,6 @@ export default {
 
 // Threat sharing Content End
 
-.v-tab {
-  padding: 0 !important;
-  font-size: 20px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
-  min-width: min-content !important;
-  text-align: left !important;
-}
-
 ::v-deep .v-slide-group__wrapper {
   padding-left: 20px !important;
 }
@@ -440,17 +426,6 @@ export default {
 ::v-deep .v-tabs-slider-wrapper {
   bottom: -1px !important;
   color: #0486fe !important;
-}
-
-::v-deep .v-tabs-bar {
-  height: 60px !important;
-
-  .v-tab {
-    font-family: 'Open Sans', sans-serif !important;
-    font-weight: 400;
-    font-weight: 400;
-    margin-right: 48px;
-  }
 }
 
 ::v-deep .community-selector {

@@ -844,6 +844,10 @@ export default {
 
 <style lang="scss">
 .communities-wrapper {
+  .v-tabs-slider {
+    width: calc(100% + 16px);
+    margin-left: -8px;
+  }
   .notification-wrapper {
     padding: 0 !important;
     width: 100%;

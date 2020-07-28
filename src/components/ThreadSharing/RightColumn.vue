@@ -730,59 +730,6 @@ export default {
     border-radius: 20px;
   }
 
-  //search Input css
-  ::v-deep .v-label--active {
-    transform: translateY(-15px) scale(0.75);
-  }
-
-  ::v-deep .v-text-field--outlined .v-label {
-    top: 11px;
-  }
-
-  ::v-deep .v-input__slot {
-    -webkit-box-align: stretch;
-    -ms-flex-align: stretch;
-    align-items: stretch;
-    min-height: 40px !important;
-  }
-
-  ::v-deep label.v-label.theme--light {
-    font-size: 12px;
-  }
-
-  .v-input {
-    font-size: 13px !important;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-  }
-
-  // end search input
-
-  ::v-deep .v-slide-group__content {
-    border-bottom: 2px solid #e4e7ed;
-    margin-right: 20px;
-  }
-
-  ::v-deep .v-tabs-slider-wrapper {
-    bottom: -1px !important;
-    color: #0486fe !important;
-  }
-
-  ::v-deep .v-tabs-bar {
-    height: 60px !important;
-
-    .v-tab {
-      font-family: 'Open Sans', sans-serif !important;
-      font-weight: 400;
-      font-weight: 600;
-      margin-right: 48px;
-    }
-  }
-
   ::v-deep .community-selector {
     .v-tabs-bar {
       height: 44px !important;
