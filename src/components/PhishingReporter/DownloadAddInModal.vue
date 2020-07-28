@@ -31,7 +31,8 @@
               Download
             </v-btn>
             <v-btn
-              class="white--text btn-util btn-download-add-in ml-n1"
+              class="white--text btn-util btn-download-add-in"
+              style="margin-left: -6px;"
               color="#2196f3"
               rounded
               :loading="outlookSpinnerStatus"
@@ -72,7 +73,7 @@
       <v-list-item class="px-0 add-in-configuration__list-item">
         <v-btn
           @click="callForGenerateDiagnosticTool"
-          class="white--text btn-util btn-download-add-in mt-n2"
+          class="white--text btn-util btn-download-add-in mt-n2 ml-n1"
           color="#2196f3"
           :loading="diagnosticToolSpinnerStatus"
           rounded
