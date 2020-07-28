@@ -43,7 +43,7 @@
       </v-btn>
       <v-btn
         @click="submit(true)"
-        class="white--text diagnostic-tool__btn-util ml-3"
+        class="white--text diagnostic-tool__btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
       >

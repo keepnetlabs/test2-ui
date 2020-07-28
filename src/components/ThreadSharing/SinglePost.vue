@@ -1178,7 +1178,6 @@ export default {
   },
   methods: {
     openShareModalFunc(post) {
-      debugger
       this.sharedIncitedId = post.communityPostResourceId
       this.openShareModal = true
     },

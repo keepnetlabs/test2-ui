@@ -81,7 +81,13 @@
             />
           </v-btn>
         </v-list-item-content>
-        <v-list-item-content v-if="this.formValues.file">
+      </v-list-item>
+      <v-list-item
+        v-if="this.formValues.file"
+        class="px-0 add-in-settings__list-item"
+        style="max-width: 220px; margin-top: 24px;"
+      >
+        <v-list-item-content>
           <div>
             <div class="add-in-settings__image-container">
               <img style="width: 100%; height: 100%;" :src="getImagePreview()" />
@@ -210,7 +216,7 @@
         </v-btn>
         <v-btn
           @click="submit($event, true)"
-          class="white--text btn-util ml-3"
+          class="white--text btn-util btn-download-add-in ml-3"
           color="#00bcd4"
           rounded
         >
@@ -400,14 +406,7 @@ export default {
     &__image-container {
       border: 2px solid whitesmoke;
       border-radius: 3px;
-      transition: all 0.3s;
-      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
       width: fit-content;
-      &:hover {
-        transform: scale(1.05) translateY(-0.5rem);
-        box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.4);
-        z-index: 20;
-      }
     }
     &__spinner {
       animation: spin 2s linear infinite;

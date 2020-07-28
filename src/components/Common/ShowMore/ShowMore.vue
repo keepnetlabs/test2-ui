@@ -4,7 +4,7 @@
       <template v-for="index in renderedBadgeCount" v-if="renderedBadgeCount > 0 && status === 0">
         <v-chip
           v-for="(value, key) in computedData[index - 1]"
-          :class="[unRenderedBadgeCount !== 0 && 'show-more__hidden']"
+          class="show-more__hidden"
           :key="value + key"
           v-if="value && key !== 'resourceId'"
           >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     getChips() {
-      debugger
       const containerWidth =
         Math.floor(
           this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width

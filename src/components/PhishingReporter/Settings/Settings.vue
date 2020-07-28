@@ -115,7 +115,7 @@ export default {
           newFormData[key] === null ? '' : newFormData[key]
         )
       })
-      debugger
+
       /*
       formData.append('File', addinSettings.file)
       formData.append('file', addinSettings.file)

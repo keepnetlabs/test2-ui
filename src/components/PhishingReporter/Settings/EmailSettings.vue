@@ -274,7 +274,7 @@ export default {
 
   &__btn-util {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     font-stretch: normal;
     font-style: normal;
     line-height: 1.71;

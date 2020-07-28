@@ -495,6 +495,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   margin-top: 8px;
+  margin-left: -4px;
   @media (max-width: 768px) {
     flex-direction: column;
     margin-top: 32px;
