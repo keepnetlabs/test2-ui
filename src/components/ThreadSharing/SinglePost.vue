@@ -1288,29 +1288,59 @@ export default {
         this.postDetails = response.data.data
         this.emailData = response.data.data.communityPostEmail
         setTimeout(function () {
-          for (let a of response.data.data.communityPostEmail.urls) {
-            const els = document
+          for (let url of response.data.data.communityPostEmail.urls) {
+            let els = document
               .getElementById('sframe')
-              .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
-            for (let i = 0, l = els.length; i < l; i++) {
-              const el = els[i]
-              el.setAttribute('target', '_blank')
-              el.setAttribute('data-title', 'This link has been reported as a phishing')
-              /*if (!a.IsShow) {
-                if (!el.hasChildNodes()) {
+              .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+            if (els && els.length) {
+              for (let i = 0, l = els.length; i < l; i++) {
+                let el = els[i]
+                el.setAttribute('target', '_blank')
+                if (url.isHidden) {
                   el.innerHTML = 'hidden by owner'
-                } else {
-                  el.lastChild.innerHTML = 'hidden by owner'
                 }
-                el.setAttribute('href', '#')
-              }*/
-              //if (a) {
-              el.classList.add('malicious-style')
-              const iEl = document.createElement('i')
-              iEl.className +=
-                'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-              el.appendChild(iEl)
-              // }
+                if (url.isFlagged) {
+                  const el = els[i]
+                  el.setAttribute('target', '_blank')
+                  el.setAttribute('data-title', 'This link has been reported as a phishing')
+                  /*if (!a.IsShow) {
+                      if (!el.hasChildNodes()) {
+                        el.innerHTML = 'hidden by owner'
+                      } else {
+                        el.lastChild.innerHTML = 'hidden by owner'
+                      }
+                      el.setAttribute('href', '#')
+                    }*/
+                  //if (a) {
+                  el.classList.add('malicious-style')
+                  const iEl = document.createElement('i')
+                  iEl.className +=
+                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                  el.appendChild(iEl)
+                  // }
+                } else {
+                  const el = els[i]
+                  el.classList.remove('malicious-style')
+                }
+              }
+            }
+            let hiddenEls = document.getElementsByClassName(url.url)
+            if (hiddenEls && hiddenEls.length) {
+              for (let i = 0, l = hiddenEls.length; i < l; i++) {
+                let hiddenEl = hiddenEls[i]
+                hiddenEl.setAttribute('target', '_blank')
+                if (url.isHidden) {
+                  hiddenEl.innerHTML = 'hidden by owner'
+                  hiddenEl.setAttribute('href', '#')
+                }
+                if (url.isFlagged) {
+                  hiddenEl.classList.add('malicious-link')
+                  let iEl = document.createElement('span')
+                  iEl.className +=
+                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                  hiddenEl.appendChild(iEl)
+                }
+              }
             }
           }
         }, 150)
