@@ -1,14 +1,14 @@
 <template>
   <div class="datatable-progress">
-    <template v-if="scope.row && parseInt(scope.row.progress) >= 0">
+    <template v-if="scope.row && parseInt(scope.row[col.property]) >= 0">
       <span
-        :class="[scope.row.progress !== 100 && 'ml-1']"
+        :class="[scope.row[col.property] !== 100 && 'ml-1']"
         v-if="col.progressType !== 'plain'"
         class="datatable-progress__per"
-        >{{ scope.row.progress === 100 ? 'Completed' : scope.row.progress + '%' }}</span
+        >{{ scope.row[col.property] === 100 ? 'Completed' : scope.row[col.property] + '%' }}</span
       >
       <v-progress-linear
-        :value="scope.row.progress"
+        :value="scope.row[col.property]"
         background-color="#b3d4fc"
         color="#2196f3"
         height="4"

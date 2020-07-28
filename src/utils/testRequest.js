@@ -17,6 +17,7 @@ testService.interceptors.request.use(
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
       config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
+      config.headers['Cache-Control'] = 'no-cache'
       //config.headers['X-IR-COMPANY-ID'] = 'TEST-COMPANY-2'
     }
     return config

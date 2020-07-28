@@ -350,6 +350,33 @@ export default {
         this.formValues.file = blob
       })
     }
+  },
+  watch: {
+    formData(val) {
+      const {
+        addInName,
+        brandName,
+        warningLabel,
+        msgBoxTitle,
+        isConfirmationBeforeAnalysis,
+        analysisConfirmationMessage,
+        analysisThankYouMessage,
+        analysisEmailDeleteMessage,
+        isDeleteEmailBeforeAnalysis
+      } = val
+      this.formValues.addInName = addInName
+      this.formValues.brandName = brandName
+      this.formValues.warningLabel = warningLabel
+      this.formValues.msgBoxTitle = msgBoxTitle
+      this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
+      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
+      this.formValues.analysisThankYouMessage = analysisThankYouMessage
+      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
+      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
+      getPhishingReporterImg().then((response) => {
+        this.formValues.file = response.data
+      })
+    }
   }
 }
 </script>

@@ -722,7 +722,10 @@
                 </template>
               </datatable>
             </div>
-            <div v-if="activeMenu === 'targetUsers' && showTargetUsersDetails">
+            <div
+              v-if="activeMenu === 'targetUsers' && showTargetUsersDetails"
+              class="investigationDetails__target-users-table-container"
+            >
               <datatable
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
@@ -762,7 +765,7 @@ import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import { getStoreValue } from '../model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
@@ -901,10 +904,10 @@ export default {
     ],
     columnsTargetUsers: [
       {
-        property: 'email',
+        property: PROPERTY_STORE.EMAIL,
         align: 'left',
         editable: false,
-        label: getStoreValue('email'),
+        label: getStoreValue(PROPERTY_STORE.EMAIL),
         fixed: 'left',
         sortable: true,
         show: true,
@@ -920,6 +923,7 @@ export default {
         show: true,
         type: 'detected'
       },
+
       {
         property: 'duration',
         align: 'left',
@@ -931,10 +935,20 @@ export default {
         type: 'text'
       },
       {
+        property: PROPERTY_STORE.LASTSEEN,
+        align: 'left',
+        editable: false,
+        label: getStoreValue(PROPERTY_STORE.LASTSEEN),
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text'
+      },
+      {
         property: 'status',
         align: 'center',
         editable: false,
-        label: getStoreValue('status'),
+        label: 'Scan Status',
         fixed: false,
         sortable: true,
         show: true,
@@ -1117,9 +1131,6 @@ export default {
           link.click()
         })
       })
-    },
-    getId() {
-      return `key-${Math.random()}`
     },
     exportTargetUsers({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {
@@ -2041,6 +2052,20 @@ export default {
 .investigation-details__warning-modal {
   .k-dialog__body {
     padding: 24px 24px 2px 24px;
+  }
+}
+
+.investigationDetails__target-users-table-container {
+  .k-table__wrapper {
+    .card .table-wrapper .el-table td > .cell {
+      padding-left: 10.5px !important;
+    }
+    .card .table-wrapper .el-table th > .cell.actions-label {
+      margin-left: 0 !important;
+    }
+    .card .table-wrapper .el-table th > .cell {
+      margin-left: 8px;
+    }
   }
 }
 </style>
