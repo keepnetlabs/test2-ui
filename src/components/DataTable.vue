@@ -407,9 +407,6 @@
               v-if="col.show"
               :filter-multiple="true"
             >
-              <template slot="header" slot-scope="{ column, $index }">
-                <span> {{ JSON.stringify(column) }} aaa {{ $index }}</span>
-              </template>
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
                 <data-table-colorful-text
@@ -512,13 +509,23 @@
                   <slot name="datatable-custom-column" :scope="scope" :col="col"></slot>
                 </div>
               </template>
-              <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">
-                <v-tooltip bottom>
+
+              <template v-slot:header="{ column, $index }">
+                <v-tooltip bottom v-if="col.showHeaderTooltip">
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
                   <span>{{ col.headerTooltip }}</span>
                 </v-tooltip>
+                <template v-else>
+                  {{ column.label }}
+                </template>
+
+                <data-table-filter
+                  :column="column"
+                  :filterableType="col.filterableType"
+                  :index="$index"
+                />
               </template>
             </el-table-column>
 
@@ -752,6 +759,7 @@ import Badge from './Badge'
 import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
+import DataTableFilter from './DataTableComponents/DataTableFilter'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -762,9 +770,9 @@ Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
-import DataTableFilter from '@/components/DataTableComponents/DataTableFilter'
 export default {
   components: {
+    DataTableFilter,
     DataTableColorfulText,
     Badge,
     DataTableText,
