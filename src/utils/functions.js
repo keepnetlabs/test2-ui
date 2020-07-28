@@ -146,3 +146,7 @@ export function isOwnerOrMember(membershipStatusId) {
 export function isOwner(membershipStatusId) {
   return membershipStatusId == 1
 }
+
+export function isPostedByMe(isPostedByMe) {
+  return isPostedByMe
+}

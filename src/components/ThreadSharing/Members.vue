@@ -1,5 +1,66 @@
 <template>
   <v-card flat color="basil">
+    <app-dialog
+      :status="showAppointANewOwnerModal"
+      @changeStatus="showAppointANewOwnerModal = false"
+      icon="mdi-lock"
+      title="Give admin privileges?,"
+      :body="`${appointUserName} will be able to access to all settings such as removing users or deleting the community`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="showAppointANewOwnerModal = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="appointANewOwnerConfirm"
+              >ACCEPT
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="showRemoveFromCommunityModal"
+      @changeStatus="showRemoveFromCommunityModal = false"
+      icon="mdi-account"
+      title="Remove user from community?"
+      :subtitle="removeFromCommunityUserName"
+      :body="`${removeFromCommunityUserName} will be removed and won’t be able to access the community`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="showRemoveFromCommunityModal = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="removeFromCommunityConfirm"
+              >REMOVE
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
     <v-card-text class="pt-2">
       <v-tabs v-model="tab" class="community-selector">
         <v-tab @click="getMembers()">Members</v-tab>
@@ -93,7 +154,7 @@
                                   <v-list-item-title>See posted incidents</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
-                              <v-list-item @click="appointANewOwner(member.companyResourceId)">
+                              <v-list-item @click="appointANewOwner(member)">
                                 <v-list-item-icon>
                                   <v-icon>mdi-account-multiple-plus</v-icon>
                                 </v-list-item-icon>
@@ -101,7 +162,7 @@
                                   <v-list-item-title>Appoint a new owner</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
-                              <v-list-item @click="removeFromCommunity(member.companyResourceId)">
+                              <v-list-item @click="removeFromCommunity(member)">
                                 <v-list-item-icon>
                                   <v-icon>mdi-delete</v-icon>
                                 </v-list-item-icon>
@@ -278,12 +339,20 @@ import {
   removeFromCommunity
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import AppDialog from '../AppDialog'
 
 export default {
   components: {
-    apexchart: VueApexCharts
+    apexchart: VueApexCharts,
+    AppDialog
   },
   data: () => ({
+    appointUserName: null,
+    appointNewOwnerId: null,
+    showAppointANewOwnerModal: false,
+    removeFromCommunityUserName: null,
+    removeCommunityId: null,
+    showRemoveFromCommunityModal: false,
     newOwnerRule: {
       limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
     },
@@ -373,14 +442,21 @@ export default {
   },
   methods: {
     appointANewOwner(item) {
+      this.appointNewOwnerId = item.companyResourceId
+      this.appointUserName = item.companyName
+      this.showAppointANewOwnerModal = true
+    },
+    appointANewOwnerConfirm() {
       const payload = {
-        AppointedCompanyResourceId: item
+        AppointedCompanyResourceId: this.appointNewOwnerId
       }
       appointNewOwner(this.$route.params.id, payload).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'New community owner request has been sent successfully'
         })
+        this.getMembers()
+        this.showAppointANewOwnerModal = false
       })
     },
     debounce(fn, delay) {
@@ -434,13 +510,20 @@ export default {
         })
     },
     isOwnerOfTheCommunity() {},
-    removeFromCommunity(compId) {
-      removeFromCommunity(this.$route.params.id, compId)
+    removeFromCommunity(item) {
+      this.removeCommunityId = item.companyResourceId
+      this.removeFromCommunityUserName = item.companyName
+      this.showRemoveFromCommunityModal = true
+    },
+    removeFromCommunityConfirm() {
+      removeFromCommunity(this.$route.params.id, this.removeCommunityId)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: '' // @atakan @nejat mesaj
           })
+          this.getMembers()
+          this.showRemoveFromCommunityModal = false
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

@@ -145,7 +145,11 @@
                     <div class="email-name">{{ item.subject }}</div>
                     <div class="select-row-inline">
                       <div class="file-type-wrap">
-                        <v-icon v-if="item.AttachmentCount != 0" class="email-icon"
+                        <v-icon
+                          :style="{
+                            visibility: item.attachmentCount != 0 ? 'visible' : 'hidden'
+                          }"
+                          class="email-icon"
                           >mdi-paperclip
                         </v-icon>
                         <div
@@ -862,7 +866,7 @@
                           <template v-slot:actions mandatory="true">
                             <v-btn
                               id="last-preview-collapse"
-                              v-if="toggle"
+                              v-if="!toggle"
                               outlined
                               rounded
                               medium
@@ -906,11 +910,11 @@
                     </div>
                     <div class="ts-body">
                       <v-clamp
-                        v-if="uploadRespond.description"
-                        :id="uploadRespond.description"
+                        v-if="uploadRespond.Description"
+                        :id="uploadRespond.Description"
                         autoresize
                         :max-lines="3"
-                        >{{ uploadRespond.description }}
+                        >{{ uploadRespond.Description }}
                       </v-clamp>
                       <v-clamp v-else autoresize :max-lines="3">
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
