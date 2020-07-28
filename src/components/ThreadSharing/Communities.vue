@@ -184,6 +184,33 @@
         </div>
       </template>
     </app-dialog>
+    <app-dialog
+      :status="isCancelRequestModal"
+      @changeStatus="isCancelRequestModal = false"
+      icon="mdi-exit-to-app"
+      title="Cancel Request?"
+      :subtitle="cancelRequestCommunityName"
+      :body="`You are cancelling your request to ${cancelRequestCommunityName}`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#f56c6c"
+              @click="isCancelRequestModal = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="cancelRequestConfirm"
+              >Confirm
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
     <v-card flat color="basil">
       <v-card-text class="pt-2">
         <v-data-iterator
@@ -302,7 +329,7 @@
                     <div class="communities__notification-wrapper">
                       <v-list dense flat class="notification-wrapper__v-list">
                         <v-list-item-group color="primary">
-                          <v-list-item @click="editCommunity(item)">
+                          <v-list-item @click="editCommunity(item)" v-if="isOwner(item)">
                             <v-list-item-icon>
                               <v-icon>mdi-pencil</v-icon>
                             </v-list-item-icon>
@@ -318,7 +345,10 @@
                               <v-list-item-title>Notification Settings</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item @click="leaveFromCommunity(item)">
+                          <v-list-item
+                            @click="leaveFromCommunity(item)"
+                            v-if="isOwnerOrMember(item)"
+                          >
                             <v-list-item-icon>
                               <v-icon>mdi-exit-to-app</v-icon>
                             </v-list-item-icon>
@@ -326,12 +356,23 @@
                               <v-list-item-title>Leave</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item @click="deleteCommunity(item)">
+                          <v-list-item @click="deleteCommunity(item)" v-if="isOwner(item)">
                             <v-list-item-icon>
                               <v-icon>mdi-delete</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
                               <v-list-item-title>Delete</v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                          <v-list-item
+                            @click="cancelRequest(item)"
+                            v-if="item.membershipStatusId == 3"
+                          >
+                            <v-list-item-icon>
+                              <v-icon>mdi-close-circle</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                              <v-list-item-title>Cancel Request</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
                         </v-list-item-group>
@@ -453,6 +494,7 @@
 <script>
 import {
   acceptInvitation,
+  cancelRequest,
   getAllCommunityList,
   getInvitationCount,
   getInvitations,
@@ -466,6 +508,8 @@ import VClamp from 'vue-clamp'
 import { isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
+import { isOwner } from '../../utils/functions'
+
 export default {
   components: {
     VClamp,
@@ -473,6 +517,9 @@ export default {
     AppDialog
   },
   data: () => ({
+    cancelRequestCommunityName: null,
+    cancelRequestCommunityId: null,
+    isCancelRequestModal: false,
     notifications: {
       isNotifications: false,
       isDashboard: false,
@@ -528,7 +575,38 @@ export default {
     this.getInvitationCount()
   },
   methods: {
+    isOwner(community) {
+      isOwner(community.membershipStatusId)
+    },
+    isOwnerOrMember(community) {
+      return community.membershipStatusId == 2 || community.membershipStatusId == 1
+    },
     saveNotificationSetting() {},
+    cancelRequest(item) {
+      this.cancelRequestCommunityName = item.communityName
+      this.cancelRequestCommunityId = item.membershiprequestresourceid
+      this.isCancelRequestModal = true
+    },
+    cancelRequestConfirm() {
+      cancelRequest(this.cancelRequestCommunityId)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: '' // @nejat, @atakan
+          })
+          this.isCancelRequestModal = false
+          this.getAllCommunitiesListData()
+          this.getAllCommunityList()
+          this.getInvitions()
+          this.getInvitationCount()
+        })
+        .catch((error) => {
+          /*this.$store.dispatch('common/createSnackBar', {
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  message: 'Error when attempting to leave from a community'
+                })*/
+        })
+    },
     deleteCommunity(item) {
       this.deleteCommunityName = item.communityName
       this.deleteCommunityId = item.communityResourceId
@@ -554,6 +632,7 @@ export default {
           message: 'Invitation request has been cancelled successfully'
         })
         this.getInvitions()
+        this.getInvitationCount()
       })
       /*
         .catch(() => {
@@ -570,6 +649,7 @@ export default {
           message: 'Invitation request has been accepted successfully'
         })
         this.getInvitions()
+        this.getInvitationCount()
       })
       /*
         .catch(() => {
