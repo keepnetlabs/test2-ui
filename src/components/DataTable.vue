@@ -405,7 +405,11 @@
               :width="col.width || ''"
               v-for="(col, ind) of columns"
               v-if="col.show"
+              :filter-multiple="true"
             >
+              <template slot="header" slot-scope="{ column, $index }">
+                <span> {{ JSON.stringify(column) }} aaa {{ $index }}</span>
+              </template>
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
                 <data-table-colorful-text
@@ -758,6 +762,7 @@ Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
+import DataTableFilter from '@/components/DataTableComponents/DataTableFilter'
 export default {
   components: {
     DataTableColorfulText,
@@ -1464,6 +1469,25 @@ export default {
       this.initialData = data
       this.dataLength = responseParams && responseParams.totalNumberOfRecords
       this.tableData = (data && data.slice(0, this.rowCount || this.countRow)) || []
+    },
+    handleFilterColumn(filterObj) {
+      debugger
+      const { column, filterValue, filteredSelectValue } = filterObj
+      this.assignFilter(column.property, filteredSelectValue, filterValue)
+      this.tableData = this.mainData.filter((row) => {
+        const filteredCols = Object.keys(this.filters)
+        let flag = false
+        filteredCols.map((key) => {
+          switch (this.filters[key]['selectValue']) {
+            case 'Starts With':
+              flag = row[key].startsWith(this.filters[key]['filterValue'])
+              break
+            default:
+              break
+          }
+        })
+        return flag
+      })
     }
   }
 }

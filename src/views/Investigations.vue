@@ -122,8 +122,8 @@ export default {
         type: 'text',
         width: 250,
         isFilterable: true,
-        editComponent: 'textfield'
-        //minWidth: 80
+        editComponent: 'textfield',
+        filterableType: 'text'
       },
       {
         property: 'source',
@@ -134,6 +134,7 @@ export default {
         sortable: true,
         show: true,
         type: 'slot',
+        filterableType: 'text',
         width: 250
         //minWidth: 80
       },
