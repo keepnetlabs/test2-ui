@@ -301,7 +301,11 @@
                   <div
                     id="preview-footer-container"
                     class="preview-footer"
-                    v-if="!!uploadRespond.attachments.length"
+                    v-if="
+                      !!uploadRespond &&
+                      uploadRespond.attachments &&
+                      uploadRespond.attachments.length
+                    "
                   >
                     <h2>Attachments</h2>
                     <div class="attachment-wrapper">
@@ -380,7 +384,7 @@
                   row-height="15"
                   solo
                   validate-on-blur
-                  :rules="[descRule.required, descRule.regex, descRule.empty]"
+                  :rules="[descRule.required, descRule.regex, descRule.empty, descRule.default]"
                   v-model="uploadRespond.Description"
                 ></v-textarea>
               </v-form>
@@ -403,6 +407,7 @@
                   :rules="category"
                   :class="{
                     'errored-selectbox':
+                      uploadRespond &&
                       uploadRespond.CategoryResourceIdArray &&
                       uploadRespond.CategoryResourceIdArray.length < 1
                   }"
@@ -514,12 +519,14 @@
                   <h2
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                     v-if="!uploadRespond.isSubjectHidden && !!uploadRespond.subject"
+                    :class="{ 'malicious-style': uploadRespond.isSubjectFlagged }"
                   >
                     Subject: {{ uploadRespond.subject }}
                   </h2>
                   <h2
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                     v-else-if="uploadRespond.isSubjectHidden && !!uploadRespond.subject"
+                    :class="{ 'malicious-style': uploadRespond.isSubjectFlagged }"
                   >
                     Subject: Hidden by owner
                   </h2>
@@ -527,12 +534,14 @@
                     <div
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
+                      :class="{ 'malicious-style': uploadRespond.isFromFlagged }"
                     >
                       From: {{ uploadRespond.from }}
                     </div>
                     <div
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-else-if="uploadRespond.isFromHidden && !!uploadRespond.from"
+                      :class="{ 'malicious-style': uploadRespond.isFromFlagged }"
                     >
                       From: Hidden by owner
                     </div>
@@ -541,12 +550,16 @@
                       v-if="
                         !uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length
                       "
+                      :class="{ 'malicious-style': uploadRespond.isToFlagged }"
                     >
                       To: {{ uploadRespond.to && uploadRespond.to.toString() }}
                     </div>
                     <div
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                      v-else-if="uploadRespond.isToHidden && !!uploadRespond.to.length"
+                      v-else-if="
+                        uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length
+                      "
+                      :class="{ 'malicious-style': uploadRespond.isToFlagged }"
                     >
                       To: Hidden by owner
                     </div>
@@ -555,12 +568,14 @@
                       v-if="
                         !uploadRespond.isCcHidden && uploadRespond.cc && !!uploadRespond.cc.length
                       "
+                      :class="{ 'malicious-style': uploadRespond.isCcFlagged }"
                     >
                       CC: {{ uploadRespond.cc && uploadRespond.cc.toString() }}
                     </div>
                     <div
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-else-if="uploadRespond.isCcHidden && !!uploadRespond.cc.length"
+                      :class="{ 'malicious-style': uploadRespond.isCcFlagged }"
                     >
                       CC: Hidden by owner
                     </div>
@@ -569,12 +584,14 @@
                       v-if="
                         !uploadRespond.isCcHidden && uploadRespond.bcc && !!uploadRespond.bcc.length
                       "
+                      :class="{ 'malicious-style': uploadRespond.isBccFlagged }"
                     >
                       CC: {{ uploadRespond.bcc && uploadRespond.bcc.toString() }}
                     </div>
                     <div
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length"
+                      :class="{ 'malicious-style': uploadRespond.isBccFlagged }"
                     >
                       BCC: Hidden by owner
                     </div>
@@ -593,7 +610,7 @@
                 <div
                   id="preview-footer-container-att"
                   class="preview-footer"
-                  v-if="!!uploadRespond.attachments.length"
+                  v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
                 >
                   <h2>Attachments</h2>
                   <div class="attachment-wrapper">
@@ -654,6 +671,59 @@
                   <div
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
+                    v-if="uploadRespond.subject"
+                  >
+                    <div v-if="!uploadRespond.isFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/short-text-red.svg" />
+                    </div>
+                    <v-switch
+                      v-model="uploadRespond.isSubjectHidden"
+                      @change="subjectValChange"
+                    ></v-switch>
+                    <label v-if="filterOpened">Subject</label>
+                    <v-menu v-model="subSettings" right offset-x transition="scale-transition">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="chevron-btn-menu" icon>
+                          <v-icon
+                            :class="{ 'chevron-down': subSettings }"
+                            v-on="on"
+                            @click="subSettings = !subSettings"
+                            >mdi-chevron-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isSubjectFlagged = false"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="!uploadRespond.isSubjectFlagged">mdi-check</v-icon>
+                            </div>
+                            None
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isSubjectFlagged = true"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="uploadRespond.isSubjectFlagged">mdi-check</v-icon>
+                            </div>
+                            Flagged Subject
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </div>
+                  <div
+                    :class="{ 'minify-switch': !filterOpened }"
+                    class="switch-row"
                     v-if="uploadRespond.from"
                   >
                     <div class="img-wrapper">
@@ -664,42 +734,190 @@
                       @change="fromValChange"
                     ></v-switch>
                     <label v-if="filterOpened">From</label>
+                    <v-menu v-model="fromSettings" right offset-x transition="scale-transition">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="chevron-btn-menu" icon>
+                          <v-icon
+                            :class="{ 'chevron-down': fromSettings }"
+                            v-on="on"
+                            @click="fromSettings = !fromSettings"
+                            >mdi-chevron-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isFromFlagged = false"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="!uploadRespond.isFromFlagged">mdi-check</v-icon>
+                            </div>
+                            None
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isFromFlagged = true"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="uploadRespond.isFromFlagged">mdi-check</v-icon>
+                            </div>
+                            Flagged From
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </div>
                   <div
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
-                    v-if="!!uploadRespond.to.length"
+                    v-if="uploadRespond.to && !!uploadRespond.to.length"
                   >
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isToHidden" @change="toValChange"></v-switch>
                     <label v-if="filterOpened">To</label>
+                    <v-menu v-model="toSettings" right offset-x transition="scale-transition">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="chevron-btn-menu" icon>
+                          <v-icon
+                            :class="{ 'chevron-down': toSettings }"
+                            v-on="on"
+                            @click="toSettings = !toSettings"
+                            >mdi-chevron-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isToFlagged = false"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="!uploadRespond.isToFlagged">mdi-check</v-icon>
+                            </div>
+                            None
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isToFlagged = true"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="uploadRespond.isToFlagged">mdi-check</v-icon>
+                            </div>
+                            Flagged To
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </div>
                   <div
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
-                    v-if="!!uploadRespond.cc.length"
+                    v-if="uploadRespond.cc && !!uploadRespond.cc.length"
                   >
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isCcHidden" @change="ccValChange"></v-switch>
                     <label v-if="filterOpened">CC</label>
+                    <v-menu v-model="ccSettings" right offset-x transition="scale-transition">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="chevron-btn-menu" icon>
+                          <v-icon
+                            :class="{ 'chevron-down': ccSettings }"
+                            v-on="on"
+                            @click="ccSettings = !ccSettings"
+                            >mdi-chevron-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isCcFlagged = false"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="!uploadRespond.isCcFlagged">mdi-check</v-icon>
+                            </div>
+                            None
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isCcFlagged = true"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="uploadRespond.isCcFlagged">mdi-check</v-icon>
+                            </div>
+                            Flagged CC
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </div>
                   <div
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
-                    v-if="!!uploadRespond.bcc.length"
+                    v-if="uploadRespond.bcc && !!uploadRespond.bcc.length"
                   >
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isBccHidden" @change="bccValChange"></v-switch>
                     <label v-if="filterOpened">BCC</label>
+                    <v-menu v-model="bccSettings" right offset-x transition="scale-transition">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="chevron-btn-menu" icon>
+                          <v-icon
+                            :class="{ 'chevron-down': bccSettings }"
+                            v-on="on"
+                            @click="bccSettings = !bccSettings"
+                            >mdi-chevron-down
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isBccFlagged = false"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="!uploadRespond.isBccFlagged">mdi-check</v-icon>
+                            </div>
+                            None
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="uploadRespond.isBccFlagged = true"
+                        >
+                          <v-list-item-title class="mal-list-row">
+                            <div class="mal-icon-wrapper">
+                              <v-icon v-if="uploadRespond.isBccFlagged">mdi-check</v-icon>
+                            </div>
+                            Flagged BCC
+                          </v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </div>
                 </div>
-                <div :class="{ 'minify-part': !filterOpened }" class="filter-part pt-5">
+                <div
+                  :class="{ 'minify-part': !filterOpened }"
+                  class="filter-part pt-5"
+                  v-if="uploadRespond.urls && !!uploadRespond.urls.length"
+                >
                   <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/link.svg" />
@@ -708,28 +926,28 @@
                     <label v-if="filterOpened">All Links</label>
                   </div>
                   <div
-                    v-for="(s, ind) of uploadRespond.urls"
-                    :key="ind + s.url + 'url'"
-                    :id="ind + s.url + 'url'"
+                    v-for="(url, ind) of uploadRespond.urls"
+                    :key="ind + url.url + 'url'"
+                    :id="ind + url.url + 'url'"
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
                   >
-                    <div v-if="!s.isFlagged" class="img-wrapper">
+                    <div v-if="!url.isFlagged" class="img-wrapper">
                       <img src="../../assets/img/filter-icons/link.svg" />
                     </div>
                     <div v-else class="img-wrapper">
                       <img src="../../assets/img/filter-icons/link-red.svg" />
                     </div>
                     <v-switch
-                      :id="'attach-switch-' + s.url"
-                      v-model="s.isHidden"
-                      @change="urlSwitchChange(s, ind)"
+                      :id="'attach-switch-' + url.url"
+                      v-model="url.isHidden"
+                      @change="urlSwitchChange(url, ind)"
                     ></v-switch>
                     <v-tooltip bottom opacity="1" z-index="9999">
                       <template v-slot:activator="{ on }">
-                        <label v-on="on" v-if="filterOpened">{{ s.url }}</label>
+                        <label v-on="on" v-if="filterOpened">{{ url.name || url.url }}</label>
                       </template>
-                      <span>{{ s.url }}</span>
+                      <span>{{ url.name || url.url }}</span>
                     </v-tooltip>
                     <v-menu v-model="attcChevron[ind]" right offset-x transition="scale-transition">
                       <template v-slot:activator="{ on }">
@@ -745,26 +963,26 @@
                       <v-list>
                         <v-list-item
                           class="pl-1 mal-list-wrapper"
-                          @click="s.isFlagged = false"
-                          @change="urlSwitchChange(s, ind)"
+                          @click="url.isFlagged = false"
+                          @change="urlSwitchChange(url, ind)"
                         >
                           <v-list-item-title class="mal-list-row">
                             <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.isFlagged">mdi-check</v-icon>
+                              <v-icon v-if="!url.isFlagged">mdi-check</v-icon>
                             </div>
                             None
                           </v-list-item-title>
                         </v-list-item>
                         <v-list-item
                           class="pl-1 mal-list-wrapper"
-                          @click="s.isFlagged = true"
-                          @change="urlSwitchChange(s, ind)"
+                          @click="url.isFlagged = true"
+                          @change="urlSwitchChange(url, ind)"
                         >
                           <v-list-item-title class="mal-list-row">
                             <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.isFlagged">mdi-check</v-icon>
+                              <v-icon v-if="url.isFlagged">mdi-check</v-icon>
                             </div>
-                            Malicious File
+                            Phishing Link
                           </v-list-item-title>
                         </v-list-item>
                       </v-list>
@@ -772,7 +990,11 @@
                   </div>
                 </div>
 
-                <div :class="{ 'minify-part': !filterOpened }" class="filter-part pt-5">
+                <div
+                  :class="{ 'minify-part': !filterOpened }"
+                  class="filter-part pt-5"
+                  v-if="uploadRespond.attachments && !!uploadRespond.attachments.length"
+                >
                   <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
                     <div class="img-wrapper">
                       <img src="../../assets/img/filter-icons/header-all.svg" />
@@ -781,19 +1003,22 @@
                     <label v-if="filterOpened">All Attachments</label>
                   </div>
                   <div
-                    v-for="(s, ind) of uploadRespond.attachments"
-                    :key="ind + s.name"
+                    v-for="(attachment, ind) of uploadRespond.attachments"
+                    :key="ind + attachment.name"
                     :class="{ 'minify-switch': !filterOpened }"
                     class="switch-row"
                   >
-                    <div v-if="!s.isFlagged" class="img-wrapper">
+                    <div v-if="!attachment.isFlagged" class="img-wrapper">
                       <img src="../../assets/img/filter-icons/attach-file.svg" />
                     </div>
                     <div v-else class="img-wrapper">
                       <img src="../../assets/img/filter-icons/attach-red.svg" />
                     </div>
-                    <v-switch :id="'attach-switch-' + s.name" v-model="s.isHidden"></v-switch>
-                    <label v-if="filterOpened">{{ s.name }}</label>
+                    <v-switch
+                      :id="'attach-switch-' + attachment.name"
+                      v-model="attachment.isHidden"
+                    ></v-switch>
+                    <label v-if="filterOpened">{{ attachment.name }}</label>
                     <v-menu v-model="urls[ind]" right offset-x transition="scale-transition">
                       <template v-slot:activator="{ on }">
                         <v-btn class="chevron-btn-menu" icon>
@@ -806,18 +1031,24 @@
                         </v-btn>
                       </template>
                       <v-list>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.isFlagged = false">
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="attachment.isFlagged = false"
+                        >
                           <v-list-item-title class="mal-list-row">
                             <div class="mal-icon-wrapper">
-                              <v-icon v-if="!s.isFlagged">mdi-check</v-icon>
+                              <v-icon v-if="!attachment.isFlagged">mdi-check</v-icon>
                             </div>
                             None
                           </v-list-item-title>
                         </v-list-item>
-                        <v-list-item class="pl-1 mal-list-wrapper" @click="s.isFlagged = true">
+                        <v-list-item
+                          class="pl-1 mal-list-wrapper"
+                          @click="attachment.isFlagged = true"
+                        >
                           <v-list-item-title class="mal-list-row">
                             <div class="mal-icon-wrapper">
-                              <v-icon v-if="s.isFlagged">mdi-check</v-icon>
+                              <v-icon v-if="attachment.isFlagged">mdi-check</v-icon>
                             </div>
                             Malicious File
                           </v-list-item-title>
@@ -915,12 +1146,6 @@
                         autoresize
                         :max-lines="3"
                         >{{ uploadRespond.Description }}
-                      </v-clamp>
-                      <v-clamp v-else autoresize :max-lines="3">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                        consequat.
                       </v-clamp>
                     </div>
                     <div id="post-inc-preview-footer" class="ts-footer d-flex row wrap">
@@ -1109,7 +1334,7 @@
                             v-if="uploadRespond.urls.some((a) => !a.isHidden && a.isFlagged)"
                             class="detail-black"
                           >
-                            {{ uploadRespond.urls.some((a) => !a.isHidden && a.isFlagged) }}Body
+                            Body
                           </p>
                           <p
                             v-for="(el, ind) of uploadRespond.urls"
@@ -1393,7 +1618,7 @@
               class="previous-btn mr-4"
               text
               color="#2196f3"
-              @click="step = step - 1"
+              @click="onPreviousButtonClick(step)"
               >Previous
             </v-btn>
             <v-btn
@@ -1612,6 +1837,11 @@ export default {
     }
   },
   data: () => ({
+    fromSettings: false,
+    toSettings: false,
+    ccSettings: false,
+    bccSettings: false,
+    subSettings: false,
     currentCompany: null,
     listData: [],
     step: 1,
@@ -1712,7 +1942,7 @@ export default {
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
     scopeRules: {
-      default: (v) => !!v || 'Explanation is required',
+      default: (v) => !!v || 'Scope is required',
       required: (v) =>
         (!!v && v.length >= 5 && v.length <= 200) ||
         'Explanation should be between 5 - 200 characters long',
@@ -1799,11 +2029,6 @@ export default {
       let els = document
         .getElementById('last-preview-body-shadow-root')
         .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
-      /*if (!els.length) {
-        els = document
-          .getElementById('last-preview-body-shadow-root')
-          .shadowRoot.querySelectorAll('[src="' + url.url + '"]')
-      }*/
       if (els && els.length) {
         for (let i = 0, l = els.length; i < l; i++) {
           let el = els[i]
@@ -1811,7 +2036,7 @@ export default {
           if (url.isHidden) {
             el.innerHTML = 'hidden by owner'
           } else {
-            el.innerHTML = url.url
+            el.innerHTML = url.name
           }
           if (url.isFlagged) {
             const el = els[i]
@@ -1847,10 +2072,10 @@ export default {
             hiddenEl.innerHTML = 'hidden by owner'
             hiddenEl.setAttribute('href', '#')
           } else {
-            hiddenEl.innerHTML = url.url
+            hiddenEl.innerHTML = url.name
             hiddenEl.setAttribute('href', url.url)
           }
-          if (url.isFalgged) {
+          if (url.isFlagged) {
             hiddenEl.classList.add('malicious-link')
             let iEl = document.createElement('span')
             iEl.className +=
@@ -1859,6 +2084,80 @@ export default {
           }
         }
       }
+    },
+
+    setShadowRootMalicousLink(id) {
+      setTimeout(() => {
+        this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
+          let urlItem = document
+            .getElementById(id)
+            .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
+          return {
+            ...item,
+            name: !!urlItem.length && urlItem[0].innerText ? urlItem[0].innerText : null
+          }
+        })
+        for (let url of this.uploadRespond.urls) {
+          let els = document
+            .getElementById(id)
+            .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+          if (els && els.length) {
+            for (let i = 0, l = els.length; i < l; i++) {
+              let el = els[i]
+              el.setAttribute('target', '_blank')
+              if (url.isHidden) {
+                el.innerHTML = 'hidden by owner'
+              } else {
+                el.innerHTML = url.name
+              }
+              if (url.isFlagged) {
+                const el = els[i]
+                el.setAttribute('target', '_blank')
+                el.setAttribute('data-title', 'This link has been reported as a phishing')
+                /*if (!a.IsShow) {
+                    if (!el.hasChildNodes()) {
+                      el.innerHTML = 'hidden by owner'
+                    } else {
+                      el.lastChild.innerHTML = 'hidden by owner'
+                    }
+                    el.setAttribute('href', '#')
+                  }*/
+                //if (a) {
+                el.classList.add('malicious-style')
+                const iEl = document.createElement('i')
+                iEl.className +=
+                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                el.appendChild(iEl)
+                // }
+              } else {
+                const el = els[i]
+                el.classList.remove('malicious-style')
+              }
+            }
+          }
+          let hiddenEls = document.getElementsByClassName(url.url)
+          if (hiddenEls && hiddenEls.length) {
+            for (let i = 0, l = hiddenEls.length; i < l; i++) {
+              let hiddenEl = hiddenEls[i]
+              hiddenEl.setAttribute('target', '_blank')
+              if (url.isHidden) {
+                hiddenEl.innerHTML = 'hidden by owner'
+                hiddenEl.setAttribute('href', '#')
+              } else {
+                hiddenEl.innerHTML = url.name
+                hiddenEl.setAttribute('href', url.url)
+              }
+              if (url.isFlagged) {
+                hiddenEl.classList.add('malicious-link')
+                let iEl = document.createElement('span')
+                iEl.className +=
+                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                hiddenEl.appendChild(iEl)
+              }
+            }
+          }
+        }
+      }, 150)
     },
     allUrlsValChange(val) {
       this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
@@ -1873,15 +2172,35 @@ export default {
       })
     },
     headerValChange(val) {
+      this.uploadRespond.isSubjectHidden = val
       this.uploadRespond.isFromHidden = val
       this.uploadRespond.isToHidden = val
       this.uploadRespond.isCcHidden = val
       this.uploadRespond.isBccHidden = val
     },
-    fromValChange(val) {},
-    toValChange(val) {},
-    ccValChange(val) {},
-    bccValChange(val) {},
+    checkAllHeaderCheck() {
+      this.allHeader =
+        (!this.uploadRespond.subject || this.uploadRespond.isSubjectHidden) &&
+        (!this.uploadRespond.from || this.uploadRespond.isFromHidden) &&
+        (!this.uploadRespond.to.length || this.uploadRespond.isToHidden) &&
+        (!this.uploadRespond.cc.length || this.uploadRespond.isCcHidden) &&
+        (!this.uploadRespond.bcc.length || this.uploadRespond.isBccHidden)
+    },
+    subjectValChange(val) {
+      this.checkAllHeaderCheck()
+    },
+    fromValChange(val) {
+      this.checkAllHeaderCheck()
+    },
+    toValChange(val) {
+      this.checkAllHeaderCheck()
+    },
+    ccValChange(val) {
+      this.checkAllHeaderCheck()
+    },
+    bccValChange(val) {
+      this.checkAllHeaderCheck()
+    },
     getListThreatCategories() {
       listThreatCategories()
         .then((response) => {
@@ -1908,6 +2227,7 @@ export default {
             this.selectedEmail = response.data.data.from
             this.uploadRespond = response.data.data
             this.uploadRespond.body = unescape(response.data.data.body)
+            this.setShadowRootMalicousLink('incident-preview-1')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -1930,7 +2250,7 @@ export default {
       })
     },
     getSelectedEmailPreview(selectedItem) {
-      let _this = this
+      const _this = this
       if (_this.editItem) {
         getCommunityPost(_this.editItem.communityPostResourceId)
           .then((response) => {
@@ -1956,6 +2276,7 @@ export default {
             if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = []
             if (!_this.uploadRespond.cc) _this.uploadRespond.cc = []
             if (!_this.uploadRespond.to) _this.uploadRespond.to = []
+            this.setShadowRootMalicousLink('incident-preview-1')
             //this.listData = data.data.results
           })
           .catch((error) => {
@@ -1968,7 +2289,8 @@ export default {
         getSelectedEmailPreview(selectedItem.resourceId)
           .then((response) => {
             const { data } = response
-            _this.uploadRespond = data.data
+            this.uploadRespond = data.data
+            // this.setShadowRootMalicousLink('incident-preview-1')
             //this.listData = data.data.results
           })
           .catch((error) => {
@@ -2014,20 +2336,20 @@ export default {
         return false
       } else {
         this.step++
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
       }
     },
     onBeforeLastStep() {
-      /*if (!this.allFiltersClosed()) {
-        this.createInc.createUser = this.$store.state.auth.user.fullName
-        this.createInc.createCompany = this.$store.state.auth.user.currentCompany.name
-        this.createInc.onPreview = true
-        this.step++
-        const refThis = this
-        setTimeout(function () {
-          refThis.previewHideShow()
-        }, 0)
-      }*/
       this.step++
+      this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+    },
+    onPreviousButtonClick() {
+      this.step = this.step - 1
+      if (this.step == 4) {
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      } else if (this.step == 1) {
+        this.setShadowRootMalicousLink('incident-preview-1')
+      }
     },
     onFinish() {
       //CommunityResourceId: this.$route.params.id,

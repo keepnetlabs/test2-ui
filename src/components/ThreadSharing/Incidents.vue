@@ -230,20 +230,6 @@ export default {
     }
   }
 
-  .v-tab {
-    padding: 0 3px !important;
-    font-size: 20px;
-    font-weight: 400;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    text-transform: none;
-    color: rgba(0, 0, 0, 0.87);
-    min-width: min-content !important;
-    text-align: left !important;
-  }
-
   .v-cart-icon-wrapper {
     width: 48px;
     height: 48px;
