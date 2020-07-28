@@ -702,7 +702,7 @@
                   >
                     <span class="d-flex align-center">
                       <span style="text-overflow: ellipsis; overflow: hidden;">{{
-                        scope.row.emailLastAction.status
+                        getInboxStatus(scope.row.emailLastAction.status)
                       }}</span>
                       <span class="ml-2">
                         <v-tooltip bottom content-class="investigation-details__tooltip">
@@ -769,6 +769,7 @@ import { getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstant
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
+import { getDataTableFieldLabel } from '../utils/functions'
 export default {
   components: {
     Datatable,
@@ -1083,6 +1084,9 @@ export default {
           break
       }
       return retValue
+    },
+    getInboxStatus(status) {
+      return getDataTableFieldLabel(status)
     },
     getIconName(status) {
       let retValue

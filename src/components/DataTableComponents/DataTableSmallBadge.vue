@@ -120,6 +120,8 @@ export default {
 <style lang="scss">
 .small-badge {
   &__container {
+    text-overflow: ellipsis;
+    overflow: hidden;
     .k-badge {
       margin-right: 5px;
     }

@@ -1269,9 +1269,7 @@ export default {
             this.callForSearchNotifiedMail()
             this.$store.dispatch('investigations/getIrSummary')
           })
-          .catch((error) => {
-            console.log('error.response', error.response)
-          })
+          .catch((error) => {})
       })
     },
     irDetailsOnClick(row) {

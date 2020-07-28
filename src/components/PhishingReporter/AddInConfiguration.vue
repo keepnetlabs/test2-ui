@@ -156,7 +156,7 @@ export default {
       addingSettings: {},
       emailSettings: {},
       otherSettings: {},
-      showModal: true,
+      showModal: false,
       outlookSpinnerStatus: false,
       diagnosticToolSpinnerStatus: false
     }

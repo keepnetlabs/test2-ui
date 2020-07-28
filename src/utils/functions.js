@@ -126,7 +126,11 @@ export function getDataTableFieldLabel(field) {
     case 'verylow':
       return 'Very Low'
     case 'completedwitherror':
-      return 'Completed With Error'
+      return 'Completed with error'
+    case 'itemnotfound':
+      return 'Item not found'
+    case 'n/a':
+      return 'N/A'
     default:
       return field.substring(0, 1).toUpperCase() + field.substring(1, field.length)
   }

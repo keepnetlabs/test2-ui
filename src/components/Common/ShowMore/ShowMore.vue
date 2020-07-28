@@ -163,6 +163,8 @@ export default {
   &__hidden {
     &.v-chip {
       max-width: 300px !important;
+    }
+    .v-chip__content {
       white-space: nowrap !important;
       padding-right: 3.5px !important;
     }
