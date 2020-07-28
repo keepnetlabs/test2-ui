@@ -73,7 +73,27 @@
           :default-time="['12:00:00']"
         />
       </template>
-      <template v-if="filterableType === 'select'"></template>
+      <template v-if="filterableType === 'select'">
+        <div>
+          <v-text-field
+            placeholder="Search"
+            class="filter__text"
+            outlined
+            dense
+            v-model="filterValue"
+            height="40"
+            style="margin-top: 1px;"
+          ></v-text-field>
+        </div>
+        <v-checkbox
+          v-for="item in searchInItems"
+          :key="item"
+          v-model="filterChecked"
+          :value="item"
+          :label="item"
+        >
+        </v-checkbox>
+      </template>
       <div class="filter__footer">
         <v-btn text class="filter__footer-button" color="#f56c6c">
           Clear
@@ -96,17 +116,23 @@ export default {
     filterableType: {
       type: String
     },
+    filterableItems: {
+      type: Array,
+      default: () => []
+    },
     index: {
       type: Number
     }
   },
   data() {
     return {
+      a: [],
       filteredSelectValue: 'Starts With',
       filteredSelectValueNum: 'Equal',
       filteredSelectValueDate: 'Before',
       filteredDateValue: null,
       filterValue: '',
+      filterChecked: [],
       textFilterItems: ['Starts With', 'Contains', 'Equal', 'Not Equal'],
       numericFilterItems: [
         'Equal',
@@ -152,8 +178,14 @@ export default {
   },
   mounted() {
     this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
+    this.a = this.filterableItems
   },
   methods: {
+    asearchInItems() {
+      return this.filterValue.length > 0
+        ? this.filterableItems.filter((item) => item.startsWith(this.filterValue))
+        : this.filterableItems
+    },
     changeDateSelect(val) {
       this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
     },
@@ -179,6 +211,20 @@ export default {
           Operator: this.filteredSelectValueDate
         })
       }
+      if (this.filterableType === 'select') {
+        this.$emit('handleFilterColumn', {
+          value: this.filterChecked,
+          FieldName: this.column.property,
+          Operator: 'Equal'
+        })
+      }
+    }
+  },
+  computed: {
+    searchInItems: function () {
+      return this.filterValue.length > 0
+        ? this.filterableItems.filter((item) => item.startsWith(this.filterValue))
+        : this.filterableItems
     }
   }
 }

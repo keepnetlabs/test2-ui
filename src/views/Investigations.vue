@@ -149,7 +149,9 @@ export default {
         show: true,
         type: 'status',
         isEditable: true,
-        width: 200
+        width: 200,
+        filterableType: 'select',
+        filterableItems: ['running', 'cancelled', 'expired', 'completed']
         //minWidth: 80
       },
       {

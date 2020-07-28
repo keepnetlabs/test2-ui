@@ -523,6 +523,7 @@
                 <data-table-filter
                   :column="column"
                   :filterableType="col.filterableType"
+                  :filterableItems="col.filterableItems"
                   :index="$index"
                   @handleFilterColumn="handleFilterColumn"
                 />
