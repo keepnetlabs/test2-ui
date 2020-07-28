@@ -322,7 +322,7 @@
               <router-link
                 :to="`/threat-sharing?detailsId=${communityId}`"
                 v-if="communityId"
-                class="page-header__title-link"
+                class="page-header__title-link text-decoration-none"
                 >{{ communityName || $route.params.name }}</router-link
               ><span v-else>{{ communityName || $route.params.name }}</span>
             </h1>

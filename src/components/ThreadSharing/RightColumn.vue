@@ -409,20 +409,22 @@ export default {
     },
     getMyLastPosts() {
       getMyLastPosts().then((response) => {
-        this.yourPosts = response.data.data
+        this.yourPosts = response.data.data.slice(0, 3)
       })
     },
     getMyTopPosts() {
       getMyTopPosts().then((response) => {
-        this.topPosts = response.data.data
+        this.topPosts = response.data.data.slice(0, 3)
       })
     },
     getsuggestedCommunities() {
       getsuggestedCommunities().then((response) => {
         this.suggestedCommunities = response.data.data
-        this.suggestedCommunities = this.suggestedCommunities.map((item) => {
-          return { ...item, isJoined: false }
-        })
+        this.suggestedCommunities = this.suggestedCommunities
+          .map((item) => {
+            return { ...item, isJoined: false }
+          })
+          .slice(0, 3)
       })
     },
     closeCommunityInfo() {

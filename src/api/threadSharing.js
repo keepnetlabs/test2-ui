@@ -232,3 +232,7 @@ export function refuseInvitation(id) {
 export function getInvitationCount() {
   return testRequest.get(`communities/my-invitations-count`, {})
 }
+
+export function cancelRequest(id) {
+  return testRequest.put(`/communities/membershiprequest/${id}/cancel`)
+}

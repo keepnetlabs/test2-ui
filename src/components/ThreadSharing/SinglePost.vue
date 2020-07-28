@@ -203,7 +203,7 @@
                   </v-list-item>
                   <v-list-item
                     style="cursor: not-allowed;"
-                    v-if="$route.name == 'Community'"
+                    v-if="false"
                     :id="'share-btn' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -1020,6 +1020,7 @@ import {
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { getNotifiedEmail } from '../../api/notifiedEmail'
+import { isOwner, isPostedByMe } from '../../utils/functions'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1386,29 +1387,11 @@ export default {
     regexChar(val) {
       return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
     },
-    canDelete(postId) {
-      /*if (
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
-        localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
-        this.getSelectedCompany.companyId === compId
-      ) {
-        return true
-      } else {
-        return false
-      }*/
-      return true
+    canDelete(post) {
+      return isOwner(post.myMembershipStatusId) && isPostedByMe(post.isPostedByMe)
     },
-    canEdit(compId) {
-      /* if (
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId ||
-        localStorage.getItem('companyId') === localStorage.getItem('communityCompanyId') ||
-        this.getSelectedCompany.companyId === compId
-      ) {
-        return true
-      } else {
-        return false
-      }*/
-      return true
+    canEdit(post) {
+      return isOwner(post.myMembershipStatusId) && isPostedByMe(post.isPostedByMe)
     },
     maliciousFound() {
       return this.shareSettings.attachments.some((at) => at.IsMalicious === true)
