@@ -157,7 +157,7 @@ export default {
     }
   },
   mounted() {
-    this.filteredDateValue = Date.now()
+    this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
   },
   methods: {
     handleFilter() {
@@ -228,6 +228,11 @@ export default {
     border-radius: 8px;
     border: solid 1px rgba(0, 0, 0, 0.16);
     background-color: #ffffff;
+  }
+
+  &__footer {
+    background: #fff;
+    padding: 10px 0;
   }
 }
 ::v-deep {
