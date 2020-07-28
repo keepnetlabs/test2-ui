@@ -49,7 +49,6 @@ const investigations = {
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
       let data = payload.data
-      console.log('detailsList', data)
       state.getInvestigationDetailsListData = data
     },
     SET_INVESTIGATIONLISTEMPY(state, payload) {

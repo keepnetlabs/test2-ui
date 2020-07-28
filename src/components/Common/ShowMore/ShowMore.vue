@@ -4,7 +4,7 @@
       <template v-for="index in renderedBadgeCount" v-if="renderedBadgeCount > 0 && status === 0">
         <v-chip
           v-for="(value, key) in computedData[index - 1]"
-          class="show-more__hidden"
+          :class="[unRenderedBadgeCount !== 0 && 'show-more__hidden']"
           :key="value + key"
           v-if="value && key !== 'resourceId'"
           >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
@@ -79,12 +79,27 @@ export default {
         Math.floor(
           this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
         ) || 0
-      const averageChipWidth = 250
-      this.renderedBadgeCount = Math.floor(containerWidth / averageChipWidth)
-      this.unRenderedBadgeCount =
-        this.computedData.length - this.renderedBadgeCount < 0
-          ? 0
-          : this.computedData.length - this.renderedBadgeCount
+      let averageChipWidth = 0
+      if (this.computedData.length > 0) {
+        averageChipWidth =
+          this.computedData.reduce((acc, item, index) => {
+            let width = 0
+            const keys = Object.keys(item)
+            for (let key of keys) {
+              width += key.length * 9 + item[key].length * 9
+            }
+            if (width > 300) {
+              width = 300
+            }
+            acc += width
+            return acc
+          }, 0) / this.computedData.length
+        this.renderedBadgeCount = Math.floor(containerWidth / averageChipWidth)
+        this.unRenderedBadgeCount =
+          this.computedData.length - this.renderedBadgeCount < 0
+            ? 0
+            : this.computedData.length - this.renderedBadgeCount
+      }
     },
     produceData() {
       this.computedData = this.data.reduce((acc, item) => {

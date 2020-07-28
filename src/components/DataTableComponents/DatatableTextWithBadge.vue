@@ -2,14 +2,16 @@
   <div class="data-table-text-with-badge">
     <div
       v-if="scope.row && scope.row[col.property]"
-      class="small-badge__container"
+      class="small-badge__container data-table-text-with-badge__container"
       :style="[
-        maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0 ? { textAlign: 'center' } : ''
+        maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0
+          ? { justifyContent: 'center' }
+          : ''
       ]"
     >
       <v-tooltip bottom :key="getKey(index)" v-for="index in (maximumRenderedBadgeCount)">
         <template v-slot:activator="{ on }">
-          <span :listeners="on">
+          <span :listeners="on" class="data-table-text-with-badge__span">
             {{ badges[index - 1] }} {{ index !== maximumRenderedBadgeCount ? ' , ' : null }}
           </span>
         </template>
@@ -97,7 +99,6 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
-    
       if (this.badges.length > 0) {
         const textAverageWidth =
           this.badges.reduce((acc, item) => {
@@ -121,6 +122,12 @@ export default {
         }
 
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
+        if (this.maximumRenderedBadgeCount === 0) {
+          if (this.scope.column.width > 100) {
+            this.maximumRenderedBadgeCount = 1
+            this.unRenderedBadgeCount -= 1
+          }
+        }
       }
     }
   }
@@ -136,6 +143,13 @@ export default {
   &__tooltip {
     white-space: pre-line;
     line-height: 1.6;
+  }
+  &__container {
+    display: flex;
+  }
+  &__span {
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 </style>

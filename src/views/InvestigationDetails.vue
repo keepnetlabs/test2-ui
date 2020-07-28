@@ -752,7 +752,55 @@
                 @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
                 v-if="showTargetUsersDetails"
                 @downloadEvent="exportTargetUsers"
-              />
+              >
+                <template v-slot:datatable-custom-column="{ scope }">
+                  <div class="datatable-progress">
+                    <template v-if="scope.row && parseInt(scope.row.analyzedMailCount) >= 0">
+                      <span
+                        :class="[
+                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) !==
+                            1 && 'ml-1'
+                        ]"
+                        class="datatable-progress__per"
+                        >{{
+                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) ===
+                          1
+                            ? 'Completed'
+                            : Math.floor(
+                                scope.row.analyzedMailCount / scope.row.filteredMailCount
+                              ) *
+                                100 +
+                              '%'
+                        }}</span
+                      >
+                      <v-progress-linear
+                        :value="
+                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) *
+                          100
+                        "
+                        background-color="#b3d4fc"
+                        color="#2196f3"
+                        height="4"
+                        reactive
+                        rounded
+                      />
+                      <span class="datatable-progress__stats">
+                        {{ scope.row.analyzedMailCount + ' / ' + scope.row.filteredMailCount }}
+                        mails
+                      </span>
+                    </template>
+                    <span v-else>
+                      <v-progress-linear
+                        :value="0"
+                        background-color="#e0e0e0"
+                        color="#2196f3"
+                        height="4"
+                        reactive
+                        rounded
+                    /></span>
+                  </div>
+                </template>
+              </datatable>
             </div>
           </div>
         </div>
@@ -964,6 +1012,15 @@ export default {
         sortable: true,
         show: true,
         type: 'service'
+      },
+      {
+        property: 'analyzedMailCount',
+        align: 'center',
+        label: 'Progress',
+        fixed: false,
+        sortable: false,
+        show: true,
+        type: 'slot'
       }
     ],
     pageSizes: [5, 10, 25, 50, 100],
