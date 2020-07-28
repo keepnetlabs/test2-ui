@@ -61,14 +61,14 @@
           v-if="filteredSelectValueDate !== 'Between'"
           v-model="filteredDateValue"
           type="datetime"
-          style="width: 100%; max-width: 232px; margin-bottom: 7px;"
+          style="width: 100%; max-width: 232px; margin-bottom: 14px;"
           :default-time="['12:00:00']"
         />
         <el-date-picker
           v-if="filteredSelectValueDate === 'Between'"
           v-model="filteredDateValue"
           type="datetimerange"
-          style="margin-bottom: 7px;"
+          style="margin-bottom: 14px;"
           :default-time="['12:00:00']"
         />
       </template>
@@ -104,7 +104,7 @@ export default {
       filteredSelectValue: 'Starts With',
       filteredSelectValueNum: 'Equal',
       filteredSelectValueDate: 'Before',
-      filteredDateValue: [],
+      filteredDateValue: null,
       filterValue: '',
       textFilterItems: ['Starts With', 'Contains', 'Equal', 'Not Equal'],
       numericFilterItems: [
@@ -156,6 +156,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.filteredDateValue = Date.now()
+  },
   methods: {
     handleFilter() {
       if (this.filterableType === 'text') {
@@ -167,7 +170,7 @@ export default {
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
-          value: this.filteredSelectValueNum,
+          value: this.filterValue,
           FieldName: this.column.property,
           Operator: this.filteredSelectValueNum
         })
