@@ -2,8 +2,8 @@
   <v-menu
     :offset-y="true"
     bottom
-    min-width="232px"
-    max-width="232px"
+    min-width="260px"
+    max-width="{filteredSelectValueDate === 'Between' ? '330px' : '260px'}"
     :close-on-content-click="false"
     class="filter__container"
     v-if="filterableType"
@@ -56,12 +56,13 @@
           outlined
           required
           v-model="filteredSelectValueDate"
+          @change="changeDateSelect"
         ></v-select>
         <el-date-picker
           v-if="filteredSelectValueDate !== 'Between'"
           v-model="filteredDateValue"
           type="datetime"
-          style="width: 100%; max-width: 232px; margin-bottom: 14px;"
+          style="width: 100%; max-width: 260px; margin-bottom: 14px;"
           :default-time="['12:00:00']"
         />
         <el-date-picker
@@ -115,14 +116,7 @@ export default {
         'Less than',
         'Less than equal'
       ],
-      dateFilterItems: [
-        'Exact date',
-        'Before',
-        'After',
-        'Between',
-        'In the last',
-        'Prior the the last'
-      ],
+      dateFilterItems: ['Exact date', 'Before', 'After', 'Between'],
       pickerOptions: {
         shortcuts: [
           {
@@ -160,6 +154,9 @@ export default {
     this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
   },
   methods: {
+    changeDateSelect(val) {
+      this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
+    },
     handleFilter() {
       if (this.filterableType === 'text') {
         this.$emit('handleFilterColumn', {
