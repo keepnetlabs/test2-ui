@@ -63,9 +63,7 @@ export default {
     }
   },
   methods: {
-    handleDetails(row) {
-      console.log('row', row)
-    },
+    handleDetails(row) {},
     handleDownload(row) {}
   },
   data() {
@@ -126,7 +124,7 @@ export default {
       const {
         data: { data }
       } = response
-      console.log('data.results', data.results)
+
       this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
     })
   }

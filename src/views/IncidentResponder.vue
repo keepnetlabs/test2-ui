@@ -440,7 +440,7 @@
                 >
               </template>
               <template v-if="scope.column.property === 'status'">
-                <template v-if="scope.row.status === 'InAnalysis'">
+                <template v-if="scope.row.status === 'BeingAnalyzed'">
                   <span class="analysis-link">
                     <div>
                       In Analysis..
@@ -819,7 +819,7 @@ export default {
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
-              if (row.status === 'InAnalysis') {
+              if (row.status === 'BeingAnalyzed') {
                 return true
               } else {
                 return false
@@ -851,7 +851,7 @@ export default {
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
-              if (row.status === 'InAnalysis') {
+              if (row.status === 'BeingAnalyzed') {
                 return true
               } else {
                 return false
@@ -1202,6 +1202,7 @@ export default {
           }
         } = response
         const tableData = results
+        console.log('reportedEmails', results)
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
     },

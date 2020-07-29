@@ -7,12 +7,7 @@
       title="Phishing Reporter Add-in Configuration"
     >
       <template v-slot:overlay-body>
-        <download-add-in-modal
-          :status="showModal"
-          @generateOutlookAddIn="callForGenerateOutlookAddIn"
-          @generateDiagnosticTool="callForGenerateDiagnosticTool"
-          @handleClose="handleContinue"
-        />
+        <download-add-in-modal :status="showModal" @handleClose="handleContinue" />
         <v-stepper v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
             <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"

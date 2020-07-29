@@ -626,22 +626,25 @@
                 </div>
               </div>
               <div
-                class="investigation-details__container__content--right-menu__summary__item--action-button"
-                v-if="statsAndMenuData.status === 'Running'"
+                class="investigation-details__container__content--right-menu__summary__item--action-button-container"
               >
-                <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
-                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>
-                  Stop
-                </v-btn>
-              </div>
-              <div
-                class="investigation-details__container__content--right-menu__summary__item--action-button"
-                v-if="statsAndMenuData.status !== 'Running'"
-              >
-                <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
-                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
-                  Duplicate
-                </v-btn>
+                <div
+                  class="investigation-details__container__content--right-menu__summary__item--action-button"
+                  v-if="statsAndMenuData.status === 'Running'"
+                >
+                  <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
+                    <v-icon medium left color="#2196f3">mdi-stop</v-icon>
+                    Stop
+                  </v-btn>
+                </div>
+                <div
+                  class="investigation-details__container__content--right-menu__summary__item--action-button"
+                >
+                  <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
+                    <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
+                    Duplicate
+                  </v-btn>
+                </div>
               </div>
             </div>
             <div class="investigation-details__container__content--right-menu__target-users">
@@ -2009,6 +2012,12 @@ export default {
                   line-height: 1.71;
                   letter-spacing: normal;
                   color: #2196f3;
+                }
+                &-container {
+                  display: flex;
+                  @media (max-width: 1024px) {
+                    flex-direction: column;
+                  }
                 }
               }
             }

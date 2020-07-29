@@ -75,10 +75,44 @@ export default {
   },
   methods: {
     getChips() {
-      const containerWidth =
-        Math.floor(
-          this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
-        ) || 0
+      let containerWidth = 0
+      if (this.unRenderedBadgeCount === 0) {
+        containerWidth =
+          Math.floor(
+            this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
+          ) - 50 || 0
+      } else {
+        containerWidth =
+          Math.floor(
+            this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
+          ) || 0
+      }
+
+      let renderedCount = 0
+      if (this.computedData.length > 0) {
+        for (let item of this.computedData) {
+          let width = 0
+          const keys = Object.keys(item)
+          for (let key of keys) {
+            width += key.length * 8.5 + item[key].length * 8.5 + 20
+          }
+
+          if (containerWidth > width) {
+            containerWidth -= width
+            renderedCount++
+          }
+        }
+        this.renderedBadgeCount = renderedCount
+        if (this.renderedBadgeCount > this.computedData.length) {
+          this.renderedBadgeCount = this.computedData.length
+        }
+        if (this.renderedBadgeCount < 0) {
+          this.renderedBadgeCount = 0
+        }
+        this.unRenderedBadgeCount = this.computedData.length - this.renderedBadgeCount
+      }
+
+      /*
       let averageChipWidth = 0
       if (this.computedData.length > 0) {
         averageChipWidth =
@@ -100,6 +134,8 @@ export default {
             ? 0
             : this.computedData.length - this.renderedBadgeCount
       }
+
+       */
     },
     produceData() {
       this.computedData = this.data.reduce((acc, item) => {

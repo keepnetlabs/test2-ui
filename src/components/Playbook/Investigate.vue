@@ -450,9 +450,7 @@ export default {
       }
     }
   },
-  beforeDestroy() {
-    console.log('iam destroyed')
-  },
+  beforeDestroy() {},
   data() {
     return {
       filters: ['URLs', 'Attachments'],
