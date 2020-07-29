@@ -46,5 +46,6 @@ export default {
   letter-spacing: normal;
   color: #2196f3 !important;
   text-decoration: none;
+  cursor: pointer;
 }
 </style>

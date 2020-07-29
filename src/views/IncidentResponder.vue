@@ -343,6 +343,16 @@
                     </template>
                   </app-dialog>
                 </template>
+                <template v-slot:datatable-custom-column="{ scope }">
+                  <span
+                    @click="handeRuleNameClick(scope.row.resourceId)"
+                    class="datatable-link"
+                    v-if="scope.row.ruleName"
+                  >
+                    {{ scope.row.ruleName }}
+                  </span>
+                  <span v-else> </span>
+                </template>
               </datatable>
             </div>
           </v-card>
@@ -595,9 +605,7 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
-          type: 'link',
-          href: '/playbook',
-          hrefKey: 'resourceId',
+          type: 'slot',
           minWidth: '40'
         },
         {
@@ -1045,6 +1053,10 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handeRuleNameClick(resourceId) {
+      this.selectedPlaybookId = resourceId
+      this.showPlaybookModal = true
+    },
     togglePlaybookModal() {
       this.selectedPlaybookId = null
       return (this.showPlaybookModal = !this.showPlaybookModal)
@@ -1177,7 +1189,7 @@ export default {
           const {
             data: { data, status }
           } = response
-
+          console.log('refTopRules', data)
           this.$refs.refTopRules.loadWithDataArray(data || [])
         })
         .catch((error) => {

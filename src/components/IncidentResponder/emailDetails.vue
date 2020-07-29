@@ -137,7 +137,7 @@
                     :selectable="false"
                     :filterable="true"
                     :options="true"
-                    :empty="iEmpty"
+                    :empty="headersTable.iEmpty"
                     :selectEvent="selectEvent"
                     :sizeable="true"
                     :isDownloadable="true"
@@ -403,7 +403,7 @@
               </v-expansion-panel>
             </v-expansion-panels>
             <div class="empty-attachment" v-if="!mailDetails.attachments.length">
-              <h2>No Attachment</h2>
+              <h2>No Attachment to display</h2>
             </div>
           </v-tab-item>
         </v-tabs-items>
@@ -552,6 +552,9 @@ export default {
     downloadModalStatus: false,
     headersTable: {
       data: [],
+      iEmpty: {
+        message: 'No Header to display'
+      },
       columns: [
         {
           property: 'key',
@@ -634,7 +637,7 @@ export default {
     },
     pageSizes: [5, 10, 25, 50, 100],
     iEmpty: {
-      message: 'No Data'
+      message: 'No URL to display'
     },
     selectEvent: {
       clipboard: true,

@@ -1,5 +1,13 @@
 <template>
-  <div class="settings-popup edit-popup" :style="[editMode && containerStyle]">
+  <div
+    class="settings-popup edit-popup"
+    :style="[
+      containerStyle,
+      editMode && {
+        top: getTop()
+      }
+    ]"
+  >
     <div class="inline-wrapper" v-if="options && options.length">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
@@ -556,6 +564,14 @@ export default {
         }
         return value
       }
+    },
+    getTop() {
+      const a = this.containerStyle.top
+        ? Number(this.containerStyle.top.substring(0, this.containerStyle.top.indexOf('p'))) -
+          120 +
+          'px'
+        : false
+      return a
     },
     getMultipleComboValue(prop) {
       return prop ? prop : []

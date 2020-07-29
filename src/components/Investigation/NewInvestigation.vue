@@ -164,7 +164,7 @@
               <v-list-item-content class>
                 <label class="edit-labels">Email Date Range</label>
                 <label class="edit-sub-labels">Select range of emails’ sending date</label>
-                <div class="date-row">
+                <div class="date-row" :class="[!isDateValid && 'date-picker-container']">
                   <el-date-picker
                     v-model="date"
                     type="datetimerange"
@@ -2993,6 +2993,11 @@ export default {
 
   100% {
     transform: translate(0, 0);
+  }
+}
+.date-picker-container {
+  .el-date-editor {
+    border: 1px solid #ff5252 !important;
   }
 }
 </style>

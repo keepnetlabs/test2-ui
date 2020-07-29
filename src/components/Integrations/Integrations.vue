@@ -203,7 +203,7 @@ export default {
       modalStatus: false,
       bodyData: {
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 5000,
         orderBy: 'createDate',
         ascending: false
       }
@@ -314,9 +314,12 @@ export default {
             data: { data, status }
           } = response
           this.tableData = data.results || []
+          /*
           this.bodyData.pageNumber = data.pageNumber
           this.bodyData.pageSize = data.pageSize
+          console.log('this.bodyData', this.bodyData)
           this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
+           */
           this.$refs.refIntegrationsList.loadWithDataArray(data.results || [], this.bodyData)
         })
         .catch((error) => {})

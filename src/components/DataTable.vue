@@ -544,7 +544,12 @@
                   <template v-if="rowActions[0].action === 'edit'">
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
+                        <v-btn
+                          @click="handleEdit(scope.row, scope.$index)"
+                          class="btn-hover"
+                          icon
+                          v-on="on"
+                        >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
                       </template>
@@ -907,9 +912,7 @@ export default {
       type: Boolean,
       default: false
     },
-    extendedViewStyle: {
-      type: Object
-    },
+
     showHeader: {
       type: Boolean,
       default: true
@@ -937,6 +940,7 @@ export default {
       tableData: [],
       rowCount: 10,
       totalCount: 100,
+      extendedViewStyle: null,
       currentPage: 1,
       multipleSelection: [],
       selectionCheckbox: false,
@@ -1428,7 +1432,13 @@ export default {
 
       navigator.clipboard.writeText(text)
     },
-    handleEdit(selections) {
+    handleEdit(selections, index) {
+      if (index > -1) {
+        this.extendedViewStyle = {
+          top: `${index * 48}px`
+        }
+        console.log('this.extendedViewStyle', this.extendedViewStyle)
+      }
       if (typeof selections === 'object' && !this.multipleSelection.length) {
         this.multipleSelection.push(selections)
       }

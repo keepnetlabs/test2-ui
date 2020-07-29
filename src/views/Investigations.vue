@@ -75,7 +75,7 @@
             v-else
             :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
             v-for="item in scope.row.matchingPlaybooks"
-            class="incident-wrapper__link"
+            class="popup-link"
             >{{ item.name }}</router-link
           >
         </template>

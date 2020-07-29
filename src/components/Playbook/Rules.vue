@@ -32,7 +32,51 @@
         </div>
       </template>
     </app-dialog>
-
+    <app-dialog
+      :status="showMatchingModal"
+      icon="mdi-email"
+      title="Matching Incidents"
+      v-if="showMatchingModal"
+      :subtitle="getSelectedMatchingIncidentsSubtitle"
+      @changeStatus="showMatchingModal = false"
+      size="maximum"
+      class-name="matching-modal"
+    >
+      <template v-slot:app-dialog-body>
+        <v-card light>
+          <v-list-item class="matching-modal__list-item">
+            <v-list-item-content>
+              <datatable
+                :refName="'matchingInvestigationPlaybookRules'"
+                ref="refmatchingInvestigationPlaybookRules"
+                :columns="matchingInvestigationPlaybookRules.columns"
+                :countRow="5"
+                :pageSizes="[5, 10, 20, 50, 100]"
+                :showHeader="true"
+                :defaultSort="'subject'"
+                :selectable="false"
+                :filterable="true"
+                :options="true"
+                :rowActions="[]"
+                :cell-padding="15"
+                :empty="matchingInvestigationPlaybookRules.iEmpty"
+              />
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex" style="justify-content: flex-end;">
+          <v-btn
+            class="pa-0 k-dialog__button"
+            text
+            color="#2196f3"
+            @click="showMatchingModal = false"
+            >CLOSE
+          </v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <datatable
       ref="refRulesList"
       :refName="'rulesListTable'"
@@ -61,51 +105,6 @@
         <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
           {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
         </span>
-        <app-dialog
-          :status="scope.row.resourceId === selectedMatch.resourceId"
-          icon="mdi-email"
-          title="Matching Incidents"
-          v-if="showMatchingModal"
-          :subtitle="getSelectedMatchingIncidentsSubtitle"
-          @changeStatus="showMatchingModal = false"
-          size="maximum"
-          class-name="matching-modal"
-        >
-          <template v-slot:app-dialog-body>
-            <v-card light>
-              <v-list-item class="matching-modal__list-item">
-                <v-list-item-content>
-                  <datatable
-                    :refName="'matchingInvestigationPlaybookRules'"
-                    ref="refmatchingInvestigationPlaybookRules"
-                    :columns="matchingInvestigationPlaybookRules.columns"
-                    :countRow="5"
-                    :pageSizes="[5, 10, 20, 50, 100]"
-                    :showHeader="true"
-                    :defaultSort="'subject'"
-                    :selectable="false"
-                    :filterable="true"
-                    :options="true"
-                    :rowActions="[]"
-                    :cell-padding="15"
-                    :empty="matchingInvestigationPlaybookRules.iEmpty"
-                  />
-                </v-list-item-content>
-              </v-list-item>
-            </v-card>
-          </template>
-          <template v-slot:app-dialog-footer>
-            <div class="d-flex" style="justify-content: flex-end;">
-              <v-btn
-                class="pa-0 k-dialog__button"
-                text
-                color="#2196f3"
-                @click="showMatchingModal = false"
-                >CLOSE
-              </v-btn>
-            </div>
-          </template>
-        </app-dialog>
       </template>
     </datatable>
 
@@ -339,6 +338,9 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    getStatus(row) {
+      return JSON.stringify(row.resourceId) === JSON.stringify(this.selectedMatch.resourceId)
+    },
     toggleRuleModal() {
       this.selectedPlaybookId = null
       return (this.showRuleModal = !this.showRuleModal)
@@ -355,6 +357,7 @@ export default {
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
+      console.log('this', this.selectedMatch)
       this.showMatchingModal = true
       const payload = {
         pageNumber: 1,
