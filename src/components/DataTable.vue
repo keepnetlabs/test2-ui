@@ -526,6 +526,7 @@
                   :filterableItems="col.filterableItems"
                   :index="$index"
                   @handleFilterColumn="handleFilterColumn"
+                  @handleClearColumnFilter="handleClearColumnFilter"
                 />
               </template>
             </el-table-column>
@@ -1492,6 +1493,9 @@ export default {
     handleFilterColumn(filterObj) {
       const { column, filterValue, filteredSelectValue } = filterObj
       this.$emit('columnFilterChanged', filterObj)
+    },
+    handleClearColumnFilter(fieldName) {
+      this.$emit('columnFilterCleared', fieldName)
     }
   }
 }
