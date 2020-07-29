@@ -26,7 +26,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="isWantToDelete = false"
@@ -57,7 +57,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="isWantToToLeaveFromCommunity = false"
@@ -70,7 +70,7 @@
               text
               color="#2196f3"
               @click="leaveFromCommunityConfirm"
-              >Delete
+              >LEAVE
             </v-btn>
           </div>
         </div>
@@ -190,7 +190,7 @@
       icon="mdi-exit-to-app"
       title="Cancel Request?"
       :subtitle="cancelRequestCommunityName"
-      :body="`You are cancelling your request to ${cancelRequestCommunityName}`"
+      :body="`You are cancelling your join request to the ${cancelRequestCommunityName}`"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -627,9 +627,16 @@ export default {
       })
     },
     getInvitationCount() {
-      getInvitationCount().then((response) => {
-        this.invitationsCount = response.data.data.count
-      })
+      getInvitationCount()
+        .then((response) => {
+          this.invitationsCount = response.data.data.count
+        })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.invitationsCount = []
+          }
+        })
       /*
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
@@ -750,10 +757,17 @@ export default {
           ]
         }
       }
-      getAllCommunityList(payload).then((response) => {
-        const { data } = response
-        this.listData = data.data.results
-      })
+      getAllCommunityList(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.listData = []
+          }
+        })
     },
     getMyCommunitiesListData() {
       this.listData = []
@@ -784,15 +798,22 @@ export default {
           ]
         }
       }
-      getMyCommunityList(payload).then((response) => {
-        const { data } = response
-        this.listData = data.data.results
-      })
+      getMyCommunityList(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.listData = []
+          }
+        })
     },
     communityDetails(item) {
       if (isOwnerOrMember(item.membershipStatusId)) {
         localStorage.setItem('communityName', item.communityName)
         localStorage.setItem('communityResourceIdForRedirect', item.communityResourceId)
+        localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
         this.$router.push({
           name: `Community`,
           params: { id: item.communityResourceId, item: item }

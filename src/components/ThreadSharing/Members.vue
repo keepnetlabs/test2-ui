@@ -11,7 +11,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="showAppointANewOwnerModal = false"
@@ -42,7 +42,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="showRemoveFromCommunityModal = false"
@@ -144,7 +144,7 @@
                           </v-btn>
                         </template>
                         <div class="notification-wrapper">
-                          <v-list dense flat>
+                          <v-list dense flat class="notification-wrapper__v-list">
                             <v-list-item-group color="primary">
                               <v-list-item>
                                 <v-list-item-icon>
@@ -154,7 +154,10 @@
                                   <v-list-item-title>See posted incidents</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
-                              <v-list-item @click="appointANewOwner(member)">
+                              <v-list-item
+                                @click="appointANewOwner(member)"
+                                v-if="!isOwnCompany(member) && isCommunityOwner()"
+                              >
                                 <v-list-item-icon>
                                   <v-icon>mdi-account-multiple-plus</v-icon>
                                 </v-list-item-icon>
@@ -162,7 +165,10 @@
                                   <v-list-item-title>Assign as owner</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
-                              <v-list-item @click="removeFromCommunity(member)">
+                              <v-list-item
+                                @click="removeFromCommunity(member)"
+                                v-if="!isOwnCompany(member) && isCommunityOwner()"
+                              >
                                 <v-list-item-icon>
                                   <v-icon>mdi-delete</v-icon>
                                 </v-list-item-icon>
@@ -441,6 +447,12 @@ export default {
     }
   },
   methods: {
+    isCommunityOwner() {
+      return localStorage.getItem('isCommunityOwner') === 'owner'
+    },
+    isOwnCompany(item) {
+      return item.membershipStatusId == 1
+    },
     appointANewOwner(item) {
       this.appointNewOwnerId = item.companyResourceId
       this.appointUserName = item.companyName
@@ -556,10 +568,17 @@ export default {
           ]
         }
       }
-      getCommunityMembers(this.$route.params.id, payload).then((response) => {
-        const { data } = response
-        this.members = data.data.results
-      })
+      getCommunityMembers(this.$route.params.id, payload)
+        .then((response) => {
+          const { data } = response
+          this.members = data.data.results
+        })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.members = []
+          }
+        })
     },
     getRequestMembers() {
       if (
@@ -593,7 +612,12 @@ export default {
             const { data } = response
             this.requestMembers = data.data.results
           })
-          .catch((error) => {})
+
+          .catch((error) => {
+            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              this.requestMembers = []
+            }
+          })
       }
     }
   },
@@ -732,22 +756,21 @@ export default {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      margin-bottom: 20px !important;
     }
 
     .community-sub-info {
       display: flex;
       flex-direction: row;
-      padding-top: 5px;
-
       @media only screen and (max-width: 750px) {
         flex-direction: column;
         padding-left: 13px;
-
         .pl-4 {
           padding-left: 0 !important;
         }
       }
-
+      position: absolute;
+      top: 40px;
       > div {
         width: auto;
       }

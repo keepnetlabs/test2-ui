@@ -948,54 +948,7 @@
     padding-top: 24px;
   }
 
-  .malicious-style {
-    //edit
-    color: #bb2a45 !important;
-    border-bottom: 1px solid #bb2a45 !important;
-    border-color: #bb2a45 !important;
-    background-color: #f3e1e5 !important;
-    font-size: 12px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.33;
-    letter-spacing: normal;
-    color: rgba(255, 255, 255, 0.87) !important;
-  }
 
-  .malicious-icon {
-    font-size: 18px !important;
-    color: #bb2a45 !important;
-    caret-color: #bb2a45 !important;
-
-  }
-
-  .red-malicious-alert {
-    border: unset !important;
-    border-color: transparent !important;
-    border-bottom-color: transparent !important;
-    border-image: none !important;
-    border-image-width: 0 !important;
-    color: #bb2a45 !important;
-    caret-color: #bb2a45 !important;
-    text-decoration: unset !important;
-    text-decoration-color: transparent !important;
-    font-size: 18px !important;
-    margin-top: -2px;
-    padding-right: 3px;
-    height: 16px !important;
-    overflow: hidden;
-  }
-
-  .red-malicious-alert::before {
-    border: unset !important;
-  }
-
-  .malicious-style {
-    .red-malicious-alert:not(:first-child) {
-      display: none !important;
-    }
-  }
   .user-wrapper {
     width: 100%;
     height: auto;

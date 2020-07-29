@@ -19,7 +19,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="isWantToDelete = false"
@@ -176,7 +176,7 @@
               :id="'notifications' + post.communityPostResourceId"
               class="notification-wrapper-single-post"
             >
-              <v-list dense flat>
+              <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
                   <v-list-item
                     :id="'edit-btn' + post.communityPostResourceId"
@@ -676,7 +676,9 @@
                   <template v-slot:activator="{ on }">
                     <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
                   </template>
-                  <span>The subject has been reported as a threat source</span>
+                  <span class="malicious-tooltip--span"
+                    >The subject has been reported as a threat source</span
+                  >
                 </v-tooltip>
               </h2>
               <h2
@@ -690,7 +692,9 @@
                   <template v-slot:activator="{ on }">
                     <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
                   </template>
-                  <span>This email address has been reported as a threat source</span>
+                  <span class="malicious-tooltip--span"
+                    >This email address has been reported as a threat source</span
+                  >
                 </v-tooltip>
               </h2>
               <div class="header-info pb-5">
@@ -704,7 +708,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                   <br />
                 </div>
@@ -718,7 +724,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -733,7 +741,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -748,7 +758,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -763,7 +775,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div v-if="emailData && emailData.cc && emailData.isCcHidden">
@@ -776,7 +790,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -793,7 +809,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div v-if="emailData && emailData.bcc && emailData.isBccHidden">
@@ -806,7 +824,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div id="details-post-date" v-if="emailData.sentTime">
@@ -1030,16 +1050,16 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
 [data-title]:hover:after {
+    visibility: visible;
     opacity: 1;
     transition: all 0.1s ease 0.5s;
-    visibility: visible;
 }
 [data-title]:after {
     content: attr(data-title);
     position: absolute;
-        padding: 5px 16px 5px 16px;
-    bottom: -30px;
-    left: 100%;
+    padding: 8px 16px 8px 16px;
+    bottom: -40px;
+    left: 0;
     white-space: nowrap;
     opacity: 0;
     z-index: 99999;
@@ -1058,13 +1078,6 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
    color: #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
-    font-size: 12px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.33;
-  letter-spacing: normal;
-      color: rgba(255, 255, 255, 0.87) !important;
 }
 
 .malicious-icon {

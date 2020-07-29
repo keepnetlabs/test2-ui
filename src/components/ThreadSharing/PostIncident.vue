@@ -1722,11 +1722,11 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     visibility: visible;
 }
 [data-title]:after {
-    content: attr(data-title);
+     content: attr(data-title);
     position: absolute;
-        padding: 5px 16px 5px 16px;
-    bottom: -30px;
-    left: 100%;
+    padding: 8px 16px 8px 16px;
+    bottom: -40px;
+    left: 0;
     white-space: nowrap;
     opacity: 0;
     z-index: 99999;
@@ -3373,14 +3373,6 @@ export default {
     max-height: 500px;
     overflow: auto;
 
-    .malicious-style {
-      //edit
-      color: #bb2a45 !important;
-      border-bottom: 1px solid #bb2a45 !important;
-      border-color: #bb2a45 !important;
-      background-color: #f3e1e5 !important;
-    }
-
     h2 {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
@@ -4704,11 +4696,6 @@ input[type=file]::-webkit-file-upload-button {
 }
 .malicious-style,
 .malicious-link {
-  border-bottom: 1px solid #bb2a45 !important;
-  border-color: #bb2a45 !important;
-  background-color: #f3e1e5 !important;
-  color: #bb2a45 !important;
-
   .share-setting-text {
     text-decoration: none !important;
     text-decoration-color: transparent !important;

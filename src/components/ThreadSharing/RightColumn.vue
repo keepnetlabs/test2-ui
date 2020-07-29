@@ -30,7 +30,7 @@
               >CANCEL</v-btn
             >
             <v-btn text color="#2196f3" class="k-dialog__button" @click="inviteMember"
-              >Accept All</v-btn
+              >Invite All</v-btn
             >
           </div>
         </template>
@@ -75,7 +75,7 @@
                 <v-icon v-on="on">mdi-cog</v-icon>
               </template>
               <div class="notification-wrapper__right-column">
-                <v-list dense flat>
+                <v-list dense flat class="notification-wrapper__v-list">
                   <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
                     <v-list-item id="right-col-edit-commun" @click="editCommunity()">
                       <v-list-item-icon>
@@ -183,7 +183,7 @@
                 <a href="#">{{ post.title }}</a>
               </div>
               <div class="right-side-desc pb-1">
-                by
+                in
                 <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
               </div>
               <div class="right-side-like-comment-wrapper">
@@ -211,7 +211,7 @@
                 <a href="#">{{ post.postTitle }}</a>
               </div>
               <div class="right-side-desc pb-1">
-                by
+                in
                 <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
               </div>
               <div class="right-side-like-comment-wrapper">
@@ -409,24 +409,42 @@ export default {
       }
     },
     getMyLastPosts() {
-      getMyLastPosts().then((response) => {
-        this.yourPosts = response.data.data.slice(0, 3)
-      })
+      getMyLastPosts()
+        .then((response) => {
+          this.yourPosts = response.data.data.slice(0, 3)
+        })
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.yourPosts = []
+          }
+        })
     },
     getMyTopPosts() {
-      getMyTopPosts().then((response) => {
-        this.topPosts = response.data.data.slice(0, 3)
-      })
+      getMyTopPosts()
+        .then((response) => {
+          this.topPosts = response.data.data.slice(0, 3)
+        })
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.topPosts = []
+          }
+        })
     },
     getsuggestedCommunities() {
-      getsuggestedCommunities().then((response) => {
-        this.suggestedCommunities = response.data.data
-        this.suggestedCommunities = this.suggestedCommunities
-          .map((item) => {
-            return { ...item, isJoined: false }
-          })
-          .slice(0, 3)
-      })
+      getsuggestedCommunities()
+        .then((response) => {
+          this.suggestedCommunities = response.data.data
+          this.suggestedCommunities = this.suggestedCommunities
+            .map((item) => {
+              return { ...item, isJoined: false }
+            })
+            .slice(0, 3)
+        })
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.suggestedCommunities = []
+          }
+        })
     },
     closeCommunityInfo() {
       // this.$emit('closeCommunity')
@@ -449,7 +467,7 @@ export default {
     },
     joinCommunity(communityId, creatorId, name, isPrivate) {
       joinCommunity(communityId).then((response) => {
-        this.suggestedCommunities = response.data.data
+        this.getsuggestedCommunities()
       })
     },
     isOwnerOfTheCommunity() {

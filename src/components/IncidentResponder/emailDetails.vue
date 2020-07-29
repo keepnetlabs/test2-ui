@@ -427,11 +427,11 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     visibility: visible;
 }
 [data-title]:after {
-    content: attr(data-title);
+     content: attr(data-title);
     position: absolute;
-    padding: 5px 16px 5px 36px;
-    bottom: -1.6em;
-    left: 100%;
+    padding: 8px 16px 8px 16px;
+    bottom: -40px;
+    left: 0;
     white-space: nowrap;
     opacity: 0;
     z-index: 99999;
