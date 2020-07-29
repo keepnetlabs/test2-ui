@@ -63,6 +63,7 @@
         :isServerSide="false"
         v-if="showDatatable"
         @onEmptyBtnClicked="isWantToAddNewCommunity = true"
+        @columnFilterChanged="columnFilterChanged"
       >
         <template v-slot:datatable-custom-column="{ scope }">
           <span v-if="scope.row.matchingPlaybooks.length === 0">
@@ -122,8 +123,8 @@ export default {
         type: 'text',
         width: 250,
         isFilterable: true,
-        editComponent: 'textfield'
-        //minWidth: 80
+        editComponent: 'textfield',
+        filterableType: 'text'
       },
       {
         property: 'source',
@@ -134,6 +135,7 @@ export default {
         sortable: true,
         show: true,
         type: 'slot',
+        filterableType: 'numeric',
         width: 250
         //minWidth: 80
       },
@@ -147,7 +149,9 @@ export default {
         show: true,
         type: 'status',
         isEditable: true,
-        width: 200
+        width: 200,
+        filterableType: 'select',
+        filterableItems: ['running', 'cancelled', 'expired', 'completed']
         //minWidth: 80
       },
       {
@@ -159,7 +163,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185
+        width: 185,
+        filterableType: 'date'
         //minWidth: 80
       },
       {
@@ -171,7 +176,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185
+        width: 185,
+        filterableType: 'date'
         //minWidth: 80
       },
       {
@@ -265,7 +271,17 @@ export default {
       pageNumber: 1,
       pageSize: 500,
       orderBy: 'createDate',
-      ascending: false
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
     }
   }),
   methods: {
@@ -284,6 +300,13 @@ export default {
         pageNumber: pageNumber,
         totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+      })
+    },
+    columnFilterChanged(filter) {
+      this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+      const _this = this
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
       })

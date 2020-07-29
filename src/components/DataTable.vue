@@ -508,13 +508,25 @@
                   <slot name="datatable-custom-column" :scope="scope" :col="col"></slot>
                 </div>
               </template>
-              <template v-slot:header="{ column }" v-if="col.showHeaderTooltip">
-                <v-tooltip bottom>
+
+              <template v-slot:header="{ column, $index }">
+                <v-tooltip bottom v-if="col.showHeaderTooltip">
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
                   <span>{{ col.headerTooltip }}</span>
                 </v-tooltip>
+                <template v-else>
+                  {{ column.label }}
+                </template>
+
+                <data-table-filter
+                  :column="column"
+                  :filterableType="col.filterableType"
+                  :filterableItems="col.filterableItems"
+                  :index="$index"
+                  @handleFilterColumn="handleFilterColumn"
+                />
               </template>
             </el-table-column>
 
@@ -748,6 +760,7 @@ import Badge from './Badge'
 import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
+import DataTableFilter from './DataTableComponents/DataTableFilter'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -760,6 +773,7 @@ import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 export default {
   components: {
+    DataTableFilter,
     DataTableColorfulText,
     Badge,
     DataTableText,
@@ -1464,6 +1478,10 @@ export default {
       this.initialData = data
       this.dataLength = responseParams && responseParams.totalNumberOfRecords
       this.tableData = (data && data.slice(0, this.rowCount || this.countRow)) || []
+    },
+    handleFilterColumn(filterObj) {
+      const { column, filterValue, filteredSelectValue } = filterObj
+      this.$emit('columnFilterChanged', filterObj)
     }
   }
 }
