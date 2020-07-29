@@ -1418,10 +1418,10 @@ export default {
       return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
     },
     canDelete(post) {
-      return isOwner(post.myMembershipStatusId) && isPostedByMe(post.isPostedByMe)
+      return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
     },
     canEdit(post) {
-      return isOwner(post.myMembershipStatusId) && isPostedByMe(post.isPostedByMe)
+      return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
     }
   }
 }
