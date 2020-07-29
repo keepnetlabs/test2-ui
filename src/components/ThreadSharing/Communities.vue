@@ -495,6 +495,7 @@
 import {
   acceptInvitation,
   cancelRequest,
+  deleteCommunity,
   getAllCommunityList,
   getInvitationCount,
   getInvitations,
@@ -576,7 +577,7 @@ export default {
   },
   methods: {
     isOwner(community) {
-      isOwner(community.membershipStatusId)
+      return isOwner(community.membershipStatusId)
     },
     isOwnerOrMember(community) {
       return community.membershipStatusId == 2 || community.membershipStatusId == 1
@@ -612,7 +613,19 @@ export default {
       this.deleteCommunityId = item.communityResourceId
       this.isWantToDelete = true
     },
-    deleteCommunityConfirm() {},
+    deleteCommunityConfirm() {
+      deleteCommunity(this.deleteCommunityId).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Community has been deleted successfully'
+        })
+        this.isWantToDelete = false
+        this.getAllCommunitiesListData()
+        this.getAllCommunityList()
+        this.getInvitions()
+        this.getInvitationCount()
+      })
+    },
     getInvitationCount() {
       getInvitationCount().then((response) => {
         this.invitationsCount = response.data.data.count
