@@ -2035,8 +2035,10 @@ export default {
           el.setAttribute('target', '_blank')
           if (url.isHidden) {
             el.innerHTML = 'hidden by owner'
-          } else {
+          } else if (!!url && !!url.name) {
             el.innerHTML = url.name
+          } else if (!!url && !!url.urlHtml) {
+            el.innerHTML = url.urlHtml
           }
           if (url.isFlagged) {
             const el = els[i]
@@ -2071,8 +2073,8 @@ export default {
           if (url.isHidden) {
             hiddenEl.innerHTML = 'hidden by owner'
             hiddenEl.setAttribute('href', '#')
-          } else {
-            hiddenEl.innerHTML = url.name
+          } else if (!!url && !!url.urlHtml) {
+            hiddenEl.innerHTML = url.urlHtml
             hiddenEl.setAttribute('href', url.url)
           }
           if (url.isFlagged) {
@@ -2092,9 +2094,11 @@ export default {
           let urlItem = document
             .getElementById(id)
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
+          debugger
           return {
             ...item,
-            name: !!urlItem.length && urlItem[0].innerText ? urlItem[0].innerText : null
+            name: !!urlItem.length && urlItem[0].innerText ? urlItem[0].innerText : null,
+            urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
           }
         })
         for (let url of this.uploadRespond.urls) {
@@ -2107,8 +2111,10 @@ export default {
               el.setAttribute('target', '_blank')
               if (url.isHidden) {
                 el.innerHTML = 'hidden by owner'
-              } else {
+              } else if (!!url && !!url.name) {
                 el.innerHTML = url.name
+              } else if (!!url && !!url.urlHtml) {
+                el.innerHTML = url.urlHtml
               }
               if (url.isFlagged) {
                 const el = els[i]
@@ -2143,8 +2149,10 @@ export default {
               if (url.isHidden) {
                 hiddenEl.innerHTML = 'hidden by owner'
                 hiddenEl.setAttribute('href', '#')
-              } else {
+              } else if (!!url && !!url.name) {
                 hiddenEl.innerHTML = url.name
+              } else if (!!url && !!url.urlHtml) {
+                hiddenEl.innerHTML = url.urlHtml
                 hiddenEl.setAttribute('href', url.url)
               }
               if (url.isFlagged) {
@@ -2157,7 +2165,7 @@ export default {
             }
           }
         }
-      }, 150)
+      }, 250)
     },
     allUrlsValChange(val) {
       this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
