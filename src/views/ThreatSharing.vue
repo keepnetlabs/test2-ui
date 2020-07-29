@@ -25,10 +25,10 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
-              <incidents />
+              <incidents ref="tsIncidents" />
             </v-tab-item>
             <v-tab-item>
-              <communities :refresh="refreshMemberTable" />
+              <communities ref="tsCommunities" :refresh="refreshMemberTable" />
             </v-tab-item>
           </v-tabs-items>
         </v-card>
@@ -57,6 +57,11 @@ export default {
     RightColumn,
     NewCommunity
   },
+  watch: {
+    tab(value) {
+      this.getSelectedTabData()
+    }
+  },
   data: () => ({
     tab: null,
     isWantToAddNewCommunity: false,
@@ -68,6 +73,15 @@ export default {
     }
   },
   methods: {
+    getSelectedTabData() {
+      setTimeout(() => {
+        if (this.tab === 0) {
+          this.$refs.tsIncidents.getIncidentList()
+        } else {
+          this.$refs.tsCommunities.getAllCommunityTabsData()
+        }
+      }, 50)
+    },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
     },
@@ -221,20 +235,6 @@ export default {
 
   // Threat sharing Content End
 
-  .v-tab {
-    padding: 0 !important;
-    font-size: 20px;
-    font-weight: 400;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    text-transform: none;
-    color: rgba(0, 0, 0, 0.87);
-    min-width: min-content !important;
-    text-align: left !important;
-  }
-
   .v-slide-group__wrapper {
     padding-left: 20px !important;
   }
@@ -295,17 +295,6 @@ export default {
     color: #0486fe !important;
   }
 
-  .v-tabs-bar {
-    height: 60px;
-
-    .v-tab {
-      font-family: 'Open Sans', sans-serif !important;
-      font-weight: 400;
-      line-height: 31px;
-      margin-right: 48px;
-    }
-  }
-
   .community-selector {
     .v-tabs-bar {
       height: 44px !important;
@@ -316,19 +305,12 @@ export default {
     background-color: #f5f7fa !important;
     height: 44px !important;
     padding-left: 0 !important;
-
-    .v-tab {
-      font-family: 'Open Sans', sans-serif !important;
-      font-weight: 400;
-      font-size: 14px !important;
-      margin-top: 6px;
-      margin-right: 32px !important;
-    }
   }
 
   .community-selector .v-slide-group__wrapper > div {
     height: 100%;
     margin-right: 0 !important;
+    padding: 0 9px;
   }
 
   .v-text-field--outlined fieldset {

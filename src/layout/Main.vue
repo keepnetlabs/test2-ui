@@ -332,16 +332,6 @@
           <div class="page-header__breadcrumb">
             <router-link class="breadcrumb-links" to="/">
               {{ $store.state.dashboard.selectedCompany.manager || 'Company' }}
-              <v-icon style="color: #fff; font-size: 16px;" v-if="routerName !== 'Dashboard'"
-                >mdi-chevron-right</v-icon
-              >
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/threat-sharing"
-              v-if="routerName === 'Threat Sharing'"
-              >{{ breadcrumbs[1].text }}
             </router-link>
 
             <router-link
@@ -349,7 +339,6 @@
               to="/threat-sharing"
               v-if="routerName === 'Community'"
             >
-              {{ breadcrumbs[1].text }}
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               {{ breadcrumbs[2].text }}
             </router-link>
@@ -359,6 +348,7 @@
               to="/threat-sharing"
               v-if="routerName === 'Incident Responder'"
             >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               {{ breadcrumbs[3].text }}
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               Dashboard
@@ -369,6 +359,7 @@
               to="/integrations"
               v-if="routerName === 'Integrations'"
             >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               {{ breadcrumbs[3].text }}
             </router-link>
 
@@ -378,6 +369,7 @@
               style="display: flex; align-items: center;"
               v-if="routerName === 'Phishing Reporter'"
             >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               {{ breadcrumbs[1].text }}
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               Phishing Reporter
@@ -388,6 +380,7 @@
               style="display: flex; align-items: center;"
               v-if="routerName === 'Playbook'"
             >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               {{ breadcrumbs[1].text }}
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               Playbook
@@ -397,7 +390,9 @@
               class="breadcrumb-links"
               to="/incident-responder"
               v-if="routerName === 'Analysis Details'"
-              >{{ breadcrumbs[3].text }}
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              {{ breadcrumbs[3].text }}
             </router-link>
 
             <router-link
@@ -405,6 +400,8 @@
               to="/investigations"
               v-if="routerName === 'Investigation Details'"
             >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+
               Investigations
             </router-link>
 
@@ -413,6 +410,8 @@
               :to="$route.path"
               class="bread-last-step breadcrumb-links"
             >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+
               Company
             </router-link>
 
@@ -420,7 +419,10 @@
               v-if="routerName === 'Investigations'"
               :to="$route.path"
               class="bread-last-step breadcrumb-links"
-              >Incident Responder > {{ routerName }}
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+
+              Incident Responder > {{ routerName }}
             </router-link>
             <v-icon
               v-if="
@@ -967,7 +969,7 @@ export default {
     &__content {
       display: flex;
       //flex-direction: column;
-      justify-content: space-between;
+      flex-flow: column;
       width: 100%;
       padding-left: 8px;
       @media (max-width: 896px) {
@@ -997,7 +999,6 @@ export default {
       color: white;
       text-decoration: none;
       display: flex;
-      justify-content: flex-end;
       align-items: center;
       font-size: 12px;
       font-weight: bold;
@@ -1477,13 +1478,13 @@ export default {
     left: 232px;
     top: 16px;
     position: fixed;
-    z-index: 9;
+    z-index: 20;
     transition: all 0.2s ease-in-out;
   }
 
   .v-navigation-drawer {
     overflow: visible !important;
-    z-index: 8;
+    z-index: 12;
 
     @media only screen and (max-width: 1025px) {
       position: fixed !important;

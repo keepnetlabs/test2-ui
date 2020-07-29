@@ -236,3 +236,7 @@ export function getInvitationCount() {
 export function cancelRequest(id) {
   return testRequest.put(`/communities/membershiprequest/${id}/cancel`)
 }
+
+export function deleteCommunity(id) {
+  return testRequest.delete(`communities/${id}`)
+}

@@ -24,7 +24,7 @@
 
   &.v-tab--active{
     color: #2196f3 !important;
-    font-weight: 600;
+    font-weight: 600 !important;
   }
 
 &s{
@@ -58,8 +58,51 @@
   display: flex;
   justify-content: flex-start;
   min-width: fit-content;
-
+  &--active{
+    color: #2196f3 !important;
+    font-weight: 600 !important;
+  }
   &:not(:last-child) {
     margin-right: 35px;
+  }
+}
+.v-tabs-bar {
+  height: 48px !important;
+  border-radius: 0 !important;
+  &__details-tab{
+    height: 48px;
+    padding: 0;
+    background-color: #f5f7fa;
+    border-radius: 0!important;
+    .v-tabs-slider {
+      width: calc(100% + 16px);
+      margin-left: -8px;
+    }
+    .v-tab{
+      font-size: 14px !important;
+      font-weight: normal !important;;
+      font-stretch: normal !important;;
+      font-style: normal !important;;
+      line-height: 1.29 !important;;
+      letter-spacing: normal !important;;
+      color: #212121 !important;
+      &--active{
+      color: #2196f3!important;
+      font-weight: 600 !important;
+      }
+    }
+  }
+}
+.sub-tab__content{
+  font-size: 14px !important;
+  font-weight: normal !important;;
+  font-stretch: normal !important;;
+  font-style: normal !important;;
+  line-height: 1.29 !important;;
+  letter-spacing: normal !important;;
+  color: #212121 !important;
+  &.v-tab--active{
+    color: #2196f3!important;
+    font-weight: 600 !important;
   }
 }

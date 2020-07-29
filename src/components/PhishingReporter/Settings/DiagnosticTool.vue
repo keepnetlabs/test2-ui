@@ -9,7 +9,7 @@
           Helper tool for checking status of add-in and diagnose problems
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content>
+      <v-list-item-content v-if="showHeaderLink">
         <a
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
           class="other-settings__link"
@@ -19,10 +19,10 @@
         </a>
       </v-list-item-content>
     </v-list-item>
-    <div class="diagnostic-tool" id="diagnostic-tool">
+    <div class="diagnostic-tool" id="diagnostic-tool" v-if="!isInModal">
       <v-list-item class="px-0 diagnostic-tool__list-item">
         <v-list-item-content>
-          <div class="diagnostic-tool__list-item-header" v-if="!isInModal">Optional Features</div>
+          <div class="diagnostic-tool__list-item-header">Optional Features</div>
           <v-checkbox
             class="diagnostic-tool__checkbox k-checkbox"
             color="#2196f3"
@@ -43,7 +43,7 @@
       </v-btn>
       <v-btn
         @click="submit(true)"
-        class="white--text diagnostic-tool__btn-util ml-3"
+        class="white--text diagnostic-tool__btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
       >
@@ -76,6 +76,10 @@ export default {
     formData: {
       type: Object,
       default: null
+    },
+    showHeaderLink: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

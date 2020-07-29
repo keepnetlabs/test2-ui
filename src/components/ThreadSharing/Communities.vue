@@ -26,7 +26,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="isWantToDelete = false"
@@ -57,7 +57,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="isWantToToLeaveFromCommunity = false"
@@ -70,7 +70,7 @@
               text
               color="#2196f3"
               @click="leaveFromCommunityConfirm"
-              >Delete
+              >LEAVE
             </v-btn>
           </div>
         </div>
@@ -190,7 +190,7 @@
       icon="mdi-exit-to-app"
       title="Cancel Request?"
       :subtitle="cancelRequestCommunityName"
-      :body="`You are cancelling your request to ${cancelRequestCommunityName}`"
+      :body="`You are cancelling your join request to the ${cancelRequestCommunityName}`"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -227,7 +227,7 @@
                 :key="ind"
                 @click="subTabSelected(tab)"
                 :href="`#tab-${ind}`"
-                class="text-decoration-none"
+                class="text-decoration-none sub-tab__content"
               >
                 <template v-if="ind === 2">
                   {{ tab }}
@@ -261,7 +261,6 @@
                   <div class="ts-title" @click="communityDetails(item)">
                     {{ item.communityName }}
                     {{ item.membershipStatusId }}
-                    {{ item.privacyStatusName }}
                   </div>
                   <div class="flex-grow-1"></div>
                   <div class="ts-header-btn-1">
@@ -495,6 +494,7 @@
 import {
   acceptInvitation,
   cancelRequest,
+  deleteCommunity,
   getAllCommunityList,
   getInvitationCount,
   getInvitations,
@@ -575,17 +575,24 @@ export default {
     this.getInvitationCount()
   },
   methods: {
+    getAllCommunityTabsData() {
+      this.getAllCommunitiesListData()
+      this.getMyCommunitiesListData()
+      this.getInvitions()
+      this.getInvitationCount()
+    },
     isOwner(community) {
-      isOwner(community.membershipStatusId)
+      return isOwner(community.membershipStatusId)
     },
     isOwnerOrMember(community) {
       return community.membershipStatusId == 2 || community.membershipStatusId == 1
     },
     saveNotificationSetting() {},
     cancelRequest(item) {
-      this.cancelRequestCommunityName = item.communityName
-      this.cancelRequestCommunityId = item.membershiprequestresourceid
-      this.isCancelRequestModal = true
+      cancelRequest(item.membershipResourceId).then(() => {
+        this.getAllCommunityTabsData()
+      })
+      //this.isCancelRequestModal = true
     },
     cancelRequestConfirm() {
       cancelRequest(this.cancelRequestCommunityId)
@@ -595,10 +602,7 @@ export default {
             message: '' // @nejat, @atakan
           })
           this.isCancelRequestModal = false
-          this.getAllCommunitiesListData()
-          this.getAllCommunityList()
-          this.getInvitions()
-          this.getInvitationCount()
+          this.getAllCommunityTabsData()
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -612,11 +616,27 @@ export default {
       this.deleteCommunityId = item.communityResourceId
       this.isWantToDelete = true
     },
-    deleteCommunityConfirm() {},
-    getInvitationCount() {
-      getInvitationCount().then((response) => {
-        this.invitationsCount = response.data.data.count
+    deleteCommunityConfirm() {
+      deleteCommunity(this.deleteCommunityId).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Community has been deleted successfully'
+        })
+        this.isWantToDelete = false
+        this.getAllCommunityTabsData()
       })
+    },
+    getInvitationCount() {
+      getInvitationCount()
+        .then((response) => {
+          this.invitationsCount = response.data.data.count
+        })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.invitationsCount = []
+          }
+        })
       /*
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
@@ -631,8 +651,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'Invitation request has been cancelled successfully'
         })
-        this.getInvitions()
-        this.getInvitationCount()
+        this.getAllCommunityTabsData()
       })
       /*
         .catch(() => {
@@ -648,8 +667,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'Invitation request has been accepted successfully'
         })
-        this.getInvitions()
-        this.getInvitationCount()
+        this.getAllCommunityTabsData()
       })
       /*
         .catch(() => {
@@ -672,8 +690,7 @@ export default {
             message: 'You have been removed from the community successfully'
           })
           this.isWantToToLeaveFromCommunity = false
-          this.getAllCommunitiesListData()
-          this.getAllCommunityList()
+          this.getAllCommunityTabsData()
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -740,10 +757,17 @@ export default {
           ]
         }
       }
-      getAllCommunityList(payload).then((response) => {
-        const { data } = response
-        this.listData = data.data.results
-      })
+      getAllCommunityList(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.listData = []
+          }
+        })
     },
     getMyCommunitiesListData() {
       this.listData = []
@@ -774,15 +798,22 @@ export default {
           ]
         }
       }
-      getMyCommunityList(payload).then((response) => {
-        const { data } = response
-        this.listData = data.data.results
-      })
+      getMyCommunityList(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+        })
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.listData = []
+          }
+        })
     },
     communityDetails(item) {
       if (isOwnerOrMember(item.membershipStatusId)) {
         localStorage.setItem('communityName', item.communityName)
         localStorage.setItem('communityResourceIdForRedirect', item.communityResourceId)
+        localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
         this.$router.push({
           name: `Community`,
           params: { id: item.communityResourceId, item: item }
@@ -811,8 +842,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'Join request has been sent successfully'
         })
-        this.getAllCommunitiesListData()
-        this.getAllCommunityList()
+        this.getAllCommunityTabsData()
       })
       /*.catch(() => {
           this.$store.dispatch('common/createSnackBar', {
@@ -844,6 +874,10 @@ export default {
 
 <style lang="scss">
 .communities-wrapper {
+  .v-tabs-slider {
+    width: calc(100% + 16px);
+    margin-left: -8px;
+  }
   .notification-wrapper {
     padding: 0 !important;
     width: 100%;

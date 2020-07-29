@@ -552,7 +552,7 @@ export default {
 
   &__btn-util {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.71;
     letter-spacing: normal;
     color: #ffffff;

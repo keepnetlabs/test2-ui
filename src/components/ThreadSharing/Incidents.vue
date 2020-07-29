@@ -189,19 +189,31 @@ export default {
       }
       const _this = this
       if (this.$router.currentRoute.name === 'Community') {
-        getCOmmunityIncidentList(this.$route.params.id, payload).then((response) => {
-          this.incidentList = response.data.data.results
-          this.incidentList = this.incidentList.map((item) => {
-            return { ...item, isToggle: false }
+        getCOmmunityIncidentList(this.$route.params.id, payload)
+          .then((response) => {
+            this.incidentList = response.data.data.results
+            this.incidentList = this.incidentList.map((item) => {
+              return { ...item, isToggle: false }
+            })
           })
-        })
+          .catch((error) => {
+            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              this.incidentList = []
+            }
+          })
       } else {
-        getIncidentList(payload).then((response) => {
-          this.incidentList = response.data.data.results
-          this.incidentList = this.incidentList.map((item) => {
-            return { ...item, isToggle: false }
+        getIncidentList(payload)
+          .then((response) => {
+            this.incidentList = response.data.data.results
+            this.incidentList = this.incidentList.map((item) => {
+              return { ...item, isToggle: false }
+            })
           })
-        })
+          .catch((error) => {
+            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              this.incidentList = []
+            }
+          })
       }
     }
   },
@@ -228,20 +240,6 @@ export default {
       color: rgba(0, 0, 0, 0.34) !important;
       cursor: pointer;
     }
-  }
-
-  .v-tab {
-    padding: 0 3px !important;
-    font-size: 20px;
-    font-weight: 400;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.15;
-    letter-spacing: normal;
-    text-transform: none;
-    color: rgba(0, 0, 0, 0.87);
-    min-width: min-content !important;
-    text-align: left !important;
   }
 
   .v-cart-icon-wrapper {

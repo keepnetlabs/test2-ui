@@ -219,7 +219,7 @@
                     class="investigation-details__container__stats__cards__card-left__icon"
                     :class="
                       statsAndMenuData.status == 'Running'
-                        ? 'bg-turquoise'
+                        ? 'bg-macaroni'
                         : statsAndMenuData.status == 'Finished'
                         ? 'bg-turquoise'
                         : statsAndMenuData.status == 'Expired'
@@ -626,22 +626,25 @@
                 </div>
               </div>
               <div
-                class="investigation-details__container__content--right-menu__summary__item--action-button"
-                v-if="statsAndMenuData.status === 'Running'"
+                class="investigation-details__container__content--right-menu__summary__item--action-button-container"
               >
-                <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
-                  <v-icon medium left color="#2196f3">mdi-stop</v-icon>
-                  Stop
-                </v-btn>
-              </div>
-              <div
-                class="investigation-details__container__content--right-menu__summary__item--action-button"
-                v-if="statsAndMenuData.status !== 'Running'"
-              >
-                <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
-                  <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
-                  Duplicate
-                </v-btn>
+                <div
+                  class="investigation-details__container__content--right-menu__summary__item--action-button"
+                  v-if="statsAndMenuData.status === 'Running'"
+                >
+                  <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
+                    <v-icon medium left color="#2196f3">mdi-stop</v-icon>
+                    Stop
+                  </v-btn>
+                </div>
+                <div
+                  class="investigation-details__container__content--right-menu__summary__item--action-button"
+                >
+                  <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
+                    <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
+                    Duplicate
+                  </v-btn>
+                </div>
               </div>
             </div>
             <div class="investigation-details__container__content--right-menu__target-users">
@@ -702,7 +705,7 @@
                   >
                     <span class="d-flex align-center">
                       <span style="text-overflow: ellipsis; overflow: hidden;">{{
-                        scope.row.emailLastAction.status
+                        getInboxStatus(scope.row.emailLastAction.status)
                       }}</span>
                       <span class="ml-2">
                         <v-tooltip bottom content-class="investigation-details__tooltip">
@@ -722,7 +725,10 @@
                 </template>
               </datatable>
             </div>
-            <div v-if="activeMenu === 'targetUsers' && showTargetUsersDetails">
+            <div
+              v-if="activeMenu === 'targetUsers' && showTargetUsersDetails"
+              class="investigationDetails__target-users-table-container"
+            >
               <datatable
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
@@ -749,7 +755,57 @@
                 @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
                 v-if="showTargetUsersDetails"
                 @downloadEvent="exportTargetUsers"
-              />
+              >
+                <template v-slot:datatable-custom-column="{ scope }">
+                  <div class="datatable-progress">
+                    <template v-if="scope.row && parseInt(scope.row.analyzedMailCount) >= 0">
+                      <span
+                        :class="[
+                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) !==
+                            1 && 'ml-1'
+                        ]"
+                        class="datatable-progress__per"
+                        >{{
+                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) ===
+                          1
+                            ? 'Completed'
+                            : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCoun)
+                            ? Math.floor(
+                                scope.row.analyzedMailCount / scope.row.filteredMailCount
+                              ) *
+                                100 +
+                              '%'
+                            : 0 + '%'
+                        }}</span
+                      >
+                      <v-progress-linear
+                        :value="
+                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) *
+                          100
+                        "
+                        background-color="#b3d4fc"
+                        color="#2196f3"
+                        height="4"
+                        reactive
+                        rounded
+                      />
+                      <span class="datatable-progress__stats">
+                        {{ scope.row.analyzedMailCount + ' / ' + scope.row.filteredMailCount }}
+                        mails
+                      </span>
+                    </template>
+                    <span v-else>
+                      <v-progress-linear
+                        :value="0"
+                        background-color="#e0e0e0"
+                        color="#2196f3"
+                        height="4"
+                        reactive
+                        rounded
+                    /></span>
+                  </div>
+                </template>
+              </datatable>
             </div>
           </div>
         </div>
@@ -762,10 +818,11 @@ import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import { getStoreValue } from '../model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
+import { getDataTableFieldLabel } from '../utils/functions'
 export default {
   components: {
     Datatable,
@@ -845,7 +902,8 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
-        width: 300
+        width: 200,
+        cellPadding: 8
       },
       {
         property: 'subject',
@@ -887,7 +945,9 @@ export default {
         type: 'textWithBadge',
         show: true,
         label: 'Filtered By',
-        width: 200
+        width: 150,
+        cellPadding: 8,
+        hasMapper: true
       },
       {
         property: 'status',
@@ -901,10 +961,10 @@ export default {
     ],
     columnsTargetUsers: [
       {
-        property: 'email',
+        property: PROPERTY_STORE.EMAIL,
         align: 'left',
         editable: false,
-        label: getStoreValue('email'),
+        label: getStoreValue(PROPERTY_STORE.EMAIL),
         fixed: 'left',
         sortable: true,
         show: true,
@@ -920,6 +980,7 @@ export default {
         show: true,
         type: 'detected'
       },
+
       {
         property: 'duration',
         align: 'left',
@@ -931,10 +992,20 @@ export default {
         type: 'text'
       },
       {
+        property: PROPERTY_STORE.LASTSEEN,
+        align: 'left',
+        editable: false,
+        label: getStoreValue(PROPERTY_STORE.LASTSEEN),
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text'
+      },
+      {
         property: 'status',
         align: 'center',
         editable: false,
-        label: getStoreValue('status'),
+        label: 'Scan Status',
         fixed: false,
         sortable: true,
         show: true,
@@ -942,13 +1013,22 @@ export default {
       },
       {
         property: 'scanType',
-        align: 'left',
+        align: 'center',
         editable: false,
         label: getStoreValue('scanType'),
         fixed: false,
         sortable: true,
         show: true,
         type: 'service'
+      },
+      {
+        property: 'analyzedMailCount',
+        align: 'center',
+        label: 'Progress',
+        fixed: false,
+        sortable: false,
+        show: true,
+        type: 'slot'
       }
     ],
     pageSizes: [5, 10, 25, 50, 100],
@@ -968,11 +1048,6 @@ export default {
         name: 'Delete and notify user',
         icon: 'mdi-delete',
         action: 'deleteAndNotifyInvestigationDetails'
-      },
-      {
-        name: 'Analyze suspicious email',
-        icon: 'mdi-sync',
-        action: 'analyzeAuspiciousEmail'
       }
     ],
 
@@ -1070,6 +1145,9 @@ export default {
       }
       return retValue
     },
+    getInboxStatus(status) {
+      return getDataTableFieldLabel(status)
+    },
     getIconName(status) {
       let retValue
       switch (status) {
@@ -1117,9 +1195,6 @@ export default {
           link.click()
         })
       })
-    },
-    getId() {
-      return `key-${Math.random()}`
     },
     exportTargetUsers({ exportTypes, reportAllPages, pageNumber }) {
       exportTypes.map((exportType) => {
@@ -1210,7 +1285,7 @@ export default {
         case 'notScannedUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `${val} Online Users`
+              return `${val} Users`
             case 'Cancelled':
               return `${val} Users`
             case 'Expired':
@@ -1224,7 +1299,7 @@ export default {
         case 'totalUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `of remaining ${val} users`
+              return `Could not be scanned`
             case 'Cancelled':
               return `Could not be scanned`
             case 'Expired':
@@ -1632,7 +1707,7 @@ export default {
           @media (max-width: 1600px) {
             flex-basis: 50%;
           }
-          flex-basis: 40%;
+          flex-basis: 42%;
           justify-content: space-between;
         }
         &-right-col {
@@ -1936,6 +2011,12 @@ export default {
                   letter-spacing: normal;
                   color: #2196f3;
                 }
+                &-container {
+                  display: flex;
+                  @media (max-width: 1024px) {
+                    flex-direction: column;
+                  }
+                }
               }
             }
           }
@@ -2041,6 +2122,20 @@ export default {
 .investigation-details__warning-modal {
   .k-dialog__body {
     padding: 24px 24px 2px 24px;
+  }
+}
+
+.investigationDetails__target-users-table-container {
+  .k-table__wrapper {
+    .card .table-wrapper .el-table td > .cell {
+      padding-left: 10.5px !important;
+    }
+    .card .table-wrapper .el-table th > .cell.actions-label {
+      margin-left: 0 !important;
+    }
+    .card .table-wrapper .el-table th > .cell {
+      margin-left: 8px;
+    }
   }
 }
 </style>

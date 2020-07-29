@@ -15,7 +15,7 @@
         <v-col class="main-column pr-0" cols="12" md="8">
           <v-card id="community-tabs" class="pl-1 pt-2 pr-1">
             <v-tabs v-model="tab" background-color="transparent" color="basil">
-              <v-tab id="incidents-tab">Incidents</v-tab>
+              <v-tab id="incidents-tab" @click="getIncidents">Incidents</v-tab>
               <v-tab id="members-tab" @click="getMembers">Members</v-tab>
               <div class="tablet-info-btn">
                 <v-btn
@@ -167,6 +167,11 @@ export default {
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
+    },
+    getIncidents() {
+      setTimeout(() => {
+        this.$refs.refIncidents.getIncidentList()
+      }, 50)
     },
     getMembers() {
       setTimeout(() => {
@@ -370,20 +375,6 @@ export default {
 
 // Threat sharing Content End
 
-.v-tab {
-  padding: 0 !important;
-  font-size: 20px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
-  min-width: min-content !important;
-  text-align: left !important;
-}
-
 ::v-deep .v-slide-group__wrapper {
   padding-left: 20px !important;
 }
@@ -440,17 +431,6 @@ export default {
 ::v-deep .v-tabs-slider-wrapper {
   bottom: -1px !important;
   color: #0486fe !important;
-}
-
-::v-deep .v-tabs-bar {
-  height: 60px !important;
-
-  .v-tab {
-    font-family: 'Open Sans', sans-serif !important;
-    font-weight: 400;
-    font-weight: 400;
-    margin-right: 48px;
-  }
 }
 
 ::v-deep .community-selector {

@@ -2,14 +2,16 @@
   <div class="data-table-text-with-badge">
     <div
       v-if="scope.row && scope.row[col.property]"
-      class="small-badge__container"
+      class="small-badge__container data-table-text-with-badge__container"
       :style="[
-        maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0 ? { textAlign: 'center' } : ''
+        maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0
+          ? { justifyContent: 'center' }
+          : ''
       ]"
     >
       <v-tooltip bottom :key="getKey(index)" v-for="index in (maximumRenderedBadgeCount)">
         <template v-slot:activator="{ on }">
-          <span :listeners="on">
+          <span :listeners="on" class="data-table-text-with-badge__span">
             {{ badges[index - 1] }} {{ index !== maximumRenderedBadgeCount ? ' , ' : null }}
           </span>
         </template>
@@ -88,7 +90,7 @@ export default {
     }
   },
   created() {
-    this.badges = this.scope.row[this.col.property]
+    this.badges = this.col.hasMapper ? this.mapper() : this.scope.row[this.col.property]
     this.getBadges()
   },
 
@@ -96,8 +98,25 @@ export default {
     getKey(index) {
       return `${index}ab-${Math.random()}`
     },
+    mapper() {
+      return this.scope.row[this.col.property].map((item) => {
+        let uppercaseCount = 0
+        let index
+        for (let i = 1; i < item.length; i++) {
+          if (item[i] === item[i].toUpperCase()) {
+            uppercaseCount++
+          }
+          if (uppercaseCount === 1) {
+            index = i
+            break
+          }
+        }
+        return item.substring(0, index) + ' ' + item.substring(index)
+      })
+    },
     getBadges() {
       if (this.badges.length > 0) {
+        /*
         const textAverageWidth =
           this.badges.reduce((acc, item) => {
             return acc + item.length * 9
@@ -105,13 +124,22 @@ export default {
             this.badges.length +
           10
         let totalWidth
-
-        if (this.unRenderedBadgeCount > 0 && this.badges.length > 1) {
-          totalWidth = Math.floor(this.scope.column.width - 40)
-          this.maximumRenderedBadgeCount = Math.floor(totalWidth / textAverageWidth)
-        } else {
-          this.maximumRenderedBadgeCount = Math.floor(this.scope.column.width / textAverageWidth)
+        */
+        let renderedCount = 0
+        let totalWidth = this.unRenderedBadgeCount
+          ? this.scope.column.width - 40
+          : this.scope.column.width
+        for (let item of this.badges) {
+          let itemWidth = item.length * 8 + this.col.cellPadding
+          if (itemWidth > totalWidth) {
+            break
+          } else {
+            renderedCount++
+            totalWidth -= itemWidth
+          }
         }
+
+        this.maximumRenderedBadgeCount = renderedCount
         if (this.maximumRenderedBadgeCount > this.badges.length) {
           this.maximumRenderedBadgeCount = this.badges.length
         }
@@ -120,6 +148,12 @@ export default {
         }
 
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
+        if (this.maximumRenderedBadgeCount === 0) {
+          if (this.scope.column.width > 100) {
+            this.maximumRenderedBadgeCount = 1
+            this.unRenderedBadgeCount -= 1
+          }
+        }
       }
     }
   }
@@ -135,6 +169,13 @@ export default {
   &__tooltip {
     white-space: pre-line;
     line-height: 1.6;
+  }
+  &__container {
+    display: flex;
+  }
+  &__span {
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 </style>

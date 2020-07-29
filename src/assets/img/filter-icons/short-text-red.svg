@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="6px" viewBox="0 0 16 6" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>short-text.f2c998a2</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.960784 0 0 0 0 0.423529 0 0 0 0 0.423529 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+        <path d="M0,0 L16,0 L16,2 L0,2 L0,0 Z M0,4 L10,4 L10,6 L0,6 L0,4 Z" id="path-2"></path>
+    </defs>
+    <g id="Threat-Sharing" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="TS---0.1-Incidents-Copy-3" transform="translate(-802.000000, -164.000000)">
+            <g id="Group-7" transform="translate(301.000000, 158.000000)">
+                <g id="short-text.f2c998a2" transform="translate(0.000000, -1.000000)" filter="url(#filter-1)">
+                    <g transform="translate(501.000000, 7.000000)">
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <g id="a"></g>
+                        <g id="c-link" mask="url(#mask-3)" fill="#757575" fill-rule="nonzero">
+                            <g transform="translate(-17.000000, -22.000000)" id="c">
+                                <polygon points="0 0 50 0 50 50 0 50"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

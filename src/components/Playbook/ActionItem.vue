@@ -653,10 +653,12 @@ export default {
           }
         })
         .catch((error) => {
+          /*
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting analysis engines data!'
           })
+          */
         })
     },
     setAvailableItems(value, oldValue, index) {

@@ -63,9 +63,7 @@ export default {
     }
   },
   methods: {
-    handleDetails(row) {
-      console.log('row', row)
-    },
+    handleDetails(row) {},
     handleDownload(row) {}
   },
   data() {
@@ -126,7 +124,7 @@ export default {
       const {
         data: { data }
       } = response
-      console.log('data.results', data.results)
+
       this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
     })
   }
@@ -137,7 +135,7 @@ export default {
 .matching-modal.version-history {
   .k-table__wrapper {
     .card .table-wrapper .el-table td > .cell {
-      padding-left: 38px !important;
+      padding-left: 34.5px !important;
     }
     .card .table-wrapper .el-table th > .cell.actions-label {
       margin-left: 0 !important;

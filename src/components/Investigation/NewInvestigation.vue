@@ -1230,7 +1230,7 @@ export default {
     }
 
     &:not(.v-input--is-focused).v-select--chips input {
-      max-height: 15px;
+      max-height: 25px;
       padding: 0;
     }
   }
@@ -1305,7 +1305,7 @@ export default {
         right: -40px;
         top: 0px;
         justify-content: center;
-        display: none;
+        display: flex;
       }
     }
   }

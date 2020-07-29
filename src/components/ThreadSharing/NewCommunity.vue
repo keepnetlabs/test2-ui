@@ -234,7 +234,9 @@ export default {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 message: 'Community updated successfully'
               })
-              refThis.$emit('closeAdd')
+              //refThis.$emit('closeAdd')
+              this.isWantToAccept = false
+              this.$router.push(`/community/${response.data.data.resourceId}`)
             })
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
@@ -249,7 +251,9 @@ export default {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 message: 'Community created successfully'
               })
-              refThis.$emit('closeAdd')
+              //refThis.$emit('closeAdd')
+              this.isWantToAccept = false
+              this.$router.push(`/community/${response.data.data.resourceId}`)
             })
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
@@ -291,9 +295,6 @@ export default {
   },
   mounted() {
     this.getBusinessCategories()
-  },
-  beforeDestroy() {
-    this.$router.push('/threat-sharing')
   }
 }
 </script>

@@ -3,7 +3,11 @@
     <v-card
       class="overlay__container"
       light
-      style="border-radius: 12px !important; padding: 24px 24px 16px 24px !important;"
+      style="
+        border-radius: 12px !important;
+        padding: 24px 24px 16px 24px !important;
+        width: 600px !important;
+      "
     >
       <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
         <div class="v-btn v-cart-icon-wrapper">
@@ -22,12 +26,13 @@
         <div class="logos-buttons__container">
           <logos wrapperClasses="mt-10 logos" />
           <div class="buttons__container">
-            <v-btn class="white--text btn-util" color="#2196f3" rounded>
+            <v-btn class="white--text btn-util btn-download-add-in" color="#2196f3" rounded>
               <v-icon left>mdi-download</v-icon>
               Download
             </v-btn>
             <v-btn
-              class="white--text btn-util"
+              class="white--text btn-util btn-download-add-in"
+              style="margin-left: -6px;"
               color="#2196f3"
               rounded
               :loading="outlookSpinnerStatus"
@@ -37,12 +42,12 @@
               Download
               <template v-slot:loader>
                 <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" />
-                <span style="font-size: 15px; text-transform: capitalize;">
+                <span style="font-size: 14px; text-transform: capitalize;">
                   Generating...
                 </span>
               </template>
             </v-btn>
-            <v-btn class="white--text btn-util" color="#2196f3" rounded>
+            <v-btn class="white--text btn-util btn-download-add-in mr-n1" color="#2196f3" rounded>
               <v-icon left>mdi-download</v-icon>
               Download
             </v-btn>
@@ -65,10 +70,10 @@
       <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
         <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
       </v-list-item>
-      <v-list-item class="px-0 add-in-configuration__list-item">
+      <v-list-item class="px-0 add-in-configuration__list-item mt-5">
         <v-btn
           @click="callForGenerateDiagnosticTool"
-          class="white--text btn-util mt-n2"
+          class="white--text btn-util btn-download-add-in ml-n1"
           color="#2196f3"
           :loading="diagnosticToolSpinnerStatus"
           rounded
@@ -77,13 +82,13 @@
           Download
           <template v-slot:loader>
             <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" />
-            <span style="font-size: 15px; text-transform: capitalize;">
+            <span style="font-size: 14px; text-transform: capitalize;">
               Generating...
             </span>
           </template>
         </v-btn>
       </v-list-item>
-      <v-list-item class="px-0 mt-7 add-in-configuration__list-item">
+      <v-list-item class="px-0 mt-12 add-in-configuration__list-item">
         <div class="px-0 overlay__footer">
           <a
             class="overlay__footer-text download-add-in__link"
@@ -188,4 +193,14 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.btn-download-add-in {
+  padding: 2px 16px 2px 22px !important;
+  .v-icon {
+    margin-top: 2px;
+  }
+  .v-btn__loader {
+    padding-right: 8px;
+  }
+}
+</style>
