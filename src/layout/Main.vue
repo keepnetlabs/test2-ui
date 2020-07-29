@@ -1477,7 +1477,7 @@ export default {
     left: 232px;
     top: 16px;
     position: fixed;
-    z-index: 9;
+    z-index: 20;
     transition: all 0.2s ease-in-out;
   }
 
