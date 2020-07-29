@@ -9,7 +9,7 @@
           Helper tool for checking status of add-in and diagnose problems
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content>
+      <v-list-item-content v-if="showHeaderLink">
         <a
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
           class="other-settings__link"
@@ -76,6 +76,10 @@ export default {
     formData: {
       type: Object,
       default: null
+    },
+    showHeaderLink: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

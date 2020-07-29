@@ -18,7 +18,13 @@
               >Email Settings</v-stepper-step
             >
             <v-divider class="k-stepper__divider" />
-            <v-stepper-step class="k-stepper__step" :step="3">Other Settings</v-stepper-step>
+            <v-stepper-step class="k-stepper__step" :complete="step > 3" :step="3"
+              >Other Settings</v-stepper-step
+            >
+            <v-divider class="k-stepper__divider" />
+            <v-stepper-step class="k-stepper__step" :complete="step > 4" :step="4"
+              >Diagnostic Tool
+            </v-stepper-step>
           </v-stepper-header>
           <v-stepper-items class="k-stepper__items">
             <v-stepper-content class="k-stepper__content" :step="1">
@@ -77,6 +83,13 @@
                 :show-header="false"
               />
             </v-stepper-content>
+            <v-stepper-content class="k-stepper__content" :step="4">
+              <diagnostic-tool
+                ref="refDiagnosticTool"
+                :show-footer="false"
+                :show-header-link="false"
+              />
+            </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
       </template>
@@ -98,7 +111,7 @@
             class="add-in-configuration__footer-btn-next"
             color="#2196f3"
             rounded
-            v-if="step < 3"
+            v-if="step < 4"
           >
             NEXT
           </v-btn>
@@ -107,7 +120,7 @@
             class="add-in-configuration__footer-btn-next"
             color="#2196f3"
             rounded
-            v-if="step === 3"
+            v-if="step === 4"
           >
             SAVE
           </v-btn>
@@ -131,9 +144,11 @@ import {
 } from '../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppModal from '../AppModal'
+import DiagnosticTool from './Settings/DiagnosticTool'
 export default {
   name: 'AddInConfiguration',
   components: {
+    DiagnosticTool,
     AddinSettings,
     EmailSettings,
     OtherSettings,
@@ -151,6 +166,7 @@ export default {
       addingSettings: {},
       emailSettings: {},
       otherSettings: {},
+      diagnosticTool: {},
       showModal: false,
       outlookSpinnerStatus: false,
       diagnosticToolSpinnerStatus: false
@@ -245,6 +261,10 @@ export default {
             hasValidationError = true
           }
           break
+        case 4:
+          ret = this.$refs.refDiagnosticTool.formValues
+          this.diagnosticTool = ret
+          hasValidationError = false
         default:
           break
       }
@@ -256,6 +276,7 @@ export default {
     submit() {
       const isOtherSettingsValid = this.$refs.refOtherSettings.submit()
       if (isOtherSettingsValid) {
+        this.diagnosticTool = this.$refs.refDiagnosticTool.formValues
         this.callForCreatePhishingReporter()
       }
     },
@@ -282,6 +303,7 @@ export default {
         ...this.addingSettings,
         ...this.emailSettings,
         ...this.otherSettings,
+        ...this.diagnosticTool,
         isProcessAttachmentOnTheFly: true
       }
       const formData = new FormData()
