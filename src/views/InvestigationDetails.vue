@@ -219,7 +219,7 @@
                     class="investigation-details__container__stats__cards__card-left__icon"
                     :class="
                       statsAndMenuData.status == 'Running'
-                        ? 'bg-turquoise'
+                        ? 'bg-macaroni'
                         : statsAndMenuData.status == 'Finished'
                         ? 'bg-turquoise'
                         : statsAndMenuData.status == 'Expired'
@@ -769,11 +769,13 @@
                           Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) ===
                           1
                             ? 'Completed'
-                            : Math.floor(
+                            : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCoun)
+                            ? Math.floor(
                                 scope.row.analyzedMailCount / scope.row.filteredMailCount
                               ) *
                                 100 +
                               '%'
+                            : 0 + '%'
                         }}</span
                       >
                       <v-progress-linear
@@ -944,7 +946,8 @@ export default {
         show: true,
         label: 'Filtered By',
         width: 150,
-        cellPadding: 13
+        cellPadding: 8,
+        hasMapper: true
       },
       {
         property: 'status',
@@ -1010,7 +1013,7 @@ export default {
       },
       {
         property: 'scanType',
-        align: 'left',
+        align: 'center',
         editable: false,
         label: getStoreValue('scanType'),
         fixed: false,
@@ -1045,11 +1048,6 @@ export default {
         name: 'Delete and notify user',
         icon: 'mdi-delete',
         action: 'deleteAndNotifyInvestigationDetails'
-      },
-      {
-        name: 'Analyze suspicious email',
-        icon: 'mdi-sync',
-        action: 'analyzeAuspiciousEmail'
       }
     ],
 
@@ -1287,7 +1285,7 @@ export default {
         case 'notScannedUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `${val} Online Users`
+              return `${val} Users`
             case 'Cancelled':
               return `${val} Users`
             case 'Expired':
@@ -1301,7 +1299,7 @@ export default {
         case 'totalUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `of remaining ${val} users`
+              return `Could not be scanned`
             case 'Cancelled':
               return `Could not be scanned`
             case 'Expired':
@@ -1709,7 +1707,7 @@ export default {
           @media (max-width: 1600px) {
             flex-basis: 50%;
           }
-          flex-basis: 40%;
+          flex-basis: 42%;
           justify-content: space-between;
         }
         &-right-col {

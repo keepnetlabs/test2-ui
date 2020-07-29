@@ -209,6 +209,11 @@ export default {
       letter-spacing: 0.3px;
       color: #ffffff;
       text-transform: initial;
+      @media not all and (min-resolution: 0.001dpcm) {
+        @supports (-webkit-appearance: none) {
+          margin-top: -2px;
+        }
+      }
     }
   }
   &__hidden {

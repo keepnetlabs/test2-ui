@@ -90,13 +90,29 @@ export default {
     }
   },
   created() {
-    this.badges = this.scope.row[this.col.property]
+    this.badges = this.col.hasMapper ? this.mapper() : this.scope.row[this.col.property]
     this.getBadges()
   },
 
   methods: {
     getKey(index) {
       return `${index}ab-${Math.random()}`
+    },
+    mapper() {
+      return this.scope.row[this.col.property].map((item) => {
+        let uppercaseCount = 0
+        let index
+        for (let i = 1; i < item.length; i++) {
+          if (item[i] === item[i].toUpperCase()) {
+            uppercaseCount++
+          }
+          if (uppercaseCount === 1) {
+            index = i
+            break
+          }
+        }
+        return item.substring(0, index) + ' ' + item.substring(index)
+      })
     },
     getBadges() {
       if (this.badges.length > 0) {
