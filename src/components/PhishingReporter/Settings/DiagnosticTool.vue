@@ -19,10 +19,10 @@
         </a>
       </v-list-item-content>
     </v-list-item>
-    <div class="diagnostic-tool" id="diagnostic-tool">
+    <div class="diagnostic-tool" id="diagnostic-tool" v-if="!isInModal">
       <v-list-item class="px-0 diagnostic-tool__list-item">
         <v-list-item-content>
-          <div class="diagnostic-tool__list-item-header" v-if="!isInModal">Optional Features</div>
+          <div class="diagnostic-tool__list-item-header">Optional Features</div>
           <v-checkbox
             class="diagnostic-tool__checkbox k-checkbox"
             color="#2196f3"

@@ -70,10 +70,10 @@
       <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
         <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
       </v-list-item>
-      <v-list-item class="px-0 add-in-configuration__list-item">
+      <v-list-item class="px-0 add-in-configuration__list-item mt-5">
         <v-btn
           @click="callForGenerateDiagnosticTool"
-          class="white--text btn-util btn-download-add-in mt-n2 ml-n1"
+          class="white--text btn-util btn-download-add-in ml-n1"
           color="#2196f3"
           :loading="diagnosticToolSpinnerStatus"
           rounded
@@ -88,7 +88,7 @@
           </template>
         </v-btn>
       </v-list-item>
-      <v-list-item class="px-0 mt-7 add-in-configuration__list-item">
+      <v-list-item class="px-0 mt-12 add-in-configuration__list-item">
         <div class="px-0 overlay__footer">
           <a
             class="overlay__footer-text download-add-in__link"
