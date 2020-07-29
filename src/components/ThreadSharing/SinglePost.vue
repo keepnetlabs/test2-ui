@@ -19,7 +19,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
           <div>
             <v-btn
-              class="pa-0 k-dialog__button"
+              class="pa-0 k-dialog__button mr-2"
               text
               color="#f56c6c"
               @click="isWantToDelete = false"
@@ -176,7 +176,7 @@
               :id="'notifications' + post.communityPostResourceId"
               class="notification-wrapper-single-post"
             >
-              <v-list dense flat>
+              <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
                   <v-list-item
                     :id="'edit-btn' + post.communityPostResourceId"
@@ -281,7 +281,7 @@
             >
             <a v-else class="pl-1 pr-1">Community Name</a>
           </div>
-          <div class="ts-user-date">
+          <div class="ts-user-date font-weight-medium">
             <span :id="'date' + post.postedTime" v-if="post.postedTime">{{ post.postedTime }}</span>
             <span v-else>04.05.2019</span>
           </div>
@@ -464,7 +464,12 @@
         eager
         class="expand-body member-company-body pa-0"
       >
-        <v-tabs v-model="tab" background-color="transparent" color="basil" class="tab-bar">
+        <v-tabs
+          v-model="tab"
+          background-color="transparent"
+          color="basil"
+          class="v-tabs-bar__details-tab"
+        >
           <v-tab id="expansion-details">Details</v-tab>
           <v-tab id="expansion-preview">Email Preview</v-tab>
         </v-tabs>
@@ -671,7 +676,9 @@
                   <template v-slot:activator="{ on }">
                     <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
                   </template>
-                  <span>The subject has been reported as a threat source</span>
+                  <span class="malicious-tooltip--span"
+                    >The subject has been reported as a threat source</span
+                  >
                 </v-tooltip>
               </h2>
               <h2
@@ -685,7 +692,9 @@
                   <template v-slot:activator="{ on }">
                     <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
                   </template>
-                  <span>This email address has been reported as a threat source</span>
+                  <span class="malicious-tooltip--span"
+                    >This email address has been reported as a threat source</span
+                  >
                 </v-tooltip>
               </h2>
               <div class="header-info pb-5">
@@ -699,7 +708,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                   <br />
                 </div>
@@ -713,7 +724,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -728,7 +741,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -743,7 +758,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -758,7 +775,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div v-if="emailData && emailData.cc && emailData.isCcHidden">
@@ -771,7 +790,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div
@@ -788,7 +809,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div v-if="emailData && emailData.bcc && emailData.isBccHidden">
@@ -801,7 +824,9 @@
                         >mdi-alert</v-icon
                       >
                     </template>
-                    <span>This email address has been reported as a threat source</span>
+                    <span class="malicious-tooltip--span"
+                      >This email address has been reported as a threat source</span
+                    >
                   </v-tooltip>
                 </div>
                 <div id="details-post-date" v-if="emailData.sentTime">
@@ -812,7 +837,10 @@
               </div>
             </div>
             <div id="single-post-body" class="preview-body">
-              <k-shadow-frame id="sframe" v-bind:content="emailData.body" />
+              <k-shadow-frame
+                :id="`sframe${post.communityPostResourceId}`"
+                v-bind:content="emailData.body"
+              />
             </div>
             <div
               class="preview-footer"
@@ -1022,16 +1050,16 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
 [data-title]:hover:after {
+    visibility: visible;
     opacity: 1;
     transition: all 0.1s ease 0.5s;
-    visibility: visible;
 }
 [data-title]:after {
     content: attr(data-title);
     position: absolute;
-    padding: 5px 16px 5px 36px;
-    bottom: -1.6em;
-    left: 100%;
+    padding: 8px 16px 8px 16px;
+    bottom: -40px;
+    left: 0;
     white-space: nowrap;
     opacity: 0;
     z-index: 99999;
@@ -1047,9 +1075,9 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     position: relative;
 }
 .malicious-style {
-
-  color: #bb2a45 !important;
-  text-decoration: underline !important;
+   color: #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
 }
 
 .malicious-icon {
@@ -1057,6 +1085,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
   font-size: 18px !important;
   color: #bb2a45 !important;
   caret-color: #bb2a45 !important;
+  position: absolute !important;
+    top: 2px;
 }
 
 .red-malicious-alert {
@@ -1202,10 +1232,17 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been updated successfully'
           })
-          getComments(this.post.communityPostResourceId).then((response) => {
-            const { data } = response
-            this.comments = data.data
-          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+
+            .catch((error) => {
+              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+                this.comments = []
+              }
+            })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1226,10 +1263,17 @@ export default {
             message: 'Comment has been deleted successfully'
           })
           this.isWantToDeleteComment = false
-          getComments(this.post.communityPostResourceId).then((response) => {
-            const { data } = response
-            this.comments = data.data
-          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+
+            .catch((error) => {
+              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+                this.comments = []
+              }
+            })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1276,21 +1320,30 @@ export default {
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
-      getComments(this.post.communityPostResourceId).then((response) => {
-        const { data } = response
-        this.comments = data.data
-        this.comments = this.comments.map((item) => {
-          return { ...item, isEdit: false, commentValue: null }
+      getComments(this.post.communityPostResourceId)
+        .then((response) => {
+          const { data } = response
+          this.comments = data.data
+          this.comments = this.comments.map((item) => {
+            return { ...item, isEdit: false, commentValue: null }
+          })
         })
-      })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.comments = []
+          }
+        })
       //getSelectedEmailPreview('4pDtxLYSG0mb')
       getCommunityPost(this.post.communityPostResourceId).then((response) => {
+        const comId = this.post.communityPostResourceId
+        console.log(comId)
         this.postDetails = response.data.data
         this.emailData = response.data.data.communityPostEmail
         setTimeout(function () {
           for (let url of response.data.data.communityPostEmail.urls) {
             let els = document
-              .getElementById('sframe')
+              .getElementById(`sframe${comId}`)
               .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
             if (els && els.length) {
               for (let i = 0, l = els.length; i < l; i++) {
@@ -1347,40 +1400,31 @@ export default {
       })
     },
     userLikePost(postId) {
-      likePost(postId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Like request success message' //@nejat, @atakan
-          })
-          getCommunityPost(this.post.communityPostResourceId).then((response) => {
-            this.postDetails = response.data.data
-          })
+      likePost(postId).then((response) => {
+        getCommunityPost(this.post.communityPostResourceId).then((response) => {
+          this.postDetails = response.data.data
         })
-        .catch((error) => {
+      })
+      /*.catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when like a comment'
           })
-        })
+        })*/
     },
     userUnlikePost(postId) {
-      likePost(postId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Unlike request success message' //@nejat, @atakan
-          })
-          getCommunityPost(this.post.communityPostResourceId).then((response) => {
-            this.postDetails = response.data.data
-          })
+      likePost(postId).then((response) => {
+        getCommunityPost(this.post.communityPostResourceId).then((response) => {
+          this.postDetails = response.data.data
         })
+      })
+      /*
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when unlike a comments'
           })
-        })
+        })*/
     },
     addPostComment(postId, communId) {
       const payload = {
@@ -1393,10 +1437,16 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment added has been successfully'
           })
-          getComments(this.post.communityPostResourceId).then((response) => {
-            const { data } = response
-            this.comments = data.data
-          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+            .catch((error) => {
+              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+                this.comments = []
+              }
+            })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

@@ -25,10 +25,10 @@
           </v-tabs>
           <v-tabs-items v-model="tab">
             <v-tab-item>
-              <incidents />
+              <incidents ref="tsIncidents" />
             </v-tab-item>
             <v-tab-item>
-              <communities :refresh="refreshMemberTable" />
+              <communities ref="tsCommunities" :refresh="refreshMemberTable" />
             </v-tab-item>
           </v-tabs-items>
         </v-card>
@@ -57,6 +57,11 @@ export default {
     RightColumn,
     NewCommunity
   },
+  watch: {
+    tab(value) {
+      this.getSelectedTabData()
+    }
+  },
   data: () => ({
     tab: null,
     isWantToAddNewCommunity: false,
@@ -68,6 +73,15 @@ export default {
     }
   },
   methods: {
+    getSelectedTabData() {
+      setTimeout(() => {
+        if (this.tab === 0) {
+          this.$refs.tsIncidents.getIncidentList()
+        } else {
+          this.$refs.tsCommunities.getAllCommunityTabsData()
+        }
+      }, 50)
+    },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
     },

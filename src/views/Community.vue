@@ -15,7 +15,7 @@
         <v-col class="main-column pr-0" cols="12" md="8">
           <v-card id="community-tabs" class="pl-1 pt-2 pr-1">
             <v-tabs v-model="tab" background-color="transparent" color="basil">
-              <v-tab id="incidents-tab">Incidents</v-tab>
+              <v-tab id="incidents-tab" @click="getIncidents">Incidents</v-tab>
               <v-tab id="members-tab" @click="getMembers">Members</v-tab>
               <div class="tablet-info-btn">
                 <v-btn
@@ -167,6 +167,11 @@ export default {
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
+    },
+    getIncidents() {
+      setTimeout(() => {
+        this.$refs.refIncidents.getIncidentList()
+      }, 50)
     },
     getMembers() {
       setTimeout(() => {
