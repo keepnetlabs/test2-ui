@@ -97,7 +97,6 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
-    
       if (this.badges.length > 0) {
         const textAverageWidth =
           this.badges.reduce((acc, item) => {

@@ -7,9 +7,12 @@
     :close-on-content-click="false"
     class="filter__container"
     v-if="filterableType"
+    v-model="menu"
   >
     <template v-slot:activator="{ on }">
-      <v-icon v-on="on" class="filter__icon">mdi-filter-variant</v-icon>
+      <v-icon v-on="on" class="filter__icon" :color="isFilterActive === true ? '#409eff' : ''"
+        >mdi-filter-variant</v-icon
+      >
     </template>
     <div class="filter__body-container">
       <template v-if="filterableType === 'text'">
@@ -59,14 +62,14 @@
           @change="changeDateSelect"
         ></v-select>
         <el-date-picker
-          v-if="filteredSelectValueDate !== 'Between'"
+          v-show="filteredSelectValueDate !== 'Between'"
           v-model="filteredDateValue"
           type="datetime"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
           :default-time="['12:00:00']"
         />
         <el-date-picker
-          v-if="filteredSelectValueDate === 'Between'"
+          v-show="filteredSelectValueDate === 'Between'"
           v-model="filteredDateValue"
           type="datetimerange"
           style="margin-bottom: 14px;"
@@ -95,7 +98,7 @@
         </v-checkbox>
       </template>
       <div class="filter__footer">
-        <v-btn text class="filter__footer-button" color="#f56c6c">
+        <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
           Clear
         </v-btn>
         <v-btn text class="filter__footer-button" color="#2196f3" @click="handleFilter">
@@ -126,14 +129,15 @@ export default {
   },
   data() {
     return {
-      a: [],
-      filteredSelectValue: 'Starts With',
+      menu: null,
+      isFilterActive: false,
+      filteredSelectValue: 'Contains',
       filteredSelectValueNum: 'Equal',
       filteredSelectValueDate: 'Before',
       filteredDateValue: null,
       filterValue: '',
       filterChecked: [],
-      textFilterItems: ['Starts With', 'Contains', 'Equal', 'Not Equal'],
+      textFilterItems: ['Contains', 'Equal', 'Not Equal'],
       numericFilterItems: [
         'Equal',
         'Not equal',
@@ -178,18 +182,23 @@ export default {
   },
   mounted() {
     this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
-    this.a = this.filterableItems
   },
   methods: {
-    asearchInItems() {
-      return this.filterValue.length > 0
-        ? this.filterableItems.filter((item) => item.startsWith(this.filterValue))
-        : this.filterableItems
-    },
     changeDateSelect(val) {
       this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
     },
+    clearFilter() {
+      this.menu = false
+      this.isFilterActive = false
+      this.filterValue = ''
+      this.filteredDateValue = null
+      this.filterChecked = []
+      this.filteredSelectValueNum = ''
+      this.$emit('handleClearColumnFilter', this.column.property)
+    },
     handleFilter() {
+      this.menu = false
+      this.isFilterActive = true
       if (this.filterableType === 'text') {
         this.$emit('handleFilterColumn', {
           value: this.filterValue,
@@ -235,7 +244,6 @@ export default {
   &__icon {
     float: right;
     font-size: 20px;
-    opacity: 0.5;
     order: 1;
     margin-top: 7px;
   }
