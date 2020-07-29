@@ -576,7 +576,7 @@ export default {
   },
   methods: {
     isOwner(community) {
-      isOwner(community.membershipStatusId)
+      return isOwner(community.membershipStatusId)
     },
     isOwnerOrMember(community) {
       return community.membershipStatusId == 2 || community.membershipStatusId == 1
