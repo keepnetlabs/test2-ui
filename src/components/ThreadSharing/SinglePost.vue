@@ -281,7 +281,7 @@
             >
             <a v-else class="pl-1 pr-1">Community Name</a>
           </div>
-          <div class="ts-user-date">
+          <div class="ts-user-date font-weight-medium">
             <span :id="'date' + post.postedTime" v-if="post.postedTime">{{ post.postedTime }}</span>
             <span v-else>04.05.2019</span>
           </div>
@@ -464,7 +464,12 @@
         eager
         class="expand-body member-company-body pa-0"
       >
-        <v-tabs v-model="tab" background-color="transparent" color="basil" class="tab-bar">
+        <v-tabs
+          v-model="tab"
+          background-color="transparent"
+          color="basil"
+          class="v-tabs-bar__details-tab"
+        >
           <v-tab id="expansion-details">Details</v-tab>
           <v-tab id="expansion-preview">Email Preview</v-tab>
         </v-tabs>
@@ -812,7 +817,10 @@
               </div>
             </div>
             <div id="single-post-body" class="preview-body">
-              <k-shadow-frame id="sframe" v-bind:content="emailData.body" />
+              <k-shadow-frame
+                :id="`sframe${post.communityPostResourceId}`"
+                v-bind:content="emailData.body"
+              />
             </div>
             <div
               class="preview-footer"
@@ -1029,8 +1037,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
     content: attr(data-title);
     position: absolute;
-    padding: 5px 16px 5px 36px;
-    bottom: -1.6em;
+        padding: 5px 16px 5px 16px;
+    bottom: -30px;
     left: 100%;
     white-space: nowrap;
     opacity: 0;
@@ -1047,9 +1055,16 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     position: relative;
 }
 .malicious-style {
-
-  color: #bb2a45 !important;
-  text-decoration: underline !important;
+   color: #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
+    font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+      color: rgba(255, 255, 255, 0.87) !important;
 }
 
 .malicious-icon {
@@ -1057,6 +1072,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
   font-size: 18px !important;
   color: #bb2a45 !important;
   caret-color: #bb2a45 !important;
+  position: absolute !important;
+    top: 2px;
 }
 
 .red-malicious-alert {
@@ -1202,10 +1219,17 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been updated successfully'
           })
-          getComments(this.post.communityPostResourceId).then((response) => {
-            const { data } = response
-            this.comments = data.data
-          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+
+            .catch((error) => {
+              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+                this.comments = []
+              }
+            })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1226,10 +1250,17 @@ export default {
             message: 'Comment has been deleted successfully'
           })
           this.isWantToDeleteComment = false
-          getComments(this.post.communityPostResourceId).then((response) => {
-            const { data } = response
-            this.comments = data.data
-          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+
+            .catch((error) => {
+              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+                this.comments = []
+              }
+            })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1276,21 +1307,30 @@ export default {
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
-      getComments(this.post.communityPostResourceId).then((response) => {
-        const { data } = response
-        this.comments = data.data
-        this.comments = this.comments.map((item) => {
-          return { ...item, isEdit: false, commentValue: null }
+      getComments(this.post.communityPostResourceId)
+        .then((response) => {
+          const { data } = response
+          this.comments = data.data
+          this.comments = this.comments.map((item) => {
+            return { ...item, isEdit: false, commentValue: null }
+          })
         })
-      })
+
+        .catch((error) => {
+          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            this.comments = []
+          }
+        })
       //getSelectedEmailPreview('4pDtxLYSG0mb')
       getCommunityPost(this.post.communityPostResourceId).then((response) => {
+        const comId = this.post.communityPostResourceId
+        console.log(comId)
         this.postDetails = response.data.data
         this.emailData = response.data.data.communityPostEmail
         setTimeout(function () {
           for (let url of response.data.data.communityPostEmail.urls) {
             let els = document
-              .getElementById('sframe')
+              .getElementById(`sframe${comId}`)
               .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
             if (els && els.length) {
               for (let i = 0, l = els.length; i < l; i++) {
@@ -1347,40 +1387,31 @@ export default {
       })
     },
     userLikePost(postId) {
-      likePost(postId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Like request success message' //@nejat, @atakan
-          })
-          getCommunityPost(this.post.communityPostResourceId).then((response) => {
-            this.postDetails = response.data.data
-          })
+      likePost(postId).then((response) => {
+        getCommunityPost(this.post.communityPostResourceId).then((response) => {
+          this.postDetails = response.data.data
         })
-        .catch((error) => {
+      })
+      /*.catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when like a comment'
           })
-        })
+        })*/
     },
     userUnlikePost(postId) {
-      likePost(postId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Unlike request success message' //@nejat, @atakan
-          })
-          getCommunityPost(this.post.communityPostResourceId).then((response) => {
-            this.postDetails = response.data.data
-          })
+      likePost(postId).then((response) => {
+        getCommunityPost(this.post.communityPostResourceId).then((response) => {
+          this.postDetails = response.data.data
         })
+      })
+      /*
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when unlike a comments'
           })
-        })
+        })*/
     },
     addPostComment(postId, communId) {
       const payload = {
@@ -1393,10 +1424,16 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment added has been successfully'
           })
-          getComments(this.post.communityPostResourceId).then((response) => {
-            const { data } = response
-            this.comments = data.data
-          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+            .catch((error) => {
+              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+                this.comments = []
+              }
+            })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

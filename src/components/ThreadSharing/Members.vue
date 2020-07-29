@@ -159,7 +159,7 @@
                                   <v-icon>mdi-account-multiple-plus</v-icon>
                                 </v-list-item-icon>
                                 <v-list-item-content>
-                                  <v-list-item-title>Appoint a new owner</v-list-item-title>
+                                  <v-list-item-title>Assign as owner</v-list-item-title>
                                 </v-list-item-content>
                               </v-list-item>
                               <v-list-item @click="removeFromCommunity(member)">

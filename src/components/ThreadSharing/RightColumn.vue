@@ -74,7 +74,7 @@
               <template v-slot:activator="{ on }">
                 <v-icon v-on="on">mdi-cog</v-icon>
               </template>
-              <div class="notification-wrapper">
+              <div class="notification-wrapper__right-column">
                 <v-list dense flat>
                   <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
                     <v-list-item id="right-col-edit-commun" @click="editCommunity()">
@@ -309,6 +309,7 @@ import {
 } from '../../api/threadSharing'
 import AppDialog from '../AppDialog'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { isOwner } from '../../utils/functions'
 
 export default {
   data() {
@@ -451,7 +452,11 @@ export default {
         this.suggestedCommunities = response.data.data
       })
     },
-    isOwnerOfTheCommunity() {},
+    isOwnerOfTheCommunity() {
+      if (this.communityDetails) {
+        return isOwner(this.communityDetails.myMembershipStatusId)
+      }
+    },
     openNotifications() {
       this.$emit('openNotifications')
       this.$store.dispatch('threadSharing/getNotifications', localStorage.getItem('communityId'))
@@ -489,7 +494,7 @@ export default {
   }
 }
 .right-column {
-  .notification-wrapper {
+  .notification-wrapper__right-column {
     padding: 0 !important;
     width: 100%;
     box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
@@ -562,7 +567,7 @@ export default {
     text-transform: unset !important;
   }
 
-  ::v-deep .suggested-card > .suggested-row {
+  .suggested-card > .suggested-row {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
@@ -719,7 +724,7 @@ export default {
     text-align: left !important;
   }
 
-  ::v-deep .v-slide-group__wrapper {
+  .v-slide-group__wrapper {
     padding-left: 20px !important;
   }
 
@@ -730,13 +735,13 @@ export default {
     border-radius: 20px;
   }
 
-  ::v-deep .community-selector {
+  .community-selector {
     .v-tabs-bar {
       height: 44px !important;
     }
   }
 
-  ::v-deep .community-selector .v-slide-group__wrapper {
+  .community-selector .v-slide-group__wrapper {
     background-color: #f5f7fa !important;
     height: 44px !important;
     padding-left: 0 !important;
@@ -749,12 +754,12 @@ export default {
     }
   }
 
-  ::v-deep .community-selector .v-slide-group__wrapper > div {
+  .community-selector .v-slide-group__wrapper > div {
     height: 100%;
     margin-right: 0 !important;
   }
 
-  ::v-deep .v-text-field--outlined fieldset {
+  .v-text-field--outlined fieldset {
     border-radius: 6px !important;
   }
 
@@ -845,12 +850,12 @@ export default {
     display: flex;
   }
 
-  ::v-deep .v-btn:not(.v-btn--round).v-size--default,
-  ::v-deep .v-btn--icon.v-size--default {
+  .v-btn:not(.v-btn--round).v-size--default,
+  .v-btn--icon.v-size--default {
     height: 36px !important;
   }
 
-  ::v-deep .v-btn--icon.v-size--default {
+  .v-btn--icon.v-size--default {
     margin-left: 4px;
     width: 36px !important;
   }
@@ -926,8 +931,8 @@ export default {
     color: rgba(0, 0, 0, 0.87);
   }
 
-  ::v-deep .right-side-like .v-icon,
-  ::v-deep .right-side-message .v-icon {
+  .right-side-like .v-icon,
+  .right-side-message .v-icon {
     height: 14px !important;
     width: 14px !important;
     font-size: 14px !important;
@@ -1138,7 +1143,7 @@ export default {
     color: rgba(0, 0, 0, 0.87);
   }
 
-  ::v-deep .invite-input > .v-input__control > .v-input__slot {
+  .invite-input > .v-input__control > .v-input__slot {
     align-items: center;
     border-radius: 8px;
     border: solid 1px rgba(0, 0, 0, 0.16);
@@ -1190,7 +1195,7 @@ export default {
     justify-content: center !important;
     align-items: center !important;
 
-    > ::v-deep .v-overlay__content {
+    > .v-overlay__content {
       height: auto;
       width: 100%;
     }

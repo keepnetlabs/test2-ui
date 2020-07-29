@@ -1286,7 +1286,7 @@
                       v-model="tab"
                       background-color="transparent"
                       color="basil"
-                      class="tab-bar"
+                      class="tab-bar v-tabs-bar__details-tab"
                       id="last-prev-tabs"
                     >
                       <v-tab>Details</v-tab>
@@ -1701,10 +1701,9 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 
 .malicious-style,
 .malicious-link {
-  border-bottom: 1px solid #bb2a45 !important;
-  border-color: #bb2a45 !important;
-  background-color: #f3e1e5 !important;
-  color: #bb2a45 !important;
+   color: #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
 
   .share-setting-text {
     text-decoration: none !important;
@@ -1725,8 +1724,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
     content: attr(data-title);
     position: absolute;
-    padding: 5px 16px 5px 36px;
-    bottom: -1.6em;
+        padding: 5px 16px 5px 16px;
+    bottom: -30px;
     left: 100%;
     white-space: nowrap;
     opacity: 0;
@@ -1743,9 +1742,9 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     position: relative;
 }
 .malicious-style {
-
-  color: #bb2a45 !important;
-  text-decoration: underline !important;
+   color: #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
 }
 
 .malicious-icon {
@@ -1753,6 +1752,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
   font-size: 18px !important;
   color: #bb2a45 !important;
   caret-color: #bb2a45 !important;
+  position: absolute !important;
+    top: 2px;
 }
 
 .red-malicious-alert {
@@ -2094,7 +2095,6 @@ export default {
           let urlItem = document
             .getElementById(id)
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
-          debugger
           return {
             ...item,
             name: !!urlItem.length && urlItem[0].innerText ? urlItem[0].innerText : null,
@@ -3373,6 +3373,14 @@ export default {
     max-height: 500px;
     overflow: auto;
 
+    .malicious-style {
+      //edit
+      color: #bb2a45 !important;
+      border-bottom: 1px solid #bb2a45 !important;
+      border-color: #bb2a45 !important;
+      background-color: #f3e1e5 !important;
+    }
+
     h2 {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
@@ -4467,48 +4475,6 @@ export default {
   .v-expansion-panel-header {
     box-shadow: unset !important;
     border: unset !important;
-  }
-
-  .tab-bar {
-    width: 100%;
-    height: 48px;
-    padding: 0;
-    background-color: #f5f7fa;
-    border-radius: 0 !important;
-
-    .v-slide-group__wrapper {
-      padding-left: 0 !important;
-    }
-
-    .v-slide-group__content {
-      margin-right: 0 !important;
-    }
-
-    .v-tab--active {
-      color: #2196f3 !important;
-    }
-
-    .v-tab {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px !important;
-      font-weight: 600 !important;
-      text-transform: uppercase;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      text-align: center !important;
-      margin-right: 32px !important;
-      padding: 0 !important;
-      padding-right: 3px !important;
-      min-width: auto !important;
-    }
-
-    .v-tabs-bar {
-      padding: 0 24px;
-      height: 48px !important;
-      border-radius: 0 !important;
-    }
   }
 
   .v-window {

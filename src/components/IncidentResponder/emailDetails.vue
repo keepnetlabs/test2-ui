@@ -447,9 +447,9 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     position: relative;
 }
 .malicious-style {
-
-  color: #bb2a45 !important;
-  text-decoration: underline !important;
+   color: #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
 }
 
 .malicious-icon {
@@ -457,6 +457,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
   font-size: 18px !important;
   color: #bb2a45 !important;
   caret-color: #bb2a45 !important;
+  position: absolute !important;
+    top: 2px;
 }
 
 .red-malicious-alert {
@@ -1951,8 +1953,11 @@ export default {
   }
 
   .malicious-style {
+    //edit
     color: #bb2a45 !important;
-    text-decoration: underline !important;
+    border-bottom: 1px solid #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
   }
 
   .malicious-icon {

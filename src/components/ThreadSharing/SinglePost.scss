@@ -949,14 +949,25 @@
   }
 
   .malicious-style {
+    //edit
     color: #bb2a45 !important;
-    text-decoration: underline !important;
+    border-bottom: 1px solid #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    color: rgba(255, 255, 255, 0.87) !important;
   }
 
   .malicious-icon {
     font-size: 18px !important;
     color: #bb2a45 !important;
     caret-color: #bb2a45 !important;
+
   }
 
   .red-malicious-alert {
