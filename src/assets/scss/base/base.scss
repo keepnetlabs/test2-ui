@@ -62,5 +62,9 @@
 .notification-wrapper__v-list{
   .v-list-item--active{
     border-left: none !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    i{
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
   }
  }

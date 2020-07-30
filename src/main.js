@@ -14,7 +14,10 @@ import 'echarts/lib/component/tooltip'
 import 'echarts-gl'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
-
+Vue.component(
+  'phishing-settings',
+  require('./components/PhishingReporter/Settings/Settings').default
+)
 if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
   console.log('process.env.VUE_APP_SAAS_STATUS: ', process.env.VUE_APP_SAAS_STATUS)
   const VueAnalytics = require('vue-analytics').default

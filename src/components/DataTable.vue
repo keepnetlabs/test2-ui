@@ -1043,6 +1043,7 @@ export default {
     if (this.init) {
       this.init = false
     }
+    console.log('iam updated')
   },
   mounted() {
     this.init = true
@@ -1302,10 +1303,9 @@ export default {
         if (this.currentPage === 1) {
           this.tableData = this.initialData.slice(0, rows)
         } else {
-          this.tableData = this.initialData.slice(
-            (this.currentPage - 1) * rows,
-            this.currentPage * rows
-          )
+          const temp =
+            this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
+          this.tableData = temp.length === 0 ? [{}] : temp
         }
       }
     },

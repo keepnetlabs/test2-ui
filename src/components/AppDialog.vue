@@ -10,7 +10,11 @@
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm">
-        <v-list-item class="k-dialog__header" v-if="icon && title">
+        <v-list-item
+          class="k-dialog__header"
+          v-if="icon && title"
+          :class="[maxHeightSize && 'k-dialog__header-max-height']"
+        >
           <div class="v-btn v-cart-icon-wrapper" v-if="icon">
             <v-icon :color="iconColor" class="ml-2" left medium>
               {{ icon }}
@@ -23,12 +27,23 @@
             }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <div class="k-dialog__body" :style="[maxHeight && { maxHeight: '400px' }]">
+        <div
+          class="k-dialog__body"
+          :style="[
+            maxHeight && {
+              maxHeight: maxHeightSize ? maxHeightSize : '400px',
+              minHeight: maxHeightSize ? maxHeightSize : ''
+            }
+          ]"
+        >
           <slot name="app-dialog-body">
             {{ body }}
           </slot>
         </div>
-        <v-card-actions class="k-dialog__footer">
+        <v-card-actions
+          class="k-dialog__footer"
+          :class="[maxHeightSize && 'k-dialog__footer-max-height']"
+        >
           <slot name="app-dialog-footer"></slot>
         </v-card-actions>
       </v-form>
@@ -83,6 +98,9 @@ export default {
       type: Boolean,
       default: false
     },
+    maxHeightSize: {
+      type: String
+    },
     size: {
       type: String,
       default: 'small'
@@ -133,6 +151,11 @@ export default {
     margin-bottom: 0;
     border-bottom: 1px solid #ebeef5;
     padding: 12px 24px 12px 24px;
+    &-max-height {
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+        0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      z-index: 999;
+    }
   }
 
   &__title {
@@ -175,6 +198,18 @@ export default {
     > * {
       width: 100%;
     }
+    &-max-height {
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+        0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+      z-index: 999;
+    }
   }
+}
+.k-dialog__body::-webkit-scrollbar {
+  display: none;
+}
+.k-dialog__body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
 }
 </style>

@@ -260,7 +260,6 @@
                 <div class="ts-header">
                   <div class="ts-title" @click="communityDetails(item)">
                     {{ item.communityName }}
-                    {{ item.membershipStatusId }}
                   </div>
                   <div class="flex-grow-1"></div>
                   <div class="ts-header-btn-1">

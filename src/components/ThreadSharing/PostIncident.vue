@@ -119,8 +119,6 @@
                 chips
                 clearable
                 hide-selected
-                item-text="Subject"
-                item-value="MailId"
                 label="Search for incident name or status"
                 class="first-select input-select mb-6"
                 solo
@@ -673,11 +671,14 @@
                     class="switch-row"
                     v-if="uploadRespond.subject"
                   >
-                    <div v-if="!uploadRespond.isFlagged" class="img-wrapper">
+                    <div v-if="!uploadRespond.isSubjectFlagged" class="img-wrapper">
                       <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
                     <div v-else class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text-red.svg" />
+                      <img
+                        srcset="../../assets/img/filter-icons/short-text.svg"
+                        src="../../assets/img/filter-icons/short-text.svg"
+                      />
                     </div>
                     <v-switch
                       v-model="uploadRespond.isSubjectHidden"
@@ -726,8 +727,11 @@
                     class="switch-row"
                     v-if="uploadRespond.from"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isFromFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-in.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-in.svg" />
                     </div>
                     <v-switch
                       v-model="uploadRespond.isFromHidden"
@@ -776,8 +780,11 @@
                     class="switch-row"
                     v-if="uploadRespond.to && !!uploadRespond.to.length"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isToFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isToHidden" @change="toValChange"></v-switch>
                     <label v-if="filterOpened">To</label>
@@ -823,8 +830,11 @@
                     class="switch-row"
                     v-if="uploadRespond.cc && !!uploadRespond.cc.length"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isCcFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isCcHidden" @change="ccValChange"></v-switch>
                     <label v-if="filterOpened">CC</label>
@@ -870,8 +880,11 @@
                     class="switch-row"
                     v-if="uploadRespond.bcc && !!uploadRespond.bcc.length"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isBccFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isBccHidden" @change="bccValChange"></v-switch>
                     <label v-if="filterOpened">BCC</label>
@@ -1206,7 +1219,7 @@
                           rounded
                           outlined
                           class="tag-btn ml-1 text-none"
-                          id="incident-badge"
+                          id="incident-badge-attach"
                           >{{ findCategory(uploadRespond.CategoryResourceIdArray[1]) }}
                         </v-btn>
                         <div style="position: relative;">
@@ -1297,33 +1310,137 @@
                         <div id="last-detail-parts" class="detail-parts">
                           <p
                             v-if="
-                              uploadRespond.subject &&
-                              !uploadRespond.isSubjectHidden &&
-                              uploadRespond.isSubjectFlagged
+                              (uploadRespond.subject &&
+                                !uploadRespond.isSubjectHidden &&
+                                uploadRespond.isSubjectFlagged) ||
+                              (!!uploadRespond.from &&
+                                !uploadRespond.isFromHidden &&
+                                uploadRespond.isFromFlagged) ||
+                              (uploadRespond.to &&
+                                !!uploadRespond.to.length &&
+                                !uploadRespond.isToHidden &&
+                                uploadRespond.isToFlagged) ||
+                              (uploadRespond.cc &&
+                                !!uploadRespond.cc.length &&
+                                !uploadRespond.isCcHidden &&
+                                uploadRespond.isCcFlagged) ||
+                              (uploadRespond.bcc &&
+                                !!uploadRespond.bcc.length &&
+                                !uploadRespond.isBccHidden &&
+                                uploadRespond.isBccFlagged)
                             "
-                            class="detail-black"
+                            class="detail-black disc-header"
                           >
                             Header
                           </p>
-                          <p
-                            v-if="uploadRespond.from && uploadRespond.isFromFlagged"
-                            :id="uploadRespond.from"
-                            class="detail-black detail-red"
-                          >
-                            From:
-                            {{
-                              !uploadRespond.isFromHidden ? uploadRespond.from : 'hidden by owner'
-                            }}
-                          </p>
-                          <p
-                            v-if="
-                              uploadRespond && uploadRespond.from && uploadRespond.isFromFlagged
-                            "
-                            id="harmful-sender"
-                            class="detail-black"
-                          >
-                            The sender email address has been reported as harmful email sender.
-                          </p>
+                          <div>
+                            <p
+                              v-if="uploadRespond.subject && uploadRespond.isSubjectFlagged"
+                              :id="uploadRespond.subject"
+                              class="detail-black detail-red"
+                            >
+                              Subject:
+                              {{
+                                !uploadRespond.isSubjectHidden
+                                  ? uploadRespond.subject
+                                  : 'hidden by owner'
+                              }}
+                            </p>
+                            <p
+                              v-if="
+                                uploadRespond &&
+                                uploadRespond.subject &&
+                                uploadRespond.isSubjectFlagged
+                              "
+                              id="harmful-Subject"
+                              class="detail-black"
+                            >
+                              The Subject is harmful
+                            </p>
+                          </div>
+                          <div>
+                            <p
+                              v-if="uploadRespond.from && uploadRespond.isFromFlagged"
+                              :id="uploadRespond.from"
+                              class="detail-black detail-red"
+                            >
+                              From:
+                              {{
+                                !uploadRespond.isFromHidden ? uploadRespond.from : 'hidden by owner'
+                              }}
+                            </p>
+                            <p
+                              v-if="
+                                uploadRespond && uploadRespond.from && uploadRespond.isFromFlagged
+                              "
+                              id="harmful-sender"
+                              class="detail-black"
+                            >
+                              The from email address has been reported as harmful email.
+                            </p>
+                          </div>
+                          <div>
+                            <p
+                              v-if="uploadRespond.to && uploadRespond.isToFlagged"
+                              class="detail-black detail-red"
+                            >
+                              To:
+                              {{
+                                !uploadRespond.isToHidden
+                                  ? uploadRespond.to.toString()
+                                  : 'hidden by owner'
+                              }}
+                            </p>
+                            <p
+                              v-if="uploadRespond && uploadRespond.to && uploadRespond.isToFlagged"
+                              id="harmful-to"
+                              class="detail-black"
+                            >
+                              The To email address has been reported as harmful email.
+                            </p>
+                          </div>
+                          <div>
+                            <p
+                              v-if="uploadRespond.cc && uploadRespond.isCcFlagged"
+                              class="detail-black detail-red"
+                            >
+                              CC:
+                              {{
+                                !uploadRespond.isCcHidden
+                                  ? uploadRespond.cc.toString()
+                                  : 'hidden by owner'
+                              }}
+                            </p>
+                            <p
+                              v-if="uploadRespond && uploadRespond.cc && uploadRespond.isCcFlagged"
+                              id="harmful-cc"
+                              class="detail-black"
+                            >
+                              The CC email address has been reported as harmful email.
+                            </p>
+                          </div>
+                          <div>
+                            <p
+                              v-if="uploadRespond.bcc && uploadRespond.isBccFlagged"
+                              class="detail-black detail-red"
+                            >
+                              CC:
+                              {{
+                                !uploadRespond.isBccHidden
+                                  ? uploadRespond.bcc.toString()
+                                  : 'hidden by owner'
+                              }}
+                            </p>
+                            <p
+                              v-if="
+                                uploadRespond && uploadRespond.bcc && uploadRespond.isBccFlagged
+                              "
+                              id="harmful-bcc"
+                              class="detail-black"
+                            >
+                              The BCC email address has been reported as harmful email.
+                            </p>
+                          </div>
                         </div>
                         <div
                           v-if="uploadRespond && uploadRespond.urls && uploadRespond.urls.length"
@@ -1448,12 +1565,14 @@
                             <h2
                               style="padding: 0 2px; border-bottom: 1px solid transparent;"
                               v-if="!uploadRespond.isSubjectHidden && !!uploadRespond.subject"
+                              :class="{ 'malicious-style': uploadRespond.isSubjectFlagged }"
                             >
                               Subject: {{ uploadRespond.subject }}
                             </h2>
                             <h2
                               style="padding: 0 2px; border-bottom: 1px solid transparent;"
                               v-else-if="uploadRespond.isSubjectHidden && !!uploadRespond.subject"
+                              :class="{ 'malicious-style': uploadRespond.isSubjectFlagged }"
                             >
                               Subject: Hidden by owner
                             </h2>
@@ -1461,12 +1580,14 @@
                               <div
                                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                                 v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
+                                :class="{ 'malicious-style': uploadRespond.isFromFlagged }"
                               >
                                 From: {{ uploadRespond.from }}
                               </div>
                               <div
                                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                                 v-else-if="uploadRespond.isFromHidden && !!uploadRespond.from"
+                                :class="{ 'malicious-style': uploadRespond.isFromFlagged }"
                               >
                                 From: Hidden by owner
                               </div>
@@ -1477,12 +1598,18 @@
                                   uploadRespond.to &&
                                   !!uploadRespond.to.length
                                 "
+                                :class="{ 'malicious-style': uploadRespond.isToFlagged }"
                               >
                                 To: {{ uploadRespond.to && uploadRespond.to.toString() }}
                               </div>
                               <div
                                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                                v-else-if="uploadRespond.isToHidden && !!uploadRespond.to.length"
+                                v-else-if="
+                                  uploadRespond.isToHidden &&
+                                  uploadRespond.to &&
+                                  !!uploadRespond.to.length
+                                "
+                                :class="{ 'malicious-style': uploadRespond.isToFlagged }"
                               >
                                 To: Hidden by owner
                               </div>
@@ -1493,12 +1620,14 @@
                                   uploadRespond.cc &&
                                   !!uploadRespond.cc.length
                                 "
+                                :class="{ 'malicious-style': uploadRespond.isCcFlagged }"
                               >
                                 CC: {{ uploadRespond.cc && uploadRespond.cc.toString() }}
                               </div>
                               <div
                                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                                 v-else-if="uploadRespond.isCcHidden && !!uploadRespond.cc.length"
+                                :class="{ 'malicious-style': uploadRespond.isCcFlagged }"
                               >
                                 CC: Hidden by owner
                               </div>
@@ -1509,12 +1638,14 @@
                                   uploadRespond.bcc &&
                                   !!uploadRespond.bcc.length
                                 "
+                                :class="{ 'malicious-style': uploadRespond.isBccFlagged }"
                               >
                                 CC: {{ uploadRespond.bcc && uploadRespond.bcc.toString() }}
                               </div>
                               <div
                                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                                 v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length"
+                                :class="{ 'malicious-style': uploadRespond.isBccFlagged }"
                               >
                                 BCC: Hidden by owner
                               </div>
@@ -1524,16 +1655,16 @@
                               </div>
                             </div>
                           </div>
-                          <div id="last-preview-body-step-5" class="preview-body">
+                          <div id="last-preview-body-preview" class="preview-body">
                             <k-shadow-frame
                               id="last-preview-body-shadow-root"
                               :content="uploadRespond.body"
                             />
                           </div>
                           <div
-                            id="preview-footer-container-att-step-5"
+                            id="preview-footer-container-att-preview"
                             class="preview-footer"
-                            v-if="!!uploadRespond.attachments.length"
+                            v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
                           >
                             <h2>Attachments</h2>
                             <div class="attachment-wrapper">
@@ -1579,7 +1710,6 @@
                             </div>
                           </div>
                         </div>
-
                         <div id="last-step-preview-buttons" class="preview-buttons">
                           <v-btn id="last-step-useful-btn">
                             <v-icon>mdi-thumb-up</v-icon>
@@ -2009,9 +2139,26 @@ export default {
     isAnonym: false
   }),
   watch: {
-    /*searchIncident(val) {
-      this.searchNotifiedMail()
-    }*/
+    searchIncident(val) {
+      if (!val) {
+        this.listData = this.backupListData
+      } else {
+        if (this.listData && this.backupListData) {
+          this.listData = this.backupListData.reduce((acc, item) => {
+            Object.values(item).find((i) => {
+              if (typeof i === 'string' && i.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+                return acc.push(item)
+            })
+            return acc
+          }, [])
+        }
+        this.$forceUpdate()
+      }
+      this.$forceUpdate()
+    }
+  },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
   },
   methods: {
     findCategory(id) {
@@ -2097,7 +2244,8 @@ export default {
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
           return {
             ...item,
-            name: !!urlItem.length && urlItem[0].innerText ? urlItem[0].innerText : null,
+            url: item.url.replace('&amp;', '&'),
+            name: item.name,
             urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
           }
         })
@@ -2234,7 +2382,7 @@ export default {
           .then((response) => {
             this.selectedEmail = response.data.data.from
             this.uploadRespond = response.data.data
-            this.uploadRespond.body = unescape(response.data.data.body)
+            this.uploadRespond.body = response.data.data.body
             this.setShadowRootMalicousLink('incident-preview-1')
           })
           .catch((error) => {
@@ -2255,6 +2403,7 @@ export default {
       searchNotifiedMail(payload).then((response) => {
         const { data } = response
         this.listData = data.data.results
+        this.backupListData = JSON.parse(JSON.stringify(data.data.results))
       })
     },
     getSelectedEmailPreview(selectedItem) {
@@ -2584,6 +2733,9 @@ export default {
     this.getListThreatCategories()
     this.currentCompany = localStorage.getItem('companyName')
     this.currentCommunityName = localStorage.getItem('communityName')
+  },
+  beforeDestroy() {
+    document.querySelector('html').style.overflowY = 'initial'
   }
 }
 </script>

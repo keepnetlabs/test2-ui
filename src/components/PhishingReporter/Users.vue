@@ -192,7 +192,7 @@ export default {
     callForPhishingReporterUser() {
       const payload = {
         pageNumber: 1,
-        pageSize: 5,
+        pageSize: 5000,
         orderBy: 'LastSeen',
         ascending: false
       }
