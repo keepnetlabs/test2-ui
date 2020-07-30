@@ -958,9 +958,9 @@
                     ></v-switch>
                     <v-tooltip bottom opacity="1" z-index="9999">
                       <template v-slot:activator="{ on }">
-                        <label v-on="on" v-if="filterOpened">{{ url.url || url.url }}</label>
+                        <label v-on="on" v-if="filterOpened">{{ url.name || url.url }}</label>
                       </template>
-                      <span>{{ url.url || url.url }}</span>
+                      <span>{{ url.name || url.url }}</span>
                     </v-tooltip>
                     <v-menu v-model="attcChevron[ind]" right offset-x transition="scale-transition">
                       <template v-slot:activator="{ on }">
