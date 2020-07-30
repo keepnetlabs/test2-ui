@@ -487,68 +487,103 @@
             >
               Detected Items
             </h1>
-            <div class="detail-parts">
+            <div id="last-detail-parts" class="detail-parts">
               <p
                 v-if="
-                (emailData &&
-                  emailData.subject &&
-                  !emailData.subject.isSubjectHidden &&
-                  emailData.subject.isFlagged)
-              "
-                class="detail-black"
+                  (emailData.subject && !emailData.isSubjectHidden && emailData.isSubjectFlagged) ||
+                  (!!emailData.from && !emailData.isFromHidden && emailData.isFromFlagged) ||
+                  (emailData.to &&
+                    !!emailData.to.length &&
+                    !emailData.isToHidden &&
+                    emailData.isToFlagged) ||
+                  (emailData.cc &&
+                    !!emailData.cc.length &&
+                    !emailData.isCcHidden &&
+                    emailData.isCcFlagged) ||
+                  (emailData.bcc &&
+                    !!emailData.bcc.length &&
+                    !emailData.isBccHidden &&
+                    emailData.isBccFlagged)
+                "
+                class="detail-black disc-header"
               >
                 Header
               </p>
-              <p
-                v-if="
-                (emailData &&
-                  emailData.from &&
-                  !emailData.from.isFromHidden &&
-                  emailData.from.isFromFlagged)
-              "
-                :id="'from' + emailData.from"
-                class="detail-black detail-red"
-              >
-                From: {{ emailData.from }}
-              </p>
-              <p
-                v-if="
-                 (emailData &&
-                  emailData.from &&
-                  !emailData.from.isFromHidden &&
-                  emailData.from.isFromFlagged)
-              "
-                class="detail-black"
-              >
-                The sender email address has been reported as harmful email sender.
-              </p>
+              <div>
+                <p
+                  v-if="emailData.subject && emailData.isSubjectFlagged"
+                  :id="emailData.subject"
+                  class="detail-black detail-red"
+                >
+                  Subject:
+                  {{ !emailData.isSubjectHidden ? emailData.subject : 'hidden by owner' }}
+                </p>
+                <p
+                  v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
+                  id="harmful-Subject"
+                  class="detail-black"
+                >
+                  The Subject is harmful
+                </p>
+              </div>
+              <div>
+                <p
+                  v-if="emailData.from && emailData.isFromFlagged"
+                  :id="emailData.from"
+                  class="detail-black detail-red"
+                >
+                  From:
+                  {{ !emailData.isFromHidden ? emailData.from : 'hidden by owner' }}
+                </p>
+                <p
+                  v-if="emailData && emailData.from && emailData.isFromFlagged"
+                  id="harmful-sender"
+                  class="detail-black"
+                >
+                  The from email address has been reported as harmful email.
+                </p>
+              </div>
+              <div>
+                <p v-if="emailData.to && emailData.isToFlagged" class="detail-black detail-red">
+                  To:
+                  {{ !emailData.isToHidden ? emailData.to.toString() : 'hidden by owner' }}
+                </p>
+                <p
+                  v-if="emailData && emailData.to && emailData.isToFlagged"
+                  id="harmful-to"
+                  class="detail-black"
+                >
+                  The To email address has been reported as harmful email.
+                </p>
+              </div>
+              <div>
+                <p v-if="emailData.cc && emailData.isCcFlagged" class="detail-black detail-red">
+                  CC:
+                  {{ !emailData.isCcHidden ? emailData.cc.toString() : 'hidden by owner' }}
+                </p>
+                <p
+                  v-if="emailData && emailData.cc && emailData.isCcFlagged"
+                  id="harmful-cc"
+                  class="detail-black"
+                >
+                  The CC email address has been reported as harmful email.
+                </p>
+              </div>
+              <div>
+                <p v-if="emailData.bcc && emailData.isBccFlagged" class="detail-black detail-red">
+                  CC:
+                  {{ !emailData.isBccHidden ? emailData.bcc.toString() : 'hidden by owner' }}
+                </p>
+                <p
+                  v-if="emailData && emailData.bcc && emailData.isBccFlagged"
+                  id="harmful-bcc"
+                  class="detail-black"
+                >
+                  The BCC email address has been reported as harmful email.
+                </p>
+              </div>
             </div>
-            <div class="detail-parts">
-              <p
-                v-if="
-                 (emailData &&
-                  emailData.to &&
-                  !emailData.isToHidden &&
-                  emailData.to.isToFlagged)
-              "
-                :id="'from' + emailData.to"
-                class="detail-black detail-red"
-              >
-                To: {{ emailData.to.toString() }}
-              </p>
-              <!--<p
-                v-if="
-                  shareSettings &&
-                  shareSettings.receiverInfo &&
-                  shareSettings.receiverInfo[0] &&
-                  shareSettings.receiverInfo[0].IsShow &&
-                  shareSettings.receiverInfo[0].IsMalicious
-                "
-                class="detail-black"
-              >
-                The receiver email address has been reported as harmful email sender.
-              </p>-->
-            </div>
+
             <div
               v-if="emailData && emailData.urls && emailData.urls.length"
               class="preview-attch-wrapper detail-parts"
@@ -668,170 +703,79 @@
           </v-tab-item>
           <v-tab-item>
             <div class="preview-header pt-0">
-              <h2 v-if="emailData && emailData.subject && !emailData.isSubjectHidden">
-                <span :class="[emailData.isSubjectFlagged ? 'malicious-style' : '']"
-                  >Subject: {{ emailData.subject }}</span
-                >
-                <v-tooltip v-if="emailData.isSubjectFlagged" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span class="malicious-tooltip--span"
-                    >The subject has been reported as a threat source</span
-                  >
-                </v-tooltip>
+              <h2
+                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                v-if="!emailData.isSubjectHidden && !!emailData.subject"
+                :class="{ 'malicious-style': emailData.isSubjectFlagged }"
+              >
+                Subject: {{ emailData.subject }}
               </h2>
               <h2
-                v-else-if="emailData && emailData.subject && emailData.isSubjectHidden"
-                :id="'detail-subject-' + emailData.subject"
+                style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                v-else-if="emailData.isSubjectHidden && !!emailData.subject"
+                :class="{ 'malicious-style': emailData.isSubjectFlagged }"
               >
-                <span :class="[emailData.isSubjectFlagged ? 'malicious-style' : '']"
-                  >Subject: hidden by owner</span
-                >
-                <v-tooltip v-if="emailData.isSubjectFlagged" bottom opacity="1">
-                  <template v-slot:activator="{ on }">
-                    <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-                  </template>
-                  <span class="malicious-tooltip--span"
-                    >This email address has been reported as a threat source</span
-                  >
-                </v-tooltip>
+                Subject: Hidden by owner
               </h2>
               <div class="header-info pb-5">
-                <div v-if="emailData && emailData.from && !emailData.isFromHidden">
-                  <span :class="[emailData.isFromFlagged ? 'malicious-style' : '']"
-                    >From: {{ emailData.from }}</span
-                  >
-                  <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
-                  <br />
-                </div>
-                <div v-if="emailData && emailData.from && emailData.isFromHidden">
-                  <span :class="[emailData.isFromFlagged ? 'malicious-style' : '']"
-                    >From: hidden by owner</span
-                  >
-                  <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!emailData.isFromHidden && !!emailData.from"
+                  :class="{ 'malicious-style': emailData.isFromFlagged }"
+                >
+                  From: {{ emailData.from }}
                 </div>
                 <div
-                  v-if="emailData && emailData.to && emailData.to.length && !emailData.isToHidden"
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="emailData.isFromHidden && !!emailData.from"
+                  :class="{ 'malicious-style': emailData.isFromFlagged }"
                 >
-                  <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
-                    >To: {{ emailData.to }}</span
-                  >
-                  <v-tooltip v-if="emailData.isToFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
+                  From: Hidden by owner
                 </div>
                 <div
-                  v-if="emailData && emailData.to && emailData.to.length && !emailData.isToHidden"
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!emailData.isToHidden && emailData.to && !!emailData.to.length"
+                  :class="{ 'malicious-style': emailData.isToFlagged }"
                 >
-                  <span :class="[emailData.isToFlagged ? 'malicious-style' : '']"
-                    >To: hidden by owner</span
-                  >
-                  <v-tooltip v-if="emailData.isToFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
+                  To: {{ emailData.to && emailData.to.toString() }}
                 </div>
                 <div
-                  v-if="emailData && emailData.cc && emailData.cc.length && !emailData.isCcHidden"
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="emailData.isToHidden && emailData.to && !!emailData.to.length"
+                  :class="{ 'malicious-style': emailData.isToFlagged }"
                 >
-                  <span :class="[emailData.isCcFlagged ? 'malicious-style' : '']"
-                    >CC: {{ emailData.cc.toString() }}</span
-                  >
-                  <v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
-                </div>
-                <div v-if="emailData && emailData.cc && emailData.isCcHidden">
-                  <span :class="[emailData.isCcFlagged ? 'malicious-style' : '']"
-                    >CC: hidden by owner</span
-                  >
-                  <v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
+                  To: Hidden by owner
                 </div>
                 <div
-                  v-if="
-                    emailData && emailData.bcc && emailData.bcc.length && !emailData.isBccHidden
-                  "
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!emailData.isCcHidden && emailData.cc && !!emailData.cc.length"
+                  :class="{ 'malicious-style': emailData.isCcFlagged }"
                 >
-                  <span :class="[emailData.isBccFlagged ? 'malicious-style' : '']"
-                    >CC: {{ emailData.bcc.toString() }}</span
-                  >
-                  <v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
+                  CC: {{ emailData.cc && emailData.cc.toString() }}
                 </div>
-                <div v-if="emailData && emailData.bcc && emailData.isBccHidden">
-                  <span :class="[emailData.isBccFlagged ? 'malicious-style' : '']"
-                    >BCC: hidden by owner</span
-                  >
-                  <v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span class="malicious-tooltip--span"
-                      >This email address has been reported as a threat source</span
-                    >
-                  </v-tooltip>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="emailData.isCcHidden && !!emailData.cc.length"
+                  :class="{ 'malicious-style': emailData.isCcFlagged }"
+                >
+                  CC: Hidden by owner
                 </div>
-                <div id="details-post-date" v-if="emailData.sentTime">
-                  Date:
-                  {{ emailData.sentTime }}
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!emailData.isCcHidden && emailData.bcc && !!emailData.bcc.length"
+                  :class="{ 'malicious-style': emailData.isBccFlagged }"
+                >
+                  CC: {{ emailData.bcc && emailData.bcc.toString() }}
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="emailData.isBccHidden && !!emailData.bcc.length"
+                  :class="{ 'malicious-style': emailData.isBccFlagged }"
+                >
+                  BCC: Hidden by owner
+                </div>
+                <div>
+                  Date: {{ emailData.sentTime }}
                   <br />
                 </div>
               </div>
