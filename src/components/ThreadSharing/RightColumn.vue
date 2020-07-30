@@ -1,5 +1,5 @@
 <template>
-  <div class="right-column">
+  <div class="right-column" ref="rightCol">
     <v-card class="pop-up-card right-column pt-4 pl-6 pr-6" light min-height="300">
       <app-dialog
         :status="openInviteModal"
