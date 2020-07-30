@@ -109,6 +109,30 @@ export default {
     border-radius: 20px;
     padding: 34px;
 
+    position: relative;
+
+    &:not(.elevation-0) {
+      margin-left: 100px;
+      &:before {
+        content: '';
+        position: absolute;
+        left: -35px;
+        width: 36px;
+        top: -125px;
+        height: calc(105%);
+        border-color: #00bcd4;
+        border-style: solid;
+        border-width: 0 0 1px 1px;
+        border-radius: 1px;
+      }
+      &:first-child {
+        &:before {
+          top: 0 !important;
+          height: calc(53%);
+        }
+      }
+    }
+
     background-color: #ffffff;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
@@ -119,6 +143,33 @@ export default {
         line-height: 1.71 !important;
         letter-spacing: normal !important;
         color: #2196f3 !important;
+      }
+    }
+    .vqb-rule {
+      margin-top: 15px;
+      margin-bottom: 15px;
+      background-color: #f5f5f5;
+      border-color: #ddd;
+      padding: 21px 24px 0 24px;
+      position: relative;
+      margin-left: 100px;
+      &:before {
+        content: '';
+        position: absolute;
+        left: -36px;
+        width: 37px;
+        top: -69px;
+        height: calc(50% + 71px);
+        border-color: #2196f3;
+        border-style: solid;
+        border-width: 0 0 1px 1px;
+        border-radius: 1px;
+      }
+      &:first-child {
+        &:before {
+          height: calc(50% + 14px);
+          top: -8px;
+        }
       }
     }
   }
@@ -145,6 +196,7 @@ export default {
   background-color: #f5f5f5;
   border-color: #ddd;
   padding: 21px 24px 0 24px;
+  position: relative;
 }
 .match-type-container {
   margin-bottom: 9.5px !important;
