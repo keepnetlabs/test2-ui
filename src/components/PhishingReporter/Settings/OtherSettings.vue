@@ -14,6 +14,7 @@
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
           class="other-settings__link"
           target="_blank"
+          v-if="showHeaderLink"
         >
           Installation and configuration guide
         </a>
@@ -35,6 +36,7 @@
               class="other-settings__checkbox k-checkbox"
               color="#2196f3"
               label="Enable proxy"
+              :readonly="!showForm"
             ></v-checkbox>
           </div>
         </v-list-item-content>
@@ -51,8 +53,9 @@
             dense
             class="mt-2"
             v-model="formValues.apiUrl"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -68,8 +71,9 @@
             dense
             class="mt-2"
             v-model="formValues.companyKey"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -85,8 +89,9 @@
             dense
             class="mt-2"
             v-model="formValues.apiKey"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -102,9 +107,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.noInternetConnectionMessage"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="no-internet-connection-message"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -119,9 +125,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnYesText"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="yes-button-text"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -136,9 +143,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnNoText"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="no-button-text"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -153,9 +161,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnCancelText"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="cancel-button-text"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -170,9 +179,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.msgBoxBtnOkText"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="super-tip-text"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -187,9 +197,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.emailSendingErrorMessage"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="email-sending-message"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -204,9 +215,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.emailSelectionErrorMessage"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="email-sending-message"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -221,9 +233,10 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.badFormatEmailMessage"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
             id="email-sending-message"
             height="40"
+            :readonly="!showForm"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -245,6 +258,7 @@
             @change="handleEnterpriseVaultChange"
             color="#2196f3"
             label="Enable enterprise vault"
+            :readonly="!showForm"
           ></v-checkbox>
           <template v-if="formValues.enableEnterpriseVault">
             <transition appear name="fade">
@@ -258,6 +272,7 @@
                   class="k-textfield site-url__textfield site-url__textfield--3 mt-2"
                   v-model="formValues.enterpriseVaultUrl"
                   height="40"
+                  :readonly="!showForm"
                 ></v-text-field>
               </div>
             </transition>
@@ -300,6 +315,10 @@ export default {
       type: Boolean,
       default: true
     },
+    showHeaderLink: {
+      type: Boolean,
+      default: true
+    },
     formData: {
       type: Object,
       default: null
@@ -309,6 +328,10 @@ export default {
       default: false
     },
     showHeader: {
+      type: Boolean,
+      default: true
+    },
+    showForm: {
       type: Boolean,
       default: true
     }

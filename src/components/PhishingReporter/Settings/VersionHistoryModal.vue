@@ -63,7 +63,9 @@ export default {
     }
   },
   methods: {
-    handleDetails(row) {},
+    handleDetails(row) {
+      this.$emit('handleHistoryRow', row)
+    },
     handleDownload(row) {}
   },
   data() {
@@ -79,18 +81,18 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 250
+            width: 200
           },
           {
             property: 'version',
             align: 'left',
             editable: false,
             label: 'Version',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 250
+            width: 200
           },
           {
             property: 'createTime',
@@ -101,6 +103,13 @@ export default {
             show: true,
             type: 'text',
             width: 250
+          }
+        ],
+        rowActions: [
+          {
+            name: 'Details',
+            icon: 'mdi-text-box',
+            action: 'handleDetails'
           }
         ],
         iEmpty: {
