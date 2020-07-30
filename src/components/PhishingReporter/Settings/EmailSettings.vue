@@ -19,6 +19,7 @@
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
           class="other-settings__link"
           target="_blank"
+          v-if="showHeaderLink"
         >
           Installation and configuration guide
         </a>
@@ -39,6 +40,7 @@
             class="other-settings__checkbox k-checkbox mt-2"
             color="#2196f3"
             label="Send Information Email"
+            :readonly="!showForm"
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
@@ -54,10 +56,15 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.to"
-            :rules="[
-              (v) => validations.mail(v, 'Invalid recipient email address'),
-              (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
-            ]"
+            :rules="
+              showForm
+                ? [
+                    (v) => validations.mail(v, 'Invalid recipient email address'),
+                    (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                  ]
+                : []
+            "
+            :readonly="!showForm"
             id="recipient-email-address"
             height="40"
           ></v-text-field>
@@ -72,10 +79,15 @@
             dense
             class="k-textfield mt-2"
             v-model="formValues.cc"
-            :rules="[
-              (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
-              (v) => validations.mail(v, 'Invalid  email address')
-            ]"
+            :rules="
+              showForm
+                ? [
+                    (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
+                    (v) => validations.mail(v, 'Invalid  email address')
+                  ]
+                : []
+            "
+            :readonly="!showForm"
             id="cc"
             height="40"
           ></v-text-field>
@@ -91,10 +103,15 @@
             class="k-textfield mt-2"
             v-model="formValues.bcc"
             id="bcc"
-            :rules="[
-              (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
-              (v) => validations.mail(v, 'Invalid  email address')
-            ]"
+            :readonly="!showForm"
+            :rules="
+              showForm
+                ? [
+                    (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
+                    (v) => validations.mail(v, 'Invalid  email address')
+                  ]
+                : []
+            "
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -109,7 +126,12 @@
             class="k-textfield mt-2"
             v-model.trim="formValues.subject"
             id="email-subject"
-            :rules="[(v) => validations.maxLength(v, 255, 'It must be maximum 255 characters')]"
+            :rules="
+              showForm
+                ? [(v) => validations.maxLength(v, 255, 'It must be maximum 255 characters')]
+                : []
+            "
+            :readonly="!showForm"
             height="40"
           ></v-text-field>
         </v-list-item-content>
@@ -123,7 +145,12 @@
             dense
             class="mt-2"
             v-model.trim="formValues.content"
-            :rules="[(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]"
+            :rules="
+              showForm
+                ? [(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]
+                : []
+            "
+            :readonly="!showForm"
             id="email-message"
           ></v-textarea>
         </v-list-item-content>
@@ -164,7 +191,15 @@ export default {
       type: Boolean,
       default: true
     },
+    showHeaderLink: {
+      type: Boolean,
+      default: true
+    },
     showFooter: {
+      type: Boolean,
+      default: true
+    },
+    showForm: {
       type: Boolean,
       default: true
     },
