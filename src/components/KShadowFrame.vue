@@ -6,6 +6,7 @@
 
 <script>
 export default {
-  props: ['content']
+  props: ['content'],
+  mounted() {}
 }
 </script>

@@ -28,6 +28,7 @@
             color="#2196f3"
             label="Check and enable all disabled add-ins automatically"
             v-model="formValues.isEnableAddIn"
+            :readonly="!showForm"
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
@@ -78,6 +79,10 @@ export default {
       default: null
     },
     showHeaderLink: {
+      type: Boolean,
+      default: true
+    },
+    showForm: {
       type: Boolean,
       default: true
     }

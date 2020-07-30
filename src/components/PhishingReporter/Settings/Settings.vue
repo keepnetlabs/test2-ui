@@ -1,5 +1,5 @@
 <template>
-  <div class="settings" id="settings">
+  <div class="settings" id="settings" :class="inModal && 'settings__in-modal'">
     <download-add-in-modal
       :status="downloadAddInModalStatus"
       v-if="downloadAddInModalStatus"
@@ -27,6 +27,9 @@
           :formData="formData"
           @updateForm="callForCreatePhishingReporter"
           :spinnerStatus="spinnerStatus"
+          :show-footer="!inModal"
+          :show-header-link="!inModal"
+          :showForm="!inModal"
         />
       </v-tab-item>
       <v-tab-item>
@@ -34,6 +37,9 @@
           ref="refEmailSettings"
           :formData="formData"
           @updateForm="callForCreatePhishingReporter"
+          :show-footer="!inModal"
+          :showHeaderLink="!inModal"
+          :showForm="!inModal"
         />
       </v-tab-item>
       <v-tab-item>
@@ -41,6 +47,9 @@
           :formData="formData"
           ref="refOtherSettings"
           @updateForm="callForCreatePhishingReporter"
+          :show-footer="!inModal"
+          :show-header-link="!inModal"
+          :showForm="!inModal"
         />
       </v-tab-item>
       <v-tab-item>
@@ -48,6 +57,9 @@
           ref="refDiagnosticTool"
           :formData="formData"
           @updateForm="callForCreatePhishingReporter"
+          :show-footer="!inModal"
+          :show-header-link="!inModal"
+          :showForm="!inModal"
         />
       </v-tab-item>
     </v-tabs-items>
@@ -62,13 +74,16 @@ import OtherSettings from './OtherSettings'
 import { createPhishingReporter } from '../../../api/phishingReporter'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import DownloadAddInModal from '../DownloadAddInModal'
-
 export default {
   name: 'Settings',
   props: {
     formData: {
       type: Object,
       default: null
+    },
+    inModal: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -145,4 +160,14 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.settings {
+  &__in-modal {
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+    background-color: #ffffff;
+    padding: 16px;
+    margin-top: -8px;
+  }
+}
+</style>

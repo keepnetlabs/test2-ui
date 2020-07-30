@@ -3,7 +3,14 @@
     <version-history-modal
       :status="versionHistoryModalStatus"
       @changeVersionHistoryModalStatus="versionHistoryModalStatus = false"
+      @handleHistoryRow="handleHistoryRow"
       v-if="versionHistoryModalStatus"
+    />
+    <reporter-version-modal
+      :selected-version-row="selectedVersionRow"
+      :status="reporterVersionModalStatus"
+      @changeReporterVersionModalStatus="reporterVersionModalStatus = false"
+      v-if="reporterVersionModalStatus"
     />
     <v-list-item class="pl-0 add-in-settings__list-item" style="max-width: 100%;" v-if="showHeader">
       <v-list-item-content>
@@ -19,6 +26,7 @@
           href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
           class="other-settings__link"
           target="_blank"
+          v-if="showHeaderLink"
         >
           Installation and configuration guide
         </a>
@@ -29,16 +37,25 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
           <v-text-field
-            :rules="[
-              (v) =>
-                validations.maxLength(v, 50, 'Investigation Name must between 1-50 characters'),
-              (v) => validations.required(v, 'Required')
-            ]"
+            :rules="
+              showForm
+                ? [
+                    (v) =>
+                      validations.maxLength(
+                        v,
+                        50,
+                        'Investigation Name must between 1-50 characters'
+                      ),
+                    (v) => validations.required(v, 'Required')
+                  ]
+                : []
+            "
             class="k-textfield mt-2"
             dense
             id="add-in-text"
             outlined
             placeholder="Suspicious E-Mail Reporter"
+            :readonly="!showForm"
             v-model="formValues.addInName"
           ></v-text-field>
         </v-list-item-content>
@@ -48,16 +65,20 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="company-text">Brand Name</label>
           <v-text-field
-            :rules="[
-              (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters'),
-              (v) => validations.required(v, 'Required')
-            ]"
+            :rules="
+              showForm
+                ? [
+                    (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters'),
+                    (v) => validations.required(v, 'Required')
+                  ]
+                : []
+            "
             class="k-textfield mt-2"
             dense
             id="company-text"
             outlined
             placeholder="Company Name"
-            required
+            :readonly="!showForm"
             v-model="formValues.brandName"
           ></v-text-field>
         </v-list-item-content>
@@ -69,7 +90,12 @@
           <div class="add-in-settings__subtitle">
             Recommended size is 60x60px
           </div>
-          <v-btn @click="onBtnSelectFileClick" class="btn-select-file mt-2" rounded>
+          <v-btn
+            @click="onBtnSelectFileClick"
+            class="btn-select-file mt-2"
+            rounded
+            :disabled="!showForm"
+          >
             SELECT FILE
             <input
               :value="formValues.hiddenFileUploadValue"
@@ -103,11 +129,20 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
           <v-text-field
-            :rules="[
-              (v) =>
-                validations.maxLength(v, 150, 'Alertbox Heading must between 1-150 characters'),
-              (v) => validations.required(v, 'Required')
-            ]"
+            :rules="
+              showForm
+                ? [
+                    (v) =>
+                      validations.maxLength(
+                        v,
+                        150,
+                        'Alertbox Heading must between 1-150 characters'
+                      ),
+                    (v) => validations.required(v, 'Required')
+                  ]
+                : []
+            "
+            :readonly="!showForm"
             class="k-textfield mt-2"
             dense
             id="alertbox-text"
@@ -131,6 +166,7 @@
             label="Show Warning"
             class="k-checkbox"
             v-model="formValues.isConfirmationBeforeAnalysis"
+            :readonly="!showForm"
           ></v-checkbox>
           <template v-if="formValues.isConfirmationBeforeAnalysis">
             <transition appear name="fade">
@@ -144,6 +180,7 @@
                   placeholder="Report this email?"
                   required
                   v-model="formValues.analysisConfirmationMessage"
+                  :readonly="!showForm"
                 ></v-text-field>
               </div>
             </transition>
@@ -161,7 +198,8 @@
             outlined
             placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
             required
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+            :readonly="!showForm"
             v-model="formValues.analysisThankYouMessage"
           ></v-text-field>
         </v-list-item-content>
@@ -177,6 +215,7 @@
             style="margin-top: 12px !important; margin-bottom: 2px;"
             color="#2196f3"
             label="Delete Original Email"
+            :readonly="!showForm"
           ></v-checkbox>
 
           <v-text-field
@@ -186,6 +225,7 @@
             outlined
             placeholder="Do you wish to delete original email?"
             required
+            :readonly="!showForm"
             v-model="formValues.analysisEmailDeleteMessage"
           ></v-text-field>
         </v-list-item-content>
@@ -195,10 +235,15 @@
         <v-list-item-content>
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
           <v-text-field
-            :rules="[
-              (v) => validations.maxLength(v, 50, 'Warning Label must between 1-150 characters'),
-              (v) => validations.required(v, 'Required')
-            ]"
+            :rules="
+              showForm
+                ? [
+                    (v) =>
+                      validations.maxLength(v, 50, 'Warning Label must between 1-150 characters'),
+                    (v) => validations.required(v, 'Required')
+                  ]
+                : []
+            "
             class="k-textfield mt-2"
             dense
             id="alertbox-text"
@@ -237,9 +282,11 @@ import { getPhishingReporterImg } from '../../../api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'
+import ReporterVersionModal from './ReporterVersionModal'
 export default {
   name: 'AddinSettings',
   components: {
+    ReporterVersionModal,
     VersionHistoryModal
   },
   props: {
@@ -247,9 +294,17 @@ export default {
       type: Boolean,
       default: true
     },
+    showHeaderLink: {
+      type: Boolean,
+      default: false
+    },
     formData: {
       type: Object,
       default: null
+    },
+    showForm: {
+      type: Boolean,
+      default: true
     },
     inModal: {
       type: Boolean,
@@ -280,7 +335,9 @@ export default {
         hiddenFileUploadValue: '',
         isDeleteEmailBeforeAnalysis: null
       },
+      reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
+      selectedVersionRow: null,
       marginStatus: true,
       validations: {
         maxLength,
@@ -297,6 +354,10 @@ export default {
     },
     onFileChanged(e) {
       this.formValues.file = e.target.files[0]
+    },
+    handleHistoryRow(row) {
+      this.selectedVersionRow = row
+      this.reporterVersionModalStatus = true
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {

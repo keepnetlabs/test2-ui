@@ -1,5 +1,193 @@
 <template>
-  <div class="right-column">
+  <div class="right-column" ref="rightCol">
+    <v-overlay
+      id="new-community-overlay"
+      :value="isWantToAddNewCommunity"
+      :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
+      :opacity="1"
+      :z-index="999"
+      color="white"
+    >
+      <new-community
+        :communityItem="communityItem"
+        :resourceId="communityItem && communityItem.resourceId"
+        @closeAdd="onAddClose"
+      />
+    </v-overlay>
+    <app-dialog
+      :status="showNeedPermissionModal"
+      @changeStatus="showNeedPermissionModal = false"
+      icon="mdi-exit-to-app"
+      title="Cannot Leave Community"
+      :subtitle="communityDetails && communityDetails.name"
+      :body="`You have to give admin privileges to at least 1 other person`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="showNeedPermissionModal = false"
+              >I UNDERSTAND
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="isWantToToLeaveFromCommunity"
+      @changeStatus="isWantToToLeaveFromCommunity = false"
+      icon="mdi-exit-to-app"
+      title="Leave Community?"
+      :subtitle="communityDetails && communityDetails.name"
+      :body="`You are leaving ${
+        communityDetails && communityDetails.name
+      }. You won’t be able to post incidents to this community`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button mr-2"
+              text
+              color="#f56c6c"
+              @click="isWantToToLeaveFromCommunity = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="leaveFromCommunityConfirm"
+              >LEAVE
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="openNotificationModal"
+      icon="mdi-bell"
+      title="Community Notification Settings"
+    >
+      <template v-slot:app-dialog-body>
+        <v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              Notifications
+            </div>
+            <div>
+              <v-switch
+                id="general-notif-switch"
+                v-model="notifications.isNotifications"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+        <v-list-item class="pa-0">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              Dashboard notifications
+            </div>
+            <div>
+              <v-switch
+                id="dashboard-notif-switch"
+                v-model="notifications.isDashboard"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+        <v-list-item class="pa-0">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              Email notifications
+            </div>
+            <div>
+              <v-switch
+                id="email-notif-switch"
+                v-model="notifications.isEmail"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+        <v-list-item class="pa-0">
+          <div class="communities-wrapper__community-notification-row">
+            <div class="community-notification__text">
+              SMS notifications
+            </div>
+            <div>
+              <v-switch
+                id="whatsapp-notif-switch"
+                v-model="notifications.isSms"
+                color="#2196f3"
+                hide-details
+                class="community-notification-switch mt-0"
+              />
+            </div>
+          </div>
+        </v-list-item>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn
+            text
+            color="#f56c6c"
+            class="k-dialog__button"
+            @click="openNotificationModal = false"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="saveNotificationSetting"
+            >Save</v-btn
+          >
+        </div>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="isWantToDelete"
+      @changeStatus="isWantToDelete = false"
+      icon="mdi-delete"
+      title="Delete Community?"
+      :subtitle="communityDetails && communityDetails.name"
+      :body="`${
+        communityDetails && communityDetails.name
+      } will be deleted. All posts and data will be lost`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button mr-2"
+              text
+              color="#f56c6c"
+              @click="isWantToDelete = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="deleteCommunityConfirm"
+              >Delete
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
     <v-card class="pop-up-card right-column pt-4 pl-6 pr-6" light min-height="300">
       <app-dialog
         :status="openInviteModal"
@@ -20,7 +208,7 @@
             outlined
             :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
             v-model="emailarray"
-            :rules="[inviteMembers.limit]"
+            :rules="[inviteMembers.limit, inviteMembers.email]"
             class="pop-up-card__invite-member"
           ></v-combobox>
         </template>
@@ -53,15 +241,6 @@
         id="post-inc-btn"
         >POST INCIDENT
       </v-btn>
-      <v-btn
-        v-else-if="false"
-        class="create-com-btn"
-        @click="joinCommunity()"
-        block
-        rounded
-        id="join-community-btn"
-        >JOIN
-      </v-btn>
       <div class="right-side-content wrapper pt-8 pb-4">
         <div v-if="$route.name == 'Community'">
           <div class="about-community right-side-title">
@@ -87,7 +266,10 @@
                     </v-list-item>
                   </v-list-item-group>
                   <v-list-item-group color="primary">
-                    <v-list-item id="right-col-notification-settings" @click="openNotifications()">
+                    <v-list-item
+                      id="right-col-notification-settings"
+                      @click="openNotificationModal = true"
+                    >
                       <v-list-item-icon>
                         <v-icon>mdi-bell</v-icon>
                       </v-list-item-icon>
@@ -97,7 +279,10 @@
                     </v-list-item>
                   </v-list-item-group>
                   <v-list-item-group color="primary">
-                    <v-list-item id="right-col-leave-commun" @click="leaveCommunity()">
+                    <v-list-item
+                      id="right-col-leave-commun"
+                      @click="isWantToToLeaveFromCommunity = true"
+                    >
                       <v-list-item-icon>
                         <v-icon>mdi-exit-to-app</v-icon>
                       </v-list-item-icon>
@@ -107,7 +292,7 @@
                     </v-list-item>
                   </v-list-item-group>
                   <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
-                    <v-list-item id="right-col-delete-commun" @click="deleteCommunity()">
+                    <v-list-item id="right-col-delete-commun" @click="isWantToDelete = true">
                       <v-list-item-icon>
                         <v-icon>mdi-delete</v-icon>
                       </v-list-item-icon>
@@ -300,20 +485,37 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import {
+  deleteCommunity,
   getCommunityDetails,
   getMyLastPosts,
   getMyTopPosts,
   getsuggestedCommunities,
   inviteToCommunity,
-  joinCommunity
+  joinCommunity,
+  removeFromCommunities
 } from '../../api/threadSharing'
 import AppDialog from '../AppDialog'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { isOwner } from '../../utils/functions'
+import NewCommunity from '../ThreadSharing/NewCommunity'
 
 export default {
   data() {
     return {
+      isWantToDelete: false,
+      openNotificationModal: false,
+      notifications: {
+        isNotifications: false,
+        isDashboard: false,
+        isEmail: false,
+        isSms: false
+      },
+      showNeedPermissionModal: false,
+      isWantToToLeaveFromCommunity: false,
+      leaveCommunityName: null,
+      communityItem: null,
+      communityResourceId: null,
+      isWantToAddNewCommunity: false,
       emailarray: [],
       openInviteModal: false,
       suggestedCommunities: [],
@@ -323,7 +525,28 @@ export default {
       ownerDetails: null,
       yourPosts: [],
       inviteMembers: {
-        limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
+        limit: (v) => (v && v.length <= 5) || 'You have reached to max limit',
+        email: (v) => {
+          if (v.length > 0) {
+            let booReturn = true
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            for (let i = 0; i < v.length; i++) {
+              if (!pattern.test(v[i])) {
+                booReturn = false
+                document.getElementsByClassName('v-chip--select')[i].style.borderColor = '#ff5252'
+                document.getElementsByClassName('v-chip--select')[i].style.color = '#ff5252'
+                return v[i] + ' address is not valid'
+              } else if (v.length === i) {
+                return booReturn
+              } else {
+                booReturn = true
+              }
+            }
+            return booReturn
+          } else {
+            return true
+          }
+        }
       }
     }
   },
@@ -335,7 +558,8 @@ export default {
     }
   },
   components: {
-    AppDialog
+    AppDialog,
+    NewCommunity
   },
   created() {
     this.getCommunityDetails()
@@ -359,6 +583,41 @@ export default {
     }
   },
   methods: {
+    deleteCommunityConfirm() {
+      deleteCommunity(this.communityDetails.resourceId).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Community has been deleted successfully'
+        })
+        this.isWantToDelete = false
+        this.$router.push(`/threat-sharing`)
+      })
+    },
+    saveNotificationSetting() {},
+    leaveFromCommunityConfirm() {
+      removeFromCommunities(this.communityDetails.resourceId)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'You have been removed from the community successfully'
+          })
+          this.isWantToToLeaveFromCommunity = false
+          this.$router.push(`/threat-sharing`)
+        })
+        .catch((error) => {
+          /*this.$store.dispatch('common/createSnackBar', {
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  message: 'Error when attempting to leave from a community'
+                })*/
+          if (error.response.data.code === 'CANNOT_LEAVE_COMMUNITY') {
+            this.isWantToToLeaveFromCommunity = false
+            this.showNeedPermissionModal = true
+          }
+        })
+    },
+    onAddClose() {
+      this.isWantToAddNewCommunity = false
+    },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
         localStorage.setItem('communityName', post.communityName)
@@ -458,8 +717,11 @@ export default {
       this.closeCommunityInfo()
     },
     editCommunity() {
-      this.$emit('editCommunity')
-      this.closeCommunityInfo()
+      this.communityItem = this.communityDetails
+      this.communityItem.resourceId = this.communityDetails.resourceId
+      this.communityItem.communityName = this.communityDetails.name
+      this.communityItem.communityDescription = this.communityDetails.description
+      this.isWantToAddNewCommunity = true
     },
     postIncident() {
       this.$emit('postIncident')
@@ -475,11 +737,7 @@ export default {
         return isOwner(this.communityDetails.myMembershipStatusId)
       }
     },
-    openNotifications() {
-      this.$emit('openNotifications')
-      this.$store.dispatch('threadSharing/getNotifications', localStorage.getItem('communityId'))
-      this.closeCommunityInfo()
-    },
+    openNotifications() {},
     isJoined(id) {
       /*if (id && id != null && this.myCommunities && this.myCommunities.length) {
         return this.myCommunities.some((cId) => cId.CommunityId == id)
@@ -907,6 +1165,17 @@ export default {
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+
+  .right-side-desc {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.29;
     letter-spacing: normal;
     color: #2196f3;
   }

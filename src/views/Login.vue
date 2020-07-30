@@ -61,20 +61,25 @@
                   <div class="login-user-pass-wrapper">
                     <v-row align="center" justify="center">
                       <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
-                        <v-form v-model="validEmail" ref="email">
-                          <label class="login-label" for="email">Username</label>
+                        <v-form
+                          @submit="(event) => event.preventDefault()"
+                          v-model="validEmail"
+                          ref="email"
+                        >
                           <v-text-field
                             id="email"
                             :type="'email'"
                             name="email"
+                            ref="email"
                             v-model="email"
                             :rules="[rules.required, rules.email, rules.max]"
                             class="username-field"
                             required
-                            placeholder="Username"
+                            label="Username"
                             aria-autocomplete="on"
                             autocomplete="on"
                             outlined
+                            @keyup.enter="toNext"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -86,19 +91,19 @@
                           v-model="validPassword"
                           ref="password"
                         >
-                          <label class="login-label" for="password">Password</label>
                           <v-text-field
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
                             :type="show1 ? '' : 'password'"
                             name="password"
+                            ref="password"
                             hint="At least 8 characters"
                             id="password"
                             v-model="password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
-                            placeholder="Password"
+                            label="Password"
                             outlined
                           ></v-text-field>
                         </v-form>
@@ -343,6 +348,9 @@ export default {
       resetPassword: 'login/resetPassword',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    toNext() {
+      this.$refs.password.$el[1].focus()
+    },
     onTwoStepLogin() {
       this.twoStepLogin({
         code: this.verificationCode,
