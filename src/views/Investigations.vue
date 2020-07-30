@@ -70,18 +70,25 @@
           <span v-if="scope.row.matchingPlaybooks.length === 0">
             {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
           </span>
-          <router-link
-            tag="span"
+          <span
             :key="item.resourceId"
             v-else
             :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
             v-for="item in scope.row.matchingPlaybooks"
             class="popup-link"
-            >{{ item.name }}</router-link
+            @click="togglePlaybookModalWithSelected(item.resourceId)"
+            >{{ item.name }}</span
           >
         </template>
       </datatable>
     </div>
+    <v-dialog v-model="showPlaybookModal" fullscreen scrollable persistent no-click-animation>
+      <CreateOrEditRule
+        :playbookId="selectedPlaybookId"
+        @cancelForm="togglePlaybookModal"
+        v-if="showPlaybookModal"
+      />
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -91,11 +98,13 @@ import AppDialog from '../components/AppDialog'
 import { mapActions, mapGetters } from 'vuex'
 import { exportInvestigationList } from '../api/incidentResponder'
 import { getStoreValue } from '../model/constants/commonConstants'
+import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 export default {
   components: {
     Datatable,
     newInvestigation,
-    AppDialog
+    AppDialog,
+    CreateOrEditRule
   },
   props: {
     selectedEmail: {
@@ -106,6 +115,8 @@ export default {
     }
   },
   data: () => ({
+    showPlaybookModal: false,
+    selectedPlaybookId: null,
     isWantToAddNewCommunity: false,
     isWantToStopInvestigation: false,
     showDatatable: false,
@@ -286,6 +297,18 @@ export default {
     }
   }),
   methods: {
+    handeRuleNameClick(resourceId) {
+      this.selectedPlaybookId = resourceId
+      this.showPlaybookModal = true
+    },
+    togglePlaybookModal() {
+      this.selectedPlaybookId = null
+      return (this.showPlaybookModal = !this.showPlaybookModal)
+    },
+    togglePlaybookModalWithSelected(selectedPlaybookId) {
+      this.selectedPlaybookId = selectedPlaybookId
+      return (this.showPlaybookModal = !this.showPlaybookModal)
+    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       const _this = this

@@ -6,7 +6,9 @@
           <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="">Create New Rule</v-list-item-title>
+          <v-list-item-title class=""
+            >{{ playbookId ? 'Edit' : 'Create New' }} Rule</v-list-item-title
+          >
         </v-list-item-content>
       </v-list-item>
     </v-card>
