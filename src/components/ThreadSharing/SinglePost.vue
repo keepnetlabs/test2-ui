@@ -98,7 +98,7 @@
           outlined
           :no-data-text="'Enter emails (max. 10)'"
           v-model="shareEmail"
-          :rules="[shareEmailRules.limit]"
+          :rules="[shareEmailRules.limit, shareEmailRules.email]"
           class="pop-up-card__invite-member"
         ></v-combobox>
       </template>
@@ -1088,7 +1088,28 @@ export default {
     openShareModal: false,
     shareEmail: [],
     shareEmailRules: {
-      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit'
+      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit',
+      email: (v) => {
+        if (v.length > 0) {
+          let booReturn = true
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          for (let i = 0; i < v.length; i++) {
+            if (!pattern.test(v[i])) {
+              booReturn = false
+              document.getElementsByClassName('v-chip--select')[i].style.borderColor = '#ff5252'
+              document.getElementsByClassName('v-chip--select')[i].style.color = '#ff5252'
+              return v[i] + ' address is not valid'
+            } else if (v.length === i) {
+              return booReturn
+            } else {
+              booReturn = true
+            }
+          }
+          return booReturn
+        } else {
+          return true
+        }
+      }
     },
     deleteCommentId: null,
     isWantToDeleteComment: false,
@@ -1284,6 +1305,12 @@ export default {
         console.log(comId)
         this.postDetails = response.data.data
         this.emailData = response.data.data.communityPostEmail
+        this.emailData.urls = this.emailData.urls.map((item) => {
+          return {
+            ...item,
+            url: item.url.replace('&amp;', '&')
+          }
+        })
         setTimeout(function () {
           for (let url of response.data.data.communityPostEmail.urls) {
             let els = document

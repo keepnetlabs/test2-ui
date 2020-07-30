@@ -119,8 +119,6 @@
                 chips
                 clearable
                 hide-selected
-                item-text="Subject"
-                item-value="MailId"
                 label="Search for incident name or status"
                 class="first-select input-select mb-6"
                 solo
@@ -673,11 +671,14 @@
                     class="switch-row"
                     v-if="uploadRespond.subject"
                   >
-                    <div v-if="!uploadRespond.isFlagged" class="img-wrapper">
+                    <div v-if="!uploadRespond.isSubjectFlagged" class="img-wrapper">
                       <img src="../../assets/img/filter-icons/short-text.svg" />
                     </div>
                     <div v-else class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text-red.svg" />
+                      <img
+                        srcset="../../assets/img/filter-icons/short-text.svg"
+                        src="../../assets/img/filter-icons/short-text.svg"
+                      />
                     </div>
                     <v-switch
                       v-model="uploadRespond.isSubjectHidden"
@@ -726,8 +727,11 @@
                     class="switch-row"
                     v-if="uploadRespond.from"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isFromFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-in.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-in.svg" />
                     </div>
                     <v-switch
                       v-model="uploadRespond.isFromHidden"
@@ -776,8 +780,11 @@
                     class="switch-row"
                     v-if="uploadRespond.to && !!uploadRespond.to.length"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isToFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isToHidden" @change="toValChange"></v-switch>
                     <label v-if="filterOpened">To</label>
@@ -823,8 +830,11 @@
                     class="switch-row"
                     v-if="uploadRespond.cc && !!uploadRespond.cc.length"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isCcFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isCcHidden" @change="ccValChange"></v-switch>
                     <label v-if="filterOpened">CC</label>
@@ -870,8 +880,11 @@
                     class="switch-row"
                     v-if="uploadRespond.bcc && !!uploadRespond.bcc.length"
                   >
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/short-text.svg" />
+                    <div v-if="!uploadRespond.isBccFlagged" class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
+                    </div>
+                    <div v-else class="img-wrapper">
+                      <img src="../../assets/img/filter-icons/user-out.svg" />
                     </div>
                     <v-switch v-model="uploadRespond.isBccHidden" @change="bccValChange"></v-switch>
                     <label v-if="filterOpened">BCC</label>
@@ -2125,7 +2138,25 @@ export default {
     allAttachments: false,
     isAnonym: false
   }),
-  watch: {},
+  watch: {
+    searchIncident(val) {
+      if (!val) {
+        this.listData = this.backupListData
+      } else {
+        if (this.listData && this.backupListData) {
+          this.listData = this.backupListData.reduce((acc, item) => {
+            Object.values(item).find((i) => {
+              if (typeof i === 'string' && i.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+                return acc.push(item)
+            })
+            return acc
+          }, [])
+        }
+        this.$forceUpdate()
+      }
+      this.$forceUpdate()
+    }
+  },
   created() {
     document.querySelector('html').style.overflowY = 'hidden'
   },
@@ -2213,7 +2244,7 @@ export default {
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
           return {
             ...item,
-            url: item.url,
+            url: item.url.replace('&amp;', '&'),
             name: item.name,
             urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
           }
@@ -2372,6 +2403,7 @@ export default {
       searchNotifiedMail(payload).then((response) => {
         const { data } = response
         this.listData = data.data.results
+        this.backupListData = JSON.parse(JSON.stringify(data.data.results))
       })
     },
     getSelectedEmailPreview(selectedItem) {

@@ -109,7 +109,7 @@
       <v-list-item class="edit-privacy-area pb-6 pt-4 pa-0">
         <v-list-item-content class="pt-0 pb-0">
           <label class="edit-labels">Privacy</label>
-          <label class="edit-sub-labels">Select an industry category</label>
+          <label class="edit-sub-labels">Select a privacy option</label>
           <div class="edit-privacy-buttons">
             <button :class="{ btnActive: !privacy }" @click="privacy = false" class="public-btn">
               PUBLIC

@@ -1,14 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="10px" viewBox="0 0 20 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>link-red</title>
     <defs>
-        <path id="a" d="M1.9 5c0-1.71 1.39-3.1 3.1-3.1h4V0H5C2.24 0 0 2.24 0 5s2.24 5 5 5h4V8.1H5C3.29 8.1 1.9 6.71 1.9 5zM6 6h8V4H6v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V10h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
-        <path id="c" d="M0 0h50v50H0z"/>
+        <path d="M1.9,5 C1.9,3.29 3.29,1.9 5,1.9 L9,1.9 L9,0 L5,0 C2.24,0 0,2.24 0,5 C0,7.76 2.24,10 5,10 L9,10 L9,8.1 L5,8.1 C3.29,8.1 1.9,6.71 1.9,5 Z M6,6 L14,6 L14,4 L6,4 L6,6 Z M15,0 L11,0 L11,1.9 L15,1.9 C16.71,1.9 18.1,3.29 18.1,5 C18.1,6.71 16.71,8.1 15,8.1 L11,8.1 L11,10 L15,10 C17.76,10 20,7.76 20,5 C20,2.24 17.76,0 15,0 Z" id="path-1"></path>
     </defs>
-    <g fill="none" fill-rule="evenodd" transform="translate(2 7)">
-        <mask id="b" fill="#fff">
-            <use xlink:href="#a"/>
-        </mask>
-        <g mask="url(#b)">
-            <use fill="#F56C6C" transform="translate(-15 -20)" xlink:href="#c"/>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="link-red">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <g id="a"></g>
+            <g id="c-link" mask="url(#mask-2)" fill="#F56C6C" fill-rule="nonzero">
+                <g transform="translate(-15.000000, -20.000000)" id="c">
+                    <polygon points="0 0 50 0 50 50 0 50"></polygon>
+                </g>
+            </g>
         </g>
     </g>
 </svg>

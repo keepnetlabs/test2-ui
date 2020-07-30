@@ -84,7 +84,7 @@
           <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
             <v-list-item-content class>
               <label class="edit-labels">Privacy</label>
-              <label class="edit-sub-labels pb-0">Select an industry category</label>
+              <label class="edit-sub-labels pb-0">Select a privacy option</label>
               <div class="new-community__radio-group">
                 <v-radio-group v-model="privacystatusid" :mandatory="false" row>
                   <v-radio value="1" label="Public" color="primary"></v-radio>
@@ -236,7 +236,7 @@ export default {
               })
               //refThis.$emit('closeAdd')
               this.isWantToAccept = false
-              this.$router.push(`/community/${response.data.data.resourceId}`)
+              this.$router.push(`/threat-sharing`)
             })
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
