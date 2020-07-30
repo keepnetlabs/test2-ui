@@ -2213,7 +2213,8 @@ export default {
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
           return {
             ...item,
-            name: !!urlItem.length && urlItem[0].innerText ? urlItem[0].innerText : null,
+            url: item.url,
+            name: item.name,
             urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
           }
         })
@@ -2350,7 +2351,7 @@ export default {
           .then((response) => {
             this.selectedEmail = response.data.data.from
             this.uploadRespond = response.data.data
-            this.uploadRespond.body = unescape(response.data.data.body)
+            this.uploadRespond.body = response.data.data.body
             this.setShadowRootMalicousLink('incident-preview-1')
           })
           .catch((error) => {
