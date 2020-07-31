@@ -6,7 +6,11 @@
       <div class="match-type-container d-flex">
         <div class="edit-privacy-buttons">
           <button
-            :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[1].label}` }"
+            :class="{
+              btnActive: query.logicalOperator === `${labels.matchTypes[1].label}`,
+              'first-depth-button':
+                query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
+            }"
             @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
             class="public-btn"
             type="button"
@@ -14,7 +18,11 @@
             AND
           </button>
           <button
-            :class="{ btnActive: query.logicalOperator === `${labels.matchTypes[0].label}` }"
+            :class="{
+              btnActive: query.logicalOperator === `${labels.matchTypes[0].label}`,
+              'first-depth-button':
+                query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
+            }"
             @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
             class="private-btn"
             type="button"
@@ -43,6 +51,7 @@
     </div>
     <v-btn
       class="query__button"
+      style="margin-left: 86px;"
       v-if="depth < maxDepth && depth === 1"
       text
       color="#2196f3"
@@ -118,11 +127,28 @@ export default {
         position: absolute;
         left: -35px;
         width: 36px;
-        top: -125px;
+        top: -8px;
+        // animation: asasa 0.2s ease-in-out;
+        height: calc(54%);
+        /* height: calc(105%); */
+        border-color: #00bcd4;
+        border-style: solid;
+        border-width: 0 0 2px 2px;
+        border-radius: 4px;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 0;
+      }
+      &:after {
+        content: '';
+        position: absolute;
+        left: -35px;
+        width: 36px;
+        top: -8px;
+        /* height: calc(53%); */
         height: calc(105%);
         border-color: #00bcd4;
         border-style: solid;
-        border-width: 0 0 1px 1px;
+        border-width: 0 0 0px 2px;
         border-radius: 1px;
       }
       &:first-child {
@@ -130,6 +156,11 @@ export default {
           top: 0 !important;
           height: calc(53%);
         }
+      }
+    }
+    &:last-child {
+      &:after {
+        height: 0;
       }
     }
 
@@ -160,10 +191,13 @@ export default {
         width: 37px;
         top: -69px;
         height: calc(50% + 71px);
+        //animation: asasab 0.2s ease-in-out;
         border-color: #2196f3;
         border-style: solid;
-        border-width: 0 0 1px 1px;
-        border-radius: 1px;
+        border-width: 0 0 2px 2px;
+        border-radius: 4px;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 0;
       }
       &:first-child {
         &:before {
@@ -222,5 +256,26 @@ export default {
   .vue-query-builder .vqb-rule.form-inline .form-group {
     display: block;
   }
+}
+
+@keyframes asasa {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: calc(53%);
+  }
+}
+@keyframes asasab {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: calc(50% + 71px);
+  }
+}
+
+.first-depth-button.btnActive {
+  background: #00bcd4 !important;
 }
 </style>

@@ -427,7 +427,7 @@ export default {
   border: unset !important;
   border-color: unset !important;
   color: #fff;
-  background-color: #2196f3 !important;
+  background-color: #2196f3;
   box-shadow: 0 2px 5px 0 #2196f3 !important;
 }
 
