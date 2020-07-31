@@ -1189,7 +1189,7 @@ export default {
           const {
             data: { data, status }
           } = response
-          console.log('refTopRules', data)
+
           this.$refs.refTopRules.loadWithDataArray(data || [])
         })
         .catch((error) => {
@@ -1214,7 +1214,6 @@ export default {
           }
         } = response
         const tableData = results
-        console.log('reportedEmails', results)
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
     },

@@ -133,7 +133,7 @@ export default {
         /* height: calc(105%); */
         border-color: #00bcd4;
         border-style: solid;
-        border-width: 0 0 2px 2px;
+        border-width: 0 0 1.5px 1.5px;
         border-radius: 4px;
         border-bottom-right-radius: 0;
         border-top-left-radius: 0;
@@ -148,12 +148,12 @@ export default {
         height: calc(105%);
         border-color: #00bcd4;
         border-style: solid;
-        border-width: 0 0 0px 2px;
+        border-width: 0 0 0px 1.5px;
         border-radius: 1px;
       }
       &:first-child {
         &:before {
-          top: 0 !important;
+          top: -22px !important;
           height: calc(53%);
         }
       }
@@ -194,7 +194,7 @@ export default {
         //animation: asasab 0.2s ease-in-out;
         border-color: #2196f3;
         border-style: solid;
-        border-width: 0 0 2px 2px;
+        border-width: 0 0 1.5px 1.5px;
         border-radius: 4px;
         border-bottom-right-radius: 0;
         border-top-left-radius: 0;
@@ -212,6 +212,9 @@ export default {
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   }
   .elevation-0 {
+    & > .vqb-children {
+      margin-top: 32px;
+    }
     padding-left: 0 !important;
   }
 }

@@ -129,6 +129,14 @@
             </v-stepper-content>
             <!-- STEP 2 -->
             <v-stepper-content step="2">
+              <v-list-item-content>
+                <v-list-item-title class="v-card-form-title">
+                  Conditions
+                </v-list-item-title>
+                <v-list-item-title class="v-card-sub-header">
+                  Define conditions to filter reported emails and take actions
+                </v-list-item-title>
+              </v-list-item-content>
               <vue-query-builder
                 :max-depth="4"
                 class="w-100"
@@ -137,7 +145,7 @@
                 v-model="query"
               >
                 <template v-slot:default="slotProps">
-                  <v-form ref="refStep2Form" lazy-validation>
+                  <v-form ref="refStep2Form" lazy-validation class="mt-2">
                     <query-builder-group
                       ref="queryBuilderGroup"
                       v-bind="slotProps"
@@ -149,6 +157,14 @@
             </v-stepper-content>
             <!-- STEP 3 -->
             <v-stepper-content step="3">
+              <v-list-item-content>
+                <v-list-item-title class="v-card-form-title">
+                  Actions
+                </v-list-item-title>
+                <v-list-item-title class="v-card-sub-header">
+                  Define action for instances that match the conditions
+                </v-list-item-title>
+              </v-list-item-content>
               <v-container fluid class="playbook-actions">
                 <v-row>
                   <v-col class="v-col" cols="12">
@@ -341,7 +357,7 @@ export default {
           { id: 'AND', label: 'AND' }
         ],
         addRule: 'ADD CONDITION',
-        addGroup: 'ADD NEW CONDITION SET',
+        addGroup: 'ADD CONDITION SET',
         textInputPlaceholder: 'value'
       },
       rules: [
@@ -542,8 +558,6 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
-
-      console.log('payload', payload)
 
       if (ref.$refs.refForm.validate()) {
         updatePlaybook(payload)

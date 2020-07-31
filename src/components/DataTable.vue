@@ -1043,7 +1043,6 @@ export default {
     if (this.init) {
       this.init = false
     }
-    console.log('iam updated')
   },
   mounted() {
     this.init = true
@@ -1162,29 +1161,29 @@ export default {
       if (!isDate()) {
         sortData = data.sort(function (a, b) {
           if (sortProps.order === 'descending' && sortProps.prop) {
-            return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop])
-          } else {
             return new Date(b[sortProps.prop]) - new Date(a[sortProps.prop])
+          } else {
+            return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop])
           }
         })
       } else {
         sortData = data.sort(function (a, b) {
-          if (a === b) {
+          if (a[sortProps.prop] === b[sortProps.prop]) {
             return 0
           }
           // nulls sort after anything else
-          else if (a === null) {
+          else if (a[sortProps.prop] === null) {
             return 1
-          } else if (b === null) {
+          } else if (b[sortProps.prop] === null) {
             return -1
           }
           // otherwise, if we're ascending, lowest sorts first
           else if (sortProps.order === 'ascending') {
-            return a < b ? -1 : 1
+            return a[sortProps.prop] < b[sortProps.prop] ? -1 : 1
           }
           // if descending, highest sorts first
           else {
-            return a < b ? 1 : -1
+            return a[sortProps.prop] < b[sortProps.prop] ? 1 : -1
           }
         })
       }
@@ -1438,7 +1437,6 @@ export default {
         this.extendedViewStyle = {
           top: `${index * 48}px`
         }
-        console.log('this.extendedViewStyle', this.extendedViewStyle)
       }
       if (typeof selections === 'object' && !this.multipleSelection.length) {
         this.multipleSelection.push(selections)

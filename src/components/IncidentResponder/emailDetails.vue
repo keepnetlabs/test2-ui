@@ -702,7 +702,6 @@ export default {
           this.tableData = this.mailDetails.urls
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
-          console.log('this.mailDetails', this.mailDetails)
           this.headersTable.data = this.mailDetails.headers
           setTimeout(function () {
             for (let a of urls) {

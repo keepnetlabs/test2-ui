@@ -1302,7 +1302,6 @@ export default {
       //getSelectedEmailPreview('4pDtxLYSG0mb')
       getCommunityPost(this.post.communityPostResourceId).then((response) => {
         const comId = this.post.communityPostResourceId
-        console.log(comId)
         this.postDetails = response.data.data
         this.emailData = response.data.data.communityPostEmail
         this.emailData.urls = this.emailData.urls.map((item) => {

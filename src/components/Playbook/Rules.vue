@@ -357,7 +357,6 @@ export default {
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
-      console.log('this', this.selectedMatch)
       this.showMatchingModal = true
       const payload = {
         pageNumber: 1,
