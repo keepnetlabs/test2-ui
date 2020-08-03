@@ -119,6 +119,7 @@
                 chips
                 clearable
                 hide-selected
+                no-filter
                 label="Search for incident name or status"
                 class="first-select input-select mb-6"
                 solo
@@ -555,7 +556,7 @@
                       v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
                     >
                       <span :class="{ 'malicious-style': uploadRespond.isFromFlagged }">
-                        From: {{ uploadRespond.from }} {{ uploadRespond.isFromFlagged }}
+                        From: {{ uploadRespond.from }}
                         <v-tooltip v-if="uploadRespond.isFromFlagged" bottom opacity="1">
                           <template v-slot:activator="{ on }">
                             <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
@@ -1255,10 +1256,11 @@
                       <div id="last-prev-user-comp" class="ts-user-comp-detail">
                         by
                         <a v-if="uploadRespond.from" href="#" class="pl-1 pr-1">
-                          <span v-if="!isAnonym">{{ uploadRespond.from }}</span>
+                          <span v-if="!isAnonym">{{ getByValue() }}</span>
                           <span v-else>Anonymous</span>
                         </a>
-                        <a v-else href="#" class="pl-1 pr-1">{{ uploadRespond.from }}</a> from
+                        <a v-else href="#" class="pl-1 pr-1">{{ getFromValue() }}</a>
+                        from
                         <a v-if="currentCompany" :id="currentCompany" href="#" class="pl-1 pr-1">
                           <span v-if="!isAnonym">{{ currentCompany }}</span>
                           <span v-else>Anonymous</span>
@@ -1470,7 +1472,7 @@
                                 v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
                               >
                                 <span :class="{ 'malicious-style': uploadRespond.isFromFlagged }">
-                                  From: {{ uploadRespond.from }} {{ uploadRespond.isFromFlagged }}
+                                  From: {{ uploadRespond.from }}
                                   <v-tooltip v-if="uploadRespond.isFromFlagged" bottom opacity="1">
                                     <template v-slot:activator="{ on }">
                                       <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
@@ -2420,23 +2422,7 @@ export default {
   }),
   watch: {
     searchIncident(val) {
-      if (!val) {
-        this.listData = this.backupListData
-        this.asd = true
-      } else {
-        if (this.listData && this.backupListData) {
-          this.listData = this.backupListData.reduce((acc, item) => {
-            Object.values(item).find((i) => {
-              if (typeof i === 'string' && i.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
-                return acc.push(item)
-            })
-            return acc
-          }, [])
-        }
-        setTimeout(() => {
-          this.$forceUpdate()
-        }, 200)
-      }
+      val && val !== this.select && this.querySelections(val)
     }
   },
   created() {
@@ -2444,6 +2430,35 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    querySelections(val) {
+      setTimeout(() => {
+        if (!val) {
+          this.listData = this.backupListData
+        } else {
+          if (this.listData && this.backupListData) {
+            this.listData = this.listData.reduce((acc, item) => {
+              Object.values(item).find((i) => {
+                if (
+                  typeof i === 'string' &&
+                  i.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+                )
+                  return acc.push(item)
+              })
+              return acc
+            }, [])
+          }
+          setTimeout(() => {
+            this.$forceUpdate()
+          }, 200)
+        }
+      }, 500)
+    },
+    getByValue() {
+      return this.uploadRespond.PostedUserFullName || localStorage.getItem('userName')
+    },
+    getFromValue() {
+      return this.uploadRespond.PostedUserCompanyName || localStorage.getItem('companyName')
+    },
     contentCopy(contentBody) {
       navigator.clipboard.writeText(contentBody)
       this.$store.dispatch('common/createSnackBar', {
@@ -2527,6 +2542,9 @@ export default {
     },
     setShadowRootMalicousLink(id) {
       setTimeout(() => {
+        let recrusiveFunctionForDom = () =>
+          document.getElementById(id) && document.getElementById(id).shadowRoot
+        if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
         this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
           let urlItem = document
             .getElementById(id)
