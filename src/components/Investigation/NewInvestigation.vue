@@ -1082,8 +1082,12 @@ export default {
         })
       this.investgationName = 'Manuel Investigation'
     }
+    document.querySelector('.page-nav').style.zIndex = 8
   },
-  mounted() {}
+  mounted() {},
+  beforeDestroy() {
+    document.querySelector('.page-nav').style.zIndex = 19
+  }
 }
 </script>
 <style lang="scss">
@@ -2929,6 +2933,10 @@ export default {
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
     color: #bb2a45 !important;
+
+    text-decoration: none !important;
+    border-bottom: 1px solid;
+    position: relative;
 
     .share-setting-text {
       text-decoration: none !important;

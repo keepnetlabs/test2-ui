@@ -168,57 +168,185 @@
                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                 v-if="!mailDetails.isSubjectHidden && !!mailDetails.subject"
               >
-                Subject: {{ mailDetails.subject }}
+                <span :class="{ 'malicious-style': mailDetails.isSubjectFlagged }">
+                  Subject: {{ mailDetails.subject }}
+                  <v-tooltip v-if="mailDetails.isSubjectFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>The subject has been reported as a threat source</span>
+                  </v-tooltip></span
+                >
               </h2>
               <h2
                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                v-else-if="mailDetails.isSubjectHidden"
+                v-else-if="mailDetails.isSubjectHidden && !!mailDetails.subject"
               >
-                Subject: Hidden by owner
+                <span :class="{ 'malicious-style': mailDetails.isSubjectFlagged }">
+                  Subject: Hidden by owner<v-tooltip
+                    v-if="mailDetails.isSubjectFlagged"
+                    bottom
+                    opacity="1"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>The subject has been reported as a threat source</span>
+                  </v-tooltip>
+                </span>
               </h2>
               <div class="header-info pb-5">
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-if="!mailDetails.isFromHidden && !!mailDetails.from"
                 >
-                  From: {{ mailDetails.from }}
+                  <span :class="{ 'malicious-style': mailDetails.isFromFlagged }">
+                    From: {{ mailDetails.from }} {{ mailDetails.isFromFlagged }}
+                    <v-tooltip v-if="mailDetails.isFromFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span>Emails from this sender may include harmful content</span>
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isFromHidden"
+                  v-else-if="mailDetails.isFromHidden && !!mailDetails.from"
                 >
-                  From: Hidden by owner
+                  <span :class="{ 'malicious-style': mailDetails.isFromFlagged }">
+                    From: Hidden by owner
+                    <v-tooltip v-if="mailDetails.isFromFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span>Emails from this sender may include harmful content</span>
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-if="!mailDetails.isToHidden && mailDetails.to && !!mailDetails.to.toString()"
+                  v-if="!mailDetails.isToHidden && mailDetails.to && !!mailDetails.to.length"
                 >
-                  To: {{ mailDetails.to && mailDetails.to.toString() }}
+                  <span :class="{ 'malicious-style': mailDetails.isToFlagged }">
+                    To: {{ mailDetails.to && mailDetails.to.toString()
+                    }}<v-tooltip v-if="mailDetails.isToFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isToHidden"
+                  v-else-if="mailDetails.isToHidden && mailDetails.to && !!mailDetails.to.length"
                 >
-                  To: Hidden by owner
+                  <span :class="{ 'malicious-style': mailDetails.isToFlagged }">
+                    To: Hidden by owner<v-tooltip v-if="mailDetails.isToFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-if="!mailDetails.isCcHidden && mailDetails.cc && !!mailDetails.cc.toString()"
+                  v-if="!mailDetails.isCcHidden && mailDetails.cc && !!mailDetails.cc.length"
                 >
-                  CC: {{ mailDetails.cc && mailDetails.cc.toString() }}
+                  <span :class="{ 'malicious-style': mailDetails.isCcFlagged }">
+                    CC: {{ mailDetails.cc && mailDetails.cc.toString()
+                    }}<v-tooltip v-if="mailDetails.isCcFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isCcHidden"
+                  v-else-if="mailDetails.isCcHidden && !!mailDetails.cc.length && mailDetails.cc"
                 >
-                  CC: Hidden by owner
+                  <span :class="{ 'malicious-style': mailDetails.isCcFlagged }">
+                    CC: Hidden by owner<v-tooltip v-if="mailDetails.isCcFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-if="!mailDetails.isCcHidden && mailDetails.bcc && !!mailDetails.bcc.length"
+                  :class="{ 'malicious-style': mailDetails.isBccFlagged }"
+                >
+                  BCC: {{ mailDetails.bcc && mailDetails.bcc.toString()
+                  }}<v-tooltip v-if="mailDetails.isBccFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span
+                      >This email address may be targeted by emails include harmful content</span
+                    >
+                  </v-tooltip>
+                </div>
+                <div
+                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  v-else-if="mailDetails.isBccHidden && !!mailDetails.bcc.length"
+                >
+                  <span :class="{ 'malicious-style': mailDetails.isBccFlagged }">
+                    BCC: Hidden by owner<v-tooltip
+                      v-if="mailDetails.isBccFlagged"
+                      bottom
+                      opacity="1"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div>
-                  Date: {{ mailDetails.receivedDate }}
+                  Date: {{ mailDetails.lastUpdateDate }}
                   <br />
                 </div>
               </div>
             </div>
+
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
             <div
               id="preview-footer-container"
@@ -423,7 +551,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
 [data-title]:hover:after {
     opacity: 1;
-    transition: all 0.1s ease 0.5s;
+    uploadRespond
     visibility: visible;
 }
 [data-title]:after {
@@ -450,32 +578,32 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
    color: #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
+
+  text-decoration: none !important;
+  border-bottom: 1px solid;
+  position:relative;
 }
 
 .malicious-icon {
-  margin: 4px;
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  position: absolute !important;
-    top: 2px;
+      top: 0px;
+    background: white;
+    margin-left: 5px;
+    padding-left: 8px;
+      color: #f56c6c;
+          font-size: 22px !important;
+    padding: 5px;
 }
 
 .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
+    color: #f56c6c !important;
+  caret-color: #f56c6c !important;
+    text-decoration: unset !important;
+    text-decoration-color: transparent !important;
+    font-size: 20px !important;
+    padding-right: 3px;
+    overflow: hidden;
+     margin-bottom: -1px;
+    padding-top: 3px;
 }
 
 .red-malicious-alert::before {
@@ -730,7 +858,7 @@ export default {
                 // }
               }
             }
-          })
+          }, 400)
         }, 100)
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1449,18 +1577,6 @@ export default {
     }
   }
 
-  .attach-found-malicious {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-top: 4px;
-  }
-
   .preview-footer {
     display: flex;
     flex-direction: row;
@@ -1605,22 +1721,6 @@ export default {
 
   .detail-parts {
     margin-top: 16px;
-
-    .detail-black {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      margin-bottom: 4px !important;
-    }
-
-    .detail-red {
-      color: rgba(219, 37, 37, 0.87) !important;
-    }
   }
 
   .detail-discovery {
@@ -1669,7 +1769,6 @@ export default {
     }
 
     .impact-right {
-      margin-top: 2px;
       max-width: 80%;
     }
   }
@@ -1934,10 +2033,6 @@ export default {
     }
   }
 
-  .file-name {
-    padding-left: 7px;
-  }
-
   #incident-badge {
     padding: 4px 12px;
   }
@@ -1961,29 +2056,10 @@ export default {
     border-bottom: 1px solid #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
-  }
 
-  .malicious-icon {
-    font-size: 18px !important;
-    color: #bb2a45 !important;
-    caret-color: #bb2a45 !important;
-  }
-
-  .red-malicious-alert {
-    border: unset !important;
-    border-color: transparent !important;
-    border-bottom-color: transparent !important;
-    border-image: none !important;
-    border-image-width: 0 !important;
-    color: #bb2a45 !important;
-    caret-color: #bb2a45 !important;
-    text-decoration: unset !important;
-    text-decoration-color: transparent !important;
-    font-size: 18px !important;
-    margin-top: -2px;
-    padding-right: 3px;
-    height: 16px !important;
-    overflow: hidden;
+    text-decoration: none !important;
+    border-bottom: 1px solid;
+    position: relative;
   }
 
   .red-malicious-alert::before {

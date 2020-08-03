@@ -154,3 +154,5 @@ export function isOwner(membershipStatusId) {
 export function isPostedByMe(isPostedByMe) {
   return isPostedByMe
 }
+
+export function copyToClipboard(e) {}
