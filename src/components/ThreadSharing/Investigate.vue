@@ -1161,7 +1161,6 @@ export default {
         line-height: 1.58;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
-        padding-left: 7px;
       }
     }
 

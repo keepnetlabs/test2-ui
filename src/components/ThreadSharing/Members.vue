@@ -4,8 +4,8 @@
       :status="showAppointANewOwnerModal"
       @changeStatus="showAppointANewOwnerModal = false"
       icon="mdi-lock"
-      title="Give admin privileges?,"
-      :body="`${appointUserName} will be able to access to all settings such as removing users or deleting the community`"
+      title="Give admin privileges?"
+      :body="`${appointUserName} will be able to access to all settings such as removing users or deleting the community.`"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">

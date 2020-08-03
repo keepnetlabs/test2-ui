@@ -423,7 +423,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
 [data-title]:hover:after {
     opacity: 1;
-    transition: all 0.1s ease 0.5s;
+    uploadRespond
     visibility: visible;
 }
 [data-title]:after {
@@ -450,32 +450,32 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
    color: #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
+
+  text-decoration: none !important;
+  border-bottom: 1px solid;
+  position:relative;
 }
 
 .malicious-icon {
-  margin: 4px;
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  position: absolute !important;
-    top: 2px;
+      top: 0px;
+    background: white;
+    margin-left: 5px;
+    padding-left: 8px;
+      color: #f56c6c;
+          font-size: 22px !important;
+    padding: 5px;
 }
 
 .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
+    color: #f56c6c !important;
+  caret-color: #f56c6c !important;
+    text-decoration: unset !important;
+    text-decoration-color: transparent !important;
+    font-size: 20px !important;
+    padding-right: 3px;
+    overflow: hidden;
+     margin-bottom: -1px;
+    padding-top: 3px;
 }
 
 .red-malicious-alert::before {
@@ -1449,18 +1449,6 @@ export default {
     }
   }
 
-  .attach-found-malicious {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-top: 4px;
-  }
-
   .preview-footer {
     display: flex;
     flex-direction: row;
@@ -1605,22 +1593,6 @@ export default {
 
   .detail-parts {
     margin-top: 16px;
-
-    .detail-black {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      margin-bottom: 4px !important;
-    }
-
-    .detail-red {
-      color: rgba(219, 37, 37, 0.87) !important;
-    }
   }
 
   .detail-discovery {
@@ -1669,7 +1641,6 @@ export default {
     }
 
     .impact-right {
-      margin-top: 2px;
       max-width: 80%;
     }
   }
@@ -1934,10 +1905,6 @@ export default {
     }
   }
 
-  .file-name {
-    padding-left: 7px;
-  }
-
   #incident-badge {
     padding: 4px 12px;
   }
@@ -1961,29 +1928,10 @@ export default {
     border-bottom: 1px solid #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
-  }
 
-  .malicious-icon {
-    font-size: 18px !important;
-    color: #bb2a45 !important;
-    caret-color: #bb2a45 !important;
-  }
-
-  .red-malicious-alert {
-    border: unset !important;
-    border-color: transparent !important;
-    border-bottom-color: transparent !important;
-    border-image: none !important;
-    border-image-width: 0 !important;
-    color: #bb2a45 !important;
-    caret-color: #bb2a45 !important;
-    text-decoration: unset !important;
-    text-decoration-color: transparent !important;
-    font-size: 18px !important;
-    margin-top: -2px;
-    padding-right: 3px;
-    height: 16px !important;
-    overflow: hidden;
+    text-decoration: none !important;
+    border-bottom: 1px solid;
+    position: relative;
   }
 
   .red-malicious-alert::before {

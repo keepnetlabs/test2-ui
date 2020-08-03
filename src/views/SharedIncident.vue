@@ -1879,22 +1879,6 @@ export default {
   color: #bb2a45 !important;
   caret-color: #bb2a45 !important;
 }
-::v-deep .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
-}
 ::v-deep .red-malicious-alert::before {
   border: unset !important;
 }

@@ -5,7 +5,7 @@
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
-      :z-index="999"
+      :z-index="99999"
       color="white"
     >
       <post-incident
@@ -14,7 +14,6 @@
         @refreshData="refreshDataFunc"
       />
     </v-overlay>
-
     <v-card id="component-incidents" flat color="basil">
       <v-card-text id="incidents-component-card" class="pt-0">
         <v-data-iterator

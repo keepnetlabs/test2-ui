@@ -431,9 +431,11 @@
                 <div class="suggested-title">{{ commun.communityName }}</div>
                 <div class="suggested-com-detail">
                   <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                  {{ commun.memberCount }}
-                  <span class="suggested-industry pl-2">Industry -&nbsp;</span>
-                  <span class="suggested-company">{{ commun.industryName }}</span>
+                  <b>{{ commun.memberCount }}</b
+                  ><span class="suggested-row__seperator">•</span>
+                  <span class="suggested-company">{{ commun.industryName }} </span>
+                  <span class="suggested-row__seperator">•</span>
+                  <span class="suggested-company">{{ commun.privacyStatusName }} </span>
                 </div>
               </div>
               <div class="suggested-right-action">
@@ -1170,14 +1172,22 @@ export default {
   }
 
   .right-side-desc {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
     line-height: 1.29;
     letter-spacing: normal;
-    color: #2196f3;
+    a {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: #2196f3;
+    }
   }
 
   .about-community {
@@ -1252,7 +1262,10 @@ export default {
     margin-bottom: 8px;
     border-radius: 4px !important;
     border: none !important;
-    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    background-color: #ffffff;
 
     .suggested-row {
       align-items: stretch;
@@ -1265,6 +1278,10 @@ export default {
       width: 100%;
       padding: 16px;
       padding-bottom: 4px;
+      &__seperator {
+        margin: 0 4px;
+        font-weight: 900;
+      }
     }
 
     .suggested-com-name {
@@ -1296,18 +1313,27 @@ export default {
         font-size: 12px;
 
         .suggested-people-icon {
-          font-size: 14px !important;
+          font-size: 20px !important;
         }
 
         .suggested-industry {
           font-family: 'Open Sans', sans-serif !important;
-          font-size: 12px;
-          font-weight: normal;
+          font-size: 14px !important;
+          font-weight: 600 !important;
           font-stretch: normal;
           font-style: normal;
-          line-height: 1.58;
+          line-height: normal;
           letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87) !important;
+        }
+        .suggested-company {
+          font-size: 14px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
         }
       }
     }
@@ -1316,7 +1342,8 @@ export default {
       align-items: center;
       display: flex;
       justify-content: flex-end;
-      margin: 13px 0;
+      margin-top: 4px;
+      margin-bottom: 13px;
       width: min-content;
 
       .suggested-btn {

@@ -470,309 +470,183 @@
           color="basil"
           class="v-tabs-bar__details-tab"
         >
-          <v-tab id="expansion-details">Details</v-tab>
           <v-tab id="expansion-preview">Email Preview</v-tab>
+          <v-tab id="expansion-details">Details</v-tab>
         </v-tabs>
-
         <v-tabs-items v-show="emailData" v-model="tab">
-          <v-tab-item>
-            <h1
-              v-if="
-                (emailData && emailData.subject && emailData.isSubjectFlagged) ||
-                (emailData.from && emailData.from.isFromFlagged) ||
-                (emailData.urls && emailData.urls.some((a) => a.isFlagged)) ||
-                (emailData.attachments && emailData.attachments.some((a) => a.isFlagged))
-              "
-              class="detected-items"
-            >
-              Detected Items
-            </h1>
-            <div id="last-detail-parts" class="detail-parts">
-              <p
-                v-if="
-                  (emailData.subject && !emailData.isSubjectHidden && emailData.isSubjectFlagged) ||
-                  (!!emailData.from && !emailData.isFromHidden && emailData.isFromFlagged) ||
-                  (emailData.to &&
-                    !!emailData.to.length &&
-                    !emailData.isToHidden &&
-                    emailData.isToFlagged) ||
-                  (emailData.cc &&
-                    !!emailData.cc.length &&
-                    !emailData.isCcHidden &&
-                    emailData.isCcFlagged) ||
-                  (emailData.bcc &&
-                    !!emailData.bcc.length &&
-                    !emailData.isBccHidden &&
-                    emailData.isBccFlagged)
-                "
-                class="detail-black disc-header"
-              >
-                Header
-              </p>
-              <div>
-                <p
-                  v-if="emailData.subject && emailData.isSubjectFlagged"
-                  :id="emailData.subject"
-                  class="detail-black detail-red"
-                >
-                  Subject:
-                  {{ !emailData.isSubjectHidden ? emailData.subject : 'hidden by owner' }}
-                </p>
-                <p
-                  v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
-                  id="harmful-Subject"
-                  class="detail-black"
-                >
-                  The Subject is harmful
-                </p>
-              </div>
-              <div>
-                <p
-                  v-if="emailData.from && emailData.isFromFlagged"
-                  :id="emailData.from"
-                  class="detail-black detail-red"
-                >
-                  From:
-                  {{ !emailData.isFromHidden ? emailData.from : 'hidden by owner' }}
-                </p>
-                <p
-                  v-if="emailData && emailData.from && emailData.isFromFlagged"
-                  id="harmful-sender"
-                  class="detail-black"
-                >
-                  The from email address has been reported as harmful email.
-                </p>
-              </div>
-              <div>
-                <p v-if="emailData.to && emailData.isToFlagged" class="detail-black detail-red">
-                  To:
-                  {{ !emailData.isToHidden ? emailData.to.toString() : 'hidden by owner' }}
-                </p>
-                <p
-                  v-if="emailData && emailData.to && emailData.isToFlagged"
-                  id="harmful-to"
-                  class="detail-black"
-                >
-                  The To email address has been reported as harmful email.
-                </p>
-              </div>
-              <div>
-                <p v-if="emailData.cc && emailData.isCcFlagged" class="detail-black detail-red">
-                  CC:
-                  {{ !emailData.isCcHidden ? emailData.cc.toString() : 'hidden by owner' }}
-                </p>
-                <p
-                  v-if="emailData && emailData.cc && emailData.isCcFlagged"
-                  id="harmful-cc"
-                  class="detail-black"
-                >
-                  The CC email address has been reported as harmful email.
-                </p>
-              </div>
-              <div>
-                <p v-if="emailData.bcc && emailData.isBccFlagged" class="detail-black detail-red">
-                  CC:
-                  {{ !emailData.isBccHidden ? emailData.bcc.toString() : 'hidden by owner' }}
-                </p>
-                <p
-                  v-if="emailData && emailData.bcc && emailData.isBccFlagged"
-                  id="harmful-bcc"
-                  class="detail-black"
-                >
-                  The BCC email address has been reported as harmful email.
-                </p>
-              </div>
-            </div>
-
-            <div
-              v-if="emailData && emailData.urls && emailData.urls.length"
-              class="preview-attch-wrapper detail-parts"
-            >
-              <p
-                v-if="
-                  emailData &&
-                  emailData.urls &&
-                  emailData.urls.some((a) => !a.isHidden && a.isFlagged)
-                "
-                class="detail-black"
-              >
-                Body
-              </p>
-              <p
-                v-for="(el, ind) of emailData.urls"
-                :key="ind + el.url"
-                v-if="el && !el.isHidden && el.isFlagged"
-                :id="'detail-links-' + el.name"
-                class="detail-black detail-red"
-              >
-                Link: {{ el.url }} <br />
-              </p>
-              <div
-                v-for="(att, ind) of emailData.urls"
-                :key="ind + att.name"
-                :id="'detail-malicious-' + att.name"
-                v-if="att.isFlagged"
-              >
-                <p class="attach-found-malicious" v-if="ind === 0">
-                  This link<span v-if="emailData.urls && emailData.urls.length > 1">s</span> has
-                  been reported as a phising link
-                </p>
-              </div>
-            </div>
-            <div
-              class="details-attchments-wrapper preview-footer"
-              v-if="emailData.attachments && emailData.attachments.length"
-            >
-              <div
-                v-for="(att, ind) of emailData.attachments"
-                :key="ind + att.name"
-                v-if="att.isFlagged"
-                class="preview-attch-wrapper details-attachments"
-              >
-                <h2 v-if="ind === 0">Attachments</h2>
-                <div>
-                  <div :id="'detail-attachs-' + att.name" class="attachment">
-                    <div
-                      :id="'detail-name-' + att.name"
-                      v-if="!att.isHidden"
-                      class="file-name max-char"
-                    >
-                      {{ att.name }}
-                    </div>
-                    <div
-                      :id="'detail-name-' + att.name"
-                      v-if="att.isHidden"
-                      class="file-name max-char"
-                    >
-                      hidden by owner
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                v-for="(att, ind) of emailData.attachments"
-                :key="ind + att.name"
-                :id="'detail-malicious-' + att.name"
-                v-if="att.isFlagged"
-              >
-                <p class="attach-found-malicious detail-black" v-if="ind === 0">
-                  This file<span v-if="emailData.attachments && emailData.attachments.length > 1"
-                    >s</span
-                  >
-                  has been reported as a malicious
-                </p>
-              </div>
-            </div>
-            <div class="detail-discovery pb-4">
-              <div
-                :id="'detail-discovery-empty'"
-                v-if="postDetails && postDetails.discoveryAndDetection"
-                class="disc-header"
-              >
-                Discovery and Detection
-              </div>
-              <p
-                :id="'detail-discovery'"
-                v-if="postDetails && postDetails.discoveryAndDetection"
-                class="discovery-p"
-              >
-                {{ postDetails && postDetails.discoveryAndDetection }}
-              </p>
-              <div v-if="postDetails && postDetails.affectArea" class="disc-header mb-1">
-                Impact Range
-              </div>
-              <div
-                :id="'detail-effect-area'"
-                v-if="postDetails && postDetails.affectArea"
-                class="impact-row"
-              >
-                <div class="impact-left">Effect area:</div>
-                <div style="width: max-content; padding-right: 13px;" class="impact-right">
-                  {{ postDetails && postDetails.affectArea.toString() }}
-                </div>
-              </div>
-              <div
-                :id="'detail-scope' + postDetails"
-                v-if="postDetails && postDetails.scope"
-                class="impact-row"
-              >
-                <div class="impact-left">Scope:</div>
-                <div class="impact-right">{{ postDetails && postDetails.scope }}</div>
-              </div>
-            </div>
-          </v-tab-item>
           <v-tab-item>
             <div class="preview-header pt-0">
               <h2
                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                 v-if="!emailData.isSubjectHidden && !!emailData.subject"
-                :class="{ 'malicious-style': emailData.isSubjectFlagged }"
               >
-                Subject: {{ emailData.subject }}
+                <span :class="{ 'malicious-style': emailData.isSubjectFlagged }">
+                  Subject: {{ emailData.subject }}
+                  <v-tooltip v-if="emailData.isSubjectFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>The subject has been reported as a threat source</span>
+                  </v-tooltip></span
+                >
               </h2>
               <h2
                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
                 v-else-if="emailData.isSubjectHidden && !!emailData.subject"
-                :class="{ 'malicious-style': emailData.isSubjectFlagged }"
               >
-                Subject: Hidden by owner
+                <span :class="{ 'malicious-style': emailData.isSubjectFlagged }">
+                  Subject: Hidden by owner<v-tooltip
+                    v-if="emailData.isSubjectFlagged"
+                    bottom
+                    opacity="1"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span>The subject has been reported as a threat source</span>
+                  </v-tooltip>
+                </span>
               </h2>
               <div class="header-info pb-5">
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-if="!emailData.isFromHidden && !!emailData.from"
-                  :class="{ 'malicious-style': emailData.isFromFlagged }"
                 >
-                  From: {{ emailData.from }}
+                  <span :class="{ 'malicious-style': emailData.isFromFlagged }">
+                    From: {{ emailData.from }} {{ emailData.isFromFlagged }}
+                    <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span>Emails from this sender may include harmful content</span>
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-else-if="emailData.isFromHidden && !!emailData.from"
-                  :class="{ 'malicious-style': emailData.isFromFlagged }"
                 >
-                  From: Hidden by owner
+                  <span :class="{ 'malicious-style': emailData.isFromFlagged }">
+                    From: Hidden by owner
+                    <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span>Emails from this sender may include harmful content</span>
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-if="!emailData.isToHidden && emailData.to && !!emailData.to.length"
-                  :class="{ 'malicious-style': emailData.isToFlagged }"
                 >
-                  To: {{ emailData.to && emailData.to.toString() }}
+                  <span :class="{ 'malicious-style': emailData.isToFlagged }">
+                    To: {{ emailData.to && emailData.to.toString()
+                    }}<v-tooltip v-if="emailData.isToFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-else-if="emailData.isToHidden && emailData.to && !!emailData.to.length"
-                  :class="{ 'malicious-style': emailData.isToFlagged }"
                 >
-                  To: Hidden by owner
+                  <span :class="{ 'malicious-style': emailData.isToFlagged }">
+                    To: Hidden by owner<v-tooltip v-if="emailData.isToFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-if="!emailData.isCcHidden && emailData.cc && !!emailData.cc.length"
-                  :class="{ 'malicious-style': emailData.isCcFlagged }"
                 >
-                  CC: {{ emailData.cc && emailData.cc.toString() }}
+                  <span :class="{ 'malicious-style': emailData.isCcFlagged }">
+                    CC: {{ emailData.cc && emailData.cc.toString()
+                    }}<v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="emailData.isCcHidden && !!emailData.cc.length"
-                  :class="{ 'malicious-style': emailData.isCcFlagged }"
+                  v-else-if="emailData.isCcHidden && !!emailData.cc.length && emailData.cc"
                 >
-                  CC: Hidden by owner
+                  <span :class="{ 'malicious-style': emailData.isCcFlagged }">
+                    CC: Hidden by owner<v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-if="!emailData.isCcHidden && emailData.bcc && !!emailData.bcc.length"
                   :class="{ 'malicious-style': emailData.isBccFlagged }"
                 >
-                  CC: {{ emailData.bcc && emailData.bcc.toString() }}
+                  BCC: {{ emailData.bcc && emailData.bcc.toString()
+                  }}<v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                        >mdi-alert</v-icon
+                      >
+                    </template>
+                    <span
+                      >This email address may be targeted by emails include harmful content</span
+                    >
+                  </v-tooltip>
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   v-else-if="emailData.isBccHidden && !!emailData.bcc.length"
-                  :class="{ 'malicious-style': emailData.isBccFlagged }"
                 >
-                  BCC: Hidden by owner
+                  <span :class="{ 'malicious-style': emailData.isBccFlagged }">
+                    BCC: Hidden by owner<v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                          >mdi-alert</v-icon
+                        >
+                      </template>
+                      <span
+                        >This email address may be targeted by emails include harmful content</span
+                      >
+                    </v-tooltip>
+                  </span>
                 </div>
                 <div>
                   Date: {{ emailData.sentTime }}
@@ -881,24 +755,6 @@
                   SEND
                 </v-btn>
               </div>
-              <!--<div v-if="!seeComments && comments && comments.length" class="hidden-comments">
-                <div class="comment-row">
-                  <div class="user-wrapper" v-if="!comments[0].isEdit">
-                    <span class="username">{{ comments[0].commenterFullName }}</span>
-                    from
-                    <span class="company-name">{{ comments[0].commenterCompanyName }}</span>
-                    <p class="the-comment">
-                      {{ comments[0].comment }}
-                    </p>
-                    <v-btn @click="comments[0].isEdit = true">
-                      <v-icon class="close-icon">mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn @click="deleteComment(comments[0].resourceId)" icon>
-                      <v-icon class="close-icon">mdi-delete</v-icon>
-                    </v-btn>
-                  </div>
-                </div>
-              </div>-->
               <div v-if="comments && comments.length" class="hidden-comments">
                 <div
                   v-for="(com, ind) of seeComments ? comments : comments.slice(0, 1)"
@@ -913,7 +769,10 @@
                         <span class="company-name">{{ com.commenterCompanyName }}</span>
                         <p class="the-comment">{{ com.comment }}</p>
                       </div>
-                      <div style="width: 20%; text-align: right;">
+                      <div
+                        style="width: 20%; text-align: right;"
+                        v-if="canDeleteOrEditComment(com, post)"
+                      >
                         <button @click="editRelativeComment(com)">
                           <v-icon class="close-icon">mdi-pencil</v-icon>
                         </button>
@@ -960,6 +819,248 @@
               </div>
             </div>
           </v-tab-item>
+          <v-tab-item>
+            <div class="single-post__details">
+              <h1
+                v-if="
+                  (emailData && emailData.subject && emailData.isSubjectFlagged) ||
+                  (emailData.from && emailData.from.isFromFlagged) ||
+                  (emailData.urls && emailData.urls.some((a) => a.isFlagged)) ||
+                  (emailData.attachments && emailData.attachments.some((a) => a.isFlagged))
+                "
+                class="detected-items"
+              >
+                Detected Items
+              </h1>
+              <div id="last-detail-parts" class="detail-parts">
+                <p
+                  v-if="
+                    (emailData.subject && emailData.isSubjectFlagged) ||
+                    (!!emailData.from && emailData.isFromFlagged) ||
+                    (emailData.to && !!emailData.to.length && emailData.isToFlagged) ||
+                    (emailData.cc && !!emailData.cc.length && emailData.isCcFlagged) ||
+                    (emailData.bcc && !!emailData.bcc.length && emailData.isBccFlagged)
+                  "
+                  class="detail-black disc-header single-post__details__section-header"
+                >
+                  Header
+                </p>
+                <div>
+                  <p
+                    v-if="emailData.subject && emailData.isSubjectFlagged"
+                    :id="emailData.subject"
+                    class="detail-black detail-red single-post__details__section-header--sub"
+                  >
+                    Subject:
+                    {{ !emailData.isSubjectHidden ? emailData.subject : 'hidden by owner' }}
+                  </p>
+                  <p
+                    v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
+                    id="harmful-Subject"
+                    class="detail-black single-post__details__section-header--result"
+                  >
+                    Emails with this subject may include harmful content
+                  </p>
+                </div>
+                <div>
+                  <p
+                    v-if="emailData.from && emailData.isFromFlagged"
+                    :id="emailData.from"
+                    class="detail-black detail-red single-post__details__section-header--sub"
+                  >
+                    From:
+                    {{ !emailData.isFromHidden ? emailData.from : 'hidden by owner' }}
+                  </p>
+                  <p
+                    v-if="emailData && emailData.from && emailData.isFromFlagged"
+                    id="harmful-sender"
+                    class="detail-black single-post__details__section-header--result"
+                  >
+                    Emails from this sender may include harmful content
+                  </p>
+                </div>
+                <div>
+                  <p
+                    v-if="emailData.to && emailData.isToFlagged"
+                    class="detail-black detail-red single-post__details__section-header--sub"
+                  >
+                    To:
+                    {{ !emailData.isToHidden ? emailData.to.toString() : 'hidden by owner' }}
+                  </p>
+                  <p
+                    v-if="emailData && emailData.to && emailData.isToFlagged"
+                    id="harmful-to"
+                    class="detail-black single-post__details__section-header--result"
+                  >
+                    This email address may be targeted by emails include harmful content
+                  </p>
+                </div>
+                <div>
+                  <p
+                    v-if="emailData.cc && emailData.isCcFlagged"
+                    class="detail-black detail-red single-post__details__section-header--sub"
+                  >
+                    CC:
+                    {{ !emailData.isCcHidden ? emailData.cc.toString() : 'hidden by owner' }}
+                  </p>
+                  <p
+                    v-if="emailData && emailData.cc && emailData.isCcFlagged"
+                    id="harmful-cc"
+                    class="detail-black single-post__details__section-header--result"
+                  >
+                    This email address may be targeted by emails include harmful content
+                  </p>
+                </div>
+                <div>
+                  <p
+                    v-if="emailData.bcc && emailData.isBccFlagged"
+                    class="detail-black detail-red single-post__details__section-header--sub"
+                  >
+                    CC:
+                    {{ !emailData.isBccHidden ? emailData.bcc.toString() : 'hidden by owner' }}
+                  </p>
+                  <p
+                    v-if="emailData && emailData.bcc && emailData.isBccFlagged"
+                    id="harmful-bcc"
+                    class="detail-black single-post__details__section-header--result"
+                  >
+                    This email address may be targeted by emails include harmful content
+                  </p>
+                </div>
+              </div>
+              <div
+                v-if="emailData && emailData.urls && emailData.urls.length"
+                class="preview-attch-wrapper detail-parts"
+              >
+                <p
+                  v-if="
+                    emailData &&
+                    emailData.urls &&
+                    emailData.urls.some((a) => !a.isHidden && a.isFlagged)
+                  "
+                  class="detail-black single-post__details__section-header"
+                >
+                  Body
+                </p>
+                <p
+                  v-for="(el, ind) of emailData.urls"
+                  :key="ind + el.url"
+                  v-if="el && !el.isHidden && el.isFlagged"
+                  :id="'detail-links-' + el.name"
+                  class="detail-black detail-red single-post__details__section-header--sub"
+                >
+                  Link: {{ el.name }} ({{ el.url }})
+                  <span
+                    class="single-post__details__section-header--result--copy-link"
+                    @click="contentCopy(el.url)"
+                  >
+                    <v-icon class="single-post__details__section-header--result--copy-link__icon"
+                      >mdi-content-copy</v-icon
+                    >Copy Url
+                  </span>
+                  <br />
+                </p>
+                <div
+                  v-for="(att, ind) of emailData.urls"
+                  :key="ind + att.name"
+                  :id="'detail-malicious-' + att.name"
+                  v-if="att.isFlagged"
+                >
+                  <p
+                    class="attach-found-malicious single-post__details__section-header--result"
+                    v-if="ind === 0"
+                  >
+                    This link<span v-if="emailData.urls && emailData.urls.length > 1">s</span> has
+                    been reported as a phising link
+                  </p>
+                </div>
+              </div>
+              <div
+                class="details-attchments-wrapper preview-footer"
+                v-if="emailData.attachments && emailData.attachments.length"
+              >
+                <div
+                  v-for="(att, ind) of emailData.attachments"
+                  :key="ind + att.name"
+                  v-if="att.isFlagged"
+                  class="preview-attch-wrapper details-attachments"
+                >
+                  <p v-if="ind === 0" class="single-post__details__section-header">Attachments</p>
+                  <div>
+                    <div :id="'detail-attachs-' + att.name" class="attachment">
+                      <div
+                        :id="'detail-name-' + att.name"
+                        v-if="!att.isHidden"
+                        class="file-name max-char single-post__details__section-header--sub"
+                      >
+                        {{ att.name }}
+                      </div>
+                      <div
+                        :id="'detail-name-' + att.name"
+                        v-if="att.isHidden"
+                        class="file-name max-char single-post__details__section-header--sub"
+                      >
+                        hidden by owner
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-for="(att, ind) of emailData.attachments"
+                  :key="ind + att.name"
+                  :id="'detail-malicious-' + att.name"
+                  v-if="att.isFlagged"
+                >
+                  <p
+                    class="attach-found-malicious detail-black single-post__details__section-header--result"
+                    v-if="ind === 0"
+                  >
+                    This file<span v-if="emailData.attachments && emailData.attachments.length > 1"
+                      >s</span
+                    >
+                    has been reported as malicious content
+                  </p>
+                </div>
+              </div>
+              <div class="detail-discovery pb-4">
+                <div
+                  :id="'detail-discovery-empty'"
+                  v-if="postDetails && postDetails.discoveryAndDetection"
+                  class="disc-header"
+                >
+                  Discovery and Detection
+                </div>
+                <p
+                  :id="'detail-discovery'"
+                  v-if="postDetails && postDetails.discoveryAndDetection"
+                  class="discovery-p"
+                >
+                  {{ postDetails && postDetails.discoveryAndDetection }}
+                </p>
+                <div v-if="postDetails && postDetails.affectArea" class="disc-header mb-1">
+                  Impact Range
+                </div>
+                <div
+                  :id="'detail-effect-area'"
+                  v-if="postDetails && postDetails.affectArea"
+                  class="impact-row"
+                >
+                  <div class="impact-left">Effect area:</div>
+                  <div style="width: max-content; padding-right: 13px;" class="impact-right">
+                    {{ postDetails && postDetails.affectArea.toString() }}
+                  </div>
+                </div>
+                <div
+                  :id="'detail-scope' + postDetails"
+                  v-if="postDetails && postDetails.scope"
+                  class="impact-row"
+                >
+                  <div class="impact-left">Scope:</div>
+                  <div class="impact-right">{{ postDetails && postDetails.scope }}</div>
+                </div>
+              </div>
+            </div>
+          </v-tab-item>
         </v-tabs-items>
       </v-expansion-panel-content>
     </div>
@@ -985,7 +1086,7 @@ import {
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { getNotifiedEmail } from '../../api/notifiedEmail'
-import { isOwner, isPostedByMe } from '../../utils/functions'
+import { copyToClipboard, isOwner, isPostedByMe } from '../../utils/functions'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -996,7 +1097,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:hover:after {
     visibility: visible;
     opacity: 1;
-    transition: all 0.1s ease 0.5s;
+
 }
 [data-title]:after {
     content: attr(data-title);
@@ -1022,32 +1123,31 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
    color: #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
+    text-decoration: none !important;
+border-bottom: 1px solid;
+position:relative;
 }
 
 .malicious-icon {
-  margin: 4px;
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  position: absolute !important;
-    top: 2px;
+     top: 0px;
+    background: white;
+    margin-left: 5px;
+    padding-left: 8px;
+      color: #f56c6c;
+          font-size: 22px !important;
+    padding: 5px;
 }
 
 .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
+    color: #f56c6c !important;
+  caret-color: #f56c6c !important;
+    text-decoration: unset !important;
+    text-decoration-color: transparent !important;
+    font-size: 20px !important;
+    padding-right: 3px;
+    overflow: hidden;
+        margin-bottom: -1px;
+    padding-top: 3px;
 }
 
 .red-malicious-alert::before {
@@ -1141,7 +1241,7 @@ export default {
     isWantToShareIncident: false,
     isWantToInvestigate: false,
     isWantToPostIncident: false,
-    tab: 1,
+    tab: 0,
     showAllTags: false,
     seeComments: false,
     rules: {
@@ -1166,6 +1266,13 @@ export default {
     this.userIdFromStorage = localStorage.getItem('userId')
   },
   methods: {
+    contentCopy(contentBody) {
+      navigator.clipboard.writeText(contentBody)
+      this.$store.dispatch('common/createSnackBar', {
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        message: 'Copied Successfully!'
+      })
+    },
     openShareModalFunc(post) {
       this.sharedIncitedId = post.communityPostResourceId
       this.openShareModal = true
@@ -1327,21 +1434,11 @@ export default {
                   const el = els[i]
                   el.setAttribute('target', '_blank')
                   el.setAttribute('data-title', 'This link has been reported as a phishing')
-                  /*if (!a.IsShow) {
-                      if (!el.hasChildNodes()) {
-                        el.innerHTML = 'hidden by owner'
-                      } else {
-                        el.lastChild.innerHTML = 'hidden by owner'
-                      }
-                      el.setAttribute('href', '#')
-                    }*/
-                  //if (a) {
                   el.classList.add('malicious-style')
                   const iEl = document.createElement('i')
                   iEl.className +=
                     'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
                   el.appendChild(iEl)
-                  // }
                 } else {
                   const el = els[i]
                   el.classList.remove('malicious-style')
@@ -1443,6 +1540,12 @@ export default {
     },
     canEdit(post) {
       return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
+    },
+    canDeleteOrEditComment(comment, post) {
+      return (
+        comment.commenterFullName == localStorage.getItem('userName') ||
+        isPostedByMe(post.isPostedByMe)
+      )
     }
   }
 }

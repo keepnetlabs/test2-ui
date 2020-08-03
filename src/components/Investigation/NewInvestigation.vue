@@ -2930,6 +2930,10 @@ export default {
     background-color: #f3e1e5 !important;
     color: #bb2a45 !important;
 
+    text-decoration: none !important;
+    border-bottom: 1px solid;
+    position: relative;
+
     .share-setting-text {
       text-decoration: none !important;
       text-decoration-color: transparent !important;
