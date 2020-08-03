@@ -602,6 +602,7 @@ export default {
       cancelRequest(item.membershipResourceId).then(() => {
         this.getAllCommunitiesListData()
         this.getInvitationCount()
+        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
       })
       //this.isCancelRequestModal = true
     },
@@ -616,6 +617,7 @@ export default {
           this.getAllCommunitiesListData()
           this.getMyCommunitiesListData()
           this.getInvitationCount()
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -639,6 +641,7 @@ export default {
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
         this.getInvitationCount()
+        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
       })
     },
     getInvitationCount() {
@@ -710,6 +713,7 @@ export default {
           this.getAllCommunitiesListData()
           this.getMyCommunitiesListData()
           this.getInvitationCount()
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -863,6 +867,7 @@ export default {
         })
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
+        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
       })
       /*.catch(() => {
           this.$store.dispatch('common/createSnackBar', {

@@ -1082,8 +1082,12 @@ export default {
         })
       this.investgationName = 'Manuel Investigation'
     }
+    document.querySelector('.page-nav').style.zIndex = 8
   },
-  mounted() {}
+  mounted() {},
+  beforeDestroy() {
+    document.querySelector('.page-nav').style.zIndex = 19
+  }
 }
 </script>
 <style lang="scss">

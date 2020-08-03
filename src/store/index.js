@@ -8,6 +8,7 @@ import dashboard from './modules/dashboard'
 import tour from './modules/tour'
 import investigations from './modules/investigations'
 import playbook from './modules/playbook'
+import rightColumn from './modules/rightColumn'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     dashboard,
     tour,
     investigations,
-    playbook
+    playbook,
+    rightColumn
   }
 })

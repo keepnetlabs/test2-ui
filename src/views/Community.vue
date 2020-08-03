@@ -681,10 +681,6 @@ export default {
   .suggested-com-detail {
     font-size: 12px;
 
-    .suggested-people-icon {
-      font-size: 14px !important;
-    }
-
     .suggested-industry {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 12px;

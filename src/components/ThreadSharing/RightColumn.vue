@@ -564,10 +564,20 @@ export default {
     NewCommunity
   },
   created() {
-    this.getCommunityDetails()
-    this.getMyLastPosts()
-    this.getMyTopPosts()
-    this.getsuggestedCommunities()
+    this.getAllRightColumnData()
+    this.$store.watch(
+      (state) => {
+        return state.rightColumn.reloadRightColumnData // could also put a Getter here
+      },
+      (newValue, oldValue) => {
+        if (newValue) {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', false)
+          setTimeout(() => {
+            this.getAllRightColumnData()
+          }, 150)
+        }
+      }
+    )
   },
   computed: {
     ...mapGetters({
@@ -585,6 +595,12 @@ export default {
     }
   },
   methods: {
+    getAllRightColumnData() {
+      this.getCommunityDetails()
+      this.getMyLastPosts()
+      this.getMyTopPosts()
+      this.getsuggestedCommunities()
+    },
     deleteCommunityConfirm() {
       deleteCommunity(this.communityDetails.resourceId).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
@@ -666,6 +682,7 @@ export default {
             localStorage.setItem('communityName', response.data.data.name)
             localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
           }
+          this.$forceUpdate()
         })
       }
     },
@@ -673,6 +690,7 @@ export default {
       getMyLastPosts()
         .then((response) => {
           this.yourPosts = response.data.data.slice(0, 3)
+          this.$forceUpdate()
         })
         .catch((error) => {
           if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
@@ -684,6 +702,7 @@ export default {
       getMyTopPosts()
         .then((response) => {
           this.topPosts = response.data.data.slice(0, 3)
+          this.$forceUpdate()
         })
         .catch((error) => {
           if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
@@ -700,6 +719,7 @@ export default {
               return { ...item, isJoined: false }
             })
             .slice(0, 3)
+          this.$forceUpdate()
         })
         .catch((error) => {
           if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
@@ -1142,6 +1162,7 @@ export default {
   .right-side-content {
     a {
       text-decoration: none !important;
+      color: #2196f3;
     }
 
     a:hover {
@@ -1173,11 +1194,12 @@ export default {
 
   .right-side-desc {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.29;
+    line-height: normal;
     letter-spacing: normal;
+    color: #434343;
     a {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;

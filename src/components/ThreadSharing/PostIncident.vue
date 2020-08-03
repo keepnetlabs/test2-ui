@@ -2422,6 +2422,7 @@ export default {
     searchIncident(val) {
       if (!val) {
         this.listData = this.backupListData
+        this.asd = true
       } else {
         if (this.listData && this.backupListData) {
           this.listData = this.backupListData.reduce((acc, item) => {
@@ -2432,13 +2433,15 @@ export default {
             return acc
           }, [])
         }
-        this.$forceUpdate()
+        setTimeout(() => {
+          this.$forceUpdate()
+        }, 200)
       }
-      this.$forceUpdate()
     }
   },
   created() {
     document.querySelector('html').style.overflowY = 'hidden'
+    document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
     contentCopy(contentBody) {
@@ -3022,6 +3025,7 @@ export default {
   },
   beforeDestroy() {
     document.querySelector('html').style.overflowY = 'initial'
+    document.querySelector('.page-nav').style.zIndex = 19
   }
 }
 </script>
@@ -5089,6 +5093,7 @@ input[type=file]::-webkit-file-upload-button {
     line-height: 1.5;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    min-width: 150px;
   }
 
   .select-row-inline {

@@ -1531,6 +1531,7 @@ export default {
       this.deleteIncidentName = post.title
       this.deleteIncidentCommunityName = post.communityName
       this.isWantToDelete = true
+      this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
     },
     regexChar(val) {
       return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
