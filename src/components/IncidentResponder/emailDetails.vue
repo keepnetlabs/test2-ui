@@ -1214,7 +1214,6 @@ export default {
 
   .v-btn--contained {
     border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
   }
 
   .v-data-footer {

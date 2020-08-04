@@ -153,7 +153,7 @@ export default {
         pageNumber: 1,
         pageSize: 500,
         orderBy: 'PostedTime',
-        ascending: true,
+        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
