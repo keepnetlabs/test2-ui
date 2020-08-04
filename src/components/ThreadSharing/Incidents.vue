@@ -5,7 +5,7 @@
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
-      :z-index="999"
+      :z-index="99999"
       color="white"
     >
       <post-incident
@@ -14,7 +14,6 @@
         @refreshData="refreshDataFunc"
       />
     </v-overlay>
-
     <v-card id="component-incidents" flat color="basil">
       <v-card-text id="incidents-component-card" class="pt-0">
         <v-data-iterator
@@ -37,7 +36,7 @@
             </div>
           </template>
           <template v-slot:default="props">
-            <v-expansion-panels :multiple="false">
+            <v-expansion-panels :accordion="false" :multiple="false">
               <v-expansion-panel
                 v-for="(item, ind) of props.items"
                 :key="ind + item.communityPostResourceId"
@@ -440,6 +439,7 @@ export default {
   .v-expansion-panel-content {
     border-radius: 20px !important;
     font-family: 'Open Sans', sans-serif !important;
+    height: 100% !important;
   }
 
   .v-expansion-panel-content__wrap {

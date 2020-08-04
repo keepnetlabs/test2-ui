@@ -78,7 +78,8 @@ export default {
         if (this.tab === 0) {
           this.$refs.tsIncidents.getIncidentList()
         } else {
-          this.$refs.tsCommunities.getAllCommunityTabsData()
+          this.$refs.tsCommunities.getAllCommunitiesListData()
+          this.$refs.tsCommunities.getInvitationCount()
         }
       }, 50)
     },
@@ -262,26 +263,30 @@ export default {
     top: 11px;
   }
 
+  /* edit css
+
   .v-input__slot {
     -webkit-box-align: stretch;
     -ms-flex-align: stretch;
     align-items: stretch;
     min-height: 40px !important;
-  }
+  }*/
 
   label.v-label.theme--light {
     font-size: 12px;
   }
 
-  .v-input {
-    font-size: 13px !important;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-  }
+  /* edit css
+.v-input {
+ font-size: 13px !important;
+ font-weight: 600;
+ font-style: normal;
+ font-stretch: normal;
+ line-height: normal;
+ letter-spacing: normal;
+ color: rgba(0, 0, 0, 0.54);
+}
+*/
 
   // end search input
 
@@ -602,10 +607,6 @@ export default {
 
     .suggested-com-detail {
       font-size: 12px;
-
-      .suggested-people-icon {
-        font-size: 14px !important;
-      }
 
       .suggested-industry {
         font-family: 'Open Sans', sans-serif !important;

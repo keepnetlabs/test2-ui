@@ -12,30 +12,32 @@
   border-bottom: 1px solid #bb2a45 !important;
   border-color: #bb2a45 !important;
   background-color: #f3e1e5 !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid;
+  position:relative;
+  z-index: 99999;
 }
 
 .malicious-icon {
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-
+  top: 0px;
+  background: white;
+  margin-left: 5px;
+  padding-left: 8px;
+  color: #f56c6c;
+  font-size: 22px !important;
+  padding: 5px;
 }
 
 .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
+  color: #f56c6c !important;
+  caret-color: #f56c6c !important;
   text-decoration: unset !important;
   text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
+  font-size: 23px !important;
   padding-right: 3px;
-  height: 16px !important;
   overflow: hidden;
+  margin-bottom: -1px;
+  padding-top: 3px;
 }
 
 .red-malicious-alert::before {
@@ -68,3 +70,55 @@
     }
   }
  }
+
+.single-post__details{
+  &__section-header{
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px !important;
+    &--sub{
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(219, 37, 37, 0.87);
+      font-size: 14px;
+      margin-bottom: 0 !important;
+      word-break: break-all;
+    }
+    &--result{
+      opacity: 0.7;
+      font-family: OpenSans;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.58;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 4px !important;
+      &--copy-link{
+        cursor: pointer;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.29;
+        letter-spacing: normal;
+        color: #2196f3;
+        font-size: 14px;
+        margin-left: 16px;
+        &__icon{
+          font-size: 14px !important;
+          color: #2196f3 !important;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}

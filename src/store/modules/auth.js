@@ -30,6 +30,7 @@ const auth = {
         localStorage.setItem('companyName', response.data.currentCompany.name)
         localStorage.setItem('userId', response.data.id)
         localStorage.setItem('businessCatId', response.data.userCompany.businessCategoryId)
+        localStorage.setItem('userName', response.data.fullName)
         dispatch('dashboard/selectCompany', datas, { root: true })
         commit('SET_CURRENTUSER', response.data)
         let systemUserData = {

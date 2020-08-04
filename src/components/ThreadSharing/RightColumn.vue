@@ -431,9 +431,11 @@
                 <div class="suggested-title">{{ commun.communityName }}</div>
                 <div class="suggested-com-detail">
                   <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                  {{ commun.memberCount }}
-                  <span class="suggested-industry pl-2">Industry -&nbsp;</span>
-                  <span class="suggested-company">{{ commun.industryName }}</span>
+                  <b>{{ commun.memberCount }}</b
+                  ><span class="suggested-row__seperator">•</span>
+                  <span class="suggested-company">{{ commun.industryName }} </span>
+                  <span class="suggested-row__seperator">•</span>
+                  <span class="suggested-company">{{ commun.privacyStatusName }} </span>
                 </div>
               </div>
               <div class="suggested-right-action">
@@ -562,10 +564,20 @@ export default {
     NewCommunity
   },
   created() {
-    this.getCommunityDetails()
-    this.getMyLastPosts()
-    this.getMyTopPosts()
-    this.getsuggestedCommunities()
+    this.getAllRightColumnData()
+    this.$store.watch(
+      (state) => {
+        return state.rightColumn.reloadRightColumnData // could also put a Getter here
+      },
+      (newValue, oldValue) => {
+        if (newValue) {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', false)
+          setTimeout(() => {
+            this.getAllRightColumnData()
+          }, 150)
+        }
+      }
+    )
   },
   computed: {
     ...mapGetters({
@@ -583,6 +595,12 @@ export default {
     }
   },
   methods: {
+    getAllRightColumnData() {
+      this.getCommunityDetails()
+      this.getMyLastPosts()
+      this.getMyTopPosts()
+      this.getsuggestedCommunities()
+    },
     deleteCommunityConfirm() {
       deleteCommunity(this.communityDetails.resourceId).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
@@ -664,6 +682,7 @@ export default {
             localStorage.setItem('communityName', response.data.data.name)
             localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
           }
+          this.$forceUpdate()
         })
       }
     },
@@ -671,6 +690,7 @@ export default {
       getMyLastPosts()
         .then((response) => {
           this.yourPosts = response.data.data.slice(0, 3)
+          this.$forceUpdate()
         })
         .catch((error) => {
           if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
@@ -682,6 +702,7 @@ export default {
       getMyTopPosts()
         .then((response) => {
           this.topPosts = response.data.data.slice(0, 3)
+          this.$forceUpdate()
         })
         .catch((error) => {
           if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
@@ -698,6 +719,7 @@ export default {
               return { ...item, isJoined: false }
             })
             .slice(0, 3)
+          this.$forceUpdate()
         })
         .catch((error) => {
           if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
@@ -1140,6 +1162,7 @@ export default {
   .right-side-content {
     a {
       text-decoration: none !important;
+      color: #2196f3;
     }
 
     a:hover {
@@ -1170,14 +1193,23 @@ export default {
   }
 
   .right-side-desc {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.29;
+    line-height: normal;
     letter-spacing: normal;
-    color: #2196f3;
+    color: #434343;
+    a {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: #2196f3;
+    }
   }
 
   .about-community {
@@ -1252,7 +1284,10 @@ export default {
     margin-bottom: 8px;
     border-radius: 4px !important;
     border: none !important;
-    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    background-color: #ffffff;
 
     .suggested-row {
       align-items: stretch;
@@ -1265,6 +1300,10 @@ export default {
       width: 100%;
       padding: 16px;
       padding-bottom: 4px;
+      &__seperator {
+        margin: 0 4px;
+        font-weight: 900;
+      }
     }
 
     .suggested-com-name {
@@ -1296,18 +1335,27 @@ export default {
         font-size: 12px;
 
         .suggested-people-icon {
-          font-size: 14px !important;
+          font-size: 20px !important;
         }
 
         .suggested-industry {
           font-family: 'Open Sans', sans-serif !important;
-          font-size: 12px;
-          font-weight: normal;
+          font-size: 14px !important;
+          font-weight: 600 !important;
           font-stretch: normal;
           font-style: normal;
-          line-height: 1.58;
+          line-height: normal;
           letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87) !important;
+        }
+        .suggested-company {
+          font-size: 14px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
         }
       }
     }
@@ -1316,7 +1364,8 @@ export default {
       align-items: center;
       display: flex;
       justify-content: flex-end;
-      margin: 13px 0;
+      margin-top: 4px;
+      margin-bottom: 13px;
       width: min-content;
 
       .suggested-btn {

@@ -184,7 +184,7 @@ export default {
     },
     getPhishingReportSummary() {
       const dateObj = this.getDates()
-  
+
       getPhishingReportSummary({
         startDate: dateObj.startDate,
         endDate: dateObj.endDate
@@ -230,7 +230,7 @@ export default {
             startDate: `${yesterday.getFullYear()}-${
               yesterday.getMonth() + 1
             }-${yesterday.getDate()}`,
-            endDate: `${year}-${month}-${new Date(new Date().setDate(day)).getDate()}`
+            endDate: `${year}-${month}-${new Date(new Date().setDate(day)).getDate() + 1}`
           }
         case this.listItems[1]:
           const sevenDaysAgo = new Date(new Date().setDate(day - 7))
