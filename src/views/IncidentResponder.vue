@@ -1082,11 +1082,13 @@ export default {
         baseManHour: this.baseManHour,
         baseManHourCost: this.baseManHourCost
       }).then((response) => {
+        this.callForGetRoiSettings()
         this.$store.dispatch('common/createSnackBar', {
           message: response.data.message,
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-check-circle'
         })
+        this.$store.dispatch('investigations/getIrSummary')
       })
       this.isShowRoi = false
     },

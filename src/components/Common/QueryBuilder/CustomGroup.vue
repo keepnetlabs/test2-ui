@@ -133,7 +133,7 @@ export default {
         /* height: calc(105%); */
         border-color: #00bcd4;
         border-style: solid;
-        border-width: 0 0 1.5px 1.5px;
+        border-width: 0 0 1px 1px;
         border-radius: 4px;
         border-bottom-right-radius: 0;
         border-top-left-radius: 0;
@@ -148,7 +148,7 @@ export default {
         height: calc(105%);
         border-color: #00bcd4;
         border-style: solid;
-        border-width: 0 0 0px 1.5px;
+        border-width: 0 0 0px 1px;
         border-radius: 1px;
       }
       &:first-child {
@@ -189,12 +189,12 @@ export default {
         position: absolute;
         left: -36px;
         width: 37px;
-        top: -69px;
-        height: calc(50% + 71px);
+        top: -106px;
+        height: calc(50% + 108px);
         //animation: asasab 0.2s ease-in-out;
         border-color: #2196f3;
         border-style: solid;
-        border-width: 0 0 1.5px 1.5px;
+        border-width: 0 0 1px 1px;
         border-radius: 4px;
         border-bottom-right-radius: 0;
         border-top-left-radius: 0;
