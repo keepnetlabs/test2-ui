@@ -222,71 +222,209 @@
                 class="pb-4 pt-0 mt-2 pa-6 investigation-content"
                 style="width: 600px;"
               >
-                <div class="mail-preview pt-0">
-                  <v-icon
-                    id="post-first-preview-close"
-                    :disabled="!!editItem"
-                    class="close-incident"
-                    @click="closePreview()"
-                    >mdi-close-circle
-                  </v-icon>
+                <div class="mail-preview">
                   <div class="preview-header pt-0">
                     <h2
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
                       v-if="!uploadRespond.isSubjectHidden && !!uploadRespond.subject"
                     >
-                      Subject: {{ uploadRespond.subject }}
+                      <span :class="{ 'malicious-style': uploadRespond.isSubjectFlagged }">
+                        Subject: {{ uploadRespond.subject }}
+                        <v-tooltip v-if="uploadRespond.isSubjectFlagged" bottom opacity="1">
+                          <template v-slot:activator="{ on }">
+                            <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                              >mdi-alert</v-icon
+                            >
+                          </template>
+                          <span>The subject has been reported as a threat source</span>
+                        </v-tooltip></span
+                      >
                     </h2>
                     <h2
                       style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                      v-else-if="uploadRespond.isSubjectHidden"
+                      v-else-if="uploadRespond.isSubjectHidden && !!uploadRespond.subject"
                     >
-                      Subject: Hidden by owner
+                      <span :class="{ 'malicious-style': uploadRespond.isSubjectFlagged }">
+                        Subject: Hidden by owner<v-tooltip
+                          v-if="uploadRespond.isSubjectFlagged"
+                          bottom
+                          opacity="1"
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                              >mdi-alert</v-icon
+                            >
+                          </template>
+                          <span>The subject has been reported as a threat source</span>
+                        </v-tooltip>
+                      </span>
                     </h2>
                     <div class="header-info pb-5">
                       <div
                         style="padding: 0 2px; border-bottom: 1px solid transparent;"
                         v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
                       >
-                        From: {{ uploadRespond.from }}
+                        <span :class="{ 'malicious-style': uploadRespond.isFromFlagged }">
+                          From: {{ uploadRespond.from }}
+                          <v-tooltip v-if="uploadRespond.isFromFlagged" bottom opacity="1">
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span>Emails from this sender may include harmful content</span>
+                          </v-tooltip>
+                        </span>
                       </div>
                       <div
                         style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                        v-else-if="uploadRespond.isFromHidden"
+                        v-else-if="uploadRespond.isFromHidden && !!uploadRespond.from"
                       >
-                        From: Hidden by owner
+                        <span :class="{ 'malicious-style': uploadRespond.isFromFlagged }">
+                          From: Hidden by owner
+                          <v-tooltip v-if="uploadRespond.isFromFlagged" bottom opacity="1">
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span>Emails from this sender may include harmful content</span>
+                          </v-tooltip>
+                        </span>
                       </div>
                       <div
                         style="padding: 0 2px; border-bottom: 1px solid transparent;"
                         v-if="
-                          !uploadRespond.isToHidden &&
-                          uploadRespond.to &&
-                          !!uploadRespond.to.toString()
+                          !uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length
                         "
                       >
-                        To: {{ uploadRespond.to && uploadRespond.to.toString() }}
+                        <span :class="{ 'malicious-style': uploadRespond.isToFlagged }">
+                          To: {{ uploadRespond.to && uploadRespond.to.toString()
+                          }}<v-tooltip v-if="uploadRespond.isToFlagged" bottom opacity="1">
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span
+                              >This email address may be targeted by emails include harmful
+                              content</span
+                            >
+                          </v-tooltip>
+                        </span>
                       </div>
                       <div
                         style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                        v-else-if="uploadRespond.isToHidden"
+                        v-else-if="
+                          uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length
+                        "
                       >
-                        To: Hidden by owner
+                        <span :class="{ 'malicious-style': uploadRespond.isToFlagged }">
+                          To: Hidden by owner<v-tooltip
+                            v-if="uploadRespond.isToFlagged"
+                            bottom
+                            opacity="1"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span
+                              >This email address may be targeted by emails include harmful
+                              content</span
+                            >
+                          </v-tooltip>
+                        </span>
+                      </div>
+                      <div
+                        style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                        v-if="
+                          !uploadRespond.isCcHidden && uploadRespond.cc && !!uploadRespond.cc.length
+                        "
+                      >
+                        <span :class="{ 'malicious-style': uploadRespond.isCcFlagged }">
+                          CC: {{ uploadRespond.cc && uploadRespond.cc.toString()
+                          }}<v-tooltip v-if="uploadRespond.isCcFlagged" bottom opacity="1">
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span
+                              >This email address may be targeted by emails include harmful
+                              content</span
+                            >
+                          </v-tooltip>
+                        </span>
+                      </div>
+                      <div
+                        style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                        v-else-if="
+                          uploadRespond.isCcHidden && !!uploadRespond.cc.length && uploadRespond.cc
+                        "
+                      >
+                        <span :class="{ 'malicious-style': uploadRespond.isCcFlagged }">
+                          CC: Hidden by owner<v-tooltip
+                            v-if="uploadRespond.isCcFlagged"
+                            bottom
+                            opacity="1"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span
+                              >This email address may be targeted by emails include harmful
+                              content</span
+                            >
+                          </v-tooltip>
+                        </span>
                       </div>
                       <div
                         style="padding: 0 2px; border-bottom: 1px solid transparent;"
                         v-if="
                           !uploadRespond.isCcHidden &&
-                          uploadRespond.cc &&
-                          !!uploadRespond.cc.toString()
+                          uploadRespond.bcc &&
+                          !!uploadRespond.bcc.length
                         "
+                        :class="{ 'malicious-style': uploadRespond.isBccFlagged }"
                       >
-                        CC: {{ uploadRespond.cc && uploadRespond.cc.toString() }}
+                        BCC: {{ uploadRespond.bcc && uploadRespond.bcc.toString()
+                        }}<v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
+                          <template v-slot:activator="{ on }">
+                            <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                              >mdi-alert</v-icon
+                            >
+                          </template>
+                          <span
+                            >This email address may be targeted by emails include harmful
+                            content</span
+                          >
+                        </v-tooltip>
                       </div>
                       <div
                         style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                        v-else-if="uploadRespond.isCcHidden"
+                        v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length"
                       >
-                        CC: Hidden by owner
+                        <span :class="{ 'malicious-style': uploadRespond.isBccFlagged }">
+                          BCC: Hidden by owner<v-tooltip
+                            v-if="uploadRespond.isBccFlagged"
+                            bottom
+                            opacity="1"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
+                                >mdi-alert</v-icon
+                              >
+                            </template>
+                            <span
+                              >This email address may be targeted by emails include harmful
+                              content</span
+                            >
+                          </v-tooltip>
+                        </span>
                       </div>
                       <div>
                         Date: {{ uploadRespond.sentTime }}
@@ -294,17 +432,17 @@
                       </div>
                     </div>
                   </div>
-                  <div id="previewed-body" class="preview-body">
-                    <k-shadow-frame id="incident-preview-1" :content="uploadRespond.body" />
+
+                  <div id="last-preview-body-preview" class="preview-body">
+                    <k-shadow-frame
+                      id="last-preview-body-shadow-root"
+                      :content="uploadRespond.body"
+                    />
                   </div>
                   <div
-                    id="preview-footer-container"
+                    id="preview-footer-container-att-preview"
                     class="preview-footer"
-                    v-if="
-                      !!uploadRespond &&
-                      uploadRespond.attachments &&
-                      uploadRespond.attachments.length
-                    "
+                    v-if="!!uploadRespond.attachments && uploadRespond.attachments.length"
                   >
                     <h2>Attachments</h2>
                     <div class="attachment-wrapper">
@@ -2479,6 +2617,7 @@ export default {
       }
     },
     urlSwitchChange(url) {
+      //this.setShadowRootMalicousLink('last-preview-body-shadow-root')
       let els = document
         .getElementById('last-preview-body-shadow-root')
         .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
@@ -2551,7 +2690,7 @@ export default {
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
           return {
             ...item,
-            url: item.url.replace('&amp;', '&'),
+            url: item.url.replace(/amp;/g, ''),
             name: item.name,
             urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
           }
@@ -3796,9 +3935,6 @@ export default {
       margin-bottom: 16px;
       width: 100%;
       display: block;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
       max-height: 80px;
     }
 
@@ -4161,10 +4297,6 @@ export default {
       margin-bottom: 16px;
       width: 100%;
       display: block;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      max-height: 80px;
     }
 
     .header-info {
@@ -4697,7 +4829,6 @@ export default {
 
   .v-btn--contained {
     border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
   }
 
   .v-data-footer {
