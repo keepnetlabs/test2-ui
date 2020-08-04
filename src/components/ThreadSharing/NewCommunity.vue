@@ -234,7 +234,7 @@ export default {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 message: 'Community updated successfully'
               })
-              //refThis.$emit('closeAdd')
+              refThis.$emit('closeAdd')
               this.isWantToAccept = false
               this.$router.push(`/threat-sharing`)
             })

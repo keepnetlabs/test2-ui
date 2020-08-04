@@ -600,7 +600,9 @@ export default {
       cancelRequest(item.membershipResourceId).then(() => {
         this.getAllCommunitiesListData()
         this.getInvitationCount()
-        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
       })
       //this.isCancelRequestModal = true
     },
@@ -615,7 +617,9 @@ export default {
           this.getAllCommunitiesListData()
           this.getMyCommunitiesListData()
           this.getInvitationCount()
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -639,7 +643,9 @@ export default {
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
         this.getInvitationCount()
-        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
       })
     },
     getInvitationCount() {
@@ -711,7 +717,9 @@ export default {
           this.getAllCommunitiesListData()
           this.getMyCommunitiesListData()
           this.getInvitationCount()
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -755,7 +763,7 @@ export default {
         pageNumber: 1,
         pageSize: 100,
         orderBy: 'CommunityName',
-        ascending: true,
+        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
@@ -796,7 +804,7 @@ export default {
         pageNumber: 1,
         pageSize: 100,
         orderBy: 'CommunityName',
-        ascending: true,
+        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
@@ -865,7 +873,9 @@ export default {
         })
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
-        this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
       })
       /*.catch(() => {
           this.$store.dispatch('common/createSnackBar', {

@@ -571,9 +571,9 @@ export default {
       },
       (newValue, oldValue) => {
         if (newValue) {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', false)
+          this.getAllRightColumnData()
           setTimeout(() => {
-            this.getAllRightColumnData()
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', false)
           }, 150)
         }
       }
@@ -752,6 +752,7 @@ export default {
     joinCommunity(communityId, creatorId, name, isPrivate) {
       joinCommunity(communityId).then((response) => {
         this.getsuggestedCommunities()
+        this.$emit('joinRequestSuccess')
       })
     },
     isOwnerOfTheCommunity() {
