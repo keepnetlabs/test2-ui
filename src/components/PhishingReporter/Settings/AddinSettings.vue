@@ -90,6 +90,7 @@
           <div class="add-in-settings__subtitle">
             Recommended size is 60x60px
           </div>
+          <!--
           <v-btn
             @click="onBtnSelectFileClick"
             class="btn-select-file mt-2"
@@ -106,6 +107,18 @@
               type="file"
             />
           </v-btn>
+          <hr /> -->
+          <file-upload
+            ref="upload"
+            class="btn-select-file mt-2 v-btn v-btn--contained v-btn--rounded theme--light v-size--default d-flex"
+            v-model="files"
+            extensions="gif,jpg,jpeg,png"
+            accept="image/png,image/gif,image/jpeg"
+            :multiple="false"
+            @input-file="onFileChanged"
+          >
+            SELECT FILE
+          </file-upload>
         </v-list-item-content>
       </v-list-item>
       <v-list-item
@@ -283,12 +296,10 @@ import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
+import FileUpload from 'vue-upload-component'
 export default {
   name: 'AddinSettings',
-  components: {
-    ReporterVersionModal,
-    VersionHistoryModal
-  },
+  components: { FileUpload, ReporterVersionModal, VersionHistoryModal },
   props: {
     showFooter: {
       type: Boolean,
@@ -322,6 +333,7 @@ export default {
   data() {
     return {
       isValid: false,
+      files: [],
       formValues: {
         addInName: '',
         brandName: '',
@@ -353,7 +365,7 @@ export default {
       return this.formValues.file && URL.createObjectURL(this.formValues.file)
     },
     onFileChanged(e) {
-      this.formValues.file = e.target.files[0]
+      this.formValues.file = this.files[0].file
     },
     handleHistoryRow(row) {
       this.selectedVersionRow = row
@@ -373,7 +385,8 @@ export default {
       } else {
         return false
       }
-    }
+    },
+    inputFile(newFile, oldFile) {}
   },
   created() {
     //If has a report
