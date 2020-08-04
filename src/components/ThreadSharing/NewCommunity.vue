@@ -81,7 +81,7 @@
               ></v-combobox>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-4 pa-0 target-users-select">
+          <v-list-item class="edit-industry-area pa-0 target-users-select">
             <v-list-item-content class>
               <label class="edit-labels">Privacy</label>
               <label class="edit-sub-labels pb-0">Select a privacy option</label>
@@ -105,7 +105,7 @@
           </v-list-item>
           <v-list-item class="p-0">
             <v-list-item-content class="pt-1 pb-0">
-              <div class="d-flex">
+              <div class="d-flex" style="margin-bottom: 8px;">
                 <v-checkbox
                   class="k-checkbox"
                   color="#2196f3"
@@ -312,7 +312,7 @@ export default {
   .k-checkbox {
     &__checkbox-text {
       position: absolute;
-      top: 9px;
+      top: 13px;
       left: 45px;
       font-size: 14px;
       font-weight: normal;

@@ -517,7 +517,7 @@
                   v-if="!emailData.isFromHidden && !!emailData.from"
                 >
                   <span :class="{ 'malicious-style': emailData.isFromFlagged }">
-                    From: {{ emailData.from }} {{ emailData.isFromFlagged }}
+                    From: {{ emailData.from }}
                     <v-tooltip v-if="emailData.isFromFlagged" bottom opacity="1">
                       <template v-slot:activator="{ on }">
                         <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
@@ -1363,6 +1363,7 @@ export default {
           })
           this.$emit('refreshData')
           this.isWantToDelete = false
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1392,80 +1393,88 @@ export default {
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
       //postId = '4pDtxLYSG0mb'
-      getComments(this.post.communityPostResourceId)
-        .then((response) => {
-          const { data } = response
-          this.comments = data.data
-          this.comments = this.comments.map((item) => {
-            return { ...item, isEdit: false, commentValue: null }
+      if (bool) {
+        getComments(this.post.communityPostResourceId)
+          .then((response) => {
+            const { data } = response
+            this.comments = data.data
+            this.comments = this.comments.map((item) => {
+              return { ...item, isEdit: false, commentValue: null }
+            })
           })
-        })
 
-        .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
-            this.comments = []
-          }
-        })
-      //getSelectedEmailPreview('4pDtxLYSG0mb')
-      getCommunityPost(this.post.communityPostResourceId).then((response) => {
-        const comId = this.post.communityPostResourceId
-        console.log(comId)
-        this.postDetails = response.data.data
-        this.emailData = response.data.data.communityPostEmail
-        this.emailData.urls = this.emailData.urls.map((item) => {
-          return {
-            ...item,
-            url: item.url.replace('&amp;', '&')
-          }
-        })
-        setTimeout(function () {
-          for (let url of response.data.data.communityPostEmail.urls) {
-            let els = document
-              .getElementById(`sframe${comId}`)
-              .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
-            if (els && els.length) {
-              for (let i = 0, l = els.length; i < l; i++) {
-                let el = els[i]
-                el.setAttribute('target', '_blank')
-                if (url.isHidden) {
-                  el.innerHTML = 'hidden by owner'
-                }
-                if (url.isFlagged) {
-                  const el = els[i]
+          .catch((error) => {
+            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              this.comments = []
+            }
+          })
+        //getSelectedEmailPreview('4pDtxLYSG0mb')
+        getCommunityPost(this.post.communityPostResourceId).then((response) => {
+          const comId = this.post.communityPostResourceId
+          console.log(comId)
+          this.postDetails = response.data.data
+          this.emailData = response.data.data.communityPostEmail
+          this.emailData.urls = this.emailData.urls.map((item) => {
+            return {
+              ...item,
+              url: item.url.replace('&amp;', '&')
+            }
+          })
+          setTimeout(function () {
+            let recrusiveFunctionForDom = () =>
+              document.getElementById(`sframe${comId}`) &&
+              document.getElementById(`sframe${comId}`).shadowRoot
+            if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
+            for (let url of response.data.data.communityPostEmail.urls) {
+              let recrusiveFunctionForDom = () => document.getElementById(`sframe${comId}`)
+              if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
+              let els = document
+                .getElementById(`sframe${comId}`)
+                .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+              if (els && els.length) {
+                for (let i = 0, l = els.length; i < l; i++) {
+                  let el = els[i]
                   el.setAttribute('target', '_blank')
-                  el.setAttribute('data-title', 'This link has been reported as a phishing')
-                  el.classList.add('malicious-style')
-                  const iEl = document.createElement('i')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  el.appendChild(iEl)
-                } else {
-                  const el = els[i]
-                  el.classList.remove('malicious-style')
+                  if (url.isHidden) {
+                    el.innerHTML = 'hidden by owner'
+                  }
+                  if (url.isFlagged) {
+                    const el = els[i]
+                    el.setAttribute('target', '_blank')
+                    el.setAttribute('data-title', 'This link has been reported as a phishing')
+                    el.classList.add('malicious-style')
+                    const iEl = document.createElement('i')
+                    iEl.className +=
+                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                    el.appendChild(iEl)
+                  } else {
+                    const el = els[i]
+                    el.classList.remove('malicious-style')
+                  }
+                }
+              }
+              let hiddenEls = document.getElementsByClassName(url.url)
+              if (hiddenEls && hiddenEls.length) {
+                for (let i = 0, l = hiddenEls.length; i < l; i++) {
+                  let hiddenEl = hiddenEls[i]
+                  hiddenEl.setAttribute('target', '_blank')
+                  if (url.isHidden) {
+                    hiddenEl.innerHTML = 'hidden by owner'
+                    hiddenEl.setAttribute('href', '#')
+                  }
+                  if (url.isFlagged) {
+                    hiddenEl.classList.add('malicious-link')
+                    let iEl = document.createElement('span')
+                    iEl.className +=
+                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+                    hiddenEl.appendChild(iEl)
+                  }
                 }
               }
             }
-            let hiddenEls = document.getElementsByClassName(url.url)
-            if (hiddenEls && hiddenEls.length) {
-              for (let i = 0, l = hiddenEls.length; i < l; i++) {
-                let hiddenEl = hiddenEls[i]
-                hiddenEl.setAttribute('target', '_blank')
-                if (url.isHidden) {
-                  hiddenEl.innerHTML = 'hidden by owner'
-                  hiddenEl.setAttribute('href', '#')
-                }
-                if (url.isFlagged) {
-                  hiddenEl.classList.add('malicious-link')
-                  let iEl = document.createElement('span')
-                  iEl.className +=
-                    'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                  hiddenEl.appendChild(iEl)
-                }
-              }
-            }
-          }
-        }, 150)
-      })
+          }, 500)
+        })
+      }
     },
     userLikePost(postId) {
       likePost(postId).then((response) => {
@@ -1531,7 +1540,6 @@ export default {
       this.deleteIncidentName = post.title
       this.deleteIncidentCommunityName = post.communityName
       this.isWantToDelete = true
-      this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
     },
     regexChar(val) {
       return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)

@@ -581,8 +581,6 @@ export default {
   created() {},
   mounted() {
     this.selectedTab = 'tab-1'
-    this.getAllCommunitiesListData()
-    this.getInvitationCount()
   },
   methods: {
     getAllCommunityTabsData() {

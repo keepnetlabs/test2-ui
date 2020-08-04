@@ -78,7 +78,8 @@ export default {
         if (this.tab === 0) {
           this.$refs.tsIncidents.getIncidentList()
         } else {
-          this.$refs.tsCommunities.getAllCommunityTabsData()
+          this.$refs.tsCommunities.getAllCommunitiesListData()
+          this.$refs.tsCommunities.getInvitationCount()
         }
       }, 50)
     },
