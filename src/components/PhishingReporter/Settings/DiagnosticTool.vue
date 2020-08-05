@@ -33,34 +33,24 @@
         </v-list-item-content>
       </v-list-item>
     </div>
-    <div class="diagnostic-tool__footer" v-if="showFooter">
-      <v-btn
-        @click="submit()"
-        class="white--text diagnostic-tool__btn-util diagnostic-tool__btn-save-changes"
-        color="#2196f3"
-        rounded
-      >
-        SAVE CHANGES
-      </v-btn>
-      <v-btn
-        @click="submit(true)"
-        class="white--text diagnostic-tool__btn-util btn-download-add-in ml-3"
-        color="#00bcd4"
-        rounded
-      >
-        <v-icon left>mdi-download</v-icon>
-        Save And Download
-      </v-btn>
-    </div>
+    <phishing-settings-footer
+      v-if="showFooter"
+      @submit="submit($event)"
+      @submitWithDownload="submit($event, true)"
+      className="mt-4"
+    />
   </v-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { generateDiagnosticTool, downloadDiagnosticTool } from '../../../api/phishingReporter'
-
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'DiagnosticTool',
+  components: {
+    PhishingSettingsFooter
+  },
   props: {
     isInModal: {
       type: Boolean,
@@ -105,7 +95,7 @@ export default {
     })
   },
   methods: {
-    submit(isAddIn = false) {
+    submit(event, isAddIn = false) {
       this.$emit('updateForm', { ...this.formValues, isAddIn })
       return this.formValues
     },
@@ -196,7 +186,7 @@ export default {
 
   &__checkbox {
     @media (min-width: 768px) {
-      margin-top: 12px !important;
+      margin-top: 8px !important;
     }
     @media (max-width: 768px) {
       margin-top: 9px !important;

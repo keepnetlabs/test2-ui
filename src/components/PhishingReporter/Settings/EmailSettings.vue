@@ -45,7 +45,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 email-settings__list-item">
+      <v-list-item class="px-0 email-settings__list-item mt-1">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
@@ -155,25 +155,23 @@
           ></v-textarea>
         </v-list-item-content>
       </v-list-item>
-      <v-btn
-        @click="submit"
-        rounded
-        class="white--text email-settings__btn-util mt-3"
-        color="#2196f3"
-        style="margin-bottom: 6px;"
+      <phishing-settings-footer
         v-if="showFooter"
-      >
-        SAVE CHANGES
-      </v-btn>
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
+      />
     </v-form>
   </v-container>
 </template>
 
 <script>
 import { maxLength, mail, required } from '../../../utils/validations'
-
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'EmailSettings',
+  components: {
+    PhishingSettingsFooter
+  },
   watch: {
     formData: {
       handler(data) {
@@ -226,13 +224,12 @@ export default {
     }
   },
   methods: {
-    submit() {
-      const result = this.$refs.refForm.validate()
-      if (!result) {
-        return false
-      } else {
-        this.$emit('updateForm', this.formValues)
+    submit(event, isAddIn = false) {
+      if (this.$refs.refForm.validate()) {
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
+      } else {
+        return false
       }
     },
     getFormValues() {
@@ -267,7 +264,7 @@ export default {
 .email-settings {
   &__list-item {
     max-width: 554px;
-    margin-top: -4px;
+    margin-top: -8px;
     &--text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;

@@ -267,24 +267,12 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-
-      <div class="add-in-settings__footer mt-4 mb-2" v-if="showFooter">
-        <v-btn @click="submit" class="white--text btn-util" color="#2196f3" rounded>
-          SAVE CHANGES
-        </v-btn>
-        <v-btn
-          @click="submit($event, true)"
-          class="white--text btn-util btn-download-add-in ml-3"
-          color="#00bcd4"
-          rounded
-        >
-          <v-icon left>mdi-download</v-icon>
-          Save and Download
-        </v-btn>
-        <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
-          DOWNLOAD History
-        </div>
-      </div>
+      <phishing-settings-footer
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
+        v-if="showFooter"
+        className="mt-1"
+      />
     </v-form>
   </v-container>
 </template>
@@ -297,9 +285,10 @@ import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-
 import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
 import FileUpload from 'vue-upload-component'
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'AddinSettings',
-  components: { FileUpload, ReporterVersionModal, VersionHistoryModal },
+  components: { FileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
   props: {
     showFooter: {
       type: Boolean,
