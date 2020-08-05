@@ -108,17 +108,99 @@
             />
           </v-btn>
           <hr /> -->
-          <file-upload
-            ref="upload"
-            class="btn-select-file mt-2 v-btn v-btn--contained v-btn--rounded theme--light v-size--default d-flex"
-            v-model="files"
-            extensions="gif,jpg,jpeg,png"
-            accept="image/png,image/gif,image/jpeg"
-            :multiple="false"
-            @input-file="onFileChanged"
-          >
-            SELECT FILE
-          </file-upload>
+          <div class="k-file-uploads">
+            <file-upload
+              ref="upload"
+              v-model="files"
+              extensions="gif,jpg,jpeg,png"
+              accept="image/png,image/gif,image/jpeg"
+              :multiple="false"
+              @input-file="onFileChanged"
+              @input-filter="inputFilter"
+              :drop="true"
+            >
+              Select or drop file
+              <v-icon>mdi-folder-open</v-icon>
+            </file-upload>
+            <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
+              <div class="k-file-uploads__item-details">
+                <div class="k-file-uploads__item-details--filename">{{ file.name }}</div>
+                <div class="k-file-uploads__item-details--filesize">
+                  <span>{{ file.size | formatSize }}</span>
+                  <span class="k-file-uploads__item-details--progress-value"
+                    >{{ file.progress }}%</span
+                  >
+                </div>
+                <div class="k-file-uploads__item-details--fileprogress">
+                  <v-progress-linear :value="file.progress" />
+                </div>
+
+                <div></div>
+              </div>
+              <div class="k-file-uploads__item-actions">
+                <v-icon>mdi-close-circle</v-icon>
+                <v-icon
+                  v-if="file.active"
+                  @click.prevent="$refs.upload.update(file, { active: false })"
+                  >mdi-close-circle</v-icon
+                >
+              </div>
+              <!--
+              <div>{{ file.speed | formatSize }}</div>
+
+              <div v-if="file.error">{{ file.error }}</div>
+              <div v-else-if="file.success">success</div>
+              <div v-else-if="file.active">active</div>
+
+              <div>
+                <a
+                  :class="{ 'dropdown-item': true, disabled: !file.active }"
+                  href="#"
+                  @click.prevent="
+                    file.active ? $refs.upload.update(file, { error: 'cancel' }) : false
+                  "
+                  >Cancel</a
+                >
+
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  v-if="file.active"
+                  @click.prevent="$refs.upload.update(file, { active: false })"
+                  >Abort</a
+                >
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  v-else-if="
+                    file.error && file.error !== 'compressing' && $refs.upload.features.html5
+                  "
+                  @click.prevent="
+                    $refs.upload.update(file, { active: true, error: '', progress: '0.00' })
+                  "
+                  >Retry upload</a
+                >
+                <a
+                  :class="{
+                    'dropdown-item': true,
+                    disabled: file.success || file.error === 'compressing'
+                  }"
+                  href="#"
+                  v-else
+                  @click.prevent="
+                    file.success || file.error === 'compressing'
+                      ? false
+                      : $refs.upload.update(file, { active: true })
+                  "
+                  >Upload</a
+                >
+
+                <a class="dropdown-item" href="#" @click.prevent="$refs.upload.remove(file)"
+                  >Remove</a
+                >
+              </div>-->
+            </div>
+          </div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item
@@ -297,6 +379,7 @@ import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-
 import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
 import FileUpload from 'vue-upload-component'
+
 export default {
   name: 'AddinSettings',
   components: { FileUpload, ReporterVersionModal, VersionHistoryModal },
@@ -386,7 +469,21 @@ export default {
         return false
       }
     },
-    inputFile(newFile, oldFile) {}
+    inputFilter(newFile, oldFile, prevent) {
+      if (newFile && !oldFile) {
+        if (!/\.(gif|jpg|jpeg|png)$/i.test(newFile.name)) {
+          this.alert('Invalid file type. Allowed file types are gif, jpg, jpeg, png')
+          return prevent()
+        }
+      }
+      if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+        newFile.url = ''
+        let URL = window.URL || window.webkitURL
+        if (URL && URL.createObjectURL) {
+          newFile.url = URL.createObjectURL(newFile.file)
+        }
+      }
+    }
   },
   created() {
     //If has a report
@@ -412,7 +509,7 @@ export default {
       this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
       getPhishingReporterImg().then((response) => {
-        this.formValues.file = response.data
+        this.files[0].file = this.formValues.file = response.data
       })
     } else {
       this.formValues.brandName = localStorage.getItem('companyName')
@@ -462,12 +559,67 @@ export default {
 </script>
 
 <style lang="scss">
+.k-file-uploads {
+  min-height: 40px;
+  border-radius: 8px;
+  border: solid 1px #dcdfe6;
+
+  & > .file-uploads {
+    padding: 10px;
+    font-size: 12px !important ;
+    font-weight: 600 !important;
+    color: rgba(0, 0, 0, 87);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  &__item {
+    padding: 10px;
+    border-top: solid 1px #dcdfe6;
+    display: flex;
+    &-details {
+      flex-grow: 1;
+      &--filename {
+        font-size: 13px;
+        line-height: 18px;
+        color: rgba(0, 0, 0, 0.72);
+      }
+      &--filesize {
+        font-size: 9px;
+        line-height: 13px;
+        color: #474747;
+        display: flex;
+        justify-content: space-between;
+      }
+      &--fileprogress {
+        margin-top: 6px;
+      }
+      &--progress-value {
+        font-size: 9px;
+        line-height: 13px;
+        font-weight: 600;
+        color: #2196f3;
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+    &-actions {
+      width: 24px;
+      text-align: right;
+      & > .v-icon.v-icon {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
 @keyframes spin {
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
 }
+
 .add-in {
   &-settings {
     &__label {
@@ -477,14 +629,17 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
     }
+
     &__image-container {
       border: 2px solid whitesmoke;
       border-radius: 3px;
       width: fit-content;
     }
+
     &__spinner {
       animation: spin 2s linear infinite;
       margin-left: 8px;
+
       &-text {
         white-space: nowrap;
         margin-left: 4px;
@@ -492,6 +647,7 @@ export default {
         color: rgb(0, 188, 212) !important;
       }
     }
+
     &__title {
       font-size: 24px;
       line-height: 1.29;
@@ -533,6 +689,7 @@ export default {
     &__list-item {
       max-width: 554px;
       margin-top: -4px;
+
       &.v-list-item {
         padding: 0 !important;
 
@@ -540,6 +697,7 @@ export default {
           border-left: none !important;
         }
       }
+
       .v-list-item__content {
         padding: 0 !important;
         overflow: visible;
@@ -552,17 +710,20 @@ export default {
         padding: 0 !important;
         border-left: none !important;
       }
+
       .v-list-group__items {
         .v-list-item {
           padding-left: 0 !important;
           overflow: visible;
         }
+
         .v-list-item__content {
           padding: 0 !important;
           overflow: visible;
         }
       }
     }
+
     .v-list-item__content > *:not(:last-child) {
       margin-bottom: 0;
     }
@@ -595,6 +756,7 @@ export default {
       margin-left: 0;
     }
   }
+
   &__message {
     opacity: 0.7;
     font-family: 'Open Sans', sans-serif !important;
@@ -608,6 +770,7 @@ export default {
     display: inline-block;
     margin-right: 21px;
   }
+
   &__textfield {
     max-width: 365px;
   }
@@ -645,9 +808,11 @@ export default {
   .v-icon {
     font-size: 19px;
   }
+
   &.v-btn--disabled {
     .v-btn__content {
       color: white !important;
+
       .v-icon {
         color: white !important;
       }
@@ -659,6 +824,7 @@ export default {
   margin-top: -7px;
   margin-bottom: 22px;
 }
+
 .show-warning {
   overflow: visible;
 }
