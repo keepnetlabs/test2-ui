@@ -1,7 +1,7 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item
-      class="px-0 email-settings__list-item mt-n1"
+      class="px-0 email-settings__list-item mt-0"
       style="max-width: 100%;"
       v-if="showHeader"
     >
@@ -26,26 +26,19 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
-      <v-list-item class="px-0 other-settings__list-item mt-n4">
-        <v-list-item-content>
-          <div class="other-settings__list-item-header">
-            Optional Features
-          </div>
-        </v-list-item-content>
-      </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
             class="other-settings__checkbox k-checkbox mt-2"
             color="#2196f3"
-            label="Send Information Email"
+            label="Send information email for reported incidents"
             :readonly="!showForm"
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 email-settings__list-item">
+      <v-list-item class="px-0 email-settings__list-item mt-0">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
@@ -143,6 +136,7 @@
             placeholder="Please investigate the attached email"
             outlined
             dense
+            no-resize
             class="mt-2"
             v-model.trim="formValues.content"
             :rules="
@@ -155,25 +149,23 @@
           ></v-textarea>
         </v-list-item-content>
       </v-list-item>
-      <v-btn
-        @click="submit"
-        rounded
-        class="white--text email-settings__btn-util mt-3"
-        color="#2196f3"
-        style="margin-bottom: 6px;"
+      <phishing-settings-footer
         v-if="showFooter"
-      >
-        SAVE CHANGES
-      </v-btn>
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
+      />
     </v-form>
   </v-container>
 </template>
 
 <script>
 import { maxLength, mail, required } from '../../../utils/validations'
-
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'EmailSettings',
+  components: {
+    PhishingSettingsFooter
+  },
   watch: {
     formData: {
       handler(data) {
@@ -226,13 +218,12 @@ export default {
     }
   },
   methods: {
-    submit() {
-      const result = this.$refs.refForm.validate()
-      if (!result) {
-        return false
-      } else {
-        this.$emit('updateForm', this.formValues)
+    submit(event, isAddIn = false) {
+      if (this.$refs.refForm.validate()) {
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
+      } else {
+        return false
       }
     },
     getFormValues() {
@@ -267,7 +258,7 @@ export default {
 .email-settings {
   &__list-item {
     max-width: 554px;
-    margin-top: -4px;
+    margin-top: -8px;
     &--text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;

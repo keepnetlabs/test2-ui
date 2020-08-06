@@ -12,7 +12,12 @@
     maxHeightSize="520px"
   >
     <template v-slot:app-dialog-body>
-      <phishing-settings ref="refSettings" :form-data="formData" :inModal="true" />
+      <phishing-settings
+        :applicationType="selectedVersionRow.applicationType"
+        ref="refSettings"
+        :form-data="formData"
+        :inModal="true"
+      />
     </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">

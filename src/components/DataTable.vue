@@ -217,8 +217,8 @@
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{
-                  (addButton && addButton.tooltip) || 'Add Users'
-                }}</span>
+                    (addButton && addButton.tooltip) || 'Add Users'
+                  }}</span>
               </v-tooltip>
             </slot>
             <v-menu bottom left offset-y v-if="isDownloadable">
@@ -583,7 +583,7 @@
                     <template v-slot:activator="{ on }">
                       <v-btn class="btn-hover" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
-                          >mdi-dots-vertical</v-icon
+                        >mdi-dots-vertical</v-icon
                         >
                       </v-btn>
                     </template>
@@ -1151,7 +1151,7 @@ export default {
         const isDate = data.reduce((acc, item) => {
           acc.push(
             new Date(item[sortProps.prop]) !== 'Invalid Date' &&
-              !isNaN(new Date(item[sortProps.prop]))
+            !isNaN(new Date(item[sortProps.prop]))
           )
           return acc
         }, [])

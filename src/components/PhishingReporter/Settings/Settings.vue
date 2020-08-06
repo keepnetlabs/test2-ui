@@ -13,15 +13,35 @@
       color="basil"
       active-class="k-sub-tabs__tab--active"
     >
-      <v-tab id="pr-tab-users" class="k-sub-tabs__tab p-2" @click="changeTabStatus(0)">
+      <v-tab
+        v-if="!inModal || applicationType === 'Outlook'"
+        id="pr-tab-users"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(0)"
+      >
         Add-in Settings
       </v-tab>
-      <v-tab class="k-sub-tabs__tab p-2" @click="changeTabStatus(1)">Email Settings </v-tab>
-      <v-tab class="k-sub-tabs__tab p-2" @click="changeTabStatus(2)">Other Settings </v-tab>
-      <v-tab class="k-sub-tabs__tab p-2" @click="changeTabStatus(3)">Diagnostic Tool </v-tab>
+      <v-tab
+        v-if="!inModal || applicationType === 'Outlook'"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(1)"
+        >Email Settings
+      </v-tab>
+      <v-tab
+        v-if="!inModal || applicationType === 'Outlook'"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(2)"
+        >Other Settings
+      </v-tab>
+      <v-tab
+        v-if="!inModal || applicationType === 'DiagnosticTool'"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(3)"
+        >Diagnostic Tool
+      </v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab" class="k-sub-tabs__container">
-      <v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
         <addin-settings
           ref="refAddinSettings"
           :formData="formData"
@@ -32,7 +52,7 @@
           :showForm="!inModal"
         />
       </v-tab-item>
-      <v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
         <email-settings
           ref="refEmailSettings"
           :formData="formData"
@@ -42,7 +62,7 @@
           :showForm="!inModal"
         />
       </v-tab-item>
-      <v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
         <other-settings
           :formData="formData"
           ref="refOtherSettings"
@@ -52,7 +72,7 @@
           :showForm="!inModal"
         />
       </v-tab-item>
-      <v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'DiagnosticTool'">
         <diagnostic-tool
           ref="refDiagnosticTool"
           :formData="formData"
@@ -84,6 +104,10 @@ export default {
     inModal: {
       type: Boolean,
       default: false
+    },
+    applicationType: {
+      type: String,
+      default: COMMON_CONSTANTS.OUTLOOK
     }
   },
   components: {

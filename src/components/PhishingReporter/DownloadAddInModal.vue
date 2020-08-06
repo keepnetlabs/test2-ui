@@ -196,6 +196,10 @@ export default {
 <style lang="scss">
 .btn-download-add-in {
   padding: 2px 16px 2px 22px !important;
+  box-shadow: 0 2px 5px 0 rgba(0, 188, 212, 0.5);
+  &:focus {
+    box-shadow: 0 2px 5px 0 rgba(0, 188, 212, 0.5);
+  }
   .v-icon {
     margin-top: 2px;
   }

@@ -60,6 +60,7 @@
                     <v-textarea
                       placeholder="Describe the rule"
                       outlined
+                      no-resize
                       v-model="description"
                       :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
                       autocomplete="disabled"

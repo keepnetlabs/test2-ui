@@ -12,7 +12,11 @@
       @changeReporterVersionModalStatus="reporterVersionModalStatus = false"
       v-if="reporterVersionModalStatus"
     />
-    <v-list-item class="pl-0 add-in-settings__list-item" style="max-width: 100%;" v-if="showHeader">
+    <v-list-item
+      class="pl-0 add-in-settings__list-item mt-0"
+      style="max-width: 100%;"
+      v-if="showHeader"
+    >
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
           Add-in Settings
@@ -40,12 +44,7 @@
             :rules="
               showForm
                 ? [
-                    (v) =>
-                      validations.maxLength(
-                        v,
-                        50,
-                        'Investigation Name must between 1-50 characters'
-                      ),
+                    (v) => validations.maxLength(v, 50, 'Add-in Name must between 1-50 characters'),
                     (v) => validations.required(v, 'Required')
                   ]
                 : []
@@ -90,6 +89,7 @@
           <div class="add-in-settings__subtitle">
             Recommended size is 60x60px
           </div>
+          <!--
           <v-btn
             @click="onBtnSelectFileClick"
             class="btn-select-file mt-2"
@@ -106,6 +106,18 @@
               type="file"
             />
           </v-btn>
+          <hr /> -->
+          <file-upload
+            ref="upload"
+            class="btn-select-file mt-2 v-btn v-btn--contained v-btn--rounded theme--light v-size--default d-flex"
+            v-model="files"
+            extensions="gif,jpg,jpeg,png"
+            accept="image/png,image/gif,image/jpeg"
+            :multiple="false"
+            @input-file="onFileChanged"
+          >
+            SELECT FILE
+          </file-upload>
         </v-list-item-content>
       </v-list-item>
       <v-list-item
@@ -122,118 +134,278 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item
-        class="px-0 add-in-settings__list-item mt-6"
-        :class="[inModal ? 'mt-5' : 'mt-6']"
-      >
+      <v-list-item class="px-0 add-in-settings__list-item add-in-settings__body-container mt-6">
         <v-list-item-content>
-          <label class="add-in-settings__label" for="alertbox-text">AlertBox Heading</label>
-          <v-text-field
-            :rules="
-              showForm
-                ? [
-                    (v) =>
-                      validations.maxLength(
-                        v,
-                        150,
-                        'Alertbox Heading must between 1-150 characters'
-                      ),
-                    (v) => validations.required(v, 'Required')
-                  ]
-                : []
-            "
-            :readonly="!showForm"
-            class="k-textfield mt-2"
-            dense
-            id="alertbox-text"
-            outlined
-            placeholder="Phishing Reporter"
-            required
-            v-model="formValues.msgBoxTitle"
-          ></v-text-field>
+          <label class="add-in-settings__label">Dialog Box Settings</label>
+          <div class="add-in-settings__body-item mt-4">
+            <label class="add-in-settings__list-item-header">Dialog Box Heading</label>
+            <v-text-field
+              :rules="
+                showForm
+                  ? [
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          150,
+                          'Alertbox Heading must between 1-150 characters'
+                        ),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+              class="k-textfield"
+              dense
+              id="alertbox-text"
+              outlined
+              placeholder="Phishing Reporter"
+              required
+              v-model="formValues.msgBoxTitle"
+            ></v-text-field>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+            <v-text-field
+              :rules="
+                showForm
+                  ? [
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          150,
+                          'Alertbox yes text must between 1-150 characters'
+                        ),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+              class="k-textfield"
+              dense
+              outlined
+              placeholder="Yes"
+              required
+              v-model="formValues.msgBoxBtnYesText"
+            ></v-text-field>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header">No Button Label</label>
+            <v-text-field
+              :rules="
+                showForm
+                  ? [
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          150,
+                          'No button label must between 1-150 characters'
+                        ),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+              class="k-textfield"
+              dense
+              outlined
+              placeholder="No"
+              required
+              v-model="formValues.msgBoxBtnNoText"
+            ></v-text-field>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+            <v-text-field
+              :rules="
+                showForm
+                  ? [
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          150,
+                          'Cancel button label must between 1-150 characters'
+                        ),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+              class="k-textfield"
+              dense
+              outlined
+              placeholder="Cancel"
+              required
+              v-model="formValues.msgBoxBtnCancelText"
+            ></v-text-field>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header">Okay Button Label</label>
+            <v-text-field
+              :rules="
+                showForm
+                  ? [
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          150,
+                          'Okay button label must between 1-150 characters'
+                        ),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+              class="k-textfield"
+              dense
+              outlined
+              placeholder="Okay"
+              required
+              v-model="formValues.msgBoxBtnOkText"
+            ></v-text-field>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+              >Instant Report Message</label
+            >
+            <v-textarea
+              placeholder="Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails."
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              v-model.trim="formValues.analysisThankYouMessage"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+              >Connection error message</label
+            >
+            <v-textarea
+              placeholder="Phishing Reporter add-in cannot connect to server. Please inform related department."
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              v-model.trim="formValues.noInternetConnectionMessage"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+              >Sending error message</label
+            >
+            <v-textarea
+              placeholder="Reported email cannot be sent to related department. Please try again later."
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              v-model.trim="formValues.emailSendingErrorMessage"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
+          <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+              >No email selected message</label
+            >
+            <v-textarea
+              placeholder="To report an email you must first select the email and then click the report button."
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              v-model.trim="formValues.emailSelectionErrorMessage"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
+          <div class="add-in-settings__body-item">
+            <v-checkbox
+              color="#2196f3"
+              label="Show confirmation messsage when reporting email"
+              class="k-checkbox add-in-settings__list-item-checkbox"
+              v-model="formValues.isConfirmationBeforeAnalysis"
+              :readonly="!showForm"
+            ></v-checkbox>
+            <v-textarea
+              placeholder="Do you want to report this email to system administrator?"
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              :disabled="!formValues.isConfirmationBeforeAnalysis"
+              v-model.trim="formValues.analysisConfirmationMessage"
+              :rules="getAnalysisConfirmationMessageRules"
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
+          <div class="add-in-settings__body-item">
+            <v-checkbox
+              color="#2196f3"
+              label="Show confirmation messsage to delete email"
+              class="k-checkbox add-in-settings__list-item-checkbox"
+              v-model="formValues.isDeleteEmailBeforeAnalysis"
+              :readonly="!showForm"
+            ></v-checkbox>
+            <v-textarea
+              placeholder="Do you wish to delete the original email from your inbox?"
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              :disabled="!formValues.isDeleteEmailBeforeAnalysis"
+              v-model.trim="formValues.analysisEmailDeleteMessage"
+              :rules="getAnalysisConfirmationMessageRules"
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 mt-n4 add-in-settings__list-item">
-        <v-list-item-content>
-          <label class="add-in-settings__label" for="alertbox-text">Report Warning</label>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 add-in-settings__list-item">
-        <v-list-item-content class="show-warning" :class="[inModal ? 'show-warning-margin' : '']">
-          <v-checkbox
-            color="#2196f3"
-            label="Show Warning"
-            class="k-checkbox"
-            v-model="formValues.isConfirmationBeforeAnalysis"
-            :readonly="!showForm"
-          ></v-checkbox>
-          <template v-if="formValues.isConfirmationBeforeAnalysis">
-            <transition appear name="fade">
-              <div class="report-warning__container">
-                <span class="report-warning__message mt-4">Report Warning Message</span>
-                <v-text-field
-                  class="k-textfield mt-2 report-warning__textfield"
-                  dense
-                  id="alertbox-text"
-                  outlined
-                  placeholder="Report this email?"
-                  required
-                  v-model="formValues.analysisConfirmationMessage"
-                  :readonly="!showForm"
-                ></v-text-field>
-              </div>
-            </transition>
-          </template>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 add-in-settings__list-item">
-        <v-list-item-content>
-          <label class="add-in-settings__label" for="reported-text">Reported Message</label>
-          <v-text-field
-            class="k-textfield mt-2"
-            dense
-            id="reported-text"
-            outlined
-            placeholder="Thank you for reporting this email. Our organisation is more secure thanks to you."
-            required
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            :readonly="!showForm"
-            v-model="formValues.analysisThankYouMessage"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 add-in-settings__list-item">
-        <v-list-item-content>
-          <label class="add-in-settings__label" for="delete-text">Delete Warning</label>
-
-          <v-checkbox
-            v-model="formValues.isDeleteEmailBeforeAnalysis"
-            class="other-settings__checkbox k-checkbox"
-            style="margin-top: 12px !important; margin-bottom: 2px;"
-            color="#2196f3"
-            label="Delete Original Email"
-            :readonly="!showForm"
-          ></v-checkbox>
-
-          <v-text-field
-            class="k-textfield"
-            dense
-            id="delete-text"
-            outlined
-            placeholder="Do you wish to delete original email?"
-            required
-            :readonly="!showForm"
-            v-model="formValues.analysisEmailDeleteMessage"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 add-in-settings__list-item">
+      <v-list-item class="px-0 add-in-settings__list-item" style="margin-top: 10px;">
         <v-list-item-content>
           <label class="add-in-settings__label" for="warning-text">Warning Label</label>
+          <label class="add-in-settings__subtitle"
+            >Appears on email header when suspicious email is opened</label
+          >
           <v-text-field
             :rules="
               showForm
@@ -250,28 +422,17 @@
             outlined
             placeholder="Suspicious E-Mail"
             required
+            :readonly="!showForm"
             v-model="formValues.warningLabel"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-
-      <div class="add-in-settings__footer mt-4 mb-2" v-if="showFooter">
-        <v-btn @click="submit" class="white--text btn-util" color="#2196f3" rounded>
-          SAVE CHANGES
-        </v-btn>
-        <v-btn
-          @click="submit($event, true)"
-          class="white--text btn-util btn-download-add-in ml-3"
-          color="#00bcd4"
-          rounded
-        >
-          <v-icon left>mdi-download</v-icon>
-          Save and Download
-        </v-btn>
-        <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
-          DOWNLOAD History
-        </div>
-      </div>
+      <phishing-settings-footer
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
+        v-if="showFooter"
+        className="mt-1"
+      />
     </v-form>
   </v-container>
 </template>
@@ -283,12 +444,11 @@ import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
+import FileUpload from 'vue-upload-component'
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'AddinSettings',
-  components: {
-    ReporterVersionModal,
-    VersionHistoryModal
-  },
+  components: { FileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
   props: {
     showFooter: {
       type: Boolean,
@@ -322,6 +482,7 @@ export default {
   data() {
     return {
       isValid: false,
+      files: [],
       formValues: {
         addInName: '',
         brandName: '',
@@ -333,7 +494,12 @@ export default {
         analysisEmailDeleteMessage: '',
         warningLabel: '',
         hiddenFileUploadValue: '',
-        isDeleteEmailBeforeAnalysis: null
+        isDeleteEmailBeforeAnalysis: null,
+        msgBoxBtnYesText: '',
+        noInternetConnectionMessage: '',
+        msgBoxBtnNoText: '',
+        msgBoxBtnOkText: '',
+        emailSelectionErrorMessage: ''
       },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
@@ -345,6 +511,18 @@ export default {
       }
     }
   },
+  computed: {
+    getAnalysisConfirmationMessageRules() {
+      const validations = []
+      if (this.formValues.isConfirmationBeforeAnalysis) {
+        validations.push((v) => this.validations.required(v, 'Required'))
+        validations.push((v) =>
+          this.validations.maxLength(v, 1000, 'It must between 1-1000 characters')
+        )
+      }
+      return validations
+    }
+  },
   methods: {
     onBtnSelectFileClick(e) {
       this.$refs.uploader.click()
@@ -353,7 +531,7 @@ export default {
       return this.formValues.file && URL.createObjectURL(this.formValues.file)
     },
     onFileChanged(e) {
-      this.formValues.file = e.target.files[0]
+      this.formValues.file = this.files[0].file
     },
     handleHistoryRow(row) {
       this.selectedVersionRow = row
@@ -373,7 +551,8 @@ export default {
       } else {
         return false
       }
-    }
+    },
+    inputFile(newFile, oldFile) {}
   },
   created() {
     //If has a report
@@ -387,10 +566,19 @@ export default {
         analysisConfirmationMessage,
         analysisThankYouMessage,
         analysisEmailDeleteMessage,
-        isDeleteEmailBeforeAnalysis
+        isDeleteEmailBeforeAnalysis,
+        msgBoxBtnYesText,
+        msgBoxBtnNoText,
+        msgBoxBtnCancelText,
+        msgBoxBtnOkText,
+        noInternetConnectionMessage,
+        emailSendingErrorMessage,
+        emailSelectionErrorMessage
       } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
+      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText
+      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText
       this.formValues.warningLabel = warningLabel
       this.formValues.msgBoxTitle = msgBoxTitle
       this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
@@ -398,6 +586,11 @@ export default {
       this.formValues.analysisThankYouMessage = analysisThankYouMessage
       this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
+      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText
+      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText
+      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
+      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
+      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
@@ -405,14 +598,25 @@ export default {
       this.formValues.brandName = localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
       this.formValues.msgBoxTitle = 'Phishing Reporter'
-      this.formValues.analysisConfirmationMessage = 'Report this email?'
+      this.formValues.msgBoxBtnCancelText = 'Cancel'
+      this.formValues.analysisConfirmationMessage =
+        'Do you want to report this email to the system administrator for analysis?'
       this.formValues.isConfirmationBeforeAnalysis = true
-      this.formValues.analysisEmailDeleteMessage = 'Do you wish to delete original email?'
+      this.formValues.analysisEmailDeleteMessage =
+        'Do you wish to delete the original email from your inbox?'
       this.formValues.analysisThankYouMessage =
-        'Thank you for reporting this email. Our organisation is more secure thanks to you.'
+        'Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails.'
       this.formValues.warningLabel = 'Suspicious E-Mail'
       this.formValues.isDeleteEmailBeforeAnalysis = true
-
+      this.formValues.msgBoxBtnYesText = 'Yes'
+      this.formValues.msgBoxBtnNoText = 'No'
+      this.formValues.msgBoxBtnOkText = 'Okay'
+      this.formValues.emailSendingErrorMessage =
+        'Report email cannot be sent to related department. Please try again later.'
+      this.formValues.noInternetConnectionMessage =
+        'Phishing Reporter add-in cannot connect to server. Please inform related department.'
+      this.formValues.emailSelectionErrorMessage =
+        'To report an email you must first select the email and then click the report button.'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = blob
       })
@@ -429,17 +633,31 @@ export default {
         analysisConfirmationMessage,
         analysisThankYouMessage,
         analysisEmailDeleteMessage,
-        isDeleteEmailBeforeAnalysis
+        isDeleteEmailBeforeAnalysis,
+        msgBoxBtnNoText,
+        msgBoxBtnYesText,
+        msgBoxBtnCancelText,
+        msgBoxBtnOkText,
+        noInternetConnectionMessage,
+        emailSendingErrorMessage,
+        emailSelectionErrorMessage
       } = val
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
+      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText
       this.formValues.warningLabel = warningLabel
+      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText
+      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText
+      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText
       this.formValues.msgBoxTitle = msgBoxTitle
       this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
       this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
       this.formValues.analysisThankYouMessage = analysisThankYouMessage
       this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
       this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
+      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
+      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
+      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
@@ -519,13 +737,29 @@ export default {
 
     &__list-item {
       max-width: 554px;
-      margin-top: -4px;
+      margin-top: -8px;
       &.v-list-item {
         padding: 0 !important;
 
         &--active {
           border-left: none !important;
         }
+      }
+      &-header {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+        margin-top: -16px !important;
+        &--1 {
+          margin-top: 12px !important;
+          align-self: flex-start !important;
+        }
+      }
+      &-checkbox {
+        margin-top: 8px;
+        align-self: flex-start !important;
       }
       .v-list-item__content {
         padding: 0 !important;
@@ -552,6 +786,29 @@ export default {
     }
     .v-list-item__content > *:not(:last-child) {
       margin-bottom: 0;
+    }
+    &__body {
+      &-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: -4px;
+        > *:first-child {
+          flex-basis: 35%;
+        }
+        .v-text-field.v-text-field--enclosed .v-text-field__details {
+          margin-bottom: 2px;
+        }
+        .v-input--dense > .v-input__control > .v-input__slot {
+          margin-bottom: 0;
+        }
+        .v-text-field {
+          max-width: 400px !important;
+        }
+      }
+      &-container {
+        max-width: 650px !important;
+      }
     }
   }
 }
