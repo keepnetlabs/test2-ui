@@ -133,7 +133,7 @@ export default {
       const {
         data: { data }
       } = response
-
+      console.log('data.results', data.results)
       this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
     })
   }

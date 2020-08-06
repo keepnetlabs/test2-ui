@@ -42,11 +42,9 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 other-settings__list-item">
+      <v-list-item class="px-0 other-settings__list-item" style="max-width: 630px;">
         <v-list-item-content>
-          <label class="other-settings__list-item-header" for="no-internet-connection-message"
-            >Phishing Reporter API Settings</label
-          >
+          <label class="other-settings__list-item-header">Phishing Reporter API Settings</label>
           <div class="other-settings__api-settings-container">
             <label class="mt-n2">Site URL</label>
             <v-text-field
@@ -109,7 +107,7 @@
       </v-list-item>
       <v-list-item
         class="px-0 other-settings__list-item"
-        style="min-height: auto; margin-top: 5px;"
+        style="min-height: auto; margin-top: 5px; max-width: 591px;"
       >
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
@@ -130,7 +128,7 @@
                   outlined
                   :disabled="enterpriseVaultDisabled"
                   dense
-                  class="k-textfield site-url__textfield site-url__textfield--3 mt-2"
+                  class="k-textfield mt-2"
                   v-model="formValues.enterpriseVaultUrl"
                   height="40"
                   :readonly="!showForm"

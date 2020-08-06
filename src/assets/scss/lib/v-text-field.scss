@@ -2,18 +2,7 @@
   .v-text-field {
     font-size: 13px;
     border-radius: 8px;
-    /*input {
-      &::placeholder {
-        font-family: "Open Sans", sans-serif !important;
-        font-size: 13px !important;
-        font-weight: normal !important;
-        font-stretch: normal !important;
-        font-style: normal !important;
-        line-height: normal !important;
-        letter-spacing: normal !important;
-        color: rgba(0, 0, 0, 0.54) !important;
-      }
-    }*/
+
     .v-input__control {
       min-height: 40px;
     }
@@ -40,9 +29,21 @@
       border: 1px solid currentColor;
     }
     &--outlined fieldset {
-
       top: 0;
+      border:1px solid #dcdfe6;
     }
+
+    &__slot input,&__slot textarea{
+      font-size: 13px;
+      line-height: 1.6;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.72) !important;
+    }
+    &__slot textarea{
+      margin-top:11px;
+    }
+
+
     &--outlined legend {
       display: none;
     }
