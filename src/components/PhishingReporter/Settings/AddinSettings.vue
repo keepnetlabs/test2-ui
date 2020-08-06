@@ -12,7 +12,11 @@
       @changeReporterVersionModalStatus="reporterVersionModalStatus = false"
       v-if="reporterVersionModalStatus"
     />
-    <v-list-item class="pl-0 add-in-settings__list-item" style="max-width: 100%;" v-if="showHeader">
+    <v-list-item
+      class="pl-0 add-in-settings__list-item mt-0"
+      style="max-width: 100%;"
+      v-if="showHeader"
+    >
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
           Add-in Settings
