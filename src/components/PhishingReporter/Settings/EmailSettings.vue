@@ -143,6 +143,7 @@
             placeholder="Please investigate the attached email"
             outlined
             dense
+            no-resize
             class="mt-2"
             v-model.trim="formValues.content"
             :rules="
