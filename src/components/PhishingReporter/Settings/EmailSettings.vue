@@ -26,26 +26,19 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
-      <v-list-item class="px-0 other-settings__list-item mt-n4">
-        <v-list-item-content>
-          <div class="other-settings__list-item-header">
-            Optional Features
-          </div>
-        </v-list-item-content>
-      </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
             class="other-settings__checkbox k-checkbox mt-2"
             color="#2196f3"
-            label="Send Information Email"
+            label="Send information email for reported incidents"
             :readonly="!showForm"
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 email-settings__list-item mt-1">
+      <v-list-item class="px-0 email-settings__list-item mt-0">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
