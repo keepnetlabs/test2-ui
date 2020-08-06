@@ -4,31 +4,32 @@
   <div class="vqb-group pa-4 mb-3" :class="'elevation-' + (depth - 1).toString()">
     <div class="vqb-group-heading card-header">
       <div class="match-type-container d-flex">
-        <div class="edit-privacy-buttons">
-          <button
+        <div
+          class="match-type-container__buttons"
+          :class="{
+            'match-type-container__buttons--first-depth': depth <= 1
+          }"
+        >
+          <span
+            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
             :class="{
-              btnActive: query.logicalOperator === `${labels.matchTypes[1].label}`,
-              'first-depth-button':
+              'match-type-container__buttons--active':
+                query.logicalOperator === `${labels.matchTypes[1].label}`,
+              'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
             }"
-            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
-            class="public-btn"
-            type="button"
+            >AND</span
           >
-            AND
-          </button>
-          <button
+          <span
+            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
             :class="{
-              btnActive: query.logicalOperator === `${labels.matchTypes[0].label}`,
-              'first-depth-button':
+              'match-type-container__buttons--active':
+                query.logicalOperator === `${labels.matchTypes[0].label}`,
+              'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
             }"
-            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
-            class="private-btn"
-            type="button"
+            >OR</span
           >
-            OR
-          </button>
         </div>
 
         <v-btn
@@ -237,6 +238,48 @@ export default {
 }
 .match-type-container {
   margin-bottom: 9.5px !important;
+  &__buttons {
+    width: 135px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    color: white !important;
+
+    border-radius: 18px;
+    background-color: #2196f3;
+    span {
+      cursor: pointer;
+      width: 66.5px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: normal;
+      color: white;
+      &:first-child {
+        margin-left: 2px;
+      }
+      margin-right: 2px;
+    }
+    &--active {
+      //padding: 4px 17px;
+      height: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      border-radius: 18px;
+      color: #2196f3 !important;
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+        0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      &-first-depth {
+        color: #00bcd4 !important;
+      }
+    }
+    &--first-depth {
+      background: #00bcd4 !important;
+    }
+  }
 }
 /*
   .vue-query-builder .vqb-group.depth-1 .vqb-rule,
