@@ -4,7 +4,9 @@ export const COMMON_CONSTANTS = {
   ERRORSNACKBARCOLOR: 'red',
   SUCCESSSNACKBARCOLOR: 'green',
   UPPERCASE: 'uppercase',
-  LOWERCASE: 'lowercase'
+  LOWERCASE: 'lowercase',
+  OUTLOOK: 'Outlook',
+  DIAGNOSTIC: 'DiagnosticTool'
 }
 
 const LABEL_STORE = {
