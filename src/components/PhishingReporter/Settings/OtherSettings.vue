@@ -57,7 +57,7 @@
               dense
               class="mt-2"
               style="margin-left: 50px;"
-              v-model="formValues.apiUrl"
+              v-model.trim="formValues.apiUrl"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
               :readonly="!showForm"
@@ -75,7 +75,7 @@
               dense
               class="mt-2"
               style="margin-left: 56px;"
-              v-model="formValues.apiKey"
+              v-model.trim="formValues.apiKey"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
               :readonly="!showForm"
@@ -115,7 +115,7 @@
       >
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
-            v-model="formValues.enableEnterpriseVault"
+            v-model.trim="formValues.enableEnterpriseVault"
             class="other-settings__checkbox k-checkbox"
             style="margin-top: -6px;"
             @change="handleEnterpriseVaultChange"
@@ -133,7 +133,7 @@
                   :disabled="enterpriseVaultDisabled"
                   dense
                   class="k-textfield mt-2"
-                  v-model="formValues.enterpriseVaultUrl"
+                  v-model.trim="formValues.enterpriseVaultUrl"
                   height="40"
                   :readonly="!showForm"
                 ></v-text-field>

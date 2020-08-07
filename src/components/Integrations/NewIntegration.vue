@@ -50,7 +50,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <v-form ref="form" v-model="valid" lazy-validation>
+        <v-form ref="form" lazy-validation>
           <v-list-item class="px-0 mt-8">
             <v-list-item-content>
               <label class="new-integration__label" for="integration-name">Integration Name</label>
@@ -59,7 +59,7 @@
                 outlined
                 dense
                 class="new-integration__textfield mt-2"
-                v-model="formValues.name"
+                v-model.trim="formValues.name"
                 required
                 :rules="[nameValidation.required, nameValidation.empty]"
                 id="integration-name"
@@ -75,7 +75,7 @@
                 outlined
                 dense
                 class="new-integration__textfield mt-2"
-                v-model="formValues.description"
+                v-model.trim="formValues.description"
                 required
                 :rules="[descriptionValidation.required, descriptionValidation.empty]"
                 id="description"
@@ -88,7 +88,7 @@
               <label class="new-integration__label" for="integration-type">Integration Type</label>
               <v-select
                 :items="integrationTypes"
-                v-model="formValues.analysisEngineTypeResourceId"
+                v-model.trim="formValues.analysisEngineTypeResourceId"
                 outlined
                 class="new-integration__select mt-2"
                 required
@@ -109,7 +109,7 @@
                 outlined
                 dense
                 class="new-integration__textfield mt-2"
-                v-model="formValues.apiUrl"
+                v-model.trim="formValues.apiUrl"
                 required
                 :rules="[apiUrlRules.required, apiUrlRules.format]"
                 @input="handleApiKeyChange"
@@ -138,9 +138,9 @@
                     dense
                     class="new-integration__textfield new-integration__api-key__textfield mt-2"
                     :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
-                    v-model="item.value"
+                    v-model.trim="item.value"
                     required
-                    :rules="[apiKeyRules.required, apiKeyRules.empty]"
+                    :rules="[apiKeyRules.required]"
                     @input="handleApiKeyChange"
                     height="40"
                   ></v-text-field>
@@ -250,7 +250,7 @@
                   persistent-hint
                   small-chips
                   :return-object="false"
-                  v-model="formValues.tags"
+                  v-model.trim="formValues.tags"
                   required
                 ></v-combobox>
               </div>
@@ -322,7 +322,7 @@
               <span class="mb-7 mr-4 type-text">File Types</span>
               <v-select
                 :items="uploadFileTypes"
-                v-model="formValues.uploadFileTypes"
+                v-model.trim="formValues.uploadFileTypes"
                 outlined
                 class="new-integration__select"
                 required

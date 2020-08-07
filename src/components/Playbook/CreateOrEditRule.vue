@@ -46,7 +46,7 @@
                       placeholder="Enter a name for the rule"
                       outlined
                       autocomplete="off"
-                      v-model="name"
+                      v-model.trim="name"
                       :rules="[
                         (v) => validations.required(v, 'Required'),
                         (v) => validations.maxLength(v, 150, 'Max 150 characters')
@@ -61,7 +61,7 @@
                       placeholder="Describe the rule"
                       outlined
                       no-resize
-                      v-model="description"
+                      v-model.trim="description"
                       :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
                       autocomplete="disabled"
                     />
@@ -74,7 +74,7 @@
                       Rules with higher priority override lower priority rules
                     </v-list-item-title>
                     <div class="playbook-rule-form__radio-group mt-2 mb-1">
-                      <v-radio-group v-model="priority" row>
+                      <v-radio-group v-model.trim="priority" row>
                         <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
@@ -96,7 +96,7 @@
                       Define tags for the rule
                     </v-list-item-title>
                     <v-combobox
-                      v-model="tags"
+                      v-model.trim="tags"
                       :items="[]"
                       chips
                       deletable-chips

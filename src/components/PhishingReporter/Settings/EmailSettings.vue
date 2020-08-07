@@ -48,7 +48,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.to"
+            v-model.trim="formValues.to"
             :rules="
               showForm
                 ? [
@@ -71,7 +71,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.cc"
+            v-model.trim="formValues.cc"
             :rules="
               showForm
                 ? [
@@ -94,7 +94,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.bcc"
+            v-model.trim="formValues.bcc"
             id="bcc"
             :readonly="!showForm"
             :rules="

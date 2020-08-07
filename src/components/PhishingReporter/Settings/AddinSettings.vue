@@ -55,7 +55,7 @@
             outlined
             placeholder="Suspicious E-Mail Reporter"
             :readonly="!showForm"
-            v-model="formValues.addInName"
+            v-model.trim="formValues.addInName"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -78,7 +78,7 @@
             outlined
             placeholder="Company Name"
             :readonly="!showForm"
-            v-model="formValues.brandName"
+            v-model.trim="formValues.brandName"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -133,7 +133,7 @@
               outlined
               placeholder="Phishing Reporter"
               required
-              v-model="formValues.msgBoxTitle"
+              v-model.trim="formValues.msgBoxTitle"
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
@@ -158,7 +158,7 @@
               outlined
               placeholder="Yes"
               required
-              v-model="formValues.msgBoxBtnYesText"
+              v-model.trim="formValues.msgBoxBtnYesText"
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
@@ -183,7 +183,7 @@
               outlined
               placeholder="No"
               required
-              v-model="formValues.msgBoxBtnNoText"
+              v-model.trim="formValues.msgBoxBtnNoText"
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
@@ -208,7 +208,7 @@
               outlined
               placeholder="Cancel"
               required
-              v-model="formValues.msgBoxBtnCancelText"
+              v-model.trim="formValues.msgBoxBtnCancelText"
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
@@ -233,7 +233,7 @@
               outlined
               placeholder="Okay"
               required
-              v-model="formValues.msgBoxBtnOkText"
+              v-model.trim="formValues.msgBoxBtnOkText"
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
@@ -396,7 +396,7 @@
             placeholder="Suspicious E-Mail"
             required
             :readonly="!showForm"
-            v-model="formValues.warningLabel"
+            v-model.trim="formValues.warningLabel"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
