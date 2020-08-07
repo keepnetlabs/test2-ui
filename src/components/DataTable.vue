@@ -217,8 +217,8 @@
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{
-                    (addButton && addButton.tooltip) || 'Add Users'
-                  }}</span>
+                  (addButton && addButton.tooltip) || 'Add Users'
+                }}</span>
               </v-tooltip>
             </slot>
             <v-menu bottom left offset-y v-if="isDownloadable">
@@ -583,7 +583,7 @@
                     <template v-slot:activator="{ on }">
                       <v-btn class="btn-hover" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
-                        >mdi-dots-vertical</v-icon
+                          >mdi-dots-vertical</v-icon
                         >
                       </v-btn>
                     </template>
@@ -1151,7 +1151,7 @@ export default {
         const isDate = data.reduce((acc, item) => {
           acc.push(
             new Date(item[sortProps.prop]) !== 'Invalid Date' &&
-            !isNaN(new Date(item[sortProps.prop]))
+              !isNaN(new Date(item[sortProps.prop]))
           )
           return acc
         }, [])
@@ -1168,22 +1168,44 @@ export default {
         })
       } else {
         sortData = data.sort(function (a, b) {
-          if (a[sortProps.prop] === b[sortProps.prop]) {
-            return 0
-          }
-          // nulls sort after anything else
-          else if (a[sortProps.prop] === null) {
-            return 1
-          } else if (b[sortProps.prop] === null) {
-            return -1
-          }
-          // otherwise, if we're ascending, lowest sorts first
-          else if (sortProps.order === 'ascending') {
-            return a[sortProps.prop] < b[sortProps.prop] ? -1 : 1
-          }
-          // if descending, highest sorts first
-          else {
-            return a[sortProps.prop] < b[sortProps.prop] ? 1 : -1
+          if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
+            const aProp = String(a[sortProps.prop])
+            const bProp = String(b[sortProps.prop])
+            if (aProp === bProp) {
+              return 0
+            }
+            // nulls sort after anything else
+            else if (aProp === 'null') {
+              return 1
+            } else if (bProp === 'null') {
+              return -1
+            }
+            // otherwise, if we're ascending, lowest sorts first
+            else if (sortProps.order === 'ascending') {
+              return aProp.toLowerCase() < bProp.toLowerCase() ? -1 : 1
+            }
+            // if descending, highest sorts first
+            else {
+              return aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
+            }
+          } else {
+            if (a[sortProps.prop] === b[sortProps.prop]) {
+              return 0
+            }
+            // nulls sort after anything else
+            else if (a[sortProps.prop] === null) {
+              return 1
+            } else if (b[sortProps.prop] === null) {
+              return -1
+            }
+            // otherwise, if we're ascending, lowest sorts first
+            else if (sortProps.order === 'ascending') {
+              return a[sortProps.prop] < b[sortProps.prop] ? -1 : 1
+            }
+            // if descending, highest sorts first
+            else {
+              return a[sortProps.prop] < b[sortProps.prop] ? 1 : -1
+            }
           }
         })
       }
