@@ -1,6 +1,10 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
-    <v-list-item class="pl-0 other-settings__list-item" style="max-width: 100%;" v-if="showHeader">
+    <v-list-item
+      class="pl-0 other-settings__list-item mt-0"
+      style="max-width: 100%;"
+      v-if="showHeader"
+    >
       <v-list-item-content>
         <v-list-item-title class="other-settings__title">
           Other Settings
@@ -24,223 +28,81 @@
       <v-list-item class="px-0 other-settings__list-item mt-n4">
         <v-list-item-content>
           <div class="other-settings__list-item-header">
-            Optional Features
+            Proxy Settings
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item" :class="[inModal ? 'mb-3' : '']">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <div>
             <v-checkbox
               v-model="formValues.isEnableProxy"
-              class="other-settings__checkbox k-checkbox"
+              class="other-settings__checkbox k-checkbox mt-n2"
               color="#2196f3"
-              label="Enable proxy"
+              label="Detect and use the proxy settings on your computer"
               :readonly="!showForm"
             ></v-checkbox>
           </div>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 other-settings__list-item">
+      <v-list-item class="px-0 other-settings__list-item" style="max-width: 630px;">
         <v-list-item-content>
-          <label class="other-settings__list-item-header" for="no-internet-connection-message"
-            >Site URL</label
-          >
-          <v-text-field
-            placeholder="https://dashboard.abc.com/"
-            outlined
-            dense
-            class="mt-2"
-            v-model="formValues.apiUrl"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
+          <label class="other-settings__list-item-header">Phishing Reporter API Settings</label>
+          <div class="other-settings__api-settings-container">
+            <label class="mt-n2">Site URL</label>
+            <v-text-field
+              placeholder="https://dashboard.abc.com/"
+              outlined
+              dense
+              class="mt-2"
+              style="margin-left: 50px;"
+              v-model="formValues.apiUrl"
+              :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+              height="40"
+              :readonly="!showForm"
+            ></v-text-field>
+          </div>
+          <div class="other-settings__api-settings-container mt-n3">
+            <label
+              class="other-settings__list-item-header mt-n2"
+              for="no-internet-connection-message"
+              >Api Key</label
+            >
+            <v-text-field
+              placeholder="Api Key"
+              outlined
+              dense
+              class="mt-2"
+              style="margin-left: 56px;"
+              v-model="formValues.apiKey"
+              :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+              height="40"
+              :readonly="!showForm"
+            ></v-text-field>
+          </div>
+          <div class="other-settings__api-settings-container">
+            <label
+              class="other-settings__list-item-header mt-n5"
+              for="no-internet-connection-message"
+              >Company ID</label
+            >
+            <v-text-field
+              placeholder="Company ID"
+              outlined
+              dense
+              class="mt-n1"
+              style="margin-left: 24px;"
+              v-model="formValues.companyKey"
+              :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+              height="40"
+              :readonly="!showForm"
+            ></v-text-field>
+          </div>
         </v-list-item-content>
       </v-list-item>
 
       <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="no-internet-connection-message"
-            >Company ID</label
-          >
-          <v-text-field
-            placeholder="Company ID"
-            outlined
-            dense
-            class="mt-2"
-            v-model="formValues.companyKey"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="no-internet-connection-message"
-            >Api Key</label
-          >
-          <v-text-field
-            placeholder="Api Key"
-            outlined
-            dense
-            class="mt-2"
-            v-model="formValues.apiKey"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="no-internet-connection-message"
-            >No Connection Message</label
-          >
-          <v-text-field
-            placeholder="No internet connection. Please try again later."
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.noInternetConnectionMessage"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="no-internet-connection-message"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="yes-button-text"
-            >Yes Button Text</label
-          >
-          <v-text-field
-            placeholder="Yes"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.msgBoxBtnYesText"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="yes-button-text"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="no-button-text"
-            >No Button Text</label
-          >
-          <v-text-field
-            placeholder="No"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.msgBoxBtnNoText"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="no-button-text"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="cancel-button-text"
-            >Cancel Button Text</label
-          >
-          <v-text-field
-            placeholder="Cancel"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.msgBoxBtnCancelText"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="cancel-button-text"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="okay-button-text"
-            >Okay Button Text</label
-          >
-          <v-text-field
-            placeholder="Okay"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.msgBoxBtnOkText"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="super-tip-text"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="email-sending-message"
-            >Email Sending Error Message</label
-          >
-          <v-text-field
-            placeholder="Email cannot be sent"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.emailSendingErrorMessage"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="email-sending-message"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="email-sending-message"
-            >Email Selection Error Message</label
-          >
-          <v-text-field
-            placeholder="Email selection error message"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.emailSelectionErrorMessage"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="email-sending-message"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item">
-        <v-list-item-content>
-          <label class="other-settings__list-item-header" for="email-sending-message"
-            >Bad Format Email Message</label
-          >
-          <v-text-field
-            placeholder="Bad format email message"
-            outlined
-            dense
-            class="k-textfield mt-2"
-            v-model="formValues.badFormatEmailMessage"
-            :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
-            id="email-sending-message"
-            height="40"
-            :readonly="!showForm"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="px-0 other-settings__list-item mt-n4">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="alertbox-text"
             >Enterprise Vault</label
@@ -249,12 +111,13 @@
       </v-list-item>
       <v-list-item
         class="px-0 other-settings__list-item"
-        style="min-height: auto; margin-top: 5px;"
+        style="min-height: auto; margin-top: 5px; max-width: 591px;"
       >
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
             v-model="formValues.enableEnterpriseVault"
-            class="other-settings__checkbox k-checkbox mt-2"
+            class="other-settings__checkbox k-checkbox"
+            style="margin-top: -6px;"
             @change="handleEnterpriseVaultChange"
             color="#2196f3"
             label="Enable enterprise vault"
@@ -269,7 +132,7 @@
                   outlined
                   :disabled="enterpriseVaultDisabled"
                   dense
-                  class="k-textfield site-url__textfield site-url__textfield--3 mt-2"
+                  class="k-textfield mt-2"
                   v-model="formValues.enterpriseVaultUrl"
                   height="40"
                   :readonly="!showForm"
@@ -280,36 +143,23 @@
         </v-list-item-content>
       </v-list-item>
 
-      <div class="other-settings__footer" v-if="showFooter">
-        <div class="d-flex justify-center">
-          <v-btn
-            @click="submit"
-            rounded
-            class="white--text other-settings__btn-util"
-            color="#2196f3"
-          >
-            SAVE CHANGES
-          </v-btn>
-        </div>
-        <div>
-          <a
-            href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
-            class="other-settings__link"
-            target="_blank"
-          >
-            Installation and configuration guide
-          </a>
-        </div>
-      </div>
+      <phishing-settings-footer
+        v-if="showFooter"
+        @submit="submit($event)"
+        @submitWithDownload="submit($event, true)"
+        className="mt-3"
+      />
     </v-form>
   </v-container>
 </template>
 
 <script>
 import { required } from '../../../utils/validations'
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 
 export default {
   name: 'OtherSettings',
+  components: { PhishingSettingsFooter },
   props: {
     showFooter: {
       type: Boolean,
@@ -341,35 +191,19 @@ export default {
       handler(data) {
         const {
           companyKey,
-          noInternetConnectionMessage,
-          msgBoxBtnYesText,
-          msgBoxBtnNoText,
-          msgBoxBtnOkText,
-          msgBoxBtnCancelText,
-          emailSendingErrorMessage,
           enterpriseVaultUrl,
           apiUrl,
           isEnableProxy,
-          emailSelectionErrorMessage,
           apiKey,
-          enableEnterpriseVault,
-          badFormatEmailMessage
+          enableEnterpriseVault
         } = data
         this.formValues.companyKey = companyKey
-        this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
-        this.formValues.msgBoxBtnYesText = msgBoxBtnYesText || ''
-        this.formValues.msgBoxBtnNoText = msgBoxBtnNoText || ''
-        this.formValues.msgBoxBtnOkText = msgBoxBtnOkText || ''
-        this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText || ''
-        this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
-        this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage || ''
         this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
         this.formValues.enableEnterpriseVault = enableEnterpriseVault || false
         this.enterpriseVaultDisabled = !enterpriseVaultUrl
         this.formValues.apiUrl = apiUrl || ''
         this.formValues.isEnableProxy = isEnableProxy || false
         this.formValues.apiKey = apiKey || ''
-        this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
       }
     }
   },
@@ -381,15 +215,7 @@ export default {
         companyKey: '',
         enableEnterpriseVault: null,
         enterpriseVaultUrl: '',
-        noInternetConnectionMessage: '',
-        msgBoxBtnYesText: '',
-        msgBoxBtnNoText: '',
-        msgBoxBtnCancelText: '',
-        msgBoxBtnOkText: '',
-        emailSendingErrorMessage: '',
-        emailSelectionErrorMessage: '',
-        apiKey: '',
-        badFormatEmailMessage: ''
+        apiKey: ''
       },
       enterpriseVaultDisabled: true,
       validations: {
@@ -398,9 +224,9 @@ export default {
     }
   },
   methods: {
-    submit() {
+    submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
-        this.$emit('updateForm', this.formValues)
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
         return false
@@ -421,48 +247,24 @@ export default {
     if (this.formData) {
       const {
         companyKey,
-        noInternetConnectionMessage,
-        msgBoxBtnYesText,
-        msgBoxBtnNoText,
-        msgBoxBtnOkText,
-        msgBoxBtnCancelText,
-        emailSendingErrorMessage,
         enterpriseVaultUrl,
         apiUrl,
         isEnableProxy,
-        emailSelectionErrorMessage,
         apiKey,
-        badFormatEmailMessage,
         enableEnterpriseVault
       } = this.formData
       this.formValues.companyKey = companyKey
-      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage || ''
-      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText || ''
-      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText || ''
-      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText || ''
-      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText || ''
-      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage || ''
-      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage || ''
       this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
       this.formValues.enableEnterpriseVault = enableEnterpriseVault || false
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isEnableProxy = isEnableProxy || false
       this.formValues.apiKey = apiKey || ''
-      this.formValues.badFormatEmailMessage = badFormatEmailMessage || ''
     } else {
       this.formValues.companyKey = localStorage.getItem('companyId')
-      this.formValues.noInternetConnectionMessage =
-        'No internet connection. Please try again later.'
       this.formValues.enableEnterpriseVault = false
-      this.formValues.msgBoxBtnYesText = 'Yes'
-      this.formValues.msgBoxBtnNoText = 'No'
-      this.formValues.msgBoxBtnCancelText = 'Cancel'
-      this.formValues.msgBoxBtnOkText = 'Okay'
-      this.formValues.emailSendingErrorMessage = 'Email cannot be sent'
-      this.formValues.emailSelectionErrorMessage = 'Email error'
       this.formValues.apiKey = ''
-      this.formValues.badFormatEmailMessage = 'Bad Format Email Message'
+      this.formValues.apiUrl = ''
     }
   }
 }
@@ -488,6 +290,27 @@ export default {
     }
   }
 
+  &__api-settings {
+    &-container {
+      display: flex;
+      align-items: center;
+      .v-text-field.v-text-field--enclosed .v-text-field__details {
+        margin-bottom: 2px;
+      }
+      .v-input--dense > .v-input__control > .v-input__slot {
+        margin-bottom: 0;
+      }
+      label {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+        opacity: 0.7;
+      }
+    }
+  }
+
   &__title {
     font-size: 24px;
     line-height: 1.29;
@@ -508,8 +331,14 @@ export default {
       margin-top: -5px;
     }
     &.v-input--selection-controls {
-      margin-top: 0 !important;
       padding-top: 0 !important;
+    }
+    .v-label {
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
     }
   }
 

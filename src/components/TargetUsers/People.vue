@@ -96,6 +96,7 @@ import {
 import {
   COMMON_CONSTANTS,
   getStoreValue,
+  LABEL_STORE,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
@@ -218,7 +219,7 @@ export default {
         download: true
       },
       iEmpty: {
-        message: 'You do not have any users added, yet',
+        message: LABEL_STORE.NO_TARGET_USER_ADDED,
         subMes: 'Start now',
         btn: 'ADD A USER',
         icon: 'mdi-account-plus'

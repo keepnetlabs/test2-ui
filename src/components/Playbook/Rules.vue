@@ -126,6 +126,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
+  LABEL_STORE,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import { getMatchingIncidents } from '../../api/incidentResponder'
@@ -231,7 +232,7 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any rules, yet',
+          message: LABEL_STORE.NO_RULES_CONFIGURED,
           btn: 'ADD A RULE',
           icon: 'mdi-plus'
         },
