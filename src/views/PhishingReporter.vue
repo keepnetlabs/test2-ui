@@ -323,7 +323,8 @@ export default {
     &-container {
       padding-left: 0 !important;
       padding-right: 0 !important;
-      margin-top: 16px !important;
+      padding-top: 0 !important;
+      margin-top: 24px !important;
       .v-card {
         @media only screen and (max-width: 500px) {
           padding: 20px !important;
@@ -360,7 +361,7 @@ export default {
     -ms-flex-flow: row;
     flex-flow: row;
     border-bottom: 2px solid #e4e7ed;
-    margin: 0 28px;
+    margin: 0 24px;
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -482,7 +483,7 @@ export default {
       -webkit-box-pack: end;
       -ms-flex-pack: end;
       justify-content: flex-end;
-      padding: 14px 0 27px 0;
+      padding: 14px 0 19px 0;
       align-items: center;
 
       &-right-col {
@@ -494,6 +495,8 @@ export default {
       }
       &-text {
         font-size: 14px;
+        font-weight: normal;
+        line-height: normal;
         letter-spacing: normal;
         color: #000000;
       }
