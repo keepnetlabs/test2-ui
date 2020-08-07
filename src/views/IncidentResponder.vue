@@ -1838,6 +1838,7 @@ export default {
   }
   .k-table__wrapper {
     padding-bottom: 0;
+    overflow-x: auto;
     .card .table-wrapper .el-table th > .cell {
       margin-left: 24px;
     }

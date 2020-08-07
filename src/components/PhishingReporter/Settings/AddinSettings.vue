@@ -86,7 +86,7 @@
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label">Add-in Logo</label>
-          <div class="add-in-settings__subtitle">
+          <div class="add-in-settings__subtitle mb-2">
             Recommended size is 60x60px
           </div>
 

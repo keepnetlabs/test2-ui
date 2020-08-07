@@ -1180,12 +1180,35 @@ export default {
             } else if (bProp === 'null') {
               return -1
             }
+
             // otherwise, if we're ascending, lowest sorts first
             else if (sortProps.order === 'ascending') {
+              if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+              ) {
+                return -1
+              } else if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+              ) {
+                return 1
+              }
               return aProp.toLowerCase() < bProp.toLowerCase() ? -1 : 1
             }
             // if descending, highest sorts first
             else {
+              if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+              ) {
+                return 1
+              } else if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+              ) {
+                return -1
+              }
               return aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
             }
           } else {
