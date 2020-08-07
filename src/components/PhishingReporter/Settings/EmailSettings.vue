@@ -298,6 +298,7 @@ export default {
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
     overflow: visible;
+    margin-top: 2px;
   }
 
   &__btn-util {
