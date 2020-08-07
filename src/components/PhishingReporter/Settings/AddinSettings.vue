@@ -89,35 +89,8 @@
           <div class="add-in-settings__subtitle">
             Recommended size is 60x60px
           </div>
-          <!--
-          <v-btn
-            @click="onBtnSelectFileClick"
-            class="btn-select-file mt-2"
-            rounded
-            :disabled="!showForm"
-          >
-            SELECT FILE
-            <input
-              :value="formValues.hiddenFileUploadValue"
-              @change="onFileChanged"
-              accept="image/gif, image/jpeg, image/png"
-              class="d-none"
-              ref="uploader"
-              type="file"
-            />
-          </v-btn>
-          <hr /> -->
-          <file-upload
-            ref="upload"
-            class="btn-select-file mt-2 v-btn v-btn--contained v-btn--rounded theme--light v-size--default d-flex"
-            v-model="files"
-            extensions="gif,jpg,jpeg,png"
-            accept="image/png,image/gif,image/jpeg"
-            :multiple="false"
-            @input-file="onFileChanged"
-          >
-            SELECT FILE
-          </file-upload>
+
+          <k-file-upload @inputFile="onFileChanged" />
         </v-list-item-content>
       </v-list-item>
       <v-list-item
@@ -444,11 +417,11 @@ import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
-import FileUpload from 'vue-upload-component'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'AddinSettings',
-  components: { FileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
+  components: { KFileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
   props: {
     showFooter: {
       type: Boolean,
@@ -530,8 +503,8 @@ export default {
     getImagePreview() {
       return this.formValues.file && URL.createObjectURL(this.formValues.file)
     },
-    onFileChanged(e) {
-      this.formValues.file = this.files[0].file
+    onFileChanged(file) {
+      this.formValues.file = file
     },
     handleHistoryRow(row) {
       this.selectedVersionRow = row
@@ -552,7 +525,21 @@ export default {
         return false
       }
     },
-    inputFile(newFile, oldFile) {}
+    inputFilter(newFile, oldFile, prevent) {
+      if (newFile && !oldFile) {
+        if (!/\.(gif|jpg|jpeg|png)$/i.test(newFile.name)) {
+          //alert('Invalid file type. Allowed file types are gif, jpg, jpeg, png')
+          return prevent()
+        }
+      }
+      if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+        newFile.url = ''
+        let URL = window.URL || window.webkitURL
+        if (URL && URL.createObjectURL) {
+          newFile.url = URL.createObjectURL(newFile.file)
+        }
+      }
+    }
   },
   created() {
     //If has a report
@@ -673,6 +660,7 @@ export default {
     transform: rotate(360deg);
   }
 }
+
 .add-in {
   &-settings {
     &__label {
@@ -682,14 +670,17 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
     }
+
     &__image-container {
       border: 2px solid whitesmoke;
       border-radius: 3px;
       width: fit-content;
     }
+
     &__spinner {
       animation: spin 2s linear infinite;
       margin-left: 8px;
+
       &-text {
         white-space: nowrap;
         margin-left: 4px;
@@ -697,6 +688,7 @@ export default {
         color: rgb(0, 188, 212) !important;
       }
     }
+
     &__title {
       font-size: 24px;
       line-height: 1.29;
@@ -775,17 +767,20 @@ export default {
         padding: 0 !important;
         border-left: none !important;
       }
+
       .v-list-group__items {
         .v-list-item {
           padding-left: 0 !important;
           overflow: visible;
         }
+
         .v-list-item__content {
           padding: 0 !important;
           overflow: visible;
         }
       }
     }
+
     .v-list-item__content > *:not(:last-child) {
       margin-bottom: 0;
     }
@@ -841,6 +836,7 @@ export default {
       margin-left: 0;
     }
   }
+
   &__message {
     opacity: 0.7;
     font-family: 'Open Sans', sans-serif !important;
@@ -854,6 +850,7 @@ export default {
     display: inline-block;
     margin-right: 21px;
   }
+
   &__textfield {
     max-width: 365px;
   }
@@ -891,9 +888,11 @@ export default {
   .v-icon {
     font-size: 19px;
   }
+
   &.v-btn--disabled {
     .v-btn__content {
       color: white !important;
+
       .v-icon {
         color: white !important;
       }
@@ -905,6 +904,7 @@ export default {
   margin-top: -7px;
   margin-bottom: 22px;
 }
+
 .show-warning {
   overflow: visible;
 }
