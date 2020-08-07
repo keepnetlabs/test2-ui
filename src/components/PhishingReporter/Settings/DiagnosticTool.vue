@@ -170,6 +170,7 @@ export default {
     line-height: 1.29;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
 
   &__sub-title {
@@ -178,6 +179,7 @@ export default {
     letter-spacing: normal;
     margin-top: 2px;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
 
   &__select {

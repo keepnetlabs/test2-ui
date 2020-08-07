@@ -290,12 +290,14 @@ export default {
     line-height: 1.29;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
   &__sub-header {
     font-size: 14px;
     line-height: 1.5;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
 
   &__btn-util {
