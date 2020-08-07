@@ -19,7 +19,7 @@
           :status="isWantToDelete"
           icon="mdi-alert"
           size="big"
-          title="Delete Ongoing Investigation"
+          title="Delete Emails?"
           :subtitle="deleteMessage()"
           @changeStatus="isWantToDelete = false"
           body="Do you want to delete emails or move to trash?"
@@ -65,14 +65,16 @@
         >
           <template v-slot:app-dialog-body>
             <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
-              <v-text-field
-                placeholder="Dangerous Email"
-                outlined
-                class="edit-name-textfield edit-select standard-height"
-                v-model="notifyMessage"
-                required
-                height="40"
-              ></v-text-field>
+              <v-form class="w-100" lazy-validation ref="refWarnForm">
+                <v-text-field
+                  placeholder="Dangerous Email"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model="notifyMessage"
+                  height="40"
+                  :rules="[(v) => validations.required(v, 'Required')]"
+                ></v-text-field>
+              </v-form>
             </v-list-item>
           </template>
           <template v-slot:app-dialog-footer>
@@ -823,6 +825,7 @@ import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
 import { getDataTableFieldLabel } from '../utils/functions'
+import { required } from '@/utils/validations'
 export default {
   components: {
     Datatable,
@@ -848,6 +851,9 @@ export default {
     criteriaChips: [],
     isWantToWarnAndDelete: false,
     totalSelectedItemsCount: [],
+    validations: {
+      required
+    },
     investigationListBodyData: {
       pageNumber: 1,
       pageSize: 5000,
@@ -1502,23 +1508,25 @@ export default {
       this.soloWarningMessageValue = value
     },
     isWantToWarnConfirm() {
-      let isArray = Array.isArray(this.soloWarningMessageValue)
-      let data = []
-      isArray
-        ? (data = this.soloWarningMessageValue.map((item) => item.resourceId))
-        : data.push(this.soloWarningMessageValue.resourceId)
-      this.$store
-        .dispatch('investigations/sendInvestigationWarningMessage', {
-          data: {
-            items: data,
-            warningMessage: this.notifyMessage
-          },
-          id: this.$route.params.id
-        })
-        .finally(() => {
-          this.refreshDatatable()
-          this.isWantToWarn = false
-        })
+      if (this.$refs.refWarnForm.validate()) {
+        let isArray = Array.isArray(this.soloWarningMessageValue)
+        let data = []
+        isArray
+          ? (data = this.soloWarningMessageValue.map((item) => item.resourceId))
+          : data.push(this.soloWarningMessageValue.resourceId)
+        this.$store
+          .dispatch('investigations/sendInvestigationWarningMessage', {
+            data: {
+              items: data,
+              warningMessage: this.notifyMessage
+            },
+            id: this.$route.params.id
+          })
+          .finally(() => {
+            this.refreshDatatable()
+            this.isWantToWarn = false
+          })
+      }
     },
     deleteInvestigationDetailsFunction(value, multi) {
       let isArray = Array.isArray(value)
