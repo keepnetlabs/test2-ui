@@ -23,27 +23,28 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="phishing-reporter__stats-cards">
-          <div class="phishing-reporter__stats-card">
-            <div class="phishing-reporter__stats-card-left">
-              <div
-                class="phishing-reporter__stats-card-left-icon"
-                style="background-color: #00bcd4;"
-              >
-                <v-icon color="white" left medium>mdi-account</v-icon>
+          <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-card">
+              <div class="phishing-reporter__stats-card-left">
+                <div
+                  class="phishing-reporter__stats-card-left-icon"
+                  style="background-color: #00bcd4;"
+                >
+                  <v-icon color="white" left medium>mdi-account</v-icon>
+                </div>
               </div>
-            </div>
-            <div class="phishing-reporter__stats-card-right">
-              <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
-                {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
-              </h3>
-              <p class="phishing-reporter__stats-card-right-stats">
-                Users Online
-              </p>
+              <div class="phishing-reporter__stats-card-right">
+                <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
+                  {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
+                </h3>
+                <p class="phishing-reporter__stats-card-right-stats">
+                  Users Online
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
         <div class="phishing-reporter__header-right-column">
           <div class="phishing-reporter__stats-cards">
             <div class="phishing-reporter__stats-card">
