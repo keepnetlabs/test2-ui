@@ -691,23 +691,23 @@ export default {
 
     &__title {
       font-size: 24px;
-      line-height: 1.29;
+      line-height: 1.29 !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
       overflow: visible;
+      opacity: 0.9;
     }
 
     &__subtitle {
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.5 !important;
       letter-spacing: normal;
-      margin-top: 2px;
       color: rgba(0, 0, 0, 0.87) !important;
       overflow: visible;
+      opacity: 0.9;
     }
 
     &__link {
-      font-family: 'Open Sans', sans-serif !important;
       text-transform: uppercase;
       font-size: 14px;
       font-weight: 600;

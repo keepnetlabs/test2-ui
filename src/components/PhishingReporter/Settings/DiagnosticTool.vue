@@ -167,17 +167,18 @@ export default {
 
   &__title {
     font-size: 24px;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
     overflow: visible;
+    opacity: 0.9;
   }
 
   &__sub-title {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.5 !important;
     letter-spacing: normal;
-    margin-top: 2px;
+    opacity: 0.9;
     color: rgba(0, 0, 0, 0.87) !important;
     overflow: visible;
   }

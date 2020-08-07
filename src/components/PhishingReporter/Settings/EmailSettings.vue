@@ -287,18 +287,19 @@ export default {
 
   &__header {
     font-size: 24px;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
     overflow: visible;
+    opacity: 0.9;
   }
   &__sub-header {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.5 !important;
+    opacity: 0.9;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
     overflow: visible;
-    margin-top: 2px;
   }
 
   &__btn-util {
