@@ -114,7 +114,7 @@
                         <div class="login-remember d-flex">
                           <v-checkbox
                             v-model="rememberMe"
-                            :label="`Remember`"
+                            :label="`Remember me`"
                             class="remember-me-check"
                           >
                           </v-checkbox>
