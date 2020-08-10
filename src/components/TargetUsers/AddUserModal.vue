@@ -24,7 +24,7 @@
             placeholder="Enter first name"
             outlined
             dense
-            v-model="formValues.firstName"
+            v-model.trim="formValues.firstName"
             id="firstName"
             height="40"
           ></v-text-field>
@@ -37,7 +37,7 @@
             placeholder="Enter last name"
             outlined
             dense
-            v-model="formValues.lastName"
+            v-model.trim="formValues.lastName"
             id="lastName"
             height="40"
           ></v-text-field>
@@ -53,7 +53,7 @@
             placeholder="Enter email address"
             outlined
             dense
-            v-model="formValues.email"
+            v-model.trim="formValues.email"
             :rules="[
               (v) => validations.required(v, 'Required'),
               (v) => validations.mail(v, 'Invalid email address')
@@ -74,7 +74,7 @@
             placeholder="Enter department name"
             outlined
             dense
-            v-model="formValues.department"
+            v-model.trim="formValues.department"
             id="department"
             height="40"
           ></v-text-field>
@@ -91,20 +91,20 @@
           <v-text-field
             outlined
             dense
-            v-model="customFieldsModels[item.name]"
+            v-model.trim="customFieldsModels[item.name]"
             :placeholder="`Enter ${item.name}`"
             height="40"
             :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
             v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
           ></v-text-field>
           <el-date-picker
-            v-model="customFieldsModels[item.name]"
+            v-model.trim="customFieldsModels[item.name]"
             :placeholder="`Enter ${item.name}`"
             type="date"
             v-else-if="item.fieldDataType === 'Date'"
           />
           <v-checkbox
-            v-model="customFieldsModels[item.name]"
+            v-model.trim="customFieldsModels[item.name]"
             :label="item.name"
             v-if="item.fieldDataType === 'Boolean'"
           />
@@ -118,7 +118,7 @@
             :items="priorityItems"
             outlined
             dense
-            v-model="formValues.priority"
+            v-model.trim="formValues.priority"
             id="department"
             height="40"
           ></v-select>
