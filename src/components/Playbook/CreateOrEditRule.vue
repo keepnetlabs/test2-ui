@@ -146,7 +146,7 @@
                 v-model="query"
               >
                 <template v-slot:default="slotProps">
-                  <v-form ref="refStep2Form" lazy-validation class="mt-2">
+                  <v-form ref="refStep2Form" lazy-validation>
                     <query-builder-group
                       ref="queryBuilderGroup"
                       v-bind="slotProps"
@@ -167,19 +167,15 @@
                 </v-list-item-title>
               </v-list-item-content>
               <v-container fluid class="playbook-actions">
-                <v-row>
-                  <v-col class="v-col" cols="12">
-                    <ActionItem
-                      ref="refActionItem"
-                      :playbookId="playbookId"
-                      :actionData.sync="actionData"
-                      :editedActions="playbookAction"
-                      :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
-                      :editedNotifications="editedNotifications"
-                      :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
-                    />
-                  </v-col>
-                </v-row>
+                <ActionItem
+                  ref="refActionItem"
+                  :playbookId="playbookId"
+                  :actionData.sync="actionData"
+                  :editedActions="playbookAction"
+                  :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
+                  :editedNotifications="editedNotifications"
+                  :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
+                />
               </v-container>
             </v-stepper-content>
           </v-stepper-items>

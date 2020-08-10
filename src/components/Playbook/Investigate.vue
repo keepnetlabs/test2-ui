@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -12,12 +12,13 @@
         </v-list-item>
       </v-col>
       <v-col md="5">
-        <div class="target-users-select__radio-group">
+        <div class="target-users-select__radio-group mb-2">
           <v-radio-group
             v-model="investigateData.targetUserType"
             :mandatory="false"
             @change="handleRadioGroup"
             row
+            hide-details
           >
             <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
             <v-radio value="Groups" label="User Groups" color="#2196f3"></v-radio>
@@ -110,7 +111,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -134,7 +135,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -154,7 +155,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -198,7 +199,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -218,7 +219,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">

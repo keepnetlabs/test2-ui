@@ -158,7 +158,7 @@ export default {
       }
       &:first-child {
         &:before {
-          top: -22px !important;
+          top: -8px !important;
           height: calc(53%);
         }
       }
@@ -204,6 +204,10 @@ export default {
         border-radius: 4px;
         border-bottom-right-radius: 0;
         border-top-left-radius: 0;
+        @media (max-width: 768px) {
+          top: -108px;
+          height: calc(50% + 110px);
+        }
       }
       &:first-child {
         &:before {
@@ -219,7 +223,7 @@ export default {
   }
   .elevation-0 {
     & > .vqb-children {
-      margin-top: 32px;
+      //margin-top: 32px;
     }
     padding-left: 0 !important;
   }
@@ -243,6 +247,7 @@ export default {
   border-radius: 8px;
   .row {
     margin-left: 0 !important;
+    padding-left: 24px !important;
     margin-right: 0 !important;
   }
   .col {
@@ -257,12 +262,12 @@ export default {
       margin-bottom: 2px;
     }
     &:first-child {
-      padding-left: 24px !important;
+      //padding-left: 24px !important;
     }
   }
 }
 .match-type-container {
-  margin-bottom: 9.5px !important;
+  margin-bottom: 16px !important;
   &__buttons {
     width: 135px;
     height: 36px;

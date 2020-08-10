@@ -19,11 +19,9 @@
   opacity: 0.9;
   font-size: 24px;
   font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.29;
+  line-height: 1.29 !important;
   letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87) !important;
 }
 
 .v-card-content {
@@ -36,12 +34,12 @@
 }
 
 .v-card-sub-header {
-  font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
+  opacity: 0.9;
   font-weight: normal;
-  line-height: normal;
+  line-height: 1.5 !important;
   letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87) !important;
 }
 
 .v-cart-icon-wrapper {

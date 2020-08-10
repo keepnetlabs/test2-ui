@@ -5,6 +5,10 @@
   flex-direction: column;
   //overflow-y: auto;
 
+  .v-list-item__content > *:not(:last-child){
+    margin-bottom:0;
+  }
+
   .v-card.header {
     padding: 32px 96px 0 96px;
     margin-bottom: 24px;
@@ -196,7 +200,7 @@
         font-weight: 600;
         line-height: 1.2;
         letter-spacing: normal;
-        color: rgba(0, 0, 0, 0.87);
+        color: rgba(0, 0, 0, 0.87) !important;
       }
       .bottom-margin {
         margin-bottom: 8px;
@@ -211,7 +215,8 @@
 }
 
 .playbook-actions {
-  padding: 0 12px !important;
+  //padding: 0 12px !important;
+  margin-top:24px;
   .row {
     min-width: 100%;
   }

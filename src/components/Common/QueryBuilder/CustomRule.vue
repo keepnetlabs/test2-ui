@@ -67,6 +67,8 @@
           query.operand !== 'AttachmentExtension' &&
           query.operand !== 'AttachmentHash'
         "
+        md=""
+        sm="10"
       >
         <!-- Condition text input-->
         <v-text-field
@@ -75,6 +77,8 @@
           outlined
           :rules="getRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col v-if="query.operand === 'SenderIp'">
@@ -85,6 +89,8 @@
           outlined
           :rules="getSenderIpRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col v-if="query.operand === 'Subject'">
@@ -95,6 +101,8 @@
           outlined
           :rules="getSubjectRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col v-if="query.operand === 'Keyword'">
@@ -105,6 +113,8 @@
           outlined
           :rules="getKeywordRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col v-if="query.operand === 'AttachmentName'">
@@ -115,6 +125,8 @@
           outlined
           :rules="getAttachmentNameRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col v-if="query.operand === 'AttachmentExtension'">
@@ -124,6 +136,8 @@
           outlined
           :rules="getAttachmentExtensionRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col v-if="query.operand === 'AttachmentHash'">
@@ -133,10 +147,13 @@
           outlined
           :rules="getAttachmentHashRules()"
           autocomplete="disabled"
+          md=""
+          sm="10"
         />
       </v-col>
       <v-col
         :md="query.operand === 'Analysis result' ? '6' : 'auto'"
+        sm="2"
         class="text-right"
         style="margin-top: 1px; padding-left: 10px !important; padding-right: 18px !important;"
       >
