@@ -54,7 +54,7 @@
                     ></v-text-field>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item class="mt-1">
+                <v-list-item>
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">Description</label>
                     <v-textarea
@@ -67,14 +67,14 @@
                     />
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item class="mt-2">
+                <v-list-item>
                   <v-list-item-content>
                     <label>Priority</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Rules with higher priority override lower priority rules
                     </v-list-item-title>
-                    <div class="playbook-rule-form__radio-group mt-2 mb-1">
-                      <v-radio-group v-model.trim="priority" row>
+                    <div class="playbook-rule-form__radio-group mb-6">
+                      <v-radio-group v-model.trim="priority" row hide-details>
                         <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
@@ -89,7 +89,7 @@
                     </div>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item style="margin-top: 10px;">
+                <v-list-item>
                   <v-list-item-content>
                     <label>Tags</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">

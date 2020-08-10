@@ -6,8 +6,8 @@
   //overflow-y: auto;
 
   .v-card.header {
-    padding: 2rem 6rem;
-    height: 112px;
+    padding: 32px 96px 0 96px;
+    margin-bottom: 24px;
     flex-shrink: 0;
     @media (max-width: 768px) {
       padding: 2rem 2rem;
@@ -164,9 +164,9 @@
   }
 
   .v-stepper__content {
-    padding: 24px 6rem;
+    padding: 32px 6rem;
     @media (max-width: 768px) {
-      padding: 24px 1rem;
+      padding: 32px 1rem;
     }
     .v-stepper__wrapper{
       overflow: visible;
@@ -194,15 +194,12 @@
       & > label {
         font-size: 20px;
         font-weight: 600;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.2rem;
+        line-height: 1.2;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
-        margin-bottom: 4px;
       }
       .bottom-margin {
-        margin-bottom: 16px;
+        margin-bottom: 8px;
       }
       .v-radio {
         label {

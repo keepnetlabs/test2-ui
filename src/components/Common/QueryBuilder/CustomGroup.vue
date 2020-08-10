@@ -1,7 +1,11 @@
 <template>
   <!-- eslint-disable vue/no-v-html -->
 
-  <div class="vqb-group pa-4 mb-3" :class="'elevation-' + (depth - 1).toString()">
+  <div
+    class="vqb-group pa-6 mb-2"
+    style="padding-bottom: 18px !important;"
+    :class="'elevation-' + (depth - 1).toString()"
+  >
     <div class="vqb-group-heading card-header">
       <div class="match-type-container d-flex">
         <div
@@ -122,11 +126,11 @@ export default {
     position: relative;
 
     &:not(.elevation-0) {
-      margin-left: 100px;
+      margin-left: 107px;
       &:before {
         content: '';
         position: absolute;
-        left: -35px;
+        left: -43px;
         width: 36px;
         top: -8px;
         // animation: asasa 0.2s ease-in-out;
@@ -142,7 +146,7 @@ export default {
       &:after {
         content: '';
         position: absolute;
-        left: -35px;
+        left: -43px;
         width: 36px;
         top: -8px;
         /* height: calc(53%); */
@@ -169,6 +173,7 @@ export default {
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
     .rule-actions {
+      margin-left: 100px !important;
       .v-btn__content {
         font-size: 14px !important;
         font-weight: 600 !important;
@@ -182,16 +187,16 @@ export default {
       margin-bottom: 15px;
       background-color: #f5f5f5;
       border-color: #ddd;
-      padding: 21px 24px 0 24px;
+      //padding: 21px 24px 0 24px;
       position: relative;
-      margin-left: 100px;
+      margin-left: 107px;
       &:before {
         content: '';
         position: absolute;
-        left: -36px;
+        left: -43px;
         width: 37px;
-        top: -106px;
-        height: calc(50% + 108px);
+        top: -78px;
+        height: calc(50% + 80px);
         //animation: asasab 0.2s ease-in-out;
         border-color: #2196f3;
         border-style: solid;
@@ -202,7 +207,7 @@ export default {
       }
       &:first-child {
         &:before {
-          height: calc(50% + 14px);
+          height: calc(50% + 11px);
           top: -8px;
         }
       }
@@ -233,8 +238,28 @@ export default {
   margin-bottom: 15px;
   background-color: #f5f5f5;
   border-color: #ddd;
-  padding: 21px 24px 0 24px;
+  //padding: 21px 24px 0 24px;
   position: relative;
+  border-radius: 8px;
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .col {
+    padding-right: 8px !important;
+    padding-left: 0 !important;
+    padding-top: 16px !important;
+    padding-bottom: 0 !important;
+    .v-select__selections {
+      flex-wrap: nowrap;
+    }
+    .v-text-field.v-text-field--enclosed .v-text-field__details {
+      margin-bottom: 2px;
+    }
+    &:first-child {
+      padding-left: 24px !important;
+    }
+  }
 }
 .match-type-container {
   margin-bottom: 9.5px !important;

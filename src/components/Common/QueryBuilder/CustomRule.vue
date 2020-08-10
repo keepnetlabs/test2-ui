@@ -1,9 +1,9 @@
 <template>
   <!-- eslint-disable vue/no-v-html -->
-  <div class="vqb-rule rounded-xl">
+  <div class="vqb-rule">
     <v-row>
       <!-- <label class="mr-5">{{ rule.label }}</label> -->
-      <v-col md="2" class="mr-2">
+      <v-col md="2">
         <!-- List of operands (optional) -->
         <v-select
           v-model.trim="query.operand"
@@ -15,7 +15,6 @@
       </v-col>
       <v-col
         md="2"
-        class="mr-2"
         v-if="
           typeof rule.operators !== 'undefined' &&
           query.operand !== 'SenderIp' &&
@@ -37,49 +36,25 @@
         <v-select
           v-model.trim="query.operator"
           :items="rule.operandsSenderIP"
-          class="mr-2"
           outlined
           hide-details
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
         <!-- List of "From" operands-->
-        <v-select
-          v-model.trim="query.format"
-          :items="rule.operandsFrom"
-          class="mr-2"
-          outlined
-          hide-details
-        />
+        <v-select v-model.trim="query.format" :items="rule.operandsFrom" outlined hide-details />
       </v-col>
       <v-col md="2" v-if="query.operand === 'To'">
         <!-- List of "From" operands-->
-        <v-select
-          v-model.trim="query.format"
-          :items="rule.operandsTo"
-          class="mr-2"
-          outlined
-          hide-details
-        />
+        <v-select v-model.trim="query.format" :items="rule.operandsTo" outlined hide-details />
       </v-col>
       <v-col md="2" v-if="query.operand === 'CC'">
         <!-- List of "From" operands-->
-        <v-select
-          v-model.trim="query.format"
-          :items="rule.operandsCC"
-          class="mr-2"
-          outlined
-          hide-details
-        />
+        <v-select v-model.trim="query.format" :items="rule.operandsCC" outlined hide-details />
       </v-col>
       <v-col md="2" v-if="query.operand === 'Analysis result'">
         <!-- List of "Analysis result" operands-->
-        <v-select
-          v-model="query.value"
-          :items="rule.operandsAnalysisResult"
-          class="mr-2"
-          outlined
-        />
+        <v-select v-model="query.value" :items="rule.operandsAnalysisResult" outlined />
       </v-col>
       <v-col
         v-if="
@@ -163,7 +138,7 @@
       <v-col
         :md="query.operand === 'Analysis result' ? '6' : 'auto'"
         class="text-right"
-        :class="[query.operand === 'Analysis result' && 'ml-n4']"
+        style="margin-top: 1px; padding-left: 10px !important; padding-right: 18px !important;"
       >
         <!-- Remove rule button -->
         <v-btn icon v-if="isDeleteRuleButton()" @click="removeRule">
