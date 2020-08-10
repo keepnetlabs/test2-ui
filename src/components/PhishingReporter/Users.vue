@@ -7,7 +7,7 @@
       subtitle="Do you want to delete this user?"
       @changeStatus="isWantToDelete = false"
     >
-      <template v-slot:app-dialog-body> {{ getUserName }} will be deleted ! </template>
+      <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"

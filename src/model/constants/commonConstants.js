@@ -51,7 +51,7 @@ export const LABEL_STORE = {
   NO_INTEGRATIONS: 'No integrations',
   NO_RULES_CONFIGURED: 'No rules configured',
   NO_TARGET_GROUPS_DEFINED: 'No target groups defined',
-  NO_TARGET_USER_ADDED: 'No target user added'
+  NO_TARGET_USER_ADDED: 'No target users added'
 }
 
 export const PROPERTY_STORE = {
