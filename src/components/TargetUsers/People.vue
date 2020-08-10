@@ -220,7 +220,6 @@ export default {
       },
       iEmpty: {
         message: LABEL_STORE.NO_TARGET_USER_ADDED,
-        subMes: 'Start now',
         btn: 'ADD A USER',
         icon: 'mdi-account-plus'
       },
