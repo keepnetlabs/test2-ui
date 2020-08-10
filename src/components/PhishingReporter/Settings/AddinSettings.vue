@@ -724,6 +724,7 @@ export default {
     &__footer {
       display: flex;
       align-items: center;
+      padding-bottom: 24px;
       @media (max-width: 768px) {
         flex-direction: column;
       }
