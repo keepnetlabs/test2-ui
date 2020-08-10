@@ -6,7 +6,9 @@
     subtitle="Download past versions of the add-in"
     @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
     :custom-size="'800'"
+    max-height
     class-name="matching-modal version-history"
+    maxHeightSize="520px"
   >
     <template v-slot:app-dialog-body>
       <v-card light>
@@ -150,5 +152,12 @@ export default {
       margin-left: 0 !important;
     }
   }
+}
+.matching-modal.version-history::-webkit-scrollbar {
+  display: none;
+}
+.matching-modal.version-history {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
 }
 </style>

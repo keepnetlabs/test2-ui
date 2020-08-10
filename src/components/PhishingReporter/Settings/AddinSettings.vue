@@ -13,7 +13,7 @@
       v-if="reporterVersionModalStatus"
     />
     <v-list-item
-      class="pl-0 add-in-settings__list-item mt-0"
+      class="pl-0 add-in-settings__list-item mt-0 mr-2"
       style="max-width: 100%;"
       v-if="showHeader"
     >

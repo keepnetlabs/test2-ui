@@ -1,7 +1,7 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item
-      class="px-0 email-settings__list-item mt-0"
+      class="px-0 email-settings__list-item mt-0 mr-2"
       style="max-width: 100%;"
       v-if="showHeader"
     >
