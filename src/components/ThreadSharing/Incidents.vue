@@ -29,7 +29,7 @@
                 placeholder="Filter by attributes or keywords"
                 outlined
                 class="filter-field pt-6"
-                v-model="search"
+                v-model.trim="search"
                 id="incidents-search-textfield"
               ></v-text-field>
               <v-icon class="filter-icon">mdi-filter-variant</v-icon>

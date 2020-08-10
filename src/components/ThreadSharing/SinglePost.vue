@@ -97,7 +97,7 @@
           small-chips
           outlined
           :no-data-text="'Enter emails (max. 10)'"
-          v-model="shareEmail"
+          v-model.trim="shareEmail"
           :rules="[shareEmailRules.limit, shareEmailRules.email]"
           class="pop-up-card__invite-member"
         ></v-combobox>
@@ -742,7 +742,7 @@
                   class="comment-input"
                   placeholder="Write your comment here"
                   outlined
-                  v-model="addCommentValue"
+                  v-model.trim="addCommentValue"
                   validate-on-blur
                   :rules="[rules.regex, rules.required]"
                 />
@@ -790,7 +790,7 @@
                           class="comment-input"
                           placeholder="Write your comment here"
                           outlined
-                          v-model="com.commentValue"
+                          v-model.trim="com.commentValue"
                           validate-on-blur
                           :rules="[rules.regex, rules.required]"
                           hide-details

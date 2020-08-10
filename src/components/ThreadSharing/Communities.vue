@@ -247,7 +247,7 @@
                 outlined
                 dense
                 class="filter-field pt-6"
-                v-model="filter"
+                v-model.trim="filter"
               ></v-text-field>
               <v-icon class="filter-icon" @click.native="updateCommunities()"
                 >mdi-filter-variant
