@@ -732,7 +732,10 @@ export default {
 
     &__list-item {
       max-width: 554px;
-      margin-top: -8px;
+      //margin-top: -2px;
+      .v-text-field.v-text-field--enclosed .v-text-field__details {
+        margin-bottom: 6px;
+      }
       &.v-list-item {
         padding: 0 !important;
 

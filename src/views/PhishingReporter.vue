@@ -426,7 +426,6 @@ export default {
           line-height: 1.15;
           letter-spacing: normal;
           color: #2196f3;
-          margin-bottom: 5px;
         }
 
         &-stats {
@@ -483,7 +482,7 @@ export default {
       -webkit-box-pack: end;
       -ms-flex-pack: end;
       justify-content: flex-end;
-      padding: 14px 0 19px 0;
+      padding: 16px 0;
       align-items: center;
 
       &-right-col {

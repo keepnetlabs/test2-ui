@@ -356,7 +356,7 @@ export default {
   }
 
   &__list-item {
-    margin-top: -4px;
+    //margin-top: -2px;
     max-width: 554px;
     overflow: visible;
     .v-list-item__content {
