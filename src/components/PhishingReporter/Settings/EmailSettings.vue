@@ -9,8 +9,7 @@
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
           >Email Settings
         </v-list-item-title>
-        <v-list-item-subtitle
-          class="email-settings__list-item--text email-settings__sub-header mb-6"
+        <v-list-item-subtitle class="email-settings__list-item--text email-settings__sub-header"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -26,19 +25,20 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
-      <v-list-item class="px-0 email-settings__list-item">
+      <v-list-item class="px-0 email-settings__list-item my-n1">
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
-            class="other-settings__checkbox k-checkbox mt-2"
+            class="other-settings__checkbox k-checkbox my-6"
             color="#2196f3"
             label="Send information email for reported incidents"
             :readonly="!showForm"
+            hide-details
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 email-settings__list-item mt-0">
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
@@ -51,10 +51,18 @@
             v-model.trim="formValues.to"
             :rules="
               showForm
-                ? [
-                    (v) => validations.mail(v, 'Invalid recipient email address'),
-                    (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
-                  ]
+                ? formValues.isSendInformationEmail
+                  ? [
+                      (v) => this.validations.mail(v, 'Invalid recipient email address'),
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters'),
+                      (v) => this.validations.required(v, 'Required')
+                    ]
+                  : [
+                      (v) => this.validations.mail(v, 'Invalid recipient email address'),
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                    ]
                 : []
             "
             :readonly="!showForm"
@@ -121,7 +129,16 @@
             id="email-subject"
             :rules="
               showForm
-                ? [(v) => validations.maxLength(v, 255, 'It must be maximum 255 characters')]
+                ? formValues.isSendInformationEmail
+                  ? [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters'),
+                      (v) => this.validations.required(v, 'Required')
+                    ]
+                  : [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                    ]
                 : []
             "
             :readonly="!showForm"
@@ -141,7 +158,16 @@
             v-model.trim="formValues.content"
             :rules="
               showForm
-                ? [(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]
+                ? formValues.isSendInformationEmail
+                  ? [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 1000 characters'),
+                      (v) => this.validations.required(v, 'Required')
+                    ]
+                  : [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                    ]
                 : []
             "
             :readonly="!showForm"
@@ -208,7 +234,7 @@ export default {
         bcc: '',
         subject: '',
         content: '',
-        IsSendInformationEmail: null
+        isSendInformationEmail: null
       },
       validations: {
         maxLength,
