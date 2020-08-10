@@ -8,26 +8,6 @@
               <div class="phishing-reporter__stats-card-left">
                 <div
                   class="phishing-reporter__stats-card-left-icon"
-                  style="background-color: #00bcd4;"
-                >
-                  <v-icon color="white" left medium>mdi-account</v-icon>
-                </div>
-              </div>
-              <div class="phishing-reporter__stats-card-right">
-                <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
-                  {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
-                </h3>
-                <p class="phishing-reporter__stats-card-right-stats">
-                  Online Users
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="phishing-reporter__stats-cards">
-            <div class="phishing-reporter__stats-card">
-              <div class="phishing-reporter__stats-card-left">
-                <div
-                  class="phishing-reporter__stats-card-left-icon"
                   style="background-color: #2196f3;"
                 >
                   <v-icon color="white" left medium>mdi-puzzle</v-icon>
@@ -38,12 +18,33 @@
                   {{ getAddOnStatus }}
                 </h3>
                 <p class="phishing-reporter__stats-card-right-stats">
-                  Users have the add-on
+                  Users have the add-in
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-card">
+              <div class="phishing-reporter__stats-card-left">
+                <div
+                  class="phishing-reporter__stats-card-left-icon"
+                  style="background-color: #00bcd4;"
+                >
+                  <v-icon color="white" left medium>mdi-account</v-icon>
+                </div>
+              </div>
+              <div class="phishing-reporter__stats-card-right">
+                <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
+                  {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
+                </h3>
+                <p class="phishing-reporter__stats-card-right-stats">
+                  Users Online
                 </p>
               </div>
             </div>
           </div>
         </div>
+
         <div class="phishing-reporter__header-right-column">
           <div class="phishing-reporter__stats-cards">
             <div class="phishing-reporter__stats-card">
@@ -60,7 +61,7 @@
                   {{ (phishingReportSummary && phishingReportSummary.offlineUsersCount) || 0 }}
                 </h3>
                 <p class="phishing-reporter__stats-card-right-stats">
-                  Users Stayed Offline
+                  Users Offline
                 </p>
               </div>
             </div>
@@ -77,7 +78,7 @@
               </div>
               <div class="phishing-reporter__stats-card-right">
                 <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                  {{ (phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}
+                  v{{ (phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}
                 </h3>
                 <p class="phishing-reporter__stats-card-right-stats">
                   Latest Release
@@ -164,11 +165,7 @@ export default {
   },
   computed: {
     getAddOnStatus() {
-      return this.phishingReportSummary
-        ? `${this.phishingReportSummary.onlineUsersCount || 0} of ${
-            this.phishingReportSummary.totalUsersCount || 0
-          }`
-        : 0
+      return this.phishingReportSummary ? this.phishingReportSummary.totalUsersCount : 0
     }
   },
   methods: {
@@ -326,7 +323,8 @@ export default {
     &-container {
       padding-left: 0 !important;
       padding-right: 0 !important;
-      margin-top: 16px !important;
+      padding-top: 0 !important;
+      margin-top: 24px !important;
       .v-card {
         @media only screen and (max-width: 500px) {
           padding: 20px !important;
@@ -363,7 +361,7 @@ export default {
     -ms-flex-flow: row;
     flex-flow: row;
     border-bottom: 2px solid #e4e7ed;
-    margin: 0 28px;
+    margin: 0 24px;
 
     @media (max-width: 768px) {
       flex-direction: column;
@@ -485,7 +483,7 @@ export default {
       -webkit-box-pack: end;
       -ms-flex-pack: end;
       justify-content: flex-end;
-      padding: 14px 0 27px 0;
+      padding: 14px 0 19px 0;
       align-items: center;
 
       &-right-col {
@@ -497,6 +495,8 @@ export default {
       }
       &-text {
         font-size: 14px;
+        font-weight: normal;
+        line-height: normal;
         letter-spacing: normal;
         color: #000000;
       }

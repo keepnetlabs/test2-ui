@@ -48,7 +48,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.to"
+            v-model.trim="formValues.to"
             :rules="
               showForm
                 ? [
@@ -71,7 +71,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.cc"
+            v-model.trim="formValues.cc"
             :rules="
               showForm
                 ? [
@@ -94,7 +94,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.bcc"
+            v-model.trim="formValues.bcc"
             id="bcc"
             :readonly="!showForm"
             :rules="
@@ -287,15 +287,19 @@ export default {
 
   &__header {
     font-size: 24px;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
+    opacity: 0.9;
   }
   &__sub-header {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.5 !important;
+    opacity: 0.9;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
 
   &__btn-util {

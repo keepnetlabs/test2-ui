@@ -349,26 +349,20 @@ export default {
   }
 
   &__title {
-    //opacity: 0.9;
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.29;
     letter-spacing: normal;
+    overflow: visible;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 
   &__subtitle {
-    //opacity: 0.9;
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.5;
     letter-spacing: normal;
+    overflow: visible;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 

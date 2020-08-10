@@ -1366,6 +1366,7 @@ export default {
 
   .v-navigation-drawer {
     min-width: 64px;
+    
   }
 
   .v-navigation-drawer__content {
