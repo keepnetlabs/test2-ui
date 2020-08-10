@@ -370,8 +370,6 @@
               v-if="routerName === 'Phishing Reporter'"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[1].text }}
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               Phishing Reporter
             </router-link>
             <router-link
@@ -1366,7 +1364,6 @@ export default {
 
   .v-navigation-drawer {
     min-width: 64px;
-    
   }
 
   .v-navigation-drawer__content {

@@ -25,11 +25,14 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
-      <v-list-item class="px-0 email-settings__list-item my-n1">
+      <v-list-item
+        class="px-0 email-settings__list-item"
+        style="padding-top: 14px; padding-bottom: 9px; margin-top: 0 !important;"
+      >
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
-            class="other-settings__checkbox k-checkbox my-6"
+            class="other-settings__checkbox k-checkbox"
             color="#2196f3"
             label="Send information email for reported incidents"
             :readonly="!showForm"
@@ -284,7 +287,10 @@ export default {
 .email-settings {
   &__list-item {
     max-width: 554px;
-    margin-top: -8px;
+    //margin-top: -2px;
+    .v-text-field.v-text-field--enclosed .v-text-field__details {
+      margin-bottom: 6px;
+    }
     &--text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
