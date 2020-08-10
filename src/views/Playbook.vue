@@ -85,7 +85,7 @@ export default {
 
 ::v-deep .v-slide-group__content {
   border-bottom: 2px solid #e4e7ed;
-  margin-right: 20px;
+  //margin-right: 20px;
 }
 
 ::v-deep .v-tabs-slider-wrapper {
@@ -96,7 +96,7 @@ export default {
 .pr-card {
   box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
     0 1px 1px -1px rgba(204, 204, 204, 0.12);
-  padding: 10px 5px 0px 24px !important;
+  padding: 10px 24px 0px 24px !important;
   border-radius: 20px !important;
 }
 

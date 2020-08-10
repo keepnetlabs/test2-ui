@@ -45,6 +45,7 @@
                     <v-text-field
                       placeholder="Enter a name for the rule"
                       outlined
+                      dense
                       autocomplete="off"
                       v-model.trim="name"
                       :rules="[
@@ -60,6 +61,7 @@
                     <v-textarea
                       placeholder="Describe the rule"
                       outlined
+                      dense
                       no-resize
                       v-model.trim="description"
                       :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
@@ -74,7 +76,7 @@
                       Rules with higher priority override lower priority rules
                     </v-list-item-title>
                     <div class="playbook-rule-form__radio-group mb-6">
-                      <v-radio-group v-model.trim="priority" row hide-details>
+                      <v-radio-group v-model.trim="priority" row hide-details dense>
                         <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
@@ -120,6 +122,7 @@
                     <v-switch
                       :ripple="false"
                       v-model="isActive"
+                      dense
                       :label="isActive ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"

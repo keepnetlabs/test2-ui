@@ -5,6 +5,11 @@
   flex-direction: column;
   //overflow-y: auto;
 
+
+  .v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 6px;
+  }
+
   .v-list-item__content > *:not(:last-child){
     margin-bottom:0;
   }
@@ -61,6 +66,7 @@
   }
   &__switch{
     margin-top: 24px;
+    padding-top:0;
     .v-input--selection-controls__input{
       order: -1;
       margin-top: 1px;

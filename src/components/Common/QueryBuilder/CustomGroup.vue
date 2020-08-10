@@ -174,6 +174,7 @@ export default {
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
     .rule-actions {
       margin-left: 100px !important;
+      margin-top: -5px;
       .v-btn__content {
         font-size: 14px !important;
         font-weight: 600 !important;
