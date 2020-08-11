@@ -388,6 +388,9 @@
             </div>
           </div>
         </div>
+        <div class="pb-4 pt-1 empty-posts" v-else>
+          You haven’t post any incidents,yet
+        </div>
         <div class="right-side-title pt-4">Top Posts from your communities</div>
         <div v-if="topPosts && topPosts.length">
           <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
@@ -627,7 +630,11 @@ export default {
                   color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                   message: 'Error when attempting to leave from a community'
                 })*/
-          if (error.response.data.code === 'CANNOT_LEAVE_COMMUNITY') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'CANNOT_LEAVE_COMMUNITY'
+          ) {
             this.isWantToToLeaveFromCommunity = false
             this.showNeedPermissionModal = true
           }
@@ -693,7 +700,11 @@ export default {
           this.$forceUpdate()
         })
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.yourPosts = []
           }
         })
@@ -705,7 +716,11 @@ export default {
           this.$forceUpdate()
         })
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.topPosts = []
           }
         })
@@ -722,7 +737,11 @@ export default {
           this.$forceUpdate()
         })
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.suggestedCommunities = []
           }
         })

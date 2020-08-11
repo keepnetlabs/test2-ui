@@ -611,8 +611,6 @@ export default {
         .finally(() => this.loadingState.shift('loading'))
     },
     testConnection(isSave) {
-      debugger
-
       for (let i = 0; i < this.formValues.apiKeys.length; i++) {
         const item = this.formValues.apiKeys[i]
         this.formValues.apiKeys[i].status = 'loading'
