@@ -9,7 +9,7 @@
         <v-list-item-title class="other-settings__title">
           Other Settings
         </v-list-item-title>
-        <v-list-item-subtitle class="other-settings__sub-title mb-6">
+        <v-list-item-subtitle class="other-settings__sub-title mb-3">
           Extra settings
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -25,7 +25,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm">
-      <v-list-item class="px-0 other-settings__list-item mt-n4">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <div class="other-settings__list-item-header">
             Proxy Settings
