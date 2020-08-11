@@ -146,7 +146,7 @@
                         <div class="notification-wrapper">
                           <v-list dense flat class="notification-wrapper__v-list">
                             <v-list-item-group color="primary">
-                              <v-list-item>
+                              <v-list-item @click="seePostedIncidentsClick(member)">
                                 <v-list-item-icon>
                                   <v-icon>mdi-magnify</v-icon>
                                 </v-list-item-icon>
@@ -447,6 +447,9 @@ export default {
     }
   },
   methods: {
+    seePostedIncidentsClick(item) {
+      this.$emit('selectedMemberPost', item)
+    },
     isCommunityOwner() {
       return localStorage.getItem('isCommunityOwner') === 'owner'
     },
@@ -575,7 +578,11 @@ export default {
         })
 
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.members = []
           }
         })
@@ -614,7 +621,11 @@ export default {
           })
 
           .catch((error) => {
-            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
               this.requestMembers = []
             }
           })

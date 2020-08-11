@@ -295,6 +295,12 @@ export default {
   },
   mounted() {
     this.getBusinessCategories()
+  },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    document.querySelector('html').style.overflowY = ''
   }
 }
 </script>

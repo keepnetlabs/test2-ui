@@ -182,7 +182,9 @@
                     <transition appear name="bounce">
                       <div class="v-messages theme--light error--text" role="alert">
                         <div class="v-messages__wrapper">
-                          <div class="v-messages__message">Date required</div>
+                          <div class="v-messages__message" style="padding-left: 10px;">
+                            Date is required
+                          </div>
                         </div>
                       </div>
                     </transition>
