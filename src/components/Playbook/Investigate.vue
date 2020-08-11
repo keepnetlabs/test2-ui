@@ -58,7 +58,6 @@
             item-text="name"
             item-value="resourceId"
             multiple
-            dense
             persistent-hint
             small-chips
             deletable-chips

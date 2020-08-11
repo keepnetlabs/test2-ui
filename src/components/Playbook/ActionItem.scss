@@ -10,6 +10,9 @@
     &.vqb-rule .col .v-select__selections{
       flex-wrap:wrap;
     }
+    .v-select.v-input--dense .v-chip{
+      margin:4px;
+    }
     .row{
       padding-left:0 !important;
     }
