@@ -329,6 +329,29 @@
             ></v-textarea>
           </div>
           <div class="add-in-settings__body-item">
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
+              >Bad format email message</label
+            >
+            <v-textarea
+              placeholder="Your selection is not a valid email message"
+              outlined
+              dense
+              rows="2"
+              no-resize
+              height="80"
+              v-model.trim="formValues.badFormatEmailMessage"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
+                      (v) => validations.required(v, 'Required')
+                    ]
+                  : []
+              "
+              :readonly="!showForm"
+            ></v-textarea>
+          </div>
+          <div class="add-in-settings__body-item">
             <v-checkbox
               color="#2196f3"
               label="Show confirmation messsage when reporting email"
@@ -472,7 +495,8 @@ export default {
         noInternetConnectionMessage: '',
         msgBoxBtnNoText: '',
         msgBoxBtnOkText: '',
-        emailSelectionErrorMessage: ''
+        emailSelectionErrorMessage: '',
+        badFormatEmailMessage: ''
       },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
@@ -560,7 +584,8 @@ export default {
         msgBoxBtnOkText,
         noInternetConnectionMessage,
         emailSendingErrorMessage,
-        emailSelectionErrorMessage
+        emailSelectionErrorMessage,
+        badFormatEmailMessage
       } = this.formData
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -578,6 +603,7 @@ export default {
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
+      this.formValues.badFormatEmailMessage = badFormatEmailMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
@@ -604,6 +630,7 @@ export default {
         'Phishing Reporter add-in cannot connect to server. Please inform related department.'
       this.formValues.emailSelectionErrorMessage =
         'To report an email you must first select the email and then click the report button.'
+      this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = blob
       })
@@ -627,7 +654,8 @@ export default {
         msgBoxBtnOkText,
         noInternetConnectionMessage,
         emailSendingErrorMessage,
-        emailSelectionErrorMessage
+        emailSelectionErrorMessage,
+        badFormatEmailMessage
       } = val
       this.formValues.addInName = addInName
       this.formValues.brandName = brandName
@@ -645,6 +673,7 @@ export default {
       this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
       this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
+      this.formValues.badFormatEmailMessage = badFormatEmailMessage
       getPhishingReporterImg().then((response) => {
         this.formValues.file = response.data
       })
