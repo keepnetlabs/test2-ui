@@ -6,9 +6,7 @@
     subtitle="Download past versions of the add-in"
     @changeStatus="$emit('changeVersionHistoryModalStatus', false)"
     :custom-size="'800'"
-    max-height
     class-name="matching-modal version-history"
-    maxHeightSize="520px"
   >
     <template v-slot:app-dialog-body>
       <v-card light>
