@@ -263,8 +263,10 @@ export default {
     } else {
       this.formValues.companyKey = localStorage.getItem('companyId')
       this.formValues.enableEnterpriseVault = false
-      this.formValues.apiKey = ''
-      this.formValues.apiUrl = ''
+      this.formValues.apiKey =
+        process.env.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
+      this.formValues.apiUrl =
+        process.env.VUE_APP_WEB_API_TEST || 'https://apitest.keepnetlabs.com/api'
     }
   }
 }
