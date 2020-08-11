@@ -56,7 +56,7 @@
     </div>
     <v-btn
       class="query__button"
-      style="margin-left: 86px;"
+      style="margin-left: 96px;"
       v-if="depth < maxDepth && depth === 1"
       text
       color="#2196f3"
@@ -122,7 +122,7 @@ export default {
   .vqb-group {
     border-radius: 20px;
     padding: 34px;
-
+    margin-bottom: 16px !important;
     position: relative;
 
     &:not(.elevation-0) {
@@ -132,9 +132,8 @@ export default {
         position: absolute;
         left: -43px;
         width: 36px;
-        top: -8px;
-        // animation: asasa 0.2s ease-in-out;
-        height: calc(54%);
+        top: -16px;
+        height: calc(50% + 24px);
         /* height: calc(105%); */
         border-color: #00bcd4;
         border-style: solid;
@@ -159,11 +158,12 @@ export default {
       &:first-child {
         &:before {
           top: -8px !important;
-          height: calc(53%);
+          height: calc(50% + 16px);
         }
       }
     }
     &:last-child {
+      margin-bottom: 0 !important;
       &:after {
         height: 0;
       }
@@ -174,7 +174,7 @@ export default {
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
     .rule-actions {
       margin-left: 100px !important;
-      margin-top: -5px;
+      margin-top: 2px;
       .v-btn__content {
         font-size: 14px !important;
         font-weight: 600 !important;
@@ -184,8 +184,12 @@ export default {
       }
     }
     .vqb-rule {
-      margin-top: 15px;
-      margin-bottom: 15px;
+      //margin-top: 15px;
+      //margin-bottom: 15px;
+      margin-bottom: 8px;
+      &:last-child {
+        margin-bottom: 0;
+      }
       background-color: #f5f5f5;
       border-color: #ddd;
       //padding: 21px 24px 0 24px;
@@ -239,8 +243,8 @@ export default {
   }
 }
 .vqb-rule {
-  margin-top: 15px;
-  margin-bottom: 15px;
+  //margin-top: 15px;
+  //margin-bottom: 15px;
   background-color: #f5f5f5;
   border-color: #ddd;
   //padding: 21px 24px 0 24px;
@@ -271,7 +275,7 @@ export default {
   margin-bottom: 16px !important;
   &__buttons {
     width: 135px;
-    height: 36px;
+    padding: 2px 0;
     display: flex;
     align-items: center;
     color: white !important;

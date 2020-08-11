@@ -155,7 +155,11 @@
         :md="query.operand === 'Analysis result' ? '6' : 'auto'"
         sm="2"
         class="text-right"
-        style="margin-top: 1px; padding-left: 10px !important; padding-right: 18px !important;"
+        style="
+          padding-top: 18px !important;
+          padding-left: 10px !important;
+          padding-right: 18px !important;
+        "
       >
         <!-- Remove rule button -->
         <v-btn icon v-if="isDeleteRuleButton()" @click="removeRule">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row align="center" class="mb-4">
+    <v-row align="center" class="mb-4 mt-n3">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -11,7 +11,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="6">
         <div class="target-users-select__radio-group mb-2">
           <v-radio-group
             v-model="investigateData.targetUserType"
@@ -122,7 +122,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="3">
         <v-select
           v-model="investigateData.filters"
           :items="act.investigateFilters"
@@ -146,7 +146,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="3">
         <v-select
           v-model="investigationRange"
           :items="act.investigateRanges"
@@ -166,7 +166,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="6">
         <div class="select-sources d-flex">
           <v-checkbox
             class="v-input--checkbox"
@@ -210,7 +210,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="3">
         <v-select
           v-model="investigationDuration"
           :items="act.investigateDurations"
@@ -230,7 +230,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="7">
+      <v-col md="6">
         <v-row>
           <v-col>
             <v-select
@@ -248,7 +248,10 @@
               hide-details
             />
           </v-col>
-          <v-col v-if="investigateData.actionType === 'Notify'">
+          <v-col
+            style="padding-right: 0 !important ;"
+            v-if="investigateData.actionType === 'Notify'"
+          >
             <v-select
               v-model="investigateActionNotificationTemplate"
               :items="act.notifyTemplates"
