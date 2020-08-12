@@ -173,6 +173,7 @@
             label="Outlook Desktop"
             value="Outlook"
             color="#2196f3"
+            v-if="scanTypes.includes('Outlook')"
           />
           <v-checkbox
             class="v-input--checkbox ml-3"
@@ -180,6 +181,7 @@
             label="Office 365"
             value="O365"
             color="#2196f3"
+            v-if="scanTypes.includes('O365')"
           />
           <v-checkbox
             class="v-input--checkbox ml-3"
@@ -187,6 +189,7 @@
             label="GSuite"
             value="GSuite"
             color="#2196f3"
+            v-if="scanTypes.includes('GSuite')"
           />
           <v-checkbox
             class="v-input--checkbox ml-3"
@@ -194,6 +197,7 @@
             label="Exchange"
             value="Exchange"
             color="#2196f3"
+            v-if="scanTypes.includes('Exchange')"
           />
         </div>
       </v-col>
@@ -274,6 +278,7 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
+import { getInvestigationScanTypes } from '@/api/investigations'
 export default {
   name: 'Investigate',
   props: {
@@ -472,6 +477,7 @@ export default {
       validations: {
         required
       },
+      scanTypes: [],
       targetUsers: {
         required: (v) =>
           (!!v && v.length > 0) || 'Target users required for creating a investigation'
@@ -527,6 +533,9 @@ export default {
     getTargetGroups().then((response) => {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
+    })
+    getInvestigationScanTypes().then((response) => {
+      this.scanTypes = response.data.data
     })
     this.callForGetTargetUsersItems(
       {

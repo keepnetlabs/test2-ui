@@ -397,7 +397,7 @@ export default {
           }
         ],
         notifyTypes: ['Reporter', 'Users', 'Groups'],
-        markAsOpts: ['Clean', 'Phishing', 'Malicious', 'Spam'],
+        markAsOpts: ['Clean', 'Phishing', 'Malicious'],
         notifyTemplates: [
           { label: 'IR User Notification', value: '18' },
           { label: 'IR Delete Action Notification', value: '41' },
