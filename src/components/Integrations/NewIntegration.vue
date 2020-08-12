@@ -98,6 +98,7 @@
                 item-text="name"
                 item-value="resourceId"
                 height="40"
+                @input="handleIntegrationTypeChange"
               ></v-select>
             </v-list-item-content>
           </v-list-item>
@@ -261,14 +262,14 @@
               <v-switch v-model="formValues.isActive" color="#2196f3" label="Active" />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
             <v-list-item-content class="pl-3">
               <v-switch v-model="formValues.isSendUrl" label="Send URL" />
             </v-list-item-content>
           </v-list-item>
           <div
             class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
-            v-if="formValues.isSendUrl"
+            v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
           >
             <v-checkbox
               class="black--text"
@@ -284,12 +285,12 @@
               <span class="tooltip-span">{{ 'Send URLs without query string parameters' }}</span>
             </v-tooltip>
           </div>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFileHash">
             <v-list-item-content class="pl-3">
               <v-switch v-model="formValues.isSendFileHash" label="Send file hash" />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
             <v-list-item-content class="pl-3">
               <v-switch
                 v-model="formValues.isUploadExecutableFile"
@@ -297,7 +298,7 @@
               />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
             <v-list-item-content class="pl-3">
               <v-switch
                 v-model="formValues.isUploadOtherFileType"
@@ -399,6 +400,7 @@ export default {
         name: null,
         apiUrl: null
       },
+      selectedIntegrationType: {},
       integrationTypes: [],
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
@@ -435,6 +437,7 @@ export default {
         const {
           data: { data, status }
         } = response
+
         this.integrationTypes = data
       })
       .catch((error) => {
@@ -643,11 +646,22 @@ export default {
               this.saveIntegration()
           })
       }
+    },
+    handleIntegrationTypeChange(val) {
+      this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
     }
   },
   destroyed() {
     this.integrationId = null
     this.resetValues()
+  },
+  watch: {
+    formValues(val) {
+      console.log('val', val)
+      this.selectedIntegrationType = this.integrationTypes.find(
+        (item) => item.resourceId === val.analysisEngineTypeResourceId
+      )
+    }
   }
 }
 </script>
