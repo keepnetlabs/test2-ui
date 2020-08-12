@@ -171,6 +171,15 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/companies" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Companies</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
         <v-list-group
           prepend-icon="mdi-flash"
@@ -407,6 +416,15 @@
 
             <router-link
               v-if="routerName === 'Target Users'"
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+
+              Company
+            </router-link>
+            <router-link
+              v-if="routerName === 'Companies'"
               :to="$route.path"
               class="bread-last-step breadcrumb-links"
             >
@@ -1366,7 +1384,6 @@ export default {
 
   .v-navigation-drawer {
     min-width: 64px;
-    
   }
 
   .v-navigation-drawer__content {
