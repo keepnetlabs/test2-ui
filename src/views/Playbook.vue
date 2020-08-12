@@ -94,8 +94,7 @@ export default {
 }
 
 .pr-card {
-  box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
-    0 1px 1px -1px rgba(204, 204, 204, 0.12);
+  box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
   padding: 10px 24px 0px 24px !important;
   border-radius: 20px !important;
 }
