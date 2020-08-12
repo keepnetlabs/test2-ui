@@ -15,23 +15,43 @@
           }"
         >
           <span
-            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
+            style="position: absolute;"
             :class="{
-              'match-type-container__buttons--active':
+              'match-type-container__buttons--active match-type-container__buttons--animate-2':
                 query.logicalOperator === `${labels.matchTypes[1].label}`,
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
             }"
+          ></span>
+          <span
+            style="z-index: 88; color: white;"
+            :class="{
+              'match-type-container__buttons--active-1':
+                query.logicalOperator === `${labels.matchTypes[1].label}`,
+              'match-type-container__buttons--active-first-depth':
+                query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
+            }"
+            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
             >AND</span
           >
           <span
-            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
+            style="position: absolute; left: 66.5px;"
             :class="{
-              'match-type-container__buttons--active':
+              'match-type-container__buttons--active match-type-container__buttons--animate-1':
                 query.logicalOperator === `${labels.matchTypes[0].label}`,
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
             }"
+          ></span>
+          <span
+            :class="{
+              'match-type-container__buttons--active-2':
+                query.logicalOperator === `${labels.matchTypes[0].label}`,
+              'match-type-container__buttons--active-first-depth':
+                query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
+            }"
+            style="z-index: 88; color: white;"
+            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
             >OR</span
           >
         </div>
@@ -276,10 +296,12 @@ export default {
   &__buttons {
     width: 135px;
     padding: 2px 0;
+    height: 36px;
+    position: relative;
     display: flex;
     align-items: center;
     color: white !important;
-
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.22);
     border-radius: 18px;
     background-color: #2196f3;
     span {
@@ -291,6 +313,7 @@ export default {
       line-height: 1;
       letter-spacing: normal;
       color: white;
+      transition: color 0.1s ease-in-out;
       &:first-child {
         margin-left: 2px;
       }
@@ -300,16 +323,30 @@ export default {
       //padding: 4px 17px;
       height: 32px;
       display: flex;
+      &-1 {
+        color: #2196f3 !important;
+      }
+      &-2 {
+        color: #2196f3 !important;
+      }
       justify-content: center;
       align-items: center;
-      background-color: white;
-      border-radius: 18px;
-      color: #2196f3 !important;
       box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      color: #2196f3 !important;
       &-first-depth {
         color: #00bcd4 !important;
       }
+    }
+    &--animate-1 {
+      animation: fromLeft 0.1s ease-in-out;
+      background-color: white;
+      border-radius: 18px;
+    }
+    &--animate-2 {
+      animation: fromRight 0.1s ease-in-out;
+      background-color: white;
+      border-radius: 18px;
     }
     &--first-depth {
       background: #00bcd4 !important;
@@ -339,20 +376,20 @@ export default {
   }
 }
 
-@keyframes asasa {
+@keyframes fromLeft {
   0% {
-    height: 0;
+    transform: translateX(-66.5px);
   }
   100% {
-    height: calc(53%);
+    transform: translateX(0);
   }
 }
-@keyframes asasab {
+@keyframes fromRight {
   0% {
-    height: 0;
+    transform: translateX(66.5px);
   }
   100% {
-    height: calc(50% + 71px);
+    transform: translateX(0);
   }
 }
 
