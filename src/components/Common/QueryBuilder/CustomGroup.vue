@@ -295,8 +295,7 @@ export default {
   margin-bottom: 16px !important;
   &__buttons {
     width: 135px;
-    padding: 2px 0;
-    height: 36px;
+    padding: 11px 0;
     position: relative;
     display: flex;
     align-items: center;
@@ -321,7 +320,7 @@ export default {
     }
     &--active {
       //padding: 4px 17px;
-      height: 32px;
+      padding: 16px 0;
       display: flex;
       &-1 {
         color: #2196f3 !important;
