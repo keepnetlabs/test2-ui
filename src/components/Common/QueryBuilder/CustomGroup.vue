@@ -295,7 +295,8 @@ export default {
   margin-bottom: 16px !important;
   &__buttons {
     width: 135px;
-    padding: 11px 0;
+    padding: 11.5px 0;
+    max-height: 36px;
     position: relative;
     display: flex;
     align-items: center;
