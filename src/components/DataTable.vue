@@ -100,6 +100,7 @@
             <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
           </template>
         </extended-view>
+        <slot name="extended-custom-view-slot"> </slot>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -374,11 +375,17 @@
         >
           <el-table
             :border="border"
+            :cell-class-name="setCellClass"
             :data="showfilteredData ? filteredData : tableData"
             :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
+            :show-header="showHeader"
+            @cell-mouse-enter="cellEnter"
+            @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
+            @sort-change="sortChangedEvent"
+            @cell-click="cellClick"
             default-expand-all
             id="data-table-container"
             lazy
@@ -386,11 +393,6 @@
             row-key="id"
             style="width: 100%;"
             v-if="!allHidden"
-            @cell-mouse-enter="cellEnter"
-            @cell-mouse-leave="cellLeave"
-            :cell-class-name="setCellClass"
-            @sort-change="sortChangedEvent"
-            :show-header="showHeader"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
@@ -1107,6 +1109,9 @@ export default {
     },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
+    },
+    cellClick(row, column, event) {
+      this.$emit('cellClick', { row, column, event })
     },
     cellLeave(row, column, cell, event) {
       this.showOverFlowTooltip = false

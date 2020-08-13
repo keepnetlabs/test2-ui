@@ -51,7 +51,11 @@ export const LABEL_STORE = {
   NO_INTEGRATIONS: 'No integrations',
   NO_RULES_CONFIGURED: 'No rules configured',
   NO_TARGET_GROUPS_DEFINED: 'No target groups defined',
-  NO_TARGET_USER_ADDED: 'No target users added'
+  NO_TARGET_USER_ADDED: 'No target users added',
+  INDUSTRYNAME: 'Industry',
+  LICENSETYPENAME: 'License Type',
+  NUMBEROFUSERS: 'User Limit',
+  LICENSEENDDATE: 'Renewal Date'
 }
 
 export const PROPERTY_STORE = {
@@ -87,7 +91,11 @@ export const PROPERTY_STORE = {
   ANALYSISENGINE: 'analysisEngine',
   RESOURCEID: 'resourceId',
   ANALYSISSOURCE: 'source',
-  CREATEDBY: 'createdBy'
+  CREATEDBY: 'createdBy',
+  INDUSTRYNAME: 'industryName',
+  LICENSETYPENAME: 'licenseTypeName',
+  NUMBEROFUSERS: 'numberOfUsers',
+  LICENSEENDDATE: 'licenseEndDate'
 }
 
 export function getStoreValue(key, type) {
