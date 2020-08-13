@@ -4,7 +4,10 @@
   <div
     class="vqb-group pa-6 mb-2"
     style="padding-bottom: 18px !important;"
-    :class="'elevation-' + (depth - 1).toString()"
+    :class="[
+      depth === 1 && query.children.length <= 1 && 'vqb-disable',
+      'elevation-' + (depth - 1).toString()
+    ]"
   >
     <div class="vqb-group-heading card-header">
       <div class="match-type-container d-flex">
@@ -17,8 +20,10 @@
           <span
             style="position: absolute;"
             :class="{
-              'match-type-container__buttons--active match-type-container__buttons--animate-2':
+              'match-type-container__buttons--active':
                 query.logicalOperator === `${labels.matchTypes[1].label}`,
+              'match-type-container__buttons--animate-2':
+                query.logicalOperator === `${labels.matchTypes[1].label}` && !blockAnimation,
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
             }"
@@ -31,14 +36,16 @@
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
             }"
-            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
+            @click="handleLogicalOperatorChange(`${labels.matchTypes[1].label}`)"
             >AND</span
           >
           <span
             style="position: absolute; left: 66.5px;"
             :class="{
-              'match-type-container__buttons--active match-type-container__buttons--animate-1':
+              'match-type-container__buttons--active':
                 query.logicalOperator === `${labels.matchTypes[0].label}`,
+              'match-type-container__buttons--animate-1':
+                query.logicalOperator === `${labels.matchTypes[0].label}` && !blockAnimation,
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
             }"
@@ -51,7 +58,7 @@
                 query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
             }"
             style="z-index: 88; color: white;"
-            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
+            @click="handleLogicalOperatorChange(`${labels.matchTypes[0].label}`)"
             >OR</span
           >
         </div>
@@ -76,7 +83,7 @@
     </div>
     <v-btn
       class="query__button"
-      style="margin-left: 96px;"
+      style="margin-left: 104px;"
       v-if="depth < maxDepth && depth === 1"
       text
       color="#2196f3"
@@ -109,7 +116,14 @@ export default {
     addNewGroup() {
       this.addGroup()
     },
+    handleLogicalOperatorChange(value) {
+      if (value !== this.query.logicalOperator) {
+        this.blockAnimation = false
+        this.query.logicalOperator = value
+      }
+    },
     deleteGroup() {
+      this.blockAnimation = true
       this.remove()
     },
     addRule() {
@@ -132,6 +146,25 @@ export default {
       }
       updated_query.children.push(child)
       this.$emit('update:query', updated_query)
+    },
+    addGroup() {
+      this.blockAnimation = true
+      let updated_query = deepClone(this.query)
+      if (this.depth < this.maxDepth) {
+        updated_query.children.push({
+          type: 'query-builder-group',
+          query: {
+            logicalOperator: this.labels.matchTypes[0].id,
+            children: []
+          }
+        })
+        this.$emit('update:query', updated_query)
+      }
+    }
+  },
+  data() {
+    return {
+      blockAnimation: true
     }
   }
 }
@@ -193,8 +226,9 @@ export default {
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
     .rule-actions {
-      margin-left: 100px !important;
-      margin-top: 2px;
+      margin-left: 108px !important;
+      margin-top: 10px;
+
       .v-btn__content {
         font-size: 14px !important;
         font-weight: 600 !important;
@@ -295,7 +329,7 @@ export default {
   margin-bottom: 16px !important;
   &__buttons {
     width: 135px;
-    padding: 11.5px 0;
+    min-height: 36px;
     max-height: 36px;
     position: relative;
     display: flex;
@@ -313,7 +347,6 @@ export default {
       line-height: 1;
       letter-spacing: normal;
       color: white;
-      transition: color 0.1s ease-in-out;
       &:first-child {
         margin-left: 2px;
       }
@@ -333,6 +366,8 @@ export default {
       align-items: center;
       box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      background-color: white;
+      border-radius: 18px;
       color: #2196f3 !important;
       &-first-depth {
         color: #00bcd4 !important;
@@ -340,13 +375,11 @@ export default {
     }
     &--animate-1 {
       animation: fromLeft 0.1s ease-in-out;
-      background-color: white;
-      border-radius: 18px;
+      transition: color 0.1s ease-in-out;
     }
     &--animate-2 {
       animation: fromRight 0.1s ease-in-out;
-      background-color: white;
-      border-radius: 18px;
+      transition: color 0.1s ease-in-out;
     }
     &--first-depth {
       background: #00bcd4 !important;
@@ -395,5 +428,21 @@ export default {
 
 .first-depth-button.btnActive {
   background: #00bcd4 !important;
+}
+.vqb-disable {
+  .match-type-container__buttons--first-depth {
+    background: #757575 !important;
+    pointer-events: none !important;
+    opacity: 0.3;
+  }
+  .match-type-container__buttons--active-first-depth {
+    color: #757575 !important;
+  }
+  .vqb-group {
+    &:before {
+      border-color: #757575 !important;
+      opacity: 0.3;
+    }
+  }
 }
 </style>
