@@ -89,7 +89,7 @@
         </div>
         <extended-view
           v-if="isWantToEditRow"
-          :value="multipleSelection"
+          :value="extendedViewValue"
           :options="extendedViewOptions"
           :titleKey="titleKey"
           :container-style="extendedViewStyle"
@@ -804,6 +804,12 @@ export default {
       required: true
     },
     extendedViewOptions: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    extendedViewValue: {
       type: Array,
       default() {
         return []
