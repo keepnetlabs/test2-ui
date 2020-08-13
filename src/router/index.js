@@ -10,7 +10,6 @@ import IncidentResponder from '../views/IncidentResponder'
 import AnalysisDetails from '../views/AnalysisDetails'
 import EmailDetails from '../components/IncidentResponder/emailDetails'
 import Workshop from '../views/Workshop.vue'
-//import SharedIncident from '../views/SharedIncident'
 import Test from '../views/Test'
 import PermissionTypes from '../model/constants/permissionTypes'
 import AuthenticationService from '../services/authentication'
@@ -21,6 +20,7 @@ import PhishingReporter from '../views/PhishingReporter'
 import Integrations from '../views/Integrations'
 import Playbook from '../views/Playbook'
 import store from '../store'
+import Companies from '@/views/Companies'
 
 Vue.use(Router)
 
@@ -77,6 +77,14 @@ const router = new Router({
           path: '/target-users',
           name: 'Target Users',
           component: TargetUsers,
+          meta: {
+            isAuthenticated: true
+          }
+        },
+        {
+          path: '/companies',
+          name: 'Companies',
+          component: Companies,
           meta: {
             isAuthenticated: true
           }
