@@ -824,10 +824,11 @@ export default {
         fixed: 'left',
         sortable: true,
         show: true,
-        type: 'text'
+        type: 'text',
+        width: 400
       },
       {
-        property: 'result',
+        property: 'status',
         align: 'center',
         editable: false,
         label: 'Status',
@@ -835,7 +836,8 @@ export default {
         sortable: false,
         show: true,
         type: 'detected',
-        hasTooltip: true
+        hasTooltip: true,
+        width: 250
       }
     ],
     title: {
@@ -907,7 +909,45 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-          this.tableData = this.mailDetails.urls
+
+          const urlTableColumns = new Set()
+          const tableData = this.mailDetails.urls.map((item, index) => {
+            const returnObj = {}
+            let result
+            for (let engine of item.analysisList) {
+              returnObj[engine.analysisEngine] = engine.result
+              urlTableColumns.add(engine.analysisEngine)
+              if (result !== 'Malicious') {
+                if (
+                  (result === 'Phishing' || result === 'Clean') &&
+                  engine.result === 'Malicious'
+                ) {
+                  result = 'Malicious'
+                } else if (result === 'Phishing' && engine.result === 'Clean') {
+                  result = 'Phishing'
+                } else {
+                  result = engine.result
+                }
+              }
+            }
+            returnObj['status'] = result
+            returnObj['url'] = item.url
+            return returnObj
+          })
+          let colObj = []
+          let a = urlTableColumns.forEach((item) => {
+            colObj.push({
+              property: item,
+              align: 'left',
+              editable: false,
+              label: item,
+              sortable: true,
+              show: true,
+              type: 'text'
+            })
+          })
+          this.columns = [...this.columns, ...colObj]
+          this.tableData = tableData
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
@@ -951,6 +991,7 @@ export default {
       getAnalysisEngineTypes()
         .then((response) => {
           const engineTypes = response.data.data
+          /*
           engineTypes.map((item) => {
             this.columns.push({
               property: 'analysisEngine',
@@ -963,6 +1004,8 @@ export default {
               type: 'text'
             })
           })
+
+           */
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
