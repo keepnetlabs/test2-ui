@@ -4,7 +4,10 @@
   <div
     class="vqb-group pa-6 mb-2"
     style="padding-bottom: 18px !important;"
-    :class="'elevation-' + (depth - 1).toString()"
+    :class="[
+      depth === 1 && query.children.length <= 1 && 'vqb-disable',
+      'elevation-' + (depth - 1).toString()
+    ]"
   >
     <div class="vqb-group-heading card-header">
       <div class="match-type-container d-flex">
@@ -15,23 +18,47 @@
           }"
         >
           <span
-            @click="query.logicalOperator = `${labels.matchTypes[1].label}`"
+            style="position: absolute;"
             :class="{
               'match-type-container__buttons--active':
+                query.logicalOperator === `${labels.matchTypes[1].label}`,
+              'match-type-container__buttons--animate-2':
+                query.logicalOperator === `${labels.matchTypes[1].label}` && !blockAnimation,
+              'match-type-container__buttons--active-first-depth':
+                query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
+            }"
+          ></span>
+          <span
+            style="z-index: 88; color: white;"
+            :class="{
+              'match-type-container__buttons--active-1':
                 query.logicalOperator === `${labels.matchTypes[1].label}`,
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[1].label}` && depth <= 1
             }"
+            @click="handleLogicalOperatorChange(`${labels.matchTypes[1].label}`)"
             >AND</span
           >
           <span
-            @click="query.logicalOperator = `${labels.matchTypes[0].label}`"
+            style="position: absolute; left: 66.5px;"
             :class="{
               'match-type-container__buttons--active':
+                query.logicalOperator === `${labels.matchTypes[0].label}`,
+              'match-type-container__buttons--animate-1':
+                query.logicalOperator === `${labels.matchTypes[0].label}` && !blockAnimation,
+              'match-type-container__buttons--active-first-depth':
+                query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
+            }"
+          ></span>
+          <span
+            :class="{
+              'match-type-container__buttons--active-2':
                 query.logicalOperator === `${labels.matchTypes[0].label}`,
               'match-type-container__buttons--active-first-depth':
                 query.logicalOperator === `${labels.matchTypes[0].label}` && depth <= 1
             }"
+            style="z-index: 88; color: white;"
+            @click="handleLogicalOperatorChange(`${labels.matchTypes[0].label}`)"
             >OR</span
           >
         </div>
@@ -56,7 +83,7 @@
     </div>
     <v-btn
       class="query__button"
-      style="margin-left: 96px;"
+      style="margin-left: 104px;"
       v-if="depth < maxDepth && depth === 1"
       text
       color="#2196f3"
@@ -89,7 +116,14 @@ export default {
     addNewGroup() {
       this.addGroup()
     },
+    handleLogicalOperatorChange(value) {
+      if (value !== this.query.logicalOperator) {
+        this.blockAnimation = false
+        this.query.logicalOperator = value
+      }
+    },
     deleteGroup() {
+      this.blockAnimation = true
       this.remove()
     },
     addRule() {
@@ -112,6 +146,25 @@ export default {
       }
       updated_query.children.push(child)
       this.$emit('update:query', updated_query)
+    },
+    addGroup() {
+      this.blockAnimation = true
+      let updated_query = deepClone(this.query)
+      if (this.depth < this.maxDepth) {
+        updated_query.children.push({
+          type: 'query-builder-group',
+          query: {
+            logicalOperator: this.labels.matchTypes[0].id,
+            children: []
+          }
+        })
+        this.$emit('update:query', updated_query)
+      }
+    }
+  },
+  data() {
+    return {
+      blockAnimation: true
     }
   }
 }
@@ -173,8 +226,9 @@ export default {
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
     .rule-actions {
-      margin-left: 100px !important;
-      margin-top: 2px;
+      margin-left: 108px !important;
+      margin-top: 10px;
+
       .v-btn__content {
         font-size: 14px !important;
         font-weight: 600 !important;
@@ -275,11 +329,13 @@ export default {
   margin-bottom: 16px !important;
   &__buttons {
     width: 135px;
-    padding: 2px 0;
+    min-height: 36px;
+    max-height: 36px;
+    position: relative;
     display: flex;
     align-items: center;
     color: white !important;
-
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.22);
     border-radius: 18px;
     background-color: #2196f3;
     span {
@@ -298,18 +354,32 @@ export default {
     }
     &--active {
       //padding: 4px 17px;
-      height: 32px;
+      padding: 16px 0;
       display: flex;
+      &-1 {
+        color: #2196f3 !important;
+      }
+      &-2 {
+        color: #2196f3 !important;
+      }
       justify-content: center;
       align-items: center;
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+        0 3px 1px -2px rgba(80, 80, 80, 0.12);
       background-color: white;
       border-radius: 18px;
       color: #2196f3 !important;
-      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-        0 3px 1px -2px rgba(80, 80, 80, 0.12);
       &-first-depth {
         color: #00bcd4 !important;
       }
+    }
+    &--animate-1 {
+      animation: fromLeft 0.1s ease-in-out;
+      transition: color 0.1s ease-in-out;
+    }
+    &--animate-2 {
+      animation: fromRight 0.1s ease-in-out;
+      transition: color 0.1s ease-in-out;
     }
     &--first-depth {
       background: #00bcd4 !important;
@@ -339,24 +409,40 @@ export default {
   }
 }
 
-@keyframes asasa {
+@keyframes fromLeft {
   0% {
-    height: 0;
+    transform: translateX(-66.5px);
   }
   100% {
-    height: calc(53%);
+    transform: translateX(0);
   }
 }
-@keyframes asasab {
+@keyframes fromRight {
   0% {
-    height: 0;
+    transform: translateX(66.5px);
   }
   100% {
-    height: calc(50% + 71px);
+    transform: translateX(0);
   }
 }
 
 .first-depth-button.btnActive {
   background: #00bcd4 !important;
+}
+.vqb-disable {
+  .match-type-container__buttons--first-depth {
+    background: #757575 !important;
+    pointer-events: none !important;
+    opacity: 0.3;
+  }
+  .match-type-container__buttons--active-first-depth {
+    color: #757575 !important;
+  }
+  .vqb-group {
+    &:before {
+      border-color: #757575 !important;
+      opacity: 0.3;
+    }
+  }
 }
 </style>
