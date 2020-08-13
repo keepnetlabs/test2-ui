@@ -208,7 +208,7 @@
                   :class="{
                     'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                   }"
-                  @click="testConnection"
+                  @click="testConnection(false)"
                 >
                   <div v-if="loadingState.length" class="test-connection">
                     <v-icon medium left class="ml-1 loading-spin" color="#00bcd4"
@@ -237,7 +237,7 @@
               <v-list-item-subtitle class="new-integration__api-key__subtitle">
                 Use enter key to use tags
               </v-list-item-subtitle>
-              <div class="max-width__form">
+              <div class="max-width__form new-integration__api-key__combobox">
                 <v-combobox
                   :items="[]"
                   placeholder="Enter Tag"
@@ -445,47 +445,50 @@ export default {
       })
   },
   methods: {
+    saveIntegration() {
+      const data = { ...this.formValues }
+      data.apiKeys = data.apiKeys.map((i) => i.value)
+      if (this.integrationId) {
+        updateIntegration(this.integrationId, data)
+          .then((response) => {
+            this.closeOverlay()
+            this.showConfirmModal = false
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: false,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Integration updated successfuly!'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when updating integration!'
+            })
+          })
+      } else {
+        createIntegration(data)
+          .then((response) => {
+            this.closeOverlay()
+            this.showConfirmModal = false
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: false,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Integration created successfuly!'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when creating new integration!'
+            })
+          })
+      }
+    },
     submit() {
       if (this.$refs.form.validate()) {
-        const data = { ...this.formValues }
-        data.apiKeys = data.apiKeys.map((i) => i.value)
-        if (this.integrationId) {
-          updateIntegration(this.integrationId, data)
-            .then((response) => {
-              this.closeOverlay()
-              this.showConfirmModal = false
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: false,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Integration updated successfuly!'
-              })
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when updating integration!'
-              })
-            })
-        } else {
-          createIntegration(data)
-            .then((response) => {
-              this.closeOverlay()
-              this.showConfirmModal = false
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: false,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Integration created successfuly!'
-              })
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when creating new integration!'
-              })
-            })
-        }
+        this.testConnection(true)
       }
     },
     closeOverlay() {
@@ -607,7 +610,7 @@ export default {
         })
         .finally(() => this.loadingState.shift('loading'))
     },
-    testConnection() {
+    testConnection(isSave) {
       for (let i = 0; i < this.formValues.apiKeys.length; i++) {
         const item = this.formValues.apiKeys[i]
         this.formValues.apiKeys[i].status = 'loading'
@@ -630,7 +633,15 @@ export default {
                 error.response.data.message || error.response.data.Message
             }
           })
-          .finally(() => this.loadingState.shift('loading'))
+          .finally(() => {
+            this.loadingState.shift('loading')
+            if (
+              isSave &&
+              !this.loadingState.length &&
+              !this.formValues.apiKeys.find((item) => item.status === 'failed')
+            )
+              this.saveIntegration()
+          })
       }
     }
   },
@@ -855,6 +866,12 @@ export default {
       color: rgba(0, 0, 0, 0.87) !important;
       &__upload-subtitle {
         margin-left: 60px;
+      }
+    }
+
+    &__combobox {
+      .v-input input {
+        max-height: 38px !important;
       }
     }
 

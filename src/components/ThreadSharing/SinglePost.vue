@@ -1,12 +1,14 @@
 <template>
   <div class="component-single-post">
-    <new-investigation
-      @closeAdd="closeNewInvestigationModal($event)"
-      ref="refNewInvestigation"
-      :status="isWantToAddNewInvestigation"
-      v-if="isWantToAddNewInvestigation"
-      :selectedMail="selectedEmail"
-    />
+    <div style="z-index: 999999;">
+      <new-investigation
+        @closeAdd="closeNewInvestigationModal($event)"
+        ref="refNewInvestigation"
+        :status="isWantToAddNewInvestigation"
+        v-if="isWantToAddNewInvestigation"
+        :selectedMail="selectedEmail"
+      />
+    </div>
     <app-dialog
       :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
@@ -97,7 +99,7 @@
           small-chips
           outlined
           :no-data-text="'Enter emails (max. 10)'"
-          v-model="shareEmail"
+          v-model.trim="shareEmail"
           :rules="[shareEmailRules.limit, shareEmailRules.email]"
           class="pop-up-card__invite-member"
         ></v-combobox>
@@ -599,7 +601,7 @@
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="emailData.isCcHidden && !!emailData.cc.length && emailData.cc"
+                  v-else-if="emailData.isCcHidden && emailData.cc && !!emailData.cc.length"
                 >
                   <span :class="{ 'malicious-style': emailData.isCcFlagged }">
                     CC: Hidden by owner<v-tooltip v-if="emailData.isCcFlagged" bottom opacity="1">
@@ -619,7 +621,7 @@
                   v-if="!emailData.isCcHidden && emailData.bcc && !!emailData.bcc.length"
                   :class="{ 'malicious-style': emailData.isBccFlagged }"
                 >
-                  BCC: {{ emailData.bcc && emailData.bcc.toString()
+                  BCC: {{ emailData.bcc && !!emailData.bcc.length && emailData.bcc.toString()
                   }}<v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
                     <template v-slot:activator="{ on }">
                       <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
@@ -633,7 +635,7 @@
                 </div>
                 <div
                   style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="emailData.isBccHidden && !!emailData.bcc.length"
+                  v-else-if="emailData.isBccHidden && emailData.bcc && !!emailData.bcc.length"
                 >
                   <span :class="{ 'malicious-style': emailData.isBccFlagged }">
                     BCC: Hidden by owner<v-tooltip v-if="emailData.isBccFlagged" bottom opacity="1">
@@ -742,7 +744,7 @@
                   class="comment-input"
                   placeholder="Write your comment here"
                   outlined
-                  v-model="addCommentValue"
+                  v-model.trim="addCommentValue"
                   validate-on-blur
                   :rules="[rules.regex, rules.required]"
                 />
@@ -790,7 +792,7 @@
                           class="comment-input"
                           placeholder="Write your comment here"
                           outlined
-                          v-model="com.commentValue"
+                          v-model.trim="com.commentValue"
                           validate-on-blur
                           :rules="[rules.regex, rules.required]"
                           hide-details
@@ -897,7 +899,7 @@
                 </div>
                 <div>
                   <p
-                    v-if="emailData.cc && emailData.isCcFlagged"
+                    v-if="emailData.cc && !!emailData.cc.length && emailData.isCcFlagged"
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
                     CC:
@@ -916,7 +918,7 @@
                     v-if="emailData.bcc && emailData.isBccFlagged"
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
-                    CC:
+                    BCC:
                     {{ !emailData.isBccHidden ? emailData.bcc.toString() : 'hidden by owner' }}
                   </p>
                   <p
@@ -1311,7 +1313,11 @@ export default {
             })
 
             .catch((error) => {
-              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.code === 'RESOURCE_NOT_FOUND'
+              ) {
                 this.comments = []
               }
             })
@@ -1342,7 +1348,11 @@ export default {
             })
 
             .catch((error) => {
-              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.code === 'RESOURCE_NOT_FOUND'
+              ) {
                 this.comments = []
               }
             })
@@ -1406,7 +1416,11 @@ export default {
           })
 
           .catch((error) => {
-            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
               this.comments = []
             }
           })
@@ -1522,7 +1536,11 @@ export default {
               this.comments = data.data
             })
             .catch((error) => {
-              if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.code === 'RESOURCE_NOT_FOUND'
+              ) {
                 this.comments = []
               }
             })

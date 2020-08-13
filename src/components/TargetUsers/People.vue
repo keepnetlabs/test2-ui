@@ -220,7 +220,6 @@ export default {
       },
       iEmpty: {
         message: LABEL_STORE.NO_TARGET_USER_ADDED,
-        subMes: 'Start now',
         btn: 'ADD A USER',
         icon: 'mdi-account-plus'
       },
@@ -300,15 +299,9 @@ export default {
         return 'clock-wise'
       }
     },
-    handleAddToGroup(row) {
-      console.log('handleAddToGroup', row)
-    },
-    handleCreateGroupWithUser(row) {
-      console.log('handleCreateGroupWithUser', row)
-    },
-    handleSubMenuItemClick(exportType) {
-      console.log('handleSubMenuItemClick', exportType)
-    },
+    handleAddToGroup(row) {},
+    handleCreateGroupWithUser(row) {},
+    handleSubMenuItemClick(exportType) {},
     handleSyncUser(scope) {
       this.selectedSyncIndex = scope.$index
       this.tableOptions.rowActions = [
@@ -393,7 +386,6 @@ export default {
       getTargetUsers(payload)
         .then((response) => {
           const { data } = response.data
-          console.log('data', data)
           this.$refs.refPeopleTable.loadWithDataArray(
             data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
           )

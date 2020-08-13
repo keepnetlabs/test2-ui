@@ -1082,11 +1082,13 @@ export default {
         baseManHour: this.baseManHour,
         baseManHourCost: this.baseManHourCost
       }).then((response) => {
+        this.callForGetRoiSettings()
         this.$store.dispatch('common/createSnackBar', {
           message: response.data.message,
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-check-circle'
         })
+        this.$store.dispatch('investigations/getIrSummary')
       })
       this.isShowRoi = false
     },
@@ -1189,7 +1191,7 @@ export default {
           const {
             data: { data, status }
           } = response
-          console.log('refTopRules', data)
+
           this.$refs.refTopRules.loadWithDataArray(data || [])
         })
         .catch((error) => {
@@ -1214,7 +1216,6 @@ export default {
           }
         } = response
         const tableData = results
-        console.log('reportedEmails', results)
         this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
       })
     },

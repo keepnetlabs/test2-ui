@@ -113,7 +113,7 @@
               <input style="display: none;" type="text" name="fakeusernameremembered" />
               <v-autocomplete
                 id="select-incident-autocomplete"
-                v-model="selectedEmail"
+                v-model.trim="selectedEmail"
                 :search-input.sync="searchIncident"
                 :items="listData"
                 chips
@@ -499,7 +499,7 @@
                   outlined
                   dense
                   class="title-field filter-field pt-4"
-                  v-model="uploadRespond.Title"
+                  v-model.trim="uploadRespond.Title"
                   solo
                   requied
                   validate-on-blur
@@ -522,7 +522,7 @@
                   solo
                   validate-on-blur
                   :rules="[descRule.required, descRule.regex, descRule.empty, descRule.default]"
-                  v-model="uploadRespond.Description"
+                  v-model.trim="uploadRespond.Description"
                 ></v-textarea>
               </v-form>
 
@@ -532,7 +532,7 @@
                 <v-select
                   id="post-category-select"
                   class="cat-select"
-                  v-model="uploadRespond.CategoryResourceIdArray"
+                  v-model.trim="uploadRespond.CategoryResourceIdArray"
                   :items="categories"
                   item-value="resourceId"
                   item-text="name"
@@ -570,7 +570,7 @@
               <v-form v-model="validDisc" ref="discoveryInput">
                 <v-textarea
                   id="post-discovery-textarea"
-                  v-model="uploadRespond.DiscoveryAndDetection"
+                  v-model.trim="uploadRespond.DiscoveryAndDetection"
                   @mouseover.native="hover = true"
                   outlined
                   dense
@@ -596,7 +596,7 @@
               <v-form v-model="validAffect" ref="affectInput">
                 <v-combobox
                   id="post-affect-area-combobox"
-                  v-model="uploadRespond.AffectArea"
+                  v-model.trim="uploadRespond.AffectArea"
                   :search-input.sync="affectSearch"
                   label="Windows 10 etc."
                   multiple
@@ -627,7 +627,7 @@
                   outlined
                   dense
                   class="filter-field"
-                  v-model="uploadRespond.Scope"
+                  v-model.trim="uploadRespond.Scope"
                   solo
                   validate-on-blur
                   ref="scopeTextField"

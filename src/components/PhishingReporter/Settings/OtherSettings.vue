@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2"
       style="max-width: 100%;"
       v-if="showHeader"
     >
@@ -9,7 +9,7 @@
         <v-list-item-title class="other-settings__title">
           Other Settings
         </v-list-item-title>
-        <v-list-item-subtitle class="other-settings__sub-title mb-6">
+        <v-list-item-subtitle class="other-settings__sub-title mb-3">
           Extra settings
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -25,7 +25,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm">
-      <v-list-item class="px-0 other-settings__list-item mt-n4">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <div class="other-settings__list-item-header">
             Proxy Settings
@@ -263,8 +263,10 @@ export default {
     } else {
       this.formValues.companyKey = localStorage.getItem('companyId')
       this.formValues.enableEnterpriseVault = false
-      this.formValues.apiKey = ''
-      this.formValues.apiUrl = ''
+      this.formValues.apiKey =
+        process.env.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
+      this.formValues.apiUrl =
+        process.env.VUE_APP_WEB_API_TEST || 'https://apitest.keepnetlabs.com/api'
     }
   }
 }
@@ -356,7 +358,7 @@ export default {
   }
 
   &__list-item {
-    margin-top: -4px;
+    //margin-top: -2px;
     max-width: 554px;
     overflow: visible;
     .v-list-item__content {

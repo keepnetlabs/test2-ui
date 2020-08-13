@@ -40,7 +40,7 @@
                 />
               </v-tab-item>
               <v-tab-item>
-                <members ref="refMembers" />
+                <members ref="refMembers" @selectedMemberPost="selectedMemberPostFunc" />
               </v-tab-item>
             </v-tabs-items>
           </v-card>
@@ -77,8 +77,7 @@ export default {
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
-    tab: null,
-    items2: ['Incidents', 'Members'],
+    tab: 0,
     text:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
     notificationSettingsOpened: false,
@@ -156,6 +155,12 @@ export default {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    selectedMemberPostFunc(item) {
+      this.tab = 0
+      setTimeout(() => {
+        this.$refs.refIncidents.getIncidentList(item.companyResourceId)
+      }, 50)
+    },
     refreshDataFunc() {
       this.refreshIncidentsData = true
     },

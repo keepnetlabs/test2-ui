@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height fluid tag="div">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2"
       style="max-width: 100%;"
       v-if="showHeader"
     >

@@ -151,4 +151,11 @@ export default {
     }
   }
 }
+.matching-modal.version-history::-webkit-scrollbar {
+  display: none;
+}
+.matching-modal.version-history {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+}
 </style>

@@ -215,7 +215,7 @@
       <v-card-text class="pt-2">
         <v-data-iterator
           :items="listData"
-          :page="page"
+          :page.sync="page"
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
           :no-data-text="'Sorry, we couldn\'t find any results matching your criteria'"
@@ -247,7 +247,7 @@
                 outlined
                 dense
                 class="filter-field pt-6"
-                v-model="filter"
+                v-model.trim="filter"
               ></v-text-field>
               <v-icon class="filter-icon" @click.native="updateCommunities()"
                 >mdi-filter-variant
@@ -290,7 +290,10 @@
                       MEMBER
                     </v-btn>
                     <v-btn
-                      v-else-if="!item.membershipStatusId && item.privacyStatusName == 'Private'"
+                      v-else-if="
+                        !item.membershipStatusId ||
+                        (item.membershipStatusId == 5 && item.privacyStatusName == 'Private')
+                      "
                       outlined
                       rounded
                       medium
@@ -301,7 +304,10 @@
                       REQUEST TO JOIN
                     </v-btn>
                     <v-btn
-                      v-else-if="!item.membershipStatusId && item.privacyStatusName == 'Public'"
+                      v-else-if="
+                        !item.membershipStatusId ||
+                        (item.membershipStatusId == 5 && item.privacyStatusName == 'Public')
+                      "
                       outlined
                       rounded
                       medium
@@ -655,7 +661,11 @@ export default {
         })
 
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.invitationsCount = []
           }
         })
@@ -726,7 +736,11 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to leave from a community'
           })*/
-          if (error.response.data.code === 'CANNOT_LEAVE_COMMUNITY') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'CANNOT_LEAVE_COMMUNITY'
+          ) {
             this.isWantToToLeaveFromCommunity = false
             this.showNeedPermissionModal = true
           }
@@ -793,7 +807,11 @@ export default {
         })
 
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.listData = []
           }
         })
@@ -833,7 +851,11 @@ export default {
           this.listData = data.data.results
         })
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.listData = []
           }
         })

@@ -45,6 +45,7 @@
                     <v-text-field
                       placeholder="Enter a name for the rule"
                       outlined
+                      dense
                       autocomplete="off"
                       v-model.trim="name"
                       :rules="[
@@ -54,12 +55,13 @@
                     ></v-text-field>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item class="mt-1">
+                <v-list-item>
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">Description</label>
                     <v-textarea
                       placeholder="Describe the rule"
                       outlined
+                      dense
                       no-resize
                       v-model.trim="description"
                       :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
@@ -67,14 +69,14 @@
                     />
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item class="mt-2">
+                <v-list-item>
                   <v-list-item-content>
                     <label>Priority</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Rules with higher priority override lower priority rules
                     </v-list-item-title>
-                    <div class="playbook-rule-form__radio-group mt-2 mb-1">
-                      <v-radio-group v-model.trim="priority" row>
+                    <div class="playbook-rule-form__radio-group mb-6">
+                      <v-radio-group v-model.trim="priority" row hide-details dense>
                         <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
@@ -89,7 +91,7 @@
                     </div>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item style="margin-top: 10px;">
+                <v-list-item>
                   <v-list-item-content>
                     <label>Tags</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
@@ -120,6 +122,7 @@
                     <v-switch
                       :ripple="false"
                       v-model="isActive"
+                      dense
                       :label="isActive ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
@@ -130,6 +133,14 @@
             </v-stepper-content>
             <!-- STEP 2 -->
             <v-stepper-content step="2">
+              <v-list-item-content>
+                <v-list-item-title class="v-card-form-title">
+                  Conditions
+                </v-list-item-title>
+                <v-list-item-title class="v-card-sub-header">
+                  Define conditions to filter reported emails and take actions
+                </v-list-item-title>
+              </v-list-item-content>
               <vue-query-builder
                 :max-depth="4"
                 class="w-100"
@@ -150,20 +161,24 @@
             </v-stepper-content>
             <!-- STEP 3 -->
             <v-stepper-content step="3">
+              <v-list-item-content>
+                <v-list-item-title class="v-card-form-title">
+                  Actions
+                </v-list-item-title>
+                <v-list-item-title class="v-card-sub-header">
+                  Define action for instances that match the conditions
+                </v-list-item-title>
+              </v-list-item-content>
               <v-container fluid class="playbook-actions">
-                <v-row>
-                  <v-col class="v-col" cols="12">
-                    <ActionItem
-                      ref="refActionItem"
-                      :playbookId="playbookId"
-                      :actionData.sync="actionData"
-                      :editedActions="playbookAction"
-                      :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
-                      :editedNotifications="editedNotifications"
-                      :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
-                    />
-                  </v-col>
-                </v-row>
+                <ActionItem
+                  ref="refActionItem"
+                  :playbookId="playbookId"
+                  :actionData.sync="actionData"
+                  :editedActions="playbookAction"
+                  :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
+                  :editedNotifications="editedNotifications"
+                  :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
+                />
               </v-container>
             </v-stepper-content>
           </v-stepper-items>
@@ -342,7 +357,7 @@ export default {
           { id: 'AND', label: 'AND' }
         ],
         addRule: 'ADD CONDITION',
-        addGroup: 'ADD NEW CONDITION SET',
+        addGroup: 'ADD CONDITION SET',
         textInputPlaceholder: 'value'
       },
       rules: [
@@ -543,8 +558,6 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
-
-      console.log('payload', payload)
 
       if (ref.$refs.refForm.validate()) {
         updatePlaybook(payload)

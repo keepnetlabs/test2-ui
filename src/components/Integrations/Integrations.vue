@@ -191,14 +191,13 @@ export default {
         pageSizes: [5, 10, 25, 50, 100],
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,
-          subMes: 'Add Integrations',
           btn: 'ADD AN INTEGRATION',
           icon: 'mdi-account-plus'
         },
         addButton: {
           show: true,
           action: 'addAction',
-          tooltip: 'Add Integration'
+          tooltip: 'Add an integration'
         }
       },
       modalStatus: false,

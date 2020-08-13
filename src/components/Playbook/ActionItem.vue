@@ -114,12 +114,8 @@
       </template>
     </app-dialog>
     <v-form ref="refForm" v-model="isFormValid" lazy-validation>
-      <v-row
-        v-for="(action, index) in actions"
-        :key="index"
-        class="vqb-rule rounded-xl action-items__item"
-      >
-        <v-col md="2" class="mr-2">
+      <v-row v-for="(action, index) in actions" :key="index" class="vqb-rule action-items__item">
+        <v-col md="2">
           <v-select
             :value="actionsValues[index]"
             :items="act.actionTypes"
@@ -132,7 +128,7 @@
             @input="setAvailableItems($event, actionsValues[index], index)"
           />
         </v-col>
-        <v-col v-if="actionsValues[index].val === 'markAs'" md="2" class="mr-2">
+        <v-col v-if="actionsValues[index].val === 'markAs'" md="2">
           <v-select
             v-model="playbookAction.markType"
             :items="act.markAsOpts"
@@ -143,7 +139,7 @@
         <v-col
           v-if="actionsValues[index].val === 'analyze'"
           md="auto"
-          class="mr-2 flex-grow-1 d-flex col-md-auto col analyze__main"
+          class="flex-grow-1 d-flex col-md-auto col analyze__main"
         >
           <v-text-field
             outlined
@@ -154,13 +150,16 @@
             class="analysis-engines-select"
           >
           </v-text-field>
-          <v-col class="analyze__main-checkbox">
+          <v-col
+            class="analyze__main-checkbox"
+            style="padding: 4px 0 0 0 !important; margin-left: 24px;"
+          >
             <v-checkbox class="k-checkbox" color="#2196f3" v-model="analyzeCheckbox" />
             <span class="checkbox-text">Investigate according to analyze results</span>
           </v-col>
         </v-col>
 
-        <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="mr-2 flex-grow-1">
+        <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="flex-grow-1">
           <v-combobox
             v-model="playbookAction.tags"
             :items="[]"
@@ -178,7 +177,7 @@
             required
           ></v-combobox>
         </v-col>
-        <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
+        <v-col v-if="actionsValues[index].val === 'notify'" md="2">
           <v-select
             v-model="targetUserType[index]"
             :items="getNotifyTypes()"
@@ -190,7 +189,6 @@
         <v-col
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
           md="5"
-          class="mr-2"
         >
           <v-combobox
             :items="specificUserItems"
@@ -215,7 +213,6 @@
         <v-col
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
           md="5"
-          class="mr-2"
         >
           <v-combobox
             :items="userGroupsItems"
@@ -255,7 +252,7 @@
             </template>
           </v-combobox>
         </v-col>
-        <v-col v-if="actionsValues[index].val === 'notify'" md="2" class="mr-2">
+        <v-col v-if="actionsValues[index].val === 'notify'" md="2">
           <v-select
             v-model="notifyTemplate"
             :items="act.notifyTemplates"
@@ -275,7 +272,11 @@
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
         </v-col>
-        <v-col md="12" v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'">
+        <v-col
+          md="12"
+          v-if="analyzeCheckbox && actionsValues[index].val === 'analyze'"
+          style="padding-top: 12px; !important;"
+        >
           <investigate
             :isCreatedByAnalyzer="true"
             :investigateData="playbookActionInvestigationAnalyzeData"
@@ -396,7 +397,7 @@ export default {
           }
         ],
         notifyTypes: ['Reporter', 'Users', 'Groups'],
-        markAsOpts: ['Clean', 'Phishing', 'Malicious', 'Spam'],
+        markAsOpts: ['Clean', 'Phishing', 'Malicious'],
         notifyTemplates: [
           { label: 'IR User Notification', value: '18' },
           { label: 'IR Delete Action Notification', value: '41' },

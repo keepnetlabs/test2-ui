@@ -20,7 +20,7 @@
           :items="incidentList"
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
-          :page.sync="page"
+          :page="page"
         >
           <template v-slot:header>
             <div class="search-wrapper">
@@ -29,7 +29,7 @@
                 placeholder="Filter by attributes or keywords"
                 outlined
                 class="filter-field pt-6"
-                v-model="search"
+                v-model.trim="search"
                 id="incidents-search-textfield"
               ></v-text-field>
               <v-icon class="filter-icon">mdi-filter-variant</v-icon>
@@ -148,8 +148,9 @@ export default {
     refreshDataFunc() {
       this.getIncidentList()
     },
-    getIncidentList() {
+    getIncidentList(memberId) {
       const payload = {
+        postedCompanyResourceId: memberId || null,
         pageNumber: 1,
         pageSize: 500,
         orderBy: 'PostedTime',
@@ -187,7 +188,7 @@ export default {
         }
       }
       const _this = this
-      if (this.$router.currentRoute.name === 'Community') {
+      if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
           .then((response) => {
             this.incidentList = response.data.data.results
@@ -196,23 +197,50 @@ export default {
             })
           })
           .catch((error) => {
-            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
               this.incidentList = []
             }
           })
       } else {
-        getIncidentList(payload)
-          .then((response) => {
-            this.incidentList = response.data.data.results
-            this.incidentList = this.incidentList.map((item) => {
-              return { ...item, isToggle: false }
+        if (this.$router.currentRoute.name === 'Community') {
+          getCOmmunityIncidentList(this.$route.params.id, payload)
+            .then((response) => {
+              this.incidentList = response.data.data.results
+              this.incidentList = this.incidentList.map((item) => {
+                return { ...item, isToggle: false }
+              })
             })
-          })
-          .catch((error) => {
-            if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
-              this.incidentList = []
-            }
-          })
+            .catch((error) => {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.code === 'RESOURCE_NOT_FOUND'
+              ) {
+                this.incidentList = []
+              }
+            })
+        } else {
+          getIncidentList(payload)
+            .then((response) => {
+              this.incidentList = response.data.data.results
+              this.incidentList = this.incidentList.map((item) => {
+                return { ...item, isToggle: false }
+              })
+            })
+            .catch((error) => {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.code === 'RESOURCE_NOT_FOUND'
+              ) {
+                this.incidentList = []
+              }
+            })
+        }
       }
     }
   },
@@ -342,6 +370,7 @@ export default {
       left: 0;
       top: 0;
       overflow-y: scroll;
+      z-index: 9999;
     }
   }
 

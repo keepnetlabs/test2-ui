@@ -12,7 +12,7 @@
       @changeReporterVersionModalStatus="reporterVersionModalStatus = false"
       v-if="reporterVersionModalStatus"
     />
-    <div class="add-in-settings__footer" :class="className">
+    <div class="add-in-settings__footer mr-2" :class="className">
       <v-btn @click="submit" class="white--text btn-util btn-save-changes" color="#2196f3" rounded>
         SAVE CHANGES
       </v-btn>

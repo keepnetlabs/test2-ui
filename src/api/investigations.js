@@ -57,3 +57,7 @@ export function investigationDetailsTargetUsersListFunction(obj, id) {
 export function irSummary() {
   return testRequest.get(`ir/dashboard/summary`)
 }
+
+export function getInvestigationScanTypes() {
+  return testRequest.get('/investigations/scan-types')
+}
