@@ -4,7 +4,9 @@ export function searchCompanies(payload) {
   return testRequest.post('/companies/search', payload)
 }
 export function exportCompanies(payload) {
-  return testRequest.post('/companies/search/export', payload)
+  return testRequest.post('/companies/search/export', payload, {
+    responseType: 'blob'
+  })
 }
 export function deleteCompany(id) {
   return testRequest.delete(`companies/${id}`)
