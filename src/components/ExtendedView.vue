@@ -532,7 +532,8 @@ export default {
   watch: {
     value(rows) {
       this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
-    }
+    },
+    options(val) {}
   },
   data() {
     //value --> gelen değer

@@ -415,6 +415,7 @@
             ref="refReportedEmails"
             :columns="emails.columns"
             :countRow="5"
+            :extended-view-options="emails.extendedViewOptions"
             :pageSizes="emails.pageSizes"
             :defaultSort="'createDate'"
             :selectable="true"
@@ -758,6 +759,106 @@ export default {
     },
     emails: {
       table: [],
+      extendedViewOptions: [
+        {
+          property: PROPERTY_STORE.SUBJECT,
+          label: getStoreValue(PROPERTY_STORE.SUBJECT),
+          isEditable: false,
+          type: 'text',
+          show: true
+        },
+        {
+          property: PROPERTY_STORE.REPORTEDBY,
+          label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
+          isEditable: false,
+          type: 'text',
+          show: true
+        },
+        {
+          property: PROPERTY_STORE.RESOURCEID,
+          label: 'Case Id',
+          isEditable: false,
+          type: 'text',
+          show: true
+        },
+        {
+          property: PROPERTY_STORE.ANALYSISSOURCE,
+          label: 'Analysis Source',
+          isEditable: false,
+          type: 'analysisSource',
+          show: true
+        },
+        {
+          property: PROPERTY_STORE.RESULT,
+          label: getStoreValue(PROPERTY_STORE.RESULT),
+          isEditable: true,
+          type: 'badge',
+          editOptions: {
+            component: 'select',
+            getDisabledValue(row) {
+              if (row.status === 'BeingAnalyzed') {
+                return true
+              } else {
+                return false
+              }
+            },
+            props: {
+              items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
+            }
+          },
+          show: true
+        },
+        {
+          property: PROPERTY_STORE.STATUS,
+          label: getStoreValue(PROPERTY_STORE.STATUS),
+          isEditable: true,
+          type: 'colorfulText',
+          editOptions: {
+            component: 'select',
+            getDisabledValue(row) {
+              if (row.status === 'BeingAnalyzed') {
+                return true
+              } else {
+                return false
+              }
+            },
+            props: {
+              items: [
+                'Open',
+                'Closed',
+                { text: 'In Progress', value: 'InProgress' },
+                { text: 'False Positive', value: 'FalsePositive' }
+              ]
+            }
+          },
+          show: true
+        },
+        {
+          property: 'tags',
+          label: 'Tags',
+          isEditable: true,
+          type: 'smallBadge',
+          editOptions: {
+            component: 'select',
+            getDisabledValue(row) {
+              if (row.status === 'BeingAnalyzed') {
+                return true
+              } else {
+                return false
+              }
+            },
+            props: {
+              items: [
+                'Open',
+                'Closed',
+                { text: 'In Progress', value: 'InProgress' },
+                { text: 'False Positive', value: 'FalsePositive' }
+              ]
+            }
+          },
+          show: true
+        }
+      ],
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
