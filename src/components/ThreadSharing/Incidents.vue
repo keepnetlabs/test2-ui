@@ -24,15 +24,61 @@
         >
           <template v-slot:header>
             <div class="search-wrapper">
-              <v-text-field
-                @mouseover.native="hover = true"
-                placeholder="Filter by attributes or keywords"
-                outlined
-                class="filter-field pt-6"
-                v-model.trim="search"
-                id="incidents-search-textfield"
-              ></v-text-field>
-              <v-icon class="filter-icon">mdi-filter-variant</v-icon>
+              <div>
+                <v-text-field
+                  @mouseover.native="hover = true"
+                  placeholder="Search"
+                  outlined
+                  class="filter-field search-wrapper__search-filter"
+                  v-model.trim="search"
+                  id="incidents-search-textfield"
+                  hide-details
+                  prepend-inner-icon="mdi-magnify"
+                ></v-text-field>
+              </div>
+              <div>
+                <v-select
+                  :items="companyItem"
+                  :placeholder="'Company'"
+                  outlined
+                  class="edit-select"
+                  v-model="companyValue"
+                  hide-details
+                  clearable
+                  @change="getIncidentList()"
+                />
+              </div>
+              <div class="d-flex">
+                <v-select
+                  :items="threatsList"
+                  placeholder="Threat"
+                  outlined
+                  class="edit-select"
+                  v-model="threats"
+                  multiple
+                  hide-details
+                  item-text="name"
+                  item-value="resourceId"
+                  @change="getIncidentList()"
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <span
+                      v-if="index === 0"
+                      style="
+                        font-size: 13px;
+                        line-height: 1.6;
+                        letter-spacing: normal;
+                        color: rgba(0, 0, 0, 0.72) !important;
+                      "
+                    >
+                      {{ item.name }}
+                    </span>
+                    <span v-if="index === 1" class="caption pl-1">
+                      (+{{ threats.length - 1 }})</span
+                    >
+                  </template>
+                </v-select>
+              </div>
             </div>
           </template>
           <template v-slot:default="props">
@@ -72,7 +118,11 @@
 
 <script>
 import SinglePost from '../ThreadSharing/SinglePost'
-import { getCOmmunityIncidentList, getIncidentList } from '../../api/threadSharing'
+import {
+  getCOmmunityIncidentList,
+  getIncidentList,
+  listThreatCategories
+} from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import PostIncident from '../ThreadSharing/PostIncident'
 
@@ -96,6 +146,10 @@ export default {
     }
   },
   data: () => ({
+    companyItem: [],
+    companyValue: null,
+    threatsList: [],
+    threats: [],
     editItem: null,
     openEditPopupItem: null,
     showPostIncident: false,
@@ -148,9 +202,15 @@ export default {
     refreshDataFunc() {
       this.getIncidentList()
     },
+    getThreats() {
+      listThreatCategories().then((response) => {
+        this.threatsList = response.data.data
+      })
+    },
     getIncidentList(memberId) {
       const payload = {
-        postedCompanyResourceId: memberId || null,
+        postedCompanyResourceId:
+          memberId || this.companyValue ? localStorage.getItem('companyId') : null,
         pageNumber: 1,
         pageSize: 500,
         orderBy: 'PostedTime',
@@ -180,6 +240,17 @@ export default {
                   Value: this.search,
                   FieldName: 'Scope',
                   Operator: 'Contains'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'CategoryResourceId',
+                  Operator: 'Include',
+                  Value: this.threats.toString()
                 }
               ],
               FilterGroups: []
@@ -245,6 +316,8 @@ export default {
     }
   },
   mounted() {
+    this.companyItem.push(localStorage.getItem('companyName'))
+    this.getThreats()
     this.getIncidentList()
   }
 }
@@ -257,15 +330,27 @@ export default {
     align-items: center;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-
-    > div {
-      padding-right: 10px;
+    padding: 8px;
+    margin: 24px 0px;
+    justify-content: end;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    .v-text-field--outlined > .v-input__control > .v-input__slot {
+      background: white !important;
     }
-
-    .filter-icon {
-      color: rgba(0, 0, 0, 0.34) !important;
-      cursor: pointer;
+    > div {
+      &:first-child {
+        width: 220px;
+      }
+      padding-right: 8px;
+      width: 220px;
+    }
+    &__search-filter {
+      font-size: 16px !important;
+      padding-right: 8px;
+      .v-input__slot {
+        min-height: 40px !important;
+      }
     }
   }
 

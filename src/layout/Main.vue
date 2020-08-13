@@ -1413,7 +1413,6 @@ export default {
     .v-input__slot {
       background-color: rgba(255, 255, 255, 0.3) !important;
       min-height: 27px !important;
-      font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
