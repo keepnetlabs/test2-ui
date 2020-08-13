@@ -1,13 +1,7 @@
 <template>
-  <app-dialog
-    :status="isShow"
-    icon="mdi-delete"
-    title="Delete User?"
-    subtitle="The user will  deleted permanently"
-  >
+  <app-dialog :status="isShow" icon="mdi-delete" title="Warning!">
     <template v-slot:app-dialog-body>
-      {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain
-      in reports.
+      {{ selectedRow.companyName }} will be permanently deleted.
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
@@ -15,7 +9,7 @@
           >CANCEL</v-btn
         >
         <v-btn
-          @click="handleDelete"
+          @click="confirmDelete"
           color="#2196f3"
           class="delete-user__footer-button"
           style="padding: 0;"
@@ -30,6 +24,7 @@
 <script>
 import AppDialog from '../AppDialog'
 export default {
+  name: 'DeleteModal',
   props: {
     isShow: {
       type: Boolean
@@ -41,22 +36,16 @@ export default {
   components: {
     AppDialog
   },
-  computed: {
-    getFirstAndLastName() {
-      const { firstName = '', lastName = '' } = this.selectedRow
-      return `${firstName} ${lastName}`
-    }
-  },
+  computed: {},
   methods: {
     closeModal() {
       this.$emit('changeModalStatus', false)
     },
-    handleDelete() {
-      this.$emit('deleteAction', this.selectedRow)
+    confirmDelete() {
+      this.$emit('confirmDelete', this.selectedRow)
       this.$emit('changeModalStatus', false)
     }
-  },
-  name: 'DeleteUserModal'
+  }
 }
 </script>
 

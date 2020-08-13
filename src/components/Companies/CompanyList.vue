@@ -1,10 +1,9 @@
 <template>
   <div class="company-list">
     <delete-modal
-      :is-show="isWantToShowDeleteUserModal"
+      :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
-      @deleteAction="handleDeleteUser"
-      v-if="isWantToShowDeleteUserModal"
+      @confirmDelete="deleteConfirmedItem"
       @changeModalStatus="changeDeleteModalStatus"
     />
     <datatable
@@ -20,28 +19,58 @@
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
-      @edit="handleEdit"
+      @edit="handleTableItemEdit"
+      @delete="handleTableItemDelete"
+      @cellClick="handleCompanyNameClick"
+      @downloadEvent="handleTableDownload"
     >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span class="datatable-link" v-if="scope.row.companyName">
+          {{ scope.row.companyName }}
+        </span>
+      </template>
+      <template v-slot:extended-custom-view-slot>
+        <company-list-extend
+          v-if="isShowExtended"
+          :selectedRow="selectedRow"
+          :selectedExtend="selectedExtend"
+          @close="
+            () => {
+              isShowExtended = false
+              selectedRow = {}
+              selectedExtend = {}
+            }
+          "
+        />
+      </template>
     </datatable>
   </div>
 </template>
 
 <script>
 import Datatable from '../../components/DataTable'
-import { searchCompanies } from '../../api/company'
+import { searchCompanies, deleteCompany, getCompanyByID, exportCompanies } from '../../api/company'
+import DeleteModal from './DeleteModal'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
+import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 
 export default {
   name: 'CompanyList',
   components: {
-    Datatable
+    CompanyListExtend,
+    Datatable,
+    DeleteModal
   },
   data: () => ({
+    isShowDeleteModal: false,
+    isShowExtended: false,
+    selectedExtend: {},
+    selectedRow: {},
     tableOptions: {
       columns: [
         {
@@ -52,7 +81,7 @@ export default {
           fixed: 'left',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'slot'
         },
         {
           property: PROPERTY_STORE.INDUSTRYNAME,
@@ -141,8 +170,6 @@ export default {
       ]
     },
     payload: {
-      pageNumber: 1,
-      pageSize: 3,
       orderBy: 'LicenseTypeName',
       ascending: true,
       filter: {
@@ -190,8 +217,94 @@ export default {
           this.$refs.refDataList.loadWithDataArray([])
         })
     },
-    handleEdit(row) {},
-    handleDelete(row) {}
+    handleTableItemEdit(row) {},
+    handleTableItemDelete(selectedItem) {
+      this.selectedRow = selectedItem
+      this.changeDeleteModalStatus(true)
+    },
+    deleteConfirmedItem(selectedItem) {
+      deleteCompany(selectedItem.companyResourceId)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.getTableData()
+          }
+        })
+        .catch((error) => {})
+    },
+    changeDeleteModalStatus(status) {
+      this.isShowDeleteModal = status
+    },
+    handleCompanyNameClick({ row, column, event }) {
+      if (column.property === 'companyName') {
+        this.selectedRow = row
+        this.selectedExtend = {}
+        this.isShowExtended = true
+        getCompanyByID(row.companyResourceId)
+          .then((response) => {
+            this.selectedExtend = response.data.data
+          })
+          .catch((error) => {
+            this.isShowExtended = false
+            this.$store.dispatch('common/createSnackBar', {
+              message: error.data.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
+          })
+      }
+    },
+    handleTableDownload(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: 'LicenseTypeName',
+          ascending: true,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: [
+                  {
+                    FieldName: 'CompanyName',
+                    Operator: 'Contains',
+                    Value: ''
+                  },
+                  {
+                    FieldName: 'IndustryName',
+                    Operator: 'Contains',
+                    Value: ''
+                  },
+                  {
+                    FieldName: 'LicenseTypeName',
+                    Operator: 'Contains',
+                    Value: ''
+                  }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
+        }
+        exportCompanies(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Companies.${item.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
+    }
   }
 }
 </script>

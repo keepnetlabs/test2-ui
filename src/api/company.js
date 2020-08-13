@@ -3,3 +3,12 @@ import testRequest from '../utils/testRequest'
 export function searchCompanies(payload) {
   return testRequest.post('/companies/search', payload)
 }
+export function exportCompanies(payload) {
+  return testRequest.post('/companies/search/export', payload)
+}
+export function deleteCompany(id) {
+  return testRequest.delete(`companies/${id}`)
+}
+export function getCompanyByID(id) {
+  return testRequest.get(`/companies/${id}`)
+}
