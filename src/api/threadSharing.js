@@ -240,3 +240,11 @@ export function cancelRequest(id) {
 export function deleteCommunity(id) {
   return testRequest.delete(`communities/${id}`)
 }
+
+export function shareAPost(id, payload) {
+  return testRequest.post(`community-posts/${id}/share`, payload, {
+    headers: {
+      'X-IR-USER-ID': localStorage.getItem('userId')
+    }
+  })
+}

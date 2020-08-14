@@ -89,8 +89,8 @@
         </div>
         <extended-view
           v-if="isWantToEditRow"
-          :value="multipleSelection"
-          :options="columns"
+          :value="extendedViewValue"
+          :options="extendedViewOptions"
           :titleKey="titleKey"
           :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
@@ -805,6 +805,18 @@ export default {
       type: Array,
       required: true
     },
+    extendedViewOptions: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    extendedViewValue: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
     titleKey: {
       type: String,
       default: 'name'
@@ -1031,6 +1043,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
+    this.extendedViewOptions = this.columns
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow

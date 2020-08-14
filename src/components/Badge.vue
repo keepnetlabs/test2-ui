@@ -62,7 +62,7 @@ export default {
     font-weight: 600 !important;
     letter-spacing: normal;
     text-align: center;
-    text-transform: capitalize;
+    text-transform: none !important;
     color: #ffffff;
   }
   &__sizes {
