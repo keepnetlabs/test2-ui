@@ -1379,14 +1379,19 @@ export default {
           tag: tag || '',
           note: this.extendedView.note || '',
           isNotifyUser: this.extendedView.isNotify,
-          customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : ''
+          customMessage: this.extendedView.isMessage
+            ? this.extendedView.customMessage
+            : selectedRow.length > 1
+            ? item.customMessage
+            : ''
         }
 
         updateNotifiedEmail(item.resourceId, payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
             })
 
             this.callForGetRunningInvestigations()
