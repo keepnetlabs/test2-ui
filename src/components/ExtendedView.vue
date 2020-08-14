@@ -73,6 +73,26 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
+                    col.type === 'copy' &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdateDate'
+                  "
+                  style="display: flex;"
+                >
+                  <span>
+                    {{ copyOfEditedRows[0][col.property] }}
+                  </span>
+                  <v-icon
+                    style="cursor: pointer;"
+                    class="ml-2"
+                    @click="writeTextToClipBoard(copyOfEditedRows[0][col.property])"
+                    small
+                    >mdi-content-copy</v-icon
+                  >
+                </span>
+                <span
+                  v-else-if="
+                    (!editMode || !col.isEditable) &&
                     col.type === 'analysisSource' &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdateDate'
@@ -480,7 +500,7 @@
    show --> boolean
    hideLabel --> boolean
    label --> string
-   type --> string (text,date,status,priority,detected,progress,chart,badge,slot)
+   type --> string (text,date,status,priority,detected,progress,chart,badge,slot,copy,analysisSource)
    isEditable --> boolean
    editOptions --> object {component:"textfield,select,textarea,datepicker", props:{} dynamic props}
    }
@@ -721,6 +741,9 @@ export default {
       this.multipleEditDisables[prop] = true
       this.editedPopupProperties.push(prop)
       this.$forceUpdate()
+    },
+    writeTextToClipBoard(text) {
+      navigator.clipboard.writeText(text)
     }
   },
   updated() {},
