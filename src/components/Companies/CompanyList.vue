@@ -81,14 +81,15 @@ export default {
           fixed: 'left',
           sortable: true,
           show: true,
-          type: 'slot'
+          type: 'slot',
+          minWidth: 180
         },
         {
           property: PROPERTY_STORE.INDUSTRYNAME,
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
-          fixed: 'left',
+
           sortable: true,
           show: true,
           type: 'text',
@@ -99,7 +100,7 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
-          fixed: 'left',
+
           sortable: true,
           show: true,
           type: 'text',
@@ -110,7 +111,7 @@ export default {
           align: 'right',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
-          fixed: 'left',
+
           sortable: true,
           show: true,
           type: 'text',
@@ -121,7 +122,7 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
-          fixed: 'left',
+
           sortable: true,
           show: true,
           type: 'text',

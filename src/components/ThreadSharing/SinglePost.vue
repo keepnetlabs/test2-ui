@@ -1084,6 +1084,7 @@ import {
   getCommunityPost,
   getSelectedEmailPreview,
   likePost,
+  shareAPost,
   updateComments
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
@@ -1281,6 +1282,17 @@ export default {
     },
     shareIncident() {
       let id = this.sharedIncitedId
+      setTimeout(() => {
+        const payload = {
+          emailarray: this.shareEmail
+        }
+        shareAPost(id, payload).then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Post has been shared successfully'
+          })
+        })
+      }, 200)
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
