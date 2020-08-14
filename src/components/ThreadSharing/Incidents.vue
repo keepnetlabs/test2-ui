@@ -123,7 +123,6 @@ import {
   getIncidentList,
   listThreatCategories
 } from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import PostIncident from '../ThreadSharing/PostIncident'
 
 export default {
@@ -258,7 +257,7 @@ export default {
           ]
         }
       }
-      const _this = this
+      //const _this = this
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
           .then((response) => {
@@ -332,7 +331,7 @@ export default {
     flex-direction: row;
     padding: 8px;
     margin: 24px 0px;
-    justify-content: end;
+    justify-content: flex-end;
     background-color: #f2f2f2;
     border-radius: 8px;
     .v-text-field--outlined > .v-input__control > .v-input__slot {
