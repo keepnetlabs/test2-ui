@@ -1822,6 +1822,7 @@ export default {
         display: flex;
         flex-flow: row;
         padding: 24px;
+        padding-bottom: 0;
 
         &--left-menu {
           display: flex;
