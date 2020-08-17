@@ -125,13 +125,13 @@
             <div class="email-details__header">
               <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Relay Information</v-card-title>
-                <div class="email-details__datatable-container">
+                <div style="margin-top: 40px;">
                   <datatable
                     ref="refRelayTable"
                     :table="relayTable.data"
                     :refName="'relayTable'"
                     :columns="relayTable.columns"
-                    :countRow="25"
+                    :countRow="5"
                     :pageSizes="pageSizes"
                     :selectable="false"
                     :filterable="true"
