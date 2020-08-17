@@ -103,8 +103,11 @@ export default {
           if (containerWidth > width) {
             containerWidth -= width
             renderedCount++
+          } else {
+            break
           }
         }
+
         this.renderedBadgeCount = renderedCount
         if (this.renderedBadgeCount > this.computedData.length) {
           this.renderedBadgeCount = this.computedData.length
@@ -221,7 +224,6 @@ export default {
   }
   &__hidden {
     &.v-chip {
-      max-width: 300px !important;
     }
     .v-chip__content {
       white-space: nowrap !important;

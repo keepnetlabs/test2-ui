@@ -18,33 +18,30 @@
         <app-dialog
           :status="isWantToDelete"
           icon="mdi-alert"
-          size="big"
+          size="small"
           title="Delete Emails?"
           :subtitle="deleteMessage()"
           @changeStatus="isWantToDelete = false"
           body="Do you want to delete emails or move to trash?"
+          className="investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
-                <v-btn
-                  class="pa-0 k-dialog__button"
-                  text
-                  color="#f56c6c"
-                  @click="isWantToDelete = false"
+                <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToDelete = false"
                   >CANCEL
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
-                  class="pa-0 mr-3 k-dialog__button"
+                  class="k-dialog__button"
                   text
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false)"
                   >Move to trash
                 </v-btn>
                 <v-btn
-                  class="pa-0 k-dialog__button"
+                  class="k-dialog__button"
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true)"
@@ -79,14 +76,10 @@
           </template>
           <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-              <v-btn
-                class="pa-0 k-dialog__button"
-                text
-                color="#f56c6c"
-                @click="isWantToWarn = false"
+              <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToWarn = false"
                 >CANCEL</v-btn
               >
-              <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="isWantToWarnConfirm"
+              <v-btn class="k-dialog__button" text color="#2196f3" @click="isWantToWarnConfirm"
                 >Send</v-btn
               >
             </div>
@@ -94,7 +87,7 @@
         </app-dialog>
         <app-dialog
           :status="isWantToStop"
-          size="big"
+          size="small"
           @changeStatus="isWantToStop = false"
           icon="mdi-alert"
           title="Stop Ongoing Investigation"
@@ -120,26 +113,28 @@
           icon="mdi-alert"
           title="Delete Emails and Notify Users?"
           :subtitle="deleteMessage()"
-          class-name="investigation-details__warning-modal"
+          class-name="investigation-details__warning-modal investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-body>
-            <v-list-item
-              class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
-            >
-              <v-text-field
-                placeholder="Dangerous Email"
-                outlined
-                class="edit-name-textfield edit-select standard-height"
-                v-model="notifyMessageWithDelete"
-                required
-              ></v-text-field>
-            </v-list-item>
+            <v-form lazy-validation ref="refFormDeleteAndNotify">
+              <v-list-item
+                class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
+              >
+                <v-text-field
+                  placeholder="Dangerous Email"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model="notifyMessageWithDelete"
+                  :rules="[(v) => validations.required(v, 'Required')]"
+                ></v-text-field>
+              </v-list-item>
+            </v-form>
           </template>
           <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
                 <v-btn
-                  class="pa-0 k-dialog__button"
+                  class="k-dialog__button"
                   text
                   color="#f56c6c"
                   @click="isWantToWarnAndDelete = false"
@@ -149,14 +144,14 @@
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
-                  class="pa-0 mr-3 k-dialog__button"
+                  class="k-dialog__button"
                   text
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false, notifyMessageWithDelete)"
                   >Move to trash
                 </v-btn>
                 <v-btn
-                  class="pa-0 k-dialog__button"
+                  class="k-dialog__button"
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
@@ -678,8 +673,9 @@
               <datatable
                 id="investigationDetailsList"
                 :refName="'investigationDetailsListTable'"
+                ref="refInvestigationListData"
                 :columns="columns"
-                :table="investigationDetailsListData && investigationDetailsListData.results"
+                :table="investigationDetailsList"
                 :countRow="5"
                 :pageSizes="pageSizes"
                 :selectable="true"
@@ -851,6 +847,7 @@ export default {
     criteriaChips: [],
     isWantToWarnAndDelete: false,
     totalSelectedItemsCount: [],
+    investigationDetailsList: [],
     validations: {
       required
     },
@@ -1469,6 +1466,7 @@ export default {
                   this.showTargetUsersDetails = false
                   this.showTargetUsersDetails = this.activeMenu === 'targetUsers'
                   this.showEmails = this.activeMenu !== 'targetUsers'
+                  this.$forceUpdate()
                 })
             })
         })
@@ -1535,6 +1533,9 @@ export default {
       this.deleteValue = value
     },
     isWantToDeleteConfirm(val, message) {
+      if (!this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
+        return
+      }
       let isArray = Array.isArray(this.deleteValue)
       let data = []
       isArray
@@ -1601,6 +1602,12 @@ export default {
         ...this.investigationDetailsData.bodies,
         ...this.investigationDetailsData.attachments
       ]
+    },
+    investigationDetailsListData(val) {
+      this.investigationDetailsList = val.results || []
+      if (this.$refs.refInvestigationListData) {
+        this.$refs.refInvestigationListData.loadWithDataArray(val.results || [])
+      }
     }
   },
   created() {},
@@ -1733,7 +1740,7 @@ export default {
         box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
         background-color: #ffffff;
         padding: 24px;
-        margin-bottom: 34px;
+        margin-bottom: 24px;
         display: flex;
 
         &__cards {
@@ -2130,6 +2137,11 @@ export default {
 .investigation-details__warning-modal {
   .k-dialog__body {
     padding: 24px 24px 2px 24px;
+  }
+}
+.investigation-details__modal-footer {
+  .k-dialog__footer {
+    padding: 8px 16px;
   }
 }
 
