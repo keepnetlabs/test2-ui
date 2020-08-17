@@ -20,6 +20,7 @@
     "core-js": "^3.6.5",
     "echarts": "^4.3.0",
     "echarts-gl": "^1.1.1",
+    "grapesjs": "^0.16.18",
     "image-to-blob": "^0.2.0",
     "js-cookie": "^2.2.1",
     "jszip": "^3.4.0",
