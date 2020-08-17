@@ -1109,7 +1109,7 @@ export default {
     flex-direction: row;
     padding: 8px;
     margin: 24px 0px;
-    justify-content: flex-end !important;
+    justify-content: flex-start !important;
     background-color: #f2f2f2;
     border-radius: 8px;
     .v-text-field--outlined > .v-input__control > .v-input__slot {

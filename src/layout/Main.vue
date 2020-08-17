@@ -486,6 +486,7 @@ import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
 import AuthenticationService from '../services/authentication'
+import 'grapesjs/dist/css/grapes.min.css'
 
 export default {
   name: 'Main',
