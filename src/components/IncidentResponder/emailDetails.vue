@@ -29,7 +29,7 @@
                   </div>
                 </div>
                 <div>
-                  <div @click="handleDownloadEmail()" class="mr-6 cursor-pointer download">
+                  <div @click="handleDownloadEmail()" class="cursor-pointer download">
                     <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
                     DOWNLOAD EMAIL
                   </div>
@@ -124,8 +124,28 @@
           <v-tab-item v-if="mailDetails">
             <div class="email-details__header">
               <v-card light class="email-details__header-card">
+                <v-card-title class="email-details__header-title">Relay Information</v-card-title>
+                <div class="email-details__datatable-container">
+                  <datatable
+                    ref="refRelayTable"
+                    :table="relayTable.data"
+                    :refName="'relayTable'"
+                    :columns="relayTable.columns"
+                    :countRow="25"
+                    :pageSizes="pageSizes"
+                    :selectable="false"
+                    :filterable="true"
+                    :options="true"
+                    :empty="relayTable.iEmpty"
+                    :selectEvent="selectEvent"
+                    :sizeable="true"
+                    :isDownloadable="true"
+                  />
+                </div>
+              </v-card>
+              <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Headers Found</v-card-title>
-                <div class="email-details__header-content">
+                <div class="email-details__datatable-container">
                   <datatable
                     ref="refHeadersTable"
                     :table="headersTable.data"
@@ -144,11 +164,8 @@
                   />
                 </div>
               </v-card>
-              <v-card light class="email-details__header-card" v-if="false">
-                <v-card-title class="email-details__header-title">Relay Information</v-card-title>
-              </v-card>
 
-              <v-card light class="email-details__header-card" v-if="false">
+              <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Received Header</v-card-title>
                 <div class="email-details__received-header">
                   <div :key="item.value + item.key" v-for="item in headersTable.data">
@@ -705,6 +722,69 @@ export default {
         }
       ]
     },
+    relayTable: {
+      data: [],
+      iEmpty: {
+        message: 'No Relay Information to display'
+      },
+      columns: [
+        {
+          property: 'hop',
+          align: 'left',
+          editable: false,
+          label: 'Hop',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 400
+        },
+        {
+          property: 'delay',
+          align: 'left',
+          editable: false,
+          label: 'Delay',
+          sortable: true,
+          show: true,
+          type: 'text'
+        },
+        {
+          property: 'from',
+          align: 'left',
+          editable: false,
+          label: 'From',
+          sortable: true,
+          show: true,
+          type: 'text'
+        },
+        {
+          property: 'by',
+          align: 'left',
+          editable: false,
+          label: 'By',
+          sortable: true,
+          show: true,
+          type: 'text'
+        },
+        {
+          property: 'utcTime',
+          align: 'left',
+          editable: false,
+          label: 'Time (UTC)',
+          sortable: true,
+          show: true,
+          type: 'text'
+        },
+        {
+          property: 'with',
+          align: 'left',
+          editable: false,
+          label: 'With',
+          sortable: true,
+          show: true,
+          type: 'text'
+        }
+      ]
+    },
     mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: [],
@@ -744,10 +824,11 @@ export default {
         fixed: 'left',
         sortable: true,
         show: true,
-        type: 'text'
+        type: 'text',
+        width: 400
       },
       {
-        property: 'result',
+        property: 'status',
         align: 'center',
         editable: false,
         label: 'Status',
@@ -755,7 +836,8 @@ export default {
         sortable: false,
         show: true,
         type: 'detected',
-        hasTooltip: true
+        hasTooltip: true,
+        width: 250
       }
     ],
     title: {
@@ -827,10 +909,49 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-          this.tableData = this.mailDetails.urls
+
+          const urlTableColumns = new Set()
+          const tableData = this.mailDetails.urls.map((item, index) => {
+            const returnObj = {}
+            let result
+            for (let engine of item.analysisList) {
+              returnObj[engine.analysisEngine] = engine.result
+              urlTableColumns.add(engine.analysisEngine)
+              if (result !== 'Malicious') {
+                if (
+                  (result === 'Phishing' || result === 'Clean') &&
+                  engine.result === 'Malicious'
+                ) {
+                  result = 'Malicious'
+                } else if (result === 'Phishing' && engine.result === 'Clean') {
+                  result = 'Phishing'
+                } else {
+                  result = engine.result
+                }
+              }
+            }
+            returnObj['status'] = result
+            returnObj['url'] = item.url
+            return returnObj
+          })
+          let colObj = []
+          let a = urlTableColumns.forEach((item) => {
+            colObj.push({
+              property: item,
+              align: 'left',
+              editable: false,
+              label: item,
+              sortable: true,
+              show: true,
+              type: 'text'
+            })
+          })
+          this.columns = [...this.columns, ...colObj]
+          this.tableData = tableData
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
+          this.relayTable.data = this.mailDetails.emailRelays
           setTimeout(function () {
             for (let a of urls) {
               const els = document
@@ -870,6 +991,7 @@ export default {
       getAnalysisEngineTypes()
         .then((response) => {
           const engineTypes = response.data.data
+          /*
           engineTypes.map((item) => {
             this.columns.push({
               property: 'analysisEngine',
@@ -882,6 +1004,8 @@ export default {
               type: 'text'
             })
           })
+
+           */
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -933,11 +1057,11 @@ export default {
     background-color: #ffffff;
     padding: 24px;
     &__container {
-      margin-top: 35px;
+      margin-top: 40px;
       border-radius: 20px;
       box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
-      padding: 10px 24px 16px;
+      padding: 10px 24px 24px;
     }
   }
 
@@ -966,6 +1090,9 @@ export default {
 
     .v-tab--active {
       color: #2196f3 !important;
+    }
+    .v-tab:not(:last-child) {
+      margin-right: 40px;
     }
 
     .v-tab {
@@ -1130,7 +1257,7 @@ export default {
     position: absolute;
   }
   .v-window-item {
-    margin-top: 24px;
+    margin-top: 19px;
   }
 
   .threat-sharing-content {
@@ -2104,19 +2231,14 @@ export default {
 }
 .email-details__header {
   &-card {
-    padding: 24px;
+    padding: 36px 24px 0px 24px;
     margin-bottom: 24px;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #ffffff !important;
     border-radius: 12px !important;
   }
-  &-content {
-    margin-top: 40px;
-    .k-table__wrapper .card .table-wrapper .el-table td > .cell {
-      white-space: inherit !important;
-    }
-  }
+
   &-title {
     padding: 0;
     font-size: 20px;
@@ -2124,6 +2246,15 @@ export default {
     line-height: 1.15;
     letter-spacing: normal;
     color: #2196f3;
+  }
+}
+
+.email-details__datatable-container {
+  margin-top: 40px;
+  .k-table__wrapper .card .table-wrapper .el-table td > .cell {
+    white-space: inherit !important;
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 }
 

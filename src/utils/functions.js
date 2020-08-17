@@ -102,6 +102,7 @@ export function getTextColor(type) {
 }
 
 export function getDataTableFieldLabel(field) {
+  const defField = field
   field = field.trim().toLowerCase()
   let upperCaseCount = 0
   for (let i = 0; i < field.length; i++) {
@@ -132,7 +133,7 @@ export function getDataTableFieldLabel(field) {
     case 'n/a':
       return 'N/A'
     default:
-      return field.substring(0, 1).toUpperCase() + field.substring(1, field.length)
+      return defField
   }
 }
 

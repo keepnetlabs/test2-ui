@@ -33,13 +33,19 @@
       border:solid 1px rgba(0, 0, 0, 0.16);
     }
 
-    &__slot input,&__slot textarea,.v-select__selection{
+    &__slot input,&__slot textarea{
       font-size: 13px;
+      line-height:1.71;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.72) !important;
     }
     &__slot textarea{
       margin-top:11px;
+    }
+    .v-select__selection{
+      font-size: 13px;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.72) !important;
     }
 
 
