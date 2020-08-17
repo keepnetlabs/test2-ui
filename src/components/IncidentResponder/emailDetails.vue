@@ -935,7 +935,7 @@ export default {
             return returnObj
           })
           let colObj = []
-          let a = urlTableColumns.forEach((item) => {
+          urlTableColumns.forEach((item) => {
             colObj.push({
               property: item,
               align: 'left',
@@ -943,7 +943,8 @@ export default {
               label: item,
               sortable: true,
               show: true,
-              type: 'text'
+              type: 'text',
+              emptyText: 'None'
             })
           })
           this.columns = [...this.columns, ...colObj]
