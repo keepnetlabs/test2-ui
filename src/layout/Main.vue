@@ -171,6 +171,15 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/companies" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Companies</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
         <v-list-group
           prepend-icon="mdi-flash"
@@ -370,8 +379,6 @@
               v-if="routerName === 'Phishing Reporter'"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[1].text }}
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               Phishing Reporter
             </router-link>
             <router-link
@@ -407,6 +414,15 @@
 
             <router-link
               v-if="routerName === 'Target Users'"
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+
+              Company
+            </router-link>
+            <router-link
+              v-if="routerName === 'Companies'"
               :to="$route.path"
               class="bread-last-step breadcrumb-links"
             >
@@ -1415,7 +1431,6 @@ export default {
     .v-input__slot {
       background-color: rgba(255, 255, 255, 0.3) !important;
       min-height: 27px !important;
-      font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;

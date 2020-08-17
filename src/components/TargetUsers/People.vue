@@ -43,12 +43,12 @@
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
+      :setClassName="setCellClassName"
       @addToGroup="handleAddToGroup"
       @createGroupWithUser="handleCreateGroupWithUser"
       @submenuItemClick="handleSubMenuItemClick"
       @syncUser="handleSyncUser"
       @delete="handleDelete"
-      :setClassName="setCellClassName"
       ref="refPeopleTable"
       @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
@@ -96,6 +96,7 @@ import {
 import {
   COMMON_CONSTANTS,
   getStoreValue,
+  LABEL_STORE,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
@@ -218,8 +219,7 @@ export default {
         download: true
       },
       iEmpty: {
-        message: 'You do not have any users added, yet',
-        subMes: 'Start now',
+        message: LABEL_STORE.NO_TARGET_USER_ADDED,
         btn: 'ADD A USER',
         icon: 'mdi-account-plus'
       },
@@ -299,15 +299,9 @@ export default {
         return 'clock-wise'
       }
     },
-    handleAddToGroup(row) {
-      console.log('handleAddToGroup', row)
-    },
-    handleCreateGroupWithUser(row) {
-      console.log('handleCreateGroupWithUser', row)
-    },
-    handleSubMenuItemClick(exportType) {
-      console.log('handleSubMenuItemClick', exportType)
-    },
+    handleAddToGroup(row) {},
+    handleCreateGroupWithUser(row) {},
+    handleSubMenuItemClick(exportType) {},
     handleSyncUser(scope) {
       this.selectedSyncIndex = scope.$index
       this.tableOptions.rowActions = [
@@ -392,7 +386,6 @@ export default {
       getTargetUsers(payload)
         .then((response) => {
           const { data } = response.data
-          console.log('data', data)
           this.$refs.refPeopleTable.loadWithDataArray(
             data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
           )

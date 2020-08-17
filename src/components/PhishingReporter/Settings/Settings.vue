@@ -10,6 +10,7 @@
       class="k-sub-tabs"
       v-model="tab"
       background-color="#f5f7fa"
+      centered
       color="basil"
       active-class="k-sub-tabs__tab--active"
     >

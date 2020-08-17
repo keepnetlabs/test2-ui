@@ -21,7 +21,7 @@
                   placeholder="Manual Investigation - 09.09.2019  16:25"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="investgationName"
+                  v-model.trim="investgationName"
                   :rules="[investigationNameRules.required, investigationNameRules.empty]"
                   required
                 ></v-text-field>
@@ -70,7 +70,7 @@
                     :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi"
-                    v-model="targetUsersValue"
+                    v-model.trim="targetUsersValue"
                     :search-input.sync="searchTargetUsersGroupsValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
@@ -103,7 +103,7 @@
                     :no-data-text="'no data'"
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi"
-                    v-model="targetUsersValue"
+                    v-model.trim="targetUsersValue"
                   ></v-combobox>
                 </div>
               </v-list-item-content>
@@ -119,7 +119,7 @@
                   <div class="filter-item__selectbox">
                     <v-select
                       :items="filterListOption"
-                      v-model="list.option"
+                      v-model.trim="list.option"
                       placeholder="Select filter"
                       outlined
                       class="edit-select standard-height"
@@ -140,7 +140,7 @@
                         list.option && generalRules[list.option].required,
                         list.option && generalRules[list.option].format
                       ]"
-                      v-model="list.text"
+                      v-model.trim="list.text"
                       required
                     ></v-text-field>
                   </div>
@@ -182,7 +182,9 @@
                     <transition appear name="bounce">
                       <div class="v-messages theme--light error--text" role="alert">
                         <div class="v-messages__wrapper">
-                          <div class="v-messages__message">Date required</div>
+                          <div class="v-messages__message" style="padding-left: 10px;">
+                            Date is required
+                          </div>
                         </div>
                       </div>
                     </transition>
@@ -226,7 +228,7 @@
                   :items="durations"
                   outlined
                   class="input-select standard-height"
-                  v-model="selectedDuration"
+                  v-model.trim="selectedDuration"
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
@@ -244,7 +246,7 @@
                   :items="actions"
                   outlined
                   class="input-select standard-height"
-                  v-model="selectedAction"
+                  v-model.trim="selectedAction"
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"

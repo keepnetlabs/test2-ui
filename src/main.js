@@ -19,7 +19,6 @@ Vue.component(
   require('./components/PhishingReporter/Settings/Settings').default
 )
 if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
-  console.log('process.env.VUE_APP_SAAS_STATUS: ', process.env.VUE_APP_SAAS_STATUS)
   const VueAnalytics = require('vue-analytics').default
   Vue.use(VueAnalytics, {
     id: 'UA-131042304-2'
@@ -40,6 +39,19 @@ Vue.component('v-chart', ECharts)
 Vue.use(require('vue-moment'))
 
 Vue.config.productionTip = false
+
+Vue.filter('formatSize', function (size) {
+  if (size > 1024 * 1024 * 1024 * 1024) {
+    return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
+  } else if (size > 1024 * 1024 * 1024) {
+    return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB'
+  } else if (size > 1024 * 1024) {
+    return (size / 1024 / 1024).toFixed(2) + ' MB'
+  } else if (size > 1024) {
+    return (size / 1024).toFixed(2) + ' KB'
+  }
+  return size.toString() + ' B'
+})
 
 const vm = new Vue({
   router,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row align="center">
+    <v-row align="center" class="mb-4 mt-n3">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -11,13 +11,14 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
-        <div class="target-users-select__radio-group">
+      <v-col md="6">
+        <div class="target-users-select__radio-group mb-2">
           <v-radio-group
             v-model="investigateData.targetUserType"
             :mandatory="false"
             @change="handleRadioGroup"
             row
+            hide-details
           >
             <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
             <v-radio value="Groups" label="User Groups" color="#2196f3"></v-radio>
@@ -57,7 +58,6 @@
             item-text="name"
             item-value="resourceId"
             multiple
-            dense
             persistent-hint
             small-chips
             deletable-chips
@@ -110,7 +110,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -121,7 +121,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="3">
         <v-select
           v-model="investigateData.filters"
           :items="act.investigateFilters"
@@ -134,7 +134,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -145,7 +145,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="3">
         <v-select
           v-model="investigationRange"
           :items="act.investigateRanges"
@@ -154,7 +154,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -165,7 +165,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="6">
         <div class="select-sources d-flex">
           <v-checkbox
             class="v-input--checkbox"
@@ -173,6 +173,7 @@
             label="Outlook Desktop"
             value="Outlook"
             color="#2196f3"
+            v-if="scanTypes.includes('Outlook')"
           />
           <v-checkbox
             class="v-input--checkbox ml-3"
@@ -180,6 +181,7 @@
             label="Office 365"
             value="O365"
             color="#2196f3"
+            v-if="scanTypes.includes('O365')"
           />
           <v-checkbox
             class="v-input--checkbox ml-3"
@@ -187,6 +189,7 @@
             label="GSuite"
             value="GSuite"
             color="#2196f3"
+            v-if="scanTypes.includes('GSuite')"
           />
           <v-checkbox
             class="v-input--checkbox ml-3"
@@ -194,11 +197,12 @@
             label="Exchange"
             value="Exchange"
             color="#2196f3"
+            v-if="scanTypes.includes('Exchange')"
           />
         </div>
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -209,7 +213,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="5">
+      <v-col md="3">
         <v-select
           v-model="investigationDuration"
           :items="act.investigateDurations"
@@ -218,7 +222,7 @@
         />
       </v-col>
     </v-row>
-    <v-row align="center">
+    <v-row align="center" class="mb-4">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
@@ -229,7 +233,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-col>
-      <v-col md="7">
+      <v-col md="6">
         <v-row>
           <v-col>
             <v-select
@@ -247,7 +251,10 @@
               hide-details
             />
           </v-col>
-          <v-col v-if="investigateData.actionType === 'Notify'">
+          <v-col
+            style="padding-right: 0 !important ;"
+            v-if="investigateData.actionType === 'Notify'"
+          >
             <v-select
               v-model="investigateActionNotificationTemplate"
               :items="act.notifyTemplates"
@@ -271,6 +278,7 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
+import { getInvestigationScanTypes } from '@/api/investigations'
 export default {
   name: 'Investigate',
   props: {
@@ -469,6 +477,7 @@ export default {
       validations: {
         required
       },
+      scanTypes: [],
       targetUsers: {
         required: (v) =>
           (!!v && v.length > 0) || 'Target users required for creating a investigation'
@@ -524,6 +533,9 @@ export default {
     getTargetGroups().then((response) => {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
+    })
+    getInvestigationScanTypes().then((response) => {
+      this.scanTypes = response.data.data
     })
     this.callForGetTargetUsersItems(
       {

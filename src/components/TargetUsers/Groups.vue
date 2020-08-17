@@ -63,6 +63,7 @@ import DeleteGroupModal from './DeleteGroupModal'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
+  LABEL_STORE,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import { required } from '../../utils/validations'
@@ -145,8 +146,7 @@ export default {
           download: true
         },
         iEmpty: {
-          message: 'You do not have any groups, yet',
-          subMes: 'Start now',
+          message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
           btn: 'ADD A GROUP',
           icon: 'mdi-plus'
         },

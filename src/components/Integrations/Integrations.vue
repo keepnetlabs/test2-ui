@@ -103,7 +103,8 @@ import {
 import {
   COMMON_CONSTANTS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  LABEL_STORE
 } from '../../model/constants/commonConstants'
 
 export default {
@@ -189,15 +190,14 @@ export default {
         ],
         pageSizes: [5, 10, 25, 50, 100],
         empty: {
-          message: 'No integrations are showing',
-          subMes: 'Add Integrations',
+          message: LABEL_STORE.NO_INTEGRATIONS,
           btn: 'ADD AN INTEGRATION',
           icon: 'mdi-account-plus'
         },
         addButton: {
           show: true,
           action: 'addAction',
-          tooltip: 'Add Integration'
+          tooltip: 'Add an integration'
         }
       },
       modalStatus: false,

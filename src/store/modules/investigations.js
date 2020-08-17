@@ -83,7 +83,6 @@ const investigations = {
       //set target list data to vuex store
       let data = payload.data
       //data.unshift({ name: 'All', groupId: 'all' })
-      console.log('data', data)
       state.targetUsersList = data
     }
   },
@@ -177,7 +176,6 @@ const investigations = {
       await investigationDetailsTargetUsersListFunction(obj.data, obj.id)
         .then((response) => {
           const result = response.data
-          console.log('getInvestigationDetailsTargetUsersListData', result)
           commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
         })
         .catch(() => {
@@ -231,7 +229,6 @@ const investigations = {
       await getStatsAndMenuDataFunction(id)
         .then((response) => {
           const result = response.data
-          console.log('getStatsAndMenuDataFunction', result)
           commit('SET_STATSANDMENUDATA', result)
         })
         .catch(() => {
@@ -251,7 +248,6 @@ const investigations = {
       await investigationList(obj)
         .then((response) => {
           const result = response.data
-          console.log('result', result)
           commit('SET_INVESTIGATIONLIST', result)
         })
         .catch(() => {
@@ -268,7 +264,6 @@ const investigations = {
       await irSummary(obj)
         .then((response) => {
           const result = response.data
-          console.log('irSummary', result)
           commit('SET_IRSUMMARY', result)
         })
         .catch(() => {

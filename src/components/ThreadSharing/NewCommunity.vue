@@ -40,7 +40,7 @@
                 placeholder="Community Name"
                 outlined
                 class="edit-name-textfield"
-                v-model="name"
+                v-model.trim="name"
                 :rules="[nameRules.empty, nameRules.required]"
                 required
               >
@@ -56,7 +56,7 @@
               <v-textarea
                 name="description"
                 outlined
-                v-model="description"
+                v-model.trim="description"
                 :rules="[descriptionRules.required, descriptionRules.empty]"
                 required
                 class="edit-description"
@@ -75,7 +75,7 @@
                 placeholder="Select the industry category"
                 outlined
                 class="edit-select"
-                v-model="selectedCategory"
+                v-model.trim="selectedCategory"
                 :rules="[categoryRule]"
                 required
               ></v-combobox>
@@ -295,6 +295,12 @@ export default {
   },
   mounted() {
     this.getBusinessCategories()
+  },
+  created() {
+    document.querySelector('html').style.overflowY = 'hidden'
+  },
+  beforeDestroy() {
+    document.querySelector('html').style.overflowY = ''
   }
 }
 </script>

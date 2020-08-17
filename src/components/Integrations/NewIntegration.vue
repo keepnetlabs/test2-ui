@@ -50,7 +50,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <v-form ref="form" v-model="valid" lazy-validation>
+        <v-form ref="form" lazy-validation>
           <v-list-item class="px-0 mt-8">
             <v-list-item-content>
               <label class="new-integration__label" for="integration-name">Integration Name</label>
@@ -59,7 +59,7 @@
                 outlined
                 dense
                 class="new-integration__textfield mt-2"
-                v-model="formValues.name"
+                v-model.trim="formValues.name"
                 required
                 :rules="[nameValidation.required, nameValidation.empty]"
                 id="integration-name"
@@ -75,7 +75,7 @@
                 outlined
                 dense
                 class="new-integration__textfield mt-2"
-                v-model="formValues.description"
+                v-model.trim="formValues.description"
                 required
                 :rules="[descriptionValidation.required, descriptionValidation.empty]"
                 id="description"
@@ -88,7 +88,7 @@
               <label class="new-integration__label" for="integration-type">Integration Type</label>
               <v-select
                 :items="integrationTypes"
-                v-model="formValues.analysisEngineTypeResourceId"
+                v-model.trim="formValues.analysisEngineTypeResourceId"
                 outlined
                 class="new-integration__select mt-2"
                 required
@@ -98,6 +98,7 @@
                 item-text="name"
                 item-value="resourceId"
                 height="40"
+                @input="handleIntegrationTypeChange"
               ></v-select>
             </v-list-item-content>
           </v-list-item>
@@ -109,7 +110,7 @@
                 outlined
                 dense
                 class="new-integration__textfield mt-2"
-                v-model="formValues.apiUrl"
+                v-model.trim="formValues.apiUrl"
                 required
                 :rules="[apiUrlRules.required, apiUrlRules.format]"
                 @input="handleApiKeyChange"
@@ -138,9 +139,9 @@
                     dense
                     class="new-integration__textfield new-integration__api-key__textfield mt-2"
                     :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
-                    v-model="item.value"
+                    v-model.trim="item.value"
                     required
-                    :rules="[apiKeyRules.required, apiKeyRules.empty]"
+                    :rules="[apiKeyRules.required]"
                     @input="handleApiKeyChange"
                     height="40"
                   ></v-text-field>
@@ -208,7 +209,7 @@
                   :class="{
                     'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                   }"
-                  @click="testConnection"
+                  @click="testConnection(false)"
                 >
                   <div v-if="loadingState.length" class="test-connection">
                     <v-icon medium left class="ml-1 loading-spin" color="#00bcd4"
@@ -237,7 +238,7 @@
               <v-list-item-subtitle class="new-integration__api-key__subtitle">
                 Use enter key to use tags
               </v-list-item-subtitle>
-              <div class="max-width__form">
+              <div class="max-width__form new-integration__api-key__combobox">
                 <v-combobox
                   :items="[]"
                   placeholder="Enter Tag"
@@ -250,7 +251,7 @@
                   persistent-hint
                   small-chips
                   :return-object="false"
-                  v-model="formValues.tags"
+                  v-model.trim="formValues.tags"
                   required
                 ></v-combobox>
               </div>
@@ -261,14 +262,14 @@
               <v-switch v-model="formValues.isActive" color="#2196f3" label="Active" />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
             <v-list-item-content class="pl-3">
               <v-switch v-model="formValues.isSendUrl" label="Send URL" />
             </v-list-item-content>
           </v-list-item>
           <div
             class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
-            v-if="formValues.isSendUrl"
+            v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
           >
             <v-checkbox
               class="black--text"
@@ -284,12 +285,12 @@
               <span class="tooltip-span">{{ 'Send URLs without query string parameters' }}</span>
             </v-tooltip>
           </div>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFileHash">
             <v-list-item-content class="pl-3">
               <v-switch v-model="formValues.isSendFileHash" label="Send file hash" />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
             <v-list-item-content class="pl-3">
               <v-switch
                 v-model="formValues.isUploadExecutableFile"
@@ -297,7 +298,7 @@
               />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
             <v-list-item-content class="pl-3">
               <v-switch
                 v-model="formValues.isUploadOtherFileType"
@@ -322,7 +323,7 @@
               <span class="mb-7 mr-4 type-text">File Types</span>
               <v-select
                 :items="uploadFileTypes"
-                v-model="formValues.uploadFileTypes"
+                v-model.trim="formValues.uploadFileTypes"
                 outlined
                 class="new-integration__select"
                 required
@@ -399,6 +400,7 @@ export default {
         name: null,
         apiUrl: null
       },
+      selectedIntegrationType: {},
       integrationTypes: [],
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
@@ -435,6 +437,7 @@ export default {
         const {
           data: { data, status }
         } = response
+
         this.integrationTypes = data
       })
       .catch((error) => {
@@ -445,47 +448,50 @@ export default {
       })
   },
   methods: {
+    saveIntegration() {
+      const data = { ...this.formValues }
+      data.apiKeys = data.apiKeys.map((i) => i.value)
+      if (this.integrationId) {
+        updateIntegration(this.integrationId, data)
+          .then((response) => {
+            this.closeOverlay()
+            this.showConfirmModal = false
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: false,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Integration updated successfuly!'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when updating integration!'
+            })
+          })
+      } else {
+        createIntegration(data)
+          .then((response) => {
+            this.closeOverlay()
+            this.showConfirmModal = false
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: false,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Integration created successfuly!'
+            })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when creating new integration!'
+            })
+          })
+      }
+    },
     submit() {
       if (this.$refs.form.validate()) {
-        const data = { ...this.formValues }
-        data.apiKeys = data.apiKeys.map((i) => i.value)
-        if (this.integrationId) {
-          updateIntegration(this.integrationId, data)
-            .then((response) => {
-              this.closeOverlay()
-              this.showConfirmModal = false
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: false,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Integration updated successfuly!'
-              })
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when updating integration!'
-              })
-            })
-        } else {
-          createIntegration(data)
-            .then((response) => {
-              this.closeOverlay()
-              this.showConfirmModal = false
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: false,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Integration created successfuly!'
-              })
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when creating new integration!'
-              })
-            })
-        }
+        this.testConnection(true)
       }
     },
     closeOverlay() {
@@ -607,7 +613,7 @@ export default {
         })
         .finally(() => this.loadingState.shift('loading'))
     },
-    testConnection() {
+    testConnection(isSave) {
       for (let i = 0; i < this.formValues.apiKeys.length; i++) {
         const item = this.formValues.apiKeys[i]
         this.formValues.apiKeys[i].status = 'loading'
@@ -630,13 +636,32 @@ export default {
                 error.response.data.message || error.response.data.Message
             }
           })
-          .finally(() => this.loadingState.shift('loading'))
+          .finally(() => {
+            this.loadingState.shift('loading')
+            if (
+              isSave &&
+              !this.loadingState.length &&
+              !this.formValues.apiKeys.find((item) => item.status === 'failed')
+            )
+              this.saveIntegration()
+          })
       }
+    },
+    handleIntegrationTypeChange(val) {
+      this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
     }
   },
   destroyed() {
     this.integrationId = null
     this.resetValues()
+  },
+  watch: {
+    formValues(val) {
+      console.log('val', val)
+      this.selectedIntegrationType = this.integrationTypes.find(
+        (item) => item.resourceId === val.analysisEngineTypeResourceId
+      )
+    }
   }
 }
 </script>
@@ -855,6 +880,12 @@ export default {
       color: rgba(0, 0, 0, 0.87) !important;
       &__upload-subtitle {
         margin-left: 60px;
+      }
+    }
+
+    &__combobox {
+      .v-input input {
+        max-height: 38px !important;
       }
     }
 

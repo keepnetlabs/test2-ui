@@ -1,6 +1,7 @@
 <template>
   <div
     class="settings-popup edit-popup"
+    v-if="options && options.length && copyOfEditedRows && copyOfEditedRows.length"
     :style="[
       containerStyle,
       editMode && {
@@ -8,7 +9,7 @@
       }
     ]"
   >
-    <div class="inline-wrapper" v-if="options && options.length">
+    <div class="inline-wrapper">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
           {{ copyOfEditedRows[0][titleKey] }}
@@ -72,12 +73,37 @@
                 <span
                   v-else-if="
                     (!editMode || !col.isEditable) &&
+                    col.type === 'copy' &&
+                    col.property !== 'createDate' &&
+                    col.property !== 'lastUpdateDate'
+                  "
+                  style="display: flex;"
+                >
+                  <span>
+                    {{ copyOfEditedRows[0][col.property] }}
+                  </span>
+                  <v-icon
+                    style="cursor: pointer;"
+                    class="ml-2"
+                    @click="writeTextToClipBoard(copyOfEditedRows[0][col.property])"
+                    small
+                    >mdi-content-copy</v-icon
+                  >
+                </span>
+                <span
+                  v-else-if="
+                    (!editMode || !col.isEditable) &&
                     col.type === 'analysisSource' &&
                     col.property !== 'createDate' &&
                     col.property !== 'lastUpdateDate'
                   "
                 >
-                  <span v-if="copyOfEditedRows[0].matchingPlaybooks.length === 0">
+                  <span
+                    v-if="
+                      copyOfEditedRows[0].matchingPlaybooks &&
+                      copyOfEditedRows[0].matchingPlaybooks.length === 0
+                    "
+                  >
                     {{
                       copyOfEditedRows[0].source === 'Auto'
                         ? 'Auto Analysis'
@@ -124,9 +150,7 @@
                   <badge
                     size="small"
                     :color="'#2196f3'"
-                    v-for="badge in copyOfEditedRows[0][col.property]
-                      .slice(0, copyOfEditedRows[0][col.property].length - 1)
-                      .split(',')"
+                    v-for="badge in copyOfEditedRows[0][col.property]"
                     class-name="mr-1 mb-1"
                     :key="badge"
                     :text="badge"
@@ -247,6 +271,7 @@
                   rows="2"
                   v-bind="col.editOptions.props"
                   row-height="20"
+                  no-resize
                 ></v-textarea>
                 <v-select
                   class="edit-select"
@@ -475,7 +500,7 @@
    show --> boolean
    hideLabel --> boolean
    label --> string
-   type --> string (text,date,status,priority,detected,progress,chart,badge,slot)
+   type --> string (text,date,status,priority,detected,progress,chart,badge,slot,copy,analysisSource)
    isEditable --> boolean
    editOptions --> object {component:"textfield,select,textarea,datepicker", props:{} dynamic props}
    }
@@ -532,7 +557,9 @@ export default {
   watch: {
     value(rows) {
       this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
-    }
+      this.defaultValues = JSON.parse(JSON.stringify(rows))
+    },
+    options(val) {}
   },
   data() {
     //value --> gelen değer
@@ -555,7 +582,10 @@ export default {
         for (let a = 0; a <= this.value.length - 2; a++) {
           let el = this.value[a]
           for (let b = a + 1; b <= this.value.length - 1; b++) {
-            if (el[key] === this.value[b][key]) {
+            if (
+              el[key] === this.value[b][key] ||
+              JSON.stringify(el[key]) === JSON.stringify(this.value[b][key])
+            ) {
               value = false
             } else {
               return true
@@ -711,8 +741,12 @@ export default {
       this.multipleEditDisables[prop] = true
       this.editedPopupProperties.push(prop)
       this.$forceUpdate()
+    },
+    writeTextToClipBoard(text) {
+      navigator.clipboard.writeText(text)
     }
   },
+  updated() {},
   created() {
     this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
     this.defaultValues = JSON.parse(JSON.stringify(this.value))

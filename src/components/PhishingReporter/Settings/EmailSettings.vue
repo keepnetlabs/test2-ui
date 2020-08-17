@@ -1,7 +1,7 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item
-      class="px-0 email-settings__list-item mt-0"
+      class="px-0 email-settings__list-item mt-0 mr-2"
       style="max-width: 100%;"
       v-if="showHeader"
     >
@@ -9,8 +9,7 @@
         <v-list-item-title class="email-settings__list-item--text email-settings__header"
           >Email Settings
         </v-list-item-title>
-        <v-list-item-subtitle
-          class="email-settings__list-item--text email-settings__sub-header mb-6"
+        <v-list-item-subtitle class="email-settings__list-item--text email-settings__sub-header"
           >Send a copy of reported emails as attachment
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -26,19 +25,23 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm" lazy-validation>
-      <v-list-item class="px-0 email-settings__list-item">
+      <v-list-item
+        class="px-0 email-settings__list-item"
+        style="padding-top: 14px; padding-bottom: 9px; margin-top: 0 !important;"
+      >
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
-            class="other-settings__checkbox k-checkbox mt-2"
+            class="other-settings__checkbox k-checkbox"
             color="#2196f3"
             label="Send information email for reported incidents"
             :readonly="!showForm"
+            hide-details
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 email-settings__list-item mt-0">
+      <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header" for="recipient-email-address"
             >Recipient Email Address</label
@@ -48,13 +51,21 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.to"
+            v-model.trim="formValues.to"
             :rules="
               showForm
-                ? [
-                    (v) => validations.mail(v, 'Invalid recipient email address'),
-                    (v) => validations.maxLength(v, 255, 'It must between 1 - 255 characters')
-                  ]
+                ? formValues.isSendInformationEmail
+                  ? [
+                      (v) => this.validations.mail(v, 'Invalid recipient email address'),
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters'),
+                      (v) => this.validations.required(v, 'Required')
+                    ]
+                  : [
+                      (v) => this.validations.mail(v, 'Invalid recipient email address'),
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                    ]
                 : []
             "
             :readonly="!showForm"
@@ -71,7 +82,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.cc"
+            v-model.trim="formValues.cc"
             :rules="
               showForm
                 ? [
@@ -94,7 +105,7 @@
             outlined
             dense
             class="k-textfield mt-2"
-            v-model="formValues.bcc"
+            v-model.trim="formValues.bcc"
             id="bcc"
             :readonly="!showForm"
             :rules="
@@ -121,7 +132,16 @@
             id="email-subject"
             :rules="
               showForm
-                ? [(v) => validations.maxLength(v, 255, 'It must be maximum 255 characters')]
+                ? formValues.isSendInformationEmail
+                  ? [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters'),
+                      (v) => this.validations.required(v, 'Required')
+                    ]
+                  : [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                    ]
                 : []
             "
             :readonly="!showForm"
@@ -141,7 +161,16 @@
             v-model.trim="formValues.content"
             :rules="
               showForm
-                ? [(v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters')]
+                ? formValues.isSendInformationEmail
+                  ? [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 1000 characters'),
+                      (v) => this.validations.required(v, 'Required')
+                    ]
+                  : [
+                      (v) =>
+                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                    ]
                 : []
             "
             :readonly="!showForm"
@@ -208,7 +237,7 @@ export default {
         bcc: '',
         subject: '',
         content: '',
-        IsSendInformationEmail: null
+        isSendInformationEmail: null
       },
       validations: {
         maxLength,
@@ -258,7 +287,10 @@ export default {
 .email-settings {
   &__list-item {
     max-width: 554px;
-    margin-top: -8px;
+    //margin-top: -2px;
+    .v-text-field.v-text-field--enclosed .v-text-field__details {
+      margin-bottom: 6px;
+    }
     &--text {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
@@ -287,15 +319,19 @@ export default {
 
   &__header {
     font-size: 24px;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
+    opacity: 0.9;
   }
   &__sub-header {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.5 !important;
+    opacity: 0.9;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
 
   &__btn-util {

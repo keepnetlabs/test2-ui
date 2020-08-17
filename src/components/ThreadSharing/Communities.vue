@@ -215,10 +215,9 @@
       <v-card-text class="pt-2">
         <v-data-iterator
           :items="listData"
-          :page="page"
+          :page.sync="page"
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
-          :no-data-text="'Sorry, we couldn\'t find any results matching your criteria'"
         >
           <template v-slot:header>
             <v-tabs v-model="selectedTab" class="community-selector">
@@ -241,17 +240,81 @@
               </v-tab>
             </v-tabs>
             <div class="search-wrapper">
-              <v-text-field
-                @mouseover.native="hover = true"
-                placeholder="Filter by attributes or keywords"
-                outlined
-                dense
-                class="filter-field pt-6"
-                v-model="filter"
-              ></v-text-field>
-              <v-icon class="filter-icon" @click.native="updateCommunities()"
-                >mdi-filter-variant
-              </v-icon>
+              <div>
+                <v-text-field
+                  @mouseover.native="hover = true"
+                  placeholder="Search"
+                  outlined
+                  class="filter-field search-wrapper__search-filter"
+                  v-model.trim="filter"
+                  id="incidents-search-textfield"
+                  hide-details
+                  prepend-inner-icon="mdi-magnify"
+                ></v-text-field>
+              </div>
+              <div>
+                <v-combobox
+                  :items="industryList"
+                  item-text="name"
+                  item-value="resourceId"
+                  value="resourceId"
+                  outlined
+                  class="edit-select search-wrapper__combobox"
+                  v-model.trim="industryValue"
+                  @change="updateCommunities()"
+                  :placeholder="'Industry'"
+                  hide-details
+                  multiple
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <span
+                      v-if="index === 0"
+                      style="
+                        font-size: 13px;
+                        line-height: 1.6;
+                        letter-spacing: normal;
+                        color: rgba(0, 0, 0, 0.72) !important;
+                      "
+                    >
+                      {{ item.name }}
+                    </span>
+                    <span v-if="index === 1" class="caption pl-1">
+                      (+{{ industryValue.length - 1 }})</span
+                    >
+                  </template>
+                </v-combobox>
+              </div>
+              <div class="d-flex">
+                <v-select
+                  :items="privacyList"
+                  placeholder="Privacy"
+                  outlined
+                  class="edit-select"
+                  v-model="privacyValue"
+                  multiple
+                  hide-details
+                  item-text="name"
+                  item-value="id"
+                  @change="updateCommunities()"
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <span
+                      v-if="index === 0"
+                      style="
+                        font-size: 13px;
+                        line-height: 1.6;
+                        letter-spacing: normal;
+                        color: rgba(0, 0, 0, 0.72) !important;
+                      "
+                    >
+                      {{ item.name }}
+                    </span>
+                    <span v-if="index === 1" class="caption pl-1">
+                      (+{{ privacyValue.length - 1 }})</span
+                    >
+                  </template>
+                </v-select>
+              </div>
             </div>
           </template>
           <template v-slot:default="props">
@@ -290,7 +353,10 @@
                       MEMBER
                     </v-btn>
                     <v-btn
-                      v-else-if="!item.membershipStatusId && item.privacyStatusName == 'Private'"
+                      v-else-if="
+                        !item.membershipStatusId ||
+                        (item.membershipStatusId == 5 && item.privacyStatusName == 'Private')
+                      "
                       outlined
                       rounded
                       medium
@@ -301,7 +367,10 @@
                       REQUEST TO JOIN
                     </v-btn>
                     <v-btn
-                      v-else-if="!item.membershipStatusId && item.privacyStatusName == 'Public'"
+                      v-else-if="
+                        !item.membershipStatusId ||
+                        (item.membershipStatusId == 5 && item.privacyStatusName == 'Public')
+                      "
                       outlined
                       rounded
                       medium
@@ -463,6 +532,16 @@
               </div>
             </div>
           </template>
+          <template v-if="filter && filter.length > 3" slot="no-data">
+            <div class="empty-communities" v-if="selectedTab === 'tab-1'">
+              <div class="empty-communities-inline">
+                <span class="no-community">
+                  Sorry, we couldn't find any results matching your criteria
+                </span>
+              </div>
+            </div>
+          </template>
+
           <template v-if="!filter || filter.length < 1" slot="no-data">
             <div class="empty-communities" v-if="selectedTab === 'tab-1'">
               <div class="empty-communities-inline">
@@ -510,6 +589,7 @@ import {
   getInvitations,
   getMyCommunityList,
   joinCommunity,
+  listBusinessCategories,
   refuseInvitation,
   removeFromCommunities
 } from '../../api/threadSharing'
@@ -527,6 +607,14 @@ export default {
     AppDialog
   },
   data: () => ({
+    industryList: [],
+    industryValue: [],
+    privacyList: [
+      { name: 'Public', id: 1 },
+      { name: 'Private', id: 2 },
+      { name: 'Hidden', id: 3 }
+    ],
+    privacyValue: [],
     cancelRequestCommunityName: null,
     cancelRequestCommunityId: null,
     isCancelRequestModal: false,
@@ -580,9 +668,15 @@ export default {
   },
   created() {},
   mounted() {
+    this.getIndustryList()
     this.selectedTab = 'tab-1'
   },
   methods: {
+    getIndustryList() {
+      listBusinessCategories().then((response) => {
+        this.industryList = response.data.data
+      })
+    },
     getAllCommunityTabsData() {
       this.getAllCommunitiesListData()
       this.getMyCommunitiesListData()
@@ -655,7 +749,11 @@ export default {
         })
 
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.invitationsCount = []
           }
         })
@@ -726,7 +824,11 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when attempting to leave from a community'
           })*/
-          if (error.response.data.code === 'CANNOT_LEAVE_COMMUNITY') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'CANNOT_LEAVE_COMMUNITY'
+          ) {
             this.isWantToToLeaveFromCommunity = false
             this.showNeedPermissionModal = true
           }
@@ -782,6 +884,28 @@ export default {
                 }
               ],
               FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'IndustryResourceId',
+                  Operator: 'Include',
+                  Value: this.industryValue.map((item) => item.resourceId).toString() || ''
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'PrivacyStatusId',
+                  Operator: 'Include',
+                  Value: this.privacyValue.toString() || ''
+                }
+              ],
+              FilterGroups: []
             }
           ]
         }
@@ -793,7 +917,11 @@ export default {
         })
 
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.listData = []
           }
         })
@@ -823,6 +951,28 @@ export default {
                 }
               ],
               FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'IndustryResourceId',
+                  Operator: 'Include',
+                  Value: this.industryValue.map((item) => item.resourceId).toString() || ''
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'PrivacyStatusId',
+                  Operator: 'Include',
+                  Value: this.privacyValue.toString() || ''
+                }
+              ],
+              FilterGroups: []
             }
           ]
         }
@@ -833,7 +983,11 @@ export default {
           this.listData = data.data.results
         })
         .catch((error) => {
-          if (error.response.data.code === 'RESOURCE_NOT_FOUND') {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
             this.listData = []
           }
         })
@@ -856,7 +1010,6 @@ export default {
           break
         case 'tab-1':
           this.getAllCommunitiesListData()
-
           break
         case 'tab-2':
           this.getInvitions()
@@ -954,15 +1107,27 @@ export default {
     align-items: center;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-
-    > div {
-      padding-right: 10px;
+    padding: 8px;
+    margin: 24px 0px;
+    justify-content: flex-end !important;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    .v-text-field--outlined > .v-input__control > .v-input__slot {
+      background: white !important;
     }
-
-    .filter-icon {
-      color: rgba(0, 0, 0, 0.34) !important;
-      cursor: pointer;
+    > div {
+      &:first-child {
+        width: 220px;
+      }
+      padding-right: 8px;
+      width: 220px;
+    }
+    &__search-filter {
+      font-size: 16px !important;
+      padding-right: 8px;
+      .v-input__slot {
+        min-height: 40px !important;
+      }
     }
   }
 

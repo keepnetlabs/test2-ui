@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2"
       style="max-width: 100%;"
       v-if="showHeader"
     >
@@ -9,7 +9,7 @@
         <v-list-item-title class="other-settings__title">
           Other Settings
         </v-list-item-title>
-        <v-list-item-subtitle class="other-settings__sub-title mb-6">
+        <v-list-item-subtitle class="other-settings__sub-title mb-3">
           Extra settings
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -25,7 +25,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm">
-      <v-list-item class="px-0 other-settings__list-item mt-n4">
+      <v-list-item class="px-0 other-settings__list-item">
         <v-list-item-content>
           <div class="other-settings__list-item-header">
             Proxy Settings
@@ -57,7 +57,7 @@
               dense
               class="mt-2"
               style="margin-left: 50px;"
-              v-model="formValues.apiUrl"
+              v-model.trim="formValues.apiUrl"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
               :readonly="!showForm"
@@ -75,7 +75,7 @@
               dense
               class="mt-2"
               style="margin-left: 56px;"
-              v-model="formValues.apiKey"
+              v-model.trim="formValues.apiKey"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
               :readonly="!showForm"
@@ -115,7 +115,7 @@
       >
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
-            v-model="formValues.enableEnterpriseVault"
+            v-model.trim="formValues.enableEnterpriseVault"
             class="other-settings__checkbox k-checkbox"
             style="margin-top: -6px;"
             @change="handleEnterpriseVaultChange"
@@ -133,7 +133,7 @@
                   :disabled="enterpriseVaultDisabled"
                   dense
                   class="k-textfield mt-2"
-                  v-model="formValues.enterpriseVaultUrl"
+                  v-model.trim="formValues.enterpriseVaultUrl"
                   height="40"
                   :readonly="!showForm"
                 ></v-text-field>
@@ -263,8 +263,10 @@ export default {
     } else {
       this.formValues.companyKey = localStorage.getItem('companyId')
       this.formValues.enableEnterpriseVault = false
-      this.formValues.apiKey = ''
-      this.formValues.apiUrl = ''
+      this.formValues.apiKey =
+        process.env.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
+      this.formValues.apiUrl =
+        process.env.VUE_APP_WEB_API_TEST || 'https://apitest.keepnetlabs.com/api'
     }
   }
 }
@@ -313,16 +315,19 @@ export default {
 
   &__title {
     font-size: 24px;
-    line-height: 1.29;
+    line-height: 1.29 !important;
+    opacity: 0.9;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
   &__sub-title {
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.5 !important;
     letter-spacing: normal;
-    margin-top: 2px;
+    opacity: 0.9;
     color: rgba(0, 0, 0, 0.87) !important;
+    overflow: visible;
   }
 
   &__checkbox {
@@ -353,7 +358,7 @@ export default {
   }
 
   &__list-item {
-    margin-top: -4px;
+    //margin-top: -2px;
     max-width: 554px;
     overflow: visible;
     .v-list-item__content {

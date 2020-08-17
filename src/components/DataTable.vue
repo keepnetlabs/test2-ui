@@ -89,8 +89,8 @@
         </div>
         <extended-view
           v-if="isWantToEditRow"
-          :value="multipleSelection"
-          :options="columns"
+          :value="extendedViewValue"
+          :options="extendedViewOptions"
           :titleKey="titleKey"
           :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
@@ -100,6 +100,7 @@
             <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
           </template>
         </extended-view>
+        <slot name="extended-custom-view-slot"> </slot>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -374,11 +375,17 @@
         >
           <el-table
             :border="border"
+            :cell-class-name="setCellClass"
             :data="showfilteredData ? filteredData : tableData"
             :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
+            :show-header="showHeader"
+            @cell-mouse-enter="cellEnter"
+            @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
+            @sort-change="sortChangedEvent"
+            @cell-click="cellClick"
             default-expand-all
             id="data-table-container"
             lazy
@@ -386,11 +393,6 @@
             row-key="id"
             style="width: 100%;"
             v-if="!allHidden"
-            @cell-mouse-enter="cellEnter"
-            @cell-mouse-leave="cellLeave"
-            :cell-class-name="setCellClass"
-            @sort-change="sortChangedEvent"
-            :show-header="showHeader"
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
@@ -803,6 +805,18 @@ export default {
       type: Array,
       required: true
     },
+    extendedViewOptions: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    extendedViewValue: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
     titleKey: {
       type: String,
       default: 'name'
@@ -1029,6 +1043,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
+    this.extendedViewOptions = this.columns
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
@@ -1094,6 +1109,9 @@ export default {
     },
     cellEnter(row, column, cell, event) {
       this.hasOverflowTooltip(row, column, cell)
+    },
+    cellClick(row, column, event) {
+      this.$emit('cellClick', { row, column, event })
     },
     cellLeave(row, column, cell, event) {
       this.showOverFlowTooltip = false
@@ -1180,12 +1198,35 @@ export default {
             } else if (bProp === 'null') {
               return -1
             }
+
             // otherwise, if we're ascending, lowest sorts first
             else if (sortProps.order === 'ascending') {
+              if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+              ) {
+                return -1
+              } else if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+              ) {
+                return 1
+              }
               return aProp.toLowerCase() < bProp.toLowerCase() ? -1 : 1
             }
             // if descending, highest sorts first
             else {
+              if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+              ) {
+                return 1
+              } else if (
+                aProp.charAt(0) !== bProp.charAt(0) &&
+                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+              ) {
+                return -1
+              }
               return aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
             }
           } else {

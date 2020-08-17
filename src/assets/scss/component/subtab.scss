@@ -3,9 +3,14 @@
     bottom: 0 !important;
     color: #0486fe !important;
   }
+  .v-tabs-slider{
+    width: calc(100% + 15.5px);
+    position: absolute;
+    left: -7.5px;
+  }
 
   .v-slide-group__wrapper {
-    padding-left: 8px !important;
+    padding-left: 16px !important;
   }
 &__tab.v-tab{
    font-size: 14px !important;

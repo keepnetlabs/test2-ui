@@ -1,6 +1,29 @@
 
 .action-items {
   &__item {
+    border-radius:20px !important;
+    padding-left:24px;
+    padding-right:16px;
+    padding-top:16px;
+    margin:0 !important;
+    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14), 0 1px 1px -1px rgba(204, 204, 204, 0.12);
+    margin-bottom:8px !important;
+    &.vqb-rule .col .v-select__selections{
+      flex-wrap:wrap;
+    }
+    .v-select.v-input--dense .v-chip{
+      margin:4px;
+    }
+    .row{
+      padding-left:0 !important;
+    }
+    .col{
+      padding: 0 !important;
+      padding-right:8px !important;
+    }
+    .v-list-item__content .bottom-margin{
+      margin-bottom:0 !important;
+    }
   }
   .v-select .v-select__selection--disabled{
     color:rgba(0,0,0,.87) !important;
@@ -13,7 +36,7 @@
 .analyze__main-checkbox {
   position: relative;
   display: flex;
-  padding: 4px 0 0 24px;
+  padding: 4px 0 0 24px !important;
 }
 .checkbox-text {
   padding-top: 4px;
@@ -42,7 +65,7 @@
 }
 
 .k-checkbox {
-  z-index: 100;
+  z-index: 8;
 }
 
 .analyze__main__select-row-wrap {

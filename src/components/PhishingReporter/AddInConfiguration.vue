@@ -5,6 +5,7 @@
       @closeOverlay="$emit('closeOverlay')"
       icon-name="mdi-domain"
       title="Phishing Reporter Add-in Configuration"
+      class-name="add-in-configuration"
     >
       <template v-slot:overlay-body>
         <download-add-in-modal :status="showModal" @handleClose="handleContinue" />
@@ -52,7 +53,7 @@
                   <v-list-item-title class="add-in-configuration__title">
                     Email Settings
                   </v-list-item-title>
-                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
+                  <v-list-item-subtitle class="add-in-configuration__subtitle">
                     Reported emails will be sent to specified recipients
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -70,7 +71,7 @@
                   <v-list-item-title class="add-in-configuration__title">
                     Other Settings
                   </v-list-item-title>
-                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
+                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-3">
                     Additional settings for add-in and archive
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -344,31 +345,29 @@ export default {
     }
   }
 
+  .v-list-item__content > *:not(:last-child) {
+    margin-bottom: 0;
+  }
+
   &__right-col {
     display: flex;
   }
 
   &__title {
-    //opacity: 0.9;
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     letter-spacing: normal;
+    overflow: visible;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 
   &__subtitle {
-    //opacity: 0.9;
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
+    line-height: 1.5 !important;
     letter-spacing: normal;
+    overflow: visible;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 

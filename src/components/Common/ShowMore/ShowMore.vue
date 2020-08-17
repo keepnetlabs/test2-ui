@@ -89,7 +89,10 @@ export default {
       }
 
       let renderedCount = 0
-      if (this.computedData.length > 0) {
+      if (this.computedData.length === 1) {
+        this.renderedBadgeCount = 1
+        this.unRenderedBadgeCount = 0
+      } else if (this.computedData.length > 1) {
         for (let item of this.computedData) {
           let width = 0
           const keys = Object.keys(item)

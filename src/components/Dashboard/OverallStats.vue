@@ -147,7 +147,6 @@ export default {
   methods: {
     changeDropdownItem(item) {
       // this.dropdownCurrent = item;
-      this.$emit('changeDropdownItem', item)
     }
   },
   created() {

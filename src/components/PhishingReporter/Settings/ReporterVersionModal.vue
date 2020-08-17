@@ -60,9 +60,7 @@ export default {
     }
   },
   created() {
-    console.log('iam created')
     const payload = JSON.parse(this.selectedVersionRow.argument)
-    console.log('payload', payload)
     const formData = {}
     for (let key of Object.keys(payload)) {
       formData[key.charAt(0).toLocaleLowerCase('en-US') + key.slice(1)] = payload[key]
