@@ -1,5 +1,6 @@
 <template>
   <div class="investigations">
+    <Grapes></Grapes>
     <div class="investigations__container">
       <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
 
@@ -99,12 +100,14 @@ import { mapActions, mapGetters } from 'vuex'
 import { exportInvestigationList } from '../api/incidentResponder'
 import { getStoreValue } from '../model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
+import Grapes from '../components/GrapesJs/Grapes'
 export default {
   components: {
     Datatable,
     newInvestigation,
     AppDialog,
-    CreateOrEditRule
+    CreateOrEditRule,
+    Grapes
   },
   props: {
     selectedEmail: {
