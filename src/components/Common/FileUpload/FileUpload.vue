@@ -1,38 +1,39 @@
 <template>
   <div class="k-file-uploads">
-    <file-upload
-      ref="upload"
-      v-model="files"
-      extensions="gif,jpg,jpeg,png"
-      accept="image/png,image/gif,image/jpeg"
-      :multiple="false"
-      @input-file="inputFile"
-      @input-filter="inputFilter"
-      :drop="true"
-    >
-      Select or drop file
-      <v-icon>mdi-folder-open</v-icon>
-    </file-upload>
-    <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
-      <div class="k-file-uploads__item-details">
-        <div class="k-file-uploads__item-details--filename">{{ file.name }}</div>
-        <div class="k-file-uploads__item-details--filesize">
-          <span>{{ file.size | formatSize }}</span>
-          <span v-if="!isAtForm" class="k-file-uploads__item-details--progress-value"
-            >{{ file.progress }}%</span
+    <div class="k-file-uploads__wrapper">
+      <file-upload
+        ref="upload"
+        v-model="files"
+        extensions="gif,jpg,jpeg,png"
+        accept="image/png,image/gif,image/jpeg"
+        :multiple="false"
+        @input-file="inputFile"
+        @input-filter="inputFilter"
+        :drop="true"
+      >
+        Select or drop file
+        <v-icon>mdi-folder-open</v-icon>
+      </file-upload>
+      <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
+        <div class="k-file-uploads__item-details">
+          <div class="k-file-uploads__item-details--filename">{{ file.name }}</div>
+          <div class="k-file-uploads__item-details--filesize">
+            <span>{{ file.size | formatSize }}</span>
+            <span v-if="!isAtForm" class="k-file-uploads__item-details--progress-value"
+              >{{ file.progress }}%</span
+            >
+          </div>
+          <div v-if="!isAtForm" class="k-file-uploads__item-details--fileprogress">
+            <v-progress-linear :value="file.progress" />
+          </div>
+        </div>
+        <div v-if="!isAtForm" class="k-file-uploads__item-actions">
+          <v-icon>mdi-close-circle</v-icon>
+          <v-icon v-if="file.active" @click.prevent="$refs.upload.update(file, { active: false })"
+            >mdi-close-circle</v-icon
           >
         </div>
-        <div v-if="!isAtForm" class="k-file-uploads__item-details--fileprogress">
-          <v-progress-linear :value="file.progress" />
-        </div>
-      </div>
-      <div v-if="!isAtForm" class="k-file-uploads__item-actions">
-        <v-icon>mdi-close-circle</v-icon>
-        <v-icon v-if="file.active" @click.prevent="$refs.upload.update(file, { active: false })"
-          >mdi-close-circle</v-icon
-        >
-      </div>
-      <!--
+        <!--
       <div>{{ file.speed | formatSize }}</div>
 
       <div v-if="file.error">{{ file.error }}</div>
@@ -86,7 +87,9 @@
           >Remove</a
         >
       </div>-->
+      </div>
     </div>
+    <div v-if="hint" class="k-file-uploads__hint">{{ hint }}</div>
   </div>
 </template>
 
@@ -105,6 +108,10 @@ export default {
     fileType: {
       type: String,
       default: 'image'
+    },
+    hint: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -142,19 +149,22 @@ export default {
 
 <style lang="scss">
 .k-file-uploads {
-  min-height: 40px;
-  border-radius: 8px;
-  border: solid 1px #dcdfe6;
+  &__wrapper {
+    min-height: 40px;
+    border-radius: 8px;
+    border: solid 1px #dcdfe6;
 
-  & > .file-uploads {
-    padding: 10px;
-    font-size: 12px !important ;
-    font-weight: 600 !important;
-    color: rgba(0, 0, 0, 87);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    & > .file-uploads {
+      padding: 10px;
+      font-size: 12px !important ;
+      font-weight: 600 !important;
+      color: rgba(0, 0, 0, 87);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
+
   &__item {
     padding: 10px;
     border-top: solid 1px #dcdfe6;
@@ -192,6 +202,12 @@ export default {
         font-size: 14px;
       }
     }
+  }
+  &__hint {
+    margin-top: 1px;
+    font-size: 9px;
+    line-height: 13px;
+    color: #474747;
   }
 }
 </style>

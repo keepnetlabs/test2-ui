@@ -14,3 +14,11 @@ export function deleteCompany(id) {
 export function getCompanyByID(id) {
   return testRequest.get(`/companies/${id}`)
 }
+export function getCompanyGroups() {
+  return testRequest.get(`/company-groups`)
+}
+export function createCompany(payload) {
+  return testRequest.post('/companies', payload, {
+    responseType: 'blob'
+  })
+}

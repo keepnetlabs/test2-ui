@@ -1,5 +1,14 @@
 <template>
   <div class="company-list">
+    <v-dialog v-model="isShowCreateOrEditModal" fullscreen scrollable persistent no-click-animation>
+      <CompanyCreateOrEdit
+        @cancelForm="
+          () => {
+            this.isShowCreateOrEditModal = false
+          }
+        "
+      />
+    </v-dialog>
     <delete-modal
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
@@ -23,6 +32,7 @@
       @delete="handleTableItemDelete"
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
+      @addButton="addButton"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.companyName">
@@ -58,10 +68,12 @@ import {
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
+import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 
 export default {
   name: 'CompanyList',
   components: {
+    CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
     DeleteModal
@@ -69,6 +81,7 @@ export default {
   data: () => ({
     isShowDeleteModal: false,
     isShowExtended: false,
+    isShowCreateOrEditModal: false,
     selectedExtend: {},
     selectedRow: {},
     tableOptions: {
@@ -240,6 +253,9 @@ export default {
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
     },
+    changeCreateOrEditModalStatus(status) {
+      this.isShowCreateOrEditModal = status
+    },
     handleCompanyNameClick({ row, column, event }) {
       if (column.property === 'companyName') {
         this.selectedRow = row
@@ -305,6 +321,9 @@ export default {
           })
           .catch((error) => {})
       })
+    },
+    addButton() {
+      this.changeCreateOrEditModalStatus(true)
     }
   }
 }
