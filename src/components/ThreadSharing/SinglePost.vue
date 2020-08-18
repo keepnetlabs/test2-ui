@@ -1292,6 +1292,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Post has been shared successfully'
           })
+          this.openShareModal = false
         })
       }, 200)
     },
