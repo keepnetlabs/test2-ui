@@ -206,10 +206,10 @@ export default {
         this.threatsList = response.data.data
       })
     },
-    getIncidentList(memberId) {
+    getIncidentList(memberId, companyId) {
+      let companyResourceId = this.companyValue ? localStorage.getItem('companyResourceId') : null
       const payload = {
-        postedCompanyResourceId:
-          memberId || this.companyValue ? localStorage.getItem('companyId') : null,
+        postedCompanyResourceId: companyId || companyResourceId,
         pageNumber: 1,
         pageSize: 500,
         orderBy: 'PostedTime',
@@ -331,7 +331,7 @@ export default {
     flex-direction: row;
     padding: 8px;
     margin: 24px 0px;
-    justify-content: flex-end;
+    justify-content: flex-start;
     background-color: #f2f2f2;
     border-radius: 8px;
     .v-text-field--outlined > .v-input__control > .v-input__slot {

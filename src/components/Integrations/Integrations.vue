@@ -6,6 +6,7 @@
       :opacity="1"
       :z-index="99"
       color="white"
+      v-if="modalStatus"
     >
       <new-integration
         :showModal="modalStatus"

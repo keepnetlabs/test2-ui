@@ -21,6 +21,7 @@ import Integrations from '../views/Integrations'
 import Playbook from '../views/Playbook'
 import store from '../store'
 import Companies from '@/views/Companies'
+import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
 
 Vue.use(Router)
 
@@ -183,6 +184,15 @@ const router = new Router({
           meta: {
             isAuthenticated: true
           }
+        },
+        {
+          path: '/grapesjs',
+          name: 'Grapes',
+          component: ExampleGrapesJS,
+          meta: {
+            isAuthenticated: true
+          },
+          props: true
         }
       ]
     },

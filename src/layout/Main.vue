@@ -237,6 +237,18 @@
             <v-list-item-title>Phishing Reporter</v-list-item-title>
           </v-list-item>
         </router-link>
+        <router-link
+          to="/grapesjs"
+          class="menu-link-default"
+          v-if="isGrapesDebug || routerName === 'Grapes'"
+        >
+          <v-list-item class="menu-list-item">
+            <v-list-item-icon>
+              <v-icon>mdi-account-voice</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Grapes JS</v-list-item-title>
+          </v-list-item>
+        </router-link>
       </v-list>
     </v-navigation-drawer>
     <!-- Header Begin -->
@@ -486,6 +498,7 @@ import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
 import AuthenticationService from '../services/authentication'
+import 'grapesjs/dist/css/grapes.min.css'
 
 export default {
   name: 'Main',
@@ -727,6 +740,9 @@ export default {
     },
     routerName() {
       return this.$route.name
+    },
+    isGrapesDebug() {
+      return this.$route.query.grapesDemo === 'true'
     },
     getDrawer: {
       get() {

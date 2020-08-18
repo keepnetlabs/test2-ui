@@ -158,7 +158,7 @@ export default {
     selectedMemberPostFunc(item) {
       this.tab = 0
       setTimeout(() => {
-        this.$refs.refIncidents.getIncidentList(item.companyResourceId)
+        this.$refs.refIncidents.getIncidentList(item.communityResourceId, item.companyResourceId)
       }, 50)
     },
     refreshDataFunc() {

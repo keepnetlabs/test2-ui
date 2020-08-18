@@ -101,7 +101,8 @@ export function getTextColor(type) {
   }
 }
 
-export function getDataTableFieldLabel(field) {
+export function getDataTableFieldLabel(field = '') {
+  field = String(field)
   const defField = field
   field = field.trim().toLowerCase()
   let upperCaseCount = 0

@@ -391,8 +391,8 @@ export default {
         tags: [],
         isActive: true,
         isSendUrl: false,
-        isSendFileHash: true,
-        isUploadExecutableFile: true,
+        isSendFileHash: false,
+        isUploadExecutableFile: false,
         isUploadOtherFileType: false,
         apiKeys: [{ value: '', status: null }],
         isHideUrlParameter: false,
@@ -400,7 +400,11 @@ export default {
         name: null,
         apiUrl: null
       },
-      selectedIntegrationType: {},
+      selectedIntegrationType: {
+        isSendUrl: false,
+        isSendFileHash: false,
+        isSendFile: false
+      },
       integrationTypes: [],
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
@@ -439,6 +443,10 @@ export default {
         } = response
 
         this.integrationTypes = data
+        this.selectedIntegrationType =
+          this.integrationTypes.find(
+            (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
+          ) || {}
       })
       .catch((error) => {
         this.$store.dispatch('common/createSnackBar', {
@@ -651,16 +659,13 @@ export default {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
     }
   },
-  destroyed() {
-    this.integrationId = null
-    this.resetValues()
-  },
+  destroyed() {},
   watch: {
     formValues(val) {
-      console.log('val', val)
-      this.selectedIntegrationType = this.integrationTypes.find(
-        (item) => item.resourceId === val.analysisEngineTypeResourceId
-      )
+      this.selectedIntegrationType =
+        this.integrationTypes.find(
+          (item) => item.resourceId === val.analysisEngineTypeResourceId
+        ) || {}
     }
   }
 }

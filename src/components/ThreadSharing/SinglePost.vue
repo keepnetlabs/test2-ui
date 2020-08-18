@@ -7,6 +7,7 @@
         :status="isWantToAddNewInvestigation"
         v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
+        style="z-index: 999999;"
       />
     </div>
     <app-dialog
