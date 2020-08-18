@@ -27,6 +27,7 @@ const auth = {
           manager: response.data.currentCompany.name
         }
         localStorage.setItem('companyId', response.data.currentCompany.id)
+        localStorage.setItem('companyResourceId', 'uB4jcFz9x1My')
         localStorage.setItem('companyName', response.data.currentCompany.name)
         localStorage.setItem('userId', response.data.id)
         localStorage.setItem('businessCatId', response.data.userCompany.businessCategoryId)
