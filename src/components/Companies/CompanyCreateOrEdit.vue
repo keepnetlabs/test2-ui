@@ -6,7 +6,7 @@
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="">{{ selectedRow ? 'Edit' : 'New' }} Company</v-list-item-title>
+          <v-list-item-title class="">{{ edit ? 'Edit' : 'New' }} Company</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-card>
@@ -133,11 +133,7 @@
                       @inputFile="onFileChanged"
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                     />
-                    <img
-                      v-if="this.selectedExtend.logoUrl.length > 0"
-                      :src="this.selectedExtend.logoUrl"
-                      style="height: 60px;"
-                    />
+                    <img v-if="edit" :src="this.selectedExtend.logoUrl" style="height: 60px;" />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -228,7 +224,9 @@
                         color="#2196f3"
                         text
                         @click="clickUnlimited"
-                        >MAKE UNLIMITED</v-btn
+                        >{{
+                          formData.IsNumberOfUsersLimited ? 'MAKE UNLIMITED' : 'LIMIT USER'
+                        }}</v-btn
                       >
                     </div>
                   </v-list-item-content>
@@ -419,6 +417,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
+    edit: { type: Boolean },
     selectedRow: { type: Object, default: null },
     selectedExtend: { type: Object, default: null }
   },
@@ -487,10 +486,12 @@ export default {
     this.getTrainingContent()
     this.getSmtpConfigurations()
 
-    this.formData.Name = this.selectedRow.companyName
-    this.formData.Description = this.selectedExtend.description
-    this.formData.IndustryResourceId = this.selectedExtend.industryResourceId
-    this.formData.CountryResourceId = this.selectedExtend.countryResourceId
+    if (this.edit) {
+      this.formData.Name = this.selectedRow.companyName
+      this.formData.Description = this.selectedExtend.description
+      this.formData.IndustryResourceId = this.selectedExtend.industryResourceId
+      this.formData.CountryResourceId = this.selectedExtend.countryResourceId
+    }
   },
   methods: {
     getIndustries() {

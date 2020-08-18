@@ -9,6 +9,7 @@
         "
         :selectedRow="selectedRow"
         :selectedExtend="selectedExtend"
+        :edit="editModal"
       />
     </v-dialog>
     <delete-modal
@@ -62,6 +63,7 @@
 </template>
 
 <script>
+''
 import Datatable from '../../components/DataTable'
 import { searchCompanies, deleteCompany, getCompanyByID, exportCompanies } from '../../api/company'
 import DeleteModal from './DeleteModal'
@@ -83,6 +85,7 @@ export default {
     DeleteModal
   },
   data: () => ({
+    editModal: false,
     isShowDeleteModal: false,
     isShowExtended: false,
     isShowCreateOrEditModal: false,
@@ -333,6 +336,7 @@ export default {
     },
     editAction(row) {
       this.selectedRow = row
+      this.editModal = true
 
       getCompanyByID(row.companyResourceId)
         .then((response) => {
