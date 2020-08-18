@@ -5,6 +5,9 @@
         @cancelForm="
           () => {
             this.isShowCreateOrEditModal = false
+            this.editModal = false
+            this.selectedExtend = {}
+            this.selectedRow = {}
           }
         "
         :selectedRow="selectedRow"
@@ -52,8 +55,8 @@
           @close="
             () => {
               isShowExtended = false
-              selectedRow = {}
-              selectedExtend = {}
+              selectedRow = null
+              selectedExtend = null
             }
           "
         />

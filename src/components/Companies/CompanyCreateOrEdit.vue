@@ -1,5 +1,5 @@
 <template>
-  <div flat class="fullscreen-form company-create-modal">
+  <div class="fullscreen-form company-create-modal">
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-btn__icon-wrapper">
@@ -188,7 +188,18 @@
                       outlined
                       placeholder="Select an option"
                       :rules="[(v) => !!v || 'Item is required']"
+                      @change="expiriyPeriodChange"
                     ></v-select>
+                    <el-date-picker
+                      v-show="formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'"
+                      v-model="LicenseDates"
+                      type="daterange"
+                      style="margin-bottom: 14px;"
+                      :picker-options="datePickerOptions"
+                      :default-time="['00:00:00']"
+                      :rules="[(v) => !!v || 'Item is required']"
+                      @change="dataPickerChange"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -417,9 +428,9 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
-    edit: { type: Boolean },
-    selectedRow: { type: Object, default: null },
-    selectedExtend: { type: Object, default: null }
+    edit: { type: Boolean, default: false },
+    selectedRow: { type: Object },
+    selectedExtend: { type: Object }
   },
   components: { KFileUpload },
   data() {
@@ -448,6 +459,7 @@ export default {
         ReleaseNotesUrl: '',
         CompanyGroupResourceIdArray: []
       },
+      LicenseDates: [],
       isActive: true,
       expiryPeriods: [],
       countries: [],
@@ -457,7 +469,11 @@ export default {
       notificationTemplates: [],
       trainingContents: [],
       smtpConfigurations: [],
-
+      datePickerOptions: {
+        disabledDate(date) {
+          return date < new Date() - 3600 * 1000 * 24
+        }
+      },
       validations: {
         required,
         maxLength
@@ -609,6 +625,22 @@ export default {
     },
     cancelForm() {
       this.$emit('cancelForm')
+    },
+    expiriyPeriodChange() {
+      const end = new Date()
+      const start = new Date()
+      if (this.formData.LicensePeriodTypeResourceId == 'HTHpWWXGJshG') {
+        end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
+      } else if (this.formData.LicensePeriodTypeResourceId == '6EXwfaM5ZDT4') {
+        end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
+      }
+
+      this.formData.LicenseStartDate = start
+      this.formData.LicenseEndDate = end
+    },
+    dataPickerChange() {
+      this.formData.LicenseStartDate = this.LicenseDates[0]
+      this.formData.LicenseEndDate = this.LicenseDates[1]
     }
   }
 }

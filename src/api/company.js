@@ -24,11 +24,10 @@ export function createCompany(payload) {
     console.log(key)
     formData.append(key, payload[key])
   }
-
+  console.log(formData)
   return testRequest.post(`/companies`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    responseType: 'blob'
+      'Content-Type': 'application/json'
+    }
   })
 }
