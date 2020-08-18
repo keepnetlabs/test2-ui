@@ -144,9 +144,9 @@
                   <v-list-item-content>
                     <v-switch
                       :ripple="false"
-                      v-model="formData.isActive"
+                      v-model="isActive"
                       dense
-                      :label="formData.isActive ? 'Active' : 'Inactive'"
+                      :label="isActive ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
                     />

@@ -38,6 +38,24 @@
           <a :href="selectedExtend.websiteUrl" target="_blank">{{ selectedExtend.websiteUrl }}</a>
         </div>
       </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key">Country</div>
+        <div class="company-list-extend__body-value">
+          {{ selectedExtend.countryName }}
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key">Notif. Templates</div>
+        <div class="company-list-extend__body-value">
+          {{ selectedExtend.notificationTemplateTypeName }}
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key">Smtp Settings</div>
+        <div class="company-list-extend__body-value">
+          {{ selectedExtend.smtpConfigurationTypeName }}
+        </div>
+      </div>
     </div>
     <div class="company-list-extend__footer">
       <div class="company-list-extend__footer-item">
