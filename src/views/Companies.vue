@@ -19,7 +19,7 @@
             <company-list />
           </v-tab-item>
           <v-tab-item>
-            222222222
+            <company-group-list></company-group-list>
           </v-tab-item>
           <v-tab-item> </v-tab-item>
         </v-tabs-items>
@@ -30,9 +30,10 @@
 
 <script>
 import CompanyList from '@/components/Companies/CompanyList'
+import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
 export default {
   name: 'Companies',
-  components: { CompanyList },
+  components: { CompanyGroupList, CompanyList },
   data() {
     return {
       tab: 0
