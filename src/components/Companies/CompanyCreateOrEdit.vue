@@ -289,6 +289,7 @@
                       item-text="name"
                       item-value="resourceId"
                       outlined
+                      :rules="[(v) => !!v || 'Item is required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -301,6 +302,7 @@
                       item-text="name"
                       item-value="resourceId"
                       outlined
+                      :rules="[(v) => !!v || 'Item is required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -313,6 +315,7 @@
                       item-text="name"
                       item-value="resourceId"
                       outlined
+                      :rules="[(v) => !!v || 'Item is required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
