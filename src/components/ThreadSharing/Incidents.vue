@@ -206,10 +206,10 @@ export default {
         this.threatsList = response.data.data
       })
     },
-    getIncidentList(memberId) {
+    getIncidentList(memberId, companyId) {
+      let companyResourceId = this.companyValue ? localStorage.getItem('companyResourceId') : null
       const payload = {
-        postedCompanyResourceId:
-          memberId || this.companyValue ? localStorage.getItem('companyId') : null,
+        postedCompanyResourceId: companyId || companyResourceId,
         pageNumber: 1,
         pageSize: 500,
         orderBy: 'PostedTime',
