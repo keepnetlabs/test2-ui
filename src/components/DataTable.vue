@@ -1043,7 +1043,7 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
-    this.extendedViewOptions = this.columns
+    //this.extendedViewOptions = this.columns
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
@@ -1549,7 +1549,10 @@ export default {
     loadWithDataArray(data, responseParams) {
       this.initialData = data
       this.dataLength = responseParams && responseParams.totalNumberOfRecords
-      this.tableData = (data && data.slice(0, this.rowCount || this.countRow)) || []
+      this.tableData =
+        (data &&
+          data.slice((this.currentPage - 1) * this.rowCount, this.currentPage * this.rowCount)) ||
+        []
     },
     handleFilterColumn(filterObj) {
       const { column, filterValue, filteredSelectValue } = filterObj
