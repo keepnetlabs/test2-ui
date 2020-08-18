@@ -269,12 +269,7 @@
           </v-list-item>
           <div
             class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
-            v-if="
-              selectedIntegrationType &&
-              formValues &&
-              formValues.isSendUrl &&
-              selectedIntegrationType.isSendUrl
-            "
+            v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
           >
             <v-checkbox
               class="black--text"
@@ -446,8 +441,12 @@ export default {
         const {
           data: { data, status }
         } = response
-      
+
         this.integrationTypes = data
+        this.selectedIntegrationType =
+          this.integrationTypes.find(
+            (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
+          ) || {}
       })
       .catch((error) => {
         this.$store.dispatch('common/createSnackBar', {
@@ -660,10 +659,7 @@ export default {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
     }
   },
-  destroyed() {
-    this.integrationId = null
-    this.resetValues()
-  },
+  destroyed() {},
   watch: {
     formValues(val) {
       this.selectedIntegrationType =
