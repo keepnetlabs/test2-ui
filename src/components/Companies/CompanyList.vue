@@ -7,6 +7,8 @@
             this.isShowCreateOrEditModal = false
           }
         "
+        :selectedRow="selectedRow"
+        :selectedExtend="selectedExtend"
       />
     </v-dialog>
     <delete-modal
@@ -33,6 +35,7 @@
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
       @addButton="addButton"
+      @editAction="editAction"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.companyName">
@@ -44,6 +47,7 @@
           v-if="isShowExtended"
           :selectedRow="selectedRow"
           :selectedExtend="selectedExtend"
+          @editAction="editAction"
           @close="
             () => {
               isShowExtended = false
@@ -167,13 +171,14 @@ export default {
       },
       addButton: {
         show: true,
-        action: 'addButton'
+        action: 'addButton',
+        tooltip: 'Add new company'
       },
       rowActions: [
         {
           name: 'Edit this row',
           icon: 'mdi-pencil',
-          action: 'edit',
+          action: 'editAction',
           isNotShow: true
         },
         {
@@ -184,6 +189,7 @@ export default {
       ]
     },
     payload: {
+      pageSize: 3000,
       orderBy: 'LicenseTypeName',
       ascending: true,
       filter: {
@@ -324,6 +330,23 @@ export default {
     },
     addButton() {
       this.changeCreateOrEditModalStatus(true)
+    },
+    editAction(row) {
+      this.selectedRow = row
+
+      getCompanyByID(row.companyResourceId)
+        .then((response) => {
+          this.selectedExtend = response.data.data
+          this.changeCreateOrEditModalStatus(true)
+        })
+        .catch((error) => {
+          this.isShowExtended = false
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
     }
   }
 }

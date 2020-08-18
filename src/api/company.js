@@ -18,7 +18,17 @@ export function getCompanyGroups() {
   return testRequest.get(`/company-groups`)
 }
 export function createCompany(payload) {
-  return testRequest.post('/companies', payload, {
+  const formData = new FormData()
+
+  for (const key in payload) {
+    console.log(key)
+    formData.append(key, payload[key])
+  }
+
+  return testRequest.post(`/companies`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
     responseType: 'blob'
   })
 }

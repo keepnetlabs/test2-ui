@@ -6,7 +6,7 @@
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="">{{ false ? 'Edit' : 'New' }} Company</v-list-item-title>
+          <v-list-item-title class="">{{ selectedRow ? 'Edit' : 'New' }} Company</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-card>
@@ -133,6 +133,11 @@
                       @inputFile="onFileChanged"
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                     />
+                    <img
+                      v-if="this.selectedExtend.logoUrl.length > 0"
+                      :src="this.selectedExtend.logoUrl"
+                      style="height: 60px;"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -248,7 +253,7 @@
                     <label class="bottom-margin">Company Groups</label>
                     <v-autocomplete
                       :items="companyGroupList"
-                      v-model="CompanyGroupResourceIdArray"
+                      v-model="formData.CompanyGroupResourceIdArray"
                       chips
                       clearable
                       item-text="name"
@@ -410,6 +415,10 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'CompanyCreateOrEdit',
+  props: {
+    selectedRow: { type: Object, default: null },
+    selectedExtend: { type: Object, default: null }
+  },
   components: { KFileUpload },
   data() {
     return {
@@ -434,10 +443,10 @@ export default {
         SmtpConfigurationTypeResourceId: '',
         IsVersionVisible: false,
         IsReleaseNotesVisible: false,
-        ReleaseNotesUrl: ''
+        ReleaseNotesUrl: '',
+        CompanyGroupResourceIdArray: []
       },
       isActive: true,
-      CompanyGroupResourceIdArray: [],
       expiryPeriods: [],
       countries: [],
       industries: [],
@@ -474,6 +483,11 @@ export default {
     this.getNotificationTemplates()
     this.getTrainingContent()
     this.getSmtpConfigurations()
+
+    this.formData.Name = this.selectedRow.companyName
+    this.formData.Description = this.selectedExtend.description
+    this.formData.IndustryResourceId = this.selectedExtend.industryResourceId
+    this.formData.CountryResourceId = this.selectedExtend.countryResourceId
   },
   methods: {
     getIndustries() {
@@ -533,14 +547,11 @@ export default {
         .catch((error) => {})
     },
     handleSave() {
-      debugger
-      const payload = {
-        ...this.formData
-      }
+      console.log('this.formdatapaylaod:', this.formData)
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
-        createCompany(payload)
+        createCompany(this.formData)
           .then((response) => {
-            debugger
+            console.log(response)
             if (response.data && response.data.message) {
               this.$store.dispatch('common/createSnackBar', {
                 message: response.data.message,

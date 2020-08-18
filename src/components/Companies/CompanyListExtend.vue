@@ -5,7 +5,7 @@
         {{ selectedRow.companyName }}
       </div>
       <div class="company-list-extend__header-icon">
-        <v-btn icon small text>
+        <v-btn icon small text @click="$emit('editAction', selectedRow)">
           <v-icon size="24">mdi-pencil</v-icon>
         </v-btn>
       </div>
