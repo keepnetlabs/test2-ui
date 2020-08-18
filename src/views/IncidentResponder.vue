@@ -435,7 +435,6 @@
             @handleDetails="irDetailsOnClick"
             @onEditClick="onEditClick"
             @handleEdit="handleEdit"
-            titleKey="subject"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
@@ -763,94 +762,107 @@ export default {
     },
     emails: {
       table: [],
-      extendedViewOptions: [
-        {
-          property: PROPERTY_STORE.SUBJECT,
-          label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          isEditable: false,
-          type: 'text',
-          show: true
-        },
-        {
-          property: PROPERTY_STORE.REPORTEDBY,
-          label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
-          isEditable: false,
-          type: 'text',
-          show: true
-        },
-        {
-          property: PROPERTY_STORE.RESOURCEID,
-          label: 'Case Id',
-          isEditable: false,
-          type: 'text',
-          show: true
-        },
-        {
-          property: PROPERTY_STORE.ANALYSISSOURCE,
-          label: 'Analysis Source',
-          isEditable: false,
-          type: 'analysisSource',
-          show: true
-        },
-        {
-          property: PROPERTY_STORE.RESULT,
-          label: getStoreValue(PROPERTY_STORE.RESULT),
-          isEditable: true,
-          type: 'badge',
-          editOptions: {
-            component: 'select',
-            getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
-              } else {
-                return false
+      extendedViewOptions: {
+        titleKey: 'subject',
+        footer: [
+          {
+            label: 'Date Created',
+            key: 'createDate'
+          },
+          {
+            label: 'Last update',
+            key: 'lastUpdateDate'
+          }
+        ],
+        col: [
+          {
+            property: PROPERTY_STORE.SUBJECT,
+            label: getStoreValue(PROPERTY_STORE.SUBJECT),
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.REPORTEDBY,
+            label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.RESOURCEID,
+            label: 'Case Id',
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.ANALYSISSOURCE,
+            label: 'Analysis Source',
+            isEditable: false,
+            type: 'analysisSource',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.RESULT,
+            label: getStoreValue(PROPERTY_STORE.RESULT),
+            isEditable: true,
+            type: 'badge',
+            editOptions: {
+              component: 'select',
+              getDisabledValue(row) {
+                if (row.status === 'BeingAnalyzed') {
+                  return true
+                } else {
+                  return false
+                }
+              },
+              props: {
+                items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
               }
             },
-            props: {
-              items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
-            }
+            show: true
           },
-          show: true
-        },
-        {
-          property: PROPERTY_STORE.STATUS,
-          label: getStoreValue(PROPERTY_STORE.STATUS),
-          isEditable: true,
-          type: 'colorfulText',
-          editOptions: {
-            component: 'select',
-            getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
-              } else {
-                return false
+          {
+            property: PROPERTY_STORE.STATUS,
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            isEditable: true,
+            type: 'colorfulText',
+            editOptions: {
+              component: 'select',
+              getDisabledValue(row) {
+                if (row.status === 'BeingAnalyzed') {
+                  return true
+                } else {
+                  return false
+                }
+              },
+              props: {
+                items: [
+                  'Open',
+                  'Closed',
+                  { text: 'In Progress', value: 'InProgress' },
+                  { text: 'False Positive', value: 'FalsePositive' }
+                ]
               }
             },
-            props: {
-              items: [
-                'Open',
-                'Closed',
-                { text: 'In Progress', value: 'InProgress' },
-                { text: 'False Positive', value: 'FalsePositive' }
-              ]
-            }
+            show: true
           },
-          show: true
-        },
-        {
-          property: 'tags',
-          label: 'Tags',
-          isEditable: true,
-          type: 'smallBadge',
-          editOptions: {
-            component: 'combobox',
-            props: {
-              placeholder: 'Enter Tags'
-            }
-          },
-          show: true
-        }
-      ],
+          {
+            property: 'tags',
+            label: 'Tags',
+            isEditable: true,
+            type: 'smallBadge',
+            editOptions: {
+              component: 'combobox',
+              props: {
+                placeholder: 'Enter Tags'
+              }
+            },
+            show: true
+          }
+        ]
+      },
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,

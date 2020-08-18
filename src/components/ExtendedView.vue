@@ -1,7 +1,9 @@
 <template>
   <div
     class="settings-popup edit-popup"
-    v-if="options && options.length && copyOfEditedRows && copyOfEditedRows.length"
+    v-if="
+      options && options.col && options.col.length && copyOfEditedRows && copyOfEditedRows.length
+    "
     :style="[
       containerStyle,
       editMode && {
@@ -12,7 +14,7 @@
     <div class="inline-wrapper">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
-          {{ copyOfEditedRows[0][titleKey] }}
+          {{ copyOfEditedRows[0][options.titleKey] }}
         </span>
         <span class="settings-span" v-else>{{ value.length }} Items Selected</span>
         <div class="edit-popup__edit-actions">
@@ -34,13 +36,13 @@
           <v-btn @click="saveEditedOnes()" color="#2196f3" dense text v-if="editMode">SAVE </v-btn>
         </div>
       </div>
-      <div class="edit-popup__body" v-if="options && options.length">
+      <div class="edit-popup__body" v-if="options && options.col && options.col.length">
         <v-form lazy-validation ref="refForm">
           <div class="items-wrapper">
             <div
               :key="col.label"
               class="row-edit-div"
-              v-for="col in options"
+              v-for="col in options.col"
               v-if="
                 !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdateDate'
               "
@@ -460,22 +462,22 @@
                     class="edit-date-created"
                     v-if="copyOfEditedRows[0]['createDate'] !== undefined"
                   >
-                    <label>Date Created</label>
+                    <label>{{ options.footer[0].label }}</label>
                     <span>{{
                       multipleValues('createDate')
                         ? 'Multiple Values'
-                        : copyOfEditedRows[0]['createDate']
+                        : copyOfEditedRows[0][options.footer[0].key]
                     }}</span>
                   </div>
                   <div
                     class="edit-date-created"
                     v-if="copyOfEditedRows[0]['lastUpdateDate'] !== undefined"
                   >
-                    <label>Last update</label>
+                    <label>{{ options.footer[1].label }}</label>
                     <span>{{
                       multipleValues('lastUpdateDate')
                         ? 'Multiple Values'
-                        : copyOfEditedRows[0]['lastUpdateDate']
+                        : copyOfEditedRows[0][options.footer[1].key]
                     }}</span>
                   </div>
                 </div>
@@ -527,9 +529,9 @@ export default {
   },
   props: {
     options: {
-      type: Array,
+      type: Object,
       default: () => {
-        return []
+        return {}
       }
     },
     containerStyle: {
@@ -540,9 +542,6 @@ export default {
       default: () => {
         return []
       }
-    },
-    titleKey: {
-      type: String
     },
     chartOptions: {
       type: Object

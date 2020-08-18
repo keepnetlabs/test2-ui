@@ -91,7 +91,6 @@
           v-if="isWantToEditRow"
           :value="extendedViewValue"
           :options="extendedViewOptions"
-          :titleKey="titleKey"
           :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
           @closeEditPopup="closeEditPopup"
@@ -809,9 +808,9 @@ export default {
       required: true
     },
     extendedViewOptions: {
-      type: Array,
+      type: Object,
       default() {
-        return []
+        return {}
       }
     },
     extendedViewValue: {
@@ -819,10 +818,6 @@ export default {
       default() {
         return []
       }
-    },
-    titleKey: {
-      type: String,
-      default: 'name'
     },
     cellPadding: {
       type: Number,
