@@ -269,7 +269,12 @@
           </v-list-item>
           <div
             class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
-            v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
+            v-if="
+              selectedIntegrationType &&
+              formValues &&
+              formValues.isSendUrl &&
+              selectedIntegrationType.isSendUrl
+            "
           >
             <v-checkbox
               class="black--text"
@@ -391,8 +396,8 @@ export default {
         tags: [],
         isActive: true,
         isSendUrl: false,
-        isSendFileHash: true,
-        isUploadExecutableFile: true,
+        isSendFileHash: false,
+        isUploadExecutableFile: false,
         isUploadOtherFileType: false,
         apiKeys: [{ value: '', status: null }],
         isHideUrlParameter: false,
@@ -400,7 +405,11 @@ export default {
         name: null,
         apiUrl: null
       },
-      selectedIntegrationType: {},
+      selectedIntegrationType: {
+        isSendUrl: false,
+        isSendFileHash: false,
+        isSendFile: false
+      },
       integrationTypes: [],
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
@@ -437,7 +446,7 @@ export default {
         const {
           data: { data, status }
         } = response
-
+      
         this.integrationTypes = data
       })
       .catch((error) => {
@@ -657,10 +666,10 @@ export default {
   },
   watch: {
     formValues(val) {
-      console.log('val', val)
-      this.selectedIntegrationType = this.integrationTypes.find(
-        (item) => item.resourceId === val.analysisEngineTypeResourceId
-      )
+      this.selectedIntegrationType =
+        this.integrationTypes.find(
+          (item) => item.resourceId === val.analysisEngineTypeResourceId
+        ) || {}
     }
   }
 }

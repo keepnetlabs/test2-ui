@@ -99,6 +99,9 @@
           <template v-slot:body>
             <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
           </template>
+          <template v-slot:footer>
+            <slot name="extended-view-footer" :scope="multipleSelection"> </slot>
+          </template>
         </extended-view>
         <slot name="extended-custom-view-slot"> </slot>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
@@ -298,7 +301,7 @@
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.edit">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="isWantToEditRow = true"
+                  @click="handleMultipleSelectedEdits"
                   class="btn-selected-hover mr-1"
                   icon
                   v-on="on"
@@ -1085,6 +1088,16 @@ export default {
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
+    },
+    handleMultipleSelectedEdits() {
+      this.extendedViewStyle = {
+        top: `${48}px`
+      }
+      this.$emit('onEditClick', {
+        selected: this.multipleSelection,
+        isEditPopupOpen: true
+      })
+      this.isWantToEditRow = true
     },
     setCellClass(obj) {
       /*

@@ -454,35 +454,37 @@
             </div>
             <slot name="body" v-if="editMode"> </slot>
             <div class="edit-popup__footer" v-if="hasEditPopupFooter()">
-              <div class="edit-footer-date">
-                <div
-                  class="edit-date-created"
-                  v-if="copyOfEditedRows[0]['createDate'] !== undefined"
-                >
-                  <label>Date Created</label>
-                  <span>{{
-                    multipleValues('createDate')
-                      ? 'Multiple Values'
-                      : copyOfEditedRows[0]['createDate']
-                  }}</span>
+              <slot name="footer">
+                <div class="edit-footer-date">
+                  <div
+                    class="edit-date-created"
+                    v-if="copyOfEditedRows[0]['createDate'] !== undefined"
+                  >
+                    <label>Date Created</label>
+                    <span>{{
+                      multipleValues('createDate')
+                        ? 'Multiple Values'
+                        : copyOfEditedRows[0]['createDate']
+                    }}</span>
+                  </div>
+                  <div
+                    class="edit-date-created"
+                    v-if="copyOfEditedRows[0]['lastUpdateDate'] !== undefined"
+                  >
+                    <label>Last update</label>
+                    <span>{{
+                      multipleValues('lastUpdateDate')
+                        ? 'Multiple Values'
+                        : copyOfEditedRows[0]['lastUpdateDate']
+                    }}</span>
+                  </div>
                 </div>
-                <div
-                  class="edit-date-created"
-                  v-if="copyOfEditedRows[0]['lastUpdateDate'] !== undefined"
-                >
-                  <label>Last update</label>
-                  <span>{{
-                    multipleValues('lastUpdateDate')
-                      ? 'Multiple Values'
-                      : copyOfEditedRows[0]['lastUpdateDate']
-                  }}</span>
+                <div class="edit-footer-settings" v-show="isPopupDateEditable">
+                  <v-btn icon color="#fff" style="text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);">
+                    <v-icon>mdi-cog</v-icon>
+                  </v-btn>
                 </div>
-              </div>
-              <div class="edit-footer-settings" v-show="isPopupDateEditable">
-                <v-btn icon color="#fff" style="text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);">
-                  <v-icon>mdi-cog</v-icon>
-                </v-btn>
-              </div>
+              </slot>
             </div>
           </div>
         </v-form>
@@ -746,7 +748,6 @@ export default {
       navigator.clipboard.writeText(text)
     }
   },
-  updated() {},
   created() {
     this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
     this.defaultValues = JSON.parse(JSON.stringify(this.value))
