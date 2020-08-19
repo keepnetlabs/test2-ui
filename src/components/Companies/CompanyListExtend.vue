@@ -39,9 +39,23 @@
         </div>
       </div>
       <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key">Website</div>
+        <div class="company-list-extend__body-value">
+          <span v-for="(group, index) of selectedExtend.companyGroups" :key="group.name">
+            {{ group.name }}<span v-if="index + 1 < selectedExtend.companyGroups.length">,</span>
+          </span>
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
         <div class="company-list-extend__body-key">Country</div>
         <div class="company-list-extend__body-value">
           {{ selectedExtend.countryName }}
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key">Courses</div>
+        <div class="company-list-extend__body-value">
+          {{ selectedExtend.trainingContentTypeName }}
         </div>
       </div>
       <div class="company-list-extend__body-item">
@@ -54,6 +68,33 @@
         <div class="company-list-extend__body-key">Smtp Settings</div>
         <div class="company-list-extend__body-value">
           {{ selectedExtend.smtpConfigurationTypeName }}
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key d-flex align-center">Phishing</div>
+        <div class="company-list-extend__body-value">
+          <apexchart :options="chartOptions" :series="series" :width="56" />
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key d-flex align-center">Training</div>
+        <div class="company-list-extend__body-value">
+          <apexchart :options="chartOptions" :series="series" :width="56" />
+        </div>
+      </div>
+      <div class="company-list-extend__body-item">
+        <div class="company-list-extend__body-key d-flex align-center">Status</div>
+        <div class="company-list-extend__body-value">
+          <v-btn
+            :dark="selectedExtend.statusId == 2 ? false : true"
+            :disabled="selectedExtend.statusId == 2 ? true : false"
+            color="#2196f3"
+            height="24"
+            depressed
+            small
+            :ripple="false"
+            >{{ selectedExtend.statusName }}</v-btn
+          >
         </div>
       </div>
     </div>
@@ -71,8 +112,12 @@
 </template>
 
 <script>
+import VueApexCharts from 'vue-apexcharts'
 export default {
   name: 'CompanyListExtend',
+  components: {
+    apexchart: VueApexCharts
+  },
   props: {
     selectedRow: {
       type: Object
@@ -89,7 +134,34 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      series: [2, 2, 2, 8],
+      chartOptions: {
+        chart: {
+          type: 'pie'
+        },
+        summary: {
+          show: true,
+          seperator: '/'
+        },
+        labels: ['Scanned User Count', 'Not Scanned Users Count'],
+
+        colors: ['#ffcc33', '#409eff', '#f56c6c', '#67c23a'],
+        legend: {
+          show: false
+        },
+        tooltip: {
+          enabled: false
+        },
+        dataLabels: {
+          enabled: false
+        },
+        plotOptions: {
+          pie: {}
+        },
+        showTooltipLine: true
+      }
+    }
   },
   mounted() {},
   methods: {}

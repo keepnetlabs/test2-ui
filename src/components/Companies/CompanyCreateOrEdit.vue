@@ -475,7 +475,8 @@ export default {
         IsVersionVisible: false,
         IsReleaseNotesVisible: false,
         ReleaseNotesUrl: '',
-        CompanyGroupResourceIdArray: ''
+        CompanyGroupResourceIdArray: '',
+        statusId: '1'
       },
       logoURL: null,
       LicenseDates: [],
@@ -542,6 +543,8 @@ export default {
       this.formData.IsVersionVisible = this.selectedExtend.isVersionVisible
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
+      this.formData.statusId = this.selectedExtend.statusId
+      this.isActive = this.selectedExtend.statusId == 1 ? true : false
       this.LicenseDates = [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) =>
@@ -719,6 +722,11 @@ export default {
     },
     editStepLock() {
       this.stepLock = false
+    }
+  },
+  watch: {
+    isActive(value) {
+      this.formData.statusId = value ? 1 : 2
     }
   }
 }
