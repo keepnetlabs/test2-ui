@@ -1981,8 +1981,9 @@ export default {
         }
 
         &--right-menu {
-          width: 100%;
-          overflow: hidden;
+          width: calc(100% - 236px);
+          transition: none !important;
+          -ms-flex-wrap: wrap;
           flex-wrap: wrap;
 
           .card.v-card.v-sheet.theme--light {
