@@ -19,7 +19,7 @@
             <company-list />
           </v-tab-item>
           <v-tab-item>
-            <company-group-list></company-group-list>
+            <company-group-list />
           </v-tab-item>
           <v-tab-item> </v-tab-item>
         </v-tabs-items>

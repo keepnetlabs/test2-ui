@@ -1,5 +1,5 @@
 <template>
-  <div flat class="fullscreen-form company-create-modal">
+  <div class="fullscreen-form company-create-modal">
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-btn__icon-wrapper">
@@ -66,7 +66,7 @@
                       dense
                       no-resize
                       v-model="formData.Description"
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
                       autocomplete="disabled"
                     />
                   </v-list-item-content>
@@ -81,7 +81,7 @@
                       item-value="resourceId"
                       outlined
                       placeholder="Select industry"
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -95,7 +95,7 @@
                       item-value="resourceId"
                       outlined
                       placeholder="Select country"
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -133,7 +133,11 @@
                       @inputFile="onFileChanged"
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                     />
-                    <img v-if="edit" :src="this.selectedExtend.logoUrl" style="height: 60px;" />
+                    <img
+                      v-if="edit && this.selectedExtend.logoUrl"
+                      :src="this.selectedExtend.logoUrl"
+                      style="height: 60px;"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -159,6 +163,12 @@
                   </v-list-item-title>
                   <v-list-item-title class="v-card-sub-header">
                     Define licence settings
+                    <a
+                      v-if="edit && stepLock"
+                      @click.prevent="editStepLock"
+                      class="company-create-modal__edit-link"
+                      >Click here to edit</a
+                    >
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -173,7 +183,8 @@
                       item-value="resourceId"
                       outlined
                       placeholder="Select an option"
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
+                      :disabled="stepLock"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -187,8 +198,22 @@
                       item-value="resourceId"
                       outlined
                       placeholder="Select an option"
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[expiryPeriodValidation]"
+                      @change="expiryPeriodChange"
+                      :disabled="stepLock"
                     ></v-select>
+                    <el-date-picker
+                      v-show="formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'"
+                      v-model="LicenseDates"
+                      type="daterange"
+                      style="margin-bottom: 14px;"
+                      :picker-options="datePickerOptions"
+                      :default-time="['00:00:00']"
+                      :rules="[(v) => !!v || 'Required']"
+                      value-format="yyyy-MM-dd"
+                      @change="dataPickerChange"
+                      :disabled="stepLock"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -208,7 +233,7 @@
                         type="number"
                         autocomplete="off"
                         v-model="formData.NumberOfUsers"
-                        :disabled="!formData.IsNumberOfUsersLimited"
+                        :disabled="!formData.IsNumberOfUsersLimited || stepLock"
                         :rules="
                           formData.IsNumberOfUsersLimited
                             ? [
@@ -224,6 +249,7 @@
                         color="#2196f3"
                         text
                         @click="clickUnlimited"
+                        :disabled="stepLock"
                         >{{
                           formData.IsNumberOfUsersLimited ? 'MAKE UNLIMITED' : 'LIMIT USER'
                         }}</v-btn
@@ -287,7 +313,7 @@
                       item-text="name"
                       item-value="resourceId"
                       outlined
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -300,7 +326,7 @@
                       item-text="name"
                       item-value="resourceId"
                       outlined
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -313,7 +339,7 @@
                       item-text="name"
                       item-value="resourceId"
                       outlined
-                      :rules="[(v) => !!v || 'Item is required']"
+                      :rules="[(v) => !!v || 'Required']"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -341,15 +367,17 @@
                         :ripple="false"
                         label="Show release notes"
                       ></v-checkbox>
-                      <label class="company-create-modal__side-label">URL</label>
-                      <v-text-field
-                        placeholder="https://doc.keepnetlabs.com/"
-                        outlined
-                        dense
-                        autocomplete="off"
-                        v-model="formData.ReleaseNotesUrl"
-                        :rules="[checkURL]"
-                      ></v-text-field>
+                      <template v-if="formData.IsReleaseNotesVisible">
+                        <label class="company-create-modal__side-label">URL</label>
+                        <v-text-field
+                          placeholder="https://doc.sitename.com/"
+                          outlined
+                          dense
+                          autocomplete="off"
+                          v-model="formData.ReleaseNotesUrl"
+                          :rules="[checkURL]"
+                        ></v-text-field>
+                      </template>
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -410,20 +438,21 @@
 <script>
 import { maxLength, required } from '@/utils/validations'
 import { getLookupListByTypeId } from '../../api/common'
-import { createCompany, getCompanyGroups } from '../../api/company'
+import { createCompany, getCompanyGroups, updateCompany } from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
-    edit: { type: Boolean },
-    selectedRow: { type: Object, default: null },
-    selectedExtend: { type: Object, default: null }
+    edit: { type: Boolean, default: false },
+    selectedRow: { type: Object },
+    selectedExtend: { type: Object }
   },
   components: { KFileUpload },
   data() {
     return {
+      stepLock: false,
       totalStep: 4,
       activeStep: 1,
       formData: {
@@ -446,8 +475,11 @@ export default {
         IsVersionVisible: false,
         IsReleaseNotesVisible: false,
         ReleaseNotesUrl: '',
-        CompanyGroupResourceIdArray: []
+        CompanyGroupResourceIdArray: '',
+        statusId: '1'
       },
+      logoURL: null,
+      LicenseDates: [],
       isActive: true,
       expiryPeriods: [],
       countries: [],
@@ -457,7 +489,11 @@ export default {
       notificationTemplates: [],
       trainingContents: [],
       smtpConfigurations: [],
-
+      datePickerOptions: {
+        disabledDate(date) {
+          return date < new Date() - 3600 * 1000 * 24
+        }
+      },
       validations: {
         required,
         maxLength
@@ -487,10 +523,33 @@ export default {
     this.getSmtpConfigurations()
 
     if (this.edit) {
-      this.formData.Name = this.selectedRow.companyName
+      this.stepLock = this.edit
+      this.logoURL = this.selectedExtend.logoUrl
+      this.formData.Name = this.selectedExtend.name
       this.formData.Description = this.selectedExtend.description
       this.formData.IndustryResourceId = this.selectedExtend.industryResourceId
       this.formData.CountryResourceId = this.selectedExtend.countryResourceId
+      this.formData.Address = this.selectedExtend.address
+      this.formData.WebsiteUrl = this.selectedExtend.websiteUrl
+      this.formData.LicenseTypeResourceId = this.selectedExtend.licenseTypeResourceId
+      this.formData.LicensePeriodTypeResourceId = this.selectedExtend.licensePeriodTypeResourceId
+      this.formData.LicenseStartDate = this.selectedExtend.licenseStartDate
+      this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
+      this.formData.IsNumberOfUsersLimited = this.selectedExtend.isNumberOfUsersLimited
+      this.formData.NumberOfUsers = this.selectedExtend.numberOfUsers
+      this.formData.NotificationTemplateTypeResourceId = this.selectedExtend.notificationTemplateTypeResourceId
+      this.formData.TrainingContentTypeResourceId = this.selectedExtend.trainingContentTypeResourceId
+      this.formData.SmtpConfigurationTypeResourceId = this.selectedExtend.smtpConfigurationTypeResourceId
+      this.formData.IsVersionVisible = this.selectedExtend.isVersionVisible
+      this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
+      this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
+      this.formData.statusId = this.selectedExtend.statusId
+      this.isActive = this.selectedExtend.statusId == 1 ? true : false
+      this.LicenseDates = [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
+      Array.isArray(this.selectedExtend.companyGroups) &&
+        this.selectedExtend.companyGroups.forEach((x) =>
+          this.formData.CompanyGroupResourceIdArray.push(x)
+        )
     }
   },
   methods: {
@@ -551,23 +610,35 @@ export default {
         .catch((error) => {})
     },
     handleSave() {
-      console.log('this.formdatapaylaod:', this.formData)
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
-        createCompany(this.formData)
-          .then((response) => {
-            console.log(response)
-            if (response.data && response.data.message) {
-              this.$store.dispatch('common/createSnackBar', {
-                message: response.data.message,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: 'mdi-check-circle-outline'
-              })
-            }
-            this.formData = []
-            this.activeStep = 1
-            this.cancelForm()
-          })
-          .catch((error) => {})
+        !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 1) : null
+        if (this.edit) {
+          updateCompany(this.selectedExtend.resourceId, this.formData)
+            .then((response) => {
+              if (response.data && response.data.message) {
+                this.$store.dispatch('common/createSnackBar', {
+                  message: response.data.message,
+                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                  icon: 'mdi-check-circle-outline'
+                })
+              }
+              this.cancelForm()
+            })
+            .catch((error) => {})
+        } else {
+          createCompany(this.formData)
+            .then((response) => {
+              if (response.data && response.data.message) {
+                this.$store.dispatch('common/createSnackBar', {
+                  message: response.data.message,
+                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                  icon: 'mdi-check-circle-outline'
+                })
+              }
+              this.cancelForm()
+            })
+            .catch((error) => {})
+        }
       }
     },
     nextStep() {
@@ -592,7 +663,7 @@ export default {
     },
     checkURL(value) {
       let validation = true
-      if (value.length > 0) {
+      if (value && value.length > 0) {
         if (
           !/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
             value
@@ -608,7 +679,55 @@ export default {
       this.formData.NumberOfUsers = ''
     },
     cancelForm() {
+      this.formData = []
+      this.LicenseDates = null
+      this.activeStep = 1
       this.$emit('cancelForm')
+    },
+    expiryPeriodValidation(value) {
+      let validation = true
+      if (
+        value === 'MaR9NJslgSGW' &&
+        !this.formData.LicenseStartDate &&
+        !this.formData.LicenseEndDate
+      ) {
+        validation = 'Start and end dates should be picked'
+      }
+
+      if (!value) {
+        validation = 'Item is required'
+      }
+      return validation
+    },
+    expiryPeriodChange() {
+      const end = new Date()
+      const start = new Date()
+      if (this.formData.LicensePeriodTypeResourceId == 'HTHpWWXGJshG') {
+        end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
+        this.formData.LicenseStartDate = this.$moment(start).format('YYYY-MM-DD')
+        this.formData.LicenseEndDate = this.$moment(end).format('YYYY-MM-DD')
+      } else if (this.formData.LicensePeriodTypeResourceId == '6EXwfaM5ZDT4') {
+        end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
+        this.formData.LicenseStartDate = this.$moment(start).format('YYYY-MM-DD')
+        this.formData.LicenseEndDate = this.$moment(end).format('YYYY-MM-DD')
+      } else {
+        this.formData.LicenseStartDate = ''
+        this.formData.LicenseEndDate = ''
+      }
+      this.LicenseDates = null
+    },
+    dataPickerChange() {
+      this.formData.LicenseStartDate = this.LicenseDates ? this.LicenseDates[0] : ''
+      this.formData.LicenseEndDate = this.LicenseDates ? this.LicenseDates[1] : ''
+      this.$refs.refStep2Form.validate()
+    },
+    editStepLock() {
+      this.stepLock = false
+    }
+  },
+  watch: {
+    isActive(value) {
+      this.formData.statusId = value ? 1 : 2
     }
   }
 }
@@ -627,6 +746,11 @@ export default {
     line-height: 22px;
     margin-left: 32px;
     margin-right: 8px;
+  }
+  &__edit-link {
+    font-size: 14px;
+    line-height: 21px;
+    color: #2196f3;
   }
 }
 .fullscreen-form {
