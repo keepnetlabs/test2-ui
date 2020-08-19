@@ -1529,7 +1529,7 @@ export default {
       padding: 160px 0 0 65px !important;
     }
     @media only screen and (max-width: 769px) {
-      padding: 160px 0 0 0 !important;
+      padding: 160px 0 0 60px !important;
     }
   }
 
