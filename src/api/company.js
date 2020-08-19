@@ -24,7 +24,7 @@ export function createCompany(payload) {
     if (Array.isArray(payload[key])) {
       payload[key].forEach((x) => formData.append(key, x))
     } else {
-      formData.append(key, payload[key])
+      payload[key] && formData.append(key, payload[key])
     }
   }
   /*for (let a of formData.entries()) {
