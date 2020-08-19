@@ -50,3 +50,7 @@ export function updateCompany(id, payload) {
 
   return testRequest.put(`/companies/${id}`, formData)
 }
+
+export function deleteCompanyGroup(id) {
+  return testRequest.delete(`/company-groups/${id}`)
+}

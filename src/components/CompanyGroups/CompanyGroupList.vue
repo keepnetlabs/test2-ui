@@ -1,5 +1,11 @@
 <template>
   <div class="company-list">
+    <delete-modal
+      :is-show="isShowDeleteModal"
+      :selectedRow="selectedRow"
+      @confirmDelete="deleteConfirmedItem"
+      @changeModalStatus="changeDeleteModalStatus"
+    />
     <datatable
       ref="refDataList"
       :addButton="tableOptions.addButton"
@@ -14,6 +20,7 @@
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       :is-downloadable="false"
+      @delete="handleTableItemDelete"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.name">
@@ -26,7 +33,8 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { getCompanyGroups } from '../../api/company'
+import { getCompanyGroups, deleteCompanyGroup, deleteCompany } from '../../api/company'
+import DeleteModal from './DeleteModal'
 
 import {
   COMMON_CONSTANTS,
@@ -38,7 +46,8 @@ import {
 export default {
   name: 'CompanyGroupList',
   components: {
-    Datatable
+    Datatable,
+    DeleteModal
   },
   data: () => ({
     isShowDeleteModal: false,
@@ -61,7 +70,7 @@ export default {
         },
         {
           property: 'companyCount',
-          align: 'left',
+          align: 'right',
           editable: false,
           label: 'Companies',
           sortable: true,
@@ -73,7 +82,7 @@ export default {
           property: 'addedTime',
           align: 'left',
           editable: false,
-          label: 'Companies',
+          label: 'Date Created',
           sortable: true,
           show: true,
           type: 'text',
@@ -89,7 +98,7 @@ export default {
       },
       iEmpty: {
         message: 'No company groups defined',
-        btn: 'ADD A COMPANY',
+        btn: 'ADD A COMPANY GROUP',
         icon: 'mdi-account-plus'
       },
       addButton: {
@@ -135,7 +144,20 @@ export default {
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
     },
-    deleteConfirmedItem(selectedItem) {},
+    deleteConfirmedItem(selectedItem) {
+      deleteCompanyGroup(selectedItem.resourceId)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.getTableData()
+          }
+        })
+        .catch((error) => {})
+    },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
     },
