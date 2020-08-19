@@ -13,6 +13,7 @@
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
+      :is-downloadable="false"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.name">
@@ -94,7 +95,7 @@ export default {
       addButton: {
         show: true,
         action: 'addButton',
-        tooltip: 'Add new company group'
+        tooltip: 'Add Company Group'
       },
       rowActions: [
         {

@@ -1,15 +1,15 @@
 <template>
   <div class="company-list">
-    <v-dialog v-model="isShowCreateOrEditModal" fullscreen scrollable persistent no-click-animation>
+    <v-dialog
+      v-if="isShowCreateOrEditModal"
+      v-model="isShowCreateOrEditModal"
+      fullscreen
+      scrollable
+      persistent
+      no-click-animation
+    >
       <CompanyCreateOrEdit
-        @cancelForm="
-          () => {
-            this.isShowCreateOrEditModal = false
-            this.editModal = false
-            this.selectedExtend = {}
-            this.selectedRow = {}
-          }
-        "
+        @cancelForm="cancelCreateOrEditForm"
         :selectedRow="selectedRow"
         :selectedExtend="selectedExtend"
         :edit="editModal"
@@ -50,15 +50,10 @@
         <company-list-extend
           v-if="isShowExtended"
           :selectedRow="selectedRow"
+          :top="extendTop"
           :selectedExtend="selectedExtend"
           @editAction="editAction"
-          @close="
-            () => {
-              isShowExtended = false
-              selectedRow = null
-              selectedExtend = null
-            }
-          "
+          @close="closeExtend"
         />
       </template>
     </datatable>
@@ -88,6 +83,7 @@ export default {
     DeleteModal
   },
   data: () => ({
+    extendTop: 0,
     editModal: false,
     isShowDeleteModal: false,
     isShowExtended: false,
@@ -178,7 +174,7 @@ export default {
       addButton: {
         show: true,
         action: 'addButton',
-        tooltip: 'Add new company'
+        tooltip: 'Add New Company'
       },
       rowActions: [
         {
@@ -273,6 +269,7 @@ export default {
         this.selectedRow = row
         this.selectedExtend = {}
         this.isShowExtended = true
+        this.extendTop = event.offsetTop + event.offsetParent.offsetTop
         getCompanyByID(row.companyResourceId)
           .then((response) => {
             this.selectedExtend = response.data.data
@@ -340,6 +337,7 @@ export default {
     editAction(row) {
       this.selectedRow = row
       this.editModal = true
+      this.isShowExtended = false
 
       getCompanyByID(row.companyResourceId)
         .then((response) => {
@@ -354,6 +352,20 @@ export default {
             icon: 'mdi-alert-circle'
           })
         })
+    },
+    cancelCreateOrEditForm() {
+      this.isShowCreateOrEditModal = false
+      this.editModal = false
+      this.selectedExtend = {}
+      this.selectedRow = {}
+      this.getTableData()
+    },
+    closeExtend() {
+      this.isShowExtended = false
+      setTimeout(() => {
+        this.selectedRow = null
+        this.selectedExtend = null
+      }, 1000)
     }
   }
 }

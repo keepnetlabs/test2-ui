@@ -1,5 +1,5 @@
 <template>
-  <div class="company-list-extend" :style="cssStyle">
+  <div class="company-list-extend" :style="{ top: top + 'px' }">
     <div class="company-list-extend__header">
       <div class="company-list-extend__header-title">
         {{ selectedRow.companyName }}
@@ -82,6 +82,10 @@ export default {
     },
     cssStyle: {
       type: Object
+    },
+    top: {
+      type: Number,
+      default: 0
     }
   },
   data() {
