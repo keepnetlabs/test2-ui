@@ -53,18 +53,9 @@
           </div>
         </template>
       </app-dialog>
-      <v-overlay
-        id="add-new-community-overlay"
-        :value="openInvestigationOverlay"
-        :class="{ newInvestigationOverlay: openInvestigationOverlay }"
-        :opacity="1"
-        :z-index="999"
-        color="white"
-      >
-        <new-investigation @closeAdd="openInvestigationOverlay = false" />
-      </v-overlay>
       <new-investigation
-        @closeAdd="closeNewInvestigationModal($event)"
+        @closeWithRoute="handleRouteToInvestigationDetails"
+        @closeAdd="isWantToAddNewInvestigation = false"
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
         v-if="isWantToAddNewInvestigation"
@@ -1158,6 +1149,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleRouteToInvestigationDetails(resp) {
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+    },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true

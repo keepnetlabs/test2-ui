@@ -11,7 +11,8 @@
           :status="isWantToAddNewCommunity"
           :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
           :investigationDetailsData="investigationDetailsData"
-          @closeAdd="onAddClose"
+          @closeWithRoute="onAddClose"
+          @closeAdd="isWantToAddNewCommunity = false"
           v-if="isWantToAddNewCommunity"
           @refreshDatatable="refreshDatatable"
         />
@@ -1480,11 +1481,13 @@ export default {
           //vm.$forceUpdate();
         })
     },
-    onAddClose() {
+    onAddClose(resp) {
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
       }
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      this.refreshDatatable()
       this.isWantToAddNewCommunity = false
     },
     createCommunityFromMobileInfo() {

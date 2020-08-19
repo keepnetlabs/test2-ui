@@ -920,8 +920,8 @@ export default {
           .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {})
           .then((resp) => {
+            this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
-            this.isEdit ? this.$router.push('/investigations') : this.$emit('refreshDatatable')
           })
       }
     },

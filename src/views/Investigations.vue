@@ -4,7 +4,8 @@
       <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
 
       <new-investigation
-        @closeAdd="onAddClose"
+        @closeWithRoute="onAddClose"
+        @closeAdd="isWantToAddNewCommunity = false"
         @refreshDatatable="refreshDatatable"
         ref="refNewInvestigation"
         :status="isWantToAddNewCommunity"
@@ -365,11 +366,12 @@ export default {
         .dispatch('investigations/getInvestigationList', this.bodyData)
         .finally(() => (this.showDatatable = true)) //module name than method name
     },
-    onAddClose() {
+    onAddClose(resp) {
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
       }
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
       this.isWantToAddNewCommunity = false
     },
     createCommunityFromMobileInfo() {
