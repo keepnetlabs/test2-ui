@@ -99,7 +99,7 @@ export default {
     overflow-y: auto;
   }
   &__container {
-    padding: 32px 96px 68px 96px !important;
+    padding: 32px 96px 92px 96px !important;
     @media (max-width: 500px) {
       padding: 10px 24px 68px 24px !important;
     }

@@ -1523,7 +1523,7 @@ export default {
 
     &:last-child {
       .v-list-item__content {
-        margin-bottom: 100px;
+        //margin-bottom: 100px;
       }
     }
   }
