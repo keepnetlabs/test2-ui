@@ -1,5 +1,5 @@
 <template>
-  <div class="company-list-extend" :style="{ top: top + 'px' }">
+  <div class="company-list-extend" :style="{ top: setPosition() + 'px' }">
     <div class="company-list-extend__header">
       <div class="company-list-extend__header-title">
         {{ selectedRow.companyName }}
@@ -38,12 +38,32 @@
           <a :href="selectedExtend.websiteUrl" target="_blank">{{ selectedExtend.websiteUrl }}</a>
         </div>
       </div>
-      <div class="company-list-extend__body-item">
-        <div class="company-list-extend__body-key">Website</div>
+      <div class="company-list-extend__body-item d-flex align-center">
+        <div class="company-list-extend__body-key">Company Groups</div>
         <div class="company-list-extend__body-value">
-          <span v-for="(group, index) of selectedExtend.companyGroups" :key="group.name">
-            {{ group.name }}<span v-if="index + 1 < selectedExtend.companyGroups.length">,</span>
-          </span>
+          <template v-if="groupCount > 0">
+            <span v-for="group of selectedExtend.companyGroups.slice(0, limiter)" :key="group.name">
+              {{ group.name }}, &nbsp;
+            </span>
+            <a
+              v-if="groupCount > 3 && groupCount > limiter"
+              @click="
+                () => {
+                  this.limiter = this.groupCount
+                }
+              "
+              >+{{ groupCount - limiter }} See more &#62;</a
+            >
+            <a
+              v-if="groupCount > 3 && groupCount === limiter"
+              @click="
+                () => {
+                  this.limiter = 3
+                }
+              "
+              >&nbsp; &#60; See less</a
+            >
+          </template>
         </div>
       </div>
       <div class="company-list-extend__body-item">
@@ -131,10 +151,16 @@ export default {
     top: {
       type: Number,
       default: 0
+    },
+    tableHeight: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
+      limiter: 3,
+      groupCount: 0,
       series: [2, 2, 2, 8],
       chartOptions: {
         chart: {
@@ -163,8 +189,29 @@ export default {
       }
     }
   },
-  mounted() {},
-  methods: {}
+  methods: {
+    setPosition() {
+      let top = this.top
+      if (this.$el !== undefined) {
+        top =
+          this.$el.clientHeight + this.top > this.tableHeight
+            ? -Math.abs(this.tableHeight - this.top) + this.top
+            : this.top
+      }
+      return top
+    }
+  },
+
+  updated() {
+    this.setPosition()
+  },
+  watch: {
+    selectedExtend() {
+      if (!!this.selectedExtend) {
+        this.groupCount = this.selectedExtend.companyGroups.length
+      }
+    }
+  }
 }
 </script>
 
@@ -212,7 +259,7 @@ export default {
       margin-bottom: 4px;
     }
     &-key {
-      min-width: 100px;
+      min-width: 105px;
       line-height: 17px;
       font-size: 12px;
       font-weight: 600;
@@ -221,6 +268,7 @@ export default {
     &-value {
       line-height: 19px;
       font-size: 12px;
+      width: 100%;
     }
   }
   &__footer {
