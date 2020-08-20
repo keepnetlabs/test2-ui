@@ -29,7 +29,9 @@
             <v-icon medium left color="blue" class="ml-2">mdi-send</v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Create New Community</v-list-item-title>
+            <v-list-item-title class="v-card-headline"
+              >{{ resourceId ? 'Edit' : 'Create New' }} Community</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
         <v-form ref="form" v-model="valid" lazy-validation>

@@ -54,11 +54,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import AuthenticationService from '../services/authentication'
 import Incidents from '../components/ThreadSharing/Incidents'
 import Members from '../components/ThreadSharing/Members'
-import EditCommunity from '../components/ThreadSharing/EditCommunity'
 import PostIncident from '../components/ThreadSharing/PostIncident'
 import RightColumn from '../components/ThreadSharing/RightColumn'
 
