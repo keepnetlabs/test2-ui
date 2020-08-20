@@ -1,11 +1,9 @@
 <template>
-  <div class="grapes-container-modal">
+  <div class="grapes-container-modal mt-5">
     <div class="panel__top-modal">
       <div class="panel__basic-actions-modal"></div>
     </div>
-    <div id="gjsModal">
-      <h1>Grapes Deneme</h1>
-    </div>
+    <div id="gjsModal"></div>
     <div id="blocksModal"></div>
   </div>
 </template>

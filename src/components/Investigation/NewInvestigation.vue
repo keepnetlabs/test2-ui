@@ -1060,24 +1060,36 @@ export default {
       this.filterList = []
       this.selectedMail.attachments &&
         this.selectedMail.attachments.map((item) => {
-          this.filterList.push({ option: 'md5', text: item.md5 })
-          this.filterList.push({ option: 'sha512', text: item.sha512 })
+          if (!item.isHidden) this.filterList.push({ option: 'md5', text: item.md5 })
+          if (!item.isHidden) this.filterList.push({ option: 'sha512', text: item.sha512 })
         })
       this.selectedMail.bcc &&
+        !this.selectedMail.isBccHidden &&
         this.selectedMail.bcc.map((item) => {
-          this.filterList.push({ option: 'bcc', item })
+          this.filterList.push({ option: 'bcc', text: item })
         })
       this.selectedMail.cc &&
+        !this.selectedMail.isCcHidden &&
         this.selectedMail.cc.map((item) => {
-          this.filterList.push({ option: 'cc', item })
+          this.filterList.push({ option: 'cc', text: item })
         })
       this.selectedMail.from &&
-        this.filterList.push({ option: 'from', text: this.selectedMail.from })
+        !this.selectedMail.isFromHidden &&
+        this.filterList.push({
+          option: 'from',
+          text: this.selectedMail.from
+        })
       this.selectedMail.subject &&
-        this.filterList.push({ option: 'subject', text: this.selectedMail.subject })
-      this.selectedMail.to.map((item) => {
-        this.filterList.push({ option: 'to', text: item })
-      })
+        !this.selectedMail.isSubjectHidden &&
+        this.filterList.push({
+          option: 'subject',
+          text: this.selectedMail.subject
+        })
+      this.selectedMail.to &&
+        !this.selectedMail.isToHidden &&
+        this.selectedMail.to.map((item) => {
+          this.filterList.push({ option: 'to', text: item })
+        })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
           this.filterList.push({ option: 'url', text: item.url })
