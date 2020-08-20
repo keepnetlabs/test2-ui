@@ -836,8 +836,7 @@ export default {
         sortable: false,
         show: true,
         type: 'detected',
-        hasTooltip: true,
-        width: 250
+        hasTooltip: true
       }
     ],
     title: {

@@ -21,14 +21,36 @@ export function createCompany(payload) {
   const formData = new FormData()
 
   for (const key in payload) {
-    console.log(key)
-    formData.append(key, payload[key])
+    if (Array.isArray(payload[key])) {
+      payload[key].forEach((x) => formData.append(key, x))
+    } else {
+      payload[key] && formData.append(key, payload[key])
+    }
+  }
+  /*for (let a of formData.entries()) {
+    console.log(a[0] + ':' + a[1])
+  }*/
+
+  return testRequest.post(`/companies`, formData)
+}
+
+export function updateCompany(id, payload) {
+  const formData = new FormData()
+
+  for (const key in payload) {
+    if (Array.isArray(payload[key])) {
+      payload[key].forEach((x) => formData.append(key, x))
+    } else {
+      payload[key] && formData.append(key, payload[key])
+    }
+  }
+  for (let a of formData.entries()) {
+    console.log(a[0] + ':' + a[1])
   }
 
-  return testRequest.post(`/companies`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    responseType: 'blob'
-  })
+  return testRequest.put(`/companies/${id}`, formData)
+}
+
+export function deleteCompanyGroup(id) {
+  return testRequest.delete(`/company-groups/${id}`)
 }
