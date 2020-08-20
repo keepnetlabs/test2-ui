@@ -2870,7 +2870,7 @@ export default {
     .v-input__slot {
       border: 1px solid rgba(0, 0, 0, 0.16) !important;
       box-shadow: unset !important;
-      height: 40px !important;
+      height: 36px !important;
     }
   }
 
@@ -3074,6 +3074,7 @@ export default {
           display: flex;
           flex-direction: row;
           justify-content: flex-start;
+          min-height: 40px;
 
           .img-wrapper {
             align-items: center;
