@@ -434,10 +434,7 @@
                   </div>
 
                   <div id="last-preview-body-preview" class="preview-body">
-                    <k-shadow-frame
-                      id="last-preview-body-shadow-root"
-                      :content="uploadRespond.body"
-                    />
+                    <k-shadow-frame id="incident-preview-1" :content="uploadRespond.body" />
                   </div>
                   <div
                     id="preview-footer-container-att-preview"
@@ -2287,6 +2284,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     text-decoration:none;
+        font-weight: normal;
+
 }
 [data-title] {
     position: relative;
@@ -2302,25 +2301,20 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 
 .malicious-icon {
-     top: 0px;
-    background: white;
-    margin-left: 5px;
-    padding-left: 8px;
-      color: #f56c6c;
-          font-size: 22px !important;
-    padding: 5px;
+ top: 0px;
+  background: transparent;
+  color: #f56c6c;
+  font-size: 22px !important;
+  padding: 0;
 }
 
 .red-malicious-alert {
    color: #f56c6c !important;
-  caret-color: #f56c6c !important;
+    caret-color: #f56c6c !important;
     text-decoration: unset !important;
     text-decoration-color: transparent !important;
-    font-size: 20px !important;
-    padding-right: 3px;
+    font-size: inherit !important;
     overflow: hidden;
-        margin-bottom: -1px;
-    padding-top: 3px;
 }
 
 .red-malicious-alert::before {

@@ -1875,9 +1875,11 @@ export default {
   text-decoration: underline !important;
 }
 .malicious-icon {
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
+  top: 0px;
+  background: transparent;
+  color: #f56c6c;
+  font-size: 22px !important;
+  padding: 0;
 }
 ::v-deep .red-malicious-alert::before {
   border: unset !important;

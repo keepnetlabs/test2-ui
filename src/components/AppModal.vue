@@ -3,7 +3,7 @@
     :value="status"
     :opacity="1"
     v-if="status"
-    :z-index="999999"
+    :z-index="99"
     color="white"
     class="k-overlay"
     :class="className"

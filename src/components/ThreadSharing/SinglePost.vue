@@ -1119,6 +1119,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     text-decoration:none;
+        font-weight: normal;
+
 }
 [data-title] {
     position: relative;
@@ -1133,25 +1135,20 @@ position:relative;
 }
 
 .malicious-icon {
-     top: 0px;
-    background: white;
-    margin-left: 5px;
-    padding-left: 8px;
-      color: #f56c6c;
-          font-size: 22px !important;
-    padding: 5px;
+ top: 0px;
+  background: transparent;
+  color: #f56c6c;
+  font-size: 22px !important;
+  padding: 0;
 }
 
 .red-malicious-alert {
-    color: #f56c6c !important;
-  caret-color: #f56c6c !important;
+   color: #f56c6c !important;
+    caret-color: #f56c6c !important;
     text-decoration: unset !important;
     text-decoration-color: transparent !important;
-    font-size: 20px !important;
-    padding-right: 3px;
+    font-size: inherit !important;
     overflow: hidden;
-        margin-bottom: -1px;
-    padding-top: 3px;
 }
 
 .red-malicious-alert::before {

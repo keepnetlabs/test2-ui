@@ -15,17 +15,15 @@
   text-decoration: none !important;
   border-bottom: 1px solid;
   position:relative;
-  z-index: 99999;
+  z-index: 9;
 }
 
 .malicious-icon {
   top: 0px;
-  background: white;
-  margin-left: 5px;
-  padding-left: 8px;
+  background: transparent;
   color: #f56c6c;
   font-size: 22px !important;
-  padding: 5px;
+  padding: 0;
 }
 
 .red-malicious-alert {
@@ -33,11 +31,8 @@
   caret-color: #f56c6c !important;
   text-decoration: unset !important;
   text-decoration-color: transparent !important;
-  font-size: 23px !important;
-  padding-right: 3px;
+  font-size: inherit !important;
   overflow: hidden;
-  margin-bottom: -1px;
-  padding-top: 3px;
 }
 
 .red-malicious-alert::before {
@@ -120,4 +115,7 @@
       }
     }
   }
+}
+.v-tooltip__content{
+  z-index: 99 !important;
 }
