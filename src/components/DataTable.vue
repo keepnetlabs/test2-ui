@@ -382,17 +382,17 @@
             :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
+            fit
             :show-header="showHeader"
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
             @sort-change="sortChangedEvent"
             @cell-click="cellClick"
-            default-expand-all
             id="data-table-container"
             lazy
             ref="elTableRef"
-            row-key="id"
+            row-key="resourceId"
             style="width: 100%;"
             v-if="!allHidden"
           >
@@ -403,6 +403,7 @@
               :key="col.property + ind"
               :label="col.label"
               :maxWidth="col.maxWidth || ''"
+              reserve-selection
               :minWidth="col.minWidth || ''"
               :prop="col.property"
               :sortable="col.hideSort ? false : 'custom'"
@@ -452,6 +453,7 @@
                         :listeners="on"
                         :full-width="col.fullWidth"
                         v-bind="col.props"
+                        :col="col"
                         :text="getDataTableFieldLabel(scope.row[col.property])"
                       />
                     </template>

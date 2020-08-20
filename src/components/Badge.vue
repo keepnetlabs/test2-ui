@@ -1,11 +1,17 @@
-<template>
+<template functional>
   <v-btn
     rounded
-    :color="color"
-    v-on="listeners"
-    :class="['k-badge', fullWidth ? 'full-width' : '', getBadgeSize, className]"
+    :color="props.color"
+    :style="props.col && props.col.props && props.col.props.style"
+    v-on="props.listeners"
+    :class="[
+      'k-badge',
+      props.fullWidth ? 'full-width' : '',
+      $options.getBadgeSize(props.size, props),
+      props.className
+    ]"
   >
-    {{ text }}
+    {{ props.text }}
   </v-btn>
 </template>
 
@@ -29,28 +35,32 @@ export default {
       type: String,
       default: 'medium'
     },
+    style: {
+      type: Object
+    },
     className: {
       type: String
+    },
+    col: {
+      type: Object
     }
   },
-  computed: {
-    getBadgeSize() {
-      let retValue = ''
-      switch (this.size) {
-        case 'medium':
-          retValue = 'k-badge__sizes--medium'
-          break
-        case 'small':
-          retValue = 'k-badge__sizes--small'
-          break
-        case 'mini':
-          retValue = 'k-badge__sizes--mini'
-          break
-        default:
-          break
-      }
-      return retValue
+  getBadgeSize(val) {
+    let retValue = ''
+    switch (val) {
+      case 'medium':
+        retValue = 'k-badge__sizes--medium'
+        break
+      case 'small':
+        retValue = 'k-badge__sizes--small'
+        break
+      case 'mini':
+        retValue = 'k-badge__sizes--mini'
+        break
+      default:
+        break
     }
+    return retValue
   }
 }
 </script>
