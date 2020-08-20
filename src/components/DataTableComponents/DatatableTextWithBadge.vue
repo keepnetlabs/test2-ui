@@ -45,6 +45,7 @@
     <span v-else>
       {{ col.emptyText || '' }}
     </span>
+    <v-btn style="display: none;"></v-btn>
   </div>
 </template>
 
@@ -54,7 +55,7 @@ import Badge from '../Badge'
 export default {
   name: 'DatatableTextWithBadge',
   components: {
-    badge: Badge
+    Badge
   },
   watch: {
     scope(val) {
