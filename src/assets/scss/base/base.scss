@@ -18,6 +18,15 @@
   z-index: 9;
 }
 
+.malicious-style {
+  &-hidden{
+    background: #757575;
+    color: white;
+  }
+}
+
+
+
 .malicious-icon {
   top: 0px;
   background: transparent;
