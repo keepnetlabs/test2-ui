@@ -201,8 +201,9 @@
                 <div class="select-sources flex">
                   <v-checkbox
                     class="v-input--checkbox"
-                    v-model="item.value"
-                    :label="item.label"
+                    v-model="scanTypes"
+                    :label="item"
+                    :value="item"
                     v-for="(item, index) in sources"
                     @change="checkCheckboxValidation()"
                     :key="index"
@@ -273,6 +274,7 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
+import { getInvestigationScanTypes } from '@/api/investigations'
 export default {
   components: {
     AppModal
@@ -373,6 +375,7 @@ export default {
         md5: '3c1cc475fc16e68f41943421301c61c4f7f655…',
         extension: 'JPG'
       },
+      scanTypes: [],
       checkboxError: false,
       investgationName: '',
       isDateValid: true,
@@ -405,12 +408,7 @@ export default {
         { actionLabel: 'Notify user only', actionValue: 'notifyUserOnly' }
       ],
       filterList: [{ option: '', text: '' }],
-      sources: [
-        { name: 'Outlook', value: false, label: 'Outlook Desktop' },
-        { name: 'O365', value: false, label: 'Office 365' },
-        { name: 'GSuite', value: false, label: 'GSuite' },
-        { name: 'Exchange', value: false, label: 'Exchange' }
-      ],
+      sources: [],
       filterListOption: [
         'ip',
         'from',
@@ -537,11 +535,8 @@ export default {
   ],
   methods: {
     checkCheckboxValidation() {
-      let isCheckboxEmpty = this.sources.reduce((acc, i) => {
-        if (i.value) acc.push(i.name)
-        return acc
-      }, [])
-      if (isCheckboxEmpty.length == 0) {
+      let isCheckboxEmpty = this.scanTypes.length === 0
+      if (isCheckboxEmpty) {
         this.checkboxError = true
       } else {
         this.checkboxError = false
@@ -595,11 +590,8 @@ export default {
         this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
-        let isCheckboxEmpty = this.sources.reduce((acc, i) => {
-          if (i.value) acc.push(i.name)
-          return acc
-        }, [])
-        if (isCheckboxEmpty.length == 0) {
+        let isCheckboxEmpty = this.scanTypes.length === 0
+        if (isCheckboxEmpty) {
           this.checkboxError = true
           return false
         } else {
@@ -909,10 +901,7 @@ export default {
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
           action: this.selectedAction,
-          scanTypes: this.sources.reduce((acc, i) => {
-            if (i.value) acc.push(i.name)
-            return acc
-          }, [])
+          scanTypes: this.scanTypes
         }
         // post request with body data
         this.$store
@@ -995,16 +984,12 @@ export default {
             (item) => item.targetUser
           )
         }
-        this.sources = this.sources.map((item) => {
-          let data = {
-            name: item.name,
-            value: _this.investigationDetailsData.scanTypes.find((source) =>
-              source.scanType == item.name ? true : false
-            ),
-            label: item.label
-          }
-          return data
-        })
+
+        this.scanTypes = _this.investigationDetailsData.scanTypes.reduce((acc, item) => {
+          acc.push(item.scanType)
+          return acc
+        }, [])
+        console.log('scanTypes', this.scanTypes)
         const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
@@ -1049,11 +1034,10 @@ export default {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
     })
-    /*
-    this.callForGetTargetGroupItems(
-      { pageNumber: 1, pageSize: 10, orderBy: 'Name', ascending: false, groupName: '' },
-      true
-    )*/
+    getInvestigationScanTypes().then((response) => {
+      this.sources = response.data.data
+      this.checkIsEdit()
+    })
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []

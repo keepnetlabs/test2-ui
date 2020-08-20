@@ -1057,7 +1057,6 @@ export default {
     if (this.init) {
       this.init = false
     }
-    console.log('updated')
   },
   mounted() {
     this.init = true
