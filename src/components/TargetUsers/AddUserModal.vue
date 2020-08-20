@@ -290,7 +290,6 @@ export default {
     left: 0;
     top: 0;
     overflow-y: auto;
-    padding-bottom: 68px !important;
   }
 
   &__list-item {

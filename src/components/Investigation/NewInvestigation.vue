@@ -371,7 +371,7 @@ export default {
         name: 'file.jpg (case sensitive)',
         sha512: '3c1cc475fc16e68f41943421301c61c4f7f655…',
         md5: '3c1cc475fc16e68f41943421301c61c4f7f655…',
-        extentions: 'JPG'
+        extension: 'JPG'
       },
       checkboxError: false,
       investgationName: '',
@@ -425,7 +425,7 @@ export default {
         'name',
         'sha512',
         'md5',
-        'extentions'
+        'extension'
       ],
       valid: false,
       menu1: '',
@@ -501,7 +501,7 @@ export default {
           required: (v) => (v && v.length <= 128) || 'It must between 1 - 128 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
-        extentions: {
+        extension: {
           required: (v) => (v && v.length <= 10) || 'It must between 1 - 10 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
@@ -867,13 +867,12 @@ export default {
                 })
               }
               break
-            case 'extentions':
+            case 'extension':
               if (
-                !attachmentsData[attachmentsData.length - 1].extentions &&
-                attachmentsData[attachmentsData.length - 1].extentions !=
-                  this.filterList[index].text
+                !attachmentsData[attachmentsData.length - 1].extension &&
+                attachmentsData[attachmentsData.length - 1].extension != this.filterList[index].text
               ) {
-                attachmentsData.filter((s) => s.extentions == null)[0].extentions = this.filterList[
+                attachmentsData.filter((s) => s.extension == null)[0].extension = this.filterList[
                   index
                 ].text
               } else {
@@ -882,7 +881,7 @@ export default {
                   name: null,
                   md5: null,
                   sha512: null,
-                  extensions: this.filterList[index].text
+                  extension: this.filterList[index].text
                 })
               }
               break
@@ -1535,7 +1534,7 @@ export default {
 
     &:last-child {
       .v-list-item__content {
-        margin-bottom: 100px;
+        //margin-bottom: 100px;
       }
     }
   }
