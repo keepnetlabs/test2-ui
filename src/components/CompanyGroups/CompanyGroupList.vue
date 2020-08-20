@@ -6,6 +6,12 @@
       @confirmDelete="deleteConfirmedItem"
       @changeModalStatus="changeDeleteModalStatus"
     />
+    <create-item-modal
+      v-if="isShowCreateOrEditModal"
+      :selectedRow="selectedRow"
+      @confirmDelete="deleteConfirmedItem"
+      @changeModalStatus="changeCreateOrEditModalStatus"
+    />
     <datatable
       ref="refDataList"
       :addButton="tableOptions.addButton"
@@ -21,6 +27,7 @@
       :selectable="true"
       :is-downloadable="false"
       @delete="handleTableItemDelete"
+      @addButton="addButton"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.name">
@@ -35,17 +42,18 @@
 import Datatable from '../../components/DataTable'
 import { getCompanyGroups, deleteCompanyGroup, deleteCompany } from '../../api/company'
 import DeleteModal from './DeleteModal'
-
 import {
   COMMON_CONSTANTS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
+import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 
 export default {
   name: 'CompanyGroupList',
   components: {
+    CreateItemModal,
     Datatable,
     DeleteModal
   },
@@ -165,53 +173,6 @@ export default {
       this.isShowCreateOrEditModal = status
     },
     handleCompanyNameClick({ row, column, event }) {},
-    handleTableDownload(downloadTypes) {
-      downloadTypes.exportTypes.forEach((item) => {
-        let payload = {
-          pageNumber: downloadTypes.pageNumber,
-          pageSize: downloadTypes.pageSize,
-          orderBy: 'LicenseTypeName',
-          ascending: true,
-          reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: [
-                  {
-                    FieldName: 'CompanyName',
-                    Operator: 'Contains',
-                    Value: ''
-                  },
-                  {
-                    FieldName: 'IndustryName',
-                    Operator: 'Contains',
-                    Value: ''
-                  },
-                  {
-                    FieldName: 'LicenseTypeName',
-                    Operator: 'Contains',
-                    Value: ''
-                  }
-                ],
-                FilterGroups: []
-              }
-            ]
-          }
-        }
-        exportCompanies(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Companies.${item.toLocaleLowerCase()}`
-            link.click()
-          })
-          .catch((error) => {})
-      })
-    },
     addButton() {
       this.changeCreateOrEditModalStatus(true)
     },

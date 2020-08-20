@@ -48,9 +48,10 @@
       </template>
       <template v-slot:extended-custom-view-slot>
         <company-list-extend
-          v-if="isShowExtended"
+          v-show="isShowExtended"
           :selectedRow="selectedRow"
           :top="extendTop"
+          :tableHeight="tableHeight"
           :selectedExtend="selectedExtend"
           @editAction="editAction"
           @close="closeExtend"
@@ -61,7 +62,6 @@
 </template>
 
 <script>
-''
 import Datatable from '../../components/DataTable'
 import { searchCompanies, deleteCompany, getCompanyByID, exportCompanies } from '../../api/company'
 import DeleteModal from './DeleteModal'
@@ -83,6 +83,7 @@ export default {
     DeleteModal
   },
   data: () => ({
+    tableHeight: 0,
     extendTop: 0,
     editModal: false,
     isShowDeleteModal: false,
@@ -269,7 +270,8 @@ export default {
         this.selectedRow = row
         this.selectedExtend = {}
         this.isShowExtended = true
-        this.extendTop = event.offsetTop + event.offsetParent.offsetTop
+        this.tableHeight = this.$refs.refDataList.$el.clientHeight
+        this.extendTop = event.offsetTop
         getCompanyByID(row.companyResourceId)
           .then((response) => {
             this.selectedExtend = response.data.data
@@ -362,10 +364,8 @@ export default {
     },
     closeExtend() {
       this.isShowExtended = false
-      setTimeout(() => {
-        this.selectedRow = null
-        this.selectedExtend = null
-      }, 1000)
+      this.selectedRow = {}
+      this.selectedExtend = {}
     }
   }
 }
