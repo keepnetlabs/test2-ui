@@ -10,6 +10,7 @@
 <script>
 export default {
   name: 'DataTableText',
+  functional: true,
   props: {
     scope: {
       type: Object

@@ -7,6 +7,7 @@
       v-if="scope.row && scope.row[col.property]"
     />
     <span v-else></span>
+    <v-btn style="display: none;"></v-btn>
   </div>
 </template>
 

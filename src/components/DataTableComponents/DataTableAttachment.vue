@@ -10,6 +10,7 @@
 <script>
 export default {
   name: 'DataTableAttachment',
+  functional: true,
   props: {
     scope: {
       type: Object

@@ -445,7 +445,7 @@
                 <template v-if="scope.row.status === 'BeingAnalyzed'">
                   <span class="analysis-link">
                     <div>
-                      In Analysis..
+                      In Analysis...
                     </div>
                     <div>
                       <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />

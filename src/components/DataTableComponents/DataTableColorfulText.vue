@@ -16,6 +16,7 @@ import { getTextColor } from '../../utils/functions'
 
 export default {
   name: 'DataTableColorfulText',
+  functional: true,
   props: {
     scope: {
       type: Object

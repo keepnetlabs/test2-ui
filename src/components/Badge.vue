@@ -17,6 +17,7 @@
 
 <script>
 export default {
+  functional: true,
   name: 'Badge',
   props: {
     color: {
