@@ -18,7 +18,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .datatable-tooltip {
   background-color: #6d6d6d;
   position: fixed;
@@ -28,5 +28,17 @@ export default {
   z-index: 12;
   border-radius: 4px;
   font-size: 12px;
+
+  @media (min-width: 1260px) {
+    max-width: 600px !important;
+  }
+  @media (max-height: 600px) {
+    max-height: 200px;
+    overflow: hidden;
+  }
+  @media (min-width: 896px) {
+    max-width: 450px;
+  }
+  max-width: 300px;
 }
 </style>
