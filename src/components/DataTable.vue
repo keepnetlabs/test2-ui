@@ -382,7 +382,6 @@
             :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
-            fit
             :show-header="showHeader"
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
@@ -1058,6 +1057,7 @@ export default {
     if (this.init) {
       this.init = false
     }
+    console.log('updated')
   },
   mounted() {
     this.init = true
