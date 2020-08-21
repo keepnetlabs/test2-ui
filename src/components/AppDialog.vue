@@ -9,7 +9,7 @@
     class="k-dialog"
   >
     <v-card class="k-dialog__card" light>
-      <v-form lazy-validation ref="refDialogForm">
+      <v-form lazy-validation ref="refDialogForm" onSubmit="return false;">
         <v-list-item
           class="k-dialog__header"
           v-if="icon && title"

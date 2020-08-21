@@ -80,7 +80,7 @@ export default {
         containerWidth =
           Math.floor(
             this.$refs.refLeftContainer && this.$refs.refLeftContainer.getBoundingClientRect().width
-          ) - 50 || 0
+          ) - 60 || 0
       } else {
         containerWidth =
           Math.floor(
@@ -97,7 +97,7 @@ export default {
           let width = 0
           const keys = Object.keys(item)
           for (let key of keys) {
-            width += key.length * 8.5 + item[key].length * 8.5 + 20
+            width += key.length * 8.5 + item[key].length * 8.5 + 15
           }
 
           if (containerWidth > width) {

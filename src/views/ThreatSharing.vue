@@ -23,7 +23,7 @@
               </v-btn>
             </div>
           </v-tabs>
-          <v-tabs-items v-model="tab">
+          <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
             <v-tab-item>
               <incidents ref="tsIncidents" />
             </v-tab-item>
@@ -268,30 +268,9 @@ export default {
     top: 11px;
   }
 
-  /* edit css
-
-  .v-input__slot {
-    -webkit-box-align: stretch;
-    -ms-flex-align: stretch;
-    align-items: stretch;
-    min-height: 40px !important;
-  }*/
-
   label.v-label.theme--light {
     font-size: 12px;
   }
-
-  /* edit css
-.v-input {
- font-size: 13px !important;
- font-weight: 600;
- font-style: normal;
- font-stretch: normal;
- line-height: normal;
- letter-spacing: normal;
- color: rgba(0, 0, 0, 0.54);
-}
-*/
 
   // end search input
 
@@ -426,7 +405,6 @@ export default {
 
   .v-data-footer__select {
     .v-select {
-      margin: 0 !important;
       margin-top: 3px !important;
       margin-left: 32px !important;
       height: 30px !important;

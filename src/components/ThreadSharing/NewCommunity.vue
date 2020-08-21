@@ -29,7 +29,9 @@
             <v-icon medium left color="blue" class="ml-2">mdi-send</v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Create New Community</v-list-item-title>
+            <v-list-item-title class="v-card-headline"
+              >{{ resourceId ? 'Edit' : 'Create New' }} Community</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
         <v-form ref="form" v-model="valid" lazy-validation>
@@ -131,13 +133,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import {
-  createCommunity,
-  getMyCommunityList,
-  listBusinessCategories,
-  updateCommunity
-} from '../../api/threadSharing'
+import { createCommunity, listBusinessCategories, updateCommunity } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 
@@ -262,11 +258,6 @@ export default {
               })
             })
         }
-
-        //this.$store.dispatch('threadSharing/createCommunity', newCommunityObj).then(() => {
-        //const refThis = this
-        //refThis.$emit('closeAdd')
-        //})
       }
     },
     getBusinessCategories() {
@@ -328,9 +319,6 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
-  }
-  .v-list-item__content {
-    padding: 12px 10px;
   }
   .v-text-field__slot input,
   textarea,

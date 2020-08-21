@@ -201,8 +201,9 @@
                 <div class="select-sources flex">
                   <v-checkbox
                     class="v-input--checkbox"
-                    v-model="item.value"
-                    :label="item.label"
+                    v-model="scanTypes"
+                    :label="item"
+                    :value="item"
                     v-for="(item, index) in sources"
                     @change="checkCheckboxValidation()"
                     :key="index"
@@ -273,6 +274,7 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
+import { getInvestigationScanTypes } from '@/api/investigations'
 export default {
   components: {
     AppModal
@@ -371,8 +373,9 @@ export default {
         name: 'file.jpg (case sensitive)',
         sha512: '3c1cc475fc16e68f41943421301c61c4f7f655…',
         md5: '3c1cc475fc16e68f41943421301c61c4f7f655…',
-        extentions: 'JPG'
+        extension: 'JPG'
       },
+      scanTypes: [],
       checkboxError: false,
       investgationName: '',
       isDateValid: true,
@@ -405,12 +408,7 @@ export default {
         { actionLabel: 'Notify user only', actionValue: 'notifyUserOnly' }
       ],
       filterList: [{ option: '', text: '' }],
-      sources: [
-        { name: 'Outlook', value: false, label: 'Outlook Desktop' },
-        { name: 'O365', value: false, label: 'Office 365' },
-        { name: 'GSuite', value: false, label: 'GSuite' },
-        { name: 'Exchange', value: false, label: 'Exchange' }
-      ],
+      sources: [],
       filterListOption: [
         'ip',
         'from',
@@ -425,7 +423,7 @@ export default {
         'name',
         'sha512',
         'md5',
-        'extentions'
+        'extension'
       ],
       valid: false,
       menu1: '',
@@ -475,7 +473,7 @@ export default {
         url: {
           required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
           format: (v) =>
-            /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
+            /https?:\/\/(www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi.test(
               v
             ) || 'invalid url'
         },
@@ -501,7 +499,7 @@ export default {
           required: (v) => (v && v.length <= 128) || 'It must between 1 - 128 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
-        extentions: {
+        extension: {
           required: (v) => (v && v.length <= 10) || 'It must between 1 - 10 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
@@ -537,11 +535,8 @@ export default {
   ],
   methods: {
     checkCheckboxValidation() {
-      let isCheckboxEmpty = this.sources.reduce((acc, i) => {
-        if (i.value) acc.push(i.name)
-        return acc
-      }, [])
-      if (isCheckboxEmpty.length == 0) {
+      let isCheckboxEmpty = this.scanTypes.length === 0
+      if (isCheckboxEmpty) {
         this.checkboxError = true
       } else {
         this.checkboxError = false
@@ -595,11 +590,8 @@ export default {
         this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
-        let isCheckboxEmpty = this.sources.reduce((acc, i) => {
-          if (i.value) acc.push(i.name)
-          return acc
-        }, [])
-        if (isCheckboxEmpty.length == 0) {
+        let isCheckboxEmpty = this.scanTypes.length === 0
+        if (isCheckboxEmpty) {
           this.checkboxError = true
           return false
         } else {
@@ -867,13 +859,12 @@ export default {
                 })
               }
               break
-            case 'extentions':
+            case 'extension':
               if (
-                !attachmentsData[attachmentsData.length - 1].extentions &&
-                attachmentsData[attachmentsData.length - 1].extentions !=
-                  this.filterList[index].text
+                !attachmentsData[attachmentsData.length - 1].extension &&
+                attachmentsData[attachmentsData.length - 1].extension != this.filterList[index].text
               ) {
-                attachmentsData.filter((s) => s.extentions == null)[0].extentions = this.filterList[
+                attachmentsData.filter((s) => s.extension == null)[0].extension = this.filterList[
                   index
                 ].text
               } else {
@@ -882,7 +873,7 @@ export default {
                   name: null,
                   md5: null,
                   sha512: null,
-                  extensions: this.filterList[index].text
+                  extension: this.filterList[index].text
                 })
               }
               break
@@ -910,18 +901,15 @@ export default {
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
           action: this.selectedAction,
-          scanTypes: this.sources.reduce((acc, i) => {
-            if (i.value) acc.push(i.name)
-            return acc
-          }, [])
+          scanTypes: this.scanTypes
         }
         // post request with body data
         this.$store
           .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {})
           .then((resp) => {
+            this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
-            this.isEdit ? this.$router.push('/investigations') : this.$emit('refreshDatatable')
           })
       }
     },
@@ -996,16 +984,12 @@ export default {
             (item) => item.targetUser
           )
         }
-        this.sources = this.sources.map((item) => {
-          let data = {
-            name: item.name,
-            value: _this.investigationDetailsData.scanTypes.find((source) =>
-              source.scanType == item.name ? true : false
-            ),
-            label: item.label
-          }
-          return data
-        })
+
+        this.scanTypes = _this.investigationDetailsData.scanTypes.reduce((acc, item) => {
+          acc.push(item.scanType)
+          return acc
+        }, [])
+        console.log('scanTypes', this.scanTypes)
         const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
@@ -1050,34 +1034,45 @@ export default {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
     })
-    /*
-    this.callForGetTargetGroupItems(
-      { pageNumber: 1, pageSize: 10, orderBy: 'Name', ascending: false, groupName: '' },
-      true
-    )*/
+    getInvestigationScanTypes().then((response) => {
+      this.sources = response.data.data
+      this.checkIsEdit()
+    })
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
       this.selectedMail.attachments &&
         this.selectedMail.attachments.map((item) => {
-          this.filterList.push({ option: 'md5', text: item.md5 })
-          this.filterList.push({ option: 'sha512', text: item.sha512 })
+          if (!item.isHidden) this.filterList.push({ option: 'md5', text: item.md5 })
+          if (!item.isHidden) this.filterList.push({ option: 'sha512', text: item.sha512 })
         })
       this.selectedMail.bcc &&
+        !this.selectedMail.isBccHidden &&
         this.selectedMail.bcc.map((item) => {
-          this.filterList.push({ option: 'bcc', item })
+          this.filterList.push({ option: 'bcc', text: item })
         })
       this.selectedMail.cc &&
+        !this.selectedMail.isCcHidden &&
         this.selectedMail.cc.map((item) => {
-          this.filterList.push({ option: 'cc', item })
+          this.filterList.push({ option: 'cc', text: item })
         })
       this.selectedMail.from &&
-        this.filterList.push({ option: 'from', text: this.selectedMail.from })
+        !this.selectedMail.isFromHidden &&
+        this.filterList.push({
+          option: 'from',
+          text: this.selectedMail.from
+        })
       this.selectedMail.subject &&
-        this.filterList.push({ option: 'subject', text: this.selectedMail.subject })
-      this.selectedMail.to.map((item) => {
-        this.filterList.push({ option: 'to', text: item })
-      })
+        !this.selectedMail.isSubjectHidden &&
+        this.filterList.push({
+          option: 'subject',
+          text: this.selectedMail.subject
+        })
+      this.selectedMail.to &&
+        !this.selectedMail.isToHidden &&
+        this.selectedMail.to.map((item) => {
+          this.filterList.push({ option: 'to', text: item })
+        })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
           this.filterList.push({ option: 'url', text: item.url })
@@ -1523,7 +1518,7 @@ export default {
 
     &:last-child {
       .v-list-item__content {
-        margin-bottom: 100px;
+        //margin-bottom: 100px;
       }
     }
   }

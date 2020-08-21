@@ -1,13 +1,13 @@
-<template>
+<template functional>
   <div>
     <span
-      v-if="scope.row && scope.row[col.property]"
+      v-if="props.scope.row && props.scope.row[props.col.property]"
       class="datatable__colorful-text"
-      :style="{ color: getTextColor(text) }"
+      :style="{ color: $options.getTextColor(props.text) }"
     >
-      {{ text }}
+      {{ props.text }}
     </span>
-    <span v-else>{{ getEmptyText }}</span>
+    <span v-else>{{ props.col['emptyText'] || '' }}</span>
   </div>
 </template>
 
@@ -16,6 +16,7 @@ import { getTextColor } from '../../utils/functions'
 
 export default {
   name: 'DataTableColorfulText',
+  functional: true,
   props: {
     scope: {
       type: Object
@@ -27,15 +28,8 @@ export default {
       type: String
     }
   },
-  computed: {
-    getEmptyText() {
-      return this.col['emptyText'] || ''
-    }
-  },
-  methods: {
-    getTextColor(value) {
-      return getTextColor(value)
-    }
+  getTextColor(value) {
+    return getTextColor(value)
   }
 }
 </script>

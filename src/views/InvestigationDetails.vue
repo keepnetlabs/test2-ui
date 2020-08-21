@@ -11,7 +11,8 @@
           :status="isWantToAddNewCommunity"
           :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
           :investigationDetailsData="investigationDetailsData"
-          @closeAdd="onAddClose"
+          @closeWithRoute="onAddClose"
+          @closeAdd="isWantToAddNewCommunity = false"
           v-if="isWantToAddNewCommunity"
           @refreshDatatable="refreshDatatable"
         />
@@ -45,7 +46,7 @@
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true)"
-                  >Delete Permenantly
+                  >Delete Permanently
                 </v-btn>
               </div>
             </div>
@@ -62,7 +63,13 @@
         >
           <template v-slot:app-dialog-body>
             <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
-              <v-form class="w-100" lazy-validation ref="refWarnForm">
+              <v-form
+                class="w-100"
+                lazy-validation
+                ref="refWarnForm"
+                @submit="isWantToWarnConfirm"
+                onSubmit="return false;"
+              >
                 <v-text-field
                   placeholder="Dangerous Email"
                   outlined
@@ -116,7 +123,12 @@
           class-name="investigation-details__warning-modal investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-body>
-            <v-form lazy-validation ref="refFormDeleteAndNotify">
+            <v-form
+              lazy-validation
+              @submit="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
+              ref="refFormDeleteAndNotify"
+              onSubmit="return false;"
+            >
               <v-list-item
                 class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
               >
@@ -155,7 +167,7 @@
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
-                  >Delete Permenantly
+                  >Delete Permanently
                 </v-btn>
               </div>
             </div>
@@ -1480,11 +1492,13 @@ export default {
           //vm.$forceUpdate();
         })
     },
-    onAddClose() {
+    onAddClose(resp) {
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
       }
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      this.refreshDatatable()
       this.isWantToAddNewCommunity = false
     },
     createCommunityFromMobileInfo() {
@@ -1981,8 +1995,9 @@ export default {
         }
 
         &--right-menu {
-          width: 100%;
-          overflow: hidden;
+          width: calc(100% - 236px);
+          transition: none !important;
+          -ms-flex-wrap: wrap;
           flex-wrap: wrap;
 
           .card.v-card.v-sheet.theme--light {

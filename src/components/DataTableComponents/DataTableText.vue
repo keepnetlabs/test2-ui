@@ -1,26 +1,22 @@
-<template>
+<template functional>
   <div>
-    <span v-if="scope.row && scope.row[col.property]">
-      {{ scope.row[col.property] }}
+    <span v-if="props.scope.row && props.scope.row[props.col.property]">
+      {{ props.scope.row[props.col.property] }}
     </span>
-    <span v-else>{{ getEmptyText }}</span>
+    <span v-else>{{ props.col['emptyText'] || '' }}</span>
   </div>
 </template>
 
 <script>
 export default {
   name: 'DataTableText',
+  functional: true,
   props: {
     scope: {
       type: Object
     },
     col: {
       type: Object
-    }
-  },
-  computed: {
-    getEmptyText() {
-      return this.col['emptyText'] || ''
     }
   }
 }

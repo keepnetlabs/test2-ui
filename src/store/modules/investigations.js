@@ -301,7 +301,7 @@ const investigations = {
     async createInvestigation({ commit, dispatch }, obj) {
       // create investigaiton list via axious. obj is a data parameter ( body ).
       // if you want to manipulate the obj, do it before.
-      await saveNewInvestigation(obj)
+      return await saveNewInvestigation(obj)
         .then((resp) => {
           dispatch(
             'common/createSnackBar',
@@ -311,6 +311,7 @@ const investigations = {
             },
             { root: true }
           )
+          return Promise.resolve(resp)
         })
         .catch((resp) => {
           dispatch(
