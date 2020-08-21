@@ -7,6 +7,7 @@
       scrollable
       persistent
       no-click-animation
+      hide-overlay
     >
       <CompanyCreateOrEdit
         @cancelForm="cancelCreateOrEditForm"
@@ -39,6 +40,7 @@
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
       @addButton="addButton"
+      @onEmptyBtnClicked="addButton"
       @editAction="editAction"
     >
       <template v-slot:datatable-custom-column="{ scope }">

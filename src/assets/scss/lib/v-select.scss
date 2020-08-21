@@ -3,10 +3,14 @@
     &.v-text-field--outlined:not(.v-text-field--single-line)
       .v-select__selections {
       padding: 4px 0;
+
+
     }
     .v-select__selections {
+      min-height: 40px;
       .v-select__selection {
         font-size: 13px;
+
       }
     }
     &-list {
