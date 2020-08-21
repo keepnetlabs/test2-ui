@@ -142,9 +142,9 @@
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                     />
                     <img
-                      v-if="edit && this.selectedExtend.logoUrl"
-                      :src="this.selectedExtend.logoUrl"
-                      style="height: 60px;"
+                      v-if="edit && this.formData.logoUrl"
+                      :src="this.formData.logoUrl"
+                      style="max-height: 60px;"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -482,6 +482,7 @@ export default {
       activeStep: 1,
       formData: {
         File: null,
+        logoURL: null,
         Name: '',
         Description: '',
         IndustryResourceId: '',
@@ -503,7 +504,7 @@ export default {
         CompanyGroupResourceIdArray: [],
         statusId: '1'
       },
-      logoURL: null,
+
       LicenseDates: [],
       isActive: true,
       expiryPeriods: [],
@@ -549,7 +550,7 @@ export default {
 
     if (this.edit) {
       this.stepLock = this.edit
-      this.logoURL = this.selectedExtend.logoUrl
+      this.formData.logoURL = this.selectedExtend.logoUrl
       this.formData.Name = this.selectedExtend.name
       this.formData.Description = this.selectedExtend.description
       this.formData.IndustryResourceId = this.selectedExtend.industryResourceId
@@ -569,9 +570,8 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId
-      this.isActive = this.selectedExtend.statusId == 1 ? true : false
+      this.isActive = this.selectedExtend.statusId === 1 ? true : false
       this.LicenseDates = [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
-      debugger
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
