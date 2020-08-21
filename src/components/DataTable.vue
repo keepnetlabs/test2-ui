@@ -735,8 +735,20 @@
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
-          layout="total, sizes, prev, pager, next"
+          layout="sizes, prev, pager, next,slot"
         >
+          <template>
+            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--2">
+              {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount }}-{{
+                this.currentPage * this.rowCount > initialData.length
+                  ? initialData.length
+                  : this.currentPage * this.rowCount
+              }}
+              of
+              {{ dataLength || initialData.length }}
+            </span>
+          </template>
         </el-pagination>
       </div>
       <div class="pagination block" v-if="showfilteredData">
