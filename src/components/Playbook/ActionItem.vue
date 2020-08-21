@@ -264,11 +264,7 @@
         </v-col>
         <v-col class="text-right">
           <!-- Remove act button -->
-          <v-btn
-            icon
-            @click="removeAction(index, actionsValues[index].val)"
-            v-if="action.val !== 'markAs'"
-          >
+          <v-btn icon @click="removeAction(index, actionsValues[index].val)">
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
         </v-col>
@@ -319,6 +315,7 @@ export default {
     actionData: Object,
     resourceId: String,
     editedActions: Object,
+    playbookId: String,
     editedPlaybookActionAnalyzers: {
       type: Array,
       default: null
@@ -772,6 +769,7 @@ export default {
       return this.actions.length
     },
     removeAction(index, actionVal) {
+      console.log('actionVal', actionVal)
       this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&
@@ -782,6 +780,9 @@ export default {
         }
       })
 
+      if (actionVal === 'markAs') {
+        this.playbookAction.markType = ''
+      }
       if (actionVal === 'notify') {
         this.targetUserType.splice(index, 1)
         this.tarUsers.splice(index, 1)
@@ -873,11 +874,8 @@ export default {
     }
   },
   created() {
-    if (
-      this.actions.findIndex((item) => {
-        return item.val === 'markAs'
-      }) === -1
-    ) {
+    console.log('this.playbookId', this.playbookId)
+    if (!this.playbookId) {
       this.addAction()
     }
     /*
@@ -944,6 +942,9 @@ export default {
     },
     editedActions(val) {
       this.playbookAction = val
+      if (val.markType) {
+        this.addAction()
+      }
       if (val.tags.length > 0) {
         this.addAction('tag')
       }

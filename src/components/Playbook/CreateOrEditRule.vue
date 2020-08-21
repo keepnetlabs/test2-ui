@@ -435,6 +435,7 @@ export default {
     },
     callForCreatePlaybook() {
       const ref = this.$refs.refActionItem
+      debugger
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
       let playbookActionAnalyzers = []
@@ -706,7 +707,9 @@ export default {
     },
     updateTags() {
       this.$nextTick(() => {
-        this.tags.push(...this.tagsearch.split(','))
+        if (this.tagsearch) {
+          this.tags.push(...this.tagsearch.split(','))
+        }
         this.$nextTick(() => {
           this.tagsearch = ''
         })
