@@ -46,7 +46,7 @@
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true)"
-                  >Delete Permenantly
+                  >Delete Permanently
                 </v-btn>
               </div>
             </div>
@@ -156,7 +156,7 @@
                   text
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
-                  >Delete Permenantly
+                  >Delete Permanently
                 </v-btn>
               </div>
             </div>
