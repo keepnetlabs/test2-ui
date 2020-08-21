@@ -2,7 +2,7 @@
   <div class="fullscreen-form company-create-modal">
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
-        <div class="v-btn v-btn__icon-wrapper">
+        <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0">
