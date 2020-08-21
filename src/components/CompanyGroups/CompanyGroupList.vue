@@ -7,13 +7,13 @@
       @changeModalStatus="changeDeleteModalStatus"
     />
     <create-item-modal
-      v-if="isShowCreateOrEditModal"
+      :is-show="isShowAddModal"
       :selectedRow="selectedRow"
-      @confirmDelete="deleteConfirmedItem"
-      @changeModalStatus="changeCreateOrEditModalStatus"
+      @changeModalStatus="changeAddModalStatus"
+      @companyGroupCreated="companyGroupCreated"
     />
     <datatable
-      ref="refDataList"
+      ref="refGroupDataList"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :countRow="5"
@@ -28,6 +28,7 @@
       :is-downloadable="false"
       @delete="handleTableItemDelete"
       @addButton="addButton"
+      @onEmptyBtnClicked="addButton"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.name">
@@ -57,78 +58,79 @@ export default {
     Datatable,
     DeleteModal
   },
-  data: () => ({
-    isShowDeleteModal: false,
-    isShowExtended: false,
-    isShowCreateOrEditModal: false,
-    selectedExtend: {},
-    selectedRow: {},
-    tableOptions: {
-      columns: [
-        {
-          property: 'name',
-          align: 'left',
-          editable: false,
-          label: 'Group Name',
-          fixed: 'left',
-          sortable: true,
-          show: true,
-          type: 'slot',
-          width: 250
+  data() {
+    return {
+      isShowDeleteModal: false,
+      isShowAddModal: false,
+      selectedExtend: {},
+      selectedRow: {},
+      tableOptions: {
+        columns: [
+          {
+            property: 'name',
+            align: 'left',
+            editable: false,
+            label: 'Group Name',
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'slot',
+            width: 250
+          },
+          {
+            property: 'companyCount',
+            align: 'right',
+            editable: false,
+            label: 'Companies',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 150
+          },
+          {
+            property: 'addedTime',
+            align: 'left',
+            editable: false,
+            label: 'Date Created',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 190
+          }
+        ],
+        pageSizes: [5, 10, 25, 50, 100],
+        selectEvent: {
+          clipboard: true,
+          edit: true,
+          delete: true,
+          download: true
         },
-        {
-          property: 'companyCount',
-          align: 'right',
-          editable: false,
-          label: 'Companies',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 150
+        iEmpty: {
+          message: 'No company groups defined',
+          btn: 'ADD A COMPANY GROUP',
+          icon: 'mdi-account-plus'
         },
-        {
-          property: 'addedTime',
-          align: 'left',
-          editable: false,
-          label: 'Date Created',
-          sortable: true,
+        addButton: {
           show: true,
-          type: 'text',
-          width: 190
-        }
-      ],
-      pageSizes: [5, 10, 25, 50, 100],
-      selectEvent: {
-        clipboard: true,
-        edit: true,
-        delete: true,
-        download: true
-      },
-      iEmpty: {
-        message: 'No company groups defined',
-        btn: 'ADD A COMPANY GROUP',
-        icon: 'mdi-account-plus'
-      },
-      addButton: {
-        show: true,
-        action: 'addButton',
-        tooltip: 'Add Company Group'
-      },
-      rowActions: [
-        {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          action: 'editAction',
-          isNotShow: true
+          action: 'addButton',
+          tooltip: 'Add Company Group'
         },
-        {
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'delete'
-        }
-      ]
+        rowActions: [
+          {
+            name: 'Edit this row',
+            icon: 'mdi-pencil',
+            action: 'editAction',
+            isNotShow: true
+          },
+          {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'delete'
+          }
+        ]
+      }
     }
-  }),
+  },
   mounted() {
     this.getTableData()
   },
@@ -136,7 +138,7 @@ export default {
     getTableData() {
       getCompanyGroups()
         .then((response) => {
-          this.$refs.refDataList.loadWithDataArray(
+          this.$refs.refGroupDataList.loadWithDataArray(
             response.data.data.hasOwnProperty('companyGroups') &&
               response.data.data.companyGroups.length > 0
               ? response.data.data.companyGroups
@@ -144,10 +146,9 @@ export default {
           )
         })
         .catch((error) => {
-          this.$refs.refDataList.loadWithDataArray([])
+          this.$refs.refGroupDataList.loadWithDataArray([])
         })
     },
-    handleTableItemEdit(row) {},
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
       this.changeDeleteModalStatus(true)
@@ -169,15 +170,14 @@ export default {
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
     },
-    changeCreateOrEditModalStatus(status) {
-      this.isShowCreateOrEditModal = status
+    changeAddModalStatus(status) {
+      this.isShowAddModal = status
     },
-    handleCompanyNameClick({ row, column, event }) {},
     addButton() {
-      this.changeCreateOrEditModalStatus(true)
+      this.changeAddModalStatus(true)
     },
-    editAction(row) {
-      this.selectedRow = row
+    companyGroupCreated() {
+      this.getTableData()
     }
   }
 }

@@ -17,6 +17,9 @@ export function getCompanyByID(id) {
 export function getCompanyGroups() {
   return testRequest.get(`/company-groups`)
 }
+export function createCompanyGroups(payload) {
+  return testRequest.post('/company-groups', payload)
+}
 export function createCompany(payload) {
   const formData = new FormData()
 
@@ -27,9 +30,6 @@ export function createCompany(payload) {
       payload[key] && formData.append(key, payload[key])
     }
   }
-  /*for (let a of formData.entries()) {
-    console.log(a[0] + ':' + a[1])
-  }*/
 
   return testRequest.post(`/companies`, formData)
 }
@@ -43,9 +43,6 @@ export function updateCompany(id, payload) {
     } else {
       payload[key] && formData.append(key, payload[key])
     }
-  }
-  for (let a of formData.entries()) {
-    console.log(a[0] + ':' + a[1])
   }
 
   return testRequest.put(`/companies/${id}`, formData)
