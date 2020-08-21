@@ -63,7 +63,13 @@
         >
           <template v-slot:app-dialog-body>
             <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
-              <v-form class="w-100" lazy-validation ref="refWarnForm" onSubmit="return false;">
+              <v-form
+                class="w-100"
+                lazy-validation
+                ref="refWarnForm"
+                @submit="isWantToWarnConfirm"
+                onSubmit="return false;"
+              >
                 <v-text-field
                   placeholder="Dangerous Email"
                   outlined
@@ -117,7 +123,12 @@
           class-name="investigation-details__warning-modal investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-body>
-            <v-form lazy-validation ref="refFormDeleteAndNotify" onSubmit="return false;">
+            <v-form
+              lazy-validation
+              @submit="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
+              ref="refFormDeleteAndNotify"
+              onSubmit="return false;"
+            >
               <v-list-item
                 class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
               >
