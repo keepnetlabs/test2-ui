@@ -211,7 +211,7 @@ export default {
     getPlaceholder() {
       switch (this.query && this.query.format) {
         case 'Email':
-          return 'Enter sender’s email address'
+          return 'Enter email address'
         case 'Domain':
           return 'Enter domain address'
         case 'Regex':
