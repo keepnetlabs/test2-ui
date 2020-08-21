@@ -191,14 +191,15 @@ export default {
   },
   methods: {
     setPosition() {
-      let top = this.top
+      let p = this.top
+      let e = 0
+      let t = this.tableHeight
+
       if (this.$el !== undefined) {
-        top =
-          this.$el.clientHeight + this.top > this.tableHeight
-            ? -Math.abs(this.tableHeight - this.top) + this.top
-            : this.top
+        e = this.$el.clientHeight
+        p = t > e ? (p = t > e + p ? p : t - e) : 0
       }
-      return top
+      return p
     }
   },
 
@@ -207,7 +208,7 @@ export default {
   },
   watch: {
     selectedExtend() {
-      if (!!this.selectedExtend) {
+      if (!!this.selectedExtend && !!this.selectedExtend.companyGroups) {
         this.groupCount = this.selectedExtend.companyGroups.length
       }
     }
@@ -217,12 +218,13 @@ export default {
 
 <style lang="scss">
 .company-list-extend {
-  top: 24px;
+  top: 0;
   position: absolute;
   right: 0;
   overflow: hidden;
   z-index: 5;
   width: 360px;
+  min-height: 500px;
   border-radius: 12px;
   box-shadow: 0 1px 1px -1px rgba(204, 204, 204, 0.12), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
     0 1px 3px 0 rgba(142, 142, 142, 0.2);
