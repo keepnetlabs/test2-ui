@@ -201,6 +201,9 @@
   .v-list-item {
     padding:0;
     max-width: 554px !important;
+    &__title{
+      overflow:hidden !important;
+    }
     &__content {
       & > label {
         font-size: 20px;
