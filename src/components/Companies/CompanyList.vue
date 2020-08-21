@@ -133,11 +133,10 @@ export default {
           align: 'right',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
-
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 130
         },
         {
           property: PROPERTY_STORE.LICENSEENDDATE,
@@ -177,7 +176,7 @@ export default {
       addButton: {
         show: true,
         action: 'addButton',
-        tooltip: 'Add New Company'
+        tooltip: 'Add Company'
       },
       rowActions: [
         {
