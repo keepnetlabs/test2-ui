@@ -387,6 +387,7 @@
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
             @sort-change="sortChangedEvent"
+            :empty-text="empty.message"
             @cell-click="cellClick"
             id="data-table-container"
             lazy
@@ -997,7 +998,6 @@ export default {
   },
   watch: {
     tableData(data) {
-      console.log('this.tableData', this.tableData)
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
@@ -1061,7 +1061,6 @@ export default {
     if (this.init) {
       this.init = false
     }
-    console.log('updated')
   },
   mounted() {
     this.init = true
@@ -1165,7 +1164,7 @@ export default {
       if (this.isServerSide) {
         this.$emit('sortChangedEvent', sortProps)
       } else {
-        if (this.filteredData && this.filteredData.length) {
+        if (this.showfilteredData && this.filteredData && this.filteredData.length) {
           this.filteredData = this.sortFunction(this.unRenderedFilterData, sortProps).slice(
             (this.currentPage - 1) * this.rowCount,
             this.currentPage * this.rowCount
