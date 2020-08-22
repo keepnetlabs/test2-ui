@@ -759,8 +759,28 @@
           :total="filteredDataLength"
           @current-change="handleFilteredCurrentChange"
           @size-change="handleFilteredSizeChange"
-          layout="total, sizes, prev, pager, next"
+          layout="sizes, prev, pager, next,slot"
         >
+          <template>
+            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--2">
+              {{
+                filteredDataLength === 0
+                  ? '0'
+                  : this.currentPage === 1
+                  ? 1
+                  : (this.currentPage - 1) * this.rowCount
+              }}-{{
+                filteredDataLength === 0
+                  ? '0'
+                  : this.currentPage * this.rowCount > initialData.length
+                  ? initialData.length
+                  : this.currentPage * this.rowCount
+              }}
+              of
+              {{ filteredDataLength }}
+            </span>
+          </template>
         </el-pagination>
       </div>
     </v-card>
