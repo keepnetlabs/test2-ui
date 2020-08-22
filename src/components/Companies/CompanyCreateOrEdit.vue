@@ -2,7 +2,7 @@
   <div class="fullscreen-form company-create-modal">
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
-        <div class="v-btn v-btn__icon-wrapper">
+        <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0">
@@ -45,8 +45,10 @@
                       placeholder="Enter a name for the company"
                       outlined
                       dense
+                      hint="*Required"
+                      persistent-hint
                       autocomplete="off"
-                      v-model="formData.Name"
+                      v-model.trim="formData.Name"
                       :rules="[
                         (v) => validations.required(v, 'Required'),
                         (v) => validations.maxLength(v, 150, 'Max 150 characters')
@@ -66,6 +68,8 @@
                       dense
                       no-resize
                       v-model="formData.Description"
+                      hint="*Required"
+                      persistent-hint
                       :rules="[(v) => !!v || 'Required']"
                       autocomplete="disabled"
                     />
@@ -82,6 +86,8 @@
                       outlined
                       placeholder="Select industry"
                       :rules="[(v) => !!v || 'Required']"
+                      hint="*Required"
+                      persistent-hint
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -96,6 +102,8 @@
                       outlined
                       placeholder="Select country"
                       :rules="[(v) => !!v || 'Required']"
+                      hint="*Required"
+                      persistent-hint
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -134,9 +142,9 @@
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                     />
                     <img
-                      v-if="edit && this.selectedExtend.logoUrl"
-                      :src="this.selectedExtend.logoUrl"
-                      style="height: 60px;"
+                      v-if="edit && this.formData.logoUrl"
+                      :src="this.formData.logoUrl"
+                      style="max-height: 60px;"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -185,6 +193,8 @@
                       placeholder="Select an option"
                       :rules="[(v) => !!v || 'Required']"
                       :disabled="stepLock"
+                      hint="*Required"
+                      persistent-hint
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -201,6 +211,8 @@
                       :rules="[expiryPeriodValidation]"
                       @change="expiryPeriodChange"
                       :disabled="stepLock"
+                      hint="*Required"
+                      persistent-hint
                     ></v-select>
                     <el-date-picker
                       v-show="formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'"
@@ -213,6 +225,8 @@
                       value-format="yyyy-MM-dd"
                       @change="dataPickerChange"
                       :disabled="stepLock"
+                      hint="*Required"
+                      persistent-hint
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -242,6 +256,8 @@
                               ]
                             : [true]
                         "
+                        hint="*Required"
+                        persistent-hint
                       ></v-text-field>
                       <v-btn
                         height="40"
@@ -314,6 +330,9 @@
                       item-value="resourceId"
                       outlined
                       :rules="[(v) => !!v || 'Required']"
+                      hint="*Required"
+                      persistent-hint
+                      placeholder="Select an option"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -327,6 +346,9 @@
                       item-value="resourceId"
                       outlined
                       :rules="[(v) => !!v || 'Required']"
+                      hint="*Required"
+                      persistent-hint
+                      placeholder="Select an option"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -340,6 +362,9 @@
                       item-value="resourceId"
                       outlined
                       :rules="[(v) => !!v || 'Required']"
+                      hint="*Required"
+                      persistent-hint
+                      placeholder="Select an option"
                     ></v-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -438,7 +463,7 @@
 <script>
 import { maxLength, required } from '@/utils/validations'
 import { getLookupListByTypeId } from '../../api/common'
-import { createCompany, getCompanyGroups, updateCompany } from '../../api/company'
+import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
@@ -457,6 +482,7 @@ export default {
       activeStep: 1,
       formData: {
         File: null,
+        logoURL: null,
         Name: '',
         Description: '',
         IndustryResourceId: '',
@@ -475,10 +501,10 @@ export default {
         IsVersionVisible: false,
         IsReleaseNotesVisible: false,
         ReleaseNotesUrl: '',
-        CompanyGroupResourceIdArray: '',
+        CompanyGroupResourceIdArray: [],
         statusId: '1'
       },
-      logoURL: null,
+
       LicenseDates: [],
       isActive: true,
       expiryPeriods: [],
@@ -524,7 +550,7 @@ export default {
 
     if (this.edit) {
       this.stepLock = this.edit
-      this.logoURL = this.selectedExtend.logoUrl
+      this.formData.logoURL = this.selectedExtend.logoUrl
       this.formData.Name = this.selectedExtend.name
       this.formData.Description = this.selectedExtend.description
       this.formData.IndustryResourceId = this.selectedExtend.industryResourceId
@@ -544,12 +570,13 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId
-      this.isActive = this.selectedExtend.statusId == 1 ? true : false
+      this.isActive = this.selectedExtend.statusId === 1 ? true : false
       this.LicenseDates = [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
       Array.isArray(this.selectedExtend.companyGroups) &&
-        this.selectedExtend.companyGroups.forEach((x) =>
-          this.formData.CompanyGroupResourceIdArray.push(x)
-        )
+        this.selectedExtend.companyGroups.forEach((x) => {
+          this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
+          this.companyGroupList.push(x)
+        })
     }
   },
   methods: {
@@ -728,6 +755,22 @@ export default {
   watch: {
     isActive(value) {
       this.formData.statusId = value ? 1 : 2
+    },
+    search(val) {
+      if (val && val.length > 2) {
+        this.debounce(() => {
+          this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
+          searchCompanies(this.payload)
+            .then((response) => {
+              this.companies =
+                response.data.data.hasOwnProperty('results') &&
+                response.data.data.results.length > 0
+                  ? response.data.data.results
+                  : []
+            })
+            .catch((error) => {})
+        }, 500)
+      }
     }
   }
 }

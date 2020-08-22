@@ -7,6 +7,7 @@
       scrollable
       persistent
       no-click-animation
+      hide-overlay
     >
       <CompanyCreateOrEdit
         @cancelForm="cancelCreateOrEditForm"
@@ -39,6 +40,7 @@
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
       @addButton="addButton"
+      @onEmptyBtnClicked="addButton"
       @editAction="editAction"
     >
       <template v-slot:datatable-custom-column="{ scope }">
@@ -131,11 +133,10 @@ export default {
           align: 'right',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
-
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 130
         },
         {
           property: PROPERTY_STORE.LICENSEENDDATE,
@@ -175,7 +176,7 @@ export default {
       addButton: {
         show: true,
         action: 'addButton',
-        tooltip: 'Add New Company'
+        tooltip: 'Add Company'
       },
       rowActions: [
         {

@@ -732,7 +732,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 400
+          width: 120
         },
         {
           property: 'delay',
@@ -741,7 +741,8 @@ export default {
           label: 'Delay',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          width: 150
         },
         {
           property: 'from',
@@ -750,7 +751,8 @@ export default {
           label: 'From',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          width: 400
         },
         {
           property: 'by',
@@ -759,7 +761,8 @@ export default {
           label: 'By',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          width: 400
         },
         {
           property: 'utcTime',

@@ -1,8 +1,12 @@
-.v-input {
-  &__slot {
-    margin-bottom: 0;
+#app {
+  .v-input {
+    &__slot {
+      margin-bottom: 1px;
+    }
+    .v-messages {
+      font-size: 9px;
+      line-height: 13px;
+    }
   }
-  .v-messages {
-    font-size: 9px;
-  }
+
 }

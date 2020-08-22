@@ -4,6 +4,7 @@
     icon="mdi-account-multiple-plus"
     title="Create New Company Group"
     subtitle="Give a name to your new group and save"
+    @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
       <v-form ref="refCreateGroupForm" lazy-validation>
@@ -11,9 +12,12 @@
           <v-list-item-content class="py-0">
             <label class="create-company-group__label">Company Group Name</label>
             <v-text-field
+              v-model="groupName"
               placeholder="Enter name"
               dense
               outlined
+              persistent-hint
+              hint="*Required"
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v, 'Required'),
@@ -30,25 +34,29 @@
             >
               You can select multiple companies
             </v-list-item-title>
-            <v-autocomplete
-              :items="companies"
+            <v-combobox
               v-model="selectedCompanies"
+              :items="companies"
+              :no-data-text="'no data'"
+              :return-object="true"
+              :search-input.sync="search"
+              auto-select-first
+              autocomplete="off"
               chips
-              clearable
               item-text="companyName"
               item-value="companyNameResourceId"
               multiple
-              small-chips
               outlined
+              persistent-hint
               placeholder="Select companies"
-            ></v-autocomplete>
+            ></v-combobox>
           </v-list-item-content>
         </v-list-item>
       </v-form>
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
-        <v-btn @click="closeModal" color="#f56c6c" class="delete-user__footer-button" text
+        <v-btn @click="changeStatus(false)" color="#f56c6c" class="delete-user__footer-button" text
           >CANCEL</v-btn
         >
         <v-btn
@@ -66,8 +74,9 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { searchCompanies } from '../../api/company'
+import { searchCompanies, createCompanyGroups } from '../../api/company'
 import { maxLength, required } from '@/utils/validations'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CreateItemModal',
   props: {
@@ -83,14 +92,16 @@ export default {
   },
   data() {
     return {
+      search: null,
+      groupName: '',
       companies: [],
-      selectedCompanies: [],
+      selectedCompanies: null,
       validations: {
         required,
         maxLength
       },
       payload: {
-        pageSize: 3000,
+        pageSize: 10,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
@@ -101,16 +112,6 @@ export default {
               FilterItems: [
                 {
                   FieldName: 'CompanyName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'IndustryName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'LicenseTypeName',
                   Operator: 'Contains',
                   Value: ''
                 }
@@ -124,28 +125,65 @@ export default {
   },
   computed: {},
   mounted() {
-    this.getData()
+    //this.getData()
   },
   methods: {
-    getData() {
-      searchCompanies(this.payload)
-        .then((response) => {
-          this.companies =
-            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-              ? response.data.data.results
-              : []
-        })
-        .catch((error) => {})
-    },
-    closeModal() {
-      this.$emit('changeModalStatus', false)
-    },
-    confirmDelete() {
-      this.$emit('confirmDelete', this.selectedRow)
-      this.$emit('changeModalStatus', false)
+    changeStatus(value) {
+      this.$emit('changeModalStatus', value)
+      if (value === false) {
+        this.companies = []
+        this.groupName = null
+        this.selectedCompanies = null
+        this.$refs.refCreateGroupForm.reset()
+      }
     },
     save() {
-      this.$refs.refCreateGroupForm.validate()
+      if (this.$refs.refCreateGroupForm.validate()) {
+        let resourceIDs = []
+        !!this.selectedCompanies &&
+          Object.entries(this.selectedCompanies).forEach((x) => {
+            resourceIDs.push(x[1].companyResourceId)
+          })
+        const payload = { name: this.groupName, companyResourceIdArray: resourceIDs }
+
+        createCompanyGroups(payload).then((response) => {
+          if (response.data && response.data.code === 'RESOURCE_CREATED') {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.$emit('companyGroupCreated', response.data.resourceId)
+            this.changeStatus(false)
+          }
+        })
+      }
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    }
+  },
+  watch: {
+    search(val) {
+      if (val && val.length > 2) {
+        this.debounce(() => {
+          this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
+          searchCompanies(this.payload)
+            .then((response) => {
+              this.companies =
+                response.data.data.hasOwnProperty('results') &&
+                response.data.data.results.length > 0
+                  ? response.data.data.results
+                  : []
+            })
+            .catch((error) => {})
+        }, 500)
+      }
     }
   }
 }
