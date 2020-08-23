@@ -1,6 +1,4 @@
 import 'babel-polyfill'
-//import './plugins/classlist'
-//import './plugins/classlist'
 import Vue from 'vue'
 import VueTour from 'vue-tour'
 import App from './App.vue'
@@ -12,6 +10,7 @@ import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 import 'echarts-gl'
+import VueMask from 'v-mask'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
 Vue.component(
@@ -38,6 +37,7 @@ Vue.use(VueTour)
 Vue.component('v-chart', ECharts)
 Vue.use(require('vue-moment'))
 
+Vue.use(VueMask)
 Vue.config.productionTip = false
 
 Vue.filter('formatSize', function (size) {
