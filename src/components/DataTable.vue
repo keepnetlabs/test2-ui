@@ -773,8 +773,8 @@
               }}-{{
                 filteredDataLength === 0
                   ? '0'
-                  : this.currentPage * this.rowCount > initialData.length
-                  ? initialData.length
+                  : this.currentPage * this.rowCount > filteredDataLength
+                  ? filteredDataLength
                   : this.currentPage * this.rowCount
               }}
               of
