@@ -41,7 +41,7 @@
       <div class="company-list-extend__body-item d-flex align-center">
         <div class="company-list-extend__body-key">Company Groups</div>
         <div class="company-list-extend__body-value">
-          <template v-if="groupCount > 0">
+          <template v-if="!!selectedExtend && !!selectedExtend.companyGroups && groupCount > 0">
             <span v-for="group of selectedExtend.companyGroups.slice(0, limiter)" :key="group.name">
               {{ group.name }}, &nbsp;
             </span>
