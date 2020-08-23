@@ -244,9 +244,10 @@
                         "
                         outlined
                         dense
-                        type="number"
+                        type="text"
                         autocomplete="off"
-                        v-model="formData.NumberOfUsers"
+                        v-mask="'###########'"
+                        v-model.number="formData.NumberOfUsers"
                         :disabled="!formData.IsNumberOfUsersLimited || stepLock"
                         :rules="
                           formData.IsNumberOfUsersLimited
