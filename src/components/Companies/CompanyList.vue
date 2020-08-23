@@ -224,6 +224,11 @@ export default {
       }
     }
   }),
+  watch: {
+    isShowCreateOrEditModal() {
+      document.querySelector('html').classList.toggle('overflow-y-hidden')
+    }
+  },
   mounted() {
     this.getTableData()
   },
