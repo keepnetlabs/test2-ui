@@ -38,7 +38,12 @@
         <v-btn @click="changeStatus(false)" color="#f56c6c" class="delete-user__footer-button" text
           >CANCEL</v-btn
         >
-        <v-btn @click="confirm" color="#2196f3" class="delete-user__footer-button" text
+        <v-btn
+          @click="confirm"
+          :disabled="selectedArray && selectedArray.length === 0"
+          color="#2196f3"
+          class="delete-user__footer-button"
+          text
           >CONFIRM</v-btn
         >
       </div>
@@ -67,7 +72,7 @@ export default {
   },
   data() {
     return {
-      selectedRow: [],
+      selectedArray: [],
       showTable: false,
       tableOptions: {
         columns: [
