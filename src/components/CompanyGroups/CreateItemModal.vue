@@ -2,12 +2,18 @@
   <app-dialog
     :status="isShow"
     icon="mdi-account-multiple-plus"
-    title="Create New Company Group"
-    subtitle="Give a name to your new group and save"
+    :title="this.isEdit ? 'Edit Company Group' : 'Create New Company Group'"
+    :subtitle="
+      this.isEdit ? 'Edit a name to your group and save' : 'Give a name to your new group and save'
+    "
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
-      <v-form ref="refCreateGroupForm" lazy-validation>
+      <v-form
+        v-if="!!isEdit && !!selectedRow && isEdit === true"
+        ref="refCreateGroupForm"
+        lazy-validation
+      >
         <v-list-item class="px-0 py-0">
           <v-list-item-content class="py-0">
             <label class="create-company-group__label">Company Group Name</label>
@@ -74,7 +80,12 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { searchCompanies, createCompanyGroups } from '../../api/company'
+import {
+  searchCompanies,
+  createCompanyGroups,
+  searchGroupCompanies,
+  updateCompanyGroup
+} from '../../api/company'
 import { maxLength, required } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
@@ -85,6 +96,10 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -124,10 +139,33 @@ export default {
     }
   },
   computed: {},
-  mounted() {
-    //this.getData()
+  mounted() {},
+  beforeUpdate() {
+    this.editHandler()
   },
   methods: {
+    editHandler() {
+      //this.getData()
+      /*
+      if (this.selectedRow && this.selectedRow.name) {
+        this.groupName = this.selectedRow.name
+      }
+  */
+      if (this.isShow && this.isEdit) {
+        const _p = this.payload
+        _p.pageSize = 500
+        this.groupName = this.selectedRow.name
+        searchGroupCompanies(this.selectedRow.resourceId, _p)
+          .then((response) => {
+            this.selectedCompanies =
+              response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+                ? response.data.data.results
+                : []
+          })
+          .catch((error) => {})
+      }
+    },
+
     changeStatus(value) {
       this.$emit('changeModalStatus', value)
       if (value === false) {
@@ -146,17 +184,31 @@ export default {
           })
         const payload = { name: this.groupName, companyResourceIdArray: resourceIDs }
 
-        createCompanyGroups(payload).then((response) => {
-          if (response.data && response.data.code === 'RESOURCE_CREATED') {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.$emit('companyGroupCreated', response.data.resourceId)
-            this.changeStatus(false)
-          }
-        })
+        if (!this.isEdit) {
+          createCompanyGroups(payload).then((response) => {
+            if (response.data && response.data.code === 'RESOURCE_CREATED') {
+              this.$store.dispatch('common/createSnackBar', {
+                message: response.data.message,
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: 'mdi-check-circle-outline'
+              })
+              this.$emit('companyGroupCreated', response.data.resourceId)
+              this.changeStatus(false)
+            }
+          })
+        } else {
+          updateCompanyGroup(this.selectedRow.resourceId, payload).then((response) => {
+            if (response.data && response.data.code === 'RESOURCE_UPDATED') {
+              this.$store.dispatch('common/createSnackBar', {
+                message: response.data.message,
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: 'mdi-check-circle-outline'
+              })
+              this.$emit('companyGroupCreated', response.data.resourceId)
+              this.changeStatus(false)
+            }
+          })
+        }
       }
     },
     debounce(fn, delay) {

@@ -9,6 +9,7 @@
     <create-item-modal
       :is-show="isShowAddModal"
       :selectedRow="selectedRow"
+      :isEdit="editAddModal"
       @changeModalStatus="changeAddModalStatus"
       @companyGroupCreated="companyGroupCreated"
     />
@@ -29,6 +30,7 @@
       @delete="handleTableItemDelete"
       @addButton="addButton"
       @onEmptyBtnClicked="addButton"
+      @editAction="editAction"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.name">
@@ -41,7 +43,12 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { getCompanyGroups, deleteCompanyGroup, deleteCompany } from '../../api/company'
+import {
+  getCompanyGroups,
+  deleteCompanyGroup,
+  deleteCompany,
+  getCompanyByID
+} from '../../api/company'
 import DeleteModal from './DeleteModal'
 import {
   COMMON_CONSTANTS,
@@ -62,8 +69,9 @@ export default {
     return {
       isShowDeleteModal: false,
       isShowAddModal: false,
+      editAddModal: false,
       selectedExtend: {},
-      selectedRow: {},
+      selectedRow: null,
       tableOptions: {
         columns: [
           {
@@ -177,7 +185,16 @@ export default {
       this.changeAddModalStatus(true)
     },
     companyGroupCreated() {
+      this.selectedRow = null
+      this.editAddModal = false
       this.getTableData()
+    },
+    editAction(row) {
+      console.log(this)
+      this.changeAddModalStatus(true)
+      this.selectedRow = row
+      this.editAddModal = true
+      console.log(this)
     }
   }
 }

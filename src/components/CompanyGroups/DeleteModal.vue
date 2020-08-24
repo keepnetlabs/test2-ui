@@ -1,7 +1,7 @@
 <template>
-  <app-dialog :status="isShow" icon="mdi-delete" title="Warning!">
+  <app-dialog v-if="!!selectedRow" :status="isShow" icon="mdi-delete" title="Warning!">
     <template v-slot:app-dialog-body>
-      {{ selectedRow.name }} will be permanently deleted.
+      {{ selectedRow.name && selectedRow.name }} will be permanently deleted.
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
