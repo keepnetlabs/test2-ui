@@ -387,6 +387,7 @@
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
             @sort-change="sortChangedEvent"
+            :empty-text="empty.message"
             @cell-click="cellClick"
             id="data-table-container"
             lazy
@@ -725,7 +726,7 @@
       </div>
       <div
         class="pagination block"
-        v-if="pageSizes.length && tableData.length > 0 && !filteredData.length"
+        v-if="pageSizes.length && tableData.length > 0 && !showfilteredData"
       >
         <el-pagination
           :current-page.sync="currentPage"
@@ -734,20 +735,52 @@
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
-          layout="total, sizes, prev, pager, next"
+          layout="sizes, prev, pager, next,slot"
         >
+          <template>
+            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--2">
+              {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount }}-{{
+                this.currentPage * this.rowCount > initialData.length
+                  ? initialData.length
+                  : this.currentPage * this.rowCount
+              }}
+              of
+              {{ dataLength || initialData.length }}
+            </span>
+          </template>
         </el-pagination>
       </div>
-      <div class="pagination block" v-if="!!filteredData.length">
+      <div class="pagination block" v-if="showfilteredData">
         <el-pagination
           :current-page.sync="currentPage"
-          :page-size="filteredData.length"
+          :page-size="countRow || rowCount"
           :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
-          :total="filteredData.length"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-          layout="total, sizes, prev, pager, next"
+          :total="filteredDataLength"
+          @current-change="handleFilteredCurrentChange"
+          @size-change="handleFilteredSizeChange"
+          layout="sizes, prev, pager, next,slot"
         >
+          <template>
+            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--2">
+              {{
+                filteredDataLength === 0
+                  ? '0'
+                  : this.currentPage === 1
+                  ? 1
+                  : (this.currentPage - 1) * this.rowCount
+              }}-{{
+                filteredDataLength === 0
+                  ? '0'
+                  : this.currentPage * this.rowCount > filteredDataLength
+                  ? filteredDataLength
+                  : this.currentPage * this.rowCount
+              }}
+              of
+              {{ filteredDataLength }}
+            </span>
+          </template>
         </el-pagination>
       </div>
     </v-card>
@@ -948,7 +981,9 @@ export default {
     return {
       setDatatableUI: false,
       filteredData: [],
+      filteredDataLength: 0,
       showfilteredData: false,
+      sortProps: null,
       initialData: [],
       dataLength: 0,
       tableData: [],
@@ -957,6 +992,7 @@ export default {
       extendedViewStyle: null,
       currentPage: 1,
       multipleSelection: [],
+      unRenderedFilterData: [],
       selectionCheckbox: false,
       selectionAll: false,
       series: [44, 55, 13, 43],
@@ -1156,11 +1192,15 @@ export default {
       }
     },
     sortChangedEvent(sortProps) {
+      this.sortProps = sortProps
       if (this.isServerSide) {
         this.$emit('sortChangedEvent', sortProps)
       } else {
-        if (this.filteredData.length) {
-          this.filteredData = this.sortFunction(this.filteredData, sortProps)
+        if (this.showfilteredData && this.filteredData && this.filteredData.length) {
+          this.filteredData = this.sortFunction(this.unRenderedFilterData, sortProps).slice(
+            (this.currentPage - 1) * this.rowCount,
+            this.currentPage * this.rowCount
+          )
           return this.filteredData
         } else {
           const data = this.sortFunction(this.initialData, sortProps)
@@ -1294,7 +1334,17 @@ export default {
       } else {
         const searchValue = this.search
         this.showfilteredData = !!searchValue.length
-        this.filteredData = this.initialData.reduce((acc, item) => {
+        if (!this.showfilteredData) {
+          if (this.sortProps && this.sortProps.order) {
+            this.sortChangedEvent(this.sortProps)
+          } else {
+            this.tableData = this.initialData.slice(
+              (this.currentPage - 1) * this.rowCount,
+              this.currentPage * this.rowCount
+            )
+          }
+        }
+        const filteredData = this.initialData.reduce((acc, item) => {
           const data = Object.values(item).find((i) => {
             if (
               typeof i === 'string' &&
@@ -1304,6 +1354,12 @@ export default {
           })
           return acc
         }, [])
+        this.filteredData = filteredData.slice(
+          (this.currentPage - 1) * this.rowCount,
+          this.currentPage * this.rowCount
+        )
+        this.unRenderedFilterData = filteredData
+        this.filteredDataLength = filteredData.length
         if (!this.showfilteredData) this.filteredData = []
       }
     },
@@ -1380,6 +1436,15 @@ export default {
         }
       }
     },
+    handleClientSideSizeChange(rows) {
+      if (this.currentPage === 1) {
+        this.tableData = this.initialData.slice(0, rows)
+      } else {
+        const temp =
+          this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
+        this.tableData = temp.length === 0 ? [{}] : temp
+      }
+    },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
       if (this.isServerSide) {
@@ -1393,6 +1458,28 @@ export default {
             pageNum * this.rowCount
           )
         }
+      }
+    },
+    handleFilteredCurrentChange(pageNum) {
+      this.currentPage = pageNum
+      if (pageNum === 1) {
+        this.filteredData = this.unRenderedFilterData.slice(0, this.rowCount)
+      } else {
+        this.filteredData = this.unRenderedFilterData.slice(
+          (pageNum - 1) * this.rowCount,
+          pageNum * this.rowCount
+        )
+      }
+    },
+    handleFilteredSizeChange(rows) {
+      this.rowCount = rows
+      if (this.currentPage === 1) {
+        this.filteredData = this.unRenderedFilterData.slice(0, rows)
+      } else {
+        const temp =
+          this.unRenderedFilterData.slice((this.currentPage - 1) * rows, this.currentPage * rows) ||
+          []
+        this.filteredData = temp.length === 0 ? [{}] : temp
       }
     },
     onEmptyBtnClicked(e) {

@@ -728,6 +728,7 @@ export default {
           property: 'hop',
           align: 'left',
           editable: false,
+          fixed: 'left',
           label: 'Hop',
           sortable: true,
           show: true,
@@ -752,7 +753,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 400
+          width: 375
         },
         {
           property: 'by',
@@ -762,7 +763,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 400
+          width: 375
         },
         {
           property: 'utcTime',
@@ -771,16 +772,19 @@ export default {
           label: 'Time (UTC)',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          width: 200
         },
         {
           property: 'with',
           align: 'left',
           editable: false,
+          fixed: 'right',
           label: 'With',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          width: 150
         }
       ]
     },
