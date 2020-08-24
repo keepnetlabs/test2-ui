@@ -11,6 +11,9 @@ export function exportCompanies(payload) {
 export function deleteCompany(id) {
   return testRequest.delete(`companies/${id}`)
 }
+export function deleteCompanyGroup(id) {
+  return testRequest.delete(`/company-groups/${id}`)
+}
 export function getCompanyByID(id) {
   return testRequest.get(`/companies/${id}`)
 }
@@ -33,7 +36,6 @@ export function createCompany(payload) {
 
   return testRequest.post(`/companies`, formData)
 }
-
 export function updateCompany(id, payload) {
   const formData = new FormData()
 
@@ -47,7 +49,6 @@ export function updateCompany(id, payload) {
 
   return testRequest.put(`/companies/${id}`, formData)
 }
-
-export function deleteCompanyGroup(id) {
-  return testRequest.delete(`/company-groups/${id}`)
+export function updateCompanyGroup(id, payload) {
+  return testRequest.put(`/company-groups/${id}`, payload)
 }

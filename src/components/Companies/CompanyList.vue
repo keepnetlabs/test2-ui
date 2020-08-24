@@ -22,6 +22,12 @@
       @confirmDelete="deleteConfirmedItem"
       @changeModalStatus="changeDeleteModalStatus"
     />
+    <AddGroupToModal
+      :companyIdArray="companyIdArray"
+      :status="showAddGroupToModal"
+      v-if="showAddGroupToModal"
+      @changeStatus="handleStatusAddGroupToModal"
+    />
     <datatable
       ref="refDataList"
       :addButton="tableOptions.addButton"
@@ -42,6 +48,7 @@
       @addButton="addButton"
       @onEmptyBtnClicked="addButton"
       @editAction="editAction"
+      @AddGroupToModal="handleAddGroupToModal"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.companyName">
@@ -75,10 +82,12 @@ import {
 } from '../../model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
+import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 
 export default {
   name: 'CompanyList',
   components: {
+    AddGroupToModal,
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
@@ -91,6 +100,8 @@ export default {
     isShowDeleteModal: false,
     isShowExtended: false,
     isShowCreateOrEditModal: false,
+    companyIdArray: [],
+    showAddGroupToModal: false,
     selectedExtend: {},
     selectedRow: {},
     tableOptions: {
@@ -184,6 +195,16 @@ export default {
           icon: 'mdi-pencil',
           action: 'editAction',
           isNotShow: true
+        },
+        {
+          name: 'Add to a company group',
+          icon: 'mdi-account-multiple-plus',
+          action: 'AddGroupToModal'
+        },
+        {
+          name: 'Create a new company group with company',
+          icon: 'mdi-account-multiple',
+          action: ''
         },
         {
           name: 'Delete',
@@ -372,6 +393,20 @@ export default {
       this.isShowExtended = false
       this.selectedRow = {}
       this.selectedExtend = {}
+    },
+    handleAddGroupToModal(v) {
+      if (Array.isArray(v)) {
+        this.companyIdArray = v.map((x) => x.companyResourceId)
+      } else {
+        this.companyIdArray = [v.companyResourceId]
+      }
+      this.showAddGroupToModal = true
+    },
+    handleStatusAddGroupToModal(status) {
+      this.showAddGroupToModal = status
+      if (status === false) {
+        this.getTableData()
+      }
     }
   }
 }
