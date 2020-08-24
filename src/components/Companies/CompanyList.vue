@@ -28,6 +28,12 @@
       v-if="showAddGroupToModal"
       @changeStatus="handleStatusAddGroupToModal"
     />
+    <create-item-modal
+      :is-show="showCreateNewGroupWithCompany"
+      :selectedRow="selectedRow"
+      :forCompany="true"
+      @changeModalStatus="(status) => (showCreateNewGroupWithCompany = status)"
+    />
     <datatable
       ref="refDataList"
       :addButton="tableOptions.addButton"
@@ -49,6 +55,7 @@
       @onEmptyBtnClicked="addButton"
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
+      @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span class="datatable-link" v-if="scope.row.companyName">
@@ -83,10 +90,12 @@ import {
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
+import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 
 export default {
   name: 'CompanyList',
   components: {
+    CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,
     CompanyListExtend,
@@ -102,6 +111,7 @@ export default {
     isShowCreateOrEditModal: false,
     companyIdArray: [],
     showAddGroupToModal: false,
+    showCreateNewGroupWithCompany: false,
     selectedExtend: {},
     selectedRow: {},
     tableOptions: {
@@ -204,7 +214,7 @@ export default {
         {
           name: 'Create a new company group with company',
           icon: 'mdi-account-multiple',
-          action: ''
+          action: 'createNewGroupWithCompany'
         },
         {
           name: 'Delete',
@@ -407,6 +417,10 @@ export default {
       if (status === false) {
         this.getTableData()
       }
+    },
+    handleCreateNewGroupWithCompany(row) {
+      this.selectedRow = { ...row, ...{ name: null }, ...{ resourceId: row.companyResourceId } }
+      this.showCreateNewGroupWithCompany = true
     }
   }
 }

@@ -10,7 +10,7 @@
   >
     <template v-slot:app-dialog-body>
       <v-form
-        v-if="!!isEdit && !!selectedRow && isEdit === true"
+        v-if="(!!selectedRow && !!isEdit === true) || !!isEdit === false"
         ref="refCreateGroupForm"
         lazy-validation
       >
@@ -100,6 +100,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    forCompany: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -145,24 +149,23 @@ export default {
   },
   methods: {
     editHandler() {
-      //this.getData()
-      /*
-      if (this.selectedRow && this.selectedRow.name) {
-        this.groupName = this.selectedRow.name
-      }
-  */
-      if (this.isShow && this.isEdit) {
+      if ((this.isShow && this.isEdit) || (this.isShow && this.forCompany)) {
         const _p = this.payload
         _p.pageSize = 500
-        this.groupName = this.selectedRow.name
-        searchGroupCompanies(this.selectedRow.resourceId, _p)
-          .then((response) => {
-            this.selectedCompanies =
-              response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-                ? response.data.data.results
-                : []
-          })
-          .catch((error) => {})
+        this.groupName = this.forCompany ? null : this.selectedRow.name
+        if (this.forCompany) {
+          this.selectedCompanies = [this.selectedRow]
+        } else {
+          searchGroupCompanies(this.selectedRow.resourceId, _p)
+            .then((response) => {
+              this.selectedCompanies =
+                response.data.data.hasOwnProperty('results') &&
+                response.data.data.results.length > 0
+                  ? response.data.data.results
+                  : []
+            })
+            .catch((error) => {})
+        }
       }
     },
 
@@ -184,7 +187,7 @@ export default {
           })
         const payload = { name: this.groupName, companyResourceIdArray: resourceIDs }
 
-        if (!this.isEdit) {
+        if (!this.isEdit || this.forCompany) {
           createCompanyGroups(payload).then((response) => {
             if (response.data && response.data.code === 'RESOURCE_CREATED') {
               this.$store.dispatch('common/createSnackBar', {
