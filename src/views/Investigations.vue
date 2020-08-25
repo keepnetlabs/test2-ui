@@ -303,7 +303,7 @@ export default {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true
     },
-    closePlaybookWithUpdate(){
+    closePlaybookWithUpdate() {
       this.togglePlaybookModal()
     },
     togglePlaybookModal() {

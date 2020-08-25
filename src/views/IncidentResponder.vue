@@ -1141,21 +1141,19 @@ export default {
     this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
   },
   created() {
-   this.initMethods()
+    this.initMethods()
   },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-    initMethods(){
-
-    this.callForGetRunningInvestigations()
-    this.callForGetTopRules()
-    this.callForSearchNotifiedMail()
-    this.callForGetRoiSettings()
-
+    initMethods() {
+      this.callForGetRunningInvestigations()
+      this.callForGetTopRules()
+      this.callForSearchNotifiedMail()
+      this.callForGetRoiSettings()
     },
-    closePlaybookWithUpdate(){
+    closePlaybookWithUpdate() {
       this.togglePlaybookModal()
       this.initMethods()
     },
