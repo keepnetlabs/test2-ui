@@ -43,7 +43,7 @@
         <v-list-item class="pl-0 pr-0">
           <v-list-item-content>
             <v-list-item-title class="new-integration__title">
-              {{ integrationId ? 'Edit Integration' : 'Add New Integration' }}
+              {{ integrationId ? "Edit Integration" : "Add New Integration" }}
             </v-list-item-title>
             <v-list-item-subtitle class="new-integration__subtitle">
               Add new integration to your Integrations
@@ -149,7 +149,7 @@
                     class="connection-error-state"
                     v-if="item.status === 'failed' && item.value.length > 0"
                   >
-                    {{ item.errorMessage || 'Error' }}
+                    {{ item.errorMessage || "Error" }}
                   </div>
                   <div class="new-integration__api-keys__connection-status" v-if="!!item.status">
                     <v-icon
@@ -176,7 +176,7 @@
                         class="retry-button"
                         @click="retryTestConnection(item)"
                         :class="{
-                          'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                          'new-integration__api-key__disabled-text': getTestConnectionDisableStatus(),
                         }"
                       >
                         RETRY
@@ -207,7 +207,7 @@
                 <div
                   class="new-integration__api-key__text"
                   :class="{
-                    'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                    'new-integration__api-key__disabled-text': getTestConnectionDisableStatus(),
                   }"
                   @click="testConnection(false)"
                 >
@@ -221,7 +221,7 @@
                     v-else
                     class="test-connection"
                     :class="{
-                      'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                      'new-integration__api-key__disabled-text': getTestConnectionDisableStatus(),
                     }"
                   >
                     TEST CONNECTION
@@ -257,85 +257,105 @@
               </div>
             </v-list-item-content>
           </v-list-item>
+
+          <v-list-item class="px-0">
+            <v-list-item-content>
+              <label class="new-integration__label" for="integration-type">URLs</label>
+              <div>
+                <v-checkbox
+                  v-model="formValues.isSendUrl"
+                  color="#2196f3"
+                  :label="`Share URLs in emails with integrated service`"
+                />
+              </div>
+              <div
+                class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
+                v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
+              >
+                <v-checkbox
+                  class="black--text"
+                  v-model="formValues.isHideUrlParameter"
+                  color="#2196f3"
+                  :label="`Hide URL Parameters`"
+                ></v-checkbox>
+                <v-tooltip bottom opacity="1">
+                  <template v-slot:activator="{ on: tooltip }">
+                    <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
+                  </template>
+                  <span style="max-width: 50px;" class="tooltip-span">{{
+                    "Send URLs without query string parameters"
+                  }}</span>
+                </v-tooltip>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item class="px-0 mt-5">
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__label">
+                Attachments
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__api-key__subtitle">
+                Uploading originally attached files to integrated services may lead sensitive
+                information to be compromised
+              </v-list-item-subtitle>
+              <v-checkbox
+                class="mt-4"
+                v-model="formValues.isSendFileHash"
+                color="#2196f3"
+                :label="`Share file hashes (MD5, SHA256 and SHA512)`"
+              ></v-checkbox>
+              <div>
+                <v-checkbox
+                  v-model="formValues.isSendFile"
+                  color="#2196f3"
+                  :label="`Upload PE files`"
+                ></v-checkbox>
+                <div
+                  class="new-integration__api-key__subtitle__upload-subtitle position-relative ml-8"
+                  style="font-size: 14px; line-height: 1.5;"
+                >
+                  Portable executable files (exe, .dll, .sys, etc.)
+                </div>
+                <div>
+                  <v-checkbox
+                    v-model="formValues.isUploadOtherFileType"
+                    color="#2196f3"
+                    :label="`Upload other file types`"
+                  />
+                </div>
+                <div
+                  class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
+                  v-if="formValues.isUploadOtherFileType"
+                >
+                  <div
+                    class="mb-8 ml-8 mt-1"
+                    v-if="formValues.isUploadOtherFileType"
+                  >
+                    <div class="d-flex align-center">
+                      <span class="mb-7 mr-4 type-text">File Types</span>
+                      <v-select
+                        :items="uploadFileTypes"
+                        v-model.trim="formValues.uploadFileTypes"
+                        outlined
+                        class="new-integration__select"
+                        required
+                        dense
+                        placeholder="Select integration type"
+                        height="40"
+                        multiple
+                      ></v-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item class="px-0">
             <v-list-item-content class="pl-3">
               <v-switch v-model="formValues.isActive" color="#2196f3" label="Active" />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
-            <v-list-item-content class="pl-3">
-              <v-switch v-model="formValues.isSendUrl" label="Send URL" />
-            </v-list-item-content>
-          </v-list-item>
-          <div
-            class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
-            v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
-          >
-            <v-checkbox
-              class="black--text"
-              dense
-              v-model="formValues.isHideUrlParameter"
-              color="#2196f3"
-              :label="`Hide URL Parameters`"
-            ></v-checkbox>
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on: tooltip }">
-                <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
-              </template>
-              <span class="tooltip-span">{{ 'Send URLs without query string parameters' }}</span>
-            </v-tooltip>
-          </div>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFileHash">
-            <v-list-item-content class="pl-3">
-              <v-switch v-model="formValues.isSendFileHash" label="Send file hash" />
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
-            <v-list-item-content class="pl-3">
-              <v-switch
-                v-model="formValues.isUploadExecutableFile"
-                label="Upload executables files"
-              />
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
-            <v-list-item-content class="pl-3">
-              <v-switch
-                v-model="formValues.isUploadOtherFileType"
-                @change="
-                  formValues.isUploadOtherFileType
-                    ? (showConfirmModal = true)
-                    : (showConfirmModal = false)
-                "
-                label="Upload other files"
-              />
-            </v-list-item-content>
-          </v-list-item>
-          <div class="mb-8 new-integration__api-key__subtitle__upload-subtitle">
-            Uploading the originally attached files to integrated services may lead sensitive
-            information to be compromised
-          </div>
-          <div
-            class="mb-8 new-integration__api-key__subtitle__upload-subtitle"
-            v-if="formValues.isUploadOtherFileType"
-          >
-            <div class="d-flex align-center">
-              <span class="mb-7 mr-4 type-text">File Types</span>
-              <v-select
-                :items="uploadFileTypes"
-                v-model.trim="formValues.uploadFileTypes"
-                outlined
-                class="new-integration__select"
-                required
-                dense
-                placeholder="Select integration type"
-                height="40"
-                item-text="name"
-                item-value="resourceId"
-                multiple
-              ></v-select>
-            </div>
-          </div>
         </v-form>
       </template>
       <template v-slot:overlay-footer>
@@ -364,23 +384,23 @@ import {
   createIntegration,
   getIntegrationDetails,
   updateIntegration,
-  testAnalysis
-} from '../../api/integrations'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import AppModal from '../AppModal'
+  testAnalysis,
+} from "../../api/integrations";
+import { COMMON_CONSTANTS } from "../../model/constants/commonConstants";
+import AppModal from "../AppModal";
 export default {
-  name: 'NewIntegration',
+  name: "NewIntegration",
   components: {
-    AppModal
+    AppModal,
   },
   props: {
     showModal: {
       type: Boolean,
-      default: false
+      default: false,
     },
     integrationId: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
@@ -394,192 +414,209 @@ export default {
         isSendFileHash: false,
         isUploadExecutableFile: false,
         isUploadOtherFileType: false,
-        apiKeys: [{ value: '', status: null }],
+        apiKeys: [{ value: "", status: null }],
         isHideUrlParameter: false,
         uploadFileTypes: [],
         name: null,
-        apiUrl: null
+        apiUrl: null,
       },
       selectedIntegrationType: {
         isSendUrl: false,
         isSendFileHash: false,
-        isSendFile: false
+        isSendFile: false,
       },
       integrationTypes: [],
-      uploadFileTypes: [],
+       uploadFileTypes: [
+          {
+            text:'Archive files (.zip, .rar)',
+            value:'Zip,Rar'
+          },
+          {
+            text:'Image files (.jpg, .png, .gif, .bmp)',
+            value:'Jpg,Png,Gif,Bmp'
+          },
+          {
+            text:'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc',
+            value:'Doc,Docx,Xls,Xlsx,Ppt,Pptx,Etc'
+          },
+          {
+            text:'Other',
+            value:'Other'
+          }
+        ],
       isTestConnectionDisabled: true,
       showConfirmModal: false,
       nameValidation: {
-        required: (v) => (v && v.length <= 150) || 'Integration Name must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Integration Name cannot start with space'
+        required: (v) => (v && v.length <= 150) || "Integration Name must between 1-150 characters",
+        empty: (v) => (v && !v.startsWith(" ")) || "Integration Name cannot start with space",
       },
       descriptionValidation: {
-        required: (v) => (v && v.length <= 150) || 'Description must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        required: (v) => (v && v.length <= 150) || "Description must between 1-150 characters",
+        empty: (v) => (v && !v.startsWith(" ")) || "Description cannot start with space",
       },
       integrationTypeRules: {
-        required: (v) => !!v || 'Integration Select required',
-        format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
+        required: (v) => !!v || "Integration Select required",
+        format: (v) => (v && !v.startsWith(" ")) || "Cannot start with space",
       },
       apiUrlRules: {
-        required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
+        required: (v) => (v && v.length <= 1000) || "It must between 1 - 1000 characters",
         format: (v) =>
           /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
             v
-          ) || 'invalid url'
+          ) || "invalid url",
       },
       apiKeyRules: {
-        required: (v) => (v && v.length <= 150) || 'Api key must between 1-150 characters',
-        format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
-      }
-    }
+        required: (v) => (v && v.length <= 150) || "Api key must between 1-150 characters",
+        format: (v) => (v && !v.startsWith(" ")) || "Cannot start with space",
+      },
+    };
   },
   created() {
-    if (this.integrationId) this.updateVModel(this.integrationId)
+    if (this.integrationId) this.updateVModel(this.integrationId);
     getIntegrationTypes()
       .then((response) => {
         const {
-          data: { data, status }
-        } = response
+          data: { data, status },
+        } = response;
 
-        this.integrationTypes = data
+        this.integrationTypes = data;
         this.selectedIntegrationType =
           this.integrationTypes.find(
             (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
-          ) || {}
+          ) || {};
       })
       .catch((error) => {
-        this.$store.dispatch('common/createSnackBar', {
+        this.$store.dispatch("common/createSnackBar", {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting integrations type!'
-        })
-      })
+          message: "Error when getting integrations type!",
+        });
+      });
   },
   methods: {
     saveIntegration() {
-      const data = { ...this.formValues }
-      data.apiKeys = data.apiKeys.map((i) => i.value)
+      const data = { ...this.formValues };
+      data.apiKeys = data.apiKeys.map((i) => i.value);
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then((response) => {
-            this.closeOverlay()
-            this.showConfirmModal = false
-            this.$store.dispatch('common/createSnackBar', {
+            this.closeOverlay();
+            this.showConfirmModal = false;
+            this.$store.dispatch("common/createSnackBar", {
               errorState: false,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Integration updated successfuly!'
-            })
+              message: "Integration updated successfuly!",
+            });
           })
           .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
+            this.$store.dispatch("common/createSnackBar", {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when updating integration!'
-            })
-          })
+              message: "Error when updating integration!",
+            });
+          });
       } else {
         createIntegration(data)
           .then((response) => {
-            this.closeOverlay()
-            this.showConfirmModal = false
-            this.$store.dispatch('common/createSnackBar', {
+            this.closeOverlay();
+            this.showConfirmModal = false;
+            this.$store.dispatch("common/createSnackBar", {
               errorState: false,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Integration created successfuly!'
-            })
+              message: "Integration created successfuly!",
+            });
           })
           .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
+            this.$store.dispatch("common/createSnackBar", {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when creating new integration!'
-            })
-          })
+              message: "Error when creating new integration!",
+            });
+          });
       }
     },
     submit() {
       if (this.$refs.form.validate()) {
-        this.testConnection(true)
+        this.testConnection(true);
       }
     },
     closeOverlay() {
-      this.$emit('closeOverlay', false, true)
+      this.$emit("closeOverlay", false, true);
     },
     getTestConnectionDisableStatus() {
       if (
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0].value.length > 0 &&
-        typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
+        typeof this.apiUrlRules.format(this.formValues.apiUrl) !== "string"
       ) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     },
     saveButtonClickOnConfirmModal() {
-      if (!this.uploadFileTypes.length) this.getFileTypes()
-      this.showConfirmModal = false
+      if (!this.uploadFileTypes.length) this.getFileTypes();
+      this.showConfirmModal = false;
     },
     getFileTypes() {
       getFileTypes()
         .then((response) => {
           const {
-            data: { data, status }
-          } = response
-          this.uploadFileTypes = data
+            data: { data, status },
+          } = response;
+          this.uploadFileTypes = data;
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting file types! '
-          })
-        })
+            message: "Error when getting file types! ",
+          });
+        });
     },
     addApiKey() {
-      this.isTestConnectionDisabled = true
-      this.formValues.apiKeys.push({ value: '', status: null })
+      this.isTestConnectionDisabled = true;
+      this.formValues.apiKeys.push({ value: "", status: null });
     },
     handleApiKeyChange() {
-      if (!this.formValues.apiUrl) return true
+      if (!this.formValues.apiUrl) return true;
       this.formValues.apiKeys.map((item) => {
-        this.isTestConnectionDisabled = false
+        this.isTestConnectionDisabled = false;
         if (!item.value.length) {
-          this.isTestConnectionDisabled = true
-          return true
+          this.isTestConnectionDisabled = true;
+          return true;
         }
-      })
+      });
     },
     cancelClickOnConfirmModal() {
-      this.formValues.uploadFileTypes = []
-      this.formValues.isUploadOtherFileType = false
-      this.showConfirmModal = false
+      this.formValues.uploadFileTypes = [];
+      this.formValues.isUploadOtherFileType = false;
+      this.showConfirmModal = false;
     },
     updateIntegration() {
       updateIntegration()
         .then((response) => {})
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when updating the integration!'
-          })
-        })
+            message: "Error when updating the integration!",
+          });
+        });
     },
     updateVModel(id) {
-      this.getFileTypes()
+      this.getFileTypes();
       getIntegrationDetails(id)
         .then((response) => {
-          response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
-            return { value: item, status: null }
-          })
-          const integrationData = response['data'].data
-          this.formValues = integrationData
+          response["data"].data.apiKeys = response["data"].data.apiKeys.map((item) => {
+            return { value: item, status: null };
+          });
+          const integrationData = response["data"].data;
+          this.formValues = integrationData;
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting integration details!'
-          })
-        })
+            message: "Error when getting integration details!",
+          });
+        });
     },
     resetValues() {
       this.formValues = {
@@ -591,73 +628,73 @@ export default {
         isSendFileHash: true,
         isUploadExecutableFile: true,
         isUploadOtherFileType: false,
-        apiKeys: [{ value: '', status: null }],
+        apiKeys: [{ value: "", status: null }],
         isHideUrlParameter: false,
         uploadFileTypes: [],
         name: null,
-        apiUrl: null
-      }
+        apiUrl: null,
+      };
     },
     retryTestConnection(item) {
-      item.status = 'loading'
-      this.loadingState.push('loading')
+      item.status = "loading";
+      this.loadingState.push("loading");
       testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
         .then((response) => {
-          if (response.data.status === 'FAILED') {
-            item.status = 'failed'
-            this.formValues.apiKeys[i].errorMessage = response.data.message
+          if (response.data.status === "FAILED") {
+            item.status = "failed";
+            this.formValues.apiKeys[i].errorMessage = response.data.message;
           } else {
-            item.status = 'success'
+            item.status = "success";
           }
-          item.status = 'success'
+          item.status = "success";
         })
         .catch((error) => {
-          item.status = 'failed'
-          if (error.response.data.Message === 'Internal server error') {
-            item.errorMessage = 'Error when testing connections!'
+          item.status = "failed";
+          if (error.response.data.Message === "Internal server error") {
+            item.errorMessage = "Error when testing connections!";
           } else {
-            item.errorMessage = error.response.data.message || error.response.data.Message
+            item.errorMessage = error.response.data.message || error.response.data.Message;
           }
         })
-        .finally(() => this.loadingState.shift('loading'))
+        .finally(() => this.loadingState.shift("loading"));
     },
     testConnection(isSave) {
       for (let i = 0; i < this.formValues.apiKeys.length; i++) {
-        const item = this.formValues.apiKeys[i]
-        this.formValues.apiKeys[i].status = 'loading'
-        this.loadingState.push('loading')
+        const item = this.formValues.apiKeys[i];
+        this.formValues.apiKeys[i].status = "loading";
+        this.loadingState.push("loading");
         testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
           .then((response) => {
-            if (response.data.status === 'FAILED') {
-              this.formValues.apiKeys[i].status = 'failed'
-              this.formValues.apiKeys[i].errorMessage = response.data.message
+            if (response.data.status === "FAILED") {
+              this.formValues.apiKeys[i].status = "failed";
+              this.formValues.apiKeys[i].errorMessage = response.data.message;
             } else {
-              this.formValues.apiKeys[i].status = 'success'
+              this.formValues.apiKeys[i].status = "success";
             }
           })
           .catch((error) => {
-            this.formValues.apiKeys[i].status = 'failed'
-            if (error.response.data.Message === 'Internal server error') {
-              this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
+            this.formValues.apiKeys[i].status = "failed";
+            if (error.response.data.Message === "Internal server error") {
+              this.formValues.apiKeys[i].errorMessage = "Error when testing connections!";
             } else {
               this.formValues.apiKeys[i].errorMessage =
-                error.response.data.message || error.response.data.Message
+                error.response.data.message || error.response.data.Message;
             }
           })
           .finally(() => {
-            this.loadingState.shift('loading')
+            this.loadingState.shift("loading");
             if (
               isSave &&
               !this.loadingState.length &&
-              !this.formValues.apiKeys.find((item) => item.status === 'failed')
+              !this.formValues.apiKeys.find((item) => item.status === "failed")
             )
-              this.saveIntegration()
-          })
+              this.saveIntegration();
+          });
       }
     },
     handleIntegrationTypeChange(val) {
-      this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
-    }
+      this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val);
+    },
   },
   destroyed() {},
   watch: {
@@ -665,10 +702,10 @@ export default {
       this.selectedIntegrationType =
         this.integrationTypes.find(
           (item) => item.resourceId === val.analysisEngineTypeResourceId
-        ) || {}
-    }
-  }
-}
+        ) || {};
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -787,7 +824,7 @@ export default {
   }
 
   &__title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     opacity: 0.9;
     font-size: 24px;
     font-weight: normal;
@@ -801,7 +838,7 @@ export default {
 
   &__subtitle {
     opacity: 0.9;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -812,7 +849,7 @@ export default {
   }
 
   &__label {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -843,7 +880,7 @@ export default {
       color: #f56c6c !important;
       border: 1px solid #f56c6c !important;
       box-shadow: none !important;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -857,7 +894,7 @@ export default {
 
     &-btn-save {
       color: #ffffff;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -875,7 +912,7 @@ export default {
 
   &__api-key {
     &__subtitle {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -884,7 +921,7 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
       &__upload-subtitle {
-        margin-left: 60px;
+        margin-left: 30px;
       }
     }
 
@@ -916,7 +953,7 @@ export default {
     }
 
     &__text {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -965,13 +1002,11 @@ export default {
   }
 
   .type-text {
-    font-size: 20px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.87) !important;
   }
 
   .v-list-item__content {

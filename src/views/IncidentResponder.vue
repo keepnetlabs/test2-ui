@@ -65,7 +65,7 @@
         <div
           class="dashboard-cards phishing-reporter mr-2"
           :class="{
-            'no-data__opacity-blue': isPhishingEmpty(irSummary)
+            'no-data__opacity-blue': isPhishingEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -125,7 +125,7 @@
         <div
           class="dashboard-cards incident-analysis mr-2"
           :class="{
-            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -168,7 +168,7 @@
         <div
           class="dashboard-cards investigations mr-2"
           :class="{
-            'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
+            'no-data__opacity-green': !isInvestigationsEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -231,7 +231,7 @@
         <div
           class="dashboard-cards roi-summary"
           :class="{
-            'no-data__opacity-purple': isPhishingEmpty(irSummary)
+            'no-data__opacity-purple': isPhishingEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -302,7 +302,7 @@
                     No Matches
                   </span>
                   <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+                    {{ scope.row[col.property] === 0 ? "No" : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
                     :status="scope.row.resourceId === selectedMatch.resourceId"
@@ -446,7 +446,7 @@
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
                 <span v-if="scope.row.matchingPlaybooks.length === 0">
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                  {{ scope.row.source === "Auto" ? "Auto Analysis" : scope.row.source }}
                 </span>
                 <span
                   v-else
@@ -559,23 +559,27 @@
   </div>
 </template>
 <script>
-import { getRoiSettings, updateNotifiedEmail, updateRoiSettings } from '../api/incidentResponder'
-import { getDataTableFieldLabel } from '../utils/functions'
-import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
-import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
-import Datatable from '../components/DataTable'
-import NewInvestigation from '../components/Investigation/NewInvestigation'
+import { getRoiSettings, updateNotifiedEmail, updateRoiSettings } from "../api/incidentResponder";
+import { getDataTableFieldLabel } from "../utils/functions";
+import DataTableColorfulText from "../components/DataTableComponents/DataTableColorfulText";
+import { exportNotifiedEmails, getNotifiedEmail } from "../api/notifiedEmail";
+import Datatable from "../components/DataTable";
+import NewInvestigation from "../components/Investigation/NewInvestigation";
 import {
   getTopRules,
   getRunningInvestigations,
   searchNotifiedMail,
-  getMatchingIncidents
-} from '../api/incidentResponder'
-import { mapActions, mapGetters } from 'vuex'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
-import AppDialog from '../components/AppDialog'
-import { maxLength, required } from '../utils/validations'
-import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
+  getMatchingIncidents,
+} from "../api/incidentResponder";
+import { mapActions, mapGetters } from "vuex";
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE,
+} from "../model/constants/commonConstants";
+import AppDialog from "../components/AppDialog";
+import { maxLength, required } from "../utils/validations";
+import CreateOrEditRule from "../components/Playbook/CreateOrEditRule";
 
 export default {
   components: {
@@ -583,15 +587,15 @@ export default {
     NewInvestigation,
     AppDialog,
     DataTableColorfulText,
-    CreateOrEditRule
+    CreateOrEditRule,
   },
 
   data: () => ({
     showPlaybookModal: false,
     selectedPlaybookId: null,
-    roiRate: '',
+    roiRate: "",
     selectedEmail: null,
-    roiTask: '',
+    roiTask: "",
     selectedMatch: null,
     isShowRoi: false,
     openInvestigationOverlay: false,
@@ -603,801 +607,802 @@ export default {
     baseManHour: null,
     baseManHourCost: null,
     validations: {
-      required
+      required,
     },
     extendedViewValue: [],
     topRules: {
       table: [],
       columns: [
         {
-          property: 'ruleName',
-          align: 'left',
+          property: "ruleName",
+          align: "left",
           editable: false,
-          label: 'Rule Name',
+          label: "Rule Name",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'slot',
-          minWidth: '40'
+          type: "slot",
+          minWidth: "40",
         },
         {
-          property: 'matchCount',
-          align: 'left',
+          property: "matchCount",
+          align: "left",
           editable: false,
-          label: 'Matching Incidents',
+          label: "Matching Incidents",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'popup',
-          minWidth: '30',
-          emptyText: 'No Match'
+          type: "popup",
+          minWidth: "30",
+          emptyText: "No Match",
         },
         {
-          property: 'status',
-          align: 'center',
+          property: "status",
+          align: "center",
           editable: false,
-          label: 'Status',
+          label: "Status",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'status',
-          minWidth: '30',
-          hasTooltip: true
-        }
+          type: "status",
+          minWidth: "30",
+          hasTooltip: true,
+        },
       ],
       iEmpty: {
         message: "There isn't any rules, yet",
-        btn: 'CREATE NEW RULE',
-        icon: 'mdi-plus'
+        btn: "CREATE NEW RULE",
+        icon: "mdi-plus",
       },
       addUsers: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       addMenu: {
         show: false,
-        popUp: false
+        popUp: false,
       },
-      selectEvent: {}
+      selectEvent: {},
     },
     recentInv: {
       table: [],
       columns: [
         {
-          property: 'name',
-          align: 'left',
+          property: "name",
+          align: "left",
           editable: false,
-          label: 'Investigation Name',
+          label: "Investigation Name",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'link',
-          href: '/investigation-details',
-          hrefKey: 'resourceId',
-          minWidth: '40'
+          type: "link",
+          href: "/investigation-details",
+          hrefKey: "resourceId",
+          minWidth: "40",
         },
         {
-          property: 'progress',
-          align: 'center',
+          property: "progress",
+          align: "center",
           editable: false,
-          label: getStoreValue('progress'),
+          label: getStoreValue("progress"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'progress',
-          minWidth: '30'
+          type: "progress",
+          minWidth: "30",
         },
         {
-          property: 'status',
-          align: 'center',
+          property: "status",
+          align: "center",
           editable: false,
-          label: getStoreValue('status'),
+          label: getStoreValue("status"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'status',
-          minWidth: '30'
-        }
+          type: "status",
+          minWidth: "30",
+        },
       ],
       addUsers: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       addMenu: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       iEmpty: {
         message: "There isn't any investigations, yet",
-        btn: 'START A NEW INVESTIGATION',
-        icon: 'mdi-plus'
+        btn: "START A NEW INVESTIGATION",
+        icon: "mdi-plus",
       },
       selectEvent: {},
-      chartOptions: {}
+      chartOptions: {},
     },
     matchingInvestigation: {
       table: [],
       columns: [
         {
-          property: 'subject',
-          align: 'left',
+          property: "subject",
+          align: "left",
           editable: false,
-          label: 'Subject',
+          label: "Subject",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '33'
+          type: "text",
+          minWidth: "33",
         },
         {
-          property: 'createDate',
-          align: 'left',
+          property: "createDate",
+          align: "left",
           editable: false,
-          label: getStoreValue('createDate'),
+          label: getStoreValue("createDate"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '33'
+          type: "text",
+          minWidth: "33",
         },
         {
-          property: 'reportedBy',
-          align: 'left',
+          property: "reportedBy",
+          align: "left",
           editable: false,
-          label: getStoreValue('reportedBy'),
+          label: getStoreValue("reportedBy"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '34'
-        }
+          type: "text",
+          minWidth: "34",
+        },
       ],
       addUsers: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       addMenu: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       iEmpty: {
         message: "There isn't any matching Incidents, yet",
-        btn: '',
-        icon: 'mdi-plus'
+        btn: "",
+        icon: "mdi-plus",
       },
       selectEvent: {},
-      chartOptions: {}
+      chartOptions: {},
     },
     emails: {
       table: [],
       extendedViewOptions: {
-        titleKey: 'subject',
+        titleKey: "subject",
         footer: [
           {
-            label: 'Date Created',
-            key: 'createDate'
+            label: "Date Created",
+            key: "createDate",
           },
           {
-            label: 'Last update',
-            key: 'lastUpdateDate'
-          }
+            label: "Last update",
+            key: "lastUpdateDate",
+          },
         ],
         col: [
           {
             property: PROPERTY_STORE.SUBJECT,
             label: getStoreValue(PROPERTY_STORE.SUBJECT),
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.REPORTEDBY,
             label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.RESOURCEID,
-            label: 'Case Id',
+            label: "Case Id",
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.ANALYSISSOURCE,
-            label: 'Analysis Source',
+            label: "Analysis Source",
             isEditable: false,
-            type: 'analysisSource',
-            show: true
+            type: "analysisSource",
+            show: true,
           },
           {
             property: PROPERTY_STORE.RESULT,
             label: getStoreValue(PROPERTY_STORE.RESULT),
             isEditable: true,
-            type: 'badge',
+            type: "badge",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
+                if (row.status === "BeingAnalyzed") {
+                  return true;
                 } else {
-                  return false
+                  return false;
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
-              }
+                items: ["Phishing", "Malicious", { text: "Non Malicious", value: "NonMalicious" }],
+              },
             },
-            show: true
+            show: true,
           },
           {
             property: PROPERTY_STORE.STATUS,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             isEditable: true,
-            type: 'colorfulText',
+            type: "colorfulText",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
+                if (row.status === "BeingAnalyzed") {
+                  return true;
                 } else {
-                  return false
+                  return false;
                 }
               },
               props: {
                 items: [
-                  'Open',
-                  'Closed',
-                  { text: 'In Progress', value: 'InProgress' },
-                  { text: 'False Positive', value: 'FalsePositive' }
-                ]
-              }
+                  "Open",
+                  "Closed",
+                  { text: "In Progress", value: "InProgress" },
+                  { text: "False Positive", value: "FalsePositive" },
+                ],
+              },
             },
-            show: true
+            show: true,
           },
           {
-            property: 'tags',
-            label: 'Tags',
+            property: "tags",
+            label: "Tags",
             isEditable: true,
-            type: 'smallBadge',
+            type: "smallBadge",
             editOptions: {
-              component: 'combobox',
+              component: "combobox",
               props: {
-                placeholder: 'Enter Tags'
-              }
+                placeholder: "Enter Tags",
+              },
             },
-            show: true
-          }
-        ]
+            show: true,
+          },
+        ],
       },
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: 'left',
+          fixed: "left",
           sortable: true,
           show: true,
-          type: 'text',
-          width: '300',
-          isEditable: false
+          type: "text",
+          width: "300",
+          isEditable: false,
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
           hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
           isEditable: false,
-          type: 'attachment',
-          width: 120
+          type: "attachment",
+          width: 120,
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '300',
-          isEditable: false
+          type: "text",
+          width: "300",
+          isEditable: false,
           //minWidth: 100
         },
         {
           property: PROPERTY_STORE.RESOURCEID,
           show: false,
-          label: 'Case Id',
-          type: 'text',
+          label: "Case Id",
+          type: "text",
           isEditable: false,
-          hideOnSettingsPopup: true
+          hideOnSettingsPopup: true,
         },
         {
           property: PROPERTY_STORE.ANALYSISSOURCE,
           isEditable: false,
-          align: 'center',
-          label: 'Analysis Source',
+          align: "center",
+          label: "Analysis Source",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'analysisSource',
-          width: '200',
-          fullWidth: true
+          type: "analysisSource",
+          width: "200",
+          fullWidth: true,
         },
         {
           property: PROPERTY_STORE.RESULT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'badge',
+          type: "badge",
           isEditable: true,
           editOptions: {
-            component: 'select',
+            component: "select",
             getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
+              if (row.status === "BeingAnalyzed") {
+                return true;
               } else {
-                return false
+                return false;
               }
             },
             props: {
-              items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
-            }
+              items: ["Phishing", "Malicious", { text: "Non Malicious", value: "NonMalicious" }],
+            },
           },
           props: {
             style: {
-              maxWidth: '110px'
-            }
+              maxWidth: "110px",
+            },
           },
-          width: '150'
+          width: "150",
         },
         {
           property: PROPERTY_STORE.STATUS,
           isEditable: true,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'slot',
-          width: '150',
+          type: "slot",
+          width: "150",
           showColorfulText: true,
           fullWidth: true,
           editOptions: {
-            component: 'select',
+            component: "select",
             getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
+              if (row.status === "BeingAnalyzed") {
+                return true;
               } else {
-                return false
+                return false;
               }
             },
             props: {
               items: [
-                'Open',
-                'Closed',
-                { text: 'In Progress', value: 'InProgress' },
-                { text: 'False Positive', value: 'FalsePositive' }
-              ]
-            }
+                "Open",
+                "Closed",
+                { text: "In Progress", value: "InProgress" },
+                { text: "False Positive", value: "FalsePositive" },
+              ],
+            },
           },
           props: {
-            style: { maxWidth: '110px' }
-          }
+            style: { maxWidth: "110px" },
+          },
         },
         {
           property: PROPERTY_STORE.CREATEDATE,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATEDATE),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
+          type: "text",
           editOptions: {
-            component: 'datepicker'
+            component: "datepicker",
           },
-          width: '230'
+          width: "230",
         },
         {
           property: PROPERTY_STORE.RESULTTAG,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'smallBadge',
+          type: "smallBadge",
           isEditable: true,
           editOptions: {
-            component: 'combobox',
+            component: "combobox",
             props: {
-              placeholder: 'Enter Tags'
-            }
+              placeholder: "Enter Tags",
+            },
           },
-          width: '150'
-        }
+          width: "150",
+        },
       ],
       pageSizes: [5, 10, 25, 50, 100],
       rowActions: [
         {
-          name: 'Edit',
-          icon: 'mdi-pencil',
-          action: 'edit',
-          isNotShow: true
+          name: "Edit",
+          icon: "mdi-pencil",
+          action: "edit",
+          isNotShow: true,
         },
         {
-          name: 'Preview Email',
-          icon: 'mdi-eye',
-          action: 'irPreview'
+          name: "Preview Email",
+          icon: "mdi-eye",
+          action: "irPreview",
         },
         {
-          name: 'Details',
-          icon: 'mdi-text-box-multiple',
-          action: 'handleDetails'
+          name: "Details",
+          icon: "mdi-text-box-multiple",
+          action: "handleDetails",
         },
         {
-          name: 'Investigate',
-          icon: 'mdi-magnify',
-          action: 'handleInvestigate'
-        }
+          name: "Investigate",
+          icon: "mdi-magnify",
+          action: "handleInvestigate",
+        },
       ],
       addMenu: {
         show: true,
-        popUp: false
+        popUp: false,
       },
       iEmpty: {
         message: "There isn't any reported mail, yet",
         subMes:
-          'Emails that are reported by your users via Phishing Reporter add-in analysed and listed here',
-        btn: 'PHISHING REPORTER SETTINGS',
-        icon: 'mdi-arrow-right'
+          "Emails that are reported by your users via Phishing Reporter add-in analysed and listed here",
+        btn: "PHISHING REPORTER SETTINGS",
+        icon: "mdi-arrow-right",
       },
       selectEvent: {
         clipboard: true,
         edit: true,
-        download: true
+        download: true,
       },
       chartOptions: {
         chart: {
           width: 60,
           height: 60,
-          type: 'pie',
+          type: "pie",
           offsetX: -1,
-          offsetY: 1
+          offsetY: 1,
         },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D'],
-        colors: ['#67c23a', '#409eff', '#f56c6c', '#ffcc33'],
+        labels: ["Team A", "Team B", "Team C", "Team D"],
+        colors: ["#67c23a", "#409eff", "#f56c6c", "#ffcc33"],
         legend: {
-          show: false
+          show: false,
         },
         tooltip: {
-          enabled: false
+          enabled: false,
         },
         dataLabels: {
-          enabled: false
-        }
-      }
+          enabled: false,
+        },
+      },
     },
     isWantToAddNewInvestigation: false,
     extendedView: {
-      note: '',
+      note: "",
       isNotify: true,
       isMessage: false,
-      customMessage: ''
+      customMessage: "",
     },
-    hasMultipleNoteValue: false
+    hasMultipleNoteValue: false,
   }),
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter' // for using getters
+      irSummary: "investigations/irSummaryGetter", // for using getters
     }),
     getRoiSummaryValue() {
       if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
-        let revenue = Number(this.irSummary.roiSummary.revenue)
+        let revenue = Number(this.irSummary.roiSummary.revenue);
         if (revenue < 1000) {
-          return `$${revenue}`
+          return `$${revenue}`;
         } else if (revenue >= 1000 && revenue < 1000000) {
-          const newRevenue = revenue / 1000
-          const stringRevenue = String(newRevenue)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
-            const beforeDecimal = stringRevenue.split('.')[0]
-            return `$${beforeDecimal}.${stringRevenue.charAt(indexOfNewRevenue + 1)}k`
+          const newRevenue = revenue / 1000;
+          const stringRevenue = String(newRevenue);
+          const indexOfNewRevenue = stringRevenue.indexOf(".");
+          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== "0") {
+            const beforeDecimal = stringRevenue.split(".")[0];
+            return `$${beforeDecimal}.${stringRevenue.charAt(indexOfNewRevenue + 1)}k`;
           } else {
-            return `$${newRevenue}k`
+            return `$${newRevenue}k`;
           }
         } else if (revenue >= 1000000 && revenue < 1000000000) {
-          const newRevenu = revenue / 1000000
-          const stringRevenue = String(newRevenu)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
-            const beforeDecimal = stringRevenue.split('.')[0]
-            const nextDecimalValue = stringRevenue.charAt(indexOfNewRevenue + 2)
+          const newRevenu = revenue / 1000000;
+          const stringRevenue = String(newRevenu);
+          const indexOfNewRevenue = stringRevenue.indexOf(".");
+          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== "0") {
+            const beforeDecimal = stringRevenue.split(".")[0];
+            const nextDecimalValue = stringRevenue.charAt(indexOfNewRevenue + 2);
             if (nextDecimalValue) {
               return `$${beforeDecimal}.${stringRevenue.charAt(
                 indexOfNewRevenue + 1
-              )}${nextDecimalValue}M`
+              )}${nextDecimalValue}M`;
             } else {
-              return `$${newRevenu}m`
+              return `$${newRevenu}m`;
             }
           } else {
             if (stringRevenue.length === 7) {
-              return `$${stringRevenue.substring(0, stringRevenue.length - 1)}m`
+              return `$${stringRevenue.substring(0, stringRevenue.length - 1)}m`;
             }
-            return `$${newRevenu}m`
+            return `$${newRevenu}m`;
           }
         } else if (revenue >= 1000000000) {
-          const newRevenue = revenue / 1000000000
-          const stringRevenue = String(newRevenue)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
+          const newRevenue = revenue / 1000000000;
+          const stringRevenue = String(newRevenue);
+          const indexOfNewRevenue = stringRevenue.indexOf(".");
           if (indexOfNewRevenue !== -1) {
-            return `$${newRevenue.toFixed(3)}b`
+            return `$${newRevenue.toFixed(3)}b`;
           } else {
-            return `$${newRevenue}b`
+            return `$${newRevenue}b`;
           }
         }
       } else {
-        return `$0`
+        return `$0`;
       }
-      return `$0`
+      return `$0`;
     },
     getSelectedMatchingIncidentsSubtitle() {
-      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
-    }
+      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`;
+    },
   },
   mounted() {
-    this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
-    this.addQuery()
+    this.$store.dispatch("investigations/getIrSummary").finally(() => (this.showDatatable = true)); //module name than method name
+    this.addQuery();
   },
   created() {
-    this.initMethods()
-    window.addEventListener('resize', () => {
-      this.addQuery()
-    })
+    this.initMethods();
+    window.addEventListener("resize", () => {
+      this.addQuery();
+    });
   },
   destroyed() {
-    window.removeEventListener('resize', () => {})
+    window.removeEventListener("resize", () => {});
   },
   methods: {
     ...mapActions({
-      getCurrentUser: 'auth/getCurrentUser'
+      getCurrentUser: "auth/getCurrentUser",
     }),
     initMethods() {
-      this.callForGetRunningInvestigations()
-      this.callForGetTopRules()
-      this.callForSearchNotifiedMail()
-      this.callForGetRoiSettings()
+      this.callForGetRunningInvestigations();
+      this.callForGetTopRules();
+      this.callForSearchNotifiedMail();
+      this.callForGetRoiSettings();
     },
     closePlaybookWithUpdate() {
-      this.togglePlaybookModal()
-      this.initMethods()
+      this.togglePlaybookModal();
+      this.initMethods();
     },
     addQuery() {
-      const navigatorWidth = document.querySelector('nav.page-nav').style.width
-      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
+      const navigatorWidth = document.querySelector("nav.page-nav").style.width;
+      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2));
       if (width < 1050 && width > 750) {
         document
-          .querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards')
+          .querySelectorAll(".incident-responder-parent .columns-row .dashboard-cards")
           .forEach((item) => {
             item.style =
-              'width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
-          })
-        document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
+              "width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;";
+          });
+        document.querySelector(".columns-row").style = "flex-wrap:wrap;";
       } else {
         document
-          .querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards')
+          .querySelectorAll(".incident-responder-parent .columns-row .dashboard-cards")
           .forEach((item) => {
-            item.style = ''
-          })
-        document.querySelector('.columns-row').style = ''
+            item.style = "";
+          });
+        const container = document.querySelector(".columns-row");
+        if (container) document.querySelector(".columns-row").style = "";
       }
     },
     handleRouteToInvestigationDetails(resp) {
-      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`);
     },
     handeRuleNameClick(resourceId) {
-      this.selectedPlaybookId = resourceId
-      this.showPlaybookModal = true
+      this.selectedPlaybookId = resourceId;
+      this.showPlaybookModal = true;
     },
     togglePlaybookModal() {
-      this.selectedPlaybookId = null
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.selectedPlaybookId = null;
+      return (this.showPlaybookModal = !this.showPlaybookModal);
     },
     togglePlaybookModalWithSelected(selectedPlaybookId) {
-      this.selectedPlaybookId = selectedPlaybookId
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.selectedPlaybookId = selectedPlaybookId;
+      return (this.showPlaybookModal = !this.showPlaybookModal);
     },
     getDataTableFieldLabel(text) {
-      return getDataTableFieldLabel(text)
+      return getDataTableFieldLabel(text);
     },
     callForGetRoiSettings() {
       getRoiSettings().then((response) => {
         const {
-          data: { data }
-        } = response
-        this.baseManHour = data.baseManHour
-        this.baseManHourCost = data.baseManHourCost
-      })
+          data: { data },
+        } = response;
+        this.baseManHour = data.baseManHour;
+        this.baseManHourCost = data.baseManHourCost;
+      });
     },
     submitRoiModal() {
       updateRoiSettings({
         baseManHour: this.baseManHour,
-        baseManHourCost: this.baseManHourCost
+        baseManHourCost: this.baseManHourCost,
       }).then((response) => {
-        this.callForGetRoiSettings()
-        this.$store.dispatch('common/createSnackBar', {
+        this.callForGetRoiSettings();
+        this.$store.dispatch("common/createSnackBar", {
           message: response.data.message,
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
-        })
-        this.$store.dispatch('investigations/getIrSummary')
-      })
-      this.isShowRoi = false
+          icon: "mdi-check-circle",
+        });
+        this.$store.dispatch("investigations/getIrSummary");
+      });
+      this.isShowRoi = false;
     },
     isRoiSummaryEmpty(summary) {
-      return !!summary
+      return !!summary;
     },
     isInvestigationsEmpty(summary) {
       if (summary && summary.investigationTypeCount) {
-        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount)
+        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount);
         if (investigationTypeCountKeys.length > 0) {
-          let hasValue = false
+          let hasValue = false;
           for (let key of investigationTypeCountKeys) {
             if (summary.investigationTypeCount[key]) {
-              hasValue = true
+              hasValue = true;
             }
           }
-          return hasValue
+          return hasValue;
         } else {
-          return false
+          return false;
         }
       } else {
-        return false
+        return false;
       }
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen) {
-        this.selectedRowsOfReportedEmailsLength = selections.length
-        this.selectedReportedMails = selections
+        this.selectedRowsOfReportedEmailsLength = selections.length;
+        this.selectedReportedMails = selections;
         if (selections.length === 1) {
           getNotifiedEmail(selections[0].resourceId).then((response) => {
-            const selectedItem = response.data.data
-            this.extendedView.note = selectedItem.note
-            this.extendedView.isNotify = selectedItem.isNotifyUser
-            this.extendedView.customMessage = selectedItem.customMessage
-            this.extendedView.isMessage = selectedItem.customMessage ? true : false
+            const selectedItem = response.data.data;
+            this.extendedView.note = selectedItem.note;
+            this.extendedView.isNotify = selectedItem.isNotifyUser;
+            this.extendedView.customMessage = selectedItem.customMessage;
+            this.extendedView.isMessage = selectedItem.customMessage ? true : false;
             this.extendedViewValue = [
               {
                 ...selectedItem,
                 resourceId: selections[0].resourceId,
                 reportedBy: selections[0].reportedBy,
                 matchingPlaybooks: selections[0].matchingPlaybooks,
-                source: selections[0].source
-              }
-            ]
-          })
-          this.hasMultipleNoteValue = false
+                source: selections[0].source,
+              },
+            ];
+          });
+          this.hasMultipleNoteValue = false;
         } else if (selections.length > 1) {
-          const rows = []
-          let index = 0
-          this.extendedView.isNotify = true
-          this.extendedView.isMessage = false
-          this.extendedView.customMessage = ''
+          const rows = [];
+          let index = 0;
+          this.extendedView.isNotify = true;
+          this.extendedView.isMessage = false;
+          this.extendedView.customMessage = "";
           selections.map((a, ind) => {
             getNotifiedEmail(selections[index].resourceId).then((response) => {
-              const selectedItem = response.data.data
+              const selectedItem = response.data.data;
               rows.push({
                 ...selectedItem,
                 resourceId: selections[ind].resourceId,
                 reportedBy: selections[ind].reportedBy,
                 matchingPlaybooks: selections[ind].matchingPlaybooks,
-                source: selections[ind].source
-              })
+                source: selections[ind].source,
+              });
               if (index === selections.length) {
-                const note = rows[0].note
+                const note = rows[0].note;
                 rows.map((item, i) => {
                   if (item.note !== note) {
-                    this.hasMultipleNoteValue = true
+                    this.hasMultipleNoteValue = true;
                   }
-                })
+                });
                 if (!this.hasMultipleNoteValue) {
-                  this.extendedView.note = rows[0].note
+                  this.extendedView.note = rows[0].note;
                 } else {
-                  this.extendedView.note = ''
+                  this.extendedView.note = "";
                 }
-                this.extendedViewValue = rows
+                this.extendedViewValue = rows;
               }
-            })
-            index++
-          })
+            });
+            index++;
+          });
         } else {
-          this.extendedView.note = ''
-          this.extendedView.customMessage = ''
-          this.extendedView.isMessage = false
-          this.extendedView.isNotify = true
-          this.hasMultipleNoteValue = false
+          this.extendedView.note = "";
+          this.extendedView.customMessage = "";
+          this.extendedView.isMessage = false;
+          this.extendedView.isNotify = true;
+          this.hasMultipleNoteValue = false;
         }
       }
     },
     closeNewInvestigationModal(value) {
       if (value) {
-        this.callForGetRunningInvestigations()
-        this.callForGetTopRules()
-        this.callForSearchNotifiedMail()
+        this.callForGetRunningInvestigations();
+        this.callForGetTopRules();
+        this.callForSearchNotifiedMail();
       }
-      this.isWantToAddNewInvestigation = false
+      this.isWantToAddNewInvestigation = false;
     },
     callForGetRunningInvestigations() {
       getRunningInvestigations()
         .then((response) => {
           const {
-            data: { data, status }
-          } = response
-          this.investigationListData = data
-          this.$refs.refRecentInv.loadWithDataArray(data || [])
+            data: { data, status },
+          } = response;
+          this.investigationListData = data;
+          this.$refs.refRecentInv.loadWithDataArray(data || []);
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the recent investigations! '
-          })
-        })
+            message: "Error when getting the recent investigations! ",
+          });
+        });
     },
     callForGetTopRules() {
       getTopRules()
         .then((response) => {
           const {
-            data: { data, status }
-          } = response
+            data: { data, status },
+          } = response;
 
-          this.$refs.refTopRules.loadWithDataArray(data || [])
+          this.$refs.refTopRules.loadWithDataArray(data || []);
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the top rules!'
-          })
-        })
+            message: "Error when getting the top rules!",
+          });
+        });
     },
     callForSearchNotifiedMail() {
       const payload = {
         pageNumber: 1,
         pageSize: 500000,
-        orderBy: 'createDate',
-        ascending: false
-      }
+        orderBy: "createDate",
+        ascending: false,
+      };
       searchNotifiedMail(payload).then((response) => {
         const {
           data: {
             data: { results },
-            status
-          }
-        } = response
-        const tableData = results
-        this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
-      })
+            status,
+          },
+        } = response;
+        const tableData = results;
+        this.$refs.refReportedEmails.loadWithDataArray(tableData || []);
+      });
     },
     matchingPopupClick(match) {
-      this.selectedMatch = match
-      this.showMatchingModal = true
+      this.selectedMatch = match;
+      this.showMatchingModal = true;
       const payload = {
         pageNumber: 1,
         pageSize: 500,
-        orderBy: 'CreateDate',
-        ascending: true
-      }
+        orderBy: "CreateDate",
+        ascending: true,
+      };
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
-          const tableData = response.data.data
-          this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || [])
+          const tableData = response.data.data;
+          this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || []);
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -1405,141 +1410,141 @@ export default {
                   color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                   message: 'Error when getting the notified emails!'
                 })*/
-        })
+        });
     },
     onEmptyBtnClicked() {
-      this.$router.push({ path: '/investigations', query: { openPopup: true } })
+      this.$router.push({ path: "/investigations", query: { openPopup: true } });
     },
     onTopRulesEmptyBtnClicked() {
-      this.$router.push({ path: '/playbook', query: { openPopup: true } })
+      this.$router.push({ path: "/playbook", query: { openPopup: true } });
     },
     onEmptyReportedEmailsBtnClicked() {
-      this.$router.push({ path: '/phishing-reporter', hash: '#settings' })
+      this.$router.push({ path: "/phishing-reporter", hash: "#settings" });
     },
     irPreviewOnClick(row) {
       this.$router.push({
-        name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 2 }
-      })
+        name: "Analysis Details",
+        params: { id: row.resourceId, tab: 2 },
+      });
     },
     handleIsNotify(value) {
       if (!value) {
-        this.extendedView.isMessage = false
+        this.extendedView.isMessage = false;
       }
     },
     handleEdit(selectedRow) {
       selectedRow.map((item, index) => {
-        const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
+        const tag = typeof item.tags === "string" ? item.tags : item.tags.join(",");
         const payload = {
           result: item.result,
           status: item.status,
-          tag: tag || '',
-          note: this.extendedView.note || '',
+          tag: tag || "",
+          note: this.extendedView.note || "",
           isNotifyUser: this.extendedView.isNotify,
           customMessage: this.extendedView.isMessage
             ? this.extendedView.customMessage
             : selectedRow.length > 1
             ? item.customMessage
-            : ''
-        }
+            : "",
+        };
 
         updateNotifiedEmail(item.resourceId, payload)
           .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
+            this.$store.dispatch("common/createSnackBar", {
               message: response.data.message,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
+              icon: "mdi-check-circle",
+            });
 
-            this.callForGetRunningInvestigations()
-            this.callForGetTopRules()
-            this.callForSearchNotifiedMail()
-            this.$store.dispatch('investigations/getIrSummary')
+            this.callForGetRunningInvestigations();
+            this.callForGetTopRules();
+            this.callForSearchNotifiedMail();
+            this.$store.dispatch("investigations/getIrSummary");
           })
-          .catch((error) => {})
-      })
+          .catch((error) => {});
+      });
     },
     irDetailsOnClick(row) {
       this.$router.push({
-        name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 0 }
-      })
+        name: "Analysis Details",
+        params: { id: row.resourceId, tab: 0 },
+      });
     },
     isPhishingEmpty(data) {
       if (data && !data.phishingReporterUserStatusCount) {
-        return true
+        return true;
       } else if (
         data &&
         data.phishingReporterUserStatusCount &&
         (data.phishingReporterUserStatusCount.onlineUsersCount ||
           data.phishingReporterUserStatusCount.offlineUsersCount)
       ) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     },
     isNotifiedEmailEmpty(data) {
       if (data && !data.notifiedEmailResultCount) {
-        return true
+        return true;
       } else if (
         data &&
         data.notifiedEmailResultCount &&
         data.notifiedEmailResultCount.reportedMailCount
       ) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     },
     handleReportedEmailInvestigate(row) {
       getNotifiedEmail(row.resourceId).then((response) => {
-        this.selectedEmail = response.data.data
+        this.selectedEmail = response.data.data;
 
-        this.isWantToAddNewInvestigation = true
-      })
+        this.isWantToAddNewInvestigation = true;
+      });
     },
     emptyPhishingButtonClick() {
-      this.$router.push('/phishing-reporter')
+      this.$router.push("/phishing-reporter");
     },
     emptyNotifiedEmailButtonClick() {
       //this.$router.push('/phishing-reporter')
     },
     emptyInvestigationButtonClick() {
-      this.$router.push('/investigations')
+      this.$router.push("/investigations");
     },
     exportReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
           pageSize: reportAllPages ? 500 : pageSize,
-          orderBy: 'CreateDate',
+          orderBy: "CreateDate",
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+        };
         exportNotifiedEmails(payload)
           .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `users.${exportType.toLocaleLowerCase()}`
-            link.click()
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
+            link.download = `users.${exportType.toLocaleLowerCase()}`;
+            link.click();
           })
-          .catch((error) => {})
-      })
-    }
+          .catch((error) => {});
+      });
+    },
   },
 
   beforeRouteLeave(to, from, next) {
     if (this.openInvestigationOverlay) {
-      this.openInvestigationOverlay = false
-      next(false)
+      this.openInvestigationOverlay = false;
+      next(false);
     } else {
-      next(true)
+      next(true);
     }
-  }
-}
+  },
+};
 </script>
 <style lang="scss">
 .incident-responder-parent {
@@ -1792,7 +1797,7 @@ export default {
 
           .title {
             h2 {
-              font-family: 'Open Sans', sans-serif;
+              font-family: "Open Sans", sans-serif;
               font-size: 20px;
               font-weight: 600;
               font-stretch: normal;
@@ -1803,7 +1808,7 @@ export default {
             }
 
             p {
-              font-family: 'Open Sans', sans-serif !important;
+              font-family: "Open Sans", sans-serif !important;
               font-size: 16px;
               font-weight: normal;
               font-stretch: normal;
@@ -1905,7 +1910,7 @@ export default {
           width: 65%;
 
           h2 {
-            font-family: 'Open Sans', sans-serif;
+            font-family: "Open Sans", sans-serif;
             font-size: 20px;
             font-weight: 600;
             font-stretch: normal;
@@ -1916,7 +1921,7 @@ export default {
           }
 
           p {
-            font-family: 'Open Sans', sans-serif !important;
+            font-family: "Open Sans", sans-serif !important;
             font-size: 16px;
             font-weight: normal;
             font-stretch: normal;
