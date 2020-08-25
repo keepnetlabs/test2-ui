@@ -11,7 +11,7 @@
       >
         <template v-slot:app-dialog-body>
           <v-form ref="form" lazy-validation>
-             <v-list-item class="roi-modal__list-item">
+            <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
                 <label class="roi-modal__label">Average time saved per reported email</label>
                 <v-text-field
@@ -37,7 +37,6 @@
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
-           
           </v-form>
         </template>
         <template v-slot:app-dialog-footer>
@@ -110,7 +109,7 @@
               class="btn-action btn-playbook btn-playbook__no-data"
               rounded
               color="white"
-              style="box-shadow: none !important;margin-top:29px;"
+              style="box-shadow: none !important; margin-top: 29px;"
               @click="emptyPhishingButtonClick"
             >
               Install Now
@@ -220,7 +219,7 @@
               class="btn-action btn-playbook btn-playbook__no-data"
               rounded
               color="white"
-               style="box-shadow: none !important;margin-top:29px;"
+              style="box-shadow: none !important; margin-top: 29px;"
               @click="emptyPhishingButtonClick"
             >
               Start Now
@@ -253,7 +252,7 @@
               <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
             </div>
           </div>
-          <div class="card-status" >Saved</div>
+          <div class="card-status">Saved</div>
           <div class="bg-image">
             <img src="../assets/img/ic-insert-chart.svg" />
           </div>
@@ -648,7 +647,7 @@ export default {
         }
       ],
       iEmpty: {
-        message: "No rules configured",
+        message: 'No rules configured',
         btn: 'CREATE NEW RULE',
         icon: 'mdi-plus'
       },
@@ -710,7 +709,7 @@ export default {
         popUp: false
       },
       iEmpty: {
-        message: "No investigations",
+        message: 'No investigations',
         btn: 'START A NEW INVESTIGATION',
         icon: 'mdi-plus'
       },
