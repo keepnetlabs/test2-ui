@@ -478,7 +478,7 @@
           <v-tab id="expansion-preview">Email Preview</v-tab>
           <v-tab id="expansion-details">Details</v-tab>
         </v-tabs>
-        <v-tabs-items v-show="emailData" v-model="tab">
+        <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
           <v-tab-item>
             <PreviewHeader :uploadRespond="emailData" />
 
@@ -1091,6 +1091,10 @@ export default {
   watch: {},
   mounted() {
     this.userIdFromStorage = localStorage.getItem('userId')
+
+    if (this.$route.query.postId) {
+      this.getPostDetails(this.$route.query.postId, 0, true)
+    }
   },
   methods: {
     contentCopy(contentBody) {

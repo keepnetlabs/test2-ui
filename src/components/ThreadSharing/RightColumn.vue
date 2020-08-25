@@ -648,6 +648,7 @@ export default {
         localStorage.setItem('communityName', post.communityName)
         localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
         this.$router.push(`/community/${post.communityResourceId}`)
+        this.$router.go(`/community/${post.communityResourceId}`)
       }
     },
     inviteMember() {
@@ -683,14 +684,24 @@ export default {
       const _this = this
       if (this.$route.name == 'Community') {
         this.ownerDetails = this.$route.params.item
-        getCommunityDetails(this.$route.params.id).then((response) => {
-          this.communityDetails = response.data.data
-          if (_this.$route.query && _this.$route.query.postId) {
-            localStorage.setItem('communityName', response.data.data.name)
-            localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
-          }
-          this.$forceUpdate()
-        })
+        getCommunityDetails(this.$route.params.id)
+          .then((response) => {
+            this.communityDetails = response.data.data
+            if (_this.$route.query && _this.$route.query.postId) {
+              localStorage.setItem('communityName', response.data.data.name)
+              localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
+            }
+            this.$forceUpdate()
+          })
+          .catch((error) => {
+            if (error.response.data.code) {
+              this.$router.push('/threat-sharing')
+            }
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Community has been not found.'
+            })
+          })
       }
     },
     getMyLastPosts() {
