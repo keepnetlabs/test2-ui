@@ -250,7 +250,7 @@ export default {
     },
     selectEvent: {
       clipboard: true,
-      edit: true,
+      edit: false,
       delete: true,
       download: true
     },
