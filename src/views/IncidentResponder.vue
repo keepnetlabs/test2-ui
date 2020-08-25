@@ -536,6 +536,7 @@
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
         @cancelForm="togglePlaybookModal"
+        @closeFormWithUpdate="closePlaybookWithUpdate"
         v-if="showPlaybookModal"
       />
     </v-dialog>
@@ -1140,15 +1141,24 @@ export default {
     this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
   },
   created() {
-    this.callForGetRunningInvestigations()
-    this.callForGetTopRules()
-    this.callForSearchNotifiedMail()
-    this.callForGetRoiSettings()
+   this.initMethods()
   },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    initMethods(){
+
+    this.callForGetRunningInvestigations()
+    this.callForGetTopRules()
+    this.callForSearchNotifiedMail()
+    this.callForGetRoiSettings()
+
+    },
+    closePlaybookWithUpdate(){
+      this.togglePlaybookModal()
+      this.initMethods()
+    },
     handleRouteToInvestigationDetails(resp) {
       this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
     },
