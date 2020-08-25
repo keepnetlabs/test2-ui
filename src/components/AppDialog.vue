@@ -13,7 +13,7 @@
         <v-list-item
           class="k-dialog__header"
           v-if="icon && title"
-          :class="[maxHeightSize && 'k-dialog__header-max-height']"
+          :class="[maxHeight && 'k-dialog__header-max-height']"
         >
           <div class="v-btn v-cart-icon-wrapper" v-if="icon">
             <v-icon :color="iconColor" class="ml-2" left medium>
@@ -29,8 +29,7 @@
         </v-list-item>
         <div
           class="k-dialog__body"
-          :style="[
-            maxHeight && {
+          :style="[{
               maxHeight: maxHeightSize ? maxHeightSize : '400px',
               minHeight: maxHeightSize ? maxHeightSize : ''
             }

@@ -65,7 +65,7 @@
         <div
           class="dashboard-cards phishing-reporter mr-2"
           :class="{
-            'no-data__opacity-blue': isPhishingEmpty(irSummary)
+            'no-data__opacity-blue': isPhishingEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -78,12 +78,14 @@
           </div>
           <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
             <div class="card-body">
-              <span class="biggest">{{
-                (irSummary &&
-                  irSummary.phishingReporterUserStatusCount &&
-                  irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
-                0
-              }}</span>
+              <div class="biggest">
+                {{
+                  (irSummary &&
+                    irSummary.phishingReporterUserStatusCount &&
+                    irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
+                  0
+                }}
+              </div>
             </div>
             <div class="card-footer">
               of
@@ -123,7 +125,7 @@
         <div
           class="dashboard-cards incident-analysis mr-2"
           :class="{
-            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -131,12 +133,14 @@
           </div>
           <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
             <div class="card-body">
-              <span class="biggest">{{
-                (irSummary &&
-                  irSummary.notifiedEmailResultCount &&
-                  irSummary.notifiedEmailResultCount.harmfulCount) ||
-                0
-              }}</span>
+              <div class="biggest">
+                {{
+                  (irSummary &&
+                    irSummary.notifiedEmailResultCount &&
+                    irSummary.notifiedEmailResultCount.harmfulCount) ||
+                  0
+                }}
+              </div>
             </div>
             <div class="card-footer">
               of
@@ -164,7 +168,7 @@
         <div
           class="dashboard-cards investigations mr-2"
           :class="{
-            'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
+            'no-data__opacity-green': !isInvestigationsEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -175,28 +179,38 @@
               >
             </router-link>
           </div>
-          <div class="columns-row__body" v-if="isInvestigationsEmpty(irSummary)">
+          <div
+            class="columns-row__body"
+            style="margin-top: 22px;"
+            v-if="isInvestigationsEmpty(irSummary)"
+          >
             <div class="card-body">
               <div class="body-row">
-                {{
-                  (irSummary &&
-                    irSummary.investigationTypeCount &&
-                    irSummary.investigationTypeCount.automaticInvestigationCount) ||
-                  0
-                }}
-                <span>automated</span>
+                <span class="body-row__number">
+                  {{
+                    (irSummary &&
+                      irSummary.investigationTypeCount &&
+                      irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                    0
+                  }}
+                </span>
+
+                <span class="body-row__text">automated</span>
               </div>
-              <div class="body-row">
-                {{
-                  (irSummary &&
-                    irSummary.investigationTypeCount &&
-                    irSummary.investigationTypeCount.manualInvestigationCount) ||
-                  0
-                }}
-                <span>manual</span>
+              <div class="body-row mt-4">
+                <span class="body-row__number"
+                  >{{
+                    (irSummary &&
+                      irSummary.investigationTypeCount &&
+                      irSummary.investigationTypeCount.manualInvestigationCount) ||
+                    0
+                  }}
+                </span>
+
+                <span class="body-row__text">manual</span>
               </div>
             </div>
-            <div class="card-status">Incidents resolved</div>
+            <div class="card-status mt-7">Incidents resolved</div>
           </div>
           <div class="columns-row__body" v-else>
             <div class="card-footer no-data-text">You haven’t started any investigations, yet</div>
@@ -217,7 +231,7 @@
         <div
           class="dashboard-cards roi-summary"
           :class="{
-            'no-data__opacity-purple': isPhishingEmpty(irSummary)
+            'no-data__opacity-purple': isPhishingEmpty(irSummary),
           }"
         >
           <div class="card-header">
@@ -227,12 +241,14 @@
             >
           </div>
           <div class="card-body">
-            <div class="body-row">
-              {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+            <div class="body-row" style="margin-top: 22px;">
+              <span class="body-row__number">
+                {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+              </span>
               <span>and</span>
             </div>
-            <div class="body-row">
-              {{ getRoiSummaryValue }}
+            <div class="body-row mt-4">
+              <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
             </div>
           </div>
           <div class="card-status">Saved</div>
@@ -286,7 +302,7 @@
                     No Matches
                   </span>
                   <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+                    {{ scope.row[col.property] === 0 ? "No" : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
                     :status="scope.row.resourceId === selectedMatch.resourceId"
@@ -396,7 +412,7 @@
           <div class="header">
             <div class="title">
               <h2>Reported Emails</h2>
-              <p class="mb-8">
+              <p class="mb-10">
                 Suspicious emails reported by users via Phishing Reporter and their analyze results
               </p>
             </div>
@@ -430,7 +446,7 @@
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
                 <span v-if="scope.row.matchingPlaybooks.length === 0">
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                  {{ scope.row.source === "Auto" ? "Auto Analysis" : scope.row.source }}
                 </span>
                 <span
                   v-else
@@ -1139,25 +1155,50 @@ export default {
   },
   mounted() {
     this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
+    this.addQuery()
   },
   created() {
-   this.initMethods()
+    this.initMethods()
+    window.addEventListener('resize', () => {
+     this.addQuery()
+    })
+      
+  },
+  destroyed(){
+      window.removeEventListener('resize',()=>{
+        
+      })
   },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-    initMethods(){
-
-    this.callForGetRunningInvestigations()
-    this.callForGetTopRules()
-    this.callForSearchNotifiedMail()
-    this.callForGetRoiSettings()
-
+    initMethods() {
+      this.callForGetRunningInvestigations()
+      this.callForGetTopRules()
+      this.callForSearchNotifiedMail()
+      this.callForGetRoiSettings()
     },
-    closePlaybookWithUpdate(){
+    closePlaybookWithUpdate() {
       this.togglePlaybookModal()
       this.initMethods()
+    },
+    addQuery() {
+      console.log("iam working")
+       const navigatorWidth = document.querySelector('nav.page-nav').style.width
+       const width=window.innerWidth - Number(navigatorWidth.slice(0, -2))
+      if (width < 1050 && width >768) {
+        document.querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards').forEach(item=>{
+          item.style='width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
+        })
+        document.querySelector('.columns-row').style='flex-wrap:wrap;'
+      }
+      else{
+ document.querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards').forEach(item=>{
+          item.style=''
+        })
+        document.querySelector('.columns-row').style=''
+      }
     },
     handleRouteToInvestigationDetails(resp) {
       this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
@@ -1553,6 +1594,9 @@ export default {
     color: #2196f3;
     cursor: pointer;
   }
+  .columns-row__body {
+    margin-top: 24px;
+  }
   .columns-row {
     display: flex;
     flex-direction: row;
@@ -1575,10 +1619,10 @@ export default {
 
     .dashboard-cards {
       width: 25%;
-      min-height: 250px;
+      min-height: 225px;
       border-radius: 8px;
       margin: 8px;
-      padding: 10px 15px;
+      padding: 16px;
       position: relative;
 
       .card-header {
@@ -1586,8 +1630,6 @@ export default {
         align-items: center;
         flex-direction: row;
         justify-content: space-between;
-        padding-bottom: 34px;
-
         .head {
           color: #fff;
           font-size: 20px;
@@ -1606,7 +1648,7 @@ export default {
       }
 
       .card-body {
-        font-size: 48px;
+        //font-size: 48px;
         font-weight: normal;
         line-height: 1.13;
         letter-spacing: normal;
@@ -1618,15 +1660,30 @@ export default {
 
         .biggest {
           font-size: 80px;
+          line-height: 1;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
         }
 
         .body-row:first-child {
           width: 100%;
-          padding-bottom: 14px;
+        }
+
+        .body-row__number {
+          font-size: 48px;
+          line-height: 0.81;
+          letter-spacing: normal;
+          color: #ffffff;
+        }
+        .body-row__text {
+          font-size: 20px;
+          line-height: 1;
+          letter-spacing: normal;
+          color: #ffffff;
         }
 
         .body-row:nth-child(2) {
-          padding-bottom: 24px;
         }
       }
 
@@ -1636,7 +1693,9 @@ export default {
         line-height: 1.25;
         letter-spacing: normal;
         color: #fff;
-        padding-bottom: 16px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        //padding-bottom: 16px;
 
         &.no-data-text {
           font-size: 20px;
@@ -1654,7 +1713,7 @@ export default {
         line-height: 1.15;
         letter-spacing: normal;
         color: #fff;
-        bottom: 24px;
+        bottom: 16px;
         position: absolute;
       }
 
@@ -1702,6 +1761,9 @@ export default {
         border-radius: 0 !important;
       }
     }
+    .k-table__wrapper {
+      padding-bottom: 12px;
+    }
 
     @media only screen and (max-width: 1023px) {
       flex-wrap: wrap;
@@ -1730,7 +1792,7 @@ export default {
 
           .title {
             h2 {
-              font-family: 'Open Sans', sans-serif;
+              font-family: "Open Sans", sans-serif;
               font-size: 20px;
               font-weight: 600;
               font-stretch: normal;
@@ -1741,7 +1803,7 @@ export default {
             }
 
             p {
-              font-family: 'Open Sans', sans-serif !important;
+              font-family: "Open Sans", sans-serif !important;
               font-size: 16px;
               font-weight: normal;
               font-stretch: normal;
@@ -1821,6 +1883,12 @@ export default {
       width: 100%;
     }
 
+    .k-table__wrapper {
+      .v-card {
+        padding: 0;
+      }
+    }
+
     .v-card {
       border-radius: 12px;
       box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
@@ -1837,7 +1905,7 @@ export default {
           width: 65%;
 
           h2 {
-            font-family: 'Open Sans', sans-serif;
+            font-family: "Open Sans", sans-serif;
             font-size: 20px;
             font-weight: 600;
             font-stretch: normal;
@@ -1848,7 +1916,7 @@ export default {
           }
 
           p {
-            font-family: 'Open Sans', sans-serif !important;
+            font-family: "Open Sans", sans-serif !important;
             font-size: 16px;
             font-weight: normal;
             font-stretch: normal;

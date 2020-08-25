@@ -143,6 +143,11 @@ export default {
         }
       }
     }
+  },
+  watch: {
+    files(val){
+      console.log("val",val)
+    }
   }
 }
 </script>
