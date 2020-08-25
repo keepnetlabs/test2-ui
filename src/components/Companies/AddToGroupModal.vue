@@ -146,7 +146,6 @@ export default {
       if (this.selectedArray && this.selectedArray.length > 0) {
         const companyIdArray = this.companyIdArray
         this.selectedArray.forEach((x) => {
-          debugger
           const payload = {
             name: x.name,
             companyResourceIdArray: companyIdArray
