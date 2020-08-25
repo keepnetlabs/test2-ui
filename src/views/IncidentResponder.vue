@@ -6,18 +6,19 @@
         :status="isShowRoi"
         icon="mdi-cog"
         :title="'ROI Summary Settings'"
+        subtitle="To calculate saving in time and money for automating the email analysis"
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
           <v-form ref="form" lazy-validation>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">Hourly Rate ($)</label>
+                <label class="roi-modal__label">Average time saved per reported email</label>
                 <v-text-field
-                  placeholder="Hourly Rate"
+                  placeholder="Saved Time"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="baseManHourCost"
+                  v-model="baseManHour"
                   :rules="[(v) => validations.required(v, 'Required')]"
                   type="number"
                 ></v-text-field>
@@ -25,12 +26,12 @@
             </v-list-item>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">Saved Time Per Task (hours)</label>
+                <label class="roi-modal__label">Average total cost per hour</label>
                 <v-text-field
-                  placeholder="Saved Time"
+                  placeholder="Hourly Rate"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="baseManHour"
+                  v-model="baseManHourCost"
                   :rules="[(v) => validations.required(v, 'Required')]"
                   type="number"
                 ></v-text-field>
@@ -102,16 +103,16 @@
           </div>
           <div class="columns-row__body" v-else>
             <div class="card-footer no-data-text">
-              Add-in isn’t installed at any users’ account, yet
+              No add-ins installed
             </div>
             <v-btn
               class="btn-action btn-playbook btn-playbook__no-data"
               rounded
               color="white"
-              style="box-shadow: none !important;"
+              style="box-shadow: none !important; margin-top: 29px;"
               @click="emptyPhishingButtonClick"
             >
-              Start Now
+              Install Now
             </v-btn>
           </div>
           <div
@@ -155,7 +156,7 @@
             <div class="card-status">Found harmful</div>
           </div>
           <div class="columns-row__body" v-else>
-            <div class="card-footer no-data-text">You haven’t analysed any emails, yet</div>
+            <div class="card-footer no-data-text">No emails analysed</div>
             <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
                   @click="emptyNotifiedEmailButtonClick">
             Start Now
@@ -213,12 +214,12 @@
             <div class="card-status mt-7">Incidents resolved</div>
           </div>
           <div class="columns-row__body" v-else>
-            <div class="card-footer no-data-text">You haven’t started any investigations, yet</div>
+            <div class="card-footer no-data-text">No investigation started</div>
             <v-btn
               class="btn-action btn-playbook btn-playbook__no-data"
               rounded
               color="white"
-              style="box-shadow: none !important;"
+              style="box-shadow: none !important; margin-top: 29px;"
               @click="emptyPhishingButtonClick"
             >
               Start Now
@@ -263,7 +264,7 @@
             <div class="header">
               <div class="title">
                 <h2>Top Rules</h2>
-                <p>Most triggered rules from Playbook</p>
+                <p>Most triggered Playbook rules</p>
               </div>
               <div class="action">
                 <v-btn
@@ -369,7 +370,7 @@
             <div class="header">
               <div class="title">
                 <h2>Recent Investigations</h2>
-                <p>Recently performed investigations</p>
+                <p>Most recent investigations</p>
               </div>
               <div class="action">
                 <v-btn
@@ -413,7 +414,7 @@
             <div class="title">
               <h2>Reported Emails</h2>
               <p class="mb-10">
-                Suspicious emails reported by users via Phishing Reporter and their analyze results
+                Summary of emails reported for analysis
               </p>
             </div>
           </div>
@@ -650,9 +651,9 @@ export default {
         },
       ],
       iEmpty: {
-        message: "There isn't any rules, yet",
-        btn: "CREATE NEW RULE",
-        icon: "mdi-plus",
+        message: 'No rules configured',
+        btn: 'CREATE NEW RULE',
+        icon: 'mdi-plus'
       },
       addUsers: {
         show: false,
@@ -712,9 +713,9 @@ export default {
         popUp: false,
       },
       iEmpty: {
-        message: "There isn't any investigations, yet",
-        btn: "START A NEW INVESTIGATION",
-        icon: "mdi-plus",
+        message: 'No investigations',
+        btn: 'START A NEW INVESTIGATION',
+        icon: 'mdi-plus'
       },
       selectEvent: {},
       chartOptions: {},
@@ -1584,8 +1585,6 @@ export default {
         line-height: 1.71;
         letter-spacing: normal;
         color: #2196f3;
-        max-width: 112px;
-        min-width: 112px;
         height: 36px;
       }
     }
@@ -1707,8 +1706,7 @@ export default {
           line-height: 1.25;
           letter-spacing: normal;
           color: #ffffff;
-          margin-top: 40px;
-          min-height: 80px;
+          margin-top: 61px;
         }
       }
 
@@ -1763,11 +1761,12 @@ export default {
       .table-wrapper {
         padding-top: 0;
         border: none !important;
+        margin-top:0 !important ;
         border-radius: 0 !important;
       }
     }
     .k-table__wrapper {
-      padding-bottom: 12px;
+      padding-bottom: 24px;
     }
 
     @media only screen and (max-width: 1023px) {
@@ -1784,7 +1783,7 @@ export default {
       .v-card {
         border-radius: 12px;
         box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
-        min-height: 260px;
+        min-height: 236px;
         padding: 24px;
         padding-bottom: 0;
         height: 100%;

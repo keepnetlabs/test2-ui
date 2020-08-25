@@ -245,7 +245,7 @@ export default {
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'No investigation has been started, yet',
+      message: 'No investigations started',
       btn: 'START A NEW INVESTIGATION',
       icon: 'mdi-plus'
     },

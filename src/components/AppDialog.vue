@@ -170,6 +170,7 @@ export default {
     margin-top: 2px;
     font-size: 16px;
     letter-spacing: normal;
+    white-space: pre-wrap;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 

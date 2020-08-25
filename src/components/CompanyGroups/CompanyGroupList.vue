@@ -33,8 +33,14 @@
       @editAction="editAction"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span class="datatable-link" v-if="scope.row.name">
-          {{ scope.row.name }}
+        <span :class="{ 'datatable-link': scope.row.companyCount !== 0 }" v-if="scope.row.name">
+          <router-link
+            v-if="scope.row.companyCount !== 0"
+            tag="span"
+            :to="{ name: 'Company Group Details', params: { groupId: scope.row.resourceId } }"
+            >{{ scope.row.name }}</router-link
+          >
+          <span v-else>{{ scope.row.name }}</span>
         </span>
       </template>
     </datatable>

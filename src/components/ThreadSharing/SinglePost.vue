@@ -478,7 +478,7 @@
           <v-tab id="expansion-preview">Email Preview</v-tab>
           <v-tab id="expansion-details">Details</v-tab>
         </v-tabs>
-        <v-tabs-items v-show="emailData" v-model="tab">
+        <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
           <v-tab-item>
             <PreviewHeader :uploadRespond="emailData" />
 
@@ -564,7 +564,11 @@
               </v-btn>
             </div>
             <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
-              <div class="add-comment-row">
+              <v-form
+                ref="refCommentForm"
+                class="add-comment-row"
+                @submit="addPostComment(post.communityPostResourceId, post.communityResourceId)"
+              >
                 <v-text-field
                   :id="'single-post-comment-' + post.communityPostResourceId"
                   class="comment-input"
@@ -582,7 +586,8 @@
                   <v-icon>mdi-send</v-icon>
                   SEND
                 </v-btn>
-              </div>
+              </v-form>
+
               <div v-if="comments && comments.length" class="hidden-comments">
                 <div
                   v-for="(com, ind) of seeComments ? comments : comments.slice(0, 1)"
@@ -1091,6 +1096,10 @@ export default {
   watch: {},
   mounted() {
     this.userIdFromStorage = localStorage.getItem('userId')
+
+    if (this.$route.query.postId) {
+      this.getPostDetails(this.$route.query.postId, 0, true)
+    }
   },
   methods: {
     contentCopy(contentBody) {
@@ -1357,37 +1366,39 @@ export default {
         })*/
     },
     addPostComment(postId, communId) {
-      const payload = {
-        comment: this.addCommentValue
+      if (this.$refs.refCommentForm.validate()) {
+        const payload = {
+          comment: this.addCommentValue
+        }
+        createComments(postId, payload)
+          .then((response) => {
+            this.addCommentValue = ''
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Comment added has been successfully'
+            })
+            getComments(this.post.communityPostResourceId)
+              .then((response) => {
+                const { data } = response
+                this.comments = data.data
+              })
+              .catch((error) => {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.code === 'RESOURCE_NOT_FOUND'
+                ) {
+                  this.comments = []
+                }
+              })
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when creating a comment'
+            })
+          })
       }
-      createComments(postId, payload)
-        .then((response) => {
-          this.addCommentValue = ''
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment added has been successfully'
-          })
-          getComments(this.post.communityPostResourceId)
-            .then((response) => {
-              const { data } = response
-              this.comments = data.data
-            })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
-              ) {
-                this.comments = []
-              }
-            })
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when creating a comment'
-          })
-        })
     },
     editIncident(post, communityName) {
       this.$emit('openEditPopupItem', post)

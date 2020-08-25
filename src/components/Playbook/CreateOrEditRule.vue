@@ -435,7 +435,6 @@ export default {
     },
     callForCreatePlaybook() {
       const ref = this.$refs.refActionItem
-      debugger
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
       let playbookActionAnalyzers = []
