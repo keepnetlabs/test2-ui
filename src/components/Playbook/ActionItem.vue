@@ -262,7 +262,7 @@
             hide-details
           />
         </v-col>
-        <v-col class="text-right">
+        <v-col class="text-right" v-if="actionsValues.length>1">
           <!-- Remove act button -->
           <v-btn icon @click="removeAction(index, actionsValues[index].val)">
             <v-icon>mdi-close-circle</v-icon>
@@ -407,13 +407,13 @@ export default {
           'From',
           'To',
           'Cc',
-          'SenderIp',
+          {value:'SenderIp',text:'Sender Ip'},
           'Subject',
           'Keyword',
           'Url',
-          'AttachmentName',
-          'AttachmentExtension',
-          'AttachmentHash'
+          {text:'Attachment Name',value:'AttachmentName'},
+          {text:'Attachment Extension',value:'AttachmentExtension'},
+          {text:'Attachment Hash',value:'AttachmentHash'}
         ],
         investigateRanges: [
           { text: '1 day before and after', value: 1 },
@@ -769,7 +769,7 @@ export default {
       return this.actions.length
     },
     removeAction(index, actionVal) {
-      console.log('actionVal', actionVal)
+      
       this.act.actionTypes.find((item) => {
         if (
           JSON.stringify(this.actionsValues[index]) === JSON.stringify(item) &&

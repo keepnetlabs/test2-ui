@@ -504,7 +504,7 @@
                     :id="'single-post-attachments-' + att.name"
                     :class="[
                       att.isFlagged ? 'red-attach malicious-style' : '',
-                      !att.isFlagged ? 'blue-attach' : ''
+                      !att.isFlagged ? 'blue-attach' : '',
                     ]"
                   >
                     <v-tooltip v-if="att.isFlagged" bottom opacity="1" z-index="9999">
@@ -527,7 +527,7 @@
                           hidden by owner
                         </div>
                       </template>
-                      <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
+                      <span>{{ !att.isHidden ? att.name : "hidden by owner" }}</span>
                     </v-tooltip>
                   </div>
                 </div>
@@ -564,25 +564,31 @@
               </v-btn>
             </div>
             <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
-              <div class="add-comment-row">
-                <v-text-field
-                  :id="'single-post-comment-' + post.communityPostResourceId"
-                  class="comment-input"
-                  placeholder="Write your comment here"
-                  outlined
-                  v-model.trim="addCommentValue"
-                  validate-on-blur
-                  :rules="[rules.regex, rules.required]"
-                />
-                <v-btn
-                  :id="'single-post-send-comment' + post.communityPostResourceId"
-                  @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
-                  class="send-btn"
+              
+                <v-form
+                  ref="refCommentForm"
+                  class="add-comment-row"
+                  @submit="addPostComment(post.communityPostResourceId, post.communityResourceId)"
                 >
-                  <v-icon>mdi-send</v-icon>
-                  SEND
-                </v-btn>
-              </div>
+                  <v-text-field
+                    :id="'single-post-comment-' + post.communityPostResourceId"
+                    class="comment-input"
+                    placeholder="Write your comment here"
+                    outlined
+                    v-model.trim="addCommentValue"
+                    validate-on-blur
+                    :rules="[rules.regex, rules.required]"
+                  />
+                  <v-btn
+                    :id="'single-post-send-comment' + post.communityPostResourceId"
+                    @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
+                    class="send-btn"
+                  >
+                    <v-icon>mdi-send</v-icon>
+                    SEND
+                  </v-btn>
+                </v-form>
+             
               <div v-if="comments && comments.length" class="hidden-comments">
                 <div
                   v-for="(com, ind) of seeComments ? comments : comments.slice(0, 1)"
@@ -680,7 +686,7 @@
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
                     Subject:
-                    {{ !emailData.isSubjectHidden ? emailData.subject : 'hidden by owner' }}
+                    {{ !emailData.isSubjectHidden ? emailData.subject : "hidden by owner" }}
                   </p>
                   <p
                     v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
@@ -697,7 +703,7 @@
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
                     From:
-                    {{ !emailData.isFromHidden ? emailData.from : 'hidden by owner' }}
+                    {{ !emailData.isFromHidden ? emailData.from : "hidden by owner" }}
                   </p>
                   <p
                     v-if="emailData && emailData.from && emailData.isFromFlagged"
@@ -713,7 +719,7 @@
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
                     To:
-                    {{ !emailData.isToHidden ? emailData.to.toString() : 'hidden by owner' }}
+                    {{ !emailData.isToHidden ? emailData.to.toString() : "hidden by owner" }}
                   </p>
                   <p
                     v-if="emailData && emailData.to && emailData.isToFlagged"
@@ -729,7 +735,7 @@
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
                     CC:
-                    {{ !emailData.isCcHidden ? emailData.cc.toString() : 'hidden by owner' }}
+                    {{ !emailData.isCcHidden ? emailData.cc.toString() : "hidden by owner" }}
                   </p>
                   <p
                     v-if="emailData && emailData.cc && emailData.isCcFlagged"
@@ -745,7 +751,7 @@
                     class="detail-black detail-red single-post__details__section-header--sub"
                   >
                     BCC:
-                    {{ !emailData.isBccHidden ? emailData.bcc.toString() : 'hidden by owner' }}
+                    {{ !emailData.isBccHidden ? emailData.bcc.toString() : "hidden by owner" }}
                   </p>
                   <p
                     v-if="emailData && emailData.bcc && emailData.isBccFlagged"
@@ -896,12 +902,12 @@
 </template>
 
 <script>
-import VClamp from 'vue-clamp'
-import NewInvestigation from '../Investigation/NewInvestigation'
-import { mapGetters } from 'vuex'
-import vueCustomElement from 'vue-custom-element'
-import KShadowFrame from '../KShadowFrame'
-import AppDialog from '../AppDialog'
+import VClamp from "vue-clamp";
+import NewInvestigation from "../Investigation/NewInvestigation";
+import { mapGetters } from "vuex";
+import vueCustomElement from "vue-custom-element";
+import KShadowFrame from "../KShadowFrame";
+import AppDialog from "../AppDialog";
 import {
   createComments,
   deleteComments,
@@ -910,14 +916,14 @@ import {
   getCommunityPost,
   likePost,
   shareAPost,
-  updateComments
-} from '../../api/threadSharing'
-import PreviewHeader from './PreviewHeader'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getNotifiedEmail } from '../../api/notifiedEmail'
-import { copyToClipboard, isOwner, isPostedByMe } from '../../utils/functions'
+  updateComments,
+} from "../../api/threadSharing";
+import PreviewHeader from "./PreviewHeader";
+import { COMMON_CONSTANTS } from "../../model/constants/commonConstants";
+import { getNotifiedEmail } from "../../api/notifiedEmail";
+import { copyToClipboard, isOwner, isPostedByMe } from "../../utils/functions";
 
-Vue.customElement('k-shadow-frame', KShadowFrame, {
+Vue.customElement("k-shadow-frame", KShadowFrame, {
   shadow: true,
   shadowCss: `
  @import url('https://fonts.googleapis.com/css?family=Material+Icons');
@@ -979,64 +985,64 @@ position:relative;
 .red-malicious-alert::before {
   border: unset !important;
 }
- `
-})
+ `,
+});
 export default {
   components: {
     VClamp,
     NewInvestigation,
     AppDialog,
-    PreviewHeader
+    PreviewHeader,
   },
   props: {
     openEditPopupItem: {
       type: Object,
-      required: false
+      required: false,
     },
     post: {
       type: Object,
       required: false,
-      default: () => ({})
+      default: () => ({}),
     },
     postIndex: {
       type: Number,
-      required: true
+      required: true,
     },
     totalPostCount: {
       type: Number,
-      required: true
+      required: true,
     },
     refreshData: {
-      required: false
-    }
+      required: false,
+    },
   },
   computed: {},
   data: () => ({
     openShareModal: false,
     shareEmail: [],
     shareEmailRules: {
-      limit: (v) => (v && v.length <= 10) || 'You have reached to max limit',
+      limit: (v) => (v && v.length <= 10) || "You have reached to max limit",
       email: (v) => {
         if (v.length > 0) {
-          let booReturn = true
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          let booReturn = true;
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           for (let i = 0; i < v.length; i++) {
             if (!pattern.test(v[i])) {
-              booReturn = false
-              document.getElementsByClassName('v-chip--select')[i].style.borderColor = '#ff5252'
-              document.getElementsByClassName('v-chip--select')[i].style.color = '#ff5252'
-              return v[i] + ' address is not valid'
+              booReturn = false;
+              document.getElementsByClassName("v-chip--select")[i].style.borderColor = "#ff5252";
+              document.getElementsByClassName("v-chip--select")[i].style.color = "#ff5252";
+              return v[i] + " address is not valid";
             } else if (v.length === i) {
-              return booReturn
+              return booReturn;
             } else {
-              booReturn = true
+              booReturn = true;
             }
           }
-          return booReturn
+          return booReturn;
         } else {
-          return true
+          return true;
         }
-      }
+      },
     },
     deleteCommentId: null,
     isWantToDeleteComment: false,
@@ -1050,17 +1056,17 @@ export default {
     emailData: null,
     categories: [
       {
-        resourceId: 'Ps0SSyl7rVNe',
-        name: 'Malicious'
+        resourceId: "Ps0SSyl7rVNe",
+        name: "Malicious",
       },
       {
-        resourceId: 'bEuAD1pdbRXF',
-        name: 'Non-Malicious'
+        resourceId: "bEuAD1pdbRXF",
+        name: "Non-Malicious",
       },
       {
-        resourceId: 'NGLCc9UCxJvw',
-        name: 'Phishing'
-      }
+        resourceId: "NGLCc9UCxJvw",
+        name: "Phishing",
+      },
     ],
     userIdFromStorage: null,
     expanded: false,
@@ -1073,272 +1079,272 @@ export default {
     seeComments: false,
     rules: {
       required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
+        (!!v && v.length >= 5 && v.length <= 300) || "Minimum 5 characters - Maximum 300 character",
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
+        "Only use letters, digits, period, comma, underline and hyphen",
     },
     likeCount: 15,
     userLiked: false,
     hasPermission: false,
     valid: false,
-    userComment: '',
+    userComment: "",
     hoverTool: false,
     details: {},
     shareSettings: {},
-    addCommentValue: ''
+    addCommentValue: "",
   }),
   watch: {},
   mounted() {
-    this.userIdFromStorage = localStorage.getItem('userId')
+    this.userIdFromStorage = localStorage.getItem("userId");
 
     if (this.$route.query.postId) {
-      this.getPostDetails(this.$route.query.postId, 0, true)
+      this.getPostDetails(this.$route.query.postId, 0, true);
     }
   },
   methods: {
     contentCopy(contentBody) {
-      navigator.clipboard.writeText(contentBody)
-      this.$store.dispatch('common/createSnackBar', {
+      navigator.clipboard.writeText(contentBody);
+      this.$store.dispatch("common/createSnackBar", {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        message: 'Copied Successfully!'
-      })
+        message: "Copied Successfully!",
+      });
     },
     openShareModalFunc(post) {
-      this.sharedIncitedId = post.communityPostResourceId
-      this.openShareModal = true
+      this.sharedIncitedId = post.communityPostResourceId;
+      this.openShareModal = true;
     },
     shareIncident() {
-      let id = this.sharedIncitedId
+      let id = this.sharedIncitedId;
       setTimeout(() => {
         const payload = {
-          emailarray: this.shareEmail
-        }
+          emailarray: this.shareEmail,
+        };
         shareAPost(id, payload).then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Post has been shared successfully'
-          })
-          this.openShareModal = false
-        })
-      }, 200)
+            message: "Post has been shared successfully",
+          });
+          this.openShareModal = false;
+        });
+      }, 200);
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
-        localStorage.setItem('communityName', post.communityName)
-        localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
-        this.$router.push(`/community/${post.communityResourceId}`)
+        localStorage.setItem("communityName", post.communityName);
+        localStorage.setItem("communityResourceIdForRedirect", post.communityResourceId);
+        this.$router.push(`/community/${post.communityResourceId}`);
       }
     },
     closeNewInvestigationModal(value) {
-      this.$emit('refreshData')
-      this.isWantToAddNewInvestigation = false
+      this.$emit("refreshData");
+      this.isWantToAddNewInvestigation = false;
     },
     editRelativeComment(comment) {
-      comment.isEdit = !comment.isEdit
-      comment.commentValue = comment.comment
-      this.$forceUpdate()
+      comment.isEdit = !comment.isEdit;
+      comment.commentValue = comment.comment;
+      this.$forceUpdate();
     },
     updateComments(comment) {
-      const payload = { comment: comment.commentValue }
+      const payload = { comment: comment.commentValue };
       updateComments(comment.resourceId, payload)
         .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been updated successfully'
-          })
+            message: "Comment has been updated successfully",
+          });
           getComments(this.post.communityPostResourceId)
             .then((response) => {
-              const { data } = response
-              this.comments = data.data
+              const { data } = response;
+              this.comments = data.data;
             })
 
             .catch((error) => {
               if (
                 error.response &&
                 error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
+                error.response.data.code === "RESOURCE_NOT_FOUND"
               ) {
-                this.comments = []
+                this.comments = [];
               }
-            })
+            });
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when update a comment'
-          })
-        })
+            message: "Error when update a comment",
+          });
+        });
     },
     deleteComment(comment) {
-      this.deleteCommentId = comment.resourceId
-      this.isWantToDeleteComment = true
+      this.deleteCommentId = comment.resourceId;
+      this.isWantToDeleteComment = true;
     },
     deleteCommentConfirm() {
       deleteComments(this.deleteCommentId)
         .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been deleted successfully'
-          })
-          this.isWantToDeleteComment = false
+            message: "Comment has been deleted successfully",
+          });
+          this.isWantToDeleteComment = false;
           getComments(this.post.communityPostResourceId)
             .then((response) => {
-              const { data } = response
-              this.comments = data.data
+              const { data } = response;
+              this.comments = data.data;
             })
 
             .catch((error) => {
               if (
                 error.response &&
                 error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
+                error.response.data.code === "RESOURCE_NOT_FOUND"
               ) {
-                this.comments = []
+                this.comments = [];
               }
-            })
+            });
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when delete a comment'
-          })
-        })
+            message: "Error when delete a comment",
+          });
+        });
     },
     deleteIncidentConfirm() {
       deleteCommunityPost(this.deleteIncidentId)
         .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Community post has been deleted successfuly'
-          })
-          this.$emit('refreshData')
-          this.isWantToDelete = false
+            message: "Community post has been deleted successfuly",
+          });
+          this.$emit("refreshData");
+          this.isWantToDelete = false;
           setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
+            this.$store.dispatch("rightColumn/changeReloadRightColumnData", true);
+          }, 500);
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          this.$store.dispatch("common/createSnackBar", {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when delete community post'
-          })
-        })
+            message: "Error when delete community post",
+          });
+        });
     },
     findCategory(id) {
       switch (id) {
-        case 'Ps0SSyl7rVNe':
-          return 'Malicious'
-        case 'bEuAD1pdbRXF':
-          return 'Non-Malicious'
-        case 'NGLCc9UCxJvw':
-          return 'Phishing'
+        case "Ps0SSyl7rVNe":
+          return "Malicious";
+        case "bEuAD1pdbRXF":
+          return "Non-Malicious";
+        case "NGLCc9UCxJvw":
+          return "Phishing";
         default:
-          return ''
+          return "";
       }
     },
     openInvestigate(post) {
       getCommunityPost(post.communityPostResourceId).then((response) => {
-        this.selectedEmail = response.data.data.communityPostEmail
-        this.isWantToAddNewInvestigation = true
-      })
+        this.selectedEmail = response.data.data.communityPostEmail;
+        this.isWantToAddNewInvestigation = true;
+      });
     },
     getPostDetails(postId, ind, bool) {
-      this.post.isToggle = bool
+      this.post.isToggle = bool;
       //postId = '4pDtxLYSG0mb'
       if (bool) {
         getComments(this.post.communityPostResourceId)
           .then((response) => {
-            const { data } = response
-            this.comments = data.data
+            const { data } = response;
+            this.comments = data.data;
             this.comments = this.comments.map((item) => {
-              return { ...item, isEdit: false, commentValue: null }
-            })
+              return { ...item, isEdit: false, commentValue: null };
+            });
           })
 
           .catch((error) => {
             if (
               error.response &&
               error.response.data &&
-              error.response.data.code === 'RESOURCE_NOT_FOUND'
+              error.response.data.code === "RESOURCE_NOT_FOUND"
             ) {
-              this.comments = []
+              this.comments = [];
             }
-          })
+          });
         //getSelectedEmailPreview('4pDtxLYSG0mb')
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
-          const comId = this.post.communityPostResourceId
-          console.log(comId)
-          this.postDetails = response.data.data
-          this.emailData = response.data.data.communityPostEmail
+          const comId = this.post.communityPostResourceId;
+          console.log(comId);
+          this.postDetails = response.data.data;
+          this.emailData = response.data.data.communityPostEmail;
           this.emailData.urls = this.emailData.urls.map((item) => {
             return {
               ...item,
-              url: item.url.replace('&amp;', '&')
-            }
-          })
+              url: item.url.replace("&amp;", "&"),
+            };
+          });
           setTimeout(function () {
             let recrusiveFunctionForDom = () =>
               document.getElementById(`sframe${comId}`) &&
-              document.getElementById(`sframe${comId}`).shadowRoot
-            if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
+              document.getElementById(`sframe${comId}`).shadowRoot;
+            if (!recrusiveFunctionForDom) recrusiveFunctionForDom();
             for (let url of response.data.data.communityPostEmail.urls) {
-              let recrusiveFunctionForDom = () => document.getElementById(`sframe${comId}`)
-              if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
+              let recrusiveFunctionForDom = () => document.getElementById(`sframe${comId}`);
+              if (!recrusiveFunctionForDom) recrusiveFunctionForDom();
               let els = document
                 .getElementById(`sframe${comId}`)
-                .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+                .shadowRoot.querySelectorAll('[href="' + url.url + '"]');
               if (els && els.length) {
                 for (let i = 0, l = els.length; i < l; i++) {
-                  let el = els[i]
-                  el.setAttribute('target', '_blank')
+                  let el = els[i];
+                  el.setAttribute("target", "_blank");
                   if (url.isHidden) {
-                    el.innerHTML = 'hidden by owner'
+                    el.innerHTML = "hidden by owner";
                   }
                   if (url.isFlagged) {
-                    const el = els[i]
-                    el.setAttribute('target', '_blank')
-                    el.setAttribute('data-title', 'This link has been reported as a phishing')
-                    el.classList.add('malicious-style')
-                    const iEl = document.createElement('i')
+                    const el = els[i];
+                    el.setAttribute("target", "_blank");
+                    el.setAttribute("data-title", "This link has been reported as a phishing");
+                    el.classList.add("malicious-style");
+                    const iEl = document.createElement("i");
                     iEl.className +=
-                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                    el.appendChild(iEl)
+                      "red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light";
+                    el.appendChild(iEl);
                   } else {
-                    const el = els[i]
-                    el.classList.remove('malicious-style')
+                    const el = els[i];
+                    el.classList.remove("malicious-style");
                   }
                 }
               }
-              let hiddenEls = document.getElementsByClassName(url.url)
+              let hiddenEls = document.getElementsByClassName(url.url);
               if (hiddenEls && hiddenEls.length) {
                 for (let i = 0, l = hiddenEls.length; i < l; i++) {
-                  let hiddenEl = hiddenEls[i]
-                  hiddenEl.setAttribute('target', '_blank')
+                  let hiddenEl = hiddenEls[i];
+                  hiddenEl.setAttribute("target", "_blank");
                   if (url.isHidden) {
-                    hiddenEl.innerHTML = 'hidden by owner'
-                    hiddenEl.setAttribute('href', '#')
+                    hiddenEl.innerHTML = "hidden by owner";
+                    hiddenEl.setAttribute("href", "#");
                   }
                   if (url.isFlagged) {
-                    hiddenEl.classList.add('malicious-link')
-                    let iEl = document.createElement('span')
+                    hiddenEl.classList.add("malicious-link");
+                    let iEl = document.createElement("span");
                     iEl.className +=
-                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                    hiddenEl.appendChild(iEl)
+                      "red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light";
+                    hiddenEl.appendChild(iEl);
                   }
                 }
               }
             }
-          }, 500)
-        })
+          }, 500);
+        });
       }
     },
     userLikePost(postId) {
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
-          this.postDetails = response.data.data
-        })
-      })
+          this.postDetails = response.data.data;
+        });
+      });
       /*.catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -1349,9 +1355,9 @@ export default {
     userUnlikePost(postId) {
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
-          this.postDetails = response.data.data
-        })
-      })
+          this.postDetails = response.data.data;
+        });
+      });
       /*
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1361,64 +1367,66 @@ export default {
         })*/
     },
     addPostComment(postId, communId) {
-      const payload = {
-        comment: this.addCommentValue
+      if (this.$refs.refCommentForm.validate()) {
+        const payload = {
+          comment: this.addCommentValue,
+        };
+        createComments(postId, payload)
+          .then((response) => {
+            this.addCommentValue = "";
+            this.$store.dispatch("common/createSnackBar", {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: "Comment added has been successfully",
+            });
+            getComments(this.post.communityPostResourceId)
+              .then((response) => {
+                const { data } = response;
+                this.comments = data.data;
+              })
+              .catch((error) => {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.code === "RESOURCE_NOT_FOUND"
+                ) {
+                  this.comments = [];
+                }
+              });
+          })
+          .catch((error) => {
+            this.$store.dispatch("common/createSnackBar", {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: "Error when creating a comment",
+            });
+          });
       }
-      createComments(postId, payload)
-        .then((response) => {
-          this.addCommentValue = ''
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment added has been successfully'
-          })
-          getComments(this.post.communityPostResourceId)
-            .then((response) => {
-              const { data } = response
-              this.comments = data.data
-            })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
-              ) {
-                this.comments = []
-              }
-            })
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when creating a comment'
-          })
-        })
     },
     editIncident(post, communityName) {
-      this.$emit('openEditPopupItem', post)
+      this.$emit("openEditPopupItem", post);
     },
     deleteIncident(post) {
-      this.deleteIncidentId = post.communityPostResourceId
-      this.deleteIncidentName = post.title
-      this.deleteIncidentCommunityName = post.communityName
-      this.isWantToDelete = true
+      this.deleteIncidentId = post.communityPostResourceId;
+      this.deleteIncidentName = post.title;
+      this.deleteIncidentCommunityName = post.communityName;
+      this.isWantToDelete = true;
     },
     regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
+      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val);
     },
     canDelete(post) {
-      return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
+      return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe);
     },
     canEdit(post) {
-      return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
+      return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe);
     },
     canDeleteOrEditComment(comment, post) {
       return (
-        comment.commenterFullName == localStorage.getItem('userName') ||
+        comment.commenterFullName == localStorage.getItem("userName") ||
         isPostedByMe(post.isPostedByMe)
-      )
-    }
-  }
-}
+      );
+    },
+  },
+};
 </script>
 
 <style lang="scss" src="./SinglePost.scss"></style>
