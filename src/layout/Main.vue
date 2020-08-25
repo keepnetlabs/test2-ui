@@ -347,6 +347,9 @@
                 >{{ communityName || $route.params.name }}</router-link
               ><span v-else>{{ communityName || $route.params.name }}</span>
             </h1>
+            <h1 v-if="routerName === 'Company Group Details'">
+              {{ companyGroupName || $route.params.name }}
+            </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
@@ -519,6 +522,8 @@ export default {
       baseUrl: null,
       sessionCheck: false,
       communityName: null,
+      companyGroupName: null,
+      companyGroupResourceId: null,
       tour: {
         isActive: false,
         one: { active: false },
@@ -879,6 +884,7 @@ export default {
   },
   updated() {
     this.getCommunityName()
+    this.routerName === 'Company Group Details' && this.getCompanyGroupName()
   },
   methods: {
     ...mapActions({
@@ -888,6 +894,10 @@ export default {
     getCommunityName() {
       this.communityId = localStorage.getItem('communityResourceIdForRedirect')
       this.communityName = localStorage.getItem('communityName')
+    },
+    getCompanyGroupName() {
+      this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
+      this.companyGroupName = localStorage.getItem('companyGroupName')
     },
     onNotificationSeen(notification) {
       notification.isSeen = true

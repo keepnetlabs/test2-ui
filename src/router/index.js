@@ -91,6 +91,16 @@ const router = new Router({
           }
         },
         {
+          path: '/company-group-details/:groupId',
+          name: 'Company Group Details',
+          component: Companies,
+          meta: {
+            isAuthenticated: true
+          },
+          props: true,
+          params: true
+        },
+        {
           path: '/incident-responder',
           name: 'Incident Responder',
           component: IncidentResponder,

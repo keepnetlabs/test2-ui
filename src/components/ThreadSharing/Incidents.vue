@@ -120,10 +120,12 @@
 import SinglePost from '../ThreadSharing/SinglePost'
 import {
   getCOmmunityIncidentList,
+  getCommunityPost,
   getIncidentList,
   listThreatCategories
 } from '../../api/threadSharing'
 import PostIncident from '../ThreadSharing/PostIncident'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 
 export default {
   components: {
@@ -145,6 +147,7 @@ export default {
     }
   },
   data: () => ({
+    isSharedPost: true,
     companyItem: [],
     companyValue: null,
     threatsList: [],
@@ -205,6 +208,21 @@ export default {
       listThreatCategories().then((response) => {
         this.threatsList = response.data.data
       })
+    },
+    getSharedPost() {
+      getCommunityPost(this.$route.query.postId)
+        .then((response) => {
+          let item = response.data.data
+          item.isToggle = true
+          item.communityPostResourceId = this.$route.query.postId
+          this.incidentList.push(item)
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting post'
+          })
+        })
     },
     getIncidentList(memberId, companyId) {
       let companyResourceId = this.companyValue ? localStorage.getItem('companyResourceId') : null
@@ -317,7 +335,12 @@ export default {
   mounted() {
     this.companyItem.push(localStorage.getItem('companyName'))
     this.getThreats()
-    this.getIncidentList()
+    if (this.$route.query && this.$route.query.postId) {
+      this.isSharedPost = true
+      this.getSharedPost()
+    } else {
+      this.getIncidentList()
+    }
   }
 }
 </script>

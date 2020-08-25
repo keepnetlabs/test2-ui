@@ -23,6 +23,9 @@ export function getCompanyByID(id) {
 export function getCompanyGroups() {
   return testRequest.get(`/company-groups`)
 }
+export function getCompanyGroupsById(id) {
+  return testRequest.get(`/company-groups/${id}`)
+}
 export function createCompanyGroups(payload) {
   return testRequest.post('/company-groups', payload)
 }
