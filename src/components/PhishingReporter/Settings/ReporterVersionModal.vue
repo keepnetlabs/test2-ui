@@ -7,10 +7,9 @@
     @changeStatus="$emit('changeReporterVersionModalStatus', false)"
     custom-size="650"
     :class-name="'matching-modal version-history'"
-    
-    :max-height="selectedVersionRow.applicationType==='Outlook'"
+    :max-height="selectedVersionRow.applicationType === 'Outlook'"
     v-if="status"
-    :maxHeightSize="selectedVersionRow.applicationType==='Outlook' ? '500px':'240px'"
+    :maxHeightSize="selectedVersionRow.applicationType === 'Outlook' ? '500px' : '240px'"
   >
     <template v-slot:app-dialog-body>
       <phishing-settings
@@ -57,7 +56,11 @@ export default {
   },
   computed: {
     getTitle() {
-      return `${this.selectedVersionRow.applicationType==='Outlook' ? 'Phishing Reporter Version ' : 'Diagnostic Tool Version'}${this.selectedVersionRow.version}`
+      return `${
+        this.selectedVersionRow.applicationType === 'Outlook'
+          ? 'Phishing Reporter Version '
+          : 'Diagnostic Tool Version'
+      }${this.selectedVersionRow.version}`
     }
   },
   created() {

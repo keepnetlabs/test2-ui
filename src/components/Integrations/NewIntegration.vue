@@ -906,7 +906,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       margin-top: -11px;
-      margin-bottom:12px;
+      margin-bottom: 12px;
 
       &-left-side {
         display: flex;

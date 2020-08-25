@@ -1999,10 +1999,10 @@ export default {
           transition: none !important;
           -ms-flex-wrap: wrap;
           flex-wrap: wrap;
-          
-        .k-table__wrapper{
-          padding-bottom:0
-        }
+
+          .k-table__wrapper {
+            padding-bottom: 0;
+          }
 
           .card.v-card.v-sheet.theme--light {
             padding: 0 !important;

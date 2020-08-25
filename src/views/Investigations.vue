@@ -303,7 +303,7 @@ export default {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true
     },
-    closePlaybookWithUpdate(){
+    closePlaybookWithUpdate() {
       this.togglePlaybookModal()
     },
     togglePlaybookModal() {
@@ -462,11 +462,11 @@ export default {
   }
   .k-table__wrapper .card {
     padding: 24px;
-    padding-bottom:0;
+    padding-bottom: 0;
     border-radius: 20px !important;
   }
-  .table-wrapper{
-    margin-top:8px;
+  .table-wrapper {
+    margin-top: 8px;
   }
   .newInvestigationOverlay {
     background-color: #fff !important;

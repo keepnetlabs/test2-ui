@@ -262,7 +262,9 @@
     <template v-slot:overlay-footer>
       <div class="new-investigation-footer">
         <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
-        <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">START INVESTIGATION</v-btn>
+        <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked"
+          >START INVESTIGATION</v-btn
+        >
       </div>
     </template>
   </app-modal>
@@ -2973,12 +2975,12 @@ export default {
     box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
     background-color: #2196f3 !important;
     color: #fff !important;
-     font-size: 14px;
-  font-weight: 600;
-  line-height: 1.71;
-  letter-spacing: normal;
-  text-align: center;
-  color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
   }
 }
 .checkbox-error {

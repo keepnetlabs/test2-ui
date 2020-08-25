@@ -1,5 +1,12 @@
 <template>
-  <div class="settings" id="settings" :class="[inModal && 'settings__in-modal',applicationType === 'DiagnosticTool' && 'settings__in-modal--diagnostic-tool']">
+  <div
+    class="settings"
+    id="settings"
+    :class="[
+      inModal && 'settings__in-modal',
+      applicationType === 'DiagnosticTool' && 'settings__in-modal--diagnostic-tool'
+    ]"
+  >
     <download-add-in-modal
       :status="downloadAddInModalStatus"
       v-if="downloadAddInModalStatus"
@@ -42,7 +49,11 @@
         >Diagnostic Tool
       </v-tab>
     </v-tabs>
-    <v-tabs-items  v-if="!inModal || applicationType === 'Outlook'" v-model="tab" class="k-sub-tabs__container">
+    <v-tabs-items
+      v-if="!inModal || applicationType === 'Outlook'"
+      v-model="tab"
+      class="k-sub-tabs__container"
+    >
       <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
         <addin-settings
           ref="refAddinSettings"
@@ -87,13 +98,13 @@
     </v-tabs-items>
     <div v-else>
       <diagnostic-tool
-          ref="refDiagnosticTool"
-          :formData="formData"
-          @updateForm="callForCreatePhishingReporter"
-          :show-footer="!inModal"
-          :show-header-link="!inModal"
-          :showForm="!inModal"
-        />
+        ref="refDiagnosticTool"
+        :formData="formData"
+        @updateForm="callForCreatePhishingReporter"
+        :show-footer="!inModal"
+        :show-header-link="!inModal"
+        :showForm="!inModal"
+      />
     </div>
   </div>
 </template>
@@ -205,11 +216,11 @@ export default {
     padding: 24px;
     padding-bottom: 16px;
     margin-top: -8px;
-    margin-bottom:24px;
-    &--diagnostic-tool{
-      padding-left:24px;
-      padding-top:24px;
-      margin-bottom:0;
+    margin-bottom: 24px;
+    &--diagnostic-tool {
+      padding-left: 24px;
+      padding-top: 24px;
+      margin-bottom: 0;
     }
   }
 }

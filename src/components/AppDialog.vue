@@ -29,7 +29,8 @@
         </v-list-item>
         <div
           class="k-dialog__body"
-          :style="[{
+          :style="[
+            {
               maxHeight: maxHeightSize ? maxHeightSize : '400px',
               minHeight: maxHeightSize ? maxHeightSize : ''
             }

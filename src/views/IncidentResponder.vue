@@ -65,7 +65,7 @@
         <div
           class="dashboard-cards phishing-reporter mr-2"
           :class="{
-            'no-data__opacity-blue': isPhishingEmpty(irSummary),
+            'no-data__opacity-blue': isPhishingEmpty(irSummary)
           }"
         >
           <div class="card-header">
@@ -125,7 +125,7 @@
         <div
           class="dashboard-cards incident-analysis mr-2"
           :class="{
-            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
+            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
           }"
         >
           <div class="card-header">
@@ -168,7 +168,7 @@
         <div
           class="dashboard-cards investigations mr-2"
           :class="{
-            'no-data__opacity-green': !isInvestigationsEmpty(irSummary),
+            'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
           }"
         >
           <div class="card-header">
@@ -231,7 +231,7 @@
         <div
           class="dashboard-cards roi-summary"
           :class="{
-            'no-data__opacity-purple': isPhishingEmpty(irSummary),
+            'no-data__opacity-purple': isPhishingEmpty(irSummary)
           }"
         >
           <div class="card-header">
@@ -302,7 +302,7 @@
                     No Matches
                   </span>
                   <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? "No" : scope.row[col.property] }} Matches
+                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
                   </span>
                   <app-dialog
                     :status="scope.row.resourceId === selectedMatch.resourceId"
@@ -446,7 +446,7 @@
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
                 <span v-if="scope.row.matchingPlaybooks.length === 0">
-                  {{ scope.row.source === "Auto" ? "Auto Analysis" : scope.row.source }}
+                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
                 </span>
                 <span
                   v-else
@@ -1160,14 +1160,11 @@ export default {
   created() {
     this.initMethods()
     window.addEventListener('resize', () => {
-     this.addQuery()
+      this.addQuery()
     })
-      
   },
-  destroyed(){
-      window.removeEventListener('resize',()=>{
-        
-      })
+  destroyed() {
+    window.removeEventListener('resize', () => {})
   },
   methods: {
     ...mapActions({
@@ -1184,20 +1181,23 @@ export default {
       this.initMethods()
     },
     addQuery() {
-      console.log("iam working")
-       const navigatorWidth = document.querySelector('nav.page-nav').style.width
-       const width=window.innerWidth - Number(navigatorWidth.slice(0, -2))
-      if (width < 1050 && width >768) {
-        document.querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards').forEach(item=>{
-          item.style='width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
-        })
-        document.querySelector('.columns-row').style='flex-wrap:wrap;'
-      }
-      else{
- document.querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards').forEach(item=>{
-          item.style=''
-        })
-        document.querySelector('.columns-row').style=''
+      const navigatorWidth = document.querySelector('nav.page-nav').style.width
+      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
+      if (width < 1050 && width > 750) {
+        document
+          .querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards')
+          .forEach((item) => {
+            item.style =
+              'width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
+          })
+        document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
+      } else {
+        document
+          .querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards')
+          .forEach((item) => {
+            item.style = ''
+          })
+        document.querySelector('.columns-row').style = ''
       }
     },
     handleRouteToInvestigationDetails(resp) {
@@ -1792,7 +1792,7 @@ export default {
 
           .title {
             h2 {
-              font-family: "Open Sans", sans-serif;
+              font-family: 'Open Sans', sans-serif;
               font-size: 20px;
               font-weight: 600;
               font-stretch: normal;
@@ -1803,7 +1803,7 @@ export default {
             }
 
             p {
-              font-family: "Open Sans", sans-serif !important;
+              font-family: 'Open Sans', sans-serif !important;
               font-size: 16px;
               font-weight: normal;
               font-stretch: normal;
@@ -1905,7 +1905,7 @@ export default {
           width: 65%;
 
           h2 {
-            font-family: "Open Sans", sans-serif;
+            font-family: 'Open Sans', sans-serif;
             font-size: 20px;
             font-weight: 600;
             font-stretch: normal;
@@ -1916,7 +1916,7 @@ export default {
           }
 
           p {
-            font-family: "Open Sans", sans-serif !important;
+            font-family: 'Open Sans', sans-serif !important;
             font-size: 16px;
             font-weight: normal;
             font-stretch: normal;
