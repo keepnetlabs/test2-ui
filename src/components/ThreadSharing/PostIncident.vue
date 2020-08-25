@@ -223,6 +223,13 @@
                 style="width: 600px;"
               >
                 <div class="mail-preview">
+                  <v-icon
+                    id="post-first-preview-close"
+                    v-if="!editItem"
+                    class="close-incident"
+                    @click="closePreview()"
+                    >mdi-close-circle
+                  </v-icon>
                   <PreviewHeader :uploadRespond="uploadRespond" />
                   <div id="last-preview-body-preview" class="preview-body">
                     <k-shadow-frame id="incident-preview-1" :content="uploadRespond.body" />

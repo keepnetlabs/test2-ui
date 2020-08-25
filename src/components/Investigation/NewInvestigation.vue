@@ -1075,7 +1075,7 @@ export default {
         })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
-          this.filterList.push({ option: 'url', text: item.url })
+          if (!item.isHidden) this.filterList.push({ option: 'url', text: item.url })
         })
       this.investgationName = 'Manuel Investigation'
     }

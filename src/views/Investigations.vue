@@ -87,6 +87,7 @@
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
         @cancelForm="togglePlaybookModal"
+        @closeFormWithUpdate="closePlaybookWithUpdate"
         v-if="showPlaybookModal"
       />
     </v-dialog>
@@ -250,7 +251,7 @@ export default {
     },
     selectEvent: {
       clipboard: true,
-      edit: true,
+      edit: false,
       delete: true,
       download: true
     },
@@ -301,6 +302,9 @@ export default {
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true
+    },
+    closePlaybookWithUpdate(){
+      this.togglePlaybookModal()
     },
     togglePlaybookModal() {
       this.selectedPlaybookId = null
