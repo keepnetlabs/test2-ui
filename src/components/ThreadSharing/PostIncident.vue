@@ -1987,6 +1987,7 @@ export default {
     },
     urlSwitchChange(url) {
       //this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      this.checkUrlChangeForAllLinksSwitch()
       let els = document
         .getElementById('last-preview-body-shadow-root')
         .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
@@ -2136,6 +2137,9 @@ export default {
         this.urlSwitchChange(item)
         return { ...item, isHidden: val }
       })
+    },
+    checkUrlChangeForAllLinksSwitch(val) {
+      this.allLinks = !this.uploadRespond.urls.find((item) => !item.isHidden)
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {

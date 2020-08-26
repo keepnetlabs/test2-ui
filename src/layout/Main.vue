@@ -347,7 +347,7 @@
                 >{{ communityName || $route.params.name }}</router-link
               ><span v-else>{{ communityName || $route.params.name }}</span>
             </h1>
-            <h1 v-if="routerName === 'Company Group Details'">
+            <h1 v-else-if="routerName === 'Company Group Details'">
               {{ companyGroupName || $route.params.name }}
             </h1>
             <h1 v-else>{{ routerName }}</h1>

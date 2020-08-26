@@ -229,29 +229,7 @@ export default {
       ascending: true,
       filter: {
         Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'OR',
-            FilterItems: [
-              {
-                FieldName: 'CompanyName',
-                Operator: 'Contains',
-                Value: ''
-              },
-              {
-                FieldName: 'IndustryName',
-                Operator: 'Contains',
-                Value: ''
-              },
-              {
-                FieldName: 'LicenseTypeName',
-                Operator: 'Contains',
-                Value: ''
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
+        FilterGroups: []
       }
     }
   }),
@@ -264,8 +242,9 @@ export default {
     this.getTableData()
   },
   methods: {
-    getTableData() {
-      searchCompanies(this.payload)
+    getTableData(payload) {
+      const _payload = Object.assign(this.payload, payload)
+      searchCompanies(_payload)
         .then((response) => {
           this.$refs.refDataList.loadWithDataArray(
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
@@ -397,7 +376,7 @@ export default {
       this.editModal = false
       this.selectedExtend = {}
       this.selectedRow = {}
-      this.getTableData()
+      this.getTableData({ orderBy: 'createdTime', ascending: false })
     },
     closeExtend() {
       this.isShowExtended = false

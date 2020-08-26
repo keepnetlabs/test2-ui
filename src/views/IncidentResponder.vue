@@ -1200,10 +1200,10 @@ export default {
         document
           .querySelectorAll(".incident-responder-parent .columns-row .dashboard-cards")
           .forEach((item) => {
-            item.style = "";
-          });
-        const container = document.querySelector(".columns-row");
-        if (container) document.querySelector(".columns-row").style = "";
+            item.style = ''
+          })
+        const columnsRowContainer = document.querySelector('.columns-row')
+        if (columnsRowContainer) document.querySelector('.columns-row').style = ''
       }
     },
     handleRouteToInvestigationDetails(resp) {
@@ -1761,7 +1761,7 @@ export default {
       .table-wrapper {
         padding-top: 0;
         border: none !important;
-        margin-top:0 !important ;
+        margin-top: 0 !important ;
         border-radius: 0 !important;
       }
     }
