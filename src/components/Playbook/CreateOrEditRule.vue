@@ -120,9 +120,7 @@
                 <v-list-item class="margin-top">
                   <v-list-item-content>
                     <v-switch
-                      :ripple="false"
                       v-model="isActive"
-                      dense
                       :label="isActive ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"

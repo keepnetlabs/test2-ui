@@ -406,6 +406,9 @@ export default {
 </script>
 
 <style lang="scss">
+.company-list {
+  margin-top: 24px;
+}
 .people {
   padding-top: 24px;
   .add-users__title {
