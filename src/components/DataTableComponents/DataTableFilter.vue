@@ -3,7 +3,7 @@
     :offset-y="true"
     bottom
     min-width="260px"
-    :max-width="filteredSelectValueDate === 'Between' ? '410px' : '260px'"
+    :max-width="filteredSelectValueDate === 'between' ? '410px' : '260px'"
     :close-on-content-click="false"
     class="filter__container"
     v-if="filterableType"
@@ -62,14 +62,14 @@
           @change="changeDateSelect"
         ></v-select>
         <el-date-picker
-          v-show="filteredSelectValueDate !== 'Between'"
+          v-show="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
           :default-time="['12:00:00']"
         />
         <el-date-picker
-          v-show="filteredSelectValueDate === 'Between'"
+          v-show="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
           type="datetimerange"
           style="margin-bottom: 14px;"
@@ -137,16 +137,25 @@ export default {
       filteredDateValue: null,
       filterValue: '',
       filterChecked: [],
-      textFilterItems: ['Contains', 'Equal', 'Not Equal'],
-      numericFilterItems: [
-        'Equal',
-        'Not equal',
-        'Greater than',
-        'Greater than or equal',
-        'Less than',
-        'Less than equal'
+      textFilterItems: [
+        { text: 'Contains', value: 'Contains' },
+        { text: 'Equal', value: '=' },
+        { text: 'Not Equal', value: '!=' }
       ],
-      dateFilterItems: ['Exact date', 'Before', 'After', 'Between'],
+      numericFilterItems: [
+        { text: 'Equal', value: '=' },
+        { text: 'Not Equal', value: '!=' },
+        { text: 'Greater than', value: '>' },
+        { text: 'Greater than or equal', value: '>=' },
+        { text: 'Less than', value: '<' },
+        { text: 'Less than equal', value: '<=' }
+      ],
+      dateFilterItems: [
+        { text: 'Exact date', value: '=' },
+        { text: 'After', value: '>=' },
+        { text: 'Before', value: '<=' },
+        { text: 'Between', value: 'between' }
+      ],
       pickerOptions: {
         shortcuts: [
           {
@@ -214,11 +223,26 @@ export default {
         })
       }
       if (this.filterableType === 'date') {
-        this.$emit('handleFilterColumn', {
-          value: this.filteredDateValue,
-          FieldName: this.column.property,
-          Operator: this.filteredSelectValueDate
-        })
+        if (this.filteredSelectValueDate === 'between') {
+          this.$emit('handleFilterColumn', [
+            {
+              value: this.filteredDateValue[0],
+              FieldName: this.column.property,
+              Operator: '>='
+            },
+            {
+              value: this.filteredDateValue[1],
+              FieldName: this.column.property,
+              Operator: '<='
+            }
+          ])
+        } else {
+          this.$emit('handleFilterColumn', {
+            value: this.filteredDateValue,
+            FieldName: this.column.property,
+            Operator: this.filteredSelectValueDate
+          })
+        }
       }
       if (this.filterableType === 'select') {
         this.$emit('handleFilterColumn', {

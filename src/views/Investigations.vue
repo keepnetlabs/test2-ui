@@ -334,12 +334,22 @@ export default {
       })
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems.forEach((x, i, t) => {
-        if (x.FieldName === filter.FieldName) {
-          this.bodyData.filter.FilterGroups[0].FilterItems.splice(i, 1)
+      let items = []
+      this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
         }
       })
-      this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+
+      this.bodyData.filter.FilterGroups[0].FilterItems = []
+      this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          this.bodyData.filter.FilterGroups[0].FilterItems.push(filter[i])
+        })
+      } else {
+        this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+      }
 
       const _this = this
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
@@ -347,11 +357,14 @@ export default {
       })
     },
     columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems.forEach((x, i, t) => {
-        if (x.FieldName === fieldName) {
-          this.bodyData.filter.FilterGroups[0].FilterItems.splice(i, 1)
+      let items = []
+      this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
         }
       })
+      this.bodyData.filter.FilterGroups[0].FilterItems = []
+      this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
       const _this = this
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
