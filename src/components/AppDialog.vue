@@ -154,7 +154,11 @@ export default {
     &-max-height {
       box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
-      z-index: 999;
+      z-index: 99999;
+      opacity: 1;
+      position: sticky;
+      top: 0;
+      background-color: white;
     }
   }
 
