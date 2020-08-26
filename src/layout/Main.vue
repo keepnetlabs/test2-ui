@@ -1014,6 +1014,7 @@ export default {
       flex-flow: column;
       width: 100%;
       padding-left: 8px;
+      margin-bottom: 1px;
       @media (max-width: 896px) {
         flex-direction: column;
         align-items: flex-start;

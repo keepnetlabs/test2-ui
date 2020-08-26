@@ -114,11 +114,14 @@
                         <div class="login-remember d-flex">
                           <v-checkbox
                             v-model="rememberMe"
-                            :label="`Remember me`"
+                            :label="`Remember`"
                             class="remember-me-check"
+                            hide-details
+                            dense
+                            color="#2196f3"
                           >
                           </v-checkbox>
-                          <div class="flex-grow-1"></div>
+
                           <div v-on:click="pageNumber = 2" class="forgot-password">
                             Forgot Password
                           </div>
@@ -468,13 +471,24 @@ export default {
     text-decoration: none;
     color: black;
     cursor: pointer;
-    line-height: 38px;
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.87);
   }
 
   .login-remember {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     .v-input--checkbox {
       label.v-label.theme--light {
         font-size: 11px;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.87) !important;
       }
 
       i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
@@ -561,6 +575,11 @@ export default {
   }
 
   .remember-me-check {
+    &.v-input--checkbox.v-input--selection-controls {
+      margin-top: 0;
+      padding-top: 0;
+      height: auto !important;
+    }
     padding-left: 5px;
 
     label {

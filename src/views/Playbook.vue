@@ -105,7 +105,7 @@ export default {
 
 .investigation-details {
   padding: 16px;
-  padding-top: 10px;
+  padding-top: 11px;
 
   &__container {
     &__stats {
