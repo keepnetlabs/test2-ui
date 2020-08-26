@@ -243,7 +243,7 @@ export default {
   },
   methods: {
     getTableData(payload) {
-      const _payload = Object.assign(this.payload, payload)
+      const _payload = { ...this.payload, ...payload }
       searchCompanies(_payload)
         .then((response) => {
           this.$refs.refDataList.loadWithDataArray(
