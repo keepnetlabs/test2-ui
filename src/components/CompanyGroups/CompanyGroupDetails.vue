@@ -16,11 +16,11 @@
         :edit="editModal"
       />
     </v-dialog>
-    <delete-modal
-      :is-show="isShowDeleteModal"
+    <remove-modal
+      :is-show="isShowRemoveModal"
       :selectedRow="selectedRow"
-      @confirmDelete="deleteConfirmedItem"
-      @changeModalStatus="changeDeleteModalStatus"
+      @confirmRemove="removeConfirmedItem"
+      @changeModalStatus="changeRemoveModalStatus"
     />
     <AddGroupToModal
       :companyIdArray="companyIdArray"
@@ -47,66 +47,55 @@
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
+      :is-downloadable="false"
       @edit="handleTableItemEdit"
-      @delete="handleTableItemDelete"
-      @cellClick="handleCompanyNameClick"
-      @downloadEvent="handleTableDownload"
-      @addButton="addButton"
-      @onEmptyBtnClicked="addButton"
+      @remove="handleTableItemRemove"
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
-    >
-      <template v-slot:datatable-custom-column="{ scope }">
-        <span class="datatable-link" v-if="scope.row.companyName">
-          {{ scope.row.companyName }}
-        </span>
-      </template>
-      <template v-slot:extended-custom-view-slot>
-        <company-list-extend
-          v-show="isShowExtended"
-          :selectedRow="selectedRow"
-          :top="extendTop"
-          :tableHeight="tableHeight"
-          :selectedExtend="selectedExtend"
-          @editAction="editAction"
-          @close="closeExtend"
-        />
-      </template>
-    </datatable>
+    />
   </div>
 </template>
 
 <script>
 import Datatable from '../../components/DataTable'
-import { searchCompanies, deleteCompany, getCompanyByID, exportCompanies } from '../../api/company'
-import DeleteModal from './DeleteModal'
+import {
+  getCompanyByID,
+  exportCompanies,
+  searchGroupCompanies,
+  updateCompanyGroup,
+  getCompanyGroupsById
+} from '@/api/company'
+import RemoveModal from './RemoveModal'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
-} from '../../model/constants/commonConstants'
-import CompanyListExtend from '@/components/Companies/CompanyListExtend'
+} from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 
 export default {
-  name: 'CompanyList',
+  name: 'CompanyGroupDetails',
   components: {
     CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,
-    CompanyListExtend,
     Datatable,
-    DeleteModal
+    RemoveModal
+  },
+  props: {
+    groupId: {
+      type: String,
+      require: true
+    }
   },
   data: () => ({
-    tableHeight: 0,
-    extendTop: 0,
+    tableData: [],
     editModal: false,
-    isShowDeleteModal: false,
+    isShowRemoveModal: false,
     isShowExtended: false,
     isShowCreateOrEditModal: false,
     companyIdArray: [],
@@ -124,7 +113,7 @@ export default {
           fixed: 'left',
           sortable: true,
           show: true,
-          type: 'slot',
+          type: 'text',
           minWidth: 180
         },
         {
@@ -195,7 +184,7 @@ export default {
         icon: 'mdi-account-plus'
       },
       addButton: {
-        show: true,
+        show: false,
         action: 'addButton',
         tooltip: 'Add Company'
       },
@@ -217,19 +206,31 @@ export default {
           action: 'createNewGroupWithCompany'
         },
         {
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'delete'
+          name: 'Remove from group',
+          icon: 'mdi-minus-circle',
+          action: 'remove'
         }
       ]
     },
     payload: {
       pageSize: 3000,
-      orderBy: 'LicenseTypeName',
+      orderBy: 'CompanyName',
       ascending: true,
       filter: {
         Condition: 'AND',
-        FilterGroups: []
+        FilterGroups: [
+          {
+            Condition: 'OR',
+            FilterItems: [
+              {
+                FieldName: 'CompanyName',
+                Operator: 'Contains',
+                Value: ''
+              }
+            ],
+            FilterGroups: []
+          }
+        ]
       }
     }
   }),
@@ -242,27 +243,42 @@ export default {
     this.getTableData()
   },
   methods: {
-    getTableData(payload) {
-      const _payload = Object.assign(this.payload, payload)
-      searchCompanies(_payload)
+    getTableData() {
+      searchGroupCompanies(this.groupId, this.payload)
         .then((response) => {
-          this.$refs.refDataList.loadWithDataArray(
+          this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? response.data.data.results
               : []
-          )
+          this.$refs.refDataList.loadWithDataArray(this.tableData)
+
+          getCompanyGroupsById(this.groupId).then((res) => {
+            const group = res.data.data.companyGroup
+
+            localStorage.setItem('companyGroupName', group.name)
+            localStorage.setItem('companyGroupResouceId', group.resourceId)
+          })
         })
         .catch((error) => {
           this.$refs.refDataList.loadWithDataArray([])
         })
     },
     handleTableItemEdit(row) {},
-    handleTableItemDelete(selectedItem) {
+    handleTableItemRemove(selectedItem) {
       this.selectedRow = selectedItem
-      this.changeDeleteModalStatus(true)
+      this.changeRemoveModalStatus(true)
     },
-    deleteConfirmedItem(selectedItem) {
-      deleteCompany(selectedItem.companyResourceId)
+    removeConfirmedItem(selectedItem) {
+      const arr = []
+      this.tableData.map(
+        (x) =>
+          x.companyResourceId !== selectedItem.companyResourceId && arr.push(x.companyResourceId)
+      )
+      const payload = {
+        name: selectedItem.companyName,
+        companyResourceIdArray: arr
+      }
+      updateCompanyGroup(this.groupId, payload)
         .then((response) => {
           if (response.data && response.data.message) {
             this.$store.dispatch('common/createSnackBar', {
@@ -275,8 +291,8 @@ export default {
         })
         .catch((error) => {})
     },
-    changeDeleteModalStatus(status) {
-      this.isShowDeleteModal = status
+    changeRemoveModalStatus(status) {
+      this.isShowRemoveModal = status
     },
     changeCreateOrEditModalStatus(status) {
       this.isShowCreateOrEditModal = status
@@ -376,7 +392,7 @@ export default {
       this.editModal = false
       this.selectedExtend = {}
       this.selectedRow = {}
-      this.getTableData({ orderBy: 'createdTime', ascending: false })
+      this.getTableData()
     },
     closeExtend() {
       this.isShowExtended = false

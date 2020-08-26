@@ -993,6 +993,7 @@ export default {
       currentPage: 1,
       multipleSelection: [],
       unRenderedFilterData: [],
+      timeout: null,
       selectionCheckbox: false,
       selectionAll: false,
       series: [44, 55, 13, 43],
@@ -1306,6 +1307,14 @@ export default {
     paginationChangedEvent(paginationProps) {
       if (this.isServerSide) this.$emit('paginationChangedEvent', paginationProps)
     },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
 
     searchChangedEvent() {
       if (this.isServerSide) {
@@ -1332,35 +1341,37 @@ export default {
         }
         this.$emit('searchChangedEvent', bodyDataFilter)
       } else {
-        const searchValue = this.search
-        this.showfilteredData = !!searchValue.length
-        if (!this.showfilteredData) {
-          if (this.sortProps && this.sortProps.order) {
-            this.sortChangedEvent(this.sortProps)
-          } else {
-            this.tableData = this.initialData.slice(
-              (this.currentPage - 1) * this.rowCount,
-              this.currentPage * this.rowCount
-            )
+        this.debounce(() => {
+          const searchValue = this.search
+          this.showfilteredData = !!searchValue.length
+          if (!this.showfilteredData) {
+            if (this.sortProps && this.sortProps.order) {
+              this.sortChangedEvent(this.sortProps)
+            } else {
+              this.tableData = this.initialData.slice(
+                (this.currentPage - 1) * this.rowCount,
+                this.currentPage * this.rowCount
+              )
+            }
           }
-        }
-        const filteredData = this.initialData.reduce((acc, item) => {
-          const data = Object.values(item).find((i) => {
-            if (
-              typeof i === 'string' &&
-              i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-            )
-              return acc.push(item)
-          })
-          return acc
-        }, [])
-        this.filteredData = filteredData.slice(
-          (this.currentPage - 1) * this.rowCount,
-          this.currentPage * this.rowCount
-        )
-        this.unRenderedFilterData = filteredData
-        this.filteredDataLength = filteredData.length
-        if (!this.showfilteredData) this.filteredData = []
+          const filteredData = this.initialData.reduce((acc, item) => {
+            const data = Object.values(item).find((i) => {
+              if (
+                typeof i === 'string' &&
+                i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+              )
+                return acc.push(item)
+            })
+            return acc
+          }, [])
+          this.filteredData = filteredData.slice(
+            (this.currentPage - 1) * this.rowCount,
+            this.currentPage * this.rowCount
+          )
+          this.unRenderedFilterData = filteredData
+          this.filteredDataLength = filteredData.length
+          if (!this.showfilteredData) this.filteredData = []
+        }, 500)
       }
     },
     addUsersAction(actionName, row) {

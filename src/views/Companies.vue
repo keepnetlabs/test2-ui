@@ -2,27 +2,31 @@
   <div class="companies">
     <v-layout wrap class="companies__container">
       <v-card class="companies__container-card">
-        <v-tabs
-          active-class="pr-tab-active"
-          background-color="transparent"
-          color="basil"
-          class="k-tabs"
-          v-model="tab"
-        >
-          <v-tab @click="changeTabStatus(0)" class="k-tab p-2" id="pr-tab-people">
-            Companies
-          </v-tab>
-          <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Company Groups</v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab" class="target-users__tabs-items">
-          <v-tab-item>
-            <company-list />
-          </v-tab-item>
-          <v-tab-item>
-            <company-group-list />
-          </v-tab-item>
-          <v-tab-item> </v-tab-item>
-        </v-tabs-items>
+        <template v-if="!$route.params.groupId">
+          <v-tabs
+            active-class="pr-tab-active"
+            background-color="transparent"
+            color="basil"
+            class="k-tabs"
+            v-model="tab"
+          >
+            <v-tab @click="changeTabStatus(0)" class="k-tab p-2" id="pr-tab-people">
+              Companies
+            </v-tab>
+            <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Company Groups</v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tab" class="target-users__tabs-items">
+            <v-tab-item>
+              <company-list />
+            </v-tab-item>
+            <v-tab-item>
+              <company-group-list />
+            </v-tab-item>
+            <v-tab-item> </v-tab-item> </v-tabs-items
+        ></template>
+        <template v-else>
+          <company-group-details :groupId="$route.params.groupId" />
+        </template>
       </v-card>
     </v-layout>
   </div>
@@ -31,14 +35,17 @@
 <script>
 import CompanyList from '@/components/Companies/CompanyList'
 import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
+import CompanyGroupDetails from '@/components/CompanyGroups/CompanyGroupDetails'
 export default {
   name: 'Companies',
-  components: { CompanyGroupList, CompanyList },
+  props: {},
+  components: { CompanyGroupDetails, CompanyGroupList, CompanyList },
   data() {
     return {
       tab: 0
     }
   },
+  mounted() {},
   methods: {
     changeTabStatus(status) {
       this.tab = status

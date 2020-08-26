@@ -905,7 +905,8 @@ export default {
       max-width: 554px !important;
       justify-content: space-between;
       align-items: center;
-      margin-top: -7px;
+      margin-top: -11px;
+      margin-bottom: 12px;
 
       &-left-side {
         display: flex;
