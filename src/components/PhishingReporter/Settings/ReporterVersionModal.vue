@@ -60,7 +60,7 @@ export default {
         this.selectedVersionRow.applicationType === 'Outlook'
           ? 'Phishing Reporter Version '
           : 'Diagnostic Tool Version'
-      }${this.selectedVersionRow.version}`
+      } ${this.selectedVersionRow.version}`
     }
   },
   created() {
