@@ -39,13 +39,15 @@
               </v-list-item>
 
               <v-form ref="refStep1Form" lazy-validation>
-                <v-list-item class="mt-6">
+                <v-list-item class="mt-6" style="margin-bottom: 17px;">
                   <v-list-item-content>
                     <label class="bottom-margin">Rule Name</label>
                     <v-text-field
                       placeholder="Enter a name for the rule"
                       outlined
                       dense
+                      hint="*Required"
+                      persistent-hint
                       autocomplete="off"
                       v-model.trim="name"
                       :rules="[
@@ -120,9 +122,7 @@
                 <v-list-item class="margin-top">
                   <v-list-item-content>
                     <v-switch
-                      :ripple="false"
                       v-model="isActive"
-                      dense
                       :label="isActive ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"

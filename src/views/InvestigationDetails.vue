@@ -1642,6 +1642,7 @@ export default {
 </script>
 <style lang="scss">
 .investigation-details-wrapper {
+  min-height: 90vh;
   .v-navigation-drawer__border {
     display: none;
   }

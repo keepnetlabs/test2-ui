@@ -33,55 +33,55 @@
           </div>
         </template>
       </app-dialog>
-      <datatable
-        id="investigationList"
-        ref="investigationTable"
-        :refName="'investigationTable'"
-        :columns="columns"
-        :table="tableData.data"
-        :title="title"
-        :countRow="5"
-        :pageSizes="pageSizes"
-        :defaultSort="'date'"
-        :selectable="true"
-        :filterable="true"
-        :options="true"
-        :rowActions="rowActions"
-        :addUsers="addUsers"
-        :empty="iEmpty"
-        :selectEvent="selectEvent"
-        :chartOptions="chartOptions"
-        :sizeable="true"
-        @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
-        @stopInvestigationFunc="stopInvestigationFunc($event)"
-        @investigationDetails="investigationDetails($event)"
-        @downloadEvent="exportInvestigationList"
-        @sortChangedEvent="sortChangedEvent($event)"
-        @paginationChangedEvent="paginationChangedEvent($event)"
-        @searchChangedEvent="searchChangedEvent($event)"
-        :dataLength="tableData && tableData.totalNumberOfRecords"
-        :requestParams="bodyData"
-        :isServerSide="false"
-        v-if="showDatatable"
-        @onEmptyBtnClicked="isWantToAddNewCommunity = true"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-      >
-        <template v-slot:datatable-custom-column="{ scope }">
-          <span v-if="scope.row.matchingPlaybooks.length === 0">
-            {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
-          </span>
-          <span
-            :key="item.resourceId"
-            v-else
-            :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
-            v-for="item in scope.row.matchingPlaybooks"
-            class="popup-link"
-            @click="togglePlaybookModalWithSelected(item.resourceId)"
-            >{{ item.name }}</span
-          >
-        </template>
-      </datatable>
+      <v-card class="investigations__container-card" light>
+        <datatable
+          id="investigationList"
+          ref="investigationTable"
+          :refName="'investigationTable'"
+          :columns="columns"
+          :table="tableData.data"
+          :countRow="5"
+          :pageSizes="pageSizes"
+          :defaultSort="'date'"
+          :selectable="true"
+          :filterable="true"
+          :options="true"
+          :rowActions="rowActions"
+          :addUsers="addUsers"
+          :empty="iEmpty"
+          :selectEvent="selectEvent"
+          :chartOptions="chartOptions"
+          :sizeable="true"
+          @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
+          @stopInvestigationFunc="stopInvestigationFunc($event)"
+          @investigationDetails="investigationDetails($event)"
+          @downloadEvent="exportInvestigationList"
+          @sortChangedEvent="sortChangedEvent($event)"
+          @paginationChangedEvent="paginationChangedEvent($event)"
+          @searchChangedEvent="searchChangedEvent($event)"
+          :dataLength="tableData && tableData.totalNumberOfRecords"
+          :requestParams="bodyData"
+          :isServerSide="false"
+          @onEmptyBtnClicked="isWantToAddNewCommunity = true"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
+        >
+          <template v-slot:datatable-custom-column="{ scope }">
+            <span v-if="scope.row.matchingPlaybooks.length === 0">
+              {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+            </span>
+            <span
+              :key="item.resourceId"
+              v-else
+              :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
+              v-for="item in scope.row.matchingPlaybooks"
+              class="popup-link"
+              @click="togglePlaybookModalWithSelected(item.resourceId)"
+              >{{ item.name }}</span
+            >
+          </template>
+        </datatable>
+      </v-card>
     </div>
     <v-dialog v-model="showPlaybookModal" fullscreen scrollable persistent no-click-animation>
       <CreateOrEditRule
@@ -121,7 +121,6 @@ export default {
     selectedPlaybookId: null,
     isWantToAddNewCommunity: false,
     isWantToStopInvestigation: false,
-    showDatatable: false,
     init: true,
     investigationListDataLength: 0,
     columns: [
@@ -220,11 +219,6 @@ export default {
         // minWidth: 60
       }
     ],
-    title: {
-      icon: 'mdi-tab-unselected',
-      title: 'Investigations',
-      subTitle: ''
-    },
     pageSizes: [5, 10, 25, 50, 100],
     rowActions: [
       {
@@ -334,12 +328,22 @@ export default {
       })
     },
     columnFilterChanged(filter) {
-      this.bodyData.filter.FilterGroups[0].FilterItems.forEach((x, i, t) => {
-        if (x.FieldName === filter.FieldName) {
-          this.bodyData.filter.FilterGroups[0].FilterItems.splice(i, 1)
+      let items = []
+      this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
         }
       })
-      this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+
+      this.bodyData.filter.FilterGroups[0].FilterItems = []
+      this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          this.bodyData.filter.FilterGroups[0].FilterItems.push(filter[i])
+        })
+      } else {
+        this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+      }
 
       const _this = this
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
@@ -347,11 +351,14 @@ export default {
       })
     },
     columnFilterCleared(fieldName) {
-      this.bodyData.filter.FilterGroups[0].FilterItems.forEach((x, i, t) => {
-        if (x.FieldName === fieldName) {
-          this.bodyData.filter.FilterGroups[0].FilterItems.splice(i, 1)
+      let items = []
+      this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
         }
       })
+      this.bodyData.filter.FilterGroups[0].FilterItems = []
+      this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
       const _this = this
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
@@ -365,10 +372,7 @@ export default {
       })
     },
     refreshDatatable() {
-      this.showDatatable = false
-      this.$store
-        .dispatch('investigations/getInvestigationList', this.bodyData)
-        .finally(() => (this.showDatatable = true)) //module name than method name
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData)
     },
     onAddClose(resp) {
       // set mobile vision
@@ -445,9 +449,11 @@ export default {
         }
       }
     })
-    this.$store
-      .dispatch('investigations/getInvestigationList', this.bodyData)
-      .finally(() => (this.showDatatable = true)) //module name than method name
+    const _this = this
+    this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+      this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+    })
+
     if (this.$route.query.openPopup) {
       this.isWantToAddNewCommunity = true
     }
@@ -459,11 +465,14 @@ export default {
   padding: 13px 16px 16px 16px;
   &__container {
     min-height: 80vh;
-  }
-  .k-table__wrapper .card {
-    padding: 24px;
-    padding-bottom: 0;
-    border-radius: 20px !important;
+    &-card {
+      border-radius: 20px !important;
+      margin-top: -2px;
+      box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+        0 1px 1px -1px rgba(204, 204, 204, 0.12) !important;
+      background-color: #ffffff;
+      padding: 16px 24px 0 24px;
+    }
   }
   .table-wrapper {
     margin-top: 8px;

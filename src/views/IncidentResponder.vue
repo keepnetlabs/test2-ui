@@ -1160,12 +1160,10 @@ export default {
   },
   created() {
     this.initMethods()
-    window.addEventListener('resize', () => {
-      this.addQuery()
-    })
+    window.addEventListener('resize', this.addQuery)
   },
-  destroyed() {
-    window.removeEventListener('resize', () => {})
+  beforeDestroy() {
+    window.removeEventListener('resize', this.addQuery)
   },
   methods: {
     ...mapActions({
@@ -1191,6 +1189,7 @@ export default {
             item.style =
               'width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
           })
+
         document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
       } else {
         document
@@ -1556,6 +1555,7 @@ export default {
       color: rgba(0, 0, 0, 0.87);
     }
     padding: 0 8px;
+    margin-top: 3px;
     padding-bottom: 35px;
 
     .no-data {

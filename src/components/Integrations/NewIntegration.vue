@@ -1,13 +1,13 @@
 <template>
   <div class="new-integration">
     <v-overlay
-      fixed
+      :style="showConfirmModal ? 'background-color:white' : ''"
       :value="showConfirmModal"
       :z-index="9999"
       class="new-integration__confirm-modal"
-      :style="showConfirmModal ? 'background-color:white' : ''"
+      fixed
     >
-      <v-card light class="new-integration__confirm-modal__container">
+      <v-card class="new-integration__confirm-modal__container" light>
         <h2 class="new-integration__confirm-modal__header">
           Are you sure to upload files to this service?
         </h2>
@@ -34,10 +34,10 @@
       </v-card>
     </v-overlay>
     <app-modal
-      :status="showModal"
       v-if="showModal"
-      icon-name="mdi-plus"
+      :status="showModal"
       :title="integrationId ? 'Edit Integration' : 'New Integration'"
+      icon-name="mdi-plus"
     >
       <template v-slot:overlay-body>
         <v-list-item class="pl-0 pr-0">
@@ -55,15 +55,15 @@
             <v-list-item-content>
               <label class="new-integration__label" for="integration-name">Integration Name</label>
               <v-text-field
-                placeholder="Enter Name"
-                outlined
-                dense
-                class="new-integration__textfield mt-2"
-                v-model.trim="formValues.name"
-                required
-                :rules="[nameValidation.required, nameValidation.empty]"
                 id="integration-name"
+                v-model.trim="formValues.name"
+                :rules="[nameValidation.required, nameValidation.empty]"
+                class="new-integration__textfield mt-2"
+                dense
                 height="40"
+                outlined
+                placeholder="Enter Name"
+                required
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
@@ -71,15 +71,15 @@
             <v-list-item-content>
               <label class="new-integration__label" for="description">Description</label>
               <v-text-field
-                placeholder="Enter description"
-                outlined
-                dense
-                class="new-integration__textfield mt-2"
-                v-model.trim="formValues.description"
-                required
-                :rules="[descriptionValidation.required, descriptionValidation.empty]"
                 id="description"
+                v-model.trim="formValues.description"
+                :rules="[descriptionValidation.required, descriptionValidation.empty]"
+                class="new-integration__textfield mt-2"
+                dense
                 height="40"
+                outlined
+                placeholder="Enter description"
+                required
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
@@ -87,17 +87,17 @@
             <v-list-item-content>
               <label class="new-integration__label" for="integration-type">Integration Type</label>
               <v-select
-                :items="integrationTypes"
                 v-model.trim="formValues.analysisEngineTypeResourceId"
-                outlined
-                class="new-integration__select mt-2"
-                required
+                :items="integrationTypes"
                 :rules="[integrationTypeRules.required, integrationTypeRules.empty]"
+                class="new-integration__select mt-2"
                 dense
-                placeholder="Select integration type"
+                height="40"
                 item-text="name"
                 item-value="resourceId"
-                height="40"
+                outlined
+                placeholder="Select integration type"
+                required
                 @input="handleIntegrationTypeChange"
               ></v-select>
             </v-list-item-content>
@@ -106,16 +106,16 @@
             <v-list-item-content>
               <label class="new-integration__label" for="api-url">API URL</label>
               <v-text-field
-                placeholder="Enter API URL"
-                outlined
-                dense
-                class="new-integration__textfield mt-2"
-                v-model.trim="formValues.apiUrl"
-                required
-                :rules="[apiUrlRules.required, apiUrlRules.format]"
-                @input="handleApiKeyChange"
                 id="api-url"
+                v-model.trim="formValues.apiUrl"
+                :rules="[apiUrlRules.required, apiUrlRules.format]"
+                class="new-integration__textfield mt-2"
+                dense
                 height="40"
+                outlined
+                placeholder="Enter API URL"
+                required
+                @input="handleApiKeyChange"
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
@@ -134,67 +134,67 @@
               >
                 <div class="max-width__form">
                   <v-text-field
-                    placeholder="Enter API Key"
-                    outlined
-                    dense
-                    class="new-integration__textfield new-integration__api-key__textfield mt-2"
-                    :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
                     v-model.trim="item.value"
-                    required
+                    :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
                     :rules="[apiKeyRules.required]"
-                    @input="handleApiKeyChange"
+                    class="new-integration__textfield new-integration__api-key__textfield mt-2"
+                    dense
                     height="40"
+                    outlined
+                    placeholder="Enter API Key"
+                    required
+                    @input="handleApiKeyChange"
                   ></v-text-field>
                   <div
-                    class="connection-error-state"
                     v-if="item.status === 'failed' && item.value.length > 0"
+                    class="connection-error-state"
                   >
                     {{ item.errorMessage || 'Error' }}
                   </div>
-                  <div class="new-integration__api-keys__connection-status" v-if="!!item.status">
+                  <div v-if="!!item.status" class="new-integration__api-keys__connection-status">
                     <v-icon
-                      medium
-                      left
-                      class="ml-1 loading-spin"
                       v-if="item.status == 'loading'"
+                      class="ml-1 loading-spin"
                       color="#00bcd4"
-                      >mdi-rotate-left</v-icon
-                    >
-                    <v-icon medium left class="ml-1" v-if="item.status == 'success'" color="#43a047"
-                      >mdi-check</v-icon
-                    >
-                    <v-icon
-                      medium
                       left
+                      medium
+                      >mdi-rotate-left
+                    </v-icon>
+                    <v-icon v-if="item.status == 'success'" class="ml-1" color="#43a047" left medium
+                      >mdi-check
+                    </v-icon>
+                    <v-icon
+                      v-if="item.status == 'failed' && loadingState.length"
                       class="ml-1"
                       color="#f56c6c"
-                      v-if="item.status == 'failed' && loadingState.length"
-                      >mdi-close</v-icon
-                    >
+                      left
+                      medium
+                      >mdi-close
+                    </v-icon>
                     <div v-if="item.status == 'failed' && !loadingState.length">
                       <button
-                        class="retry-button"
-                        @click="retryTestConnection(item)"
                         :class="{
                           'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                         }"
+                        class="retry-button"
+                        @click="retryTestConnection(item)"
                       >
                         RETRY
                       </button>
                     </div>
                   </div>
                   <div
-                    class="new-integration__api-keys__delete"
                     :style="{ right: item.status ? '-100px' : '-40px' }"
+                    class="new-integration__api-keys__delete"
                   >
                     <v-icon
-                      medium
-                      left
-                      class="ml-2"
                       v-if="formValues.apiKeys.length > 1"
+                      class="ml-2"
+                      left
+                      medium
                       @click="formValues.apiKeys.splice(index, 1)"
-                      >mdi-delete</v-icon
-                    >
+                      >mdi-delete
+                    </v-icon>
                   </div>
                 </div>
               </div>
@@ -205,24 +205,24 @@
                   <div class="ml-2 new-integration__api-key__text">ADD API KEY</div>
                 </div>
                 <div
-                  class="new-integration__api-key__text"
                   :class="{
                     'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                   }"
+                  class="new-integration__api-key__text"
                   @click="testConnection(false)"
                 >
                   <div v-if="loadingState.length" class="test-connection">
-                    <v-icon medium left class="ml-1 loading-spin" color="#00bcd4"
-                      >mdi-rotate-left</v-icon
-                    >
+                    <v-icon class="ml-1 loading-spin" color="#00bcd4" left medium
+                      >mdi-rotate-left
+                    </v-icon>
                     TESTING CONNECTION
                   </div>
                   <div
                     v-else
-                    class="test-connection"
                     :class="{
                       'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                     }"
+                    class="test-connection"
                   >
                     TEST CONNECTION
                   </div>
@@ -240,102 +240,138 @@
               </v-list-item-subtitle>
               <div class="max-width__form new-integration__api-key__combobox">
                 <v-combobox
+                  v-model.trim="formValues.tags"
                   :items="[]"
-                  placeholder="Enter Tag"
-                  outlined
+                  :return-object="false"
                   class="edit-select standard-height mt-2"
+                  deletable-chips
+                  dense
                   item-text="name"
                   multiple
-                  dense
-                  deletable-chips
+                  outlined
                   persistent-hint
-                  small-chips
-                  :return-object="false"
-                  v-model.trim="formValues.tags"
+                  placeholder="Enter Tag"
                   required
+                  small-chips
                 ></v-combobox>
               </div>
             </v-list-item-content>
           </v-list-item>
+
+          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
+            <v-list-item-content>
+              <label class="new-integration__label" for="integration-type">URLs</label>
+              <div>
+                <v-checkbox
+                  v-model="formValues.isSendUrl"
+                  :label="`Share URLs in emails with integrated service`"
+                  color="#2196f3"
+                />
+              </div>
+              <div
+                v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
+                class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
+              >
+                <v-checkbox
+                  v-model="formValues.isHideUrlParameter"
+                  :label="`Hide URL Parameters`"
+                  class="black--text"
+                  color="#2196f3"
+                ></v-checkbox>
+                <v-tooltip bottom opacity="1">
+                  <template v-slot:activator="{ on: tooltip }">
+                    <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
+                  </template>
+                  <span class="tooltip-span" style="max-width: 50px;">{{
+                    'Send URLs without query string parameters'
+                  }}</span>
+                </v-tooltip>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            class="px-0 mt-6 mb-6"
+            v-if="
+              selectedIntegrationType.isSendUrl ||
+              selectedIntegrationType.isSendFileHash ||
+              selectedIntegrationType.isSendUrl
+            "
+          >
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__label">
+                Attachments
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__api-key__subtitle">
+                Uploading originally attached files to integrated services may lead sensitive
+                information to be compromised
+              </v-list-item-subtitle>
+              <v-checkbox
+                v-model="formValues.isSendFileHash"
+                :label="`Share file hashes (MD5, SHA256 and SHA512)`"
+                style="margin-top: 10px;"
+                color="#2196f3"
+                v-if="selectedIntegrationType.isSendFileHash"
+              ></v-checkbox>
+              <div v-if="selectedIntegrationType.isSendFile">
+                <v-checkbox
+                  v-model="formValues.isSendFile"
+                  :label="`Upload PE files`"
+                  color="#2196f3"
+                ></v-checkbox>
+                <div
+                  class="new-integration__api-key__subtitle__upload-subtitle position-relative ml-8"
+                  style="font-size: 14px; line-height: 1.5;"
+                >
+                  Portable executable files (exe, .dll, .sys, etc.)
+                </div>
+                <div>
+                  <v-checkbox
+                    v-model="formValues.isUploadOtherFileType"
+                    :label="`Upload other file types`"
+                    color="#2196f3"
+                  />
+                </div>
+                <div
+                  v-if="formValues.isUploadOtherFileType"
+                  class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
+                >
+                  <div v-if="formValues.isUploadOtherFileType" class="ml-8 mt-1">
+                    <div class="d-flex align-center">
+                      <span class="mr-4 type-text">File Types</span>
+                      <v-select
+                        v-model.trim="formValues.uploadFileTypes"
+                        :items="uploadFileTypes"
+                        class="new-integration__select"
+                        dense
+                        multiple
+                        outlined
+                        hide-details
+                        placeholder="Select integration type"
+                        required
+                      ></v-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item class="px-0">
             <v-list-item-content class="pl-3">
-              <v-switch v-model="formValues.isActive" color="#2196f3" label="Active" />
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
-            <v-list-item-content class="pl-3">
-              <v-switch v-model="formValues.isSendUrl" label="Send URL" />
-            </v-list-item-content>
-          </v-list-item>
-          <div
-            class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
-            v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
-          >
-            <v-checkbox
-              class="black--text"
-              dense
-              v-model="formValues.isHideUrlParameter"
-              color="#2196f3"
-              :label="`Hide URL Parameters`"
-            ></v-checkbox>
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on: tooltip }">
-                <v-icon v-on="{ ...tooltip }">mdi-help-circle</v-icon>
-              </template>
-              <span class="tooltip-span">{{ 'Send URLs without query string parameters' }}</span>
-            </v-tooltip>
-          </div>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFileHash">
-            <v-list-item-content class="pl-3">
-              <v-switch v-model="formValues.isSendFileHash" label="Send file hash" />
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
-            <v-list-item-content class="pl-3">
+              <v-list-item-title class="new-integration__label">
+                Status
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__api-key__subtitle">
+                Activate and deactivate integration
+              </v-list-item-subtitle>
               <v-switch
-                v-model="formValues.isUploadExecutableFile"
-                label="Upload executables files"
+                class="playbook-rule-form__switch"
+                v-model="formValues.isActive"
+                :label="formValues.isActive ? 'Active' : 'Inactive'"
+                color="#2196f3"
               />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendFile">
-            <v-list-item-content class="pl-3">
-              <v-switch
-                v-model="formValues.isUploadOtherFileType"
-                @change="
-                  formValues.isUploadOtherFileType
-                    ? (showConfirmModal = true)
-                    : (showConfirmModal = false)
-                "
-                label="Upload other files"
-              />
-            </v-list-item-content>
-          </v-list-item>
-          <div class="mb-8 new-integration__api-key__subtitle__upload-subtitle">
-            Uploading the originally attached files to integrated services may lead sensitive
-            information to be compromised
-          </div>
-          <div
-            class="mb-8 new-integration__api-key__subtitle__upload-subtitle"
-            v-if="formValues.isUploadOtherFileType"
-          >
-            <div class="d-flex align-center">
-              <span class="mb-7 mr-4 type-text">File Types</span>
-              <v-select
-                :items="uploadFileTypes"
-                v-model.trim="formValues.uploadFileTypes"
-                outlined
-                class="new-integration__select"
-                required
-                dense
-                placeholder="Select integration type"
-                height="40"
-                item-text="name"
-                item-value="resourceId"
-                multiple
-              ></v-select>
-            </div>
-          </div>
         </v-form>
       </template>
       <template v-slot:overlay-footer>
@@ -368,6 +404,7 @@ import {
 } from '../../api/integrations'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppModal from '../AppModal'
+
 export default {
   name: 'NewIntegration',
   components: {
@@ -454,6 +491,7 @@ export default {
           message: 'Error when getting integrations type!'
         })
       })
+    this.getFileTypes()
   },
   methods: {
     saveIntegration() {
@@ -526,7 +564,23 @@ export default {
           const {
             data: { data, status }
           } = response
-          this.uploadFileTypes = data
+          this.uploadFileTypes = data.map((item) => {
+            switch (item.name) {
+              case 'Archive':
+                return { text: 'Archive files (.zip, .rar)', value: item.name }
+              case 'Image':
+                return { text: 'Image files (.jpg, .png, .gif, .bmp)', value: item.name }
+              case 'Microsoft Office':
+                return {
+                  text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
+                  value: item.name
+                }
+              case 'Other':
+                return { text: 'Other', value: item.name }
+              default:
+                return { text: item.name, value: item.name }
+            }
+          })
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -565,7 +619,6 @@ export default {
         })
     },
     updateVModel(id) {
-      this.getFileTypes()
       getIntegrationDetails(id)
         .then((response) => {
           response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
@@ -678,6 +731,7 @@ export default {
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 }
+
 @keyframes spin {
   from {
     transform: rotate(360deg);
@@ -686,24 +740,29 @@ export default {
     transform: rotate(0deg);
   }
 }
+
 .position-relative {
   position: relative;
 }
+
 .max-width__form {
   position: relative;
   max-width: 554px !important;
 }
+
 .new-integration {
   .edit-select {
     .v-input__append-inner {
       display: none;
     }
   }
+
   .new-integration__api-key__textfield {
     .v-text-field__details {
       margin-bottom: 0;
     }
   }
+
   .connection-error-state {
     font-size: 9px;
     font-weight: normal;
@@ -716,12 +775,14 @@ export default {
     position: absolute;
     top: 42px;
     left: 13px;
+
     &__border {
       fieldset {
         border-color: #d0021b;
       }
     }
   }
+
   .test-connection {
     font-size: 14px;
     font-weight: 600;
@@ -732,6 +793,7 @@ export default {
     text-align: center;
     color: #00bcd4;
   }
+
   .retry-button {
     color: #f56c6c;
     font-size: 14px;
@@ -741,17 +803,20 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
   }
+
   &__container {
     padding: 24px 0 0 96px !important;
     border-radius: 0 !important;
     box-shadow: none !important;
   }
+
   &__api-keys {
     &:hover {
       .new-integration__api-keys__delete {
         display: flex;
       }
     }
+
     &__connection-status {
       width: 44px;
       height: 40px;
@@ -761,6 +826,7 @@ export default {
       top: 6px;
       justify-content: center;
     }
+
     &__delete {
       width: 44px;
       height: 40px;
@@ -883,8 +949,9 @@ export default {
       line-height: 1.5;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
+
       &__upload-subtitle {
-        margin-left: 60px;
+        margin-left: 30px;
       }
     }
 
@@ -936,6 +1003,7 @@ export default {
       color: #757575 !important;
       opacity: 0.8;
     }
+
     &__disabled-text {
       font-size: 14px;
       font-weight: 600;
@@ -965,23 +1033,23 @@ export default {
   }
 
   .type-text {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
+    line-height: 1.5;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87) !important;
   }
 
   .v-list-item__content {
     padding: 0 !important;
   }
+
   .v-input--checkbox {
     .v-messages {
       display: none;
     }
   }
+
   .checkbox-tooltip {
     .mdi-help-circle {
       position: absolute;
@@ -990,11 +1058,13 @@ export default {
     }
   }
 }
+
 .new-integration__confirm-modal {
   .v-overlay__scrim {
     opacity: 0 !important;
     background-color: white !important;
   }
+
   &__header {
     padding: 32px 24px;
     font-size: 20px;
@@ -1005,6 +1075,7 @@ export default {
     letter-spacing: normal;
     color: #2196f3;
   }
+
   &__content {
     font-size: 13px;
     font-weight: 600;
@@ -1015,10 +1086,12 @@ export default {
     color: rgba(0, 0, 0, 0.54);
     padding: 8px 24px;
   }
+
   &__footer {
     padding: 16px 24px;
     text-align: right;
   }
+
   &__btn-continue {
     font-size: 14px;
     font-weight: 600;
@@ -1028,6 +1101,7 @@ export default {
     letter-spacing: normal;
     color: #2196f3;
   }
+
   &__btn-cancel {
     font-size: 14px;
     font-weight: 600;

@@ -243,7 +243,7 @@ export default {
   },
   methods: {
     getTableData(payload) {
-      const _payload = Object.assign(this.payload, payload)
+      const _payload = { ...this.payload, ...payload }
       searchCompanies(_payload)
         .then((response) => {
           this.$refs.refDataList.loadWithDataArray(
@@ -406,6 +406,9 @@ export default {
 </script>
 
 <style lang="scss">
+.company-list {
+  margin-top: 24px;
+}
 .people {
   padding-top: 24px;
   .add-users__title {

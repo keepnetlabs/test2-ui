@@ -43,10 +43,7 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item
-        class="add-user-overlay__list-item"
-        :class="[!hasEmailError && !formValues.email ? 'mb-2' : '']"
-      >
+      <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
         <v-list-item-content>
           <label class="add-user-overlay__label" for="email">Email</label>
           <v-text-field
@@ -54,17 +51,15 @@
             outlined
             dense
             v-model.trim="formValues.email"
+            hint="*Required"
+            persistent-hint
             :rules="[
               (v) => validations.required(v, 'Required'),
               (v) => validations.mail(v, 'Invalid email address')
             ]"
             id="email"
             height="40"
-            @blur="hasEmailError = true"
           ></v-text-field>
-          <div v-if="!hasEmailError && !formValues.email" class="email-settings__required__text">
-            *Required
-          </div>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="add-user-overlay__list-item">
@@ -201,10 +196,7 @@ export default {
       validations: {
         required,
         mail
-      },
-      hasFirstNameError: false,
-      hasLastNameError: false,
-      hasEmailError: false
+      }
     }
   },
   methods: {
@@ -294,7 +286,7 @@ export default {
 
   &__list-item {
     padding: 0 !important;
-    margin-top: -4px;
+    margin-top: 1px;
     .v-list-item__content {
       padding: 0;
       max-width: 554px;

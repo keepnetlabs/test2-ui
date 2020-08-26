@@ -1014,6 +1014,7 @@ export default {
       flex-flow: column;
       width: 100%;
       padding-left: 8px;
+      margin-bottom: 1px;
       @media (max-width: 896px) {
         flex-direction: column;
         align-items: flex-start;
@@ -1533,8 +1534,8 @@ export default {
   }
 
   .v-content {
-    min-height: calc(100vh - 46px);
-
+    // min-height: calc(100vh - 46px);
+    height: 100%;
     @media only screen and (max-width: 1025px) {
       padding: 160px 0 0 65px !important;
     }
