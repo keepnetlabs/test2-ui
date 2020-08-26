@@ -877,6 +877,7 @@
                     <v-switch
                       :id="'attach-switch-' + attachment.name"
                       v-model="attachment.isHidden"
+                      @change="checkAttachmentsChangeForAllLinksSwitch()"
                     ></v-switch>
                     <label v-if="filterOpened">{{ attachment.name }}</label>
                     <v-menu v-model="urls[ind]" right offset-x transition="scale-transition">
@@ -2138,13 +2139,16 @@ export default {
         return { ...item, isHidden: val }
       })
     },
-    checkUrlChangeForAllLinksSwitch(val) {
+    checkUrlChangeForAllLinksSwitch() {
       this.allLinks = !this.uploadRespond.urls.find((item) => !item.isHidden)
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {
         return { ...item, isHidden: val }
       })
+    },
+    checkAttachmentsChangeForAllLinksSwitch() {
+      this.allAttachments = !this.uploadRespond.attachments.find((item) => !item.isHidden)
     },
     headerValChange(val) {
       this.uploadRespond.isSubjectHidden = val
