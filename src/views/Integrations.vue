@@ -2,7 +2,7 @@
   <div class="integrations" id="integrations">
     <v-layout id="ts-layout" wrap style="min-height: 80vh;">
       <v-col class="pl-0 integrations__tab-container" cols="12">
-        <v-card id="pr-card" class="pr-card">
+        <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <v-tabs
             id="pr-tabs"
             v-model="tab"
@@ -55,12 +55,11 @@ export default {
   &__tab-container {
     padding-left: 0 !important;
     padding-right: 0 !important;
-    padding-top: 8px !important;
+    padding-top: 11px !important;
   }
 
   .v-slide-group__content {
     border-bottom: 2px solid #e4e7ed;
-    margin-right: 20px;
   }
 
   .v-window__container {

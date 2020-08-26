@@ -90,7 +90,7 @@
             Recommended size is 60x60px
           </div>
 
-          <k-file-upload @inputFile="onFileChanged" />
+          <k-file-upload ref="refFileUpload" @inputFile="onFileChanged" />
         </v-list-item-content>
       </v-list-item>
       <v-list-item
@@ -605,6 +605,7 @@ export default {
       this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
       this.formValues.badFormatEmailMessage = badFormatEmailMessage
       getPhishingReporterImg().then((response) => {
+        //this.$refs.refFileUpload.$refs.upload.add(response.data)
         this.formValues.file = response.data
       })
     } else {

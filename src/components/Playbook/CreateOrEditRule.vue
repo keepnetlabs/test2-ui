@@ -55,7 +55,7 @@
                     ></v-text-field>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
+                <v-list-item class="margin-top">
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">Description</label>
                     <v-textarea
@@ -69,7 +69,7 @@
                     />
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
+                <v-list-item class="margin-top">
                   <v-list-item-content>
                     <label>Priority</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
@@ -117,7 +117,7 @@
                     ></v-combobox>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
+                <v-list-item class="margin-top">
                   <v-list-item-content>
                     <v-switch
                       :ripple="false"
@@ -435,7 +435,6 @@ export default {
     },
     callForCreatePlaybook() {
       const ref = this.$refs.refActionItem
-      debugger
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
       let playbookActionAnalyzers = []

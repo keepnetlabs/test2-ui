@@ -245,7 +245,7 @@ export default {
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'No investigation has been started, yet',
+      message: 'No investigations started',
       btn: 'START A NEW INVESTIGATION',
       icon: 'mdi-plus'
     },
@@ -462,7 +462,11 @@ export default {
   }
   .k-table__wrapper .card {
     padding: 24px;
+    padding-bottom: 0;
     border-radius: 20px !important;
+  }
+  .table-wrapper {
+    margin-top: 8px;
   }
   .newInvestigationOverlay {
     background-color: #fff !important;
