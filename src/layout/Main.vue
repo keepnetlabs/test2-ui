@@ -1534,8 +1534,8 @@ export default {
   }
 
   .v-content {
-    min-height: calc(100vh - 46px);
-
+    // min-height: calc(100vh - 46px);
+    height: 100%;
     @media only screen and (max-width: 1025px) {
       padding: 160px 0 0 65px !important;
     }

@@ -647,7 +647,7 @@ export default {
   data: () => ({
     attachmentTableOptions: {
       iEmpty: {
-        message: 'You do not have Attachments, yet'
+        message: 'The attachment is not analyzed'
       },
       tableData: [],
       columns: [
