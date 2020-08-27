@@ -354,8 +354,9 @@
                     </v-btn>
                     <v-btn
                       v-else-if="
-                        !item.membershipStatusId ||
-                        (item.membershipStatusId == 5 && item.privacyStatusName == 'Private')
+                        !item.membershipStatusId &&
+                        (item.privacyStatusName == 'Private' ||
+                          (item.membershipStatusId == 5 && item.privacyStatusName == 'Private'))
                       "
                       outlined
                       rounded
@@ -368,8 +369,9 @@
                     </v-btn>
                     <v-btn
                       v-else-if="
-                        !item.membershipStatusId ||
-                        (item.membershipStatusId == 5 && item.privacyStatusName == 'Public')
+                        !item.membershipStatusId &&
+                        (item.privacyStatusName == 'Public' ||
+                          (item.membershipStatusId == 5 && item.privacyStatusName == 'Public'))
                       "
                       outlined
                       rounded
@@ -741,6 +743,9 @@ export default {
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         }, 500)
       })
+    },
+    setInitialCommunityValues() {
+      this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
       getInvitationCount()
