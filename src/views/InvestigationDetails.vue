@@ -708,6 +708,8 @@
                 "
                 @downloadEvent="exportInvestigationEmails"
                 v-if="showEmails"
+                @columnFilterChanged="columnFilterChanged"
+                @columnFilterCleared="columnFilterCleared"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template
@@ -765,6 +767,8 @@
                 @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
                 v-if="showTargetUsersDetails"
                 @downloadEvent="exportTargetUsers"
+                @columnFilterChanged="columnFilterChangedTargetUsers"
+                @columnFilterCleared="columnFilterClearedTargetUsers"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -892,7 +896,13 @@ export default {
       ascending: true,
       filter: {
         Condition: 'AND',
-        FilterGroups: []
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
       }
     },
     columns: [
@@ -906,7 +916,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        minWidth: 208
+        minWidth: 208,
+        filterableType: 'text'
       },
       {
         property: 'to',
@@ -929,7 +940,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        minWidth: 208
+        minWidth: 208,
+        filterableType: 'text'
       },
       {
         property: 'attachmentCount',
@@ -951,7 +963,9 @@ export default {
         sortable: true,
         show: true,
         type: 'service',
-        width: 110
+        width: 110,
+        filterableType: 'select',
+        filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
       },
       {
         property: 'filterTags',
@@ -983,7 +997,8 @@ export default {
         fixed: 'left',
         sortable: true,
         show: true,
-        type: 'text'
+        type: 'text',
+        filterableType: 'text'
       },
       {
         property: 'userStatus',
@@ -1024,7 +1039,9 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'status'
+        type: 'status',
+        filterableType: 'select',
+        filterableItems: ['Online', 'Offline']
       },
       {
         property: 'scanType',
@@ -1034,7 +1051,9 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'service'
+        type: 'service',
+        filterableType: 'select',
+        filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
       },
       {
         property: 'analyzedMailCount',
@@ -1392,6 +1411,9 @@ export default {
       this.showEmails = false
       if (menu != 'targetUsers') {
         let dataBody = this.investigationListBodyData
+        while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
+          dataBody.filter.FilterGroups[0].FilterItems.pop()
+        }
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
         this.$store
           .dispatch('investigations/getInvestigationDetailsListData', {
@@ -1585,6 +1607,90 @@ export default {
 
     startInvestigationFunc() {
       this.isWantToAddNewCommunity = true
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
+          items.push(x)
+      })
+
+      filterPayload = [...items]
+
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName =
+            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          filterPayload.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+        filterPayload.push(elem)
+      }
+
+      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.refreshDatatable()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.refreshDatatable()
+    },
+    columnFilterChangedTargetUsers(filter) {
+      let items = []
+      let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
+        .FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
+          items.push(x)
+      })
+
+      filterPayload = [...items]
+
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName =
+            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          filterPayload.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+        filterPayload.push(elem)
+      }
+
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.refreshDatatable()
+    },
+    columnFilterClearedTargetUsers(fieldName) {
+      let items = []
+      let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
+        .FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.refreshDatatable()
     }
   },
   computed: {

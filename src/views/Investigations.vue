@@ -148,8 +148,8 @@ export default {
         sortable: true,
         show: true,
         type: 'slot',
-        filterableType: 'numeric',
-        width: 250
+        width: 250,
+        filterableType: 'text'
         //minWidth: 80
       },
       {
@@ -164,8 +164,7 @@ export default {
         isEditable: true,
         width: 200,
         filterableType: 'select',
-        filterableItems: ['running', 'cancelled', 'expired', 'completed']
-        //minWidth: 80
+        filterableItems: ['Idle', 'Running', 'Cancelled', 'Expired', 'Finished']
       },
       {
         property: 'createDate',
