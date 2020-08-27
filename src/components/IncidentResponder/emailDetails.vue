@@ -2235,7 +2235,13 @@ export default {
 .email-details__header {
   &-card {
     padding: 36px 24px 0px 24px;
-    margin-bottom: 24px;
+
+    &:not(:last-child) {
+      margin-bottom: 24px;
+    }
+    &:last-child {
+      padding-bottom: 24px;
+    }
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #ffffff !important;
