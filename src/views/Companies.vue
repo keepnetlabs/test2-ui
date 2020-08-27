@@ -57,6 +57,7 @@ export default {
 <style lang="scss">
 .companies {
   min-height: 80vh !important;
+  padding-top: 10px;
   &__container {
     padding: 0px 16px 24px 16px !important;
     width: 100%;

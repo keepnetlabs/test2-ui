@@ -308,7 +308,7 @@
               <v-checkbox
                 v-model="formValues.isSendFileHash"
                 :label="`Share file hashes (MD5, SHA256 and SHA512)`"
-                style="margin-top: 18px;"
+                style="margin-top: 10px;"
                 color="#2196f3"
                 v-if="selectedIntegrationType.isSendFileHash"
               ></v-checkbox>

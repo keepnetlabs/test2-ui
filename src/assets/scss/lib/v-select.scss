@@ -25,4 +25,11 @@
   .v-text-field--outlined:not(.v-input--is-focused).v-input--is-disabled > .v-input__control > .v-input__slot fieldset {
     background-color: #f2f2f2 !important;
   }
+  @-moz-document url-prefix() {
+    .v-select-list{
+      .v-list-item__content{
+        overflow: visible;
+      }
+    }
+  }
 }
