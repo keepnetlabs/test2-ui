@@ -33,7 +33,7 @@
               class="white--text first-time__btn-util"
               color="#2196f3"
             >
-              <v-icon left>mdi-plus</v-icon>
+              <v-icon medium left>mdi-plus</v-icon>
               Configure Add-in
             </v-btn>
           </div>
@@ -61,9 +61,9 @@
         >
           SAVE CHANGES
         </v-btn>
-        <v-btn rounded class="white--text btn-util ml-3" disabled>
+        <v-btn style="padding-left: 20px;" rounded class="white--text btn-util ml-4" disabled>
           <v-icon left color="#fff">mdi-download</v-icon>
-          Download diagnostic tool
+          Save and Download Add-in
         </v-btn>
       </div>
     </v-container>
@@ -108,7 +108,7 @@ export default {
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
     text-align: center;
-    margin-top: 66px;
+    margin-top: 88px;
 
     @media (max-width: 768px) {
       margin-top: 0;
@@ -138,7 +138,6 @@ export default {
     }
 
     > div:nth-child(2) {
-      margin: 0 48px;
     }
   }
 
@@ -149,6 +148,9 @@ export default {
 
   &__guide-container {
     text-align: center;
+    @media (min-width: 1024px) {
+      margin-top: -10px;
+    }
 
     > a {
       font-family: 'Open Sans', sans-serif !important;
@@ -164,16 +166,22 @@ export default {
   }
 
   &__footer {
-    margin-top: 92px;
+    margin-top: 78px;
     display: flex;
+    padding-bottom: 24px;
+
     @media (max-width: 768px) {
       margin-top: 10px;
+      padding-bottom: 12px;
       justify-content: center;
       flex-direction: column;
       align-items: center;
       .first-time__btn-util:last-child {
         margin-top: 8px;
       }
+    }
+    .v-btn {
+      box-shadow: none !important;
     }
     .v-btn--disabled .v-btn__content {
       font-family: 'Open Sans', sans-serif !important;
@@ -198,6 +206,11 @@ export default {
   &__list-item {
     .v-list-item__content {
       padding: 0 !important;
+      overflow: visible;
+    }
+    &:nth-child(2) {
+      margin-bottom: -3px;
+      margin-top: 3px;
     }
   }
 
@@ -214,11 +227,17 @@ export default {
 
   &__btn-util {
     font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: #ffffff;
-    box-shadow: none !important;
+    padding-left: 20px !important;
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+    .v-btn__content {
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: #fff;
+    }
     &:focus {
       box-shadow: none;
     }
