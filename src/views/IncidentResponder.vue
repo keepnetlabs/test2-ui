@@ -443,6 +443,8 @@
             @handleDetails="irDetailsOnClick"
             @onEditClick="onEditClick"
             @handleEdit="handleEdit"
+            @columnFilterChanged="columnFilterChanged"
+            @columnFilterCleared="columnFilterCleared"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
@@ -882,7 +884,8 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          isEditable: false
+          isEditable: false,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
@@ -906,8 +909,8 @@ export default {
           show: true,
           type: 'text',
           width: '300',
-          isEditable: false
-          //minWidth: 100
+          isEditable: false,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.RESOURCEID,
@@ -970,6 +973,8 @@ export default {
           width: '150',
           showColorfulText: true,
           fullWidth: true,
+          filterableType: 'select',
+          filterableItems: ['Online', 'Offline'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -1093,7 +1098,23 @@ export default {
       isMessage: false,
       customMessage: ''
     },
-    hasMultipleNoteValue: false
+    hasMultipleNoteValue: false,
+    requestBodyReportedEmails: {
+      pageNumber: 1,
+      pageSize: 500000,
+      orderBy: 'createDate',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    }
   }),
   computed: {
     ...mapGetters({
@@ -1369,13 +1390,7 @@ export default {
         })
     },
     callForSearchNotifiedMail() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 500000,
-        orderBy: 'createDate',
-        ascending: false
-      }
-      searchNotifiedMail(payload).then((response) => {
+      searchNotifiedMail(this.requestBodyReportedEmails).then((response) => {
         const {
           data: {
             data: { results },
@@ -1529,6 +1544,46 @@ export default {
           })
           .catch((error) => {})
       })
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName =
+            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+        requestBody.push(elem)
+      }
+
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForSearchNotifiedMail()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForSearchNotifiedMail()
     }
   },
 

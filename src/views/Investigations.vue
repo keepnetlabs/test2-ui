@@ -328,6 +328,7 @@ export default {
     },
     columnFilterChanged(filter) {
       let items = []
+      let filterPayload = []
       this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
@@ -356,7 +357,7 @@ export default {
           items.push(x)
         }
       })
-      this.bodyData.filter.FilterGroups[0].FilterItems = []
+
       this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
       const _this = this
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
