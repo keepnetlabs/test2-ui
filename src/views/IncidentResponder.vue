@@ -941,6 +941,8 @@ export default {
           show: true,
           type: 'badge',
           isEditable: true,
+          filterableType: 'select',
+          filterableItems: ['NonMalicious', 'Malicious', 'Phishing'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -974,7 +976,7 @@ export default {
           showColorfulText: true,
           fullWidth: true,
           filterableType: 'select',
-          filterableItems: ['Online', 'Offline'],
+          filterableItems: ['BeingAnalyzed', 'Open', 'Closed', 'InProgress', 'FalsePositive'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -1009,7 +1011,8 @@ export default {
           editOptions: {
             component: 'datepicker'
           },
-          width: '230'
+          width: '230',
+          filterableType: 'date'
         },
         {
           property: PROPERTY_STORE.RESULTTAG,
