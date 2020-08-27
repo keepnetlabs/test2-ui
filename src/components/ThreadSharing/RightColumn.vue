@@ -447,7 +447,7 @@
                   <span class="pr-2">Member</span>
                 </v-btn>
                 <v-btn
-                  @click="joinCommunity(commun.resourceId)"
+                  @click="joinCommunity(commun.resourceId, commun.communityName)"
                   class="suggested-btn"
                   block
                   rounded
@@ -779,9 +779,16 @@ export default {
       this.$emit('postIncident')
       this.closeCommunityInfo()
     },
-    joinCommunity(communityId, creatorId, name, isPrivate) {
+    joinCommunity(communityId, name) {
       joinCommunity(communityId).then((response) => {
         this.getsuggestedCommunities()
+        localStorage.setItem('communityName', name)
+        localStorage.setItem('communityResourceIdForRedirect', communityId)
+        if (this.$route.name == 'Community') {
+          this.$router.go(`/community/${communityId}`)
+        } else {
+          this.$router.push(`/community/${communityId}`)
+        }
         this.$emit('joinRequestSuccess')
       })
     },

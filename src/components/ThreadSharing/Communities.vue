@@ -744,6 +744,9 @@ export default {
         }, 500)
       })
     },
+    setInitialCommunityValues() {
+      this.selectedTab = 'tab-1'
+    },
     getInvitationCount() {
       getInvitationCount()
         .then((response) => {
