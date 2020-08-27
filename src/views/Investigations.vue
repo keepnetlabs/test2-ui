@@ -148,7 +148,6 @@ export default {
         sortable: true,
         show: true,
         type: 'slot',
-        filterableType: 'numeric',
         width: 250
         //minWidth: 80
       },

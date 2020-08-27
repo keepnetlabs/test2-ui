@@ -210,14 +210,14 @@ export default {
       this.isFilterActive = true
       if (this.filterableType === 'text') {
         this.$emit('handleFilterColumn', {
-          value: this.filterValue,
+          Value: this.filterValue,
           FieldName: this.column.property,
           Operator: this.filteredSelectValue
         })
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
-          value: this.filterValue,
+          Value: this.filterValue,
           FieldName: this.column.property,
           Operator: this.filteredSelectValueNum
         })
@@ -226,19 +226,19 @@ export default {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
-              value: this.filteredDateValue[0],
+              Value: this.$moment(this.filteredDateValue[0]).format('YYYY-MM-DD  HH:mm:ss'),
               FieldName: this.column.property,
               Operator: '>='
             },
             {
-              value: this.filteredDateValue[1],
+              value: this.$moment(this.filteredDateValue[1]).format('YYYY-MM-DD HH:mm:ss'),
               FieldName: this.column.property,
               Operator: '<='
             }
           ])
         } else {
           this.$emit('handleFilterColumn', {
-            value: this.filteredDateValue,
+            Value: this.filteredDateValue,
             FieldName: this.column.property,
             Operator: this.filteredSelectValueDate
           })
@@ -246,9 +246,9 @@ export default {
       }
       if (this.filterableType === 'select') {
         this.$emit('handleFilterColumn', {
-          value: this.filterChecked,
+          Value: this.filterChecked.toString(),
           FieldName: this.column.property,
-          Operator: 'Equal'
+          Operator: 'Include'
         })
       }
     }
