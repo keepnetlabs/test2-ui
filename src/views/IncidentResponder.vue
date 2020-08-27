@@ -220,7 +220,7 @@
               rounded
               color="white"
               style="box-shadow: none !important; margin-top: 29px;"
-              @click="emptyPhishingButtonClick"
+              @click="emptyInvestigationButtonClick"
             >
               Start Now
             </v-btn>
