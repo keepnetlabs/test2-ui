@@ -166,7 +166,7 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any users, yet'
+          message: 'No Users'
         },
         rowActions: [
           {
