@@ -172,7 +172,13 @@
               <div class="input-header">Upload Email</div>
               <div class="input-sub">.eml or .msg files only.</div>
               <div class="upload-wrapper">
-                <div
+                <k-file-upload
+                  ref="refFileUpload"
+                  :extensions="['eml', 'msg']"
+                  :is-stand-alone="true"
+                  @inputFile="uploadFile"
+                />
+                <!-- <div
                   class="v-input up-btn v-input--dense theme--light v-text-field v-text-field--is-booted v-text-field--placeholder"
                   id="upload-btn"
                 >
@@ -205,7 +211,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
 
               <span
@@ -1610,6 +1616,7 @@ import {
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1700,6 +1707,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 
 export default {
   components: {
+    KFileUpload,
     VClamp,
     PreviewHeader
   },
@@ -2193,28 +2201,21 @@ export default {
         })
     },
     uploadFile(e) {
-      this.msgEmlFile = e.target.files || e.dataTransfer.files
-      const extensionName = this.msgEmlFile[0].name.slice(-3)
-      if (extensionName != 'msg' && extensionName != 'eml') {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting details of uploaded file'
+      this.msgEmlFile = e
+
+      uploadEmlOrMsg(this.msgEmlFile)
+        .then((response) => {
+          this.selectedEmail = response.data.data.from
+          this.uploadRespond = response.data.data
+          this.uploadRespond.body = response.data.data.body
+          this.setShadowRootMalicousLink('incident-preview-1')
         })
-      } else {
-        uploadEmlOrMsg(this.msgEmlFile[0])
-          .then((response) => {
-            this.selectedEmail = response.data.data.from
-            this.uploadRespond = response.data.data
-            this.uploadRespond.body = response.data.data.body
-            this.setShadowRootMalicousLink('incident-preview-1')
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting details of uploaded file'
           })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting details of uploaded file'
-            })
-          })
-      }
+        })
     },
     searchNotifiedMail() {
       const payload = {
@@ -2890,11 +2891,9 @@ export default {
   }
 
   .upload-wrapper {
-    max-width: 109px;
-    margin-top: -2px;
-    border: unset !important;
+    max-width: 554px;
     position: relative;
-
+    /*
     .up-btn {
       align-items: center;
       border-radius: 18px !important;
@@ -2993,6 +2992,7 @@ export default {
     .v-input__append-inner {
       display: none !important;
     }
+    */
   }
 
   .step-container {
