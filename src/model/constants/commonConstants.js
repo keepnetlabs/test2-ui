@@ -60,7 +60,9 @@ export const LABEL_STORE = {
   IPADDRESS: 'Ip Address',
   TYPE: 'Type',
   URL: 'URL',
-  USERS: 'Users'
+  USERS: 'Users',
+  SMTPADDRESS: 'SMTP Address',
+  AVAILABLEFOR: 'Available For'
 }
 
 export const PROPERTY_STORE = {
@@ -104,7 +106,9 @@ export const PROPERTY_STORE = {
   LICENSEENDDATE: 'licenseEndDate',
   TYPE: 'type',
   URL: 'url',
-  USERS: 'users'
+  USERS: 'users',
+  SMTPADDRESS: 'smtpAddress',
+  AVAILABLEFOR: 'avaiableFor'
 }
 
 export function getStoreValue(key, type) {

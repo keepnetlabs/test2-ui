@@ -60,7 +60,7 @@
       <v-list-item-content>
         <label class="add-user-overlay__label">Filter</label>
         <v-text-field
-          placeholder="Enter email address"
+          placeholder="Use a query to filter"
           outlined
           dense
           v-model.trim="formValues.filter"

@@ -107,7 +107,20 @@ export default {
   },
   methods: {
     changeStep(step) {
-      this.step += step
+      let isValid = false
+      switch (this.step) {
+        case 1:
+          if (this.$refs.refLdapInfoForm.$refs.refForm.validate()) {
+            isValid = true
+          }
+          break
+        default:
+          isValid = true
+          break
+      }
+      if (isValid) {
+        this.step += step
+      }
     },
     submit() {},
     closeOverlay() {

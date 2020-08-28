@@ -88,8 +88,10 @@
           </div>
         </div>
         <extended-view
-          v-if="isWantToEditRow"
+          v-if="isWantToEditRow || isExtendedViewCreateMode"
           :value="extendedViewValue"
+          :create-mode="isExtendedViewCreateMode"
+          @closeCreateMode="$emit('closeCreateMode')"
           :options="extendedViewOptions"
           :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
@@ -848,6 +850,10 @@ export default {
         return {}
       }
     },
+    isExtendedViewCreateMode: {
+      type: Boolean,
+      default: false
+    },
     extendedViewValue: {
       type: Array,
       default() {
@@ -1094,6 +1100,7 @@ export default {
     if (this.init) {
       this.init = false
     }
+    console.log('isExtendedViewCreateMode', this.isExtendedViewCreateMode)
   },
   mounted() {
     this.init = true
