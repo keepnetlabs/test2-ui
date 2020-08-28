@@ -34,6 +34,8 @@
       @downloadEvent="exportPhishingReporterUserList"
       id="usersList"
       ref="refUsersList"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     />
   </div>
 </template>
@@ -97,7 +99,9 @@ export default {
             type: 'text',
             width: 300,
             isEditable: true,
-            editComponent: 'textfield'
+            editComponent: 'textfield',
+            filterableType: 'text',
+            filterableCustomFieldName: 'Email'
             //minWidth: 80
           },
           {
@@ -111,9 +115,9 @@ export default {
             type: 'fiber',
             isEditable: true,
             editComponent: 'textfield',
-
-            width: 200
-            //minWidth: 80
+            width: 200,
+            filterableType: 'text',
+            filterableCustomFieldName: 'HostName'
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -126,7 +130,9 @@ export default {
             type: 'text',
             isEditable: true,
             editComponent: 'textfield',
-            width: 220
+            width: 220,
+            filterableType: 'date',
+            filterableCustomFieldName: 'LastSeen'
             //minWidth: 80
           },
           {
@@ -172,7 +178,23 @@ export default {
         pageSizes: [5, 10, 25, 50, 100]
       },
       isWantToDelete: false,
-      selectedRow: null
+      selectedRow: null,
+      requestBody: {
+        pageNumber: 1,
+        pageSize: 5000,
+        orderBy: 'LastSeen',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
     }
   },
   computed: {
@@ -190,13 +212,7 @@ export default {
     handleEdit(rows) {},
     handleAdd(row) {},
     callForPhishingReporterUser() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 5000,
-        orderBy: 'LastSeen',
-        ascending: false
-      }
-      searchPhishingReporterUser(payload)
+      searchPhishingReporterUser(this.requestBody)
         .then((response) => {
           const {
             data: {
@@ -248,6 +264,45 @@ export default {
     deleteUser() {
       this.callForDeletePhishingReporterUser()
       this.isWantToDelete = false
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForPhishingReporterUser()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForPhishingReporterUser()
     }
   },
   created() {
