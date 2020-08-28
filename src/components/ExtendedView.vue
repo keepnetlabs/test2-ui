@@ -8,13 +8,16 @@
       containerStyle,
       editMode && {
         top: getTop()
+      },
+      createMode && {
+        height: '250px'
       }
     ]"
   >
     <div class="inline-wrapper">
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
-          {{ copyOfEditedRows[0][options.titleKey] }}
+          {{ copyOfEditedRows[0][options.titleKey] || options.title }}
         </span>
         <span class="settings-span" v-else>{{ value.length }} Items Selected</span>
         <div class="edit-popup__edit-actions">
@@ -534,6 +537,10 @@ export default {
         return {}
       }
     },
+    createMode: {
+      type: Boolean,
+      default: false
+    },
     containerStyle: {
       type: Object
     },
@@ -597,11 +604,12 @@ export default {
       }
     },
     getTop() {
-      const a = this.containerStyle.top
-        ? Number(this.containerStyle.top.substring(0, this.containerStyle.top.indexOf('p'))) -
-          120 +
-          'px'
-        : false
+      const a =
+        this.containerStyle && this.containerStyle.top
+          ? Number(this.containerStyle.top.substring(0, this.containerStyle.top.indexOf('p'))) -
+            120 +
+            'px'
+          : false
       return a
     },
     getMultipleComboValue(prop) {
@@ -642,11 +650,15 @@ export default {
       return []
     },
     cancelEditedOnes() {
-      this.editMode = false
-      this.multipleEditModels = []
-      this.editedPopupProperties = []
-      this.copyOfEditedRows = JSON.parse(JSON.stringify(this.defaultValues))
-      this.multipleEditDisables = []
+      if (this.createMode) {
+        this.$emit('closeCreateMode')
+      } else {
+        this.editMode = false
+        this.multipleEditModels = []
+        this.editedPopupProperties = []
+        this.copyOfEditedRows = JSON.parse(JSON.stringify(this.defaultValues))
+        this.multipleEditDisables = []
+      }
     },
     saveEditedOnes() {
       if (this.$refs.refForm.validate()) {
@@ -750,6 +762,7 @@ export default {
   created() {
     this.copyOfEditedRows = JSON.parse(JSON.stringify(this.value))
     this.defaultValues = JSON.parse(JSON.stringify(this.value))
+    this.editMode = this.createMode
   }
 }
 </script>

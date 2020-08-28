@@ -26,7 +26,7 @@
             <user-directories />
           </v-tab-item>
           <v-tab-item>
-            Tab 3
+            <s-m-t-p-settings />
           </v-tab-item>
           <v-tab-item>
             Tab 4
@@ -55,9 +55,11 @@
 <script>
 import IpAddresses from '@/components/Company Settings/IpAddresses'
 import UserDirectories from '@/components/Company Settings/UserDirectories'
+import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 export default {
   name: 'CompanySettings',
   components: {
+    SMTPSettings,
     UserDirectories,
     IpAddresses
   },
