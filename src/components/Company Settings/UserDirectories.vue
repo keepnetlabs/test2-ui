@@ -1,5 +1,6 @@
 <template>
   <div class="user-directories">
+    <new-ldap-integration :status="ldapModalStatus" @closeOverlay="ldapModalStatus = false" />
     <company-settings-header
       title="User Directories"
       sub-title="Manage user directory integrations like LDAP and MS Active Directory"
@@ -20,6 +21,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
+        @onEmptyBtnClicked="ldapModalStatus = true"
       />
     </div>
   </div>
@@ -28,12 +30,14 @@
 <script>
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
+import NewLdapIntegration from '@/components/Company Settings/NewLdapIntegration'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'UserDirectories',
   components: {
     CompanySettingsHeader,
-    DataTable
+    DataTable,
+    NewLdapIntegration
   },
   data() {
     return {
@@ -119,7 +123,8 @@ export default {
           action: 'handleAddUserDirectories',
           tooltip: 'Add New Integration'
         }
-      }
+      },
+      ldapModalStatus: false
     }
   }
 }

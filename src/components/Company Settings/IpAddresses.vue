@@ -74,7 +74,9 @@ export default {
         ],
         pageSizes: [5, 10, 25, 50, 100],
         empty: {
-          message: LABEL_STORE.NO_IP_ADDRESS_DEFINED
+          message: LABEL_STORE.NO_IP_ADDRESS_DEFINED,
+          btn: 'Add New IP Address',
+          icon: 'mdi-plus'
         },
         rowActions: [
           {
@@ -96,9 +98,7 @@ export default {
       }
     }
   },
-  created() {
-    this.$refs.refIpAddressesList.loadWithDataArray([])
-  },
+  created() {},
   methods: {
     handleAddIpAddress() {}
   }
