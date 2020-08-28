@@ -4,8 +4,8 @@
       <file-upload
         ref="upload"
         v-model="files"
-        extensions="gif,jpg,jpeg,png"
-        accept="image/png,image/gif,image/jpeg"
+        :extensions="_extensions"
+        :accept="accept"
         :multiple="false"
         @input-file="inputFile"
         @input-filter="inputFilter"
@@ -19,15 +19,20 @@
           <div class="k-file-uploads__item-details--filename">{{ file.name }}</div>
           <div class="k-file-uploads__item-details--filesize">
             <span>{{ file.size | formatSize }}</span>
-            <span v-if="!isAtForm" class="k-file-uploads__item-details--progress-value"
+            <span
+              v-if="isStandAlone && file.progress"
+              class="k-file-uploads__item-details--progress-value"
               >{{ file.progress }}%</span
             >
           </div>
-          <div v-if="!isAtForm" class="k-file-uploads__item-details--fileprogress">
+          <div
+            v-if="isStandAlone && file.progress"
+            class="k-file-uploads__item-details--fileprogress"
+          >
             <v-progress-linear :value="file.progress" />
           </div>
         </div>
-        <div v-if="!isAtForm" class="k-file-uploads__item-actions">
+        <div v-if="isStandAlone" class="k-file-uploads__item-actions">
           <v-icon>mdi-close-circle</v-icon>
           <v-icon v-if="file.active" @click.prevent="$refs.upload.update(file, { active: false })"
             >mdi-close-circle</v-icon
@@ -101,13 +106,23 @@ export default {
   name: 'KFileUpload',
   components: { FileUpload },
   props: {
-    isAtForm: {
+    isStandAlone: {
       type: Boolean,
-      default: true
+      default: false
     },
     fileType: {
       type: String,
       default: 'image'
+    },
+    extensions: {
+      type: Array,
+      default: () => {
+        return ['gif', 'jpg', 'jpeg', 'png']
+      }
+    },
+    accept: {
+      type: String,
+      default: undefined
     },
     hint: {
       type: String,
@@ -119,6 +134,21 @@ export default {
       files: []
     }
   },
+  computed: {
+    _extensions() {
+      const arr = [...this.extensions]
+      return arr.toString()
+    },
+    readableExtensions() {
+      const arr = [...this.extensions]
+      return arr.join(', ')
+    },
+    regexExtensions() {
+      const arr = [...this.extensions]
+      const extString = arr.join('|')
+      return new RegExp('\.(' + extString + ')$', 'i')
+    }
+  },
   methods: {
     inputFile() {
       this.$emit('inputFile', this.files[0].file)
@@ -126,9 +156,9 @@ export default {
     inputFilter(newFile, oldFile, prevent) {
       this.$emit('inputFilter', { newFile, oldFile, prevent })
       if (newFile && !oldFile) {
-        if (!/\.(gif|jpg|jpeg|png)$/i.test(newFile.name)) {
+        if (!this.regexExtensions.test(newFile.name)) {
           this.$store.dispatch('common/createSnackBar', {
-            message: 'Invalid file type. Allowed file types are gif, jpg, jpeg, png',
+            message: `Invalid file type. Allowed file types are ${this.readableExtensions}`,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             icon: 'mdi-alert-circle'
           })
