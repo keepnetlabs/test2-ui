@@ -46,6 +46,8 @@
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
       :isServerSide="false"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -132,8 +134,9 @@ export default {
             show: true,
             type: 'text',
             fixed: 'left',
-            width: 250
-            //minWidth: 80
+            width: 250,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Name'
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,
@@ -143,8 +146,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 350
-            //minWidth: 80
+            width: 350,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Description'
           },
           {
             property: PROPERTY_STORE.STATUS,
@@ -156,8 +160,10 @@ export default {
             show: true,
             type: 'status',
             width: 160,
-            hasTooltip: true
-            //minWidth: 80
+            hasTooltip: true,
+            filterableType: 'select',
+            filterableCustomFieldName: 'Status',
+            filterableItems: ['Active', 'InActive']
           },
           {
             property: PROPERTY_STORE.CREATEDATE,
@@ -206,7 +212,17 @@ export default {
         pageNumber: 1,
         pageSize: 5000,
         orderBy: 'createDate',
-        ascending: false
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
@@ -328,6 +344,45 @@ export default {
     handleActionDelete(row) {
       this.selectedIntegration = row
       this.showDeleteModal = true
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.getDatatableList()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getDatatableList()
     }
   },
   mounted() {
