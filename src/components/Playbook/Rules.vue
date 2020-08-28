@@ -97,6 +97,8 @@
       @downloadEvent="exportPlaybookRules"
       @deleteAction="deleteRule($event)"
       @editAction="handleEdit"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -164,8 +166,9 @@ export default {
             show: true,
             type: 'text',
             fixed: 'left',
-            width: 175
-            //minWidth: 80
+            width: 175,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Name'
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,
@@ -176,7 +179,9 @@ export default {
             show: true,
             type: 'text',
             width: 150,
-            minWidth: 100
+            minWidth: 100,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Description'
           },
           {
             property: 'matchingCount',
@@ -196,13 +201,13 @@ export default {
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDATE),
-
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 180
-            //minWidth: 80
+            width: 180,
+            filterableType: 'date',
+            filterableCustomFieldName: 'CreateTime'
           },
           {
             property: PROPERTY_STORE.STATUS,
@@ -214,8 +219,10 @@ export default {
             show: true,
             type: 'status',
             width: 225,
-            hasTooltip: true
-            //minWidth: 80
+            hasTooltip: true,
+            filterableType: 'select',
+            filterableCustomFieldName: 'Status',
+            filterableItems: ['Active', 'InActive']
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -227,8 +234,10 @@ export default {
             show: true,
             type: 'priority',
             width: 225,
-            hasTooltip: true
-            //minWidth: 80
+            hasTooltip: true,
+            filterableType: 'select',
+            filterableCustomFieldName: 'Priority',
+            filterableItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh']
           }
         ],
         empty: {
@@ -445,6 +454,50 @@ export default {
           ? `${this.totalSelectedItemsCount} rules`
           : item && item.name
       return `${nameValues} will be deleted!`
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
+      this.getTableData()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getTableData()
+    },
+    getTableData() {
+      this.getPlaybookList(this.tableCredientials).then(() => {
+        this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
+      })
     }
   },
   mounted() {
@@ -457,7 +510,6 @@ export default {
       this.showRuleModal = true
     }
   },
-
   computed: {
     ...mapGetters({
       playbookList: 'playbook/playbookListGetter'

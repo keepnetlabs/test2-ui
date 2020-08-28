@@ -530,6 +530,7 @@
                   :column="column"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
+                  :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
                   @handleFilterColumn="handleFilterColumn"
                   @handleClearColumnFilter="handleClearColumnFilter"
@@ -959,7 +960,6 @@ export default {
       type: Boolean,
       default: false
     },
-
     showHeader: {
       type: Boolean,
       default: true

@@ -123,6 +123,10 @@ export default {
       type: Array,
       default: () => []
     },
+    filterableCustomFieldName: {
+      type: String,
+      default: null
+    },
     index: {
       type: Number
     }
@@ -203,22 +207,23 @@ export default {
       this.filteredDateValue = null
       this.filterChecked = []
       this.filteredSelectValueNum = ''
-      this.$emit('handleClearColumnFilter', this.column.property)
+      this.$emit('handleClearColumnFilter', this.fieldName)
     },
     handleFilter() {
       this.menu = false
       this.isFilterActive = true
+
       if (this.filterableType === 'text') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
-          FieldName: this.column.property,
+          FieldName: this.fieldName,
           Operator: this.filteredSelectValue
         })
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
-          FieldName: this.column.property,
+          FieldName: this.fieldName,
           Operator: this.filteredSelectValueNum
         })
       }
@@ -227,19 +232,19 @@ export default {
           this.$emit('handleFilterColumn', [
             {
               Value: this.$moment(this.filteredDateValue[0]).format('YYYY-MM-DD  HH:mm:ss'),
-              FieldName: this.column.property,
+              FieldName: this.fieldName,
               Operator: '>='
             },
             {
               value: this.$moment(this.filteredDateValue[1]).format('YYYY-MM-DD HH:mm:ss'),
-              FieldName: this.column.property,
+              FieldName: this.fieldName,
               Operator: '<='
             }
           ])
         } else {
           this.$emit('handleFilterColumn', {
             Value: this.filteredDateValue,
-            FieldName: this.column.property,
+            FieldName: this.fieldName,
             Operator: this.filteredSelectValueDate
           })
         }
@@ -247,7 +252,7 @@ export default {
       if (this.filterableType === 'select') {
         this.$emit('handleFilterColumn', {
           Value: this.filterChecked.toString(),
-          FieldName: this.column.property,
+          FieldName: this.fieldName,
           Operator: 'Include'
         })
       }
@@ -258,6 +263,9 @@ export default {
       return this.filterValue.length > 0
         ? this.filterableItems.filter((item) => item.startsWith(this.filterValue))
         : this.filterableItems
+    },
+    fieldName: function () {
+      return this.filterableCustomFieldName || this.column.property
     }
   }
 }
