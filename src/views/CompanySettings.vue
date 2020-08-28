@@ -23,7 +23,7 @@
             <ip-addresses />
           </v-tab-item>
           <v-tab-item>
-            Tab2
+            <user-directories />
           </v-tab-item>
           <v-tab-item>
             Tab 3
@@ -54,9 +54,11 @@
 
 <script>
 import IpAddresses from '@/components/Company Settings/IpAddresses'
+import UserDirectories from '@/components/Company Settings/UserDirectories'
 export default {
   name: 'CompanySettings',
   components: {
+    UserDirectories,
     IpAddresses
   },
   data() {
@@ -65,7 +67,7 @@ export default {
       tabItems: [
         'IP Addresses',
         'User Directories',
-        'User Directories',
+        'SMTP Settings',
         'Notification Templates',
         'Data Anonymization',
         'White Labeling',
@@ -105,7 +107,7 @@ export default {
     font-size: 24px;
     opacity: 0.9;
     font-weight: normal;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
   }
@@ -114,7 +116,7 @@ export default {
     font-size: 14px;
     opacity: 0.9;
     font-weight: normal;
-    line-height: 1.5;
+    line-height: 1.5 !important;
     letter-spacing: normal;
     margin-bottom: 24px;
     color: rgba(0, 0, 0, 0.87) !important;

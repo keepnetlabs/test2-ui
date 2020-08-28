@@ -57,7 +57,10 @@ export const LABEL_STORE = {
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
   LICENSEENDDATE: 'Renewal Date',
-  IPADDRESS: 'Ip Address'
+  IPADDRESS: 'Ip Address',
+  TYPE: 'Type',
+  URL: 'URL',
+  USERS: 'Users'
 }
 
 export const PROPERTY_STORE = {
@@ -98,7 +101,10 @@ export const PROPERTY_STORE = {
   INDUSTRYNAME: 'industryName',
   LICENSETYPENAME: 'licenseTypeName',
   NUMBEROFUSERS: 'numberOfUsers',
-  LICENSEENDDATE: 'licenseEndDate'
+  LICENSEENDDATE: 'licenseEndDate',
+  TYPE: 'type',
+  URL: 'url',
+  USERS: 'users'
 }
 
 export function getStoreValue(key, type) {
