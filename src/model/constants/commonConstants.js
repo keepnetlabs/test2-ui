@@ -52,10 +52,15 @@ export const LABEL_STORE = {
   NO_RULES_CONFIGURED: 'No rules configured',
   NO_TARGET_GROUPS_DEFINED: 'No target groups defined',
   NO_TARGET_USER_ADDED: 'No target users added',
+  NO_IP_ADDRESS_DEFINED: 'No Ip Address',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
-  LICENSEENDDATE: 'Renewal Date'
+  LICENSEENDDATE: 'Renewal Date',
+  IPADDRESS: 'Ip Address',
+  TYPE: 'Type',
+  URL: 'URL',
+  USERS: 'Users'
 }
 
 export const PROPERTY_STORE = {
@@ -87,6 +92,7 @@ export const PROPERTY_STORE = {
   SERVICE: 'service',
   ISSENDFILEHASH: 'isSendFileHash',
   ISSENDFILE: 'isSendFile',
+  IPADDRESS: 'ipAddress',
   DETAILS: 'details',
   ANALYSISENGINE: 'analysisEngine',
   RESOURCEID: 'resourceId',
@@ -95,7 +101,10 @@ export const PROPERTY_STORE = {
   INDUSTRYNAME: 'industryName',
   LICENSETYPENAME: 'licenseTypeName',
   NUMBEROFUSERS: 'numberOfUsers',
-  LICENSEENDDATE: 'licenseEndDate'
+  LICENSEENDDATE: 'licenseEndDate',
+  TYPE: 'type',
+  URL: 'url',
+  USERS: 'users'
 }
 
 export function getStoreValue(key, type) {

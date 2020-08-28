@@ -941,7 +941,7 @@ export default {
     },
     editedActions(val) {
       this.playbookAction = val
-      if (val.markType) {
+      if (val.markType && val.markType !== 'Unknown') {
         this.addAction()
       }
       if (val.tags.length > 0) {
