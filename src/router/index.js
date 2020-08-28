@@ -22,6 +22,7 @@ import Playbook from '../views/Playbook'
 import store from '../store'
 import Companies from '@/views/Companies'
 import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
+import CompanySettings from '@/views/CompanySettings'
 
 Vue.use(Router)
 
@@ -104,6 +105,16 @@ const router = new Router({
           path: '/incident-responder',
           name: 'Incident Responder',
           component: IncidentResponder,
+          meta: {
+            isAuthenticated: true
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/company-settings',
+          name: 'Company Settings',
+          component: CompanySettings,
           meta: {
             isAuthenticated: true
           },
