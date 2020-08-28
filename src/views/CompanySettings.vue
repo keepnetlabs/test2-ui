@@ -87,6 +87,38 @@ export default {
 .company-settings {
   min-height: 80vh !important;
   padding-top: 10px;
+  &__header {
+    .v-list-item {
+      padding: 0;
+
+      .v-list-item__content {
+        padding: 0;
+      }
+
+      .v-list-item__content > *:not(:last-child) {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__title {
+    font-size: 24px;
+    opacity: 0.9;
+    font-weight: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    margin-bottom: 24px;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
   &__container {
     padding: 0px 16px 24px 16px !important;
     width: 100%;
