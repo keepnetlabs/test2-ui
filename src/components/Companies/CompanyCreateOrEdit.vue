@@ -246,7 +246,6 @@
                         dense
                         type="text"
                         autocomplete="off"
-                        v-mask="'###########'"
                         v-model.number="formData.NumberOfUsers"
                         :disabled="!formData.IsNumberOfUsersLimited || stepLock"
                         :rules="
@@ -259,6 +258,7 @@
                         "
                         hint="*Required"
                         persistent-hint
+                        @keydown="onlyNumbers"
                       ></v-text-field>
                       <v-btn
                         height="40"
@@ -467,6 +467,8 @@ import { getLookupListByTypeId } from '../../api/common'
 import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AuthenticationService from '@/services/authentication'
+import AuthenticationStatus from '@/model/constants/authenticationStatus'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -751,6 +753,27 @@ export default {
     },
     editStepLock() {
       this.stepLock = false
+    },
+    onlyNumbers(e) {
+      //
+      const key = e.charCode || e.keyCode || 0
+      // allow backspace, tab, delete, enter, arrows, numbers and keypad numbers ONLY
+      // home, end, period, and numpad decimal
+      if (
+        key == 8 ||
+        key == 9 ||
+        key == 13 ||
+        key == 46 ||
+        key == 110 ||
+        key == 190 ||
+        (key >= 35 && key <= 40) ||
+        (key >= 48 && key <= 57) ||
+        (key >= 96 && key <= 105)
+      ) {
+        return key
+      } else {
+        e.preventDefault()
+      }
     }
   },
   watch: {

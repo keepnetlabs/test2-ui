@@ -17,13 +17,13 @@
           </v-tabs>
           <v-tabs-items v-model="tab" class="target-users__tabs-items">
             <v-tab-item>
-              <company-list />
+              <company-list v-if="tab === 0" />
             </v-tab-item>
             <v-tab-item>
-              <company-group-list />
+              <company-group-list v-if="tab === 1" />
             </v-tab-item>
-            <v-tab-item> </v-tab-item> </v-tabs-items
-        ></template>
+          </v-tabs-items>
+        </template>
         <template v-else>
           <company-group-details :groupId="$route.params.groupId" />
         </template>
