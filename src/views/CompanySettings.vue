@@ -29,7 +29,7 @@
             <s-m-t-p-settings />
           </v-tab-item>
           <v-tab-item>
-            Tab 4
+            <notification-templates />
           </v-tab-item>
           <v-tab-item>
             Tab 5
@@ -56,12 +56,14 @@
 import IpAddresses from '@/components/Company Settings/IpAddresses'
 import UserDirectories from '@/components/Company Settings/UserDirectories'
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
+import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 export default {
   name: 'CompanySettings',
   components: {
     SMTPSettings,
     UserDirectories,
-    IpAddresses
+    IpAddresses,
+    NotificationTemplates
   },
   data() {
     return {

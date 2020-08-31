@@ -24,7 +24,10 @@
           v-model.trim="formValues.url"
           hint="*Required"
           persistent-hint
-          :rules="[(v) => validations.required(v, 'Required')]"
+          :rules="[
+            (v) => validations.required(v, 'Required'),
+            (v) => validations.url(v, 'Invalid URL')
+          ]"
         ></v-text-field>
       </v-list-item-content>
     </v-list-item>
@@ -52,6 +55,7 @@
           v-model.trim="formValues.password"
           hint="*Required"
           persistent-hint
+          type="password"
           :rules="[(v) => validations.required(v, 'Required')]"
         ></v-text-field>
       </v-list-item-content>
@@ -112,7 +116,7 @@
 </template>
 
 <script>
-import { maxLength, required } from '@/utils/validations'
+import { maxLength, required, url, mail } from '@/utils/validations'
 
 export default {
   name: 'LdapInfoForm',
@@ -127,7 +131,9 @@ export default {
       },
       validations: {
         maxLength,
-        required
+        required,
+        url,
+        mail
       },
       isLoading: false
     }

@@ -1,6 +1,7 @@
 <template>
   <div class="smtp-settings">
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
+    <new-smtp-settings :status="newSmtpModalStatus" @closeOverlay="newSmtpModalStatus = false" />
     <div class="smtp-settings__container">
       <data-table
         ref="refSmtpSettingsList"
@@ -16,6 +17,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
+        @onEmptyBtnClicked="newSmtpModalStatus = true"
       />
     </div>
   </div>
@@ -25,11 +27,13 @@
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
+import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
 export default {
   name: 'SMTPSettings',
   components: {
     CompanySettingsHeader,
-    DataTable
+    DataTable,
+    NewSmtpSettings
   },
   data() {
     return {
@@ -126,7 +130,8 @@ export default {
           action: 'handleAddUserDirectories',
           tooltip: 'Add SMTP Setting'
         }
-      }
+      },
+      newSmtpModalStatus: false
     }
   }
 }
