@@ -38,7 +38,7 @@
             <white-labeling />
           </v-tab-item>
           <v-tab-item>
-            Tab 7
+            <rest-api />
           </v-tab-item>
           <v-tab-item>
             Tab 8
@@ -59,6 +59,7 @@ import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import DataAnonymization from '@/components/Company Settings/DataAnonymization'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
+import RestApi from '@/components/Company Settings/RestApi'
 export default {
   name: 'CompanySettings',
   components: {
@@ -67,7 +68,8 @@ export default {
     IpAddresses,
     NotificationTemplates,
     DataAnonymization,
-    WhiteLabeling
+    WhiteLabeling,
+    RestApi
   },
   data() {
     return {
