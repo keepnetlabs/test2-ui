@@ -150,6 +150,7 @@
               placeholder="Reply to"
               outlined
               dense
+              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
               v-model.trim="formValues.replyTo"
             ></v-text-field>
           </v-list-item-content>
@@ -161,6 +162,7 @@
               placeholder="Error to"
               outlined
               dense
+              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
               v-model.trim="formValues.errorTo"
             ></v-text-field>
           </v-list-item-content>
@@ -171,6 +173,7 @@
             <v-text-field
               placeholder="Enter CC address"
               outlined
+              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
               dense
               v-model.trim="formValues.cc"
             ></v-text-field>
@@ -183,6 +186,7 @@
               placeholder="Enter BCC address"
               outlined
               dense
+              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
               v-model.trim="formValues.bcc"
             ></v-text-field>
           </v-list-item-content>
@@ -225,7 +229,7 @@
 
 <script>
 import AppModal from '@/components/AppModal'
-import { maxLength, required } from '@/utils/validations'
+import { maxLength, required, mail } from '@/utils/validations'
 export default {
   name: 'NewSmtpSettings',
   components: {
@@ -260,7 +264,8 @@ export default {
       companyItems: [],
       validations: {
         maxLength,
-        required
+        required,
+        mail
       }
     }
   },

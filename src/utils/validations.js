@@ -31,6 +31,15 @@ export function ip(value, message) {
   )
 }
 
+export function url(value, message) {
+  value = getValue(value)
+  return (
+    /https?:\/\/(www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi.test(
+      value
+    ) || message
+  )
+}
+
 export function domain(value, message) {
   value = getValue(value)
   return /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
