@@ -53,6 +53,7 @@ export const LABEL_STORE = {
   NO_TARGET_GROUPS_DEFINED: 'No target groups defined',
   NO_TARGET_USER_ADDED: 'No target users added',
   NO_IP_ADDRESS_DEFINED: 'You do not have any IP Addresses, yet',
+  NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification template, yet',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
