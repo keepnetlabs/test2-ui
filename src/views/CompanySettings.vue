@@ -35,7 +35,7 @@
             <data-anonymization />
           </v-tab-item>
           <v-tab-item>
-            Tab 6
+            <white-labeling />
           </v-tab-item>
           <v-tab-item>
             Tab 7
@@ -58,6 +58,7 @@ import UserDirectories from '@/components/Company Settings/UserDirectories'
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import DataAnonymization from '@/components/Company Settings/DataAnonymization'
+import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 export default {
   name: 'CompanySettings',
   components: {
@@ -65,7 +66,8 @@ export default {
     UserDirectories,
     IpAddresses,
     NotificationTemplates,
-    DataAnonymization
+    DataAnonymization,
+    WhiteLabeling
   },
   data() {
     return {
