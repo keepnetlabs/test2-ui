@@ -1,5 +1,6 @@
 <template>
   <div class="sms-settings">
+    <new-sms-settings :status="showSmsSettingsModal" @closeOverlay="showSmsSettingsModal = false" />
     <company-settings-header title="SMS Settings" sub-title="Manage SMS Integrations" />
     <div class="sms-settings__container">
       <data-table
@@ -16,7 +17,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="showNewRestApiModal = true"
+        @onEmptyBtnClicked="showSmsSettingsModal = true"
         @handleAddNewSmsIntegration="handleAddNewSmsIntegration"
       />
     </div>
@@ -26,12 +27,14 @@
 <script>
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import NewSmsSettings from '@/components/Company Settings/NewSmsSettings'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'SmsSettings',
   components: {
     CompanySettingsHeader,
-    DataTable
+    DataTable,
+    NewSmsSettings
   },
   data() {
     return {
@@ -95,7 +98,8 @@ export default {
           action: 'handleAddNewSmsIntegration',
           tooltip: 'Add a New Rest Api'
         }
-      }
+      },
+      showSmsSettingsModal: false
     }
   },
   methods: {

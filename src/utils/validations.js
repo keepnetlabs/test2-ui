@@ -14,6 +14,7 @@ export function maxLength(value, length, message) {
 export function minLength(value, length, message) {
   //length patlamasın diye.
   value = getValue(value)
+
   return value.length > length || message
 }
 
