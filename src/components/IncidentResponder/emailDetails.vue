@@ -783,7 +783,8 @@ export default {
           label: 'With',
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          minWidth: 150
         }
       ]
     },
