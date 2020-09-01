@@ -239,7 +239,7 @@ export default {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
     }
   },
-  mounted() {
+  created() {
     this.getTableData()
   },
   methods: {
@@ -257,6 +257,7 @@ export default {
 
             localStorage.setItem('companyGroupName', group.name)
             localStorage.setItem('companyGroupResouceId', group.resourceId)
+            //this.$parent.$forceUpdate()
           })
         })
         .catch((error) => {
