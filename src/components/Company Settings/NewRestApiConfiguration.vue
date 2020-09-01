@@ -54,6 +54,7 @@
               text
               :color="isAuthKeyApiCreated ? '#00bcd4' : '#2196f3'"
               class="auth-key__button"
+              :class="[isAuthKeyApiCreated && 'ml-0']"
               @click="handleGenerateApiKeyForAuthKey"
               :ripple="false"
             >
@@ -87,6 +88,7 @@
               class="auth-key__button"
               @click="handleGenerateApiKeyForAuthSecret"
               :ripple="false"
+              :class="[isAuthSecretApiCreated && 'ml-0']"
             >
               {{ isAuthSecretApiCreated ? 'Re-Generate API Key' : 'Generate Secret Key' }}
             </v-btn>

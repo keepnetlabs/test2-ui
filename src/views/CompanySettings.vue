@@ -41,7 +41,7 @@
             <rest-api />
           </v-tab-item>
           <v-tab-item>
-            Tab 8
+            <sms-settings />
           </v-tab-item>
           <v-tab-item>
             Tab 9
@@ -60,6 +60,7 @@ import NotificationTemplates from '@/components/Company Settings/NotificationTem
 import DataAnonymization from '@/components/Company Settings/DataAnonymization'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import RestApi from '@/components/Company Settings/RestApi'
+import SmsSettings from '@/components/Company Settings/SmsSettings'
 export default {
   name: 'CompanySettings',
   components: {
@@ -69,7 +70,8 @@ export default {
     NotificationTemplates,
     DataAnonymization,
     WhiteLabeling,
-    RestApi
+    RestApi,
+    SmsSettings
   },
   data() {
     return {

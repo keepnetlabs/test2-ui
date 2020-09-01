@@ -63,7 +63,9 @@ export const LABEL_STORE = {
   URL: 'URL',
   USERS: 'Users',
   SMTPADDRESS: 'SMTP Address',
-  AVAILABLEFOR: 'Available For'
+  AVAILABLEFOR: 'Available For',
+  PROVIDER: 'Provider',
+  ACCOUNTSID: 'Account SID'
 }
 
 export const PROPERTY_STORE = {
@@ -109,7 +111,9 @@ export const PROPERTY_STORE = {
   URL: 'url',
   USERS: 'users',
   SMTPADDRESS: 'smtpAddress',
-  AVAILABLEFOR: 'avaiableFor'
+  AVAILABLEFOR: 'avaiableFor',
+  PROVIDER: 'provider',
+  ACCOUNTSID: 'accountSID'
 }
 
 export function getStoreValue(key, type) {
