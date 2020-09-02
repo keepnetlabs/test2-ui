@@ -520,6 +520,8 @@ import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
 import AuthenticationService from '../services/authentication'
 import 'grapesjs/dist/css/grapes.min.css'
+import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
+import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 
 export default {
   name: 'Main',

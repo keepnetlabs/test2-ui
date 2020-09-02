@@ -600,6 +600,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
   text-decoration: none !important;
   border-bottom: 1px solid;
   position:relative;
+      text-indent: 0;
 }
 
 .malicious-icon {
@@ -2188,6 +2189,7 @@ export default {
     text-decoration: none !important;
     border-bottom: 1px solid;
     position: relative;
+    text-indent: 0;
   }
 
   .red-malicious-alert::before {
