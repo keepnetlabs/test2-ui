@@ -2936,6 +2936,7 @@ export default {
     text-decoration: none !important;
     border-bottom: 1px solid;
     position: relative;
+    text-indent: 0;
 
     .share-setting-text {
       text-decoration: none !important;
