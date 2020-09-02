@@ -1,6 +1,7 @@
 <template>
   <div class="custom-api">
     <div class="custom-apis__container">
+      <new-custom-api :status="showNewCustomApi" @closeOverlay="showNewCustomApi = false" />
       <company-settings-header
         title="Custom API"
         sub-title="Create API Key to your customers for integration"
@@ -19,7 +20,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="showSmsSettingsModal = true"
+        @onEmptyBtnClicked="showNewCustomApi = true"
         @handleAddNewCustomApi="handleAddNewCustomApi"
       />
     </div>
@@ -29,6 +30,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import NewCustomApi from '@/components/Company Settings/NewCustomApi'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'CustomApi',
@@ -97,7 +99,7 @@ export default {
         empty: {
           message: 'You do not have any Custom API',
           subMes: 'Create a new custom API',
-          btn: 'Create New Custom API',
+          btn: 'Create a New Custom API',
           icon: 'mdi-plus'
         },
         addButton: {
@@ -105,12 +107,14 @@ export default {
           action: 'handleAddNewCustomApi',
           tooltip: 'Add a New Custom Api'
         }
-      }
+      },
+      showNewCustomApi: false
     }
   },
   components: {
     CompanySettingsHeader,
-    DataTable
+    DataTable,
+    NewCustomApi
   },
   methods: {
     handleAddNewCustomApi() {}
