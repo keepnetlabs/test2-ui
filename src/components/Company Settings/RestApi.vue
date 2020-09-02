@@ -1,5 +1,9 @@
 <template>
   <div class="rest-api">
+    <new-rest-api-configuration
+      :status="showNewRestApiModal"
+      @closeOverlay="showNewRestApiModal = false"
+    />
     <company-settings-header title="Rest API" sub-title="Manage Rest API configurations" />
     <div class="rest-api__container">
       <data-table
@@ -16,6 +20,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
+        @onEmptyBtnClicked="showNewRestApiModal = true"
         @handleAddNewRestApi="handleAddNewRestApi"
       />
     </div>
@@ -26,11 +31,13 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import NewRestApiConfiguration from '@/components/Company Settings/NewRestApiConfiguration'
 export default {
   name: 'RestApi',
   components: {
     CompanySettingsHeader,
-    DataTable
+    DataTable,
+    NewRestApiConfiguration
   },
   data() {
     return {
@@ -112,7 +119,8 @@ export default {
           action: 'handleAddNewRestApi',
           tooltip: 'Add a New Rest Api'
         }
-      }
+      },
+      showNewRestApiModal: false
     }
   },
   methods: {
