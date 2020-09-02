@@ -7,7 +7,7 @@
       <div id="gjsWebPageModal"></div>
       <div id="blocksModal"></div>
     </div>
-    <v-btn @click="getGrapesWebModalDraw()"></v-btn>
+    <!--<v-btn @click="getGrapesWebModalDraw()"></v-btn>-->
   </div>
 </template>
 
