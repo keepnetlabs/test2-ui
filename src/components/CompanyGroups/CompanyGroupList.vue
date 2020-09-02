@@ -193,11 +193,9 @@ export default {
       this.getTableData()
     },
     editAction(row) {
-      console.log(this)
       this.changeAddModalStatus(true)
       this.selectedRow = row
       this.editAddModal = true
-      console.log(this)
     },
     goToDetails(selectedRow) {
       localStorage.setItem('companyGroupName', selectedRow.name)
