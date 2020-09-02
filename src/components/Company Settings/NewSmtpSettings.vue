@@ -66,9 +66,10 @@
               <v-text-field
                 placeholder="Port"
                 outlined
+                ref="refTextField"
                 dense
-                type="number"
-                v-model.trim="formValues.serverPort"
+                @input="onPortChange"
+                :value="formValues.serverPort"
               ></v-text-field>
             </div>
           </v-list-item-content>
@@ -97,7 +98,6 @@
               v-model.trim="formValues.password"
               hint="*Required"
               persistent-hint
-              type="password"
               :rules="[(v) => validations.required(v, 'Required')]"
             ></v-text-field>
           </v-list-item-content>
@@ -276,6 +276,13 @@ export default {
     },
     closeOverlay() {
       this.$emit('closeOverlay')
+    },
+    onPortChange(val) {
+      const numberVal = Number(val)
+      const newVal = isNaN(numberVal) ? '' : val
+      const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
+      this.formValues.serverPort = renderedValue
+      this.$refs.refTextField.lazyValue = renderedValue
     }
   }
 }

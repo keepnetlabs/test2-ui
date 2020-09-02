@@ -60,12 +60,13 @@
               placeholder="Enter number"
               outlined
               dense
-              type="number"
               :rules="[
                 (v) => validations.maxLength(v, 11, '10 characters'),
                 (v) => validations.minLength(v, 9, '10 characters')
               ]"
-              :value="phoneNumber"
+              ref="refTextField"
+              :value="formValues.phoneNumber"
+              @input="onPhoneNumberChange"
             >
               <template v-slot:prepend-inner>
                 <v-menu bottom offset-y min-width="133" max-height="250">
@@ -144,14 +145,14 @@ export default {
         accountSid: '',
         authorizationToken: '',
         isActive: true,
-        selectedPhoneItem: ''
+        selectedPhoneItem: '',
+        phoneNumber: ''
       },
       listItems: [],
       validations: {
         maxLength,
         minLength
-      },
-      phoneNumber: ''
+      }
     }
   },
   methods: {
@@ -161,6 +162,13 @@ export default {
     submit() {},
     handleListItemClick(item) {
       this.selectedPhoneItem = item
+    },
+    onPhoneNumberChange(val) {
+      const numberVal = Number(val)
+      const newVal = isNaN(numberVal) ? '' : val
+      const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
+      this.formValues.serverPort = renderedValue
+      this.$refs.refTextField.lazyValue = renderedValue
     }
   },
   created() {
@@ -168,11 +176,6 @@ export default {
       this.listItems.push(`+${i}`)
     }
     this.selectedPhoneItem = '+90'
-  },
-  watch: {
-    phoneNumber(newVal, oldVal) {
-      this.phoneNumber = /"^[0-9]+$"/.test(newVal) ? newVal : oldVal
-    }
   }
 }
 </script>
