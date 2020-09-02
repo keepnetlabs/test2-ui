@@ -6,6 +6,7 @@
     subtitle="Select groups to add companies to"
     @changeStatus="changeStatus"
     size="maximum"
+    maxHeightSize="auto"
   >
     <template v-slot:app-dialog-body>
       <v-form ref="refFormAddToGroup" lazy-validation>
