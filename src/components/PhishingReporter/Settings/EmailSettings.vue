@@ -24,11 +24,8 @@
         </a>
       </v-list-item-content>
     </v-list-item>
-    <v-form ref="refForm" lazy-validation>
-      <v-list-item
-        class="px-0 email-settings__list-item"
-        style="padding-top: 14px; padding-bottom: 9px; margin-top: 0 !important;"
-      >
+    <v-form class="email-settings__form" ref="refForm" lazy-validation>
+      <v-list-item class="px-0 email-settings__list-item email-settings__checkbox-container">
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
@@ -182,6 +179,7 @@
         v-if="showFooter"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
+        class-name="mt-3"
       />
     </v-form>
   </v-container>
@@ -317,6 +315,18 @@ export default {
     }
   }
 
+  &__form {
+    .email-settings__list-item {
+      margin-bottom: 3px;
+    }
+  }
+
+  &__checkbox-container {
+    padding-top: 14px !important;
+    padding-bottom: 6px !important;
+    margin-top: 0 !important;
+  }
+
   &__header {
     font-size: 24px;
     line-height: 1.29 !important;
@@ -337,8 +347,6 @@ export default {
   &__btn-util {
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
     text-align: center;
@@ -352,8 +360,6 @@ export default {
     z-index: 9;
     font-size: 9px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: normal;
     margin-left: 10px;
     letter-spacing: normal;

@@ -102,7 +102,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 other-settings__list-item">
+      <v-list-item class="px-0 other-settings__list-item mt-n1">
         <v-list-item-content>
           <label class="other-settings__list-item-header" for="alertbox-text"
             >Enterprise Vault</label
@@ -116,8 +116,7 @@
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
             v-model.trim="formValues.enableEnterpriseVault"
-            class="other-settings__checkbox k-checkbox"
-            style="margin-top: -6px;"
+            class="other-settings__checkbox k-checkbox mt-n1"
             @change="handleEnterpriseVaultChange"
             color="#2196f3"
             label="Enable enterprise vault"
@@ -125,7 +124,7 @@
           ></v-checkbox>
           <template v-if="formValues.enableEnterpriseVault">
             <transition appear name="fade">
-              <div class="site-url__container mt-n3">
+              <div class="site-url__container mt-n4">
                 <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
                 <v-text-field
                   placeholder="www.bc.com"
@@ -147,7 +146,7 @@
         v-if="showFooter"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
-        className="mt-3"
+        class-name="mt-4"
       />
     </v-form>
   </v-container>
@@ -292,6 +291,11 @@ export default {
     }
   }
 
+  &__footer {
+    &-disabled {
+    }
+  }
+
   &__api-settings {
     &-container {
       display: flex;
@@ -351,7 +355,6 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 16px;
     @media (max-width: 768px) {
       flex-direction: column;
     }

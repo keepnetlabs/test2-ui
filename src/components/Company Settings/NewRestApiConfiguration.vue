@@ -5,6 +5,7 @@
     @closeOverlay="closeOverlay"
     :title="'New Rest API Configuration'"
     icon-name="mdi-domain"
+    class-name="new-rest-api-configuration"
   >
     <template v-slot:overlay-body>
       <v-list-item class="pl-0 pr-0 mt-8">
