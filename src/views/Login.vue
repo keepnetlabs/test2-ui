@@ -271,6 +271,12 @@ export default {
     }
   },
   created() {
+    if (localStorage.getItem('isRemember')) {
+      this.rememberMe = localStorage.getItem('isRemember')
+      this.email = localStorage.getItem('username')
+      this.password = localStorage.getItem('password')
+    }
+
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
         this.$route.query &&
@@ -377,6 +383,16 @@ export default {
           })
           .then(() => {
             setTimeout(() => {
+              if (this.rememberMe) {
+                localStorage.setItem('username', this.email)
+                localStorage.setItem('password', this.password)
+                localStorage.setItem('isRemember', this.rememberMe)
+              } else {
+                localStorage.removeItem('username')
+                localStorage.removeItem('password')
+                localStorage.removeItem('isRemember')
+              }
+
               if (!!Object.keys(mainUrl.query).length) {
                 _this.$router.push(mainUrl.fullPath)
               }
