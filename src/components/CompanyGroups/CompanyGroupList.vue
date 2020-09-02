@@ -34,12 +34,9 @@
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span :class="{ 'datatable-link': scope.row.companyCount !== 0 }" v-if="scope.row.name">
-          <router-link
-            v-if="scope.row.companyCount !== 0"
-            tag="span"
-            :to="{ name: 'Company Group Details', params: { groupId: scope.row.resourceId } }"
-            >{{ scope.row.name }}</router-link
-          >
+          <span @click="goToDetails(scope.row)" v-if="scope.row.companyCount !== 0">{{
+            scope.row.name
+          }}</span>
           <span v-else>{{ scope.row.name }}</span>
         </span>
       </template>
@@ -196,11 +193,17 @@ export default {
       this.getTableData()
     },
     editAction(row) {
-      console.log(this)
       this.changeAddModalStatus(true)
       this.selectedRow = row
       this.editAddModal = true
-      console.log(this)
+    },
+    goToDetails(selectedRow) {
+      localStorage.setItem('companyGroupName', selectedRow.name)
+      localStorage.setItem('companyGroupResouceId', selectedRow.resourceId)
+      this.$router.push({
+        name: 'Company Group Details',
+        params: { groupId: selectedRow.resourceId }
+      })
     }
   }
 }

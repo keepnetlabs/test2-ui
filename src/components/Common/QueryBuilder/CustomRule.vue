@@ -193,7 +193,8 @@ export default {
         case 'Email':
           return [
             (v) => this.validations.required(v, 'Required'),
-            (v) => this.validations.mail(v, 'Invalid email address')
+            (v) => this.validations.mail(v, 'Invalid email address'),
+            (v) => this.validations.maxLength(v, 250, 'Invalid email address')
           ]
         case 'Domain':
           return [

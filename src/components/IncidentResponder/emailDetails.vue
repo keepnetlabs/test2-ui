@@ -729,7 +729,7 @@ export default {
           property: 'hop',
           align: 'left',
           editable: false,
-          fixed: 'left',
+          fixed: false,
           label: 'Hop',
           sortable: true,
           show: true,
@@ -780,12 +780,12 @@ export default {
           property: 'with',
           align: 'left',
           editable: false,
-          fixed: 'right',
+          fixed: false,
           label: 'With',
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          minWidth: 150
         }
       ]
     },

@@ -4,6 +4,10 @@
       title="Notification Templates"
       sub-title="Manage notification email templates"
     />
+    <new-notification-template
+      :status="newNotificationTemplateStatus"
+      @closeOverlay="newNotificationTemplateStatus = false"
+    />
     <delete-notification-template-modal :status="showDeleteNotificationTemplateModal" />
     <div class="notification-templates__container">
       <data-table
@@ -18,6 +22,7 @@
         :refName="'notificationList'"
         :selectable="true"
         @handleAddNotificationTemplates="handleAddNotificationTemplates"
+        @onEmptyBtnClicked="newNotificationTemplateStatus = true"
       />
     </div>
   </div>
@@ -28,9 +33,11 @@ import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import { LABEL_STORE } from '@/model/constants/commonConstants'
 import DeleteNotificationTemplateModal from '@/components/Company Settings/DeleteNotificationTemplateModal'
+import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate'
 export default {
   name: 'NotificationTemplates',
   components: {
+    NewNotificationTemplate,
     DeleteNotificationTemplateModal,
     DataTable,
     CompanySettingsHeader
@@ -52,7 +59,8 @@ export default {
           icon: 'mdi-plus'
         }
       },
-      showDeleteNotificationTemplateModal: false
+      showDeleteNotificationTemplateModal: false,
+      newNotificationTemplateStatus: false
     }
   },
   methods: {

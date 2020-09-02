@@ -31,9 +31,11 @@
     <create-item-modal
       :is-show="showCreateNewGroupWithCompany"
       :selectedRow="selectedRow"
-      :forCompany="true"
-      @changeModalStatus="(status) => (showCreateNewGroupWithCompany = status)"
+      :forCompany="forCompany"
+      @changeModalStatus="handleCreateItemModal"
+      :is-edit="editCreateGroup"
     />
+
     <datatable
       ref="refDataList"
       :addButton="tableOptions.addButton"
@@ -48,6 +50,7 @@
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       :is-downloadable="false"
+      @addButton="addButton"
       @edit="handleTableItemEdit"
       @remove="handleTableItemRemove"
       @editAction="editAction"
@@ -93,6 +96,8 @@ export default {
     }
   },
   data: () => ({
+    editCreateGroup: false,
+    forCompany: true,
     tableData: [],
     editModal: false,
     isShowRemoveModal: false,
@@ -184,9 +189,9 @@ export default {
         icon: 'mdi-account-plus'
       },
       addButton: {
-        show: false,
+        show: true,
         action: 'addButton',
-        tooltip: 'Add Company'
+        tooltip: 'Add Company to Company Group'
       },
       rowActions: [
         {
@@ -239,7 +244,7 @@ export default {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
     }
   },
-  mounted() {
+  created() {
     this.getTableData()
   },
   methods: {
@@ -251,13 +256,6 @@ export default {
               ? response.data.data.results
               : []
           this.$refs.refDataList.loadWithDataArray(this.tableData)
-
-          getCompanyGroupsById(this.groupId).then((res) => {
-            const group = res.data.data.companyGroup
-
-            localStorage.setItem('companyGroupName', group.name)
-            localStorage.setItem('companyGroupResouceId', group.resourceId)
-          })
         })
         .catch((error) => {
           this.$refs.refDataList.loadWithDataArray([])
@@ -297,77 +295,7 @@ export default {
     changeCreateOrEditModalStatus(status) {
       this.isShowCreateOrEditModal = status
     },
-    handleCompanyNameClick({ row, column, event }) {
-      if (column.property === 'companyName') {
-        this.selectedRow = row
-        this.selectedExtend = {}
-        this.isShowExtended = true
-        this.tableHeight = this.$refs.refDataList.$el.clientHeight
-        this.extendTop = event.offsetTop
-        getCompanyByID(row.companyResourceId)
-          .then((response) => {
-            this.selectedExtend = response.data.data
-          })
-          .catch((error) => {
-            this.isShowExtended = false
-            this.$store.dispatch('common/createSnackBar', {
-              message: error.data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
-          })
-      }
-    },
-    handleTableDownload(downloadTypes) {
-      downloadTypes.exportTypes.forEach((item) => {
-        let payload = {
-          pageNumber: downloadTypes.pageNumber,
-          pageSize: downloadTypes.pageSize,
-          orderBy: 'LicenseTypeName',
-          ascending: true,
-          reportAllPages: downloadTypes.reportAllPages,
-          exportType: item === 'XLS' ? 'Excel' : item,
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: [
-                  {
-                    FieldName: 'CompanyName',
-                    Operator: 'Contains',
-                    Value: ''
-                  },
-                  {
-                    FieldName: 'IndustryName',
-                    Operator: 'Contains',
-                    Value: ''
-                  },
-                  {
-                    FieldName: 'LicenseTypeName',
-                    Operator: 'Contains',
-                    Value: ''
-                  }
-                ],
-                FilterGroups: []
-              }
-            ]
-          }
-        }
-        exportCompanies(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Companies.${item.toLocaleLowerCase()}`
-            link.click()
-          })
-          .catch((error) => {})
-      })
-    },
-    addButton() {
-      this.changeCreateOrEditModalStatus(true)
-    },
+
     editAction(row) {
       this.selectedRow = row
       this.editModal = true
@@ -414,7 +342,22 @@ export default {
       }
     },
     handleCreateNewGroupWithCompany(row) {
+      this.editCreateGroup = false
+      this.forCompany = true
       this.selectedRow = { ...row, ...{ name: null }, ...{ resourceId: row.companyResourceId } }
+      this.showCreateNewGroupWithCompany = true
+    },
+    handleCreateItemModal(status) {
+      this.showCreateNewGroupWithCompany = status
+      this.getTableData()
+    },
+    addButton() {
+      this.forCompany = false
+      this.editCreateGroup = true
+      this.selectedRow = {
+        ...{ name: localStorage.getItem('companyGroupName') },
+        ...{ resourceId: this.groupId }
+      }
       this.showCreateNewGroupWithCompany = true
     }
   }
