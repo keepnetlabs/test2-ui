@@ -740,6 +740,9 @@
                           </template>
                           <span>{{ getTooltipText(scope.row.emailLastAction) }} </span>
                         </v-tooltip>
+                        <v-icon v-else :color="getIconColor(scope.row.emailLastAction.status)">{{
+                          getIconName(scope.row.emailLastAction.status)
+                        }}</v-icon>
                       </span>
                     </span>
                   </template>
