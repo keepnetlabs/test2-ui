@@ -74,9 +74,12 @@
                   placeholder="Dangerous Email"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="notifyMessage"
+                  v-model.trim="notifyMessage"
                   height="40"
-                  :rules="[(v) => validations.required(v, 'Required')]"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.trim(v, 'Required')
+                  ]"
                 ></v-text-field>
               </v-form>
             </v-list-item>
@@ -136,8 +139,11 @@
                   placeholder="Dangerous Email"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
-                  v-model="notifyMessageWithDelete"
-                  :rules="[(v) => validations.required(v, 'Required')]"
+                  v-model.trim="notifyMessageWithDelete"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.trim(v, 'Required')
+                  ]"
                 ></v-text-field>
               </v-list-item>
             </v-form>
@@ -720,7 +726,11 @@
                         getInboxStatus(scope.row.emailLastAction.status)
                       }}</span>
                       <span class="ml-2">
-                        <v-tooltip bottom content-class="investigation-details__tooltip">
+                        <v-tooltip
+                          bottom
+                          content-class="investigation-details__tooltip"
+                          v-if="getTooltipText(scope.row.emailLastAction)"
+                        >
                           <template v-slot:activator="{ on }">
                             <v-icon
                               v-on="on"
@@ -837,7 +847,7 @@ import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
 import { getDataTableFieldLabel } from '../utils/functions'
-import { required } from '@/utils/validations'
+import { required, trim } from '@/utils/validations'
 export default {
   components: {
     Datatable,
@@ -865,7 +875,8 @@ export default {
     totalSelectedItemsCount: [],
     investigationDetailsList: [],
     validations: {
-      required
+      required,
+      trim
     },
     investigationListBodyData: {
       pageNumber: 1,
@@ -1205,8 +1216,10 @@ export default {
       if (action.warningMessage) {
         retValue += action.warningMessage
       }
-      if (action.actionResultErrorMessage) {
+      if (action.actionResultErrorMessage && action.warningMessage) {
         retValue = `${retValue}\n\n"${action.actionResultErrorMessage}"`
+      } else if (action.actionResultErrorMessage) {
+        retValue = `${action.actionResultErrorMessage}"`
       }
       return retValue
     },

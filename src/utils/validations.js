@@ -54,3 +54,8 @@ export function extension(value, message) {
 export function required(value, message) {
   return !!hasValue(value) || message
 }
+
+export function trim(value, message) {
+  value = getValue(value).trim()
+  return value.length > 0 || message
+}
