@@ -42,7 +42,11 @@
 
 <script>
 import DataTable from '../DataTable'
-import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList,
@@ -256,6 +260,11 @@ export default {
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
         .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
           this.callForPhishingReporterUser()
           this.$emit('callForPhishingReporterSummary')
         })
