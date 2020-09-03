@@ -11,10 +11,10 @@
       <v-list-item class="pl-0 pr-0 mt-8 white-labeling__list-item">
         <v-list-item-content>
           <v-list-item-title class="new-smtp-setting__title">
-            Rest API Configuration
+            Add New Integration Client
           </v-list-item-title>
           <v-list-item-subtitle class="new-smtp-setting__sub-title mb-6">
-            Set new API
+            Add new client to provide integration service
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -38,10 +38,10 @@
         </v-list-item>
         <div class="auth-key">
           <v-list-item-title class="new-integration__label">
-            Customer’s Keepnet ID
+            Generate API Key for Keepnet Customer ID
           </v-list-item-title>
           <v-list-item-subtitle class="new-smtp-setting__sub-title mb-2">
-            This name will respresent the client company
+            Enter Keepnet Customer ID of the client to generate an API Key
           </v-list-item-subtitle>
           <div class="mt-2 auth-key__container">
             <v-text-field

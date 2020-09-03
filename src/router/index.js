@@ -23,7 +23,7 @@ import store from '../store'
 import Companies from '@/views/Companies'
 import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
 import CompanySettings from '@/views/CompanySettings'
-
+import SystemUsers from '@/views/SystemUsers'
 Vue.use(Router)
 
 const router = new Router({
@@ -115,6 +115,16 @@ const router = new Router({
           path: '/company-settings',
           name: 'Company Settings',
           component: CompanySettings,
+          meta: {
+            isAuthenticated: true
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/system-users',
+          name: 'System Users',
+          component: SystemUsers,
           meta: {
             isAuthenticated: true
           },

@@ -261,7 +261,7 @@
           <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
             <v-list-item-content>
               <label class="new-integration__label" for="integration-type">URLs</label>
-              <div>
+              <div class="mt-1">
                 <v-checkbox
                   v-model="formValues.isSendUrl"
                   :label="`Share URLs in emails with integrated service`"
@@ -365,7 +365,7 @@
                 Activate and deactivate integration
               </v-list-item-subtitle>
               <v-switch
-                class="playbook-rule-form__switch"
+                class="playbook-rule-form__switch mt-4"
                 v-model="formValues.isActive"
                 :label="formValues.isActive ? 'Active' : 'Inactive'"
                 color="#2196f3"
@@ -757,6 +757,14 @@ export default {
     }
   }
 
+  .v-list-item {
+    margin-bottom: 1px;
+  }
+
+  .v-list-item__content > *:not(:last-child) {
+    margin-bottom: 0;
+  }
+
   .new-integration__api-key__textfield {
     .v-text-field__details {
       margin-bottom: 0;
@@ -786,8 +794,6 @@ export default {
   .test-connection {
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
     text-align: center;
@@ -798,8 +804,6 @@ export default {
     color: #f56c6c;
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
   }
@@ -857,9 +861,7 @@ export default {
     opacity: 0.9;
     font-size: 24px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.29;
+    line-height: 1.29 !important;
     margin-top: 31px !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
@@ -870,19 +872,14 @@ export default {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.5;
+    line-height: 1.5 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 
   &__label {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.2;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
@@ -909,11 +906,8 @@ export default {
       color: #f56c6c !important;
       border: 1px solid #f56c6c !important;
       box-shadow: none !important;
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       text-align: center;
@@ -923,11 +917,8 @@ export default {
 
     &-btn-save {
       color: #ffffff;
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       text-align: center;
@@ -941,12 +932,9 @@ export default {
 
   &__api-key {
     &__subtitle {
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.5;
+      line-height: 1.5 !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;
 
@@ -972,7 +960,7 @@ export default {
       max-width: 554px !important;
       justify-content: space-between;
       align-items: center;
-      margin-top: -11px;
+      margin-top: -7px;
       margin-bottom: 12px;
 
       &-left-side {
@@ -983,11 +971,8 @@ export default {
     }
 
     &__text {
-      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       color: #2196f3;
@@ -1024,8 +1009,6 @@ export default {
     .v-label {
       font-size: 20px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.2;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
@@ -1069,8 +1052,7 @@ export default {
     padding: 32px 24px;
     font-size: 20px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
+
     line-height: 1.15;
     letter-spacing: normal;
     color: #2196f3;
@@ -1079,8 +1061,6 @@ export default {
   &__content {
     font-size: 13px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: normal;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.54);
