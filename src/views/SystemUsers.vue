@@ -19,7 +19,7 @@
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
-          <v-tab-item> </v-tab-item>
+          <v-tab-item> <people /> </v-tab-item>
           <v-tab-item> </v-tab-item>
         </v-tabs-items>
       </v-card>
@@ -28,8 +28,12 @@
 </template>
 
 <script>
+import People from '@/components/SystemUsers/People'
 export default {
   name: 'SystemUsers',
+  components: {
+    People
+  },
   data() {
     return {
       tabItems: ['People', 'User Roles'],
