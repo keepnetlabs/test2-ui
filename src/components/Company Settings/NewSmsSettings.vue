@@ -8,90 +8,36 @@
     class-name="new-smtp-setting"
   >
     <template v-slot:overlay-body>
-      <v-list-item class="pl-0 pr-0 mt-8">
-        <v-list-item-content>
-          <v-list-item-title class="new-smtp-setting__title">
-            SMS Configuration
-          </v-list-item-title>
-          <v-list-item-subtitle class="new-smtp-setting__sub-title mb-6">
-            Set new SMS Provider
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
+      <app-modal-body-header title="SMS Configuration" sub-title="Set new SMS Provider" />
       <v-form ref="refForm" lazy-validation>
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Provider</label>
-            <v-select
-              placeholder="Enter Provider"
-              outlined
-              dense
-              :items="providerItems"
-              v-model="formValues.provider"
-            ></v-select>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Account SID</label>
-            <v-text-field
-              placeholder="Enter Account SID"
-              outlined
-              dense
-              v-model="formValues.accountSid"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Authorization Token</label>
-            <v-text-field
-              placeholder="Enter authorization token"
-              outlined
-              dense
-              v-model="formValues.authorizationToken"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Phone Number</label>
-            <v-text-field
-              placeholder="Enter number"
-              outlined
-              dense
-              :rules="[
-                (v) => validations.maxLength(v, 11, '10 characters'),
-                (v) => validations.minLength(v, 9, '10 characters')
-              ]"
-              ref="refTextField"
-              :value="formValues.phoneNumber"
-              @input="onPhoneNumberChange"
-            >
-              <template v-slot:prepend-inner>
-                <v-menu bottom offset-y min-width="133" max-height="250">
-                  <template v-slot:activator="{ on }">
-                    <div v-on="on" class="phishing-reporter__header-container-panel-right-col pl-0">
-                      <div class="phone-number__text">
-                        {{ selectedPhoneItem }}
-                      </div>
-                      <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
-                    </div>
-                  </template>
-                  <v-list>
-                    <v-list-item
-                      @click="handleListItemClick(item)"
-                      :key="item"
-                      v-for="item in listItems"
-                    >
-                      <v-list-item-title>{{ item }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </template>
-            </v-text-field>
-          </v-list-item-content>
-        </v-list-item>
+        <form-group title="Provider">
+          <v-select
+            placeholder="Select option"
+            outlined
+            dense
+            :items="providerItems"
+            v-model.trim="formValues.provider"
+          ></v-select>
+        </form-group>
+        <form-group title="Account SID">
+          <v-text-field
+            placeholder="Enter Account SID"
+            outlined
+            dense
+            v-model.trim="formValues.accountSid"
+          ></v-text-field>
+        </form-group>
+        <form-group title="Authorization Token">
+          <v-text-field
+            placeholder="Enter authorization token"
+            outlined
+            dense
+            v-model.trim="formValues.authorizationToken"
+          ></v-text-field>
+        </form-group>
+        <form-group title="Phone Number">
+          <phone-number v-model="formValues.phoneNumber" />
+        </form-group>
         <v-list-item class="white-labeling__list-item">
           <v-list-item-content>
             <label class="add-user-overlay__label">Status</label>
@@ -125,11 +71,17 @@
 
 <script>
 import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import { maxLength, minLength } from '@/utils/validations'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'NewSmsSettings',
   components: {
-    AppModal
+    AppModal,
+    AppModalBodyHeader,
+    PhoneNumber,
+    FormGroup
   },
   props: {
     status: {
@@ -145,7 +97,6 @@ export default {
         accountSid: '',
         authorizationToken: '',
         isActive: true,
-        selectedPhoneItem: '',
         phoneNumber: ''
       },
       listItems: [],
@@ -159,35 +110,14 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
-    submit() {},
-    handleListItemClick(item) {
-      this.selectedPhoneItem = item
-    },
-    onPhoneNumberChange(val) {
-      const numberVal = Number(val)
-      const newVal = isNaN(numberVal) ? '' : val
-      const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
-      this.formValues.serverPort = renderedValue
-      this.$refs.refTextField.lazyValue = renderedValue
-    }
+    submit() {}
   },
-  created() {
-    for (let i = 0; i < 100; i++) {
-      this.listItems.push(`+${i}`)
-    }
-    this.selectedPhoneItem = '+90'
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.refForm.resetValidation()
+    })
   }
 }
 </script>
 
-<style lang="scss">
-.phone-number {
-  &__text {
-    font-size: 13px;
-    font-weight: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72) !important;
-  }
-}
-</style>
+<style lang="scss"></style>

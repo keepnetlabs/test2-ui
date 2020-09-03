@@ -1,6 +1,11 @@
 <template>
   <div class="system-users-people">
     <div class="system-users-people__container">
+      <create-or-edit-system-user
+        v-if="showCreateOrEditSystemUserModal"
+        :status="showCreateOrEditSystemUserModal"
+        @closeOverlay="toggleCreateOrEditSystemUser"
+      />
       <data-table
         ref="refSystemUsersList"
         :refName="'systemUsersList'"
@@ -16,7 +21,7 @@
         :selectable="true"
         :sizeable="true"
         @handleAddNewSystemUsers="handleAddNewSystemUsers"
-        @onEmptyBtnClicked="showNewCustomApi = true"
+        @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
       />
     </div>
   </div>
@@ -25,10 +30,12 @@
 <script>
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
+import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 export default {
   name: 'People',
   components: {
-    DataTable
+    DataTable,
+    CreateOrEditSystemUser
   },
   data() {
     return {
@@ -135,11 +142,15 @@ export default {
           action: 'handleAddNewSystemUsers',
           tooltip: 'Add a New System User'
         }
-      }
+      },
+      showCreateOrEditSystemUserModal: false
     }
   },
   methods: {
-    handleAddNewSystemUsers() {}
+    handleAddNewSystemUsers() {},
+    toggleCreateOrEditSystemUser() {
+      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+    }
   }
 }
 </script>

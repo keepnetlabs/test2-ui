@@ -3,37 +3,25 @@
     v-if="status"
     :status="status"
     @closeOverlay="closeOverlay"
+    @submit="submit"
     :title="'New Rest API Configuration'"
     icon-name="mdi-domain"
     class-name="new-rest-api-configuration"
   >
     <template v-slot:overlay-body>
-      <v-list-item class="pl-0 pr-0 mt-8">
-        <v-list-item-content>
-          <v-list-item-title class="new-smtp-setting__title">
-            Rest API Configuration
-          </v-list-item-title>
-          <v-list-item-subtitle class="new-smtp-setting__sub-title mb-6">
-            Set new API
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
+      <app-modal-body-header title="Rest API Configuration" sub-title="Set new API" />
       <v-form lazy-validation ref="refForm">
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">URL</label>
-            <v-text-field
-              placeholder="Enter URL"
-              outlined
-              dense
-              :rules="[(v) => validations.url(v, 'Invalid URL')]"
-              v-model.trim="formValues.url"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <div class="auth-key">
-          <label class="add-user-overlay__label">Auth. Key</label>
-          <div class="mt-2 auth-key__container">
+        <form-group title="URL">
+          <v-text-field
+            placeholder="Enter URL"
+            outlined
+            dense
+            :rules="[(v) => validations.url(v, 'Invalid URL')]"
+            v-model.trim="formValues.url"
+          ></v-text-field>
+        </form-group>
+        <form-group title="Auth. Key" class-name="auth-key">
+          <div class="auth-key__container">
             <v-text-field
               placeholder="Generate Key"
               outlined
@@ -62,9 +50,8 @@
               {{ isAuthKeyApiCreated ? 'Re-Generate API Key' : 'Generate Api Key' }}
             </v-btn>
           </div>
-        </div>
-        <div class="auth-key">
-          <label class="add-user-overlay__label">Auth. Secret</label>
+        </form-group>
+        <form-group title="Auth. Secret" class-name="auth-key">
           <div class="mt-2 auth-key__container">
             <v-text-field
               placeholder="Generate Secret"
@@ -94,10 +81,9 @@
               {{ isAuthSecretApiCreated ? 'Re-Generate API Key' : 'Generate Secret Key' }}
             </v-btn>
           </div>
-        </div>
-        <div class="auth-key">
-          <label class="add-user-overlay__label">Company ID</label>
-          <div class="mt-2 auth-key__container">
+        </form-group>
+        <form-group title="Company ID" class-name="auth-key">
+          <div class="auth-key__container">
             <v-text-field
               placeholder="Enter Company ID"
               disabled
@@ -116,7 +102,7 @@
               Copy To Clipboard
             </v-btn>
           </div>
-        </div>
+        </form-group>
         <v-list-item class="white-labeling__list-item">
           <v-list-item-content>
             <label class="add-user-overlay__label">Status</label>
@@ -130,31 +116,20 @@
         </v-list-item>
       </v-form>
     </template>
-    <template v-slot:overlay-footer>
-      <v-btn class="new-integration__footer-btn-cancel" @click="closeOverlay" rounded>
-        CANCEL
-      </v-btn>
-      <div class="new-integration__footer__right-col">
-        <v-btn
-          class="new-integration__footer-btn-save white--text"
-          color="#2196f3"
-          rounded
-          @click="submit"
-        >
-          SAVE
-        </v-btn>
-      </div>
-    </template>
   </app-modal>
 </template>
 
 <script>
 import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 import { url } from '@/utils/validations'
 export default {
   name: 'NewRestApiConfiguration',
   components: {
-    AppModal
+    AppModal,
+    AppModalBodyHeader,
+    FormGroup
   },
   props: {
     status: {
@@ -207,14 +182,13 @@ export default {
 
 <style lang="scss">
 .auth-key {
+  max-width: 100% !important;
   &__container {
     display: flex;
   }
   &__button {
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
     color: #2196f3;

@@ -23,15 +23,10 @@
         <slot name="overlay-body"> </slot>
         <div class="k-overlay__footer">
           <slot name="overlay-footer">
-            <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
+            <v-btn class="k-overlay__btn-cancel" rounded @click="closeOverlay">
               CANCEL
             </v-btn>
-            <v-btn
-              class="add-user-overlay__footer-btn-save white--text"
-              color="#2196f3"
-              rounded
-              @click="submit"
-            >
+            <v-btn class="k-overlay__btn-save white--text" color="#2196f3" rounded @click="submit">
               SAVE
             </v-btn>
           </slot>
@@ -76,7 +71,9 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
-    submit() {}
+    submit() {
+      this.$emit('submit')
+    }
   },
   created() {
     document.querySelector('html').style.overflowY = 'hidden'
@@ -135,6 +132,30 @@ export default {
       padding: 16px 24px !important;
     }
     z-index: 999;
+  }
+  &__btn-cancel {
+    color: #f56c6c !important;
+    border: 1px solid #f56c6c !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    width: 86px;
+    height: 36px !important;
+  }
+  &__btn-save {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    width: 65px;
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+    height: 36px !important;
+    border-radius: 18px;
+    background-color: #2196f3;
   }
 }
 </style>

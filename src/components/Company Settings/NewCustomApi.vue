@@ -8,42 +8,26 @@
     class-name="new-smtp-setting"
   >
     <template v-slot:overlay-body>
-      <v-list-item class="pl-0 pr-0 mt-8 white-labeling__list-item">
-        <v-list-item-content>
-          <v-list-item-title class="new-smtp-setting__title">
-            Add New Integration Client
-          </v-list-item-title>
-          <v-list-item-subtitle class="new-smtp-setting__sub-title mb-6">
-            Add new client to provide integration service
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
+      <app-modal-body-header
+        title="Add New Integration Client"
+        sub-title="Add new client to provide integration service"
+      />
       <v-form ref="refForm">
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__label">
-              Client Name
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-smtp-setting__sub-title mb-2">
-              This name will respresent the client company
-            </v-list-item-subtitle>
-            <v-text-field
-              placeholder="Enter name"
-              outlined
-              dense
-              class="auth-key__textfield"
-              v-model.trim="formValues.clientName"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <div class="auth-key">
-          <v-list-item-title class="new-integration__label">
-            Generate API Key for Keepnet Customer ID
-          </v-list-item-title>
-          <v-list-item-subtitle class="new-smtp-setting__sub-title mb-2">
-            Enter Keepnet Customer ID of the client to generate an API Key
-          </v-list-item-subtitle>
-          <div class="mt-2 auth-key__container">
+        <form-group title="Client Name" sub-title="This name will represent the client company">
+          <v-text-field
+            placeholder="Enter name"
+            outlined
+            dense
+            class="auth-key__textfield"
+            v-model.trim="formValues.clientName"
+          ></v-text-field>
+        </form-group>
+        <form-group
+          title="Generate API Key for Keepnet Customer ID"
+          sub-title="Enter Keepnet Customer ID of the client to generate an API Key"
+          class-name="auth-key"
+        >
+          <div class="auth-key__container">
             <v-text-field
               placeholder="Enter Keepnet Customer ID"
               outlined
@@ -60,24 +44,16 @@
               GENERATE API KEY
             </v-btn>
           </div>
-        </div>
-        <v-list-item class="white-labeling__list-item">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__label">
-              API Key
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-smtp-setting__sub-title mb-2">
-              Copy generated key and send it to your client
-            </v-list-item-subtitle>
-            <v-text-field
-              placeholder="Generate API Key first"
-              outlined
-              dense
-              class="auth-key__textfield"
-              v-model.trim="formValues.apiKey"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
+        </form-group>
+        <form-group title="API Key" sub-title="Copy generated key and send it to your client">
+          <v-text-field
+            placeholder="Generate API Key first"
+            outlined
+            dense
+            class="auth-key__textfield"
+            v-model.trim="formValues.apiKey"
+          ></v-text-field>
+        </form-group>
       </v-form>
     </template>
     <template v-slot:overlay-footer>
@@ -100,10 +76,14 @@
 
 <script>
 import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'NewCustomApi',
   components: {
-    AppModal
+    AppModal,
+    AppModalBodyHeader,
+    FormGroup
   },
   props: {
     status: {

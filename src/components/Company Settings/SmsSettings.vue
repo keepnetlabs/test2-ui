@@ -1,6 +1,10 @@
 <template>
   <div class="sms-settings">
-    <new-sms-settings :status="showSmsSettingsModal" @closeOverlay="showSmsSettingsModal = false" />
+    <new-sms-settings
+      v-if="showSmsSettingsModal"
+      :status="showSmsSettingsModal"
+      @closeOverlay="showSmsSettingsModal = false"
+    />
     <company-settings-header title="SMS Settings" sub-title="Manage SMS Integrations" />
     <div class="sms-settings__container">
       <data-table

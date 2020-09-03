@@ -20,30 +20,20 @@
           </v-stepper-header>
           <v-stepper-items class="k-stepper__items">
             <v-stepper-content class="k-stepper__content" :step="1">
-              <v-list-item class="pl-0 add-in-configuration__list-item">
-                <v-list-item-content>
-                  <v-list-item-title class="add-in-configuration__title">
-                    LDAP Information
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="add-in-configuration__subtitle mb-6">
-                    Enter Active Directory information
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+              <app-modal-body-header
+                inStepper
+                title="LDAP Information"
+                sub-title=" Enter Active Directory information"
+              />
               <ldap-info-form ref="refLdapInfoForm" />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="2">
-              <v-list-item class="pl-0 add-in-configuration__list-item">
-                <v-list-item-content>
-                  <v-list-item-title class="add-in-configuration__title">
-                    Field Mapping
-                  </v-list-item-title>
-                  <v-list-item-subtitle class="add-in-configuration__subtitle">
-                    Match field names from your Active Directory to the system fields to import
-                    users information correctly
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+              <app-modal-body-header
+                inStepper
+                title="Field Mapping"
+                sub-title="Match field names from your Active Directory to the system fields to import
+                    users information correctly"
+              />
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
@@ -88,12 +78,13 @@
 <script>
 import AppModal from '@/components/AppModal'
 import LdapInfoForm from '@/components/Company Settings/LdapInfoForm'
-
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 export default {
   name: 'NewLdapIntegration',
   components: {
     LdapInfoForm,
-    AppModal
+    AppModal,
+    AppModalBodyHeader
   },
   props: {
     status: {

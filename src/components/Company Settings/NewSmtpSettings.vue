@@ -3,237 +3,183 @@
     v-if="status"
     :status="status"
     @closeOverlay="closeOverlay"
+    @submit="submit"
     :title="'New SMTP Setting'"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
   >
     <template v-slot:overlay-body>
-      <v-list-item class="pl-0 pr-0 mt-8">
-        <v-list-item-content>
-          <v-list-item-title class="new-smtp-setting__title">
-            SMTP Server Settings
-          </v-list-item-title>
-          <v-list-item-subtitle class="new-smtp-setting__sub-title mb-6">
-            Fill information and credentials
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-      <v-form ref="refForm" lazy-validation>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">SMTP Setting Name</label>
-            <v-text-field
-              placeholder="Enter name"
-              outlined
-              dense
-              v-model.trim="formValues.name"
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Service Provider</label>
-            <v-select
-              v-model.trim="formValues.serviceProvider"
-              :items="serviceProviderItems"
-              class="new-integration__select"
-              dense
-              multiple
-              outlined
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-              placeholder="Select from the list"
-            ></v-select>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">SMTP Server Address</label>
-            <div class="new-smtp-setting__server-address-container">
-              <v-text-field
-                placeholder="Server URL or IP Address"
-                outlined
-                dense
-                v-model.trim="formValues.serverAddress"
-                hint="*Required"
-                persistent-hint
-                :rules="[(v) => validations.required(v, 'Required')]"
-              ></v-text-field>
-              <v-text-field
-                placeholder="Port"
-                outlined
-                ref="refTextField"
-                dense
-                @input="onPortChange"
-                :value="formValues.serverPort"
-              ></v-text-field>
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">User Name or Email Address</label>
-            <v-text-field
-              placeholder="Enter username"
-              outlined
-              dense
-              v-model.trim="formValues.userName"
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Password</label>
-            <v-text-field
-              placeholder="Enter password"
-              outlined
-              dense
-              v-model.trim="formValues.password"
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <div>
-              <v-checkbox
-                v-model="formValues.isAuth"
-                class="mt-n1 mb-1"
-                color="#2196f3"
-                label="Use Authentication"
-              />
-              <v-checkbox v-model="formValues.isSSL" class="mb-1" color="#2196f3" label="Use SSL" />
-              <v-checkbox
-                v-model="formValues.isSmtpRelay"
-                class="mb-n1"
-                color="#2196f3"
-                label="Has SMTP Relay"
-              />
-            </div>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__label">
-              Make Available For
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-smtp-setting__sub-title mb-2">
-              Companies that will see this setting in their libraries
-            </v-list-item-subtitle>
-            <v-select
-              v-model.trim="formValues.company"
-              :items="companyItems"
-              class="new-integration__select"
-              dense
-              multiple
-              outlined
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-              placeholder="Select Companies"
-            ></v-select>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item mb-0">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Reply to</label>
-            <v-text-field
-              placeholder="Reply to"
-              outlined
-              dense
-              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
-              v-model.trim="formValues.replyTo"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item mb-0">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Error to</label>
-            <v-text-field
-              placeholder="Error to"
-              outlined
-              dense
-              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
-              v-model.trim="formValues.errorTo"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item mb-0">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">CC</label>
-            <v-text-field
-              placeholder="Enter CC address"
-              outlined
-              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
-              dense
-              v-model.trim="formValues.cc"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item mb-0">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">BCC</label>
-            <v-text-field
-              placeholder="Enter BCC address"
-              outlined
-              dense
-              :rules="[(v) => validations.mail(v, 'Invalid email address')]"
-              v-model.trim="formValues.bcc"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="ldap-info__list-item mb-0">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Custom Header</label>
-            <v-textarea
-              outlined
-              dense
-              rows="2"
-              no-resize
-              height="100"
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-              v-model.trim="formValues.customHeader"
-            ></v-textarea>
-          </v-list-item-content>
-        </v-list-item>
-      </v-form>
-    </template>
-    <template v-slot:overlay-footer>
-      <v-btn class="new-integration__footer-btn-cancel" @click="closeOverlay" rounded>
-        CANCEL
-      </v-btn>
-      <div class="new-integration__footer__right-col">
-        <v-btn
-          class="new-integration__footer-btn-save white--text"
+      <app-modal-body-header
+        title="SMTP Server Settings"
+        sub-title="Fill information and credentials"
+      />
+      <form-group title="SMTP Setting Name" has-hint>
+        <v-text-field
+          placeholder="Enter SMTP setting name"
+          outlined
+          dense
+          v-model.trim="formValues.name"
+          hint="*Required"
+          persistent-hint
+          :rules="[(v) => validations.required(v, 'Required')]"
+        ></v-text-field>
+      </form-group>
+      <form-group title="Service Provider" has-hint>
+        <v-select
+          v-model.trim="formValues.serviceProvider"
+          :items="serviceProviderItems"
+          class="new-integration__select"
+          dense
+          multiple
+          outlined
+          hint="*Required"
+          persistent-hint
+          :rules="[(v) => validations.required(v, 'Required')]"
+          placeholder="Select option"
+        ></v-select>
+      </form-group>
+      <form-group title="SMTP Server Address" has-hint>
+        <div class="new-smtp-setting__server-address-container">
+          <v-text-field
+            placeholder="Server URL or IP Address"
+            outlined
+            dense
+            v-model.trim="formValues.serverAddress"
+            hint="*Required"
+            persistent-hint
+            :rules="[(v) => validations.required(v, 'Required')]"
+          ></v-text-field>
+          <v-text-field
+            placeholder="Port"
+            outlined
+            ref="refTextField"
+            dense
+            @input="onPortChange"
+            :rules="[(v) => validations.required(v, 'Required')]"
+            :value="formValues.serverPort"
+          ></v-text-field>
+        </div>
+      </form-group>
+      <form-group title="User Name or Email Address" has-hint>
+        <v-text-field
+          placeholder="Enter username"
+          outlined
+          dense
+          v-model.trim="formValues.userName"
+          hint="*Required"
+          persistent-hint
+          :rules="[(v) => validations.required(v, 'Required')]"
+        ></v-text-field>
+      </form-group>
+      <form-group title="Password" has-hint>
+        <v-text-field
+          placeholder="Enter password"
+          outlined
+          dense
+          v-model.trim="formValues.password"
+          hint="*Required"
+          persistent-hint
+          :rules="[(v) => validations.required(v, 'Required')]"
+        ></v-text-field>
+      </form-group>
+      <form-group>
+        <v-checkbox
+          v-model="formValues.isAuth"
+          class="mt-n3 mb-1"
           color="#2196f3"
-          rounded
-          @click="submit"
-        >
-          SAVE
-        </v-btn>
-      </div>
+          label="Use Authentication"
+        />
+        <v-checkbox v-model="formValues.isSSL" class="mb-1" color="#2196f3" label="Use SSL" />
+        <v-checkbox
+          v-model="formValues.isSmtpRelay"
+          class="mb-2"
+          color="#2196f3"
+          label="Has SMTP Relay"
+        />
+      </form-group>
+      <form-group
+        title="Make Available For"
+        sub-title="Companies that will see this setting in their libraries"
+        has-hint
+      >
+        <v-select
+          v-model.trim="formValues.company"
+          :items="companyItems"
+          class="new-integration__select"
+          dense
+          multiple
+          outlined
+          hint="*Required"
+          persistent-hint
+          :rules="[(v) => validations.required(v, 'Required')]"
+          placeholder="Select option"
+        ></v-select>
+      </form-group>
+      <form-group title="Reply to">
+        <v-text-field
+          placeholder="Enter Reply to"
+          outlined
+          dense
+          :rules="[(v) => validations.mail(v, 'Invalid email address')]"
+          v-model.trim="formValues.replyTo"
+        ></v-text-field>
+      </form-group>
+      <form-group title="Error to">
+        <v-text-field
+          placeholder="Enter Error to"
+          outlined
+          dense
+          :rules="[(v) => validations.mail(v, 'Invalid email address')]"
+          v-model.trim="formValues.errorTo"
+        ></v-text-field>
+      </form-group>
+      <form-group title="CC">
+        <v-text-field
+          placeholder="Enter CC address"
+          outlined
+          :rules="[(v) => validations.mail(v, 'Invalid email address')]"
+          dense
+          v-model.trim="formValues.cc"
+        ></v-text-field>
+      </form-group>
+      <form-group title="BCC">
+        <v-text-field
+          placeholder="Enter BCC address"
+          outlined
+          dense
+          :rules="[(v) => validations.mail(v, 'Invalid email address')]"
+          v-model.trim="formValues.bcc"
+        ></v-text-field>
+      </form-group>
+      <form-group title="Custom Header">
+        <v-textarea
+          outlined
+          dense
+          rows="2"
+          no-resize
+          placeholder="Enter Custom Header"
+          height="100"
+          hint="*Required"
+          persistent-hint
+          :rules="[(v) => validations.required(v, 'Required')]"
+          v-model.trim="formValues.customHeader"
+        ></v-textarea>
+      </form-group>
     </template>
   </app-modal>
 </template>
 
 <script>
 import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 import { maxLength, required, mail } from '@/utils/validations'
 export default {
   name: 'NewSmtpSettings',
   components: {
-    AppModal
+    AppModal,
+    AppModalBodyHeader,
+    FormGroup
   },
   props: {
     status: {
@@ -270,10 +216,7 @@ export default {
     }
   },
   methods: {
-    submit() {
-      if (this.$refs.refForm.validate()) {
-      }
-    },
+    submit() {},
     closeOverlay() {
       this.$emit('closeOverlay')
     },
@@ -290,25 +233,6 @@ export default {
 
 <style lang="scss">
 .new-smtp-setting {
-  &__title {
-    font-size: 24px;
-    font-weight: normal;
-    line-height: 1.29 !important;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    opacity: 0.9;
-  }
-  &__sub-title {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.5 !important;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    opacity: 0.9;
-  }
-  .v-list-item__content > *:not(:last-child) {
-    margin-bottom: 0;
-  }
   &__server-address-container {
     display: flex;
     & > div:first-child {
