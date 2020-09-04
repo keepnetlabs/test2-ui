@@ -3,10 +3,7 @@
     placeholder="Enter phone number"
     outlined
     dense
-    :rules="[
-      (v) => validations.maxLength(v, 11, '10 characters'),
-      (v) => validations.minLength(v, 9, '10 characters')
-    ]"
+    :rules="[(v) => validations.maxLength(v, 11, '10 characters')]"
     ref="refTextField"
     :value="value.val"
     @input="onPhoneNumberChange"

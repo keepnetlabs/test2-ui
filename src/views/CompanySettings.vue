@@ -138,10 +138,6 @@ export default {
   &__container {
     padding: 0px 16px 24px 16px !important;
     width: 100%;
-    .v-slide-group__next--disabled,
-    .v-slide-group__prev--disabled {
-      display: none;
-    }
     .v-window__container {
       margin-top: 24px;
     }
