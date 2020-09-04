@@ -1100,7 +1100,6 @@ export default {
     if (this.init) {
       this.init = false
     }
-    console.log('isExtendedViewCreateMode', this.isExtendedViewCreateMode)
   },
   mounted() {
     this.init = true

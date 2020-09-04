@@ -9,6 +9,12 @@
     class-name="create-edit-system-user"
   >
     <template v-slot:overlay-body>
+      <send-welcome-email-to-new-user-modal
+        v-if="showWelcomeEmailModal"
+        :status="showWelcomeEmailModal"
+        @closeOverlay="toggleWelcomeEmailModal"
+        @sendEmail="handleSendEmail"
+      />
       <app-modal-body-header :title="bodyTitle" sub-title="Fill information below" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="First Name" has-hint>
@@ -84,7 +90,17 @@
             label="LDAP Authentication"
           />
         </form-group>
-        <form-group v-if="systemUserId"> </form-group>
+        <form-group v-if="systemUserId">
+          <v-btn
+            color="#2196f3"
+            rounded
+            class="white--text btn-util"
+            @click="toggleWelcomeEmailModal"
+          >
+            <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
+            Send Information Email
+          </v-btn></form-group
+        >
       </v-form>
     </template>
   </app-modal>
@@ -96,13 +112,15 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { mail, maxLength, required } from '@/utils/validations'
 import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
     AppModal,
     AppModalBodyHeader,
     PhoneNumber,
-    FormGroup
+    FormGroup,
+    SendWelcomeEmailToNewUserModal
   },
   props: {
     status: {
@@ -129,6 +147,7 @@ export default {
         isTwoStep: false,
         isLdap: false
       },
+      showWelcomeEmailModal: false,
       statusItems: [],
       roleItems: [],
       validations: {
@@ -148,8 +167,17 @@ export default {
       this.$emit('closeOverlay')
     },
     submit() {
-      if (this.$refs.refForm.validate()) {
+      this.toggleWelcomeEmailModal()
+      /*if (this.$refs.refForm.validate()) {
       }
+
+       */
+    },
+    toggleWelcomeEmailModal() {
+      this.showWelcomeEmailModal = !this.showWelcomeEmailModal
+    },
+    handleSendEmail() {
+      this.toggleWelcomeEmailModal()
     }
   },
   mounted() {
