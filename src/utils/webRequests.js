@@ -14,9 +14,7 @@ service.interceptors.request.use(
   (config) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
-      ;(config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`),
-        (config.headers.companyId = localStorage.getItem('companyId')),
-        (config.headers.CacheControl = 'no-cache')
+      config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
     }
     return config
   },

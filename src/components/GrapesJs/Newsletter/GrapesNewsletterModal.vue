@@ -140,11 +140,9 @@ export default {
     getGrapesWebModalDraw(htmlBody) {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
-      debugger
       this.editor.setComponents(`${htmlBody}`)
     },
     cloneUrlButtonCLick() {
-      debugger
       this.cloneUrlPage = this.cloneUrl
     }
   }

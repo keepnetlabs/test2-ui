@@ -31,6 +31,7 @@
       </template>
       <template v-slot:overlay-footer>
         <v-btn
+          type="button"
           class="new-integration__footer-btn-cancel"
           rounded
           @click="showWebPageGrapes = false"
@@ -38,7 +39,12 @@
           CANCEL
         </v-btn>
         <div class="new-integration__footer__right-col">
-          <v-btn class="new-integration__footer-btn-save white--text" color="#2196f3" rounded>
+          <v-btn
+            class="new-integration__footer-btn-save white--text"
+            color="#2196f3"
+            rounded
+            type="button"
+          >
             SAVE
           </v-btn>
         </div>

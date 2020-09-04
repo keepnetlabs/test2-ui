@@ -73,13 +73,14 @@ const login = {
     },
     loginAction({ commit, dispatch }, payload) {
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+      //@todo arda set expired
       loginAction(payload)
         .then((response) => {
           commit('common/SET_ERROR_STATE', false, { root: true })
           AuthenticationService.setToken(
-            response.data.token,
-            response.data.expiredIn,
-            response.data.status
+            response.data.access_token,
+            response.data.expiredIn || 9999999999999,
+            response.data.status || 1
           )
           if (response.data.status === 3) {
             commit('SET_PAGE_NUMBER', 4)
