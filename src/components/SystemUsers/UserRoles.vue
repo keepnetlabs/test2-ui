@@ -5,6 +5,11 @@
       v-if="showDeleteSystemUserModal"
       @closeOverlay="toggleShowDeleteSystemUserModal"
     />
+    <cant-delete-user-role-modal
+      :status="showCantDeleteUserModal"
+      v-if="showCantDeleteUserModal"
+      @closeOverlay="toggleCantDeleteUserRoleModal"
+    />
     <div class="user-roles__container">
       <data-table
         ref="refUserRolesList"
@@ -30,9 +35,11 @@
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import DeleteSystemUserRoleModal from '@/components/SystemUsers/DeleteSystemUserRoleModal'
+import CantDeleteUserRoleModal from '@/components/SystemUsers/CantDeleteUserRoleModal'
 export default {
   name: 'UserRoles',
   components: {
+    CantDeleteUserRoleModal,
     DataTable,
     DeleteSystemUserRoleModal
   },
@@ -120,13 +127,17 @@ export default {
           tooltip: 'Add a New System User'
         }
       },
-      showDeleteSystemUserModal: false
+      showDeleteSystemUserModal: false,
+      showCantDeleteUserModal: false
     }
   },
   methods: {
     handleAddNewUserRole() {},
     toggleShowDeleteSystemUserModal() {
       this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
+    },
+    toggleCantDeleteUserRoleModal() {
+      this.showCantDeleteUserModal = !this.showCantDeleteUserModal
     }
   }
 }
