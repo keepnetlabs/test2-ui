@@ -20,11 +20,14 @@
       :pageSizes="tableOptions.pageSizes"
       :refName="'groupsTable'"
       :rowActions="tableOptions.rowActions"
+      :extended-view-options="tableOptions.extendedViewOptions"
+      :extendedViewValue="extendedViewValue"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       ref="refGroupsTable"
       @syncWithLDAP="handleSyncWithLDAP"
       @handleEdit="handleEdit"
+      @onEditClick="onEditClick"
       @delete="handleDelete"
       @onEmptyBtnClicked="showNewUserGroupModal = true"
       titleKey="name"
@@ -173,12 +176,58 @@ export default {
             icon: 'mdi-delete',
             action: 'delete'
           }
-        ]
+        ],
+        extendedViewOptions: {
+          titleKey: 'name',
+          footer: [
+            {
+              label: 'Date Created',
+              key: 'createDate'
+            },
+            {
+              label: 'Last update',
+              key: 'lastUpdateDate'
+            }
+          ],
+          col: [
+            {
+              property: PROPERTY_STORE.NAME,
+              label: 'Group Name',
+              isEditable: true,
+              type: 'text',
+              editOptions: {
+                component: 'textfield',
+                props: {
+                  rules: [(v) => required(v, 'Required')]
+                }
+              }
+            },
+            {
+              property: PROPERTY_STORE.PRIORITY,
+              label: getStoreValue(PROPERTY_STORE.PRIORITY),
+              type: 'priority',
+              isEditable: true,
+              editOptions: {
+                component: 'select',
+                props: {
+                  items: [
+                    { text: 'Very Low', value: 'VeryLow' },
+                    'Low',
+                    'Medium',
+                    'High',
+                    { text: 'Very High', value: 'VeryHigh' }
+                  ]
+                }
+              }
+            }
+          ]
+        }
       },
       addGroupsItems: ['Create User Group', 'Create Smart Group'],
       showNewUserGroupModal: false,
       showDeleteGroupModal: false,
-      selectedRow: {}
+      selectedRow: {},
+      extendedViewValue: []
     }
   },
   methods: {
@@ -253,6 +302,11 @@ export default {
     handleDelete(selectedRow) {
       this.changeDeleteGroupModalStatus(true)
       this.selectedRow = selectedRow
+    },
+    onEditClick({ selected: selections, isEditPopupOpen }) {
+      if (isEditPopupOpen) {
+        this.extendedViewValue = [...selections]
+      }
     },
     handleDeleteGroup(selectedRow) {
       deleteTargetGroup(selectedRow.resourceId)
