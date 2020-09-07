@@ -752,15 +752,37 @@
       left: unset !important;
       right: 220px !important;
     }
-
+    .el-table [class*="el-table__row--level"]{
+      .el-table__indent,.el-table__placeholder{
+        display: none;
+      }
+    }
     .el-table [class*="el-table__row--level"] .el-table__expand-icon {
       float: right !important;
       margin-top: 2px;
-
+      transform: rotate(-90deg);
       .el-icon-arrow-right:before {
         font-weight: 900;
         font-size: 15px;
       }
+    }
+    .el-table__row.el-table__row--level-1{
+     background-color: #f5f7fa !important;
+       td{
+        padding-left: 29px !important;
+      }
+      .el-table-column--selection .cell{
+        overflow: visible !important;
+      }
+      .actions-container{
+        button{
+          visibility: hidden;
+        }
+      }
+
+    }
+    .el-table [class*="el-table__row--level"] .el-table__expand-icon--expanded{
+      transform: rotate(90deg) !important;
     }
 
     .cluster-btn {

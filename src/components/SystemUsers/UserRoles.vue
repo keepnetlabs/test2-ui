@@ -14,6 +14,8 @@
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
+        :row-key="'id'"
+        groupable
         :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
@@ -41,21 +43,10 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: PROPERTY_STORE.TITLE,
+            property: 'date',
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.TITLE),
-            sortable: true,
-            show: true,
-            fixed: 'left',
-            type: 'text',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.USERS,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.USERS),
+            label: 'Date',
             sortable: true,
             show: true,
             fixed: false,
@@ -63,32 +54,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.COMPANY,
+            property: 'name',
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.COMPANY),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.TYPE,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.TYPE),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'badge',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.CREATEDATE,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: 'Name',
             sortable: true,
             show: true,
             fixed: false,
@@ -128,6 +97,37 @@ export default {
     toggleShowDeleteSystemUserModal() {
       this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
     }
+  },
+  mounted() {
+    this.$refs.refUserRolesList.loadWithDataArray([
+      {
+        id: 1,
+        date: '2016-05-02',
+        name: 'wangxiaohu'
+      },
+      {
+        id: 2,
+        date: '2016-05-04',
+        name: 'wangxiaohu',
+        children: [
+          {
+            id: 31,
+            date: '2016-05-01',
+            name: 'wangxiaohu'
+          },
+          {
+            id: 32,
+            date: '2016-05-05',
+            name: 'wangxiaohu'
+          }
+        ]
+      },
+      {
+        id: 3,
+        date: '2016-05-01',
+        name: 'wangxiaohu'
+      }
+    ])
   }
 }
 </script>

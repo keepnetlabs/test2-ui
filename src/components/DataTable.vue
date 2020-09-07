@@ -388,13 +388,15 @@
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
+            @select="handleSelect"
             @sort-change="sortChangedEvent"
             :empty-text="empty.message"
+            @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
             lazy
             ref="elTableRef"
-            row-key="resourceId"
+            :row-key="rowKey"
             style="width: 100%;"
             v-if="!allHidden"
           >
@@ -850,6 +852,10 @@ export default {
         return {}
       }
     },
+    rowKey: {
+      type: String,
+      default: 'resourceId'
+    },
     isExtendedViewCreateMode: {
       type: Boolean,
       default: false
@@ -1013,6 +1019,7 @@ export default {
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed: true,
+      clusteredItems: [],
       isRowActionsMenuOpen: [],
       download: {
         xls: false,
@@ -1032,11 +1039,21 @@ export default {
       actionsWidth: 0,
       init: true,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
-      selectionRowCheckboxDeterminate: false
+      selectionRowCheckboxDeterminate: false,
+      totalLength: 0
     }
   },
   watch: {
     tableData(data) {
+      if (data && this.groupable) {
+        this.totalLength = data.reduce((acc, item) => {
+          if (item.children) {
+            return acc + 1 + item.children.length
+          } else {
+            return acc + 1
+          }
+        }, 0)
+      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
@@ -1063,13 +1080,24 @@ export default {
     },
     multipleSelection(selecteds) {
       this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
-      if (selecteds.length === this.tableData.length) {
-        this.selectionCheckbox = true
-        this.selectionRowCheckboxDeterminate = false
-      } else if (selecteds.length > 0) {
-        this.selectionRowCheckboxDeterminate = true
+      if (this.groupable) {
+        if (selecteds.length === this.totalLength) {
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
+        } else if (selecteds.length > 0) {
+          this.selectionRowCheckboxDeterminate = true
+        } else {
+          this.selectionCheckbox = false
+        }
       } else {
-        this.selectionCheckbox = false
+        if (selecteds.length === this.tableData.length) {
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
+        } else if (selecteds.length > 0) {
+          this.selectionRowCheckboxDeterminate = true
+        } else {
+          this.selectionCheckbox = false
+        }
       }
     },
     columns: {
@@ -1137,6 +1165,36 @@ export default {
         isEditPopupOpen: true
       })
       this.isWantToEditRow = true
+    },
+    handleSelectAll(selection) {
+      if (this.groupable) {
+        if (this.clusteredItems.length) {
+          for (let item of this.clusteredItems) {
+            this.$refs.elTableRef.toggleRowSelection(item, false)
+          }
+          this.selection = []
+          this.clusteredItems = []
+        }
+        for (let item of selection) {
+          if (item.children) {
+            for (let child of item.children) {
+              this.$refs.elTableRef.toggleRowSelection(child, true)
+              this.clusteredItems.push(child)
+              if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
+                selection.push(child)
+              }
+            }
+          } else {
+          }
+        }
+        console.log('selection', selection)
+
+        this.multipleSelection = selection
+        if (this.multipleSelection.length === 0) {
+          this.isWantToEditRow = false
+        }
+        this.$emit('handleSelectionChange', selection)
+      }
     },
     setCellClass(obj) {
       /*
@@ -1426,12 +1484,43 @@ export default {
       }
       return ''
     },
-    handleSelectionChange(val) {
+    handleSelectionChange(val, row) {
       this.multipleSelection = val
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
       this.$emit('handleSelectionChange', val)
+    },
+    handleSelect(selection, row) {
+      console.log('handleSelect')
+      if (this.groupable) {
+        if (row.children) {
+          if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
+            for (let child of row.children) {
+              this.$refs.elTableRef.toggleRowSelection(child, true)
+              if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
+                this.clusteredItems.push(child)
+                selection.push(child)
+              }
+            }
+          } else {
+            for (let child of row.children) {
+              this.$refs.elTableRef.toggleRowSelection(child, false)
+              const ind = selection.findIndex(
+                (item) => JSON.stringify(item) === JSON.stringify(child)
+              )
+              if (ind > -1) {
+                selection.splice(ind, 1)
+              }
+            }
+          }
+        }
+        this.multipleSelection = selection
+        if (this.multipleSelection.length === 0) {
+          this.isWantToEditRow = false
+        }
+        this.$emit('handleSelectionChange', selection)
+      }
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
