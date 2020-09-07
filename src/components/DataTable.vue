@@ -1175,6 +1175,7 @@ export default {
           this.selection = []
           this.clusteredItems = []
         }
+
         for (let item of selection) {
           if (item.children) {
             for (let child of item.children) {
@@ -1184,10 +1185,8 @@ export default {
                 selection.push(child)
               }
             }
-          } else {
           }
         }
-        console.log('selection', selection)
 
         this.multipleSelection = selection
         if (this.multipleSelection.length === 0) {
@@ -1277,7 +1276,6 @@ export default {
         }
       }
     },
-
     sortFunction(data, sortProps) {
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
@@ -1492,7 +1490,6 @@ export default {
       this.$emit('handleSelectionChange', val)
     },
     handleSelect(selection, row) {
-      console.log('handleSelect')
       if (this.groupable) {
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
@@ -1649,6 +1646,7 @@ export default {
       // Do something
     },
     clusterSelected(name, ind) {
+      debugger
       this.clusterItems[ind].selected = !this.clusterItems[ind].selected
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.

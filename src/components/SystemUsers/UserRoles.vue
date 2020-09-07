@@ -14,9 +14,13 @@
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
-        :row-key="'id'"
+        :row-key="rowKey"
         groupable
         :options="true"
+        :cluster-items="[
+          { name: 'id', selected: true },
+          { name: 'name', selected: false }
+        ]"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
@@ -89,7 +93,8 @@ export default {
           tooltip: 'Add a New System User'
         }
       },
-      showDeleteSystemUserModal: false
+      showDeleteSystemUserModal: false,
+      rowKey: 'id'
     }
   },
   methods: {
@@ -125,7 +130,19 @@ export default {
       {
         id: 3,
         date: '2016-05-01',
-        name: 'wangxiaohu'
+        name: 'wangxiaohu',
+        children: [
+          {
+            id: 33,
+            date: '2016-05-02',
+            name: 'wangxiaohu'
+          },
+          {
+            id: 34,
+            date: '2016-05-05',
+            name: 'wangxiaohu'
+          }
+        ]
       }
     ])
   }
