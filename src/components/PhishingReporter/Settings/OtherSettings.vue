@@ -1,8 +1,7 @@
 <template>
   <v-container fluid id="other-settings" class="other-settings">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2"
-      style="max-width: 100%;"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2 other-settings__header"
       v-if="showHeader"
     >
       <v-list-item-content>
@@ -37,7 +36,7 @@
           <div>
             <v-checkbox
               v-model="formValues.isEnableProxy"
-              class="other-settings__checkbox k-checkbox mt-n2"
+              class="other-settings__checkbox k-checkbox mt-n3"
               color="#2196f3"
               label="Detect and use the proxy settings on your computer"
               :readonly="!showForm"
@@ -46,7 +45,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item class="px-0 other-settings__list-item" style="max-width: 630px;">
+      <v-list-item class="px-0 other-settings__list-item other-settings__list-item-container mt-n1">
         <v-list-item-content>
           <label class="other-settings__list-item-header">Phishing Reporter API Settings</label>
           <div class="other-settings__api-settings-container">
@@ -55,8 +54,7 @@
               placeholder="https://dashboard.abc.com/"
               outlined
               dense
-              class="mt-2"
-              style="margin-left: 50px;"
+              class="mt-2 other-settings__list-item-container-item--1"
               v-model.trim="formValues.apiUrl"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
@@ -64,17 +62,12 @@
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container mt-n3">
-            <label
-              class="other-settings__list-item-header mt-n2"
-              for="no-internet-connection-message"
-              >Api Key</label
-            >
+            <label class="other-settings__list-item-header mt-n2">Api Key</label>
             <v-text-field
               placeholder="Api Key"
               outlined
               dense
-              class="mt-2"
-              style="margin-left: 56px;"
+              class="mt-2 other-settings__list-item-container-item--2"
               v-model.trim="formValues.apiKey"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
@@ -82,17 +75,12 @@
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container">
-            <label
-              class="other-settings__list-item-header mt-n5"
-              for="no-internet-connection-message"
-              >Company ID</label
-            >
+            <label class="other-settings__list-item-header mt-n5">Company ID</label>
             <v-text-field
               placeholder="Company ID"
               outlined
               dense
-              class="mt-n1"
-              style="margin-left: 24px;"
+              class="mt-n1 ml-6"
               v-model="formValues.companyKey"
               :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
               height="40"
@@ -104,15 +92,10 @@
 
       <v-list-item class="px-0 other-settings__list-item mt-n1">
         <v-list-item-content>
-          <label class="other-settings__list-item-header" for="alertbox-text"
-            >Enterprise Vault</label
-          >
+          <label class="other-settings__list-item-header">Enterprise Vault</label>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item
-        class="px-0 other-settings__list-item"
-        style="min-height: auto; margin-top: 5px; max-width: 591px;"
-      >
+      <v-list-item class="px-0 other-settings__list-item other-settings__list-item-enter-prise">
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
             v-model.trim="formValues.enableEnterpriseVault"
@@ -153,7 +136,7 @@
 </template>
 
 <script>
-import { required } from '../../../utils/validations'
+import { required } from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 
 export default {
@@ -290,6 +273,9 @@ export default {
       justify-content: center;
     }
   }
+  &__header {
+    max-width: 100% !important;
+  }
 
   &__footer {
     &-disabled {
@@ -367,6 +353,22 @@ export default {
     .v-list-item__content {
       padding: 0 !important;
       overflow: visible;
+    }
+    &-enter-prise {
+      min-height: auto !important;
+      margin-top: 5px;
+      max-width: 591px !important;
+    }
+    &-container {
+      max-width: 630px;
+      &-item {
+        &--1 {
+          margin-left: 50px !important;
+        }
+        &--2 {
+          margin-left: 56px !important;
+        }
+      }
     }
 
     .v-list-item {

@@ -118,16 +118,16 @@
               @keyup="searchChangedEvent"
             />
           </div>
-          <div class="table-settings" v-if="options" v-once>
+          <div class="table-settings" v-if="options">
             <v-btn
               class="clust-btn btn-hover mr-2"
               color="#2196f3"
               icon
               outlined
-              style="border-radius: 6px !important; order: 1;"
+              style="border-radius: 6px !important; order: 1; width: 40px;"
               v-if="groupable"
             >
-              <v-icon>mdi-format-list-bulleted</v-icon>
+              <v-icon style="font-size: 20px;">mdi-format-list-bulleted</v-icon>
             </v-btn>
             <v-btn
               class="clust-btn cluster-btn btn-hover mr-4"
@@ -136,8 +136,15 @@
               style="border-radius: 6px !important; order: 2;"
               v-if="groupable"
             >
-              <v-icon>mdi-format-list-text</v-icon>
-              <v-menu bottom offset-y transition="scale-transition" v-model="clusterChevron">
+              <v-icon style="font-size: 20px;">mdi-format-list-text</v-icon>
+              <v-menu
+                bottom
+                offset-y
+                transition="scale-transition"
+                v-model="clusterChevron"
+                min-width="130"
+                content-class="cluster-view"
+              >
                 <template v-slot:activator="{ on }">
                   <div @click="clusterChevron = !clusterChevron" class="header-list-item" v-on="on">
                     <v-icon :class="{ 'chevron-down': clusterChevron }">mdi-chevron-down</v-icon>
@@ -155,8 +162,16 @@
                     v-for="(item, key) of clusterItems"
                   >
                     <v-list-item-title>
-                      <span class="cluster-span">{{ item.name }}</span>
-                      <v-icon color="#2196f3" v-if="item.selected">mdi-check</v-icon>
+                      <span
+                        :class="[
+                          'cluster-view__item',
+                          isEqualCluster(item.name) && 'cluster-view__item--selected'
+                        ]"
+                        >{{ item.name }}</span
+                      >
+                      <v-icon class="ml-4 mt-n1" color="#2196f3" v-if="isEqualCluster(item.name)"
+                        >mdi-check</v-icon
+                      >
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -998,6 +1013,7 @@ export default {
       sortProps: null,
       initialData: [],
       dataLength: 0,
+      selectedCluster: '',
       tableData: [],
       rowCount: 10,
       totalCount: 100,
@@ -1155,6 +1171,9 @@ export default {
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
+    },
+    isEqualCluster(name) {
+      return name === this.selectedCluster
     },
     handleMultipleSelectedEdits() {
       this.extendedViewStyle = {
@@ -1646,8 +1665,7 @@ export default {
       // Do something
     },
     clusterSelected(name, ind) {
-      debugger
-      this.clusterItems[ind].selected = !this.clusterItems[ind].selected
+      this.selectedCluster = name
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },

@@ -114,8 +114,8 @@ import AddinSettings from './AddinSettings'
 import DiagnosticTool from './DiagnosticTool'
 import EmailSettings from './EmailSettings'
 import OtherSettings from './OtherSettings'
-import { createPhishingReporter } from '../../../api/phishingReporter'
-import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
+import { createPhishingReporter } from '@/api/phishingReporter'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import DownloadAddInModal from '../DownloadAddInModal'
 export default {
   name: 'Settings',
@@ -184,7 +184,7 @@ export default {
 
        */
       createPhishingReporter(formData)
-        .then((response) => {
+        .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             message: 'Phishing Reporter Saved Successfully!',
             icon: 'mdi-check-circle',
@@ -213,8 +213,7 @@ export default {
     border-radius: 20px;
     box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
     background-color: #ffffff;
-    padding: 24px;
-    padding-bottom: 16px;
+    padding: 24px 24px 16px 24px;
     margin-top: -8px;
     margin-bottom: 24px;
     &--diagnostic-tool {

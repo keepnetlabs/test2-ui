@@ -1,8 +1,7 @@
 <template>
   <v-container fluid tag="div" id="email-settings" class="email-settings">
     <v-list-item
-      class="px-0 email-settings__list-item mt-0 mr-2"
-      style="max-width: 100%;"
+      class="px-0 email-settings__list-item mt-0 mr-2 email-settings__header-container"
       v-if="showHeader"
     >
       <v-list-item-content>
@@ -40,9 +39,7 @@
 
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header" for="recipient-email-address"
-            >Recipient Email Address</label
-          >
+          <label class="email-settings__list-item--header">Recipient Email Address</label>
           <v-text-field
             placeholder="Enter email address"
             outlined
@@ -66,14 +63,13 @@
                 : []
             "
             :readonly="!showForm"
-            id="recipient-email-address"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header" for="cc">CC</label>
+          <label class="email-settings__list-item--header">CC</label>
           <v-text-field
             placeholder="Enter email address"
             outlined
@@ -89,21 +85,19 @@
                 : []
             "
             :readonly="!showForm"
-            id="cc"
             height="40"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header" for="bcc">BCC</label>
+          <label class="email-settings__list-item--header">BCC</label>
           <v-text-field
             placeholder="Enter email address"
             outlined
             dense
             class="k-textfield mt-2"
             v-model.trim="formValues.bcc"
-            id="bcc"
             :readonly="!showForm"
             :rules="
               showForm
@@ -119,14 +113,13 @@
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header" for="email-subject">Email Subject</label>
+          <label class="email-settings__list-item--header">Email Subject</label>
           <v-text-field
             placeholder="Suspicious Email"
             outlined
             dense
             class="k-textfield mt-2"
             v-model.trim="formValues.subject"
-            id="email-subject"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
@@ -148,7 +141,7 @@
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
-          <label class="email-settings__list-item--header" for="email-message">Email Message</label>
+          <label class="email-settings__list-item--header">Email Message</label>
           <v-textarea
             placeholder="Please investigate the attached email"
             outlined
@@ -171,7 +164,6 @@
                 : []
             "
             :readonly="!showForm"
-            id="email-message"
           ></v-textarea>
         </v-list-item-content>
       </v-list-item>
@@ -186,7 +178,7 @@
 </template>
 
 <script>
-import { maxLength, mail, required } from '../../../utils/validations'
+import { maxLength, mail, required } from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'EmailSettings',
@@ -260,11 +252,6 @@ export default {
       } else {
         return false
       }
-    },
-    handleEmailAddressChange(value) {
-      if (!value) {
-        this.hasError = true
-      }
     }
   },
   created() {
@@ -334,6 +321,9 @@ export default {
     color: rgba(0, 0, 0, 0.87) !important;
     overflow: visible;
     opacity: 0.9;
+    &-container {
+      max-width: 100% !important;
+    }
   }
   &__sub-header {
     font-size: 14px;

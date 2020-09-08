@@ -35,7 +35,7 @@
               </div>
               <div class="phishing-reporter__stats-card-right">
                 <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
-                  {{ (phishingReportSummary && phishingReportSummary.onlineUsersCount) || 0 }}
+                  {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
                 </h3>
                 <p class="phishing-reporter__stats-card-right-stats">
                   Users Online
@@ -58,7 +58,7 @@
               </div>
               <div class="phishing-reporter__stats-card-right">
                 <h3 class="phishing-reporter__stats-card-right-title" style="color: #f56c6c;">
-                  {{ (phishingReportSummary && phishingReportSummary.offlineUsersCount) || 0 }}
+                  {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
                 </h3>
                 <p class="phishing-reporter__stats-card-right-stats">
                   Users Offline
@@ -73,12 +73,12 @@
                   class="phishing-reporter__stats-card-left-icon"
                   style="background-color: #2196f3;"
                 >
-                  <img src="../assets/img/account-tree.png" />
+                  <img src="../assets/img/account-tree.png" alt="" />
                 </div>
               </div>
               <div class="phishing-reporter__stats-card-right">
                 <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                  v{{ (phishingReportSummary && phishingReportSummary.addInVersion) || 0 }}
+                  v{{ (phishingReportSummary && phishingReportSummary['addInVersion']) || 0 }}
                 </h3>
                 <p class="phishing-reporter__stats-card-right-stats">
                   Latest Release
@@ -141,7 +141,7 @@
 import Settings from '../components/PhishingReporter/Settings/Settings'
 import Users from '../components/PhishingReporter/Users'
 import FirstTime from '../components/PhishingReporter/Settings/FirstTime'
-import { getPhishingReporter, getPhishingReportSummary } from '../api/phishingReporter'
+import { getPhishingReporter, getPhishingReportSummary } from '@/api/phishingReporter'
 
 export default {
   name: 'PhishingReporter',
@@ -165,7 +165,7 @@ export default {
   },
   computed: {
     getAddOnStatus() {
-      return this.phishingReportSummary ? this.phishingReportSummary.totalUsersCount : 0
+      return this.phishingReportSummary ? this.phishingReportSummary['totalUsersCount'] : 0
     }
   },
   methods: {
@@ -181,7 +181,6 @@ export default {
     },
     getPhishingReportSummary() {
       const dateObj = this.getDates()
-      console.log('dateObj', dateObj)
       getPhishingReportSummary({
         startDate: dateObj.startDate,
         endDate: dateObj.endDate
@@ -193,7 +192,7 @@ export default {
 
           this.phishingReportSummary = data
         })
-        .catch((error) => {
+        .catch(() => {
           this.phishingReportSummary = {}
         })
     },
@@ -276,7 +275,7 @@ export default {
             }
           }
         })
-        .catch((error) => {
+        .catch(() => {
           this.tabComponent = {
             name: FirstTime,
             ref: 'refFirstTime',
@@ -359,7 +358,6 @@ export default {
     flex-wrap: wrap;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-    -ms-flex-flow: row;
     flex-flow: row;
     border-bottom: 2px solid #e4e7ed;
     margin: 0 24px;
@@ -441,8 +439,7 @@ export default {
   }
 }
 .phishing-reporter__header {
-  padding: 16px;
-  padding-top: 10px;
+  padding: 11px 16px 16px 16px;
 
   &-left-column {
     display: flex;

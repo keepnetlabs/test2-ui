@@ -74,6 +74,17 @@ export default {
             fixed: false,
             type: 'text',
             width: 150
+          },
+          {
+            property: 'status',
+            align: 'left',
+            editable: false,
+            label: 'Name',
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'badge',
+            width: 150
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
@@ -101,7 +112,7 @@ export default {
         }
       },
       showDeleteSystemUserModal: false,
-      rowKey: 'id'
+      rowKey: 'id',
       showCantDeleteUserModal: false
     }
   },
@@ -119,22 +130,26 @@ export default {
       {
         id: 1,
         date: '2016-05-02',
-        name: 'wangxiaohu'
+        name: 'wangxiaohu',
+        status: 'Active'
       },
       {
         id: 2,
         date: '2016-05-04',
         name: 'wangxiaohu',
+        status: 'Active',
         children: [
           {
             id: 31,
             date: '2016-05-01',
-            name: 'wangxiaohu'
+            name: 'wangxiaohu',
+            status: 'Active'
           },
           {
             id: 32,
             date: '2016-05-05',
-            name: 'wangxiaohu'
+            name: 'wangxiaohu',
+            status: 'Active'
           }
         ]
       },
@@ -146,12 +161,14 @@ export default {
           {
             id: 33,
             date: '2016-05-02',
-            name: 'wangxiaohu'
+            name: 'wangxiaohu',
+            status: 'Inactive'
           },
           {
             id: 34,
             date: '2016-05-05',
-            name: 'wangxiaohu'
+            name: 'wangxiaohu',
+            status: 'Inactive'
           }
         ]
       }

@@ -61,7 +61,7 @@
         >
           SAVE CHANGES
         </v-btn>
-        <v-btn style="padding-left: 20px;" rounded class="white--text btn-util ml-4" disabled>
+        <v-btn rounded class="white--text btn-util ml-4 pl-5" disabled>
           <v-icon left color="#fff">mdi-download</v-icon>
           Save and Download Add-in
         </v-btn>
@@ -102,8 +102,6 @@ export default {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 34px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.15;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
@@ -187,8 +185,6 @@ export default {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       text-align: right;
@@ -232,8 +228,6 @@ export default {
     .v-btn__content {
       font-size: 14px;
       font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
       line-height: 1.71;
       letter-spacing: normal;
       color: #fff;
