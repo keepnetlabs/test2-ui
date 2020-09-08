@@ -118,7 +118,7 @@
               @keyup="searchChangedEvent"
             />
           </div>
-          <div class="table-settings" v-if="options">
+          <div class="table-settings" v-if="options" v-once>
             <v-btn
               class="clust-btn btn-hover mr-2"
               color="#2196f3"
