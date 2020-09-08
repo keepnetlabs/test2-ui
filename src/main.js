@@ -17,7 +17,9 @@ Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
-if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
+console.log('env config', config.VUE_APP_SAAS_STATUS)
+if (config.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
+  console.log('buralar hep cloud')
   const VueAnalytics = require('vue-analytics').default
   Vue.use(VueAnalytics, {
     id: 'UA-131042304-2'
