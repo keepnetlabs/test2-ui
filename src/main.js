@@ -13,10 +13,15 @@ import 'echarts-gl'
 import VueMask from 'v-mask'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
+import { SmartWidget } from 'vue-smart-widget'
+import { SmartWidgetGrid } from 'vue-smart-widget'
+Vue.component('SmartWidget', SmartWidget)
+Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
+
 if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
   const VueAnalytics = require('vue-analytics').default
   Vue.use(VueAnalytics, {
