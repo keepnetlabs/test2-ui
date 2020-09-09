@@ -43,6 +43,7 @@ export default {
   max-width: 554px;
   margin-bottom: 1px;
   .v-list-item__content {
+    overflow: visible;
     padding: 0;
   }
   &.v-list-item {

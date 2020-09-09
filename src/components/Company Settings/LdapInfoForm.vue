@@ -144,6 +144,7 @@ export default {
     }
     .v-list-item__content {
       padding: 0;
+      overflow: visible;
     }
     .v-card-headline {
       white-space: normal;

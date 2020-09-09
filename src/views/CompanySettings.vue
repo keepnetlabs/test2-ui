@@ -20,9 +20,6 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <ip-addresses />
-          </v-tab-item>
-          <v-tab-item>
             <user-directories />
           </v-tab-item>
           <v-tab-item>
@@ -46,6 +43,9 @@
           <v-tab-item>
             <custom-api />
           </v-tab-item>
+          <v-tab-item>
+            <server-settings />
+          </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-layout>
@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import IpAddresses from '@/components/Company Settings/IpAddresses'
 import UserDirectories from '@/components/Company Settings/UserDirectories'
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
@@ -62,24 +61,24 @@ import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import RestApi from '@/components/Company Settings/RestApi'
 import SmsSettings from '@/components/Company Settings/SmsSettings'
 import CustomApi from '@/components/Company Settings/CustomApi'
+import ServerSettings from '@/components/Company Settings/ServerSettings'
 export default {
   name: 'CompanySettings',
   components: {
     SMTPSettings,
     UserDirectories,
-    IpAddresses,
     NotificationTemplates,
     DataAnonymization,
     WhiteLabeling,
     RestApi,
     SmsSettings,
-    CustomApi
+    CustomApi,
+    ServerSettings
   },
   data() {
     return {
       tab: 0,
       tabItems: [
-        'IP Addresses',
         'User Directories',
         'SMTP Settings',
         'Notification Templates',
@@ -87,7 +86,8 @@ export default {
         'White Labeling',
         'Rest API',
         'SMS Settings',
-        'Custom API'
+        'Custom API',
+        'Server Settings'
       ]
     }
   },
