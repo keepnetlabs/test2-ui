@@ -448,7 +448,13 @@
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
-                <span v-if="scope.row.matchingPlaybooks.length === 0">
+                <span
+                  v-if="
+                    scope.row &&
+                    scope.row.matchingPlaybooks &&
+                    scope.row.matchingPlaybooks.length === 0
+                  "
+                >
                   {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
                 </span>
                 <span
