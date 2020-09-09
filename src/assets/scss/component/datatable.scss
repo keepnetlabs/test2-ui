@@ -294,7 +294,7 @@
           border-top: 0;
           height: 8px;
           left: 4px;
-          top: 0px;
+          top: 0;
           width: 4px;
         }
 
@@ -424,7 +424,7 @@
 
           .table-settings {
             cursor: pointer;
-
+            display: flex;
             @media only screen and (max-width: 500px) {
               padding-right: 0;
               padding-top: 13px;
@@ -769,10 +769,14 @@
     .el-table__row.el-table__row--level-1{
      background-color: #f5f7fa !important;
        td{
-        padding-left: 29px !important;
+        padding-left: 24px !important;
+
       }
       .el-table-column--selection .cell{
         overflow: visible !important;
+      }
+      .el-table-column--selection{
+        padding-left: 32px !important;
       }
       .actions-container{
         button{
