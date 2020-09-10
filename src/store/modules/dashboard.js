@@ -335,11 +335,11 @@ const dashboard = {
     selectCompany({ commit, dispatch }, payload) {
       return selectCompany(payload).then(() => {
         commit('SET_SELECTED_COMPANY', payload)
-        dispatch('getLastFiveCompaignsStats')
-        dispatch('getPhishingCampaigns', 999)
-        dispatch('getOverallStats', 12)
-        dispatch('getCompanyInformation')
-        dispatch('getDropdownCompanies')
+        //dispatch('getLastFiveCompaignsStats')
+        //dispatch('getPhishingCampaigns', 999)
+        //dispatch('getOverallStats', 12)
+        //dispatch('getCompanyInformation')
+        //dispatch('getDropdownCompanies')
         //commit('threadSharing/SET_COLLAPSE_TO_INCIDENTS', false, { root: true })
       })
     },
