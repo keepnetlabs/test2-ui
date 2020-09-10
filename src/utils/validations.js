@@ -14,6 +14,7 @@ export function maxLength(value, length, message) {
 export function minLength(value, length, message) {
   //length patlamasın diye.
   value = getValue(value)
+
   return value.length > length || message
 }
 
@@ -52,4 +53,9 @@ export function extension(value, message) {
 
 export function required(value, message) {
   return !!hasValue(value) || message
+}
+
+export function trim(value, message) {
+  value = getValue(value).trim()
+  return value.length > 0 || message
 }

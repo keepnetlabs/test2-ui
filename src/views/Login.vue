@@ -64,6 +64,7 @@
                         <v-form
                           @submit="(event) => event.preventDefault()"
                           v-model="validEmail"
+                          autocomplete="off"
                           ref="email"
                         >
                           <v-text-field
@@ -76,8 +77,7 @@
                             class="username-field"
                             required
                             label="Username"
-                            aria-autocomplete="on"
-                            autocomplete="on"
+                            autocomplete="off"
                             outlined
                             @keyup.enter="toNext"
                           ></v-text-field>
@@ -100,6 +100,7 @@
                             hint="At least 8 characters"
                             id="password"
                             v-model="password"
+                            autocomplete="off"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
@@ -271,6 +272,12 @@ export default {
     }
   },
   created() {
+    if (localStorage.getItem('isRemember')) {
+      this.rememberMe = localStorage.getItem('isRemember')
+      this.email = localStorage.getItem('username')
+      this.password = localStorage.getItem('password')
+    }
+
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
         this.$route.query &&
@@ -377,6 +384,16 @@ export default {
           })
           .then(() => {
             setTimeout(() => {
+              if (this.rememberMe) {
+                localStorage.setItem('username', this.email)
+                localStorage.setItem('password', this.password)
+                localStorage.setItem('isRemember', this.rememberMe)
+              } else {
+                localStorage.removeItem('username')
+                localStorage.removeItem('password')
+                localStorage.removeItem('isRemember')
+              }
+
               if (!!Object.keys(mainUrl.query).length) {
                 _this.$router.push(mainUrl.fullPath)
               }

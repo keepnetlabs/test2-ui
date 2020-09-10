@@ -1,19 +1,14 @@
 <template>
-  <div class="user-directories">
-    <new-ldap-integration
-      v-if="ldapModalStatus"
-      :status="ldapModalStatus"
-      @closeOverlay="ldapModalStatus = false"
-    />
-    <company-settings-header
-      title="User Directories"
-      sub-title="Manage user directory integrations like LDAP and MS Active Directory"
-    />
-    <div class="user-directories__container">
+  <div class="system-users-people">
+    <div class="system-users-people__container">
+      <create-or-edit-system-user
+        v-if="showCreateOrEditSystemUserModal"
+        :status="showCreateOrEditSystemUserModal"
+        @closeOverlay="toggleCreateOrEditSystemUser"
+      />
       <data-table
-        id="user-directories"
-        ref="refUserDirectoriesList"
-        :refName="'userDirectoriesList'"
+        ref="refSystemUsersList"
+        :refName="'systemUsersList'"
         :columns="tableOptions.columns"
         :countRow="5"
         :empty="tableOptions.empty"
@@ -25,33 +20,32 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="ldapModalStatus = true"
+        @handleAddNewSystemUsers="handleAddNewSystemUsers"
+        @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
       />
     </div>
   </div>
 </template>
 
 <script>
-import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import DataTable from '@/components/DataTable'
-import NewLdapIntegration from '@/components/Company Settings/NewLdapIntegration'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import DataTable from '@/components/DataTable'
+import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 export default {
-  name: 'UserDirectories',
+  name: 'People',
   components: {
-    CompanySettingsHeader,
     DataTable,
-    NewLdapIntegration
+    CreateOrEditSystemUser
   },
   data() {
     return {
       tableOptions: {
         columns: [
           {
-            property: PROPERTY_STORE.INTEGRATIONNAME,
+            property: PROPERTY_STORE.FIRSTNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.INTEGRATIONNAME),
+            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
             sortable: true,
             show: true,
             fixed: 'left',
@@ -59,10 +53,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.TYPE,
+            property: PROPERTY_STORE.LASTNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.TYPE),
+            label: getStoreValue(PROPERTY_STORE.LASTNAME),
             sortable: true,
             show: true,
             fixed: false,
@@ -70,10 +64,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.URL,
+            property: PROPERTY_STORE.COMPANY,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.URL),
+            label: getStoreValue(PROPERTY_STORE.COMPANY),
             sortable: true,
             show: true,
             fixed: false,
@@ -81,14 +75,36 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.USERS,
+            property: PROPERTY_STORE.ROLE,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.USERS),
+            label: getStoreValue(PROPERTY_STORE.ROLE),
             sortable: true,
             show: true,
             fixed: false,
             type: 'text',
+            width: 150
+          },
+          {
+            property: PROPERTY_STORE.PHONE,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PHONE),
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'text',
+            width: 150
+          },
+          {
+            property: PROPERTY_STORE.STATUS,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'badge',
             width: 150
           },
           {
@@ -117,18 +133,23 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any user directory integration, yet',
-          subMes: 'Create a new user directory integration',
-          btn: 'Add a New Integration',
+          message: 'You do not have any System Users',
+          btn: 'Create a New System User',
           icon: 'mdi-plus'
         },
         addButton: {
           show: true,
-          action: 'handleAddUserDirectories',
-          tooltip: 'Add a New Integration'
+          action: 'handleAddNewSystemUsers',
+          tooltip: 'Add a New System User'
         }
       },
-      ldapModalStatus: false
+      showCreateOrEditSystemUserModal: false
+    }
+  },
+  methods: {
+    handleAddNewSystemUsers() {},
+    toggleCreateOrEditSystemUser() {
+      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
     }
   }
 }

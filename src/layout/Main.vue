@@ -189,6 +189,15 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/system-users" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">System Users</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
         <v-list-group
           prepend-icon="mdi-flash"

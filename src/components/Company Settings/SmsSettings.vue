@@ -1,19 +1,15 @@
 <template>
-  <div class="user-directories">
-    <new-ldap-integration
-      v-if="ldapModalStatus"
-      :status="ldapModalStatus"
-      @closeOverlay="ldapModalStatus = false"
+  <div class="sms-settings">
+    <new-sms-settings
+      v-if="showSmsSettingsModal"
+      :status="showSmsSettingsModal"
+      @closeOverlay="showSmsSettingsModal = false"
     />
-    <company-settings-header
-      title="User Directories"
-      sub-title="Manage user directory integrations like LDAP and MS Active Directory"
-    />
-    <div class="user-directories__container">
+    <company-settings-header title="SMS Settings" sub-title="Manage SMS Integrations" />
+    <div class="sms-settings__container">
       <data-table
-        id="user-directories"
-        ref="refUserDirectoriesList"
-        :refName="'userDirectoriesList'"
+        ref="refSmtpSettingsList"
+        :refName="'smtpSettingsList'"
         :columns="tableOptions.columns"
         :countRow="5"
         :empty="tableOptions.empty"
@@ -25,33 +21,34 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="ldapModalStatus = true"
+        @onEmptyBtnClicked="showSmsSettingsModal = true"
+        @handleAddNewSmsIntegration="handleAddNewSmsIntegration"
       />
     </div>
   </div>
 </template>
 
 <script>
-import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
-import NewLdapIntegration from '@/components/Company Settings/NewLdapIntegration'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import NewSmsSettings from '@/components/Company Settings/NewSmsSettings'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
-  name: 'UserDirectories',
+  name: 'SmsSettings',
   components: {
     CompanySettingsHeader,
     DataTable,
-    NewLdapIntegration
+    NewSmsSettings
   },
   data() {
     return {
       tableOptions: {
         columns: [
           {
-            property: PROPERTY_STORE.INTEGRATIONNAME,
+            property: PROPERTY_STORE.PROVIDER,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.INTEGRATIONNAME),
+            label: getStoreValue(PROPERTY_STORE.PROVIDER),
             sortable: true,
             show: true,
             fixed: 'left',
@@ -59,32 +56,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.TYPE,
+            property: PROPERTY_STORE.ACCOUNTSID,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.TYPE),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.URL,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.URL),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.USERS,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.USERS),
+            label: getStoreValue(PROPERTY_STORE.ACCOUNTSID),
             sortable: true,
             show: true,
             fixed: false,
@@ -117,21 +92,24 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any user directory integration, yet',
-          subMes: 'Create a new user directory integration',
-          btn: 'Add a New Integration',
+          message: 'You do not have any SMS integrations',
+          subMes: 'Create a new configuration',
+          btn: 'Create New SMS Integration',
           icon: 'mdi-plus'
         },
         addButton: {
           show: true,
-          action: 'handleAddUserDirectories',
-          tooltip: 'Add a New Integration'
+          action: 'handleAddNewSmsIntegration',
+          tooltip: 'Add a New Rest Api'
         }
       },
-      ldapModalStatus: false
+      showSmsSettingsModal: false
     }
+  },
+  methods: {
+    handleAddNewSmsIntegration() {}
   }
 }
 </script>
 
-<style lang="scss"></style>
+<style></style>

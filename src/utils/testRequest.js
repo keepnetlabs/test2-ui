@@ -51,7 +51,10 @@ testService.interceptors.response.use(
         'common/createSnackBar',
         {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: error.response.data.message || error.response.data.Message
+          message:
+            error.response.data.validationMessages[0] ||
+            error.response.data.message ||
+            error.response.data.Message
         },
         { root: true }
       )

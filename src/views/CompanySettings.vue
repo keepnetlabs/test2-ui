@@ -20,9 +20,6 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <ip-addresses />
-          </v-tab-item>
-          <v-tab-item>
             <user-directories />
           </v-tab-item>
           <v-tab-item>
@@ -41,10 +38,13 @@
             <rest-api />
           </v-tab-item>
           <v-tab-item>
-            Tab 8
+            <sms-settings />
           </v-tab-item>
           <v-tab-item>
-            Tab 9
+            <custom-api />
+          </v-tab-item>
+          <v-tab-item>
+            <server-settings />
           </v-tab-item>
         </v-tabs-items>
       </v-card>
@@ -53,29 +53,32 @@
 </template>
 
 <script>
-import IpAddresses from '@/components/Company Settings/IpAddresses'
 import UserDirectories from '@/components/Company Settings/UserDirectories'
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import DataAnonymization from '@/components/Company Settings/DataAnonymization'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import RestApi from '@/components/Company Settings/RestApi'
+import SmsSettings from '@/components/Company Settings/SmsSettings'
+import CustomApi from '@/components/Company Settings/CustomApi'
+import ServerSettings from '@/components/Company Settings/ServerSettings'
 export default {
   name: 'CompanySettings',
   components: {
     SMTPSettings,
     UserDirectories,
-    IpAddresses,
     NotificationTemplates,
     DataAnonymization,
     WhiteLabeling,
-    RestApi
+    RestApi,
+    SmsSettings,
+    CustomApi,
+    ServerSettings
   },
   data() {
     return {
       tab: 0,
       tabItems: [
-        'IP Addresses',
         'User Directories',
         'SMTP Settings',
         'Notification Templates',
@@ -83,7 +86,8 @@ export default {
         'White Labeling',
         'Rest API',
         'SMS Settings',
-        'Custom API'
+        'Custom API',
+        'Server Settings'
       ]
     }
   },
@@ -134,10 +138,6 @@ export default {
   &__container {
     padding: 0px 16px 24px 16px !important;
     width: 100%;
-    .v-slide-group__next--disabled,
-    .v-slide-group__prev--disabled {
-      display: none;
-    }
     .v-window__container {
       margin-top: 24px;
     }

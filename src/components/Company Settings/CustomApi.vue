@@ -1,19 +1,14 @@
 <template>
-  <div class="user-directories">
-    <new-ldap-integration
-      v-if="ldapModalStatus"
-      :status="ldapModalStatus"
-      @closeOverlay="ldapModalStatus = false"
-    />
-    <company-settings-header
-      title="User Directories"
-      sub-title="Manage user directory integrations like LDAP and MS Active Directory"
-    />
-    <div class="user-directories__container">
+  <div class="custom-api">
+    <div class="custom-apis__container">
+      <new-custom-api :status="showNewCustomApi" @closeOverlay="showNewCustomApi = false" />
+      <company-settings-header
+        title="Custom API"
+        sub-title="Create API Key to your customers for integration"
+      />
       <data-table
-        id="user-directories"
-        ref="refUserDirectoriesList"
-        :refName="'userDirectoriesList'"
+        ref="refCustomApiList"
+        :refName="'smtpSettingsList'"
         :columns="tableOptions.columns"
         :countRow="5"
         :empty="tableOptions.empty"
@@ -25,33 +20,29 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="ldapModalStatus = true"
+        @onEmptyBtnClicked="showNewCustomApi = true"
+        @handleAddNewCustomApi="handleAddNewCustomApi"
       />
     </div>
   </div>
 </template>
 
 <script>
-import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
-import NewLdapIntegration from '@/components/Company Settings/NewLdapIntegration'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import NewCustomApi from '@/components/Company Settings/NewCustomApi'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
-  name: 'UserDirectories',
-  components: {
-    CompanySettingsHeader,
-    DataTable,
-    NewLdapIntegration
-  },
+  name: 'CustomApi',
   data() {
     return {
       tableOptions: {
         columns: [
           {
-            property: PROPERTY_STORE.INTEGRATIONNAME,
+            property: PROPERTY_STORE.COMPANY,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.INTEGRATIONNAME),
+            label: getStoreValue(PROPERTY_STORE.COMPANY),
             sortable: true,
             show: true,
             fixed: 'left',
@@ -59,10 +50,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.TYPE,
+            property: PROPERTY_STORE.APIKEY,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.TYPE),
+            label: getStoreValue(PROPERTY_STORE.APIKEY),
             sortable: true,
             show: true,
             fixed: false,
@@ -70,25 +61,14 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.URL,
+            property: PROPERTY_STORE.STATUS,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.URL),
+            label: getStoreValue(PROPERTY_STORE.STATUS),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.USERS,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.USERS),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
+            type: 'badge',
             width: 150
           },
           {
@@ -117,21 +97,29 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any user directory integration, yet',
-          subMes: 'Create a new user directory integration',
-          btn: 'Add a New Integration',
+          message: 'You do not have any Custom API',
+          subMes: 'Create a new custom API',
+          btn: 'Create a New Custom API',
           icon: 'mdi-plus'
         },
         addButton: {
           show: true,
-          action: 'handleAddUserDirectories',
-          tooltip: 'Add a New Integration'
+          action: 'handleAddNewCustomApi',
+          tooltip: 'Add a New Custom Api'
         }
       },
-      ldapModalStatus: false
+      showNewCustomApi: false
     }
+  },
+  components: {
+    CompanySettingsHeader,
+    DataTable,
+    NewCustomApi
+  },
+  methods: {
+    handleAddNewCustomApi() {}
   }
 }
 </script>
 
-<style lang="scss"></style>
+<style></style>

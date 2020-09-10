@@ -206,7 +206,7 @@
                   </v-list-item>
                   <v-list-item
                     style="cursor: not-allowed;"
-                    v-if="false"
+                    v-if="post.communityPrivacyStatusId !== 1"
                     :id="'share-btn' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -221,7 +221,7 @@
                         </v-list-item-content>
                       </template>
                       <span class="tooltip-span">
-                        You cannot share incident from private communities
+                        You cannot share incident from private or hidden communities
                       </span>
                     </v-tooltip>
                   </v-list-item>
@@ -564,11 +564,7 @@
               </v-btn>
             </div>
             <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
-              <v-form
-                ref="refCommentForm"
-                class="add-comment-row"
-                @submit="addPostComment(post.communityPostResourceId, post.communityResourceId)"
-              >
+              <div ref="refCommentForm" class="add-comment-row">
                 <v-text-field
                   :id="'single-post-comment-' + post.communityPostResourceId"
                   class="comment-input"
@@ -582,11 +578,12 @@
                   :id="'single-post-send-comment' + post.communityPostResourceId"
                   @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
                   class="send-btn"
+                  type="button"
                 >
                   <v-icon>mdi-send</v-icon>
                   SEND
                 </v-btn>
-              </v-form>
+              </div>
 
               <div v-if="comments && comments.length" class="hidden-comments">
                 <div
@@ -1066,6 +1063,10 @@ export default {
       {
         resourceId: 'NGLCc9UCxJvw',
         name: 'Phishing'
+      },
+      {
+        resourceId: 'Gwt67E1ftYtr',
+        name: 'Spam'
       }
     ],
     userIdFromStorage: null,
@@ -1300,6 +1301,7 @@ export default {
                   el.setAttribute('target', '_blank')
                   if (url.isHidden) {
                     el.innerHTML = 'hidden by owner'
+                    el.setAttribute('href', '#')
                   }
                   if (url.isFlagged) {
                     const el = els[i]
@@ -1313,6 +1315,9 @@ export default {
                   } else {
                     const el = els[i]
                     el.classList.remove('malicious-style')
+                  }
+                  if (url.isHidden) {
+                    el.setAttribute('target', '_self')
                   }
                 }
               }
@@ -1367,39 +1372,37 @@ export default {
         })*/
     },
     addPostComment(postId, communId) {
-      if (this.$refs.refCommentForm.validate()) {
-        const payload = {
-          comment: this.addCommentValue
-        }
-        createComments(postId, payload)
-          .then((response) => {
-            this.addCommentValue = ''
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Comment added has been successfully'
-            })
-            getComments(this.post.communityPostResourceId)
-              .then((response) => {
-                const { data } = response
-                this.comments = data.data
-              })
-              .catch((error) => {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.code === 'RESOURCE_NOT_FOUND'
-                ) {
-                  this.comments = []
-                }
-              })
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when creating a comment'
-            })
-          })
+      const payload = {
+        comment: this.addCommentValue
       }
+      createComments(postId, payload)
+        .then((response) => {
+          this.addCommentValue = ''
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Comment added has been successfully'
+          })
+          getComments(this.post.communityPostResourceId)
+            .then((response) => {
+              const { data } = response
+              this.comments = data.data
+            })
+            .catch((error) => {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.code === 'RESOURCE_NOT_FOUND'
+              ) {
+                this.comments = []
+              }
+            })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when creating a comment'
+          })
+        })
     },
     editIncident(post, communityName) {
       this.$emit('openEditPopupItem', post)
