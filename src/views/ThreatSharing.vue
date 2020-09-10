@@ -83,7 +83,6 @@ export default {
           this.$refs.tsIncidents.getIncidentList()
         } else {
           this.$refs.tsCommunities.getAllCommunitiesListData()
-          this.$refs.tsCommunities.getMyCommunitiesListData()
           this.$refs.tsCommunities.getInvitationCount()
           this.$refs.tsCommunities.setInitialCommunityValues()
         }

@@ -292,7 +292,7 @@
             </div>
             <div class="incident-content">
               <div class="input-header">Title</div>
-              <v-form v-model="valid" ref="titleInput">
+              <v-form onSubmit="return false;" v-model="valid" ref="titleInput">
                 <v-text-field
                   id="post-title-text-field"
                   @mouseover.native="hover = true"
@@ -310,7 +310,7 @@
               <!--<span class="required">*Required</span>-->
               <div class="input-header pt-6">Description</div>
               <div class="input-sub pb-1">Describe the incident briefly (Max. 300 characters)</div>
-              <v-form v-model="valid" ref="descriptionInput">
+              <v-form onSubmit="return false;" v-model="valid" ref="descriptionInput">
                 <v-textarea
                   id="post-description-textarea"
                   @mouseover.native="hover = true"
@@ -329,7 +329,7 @@
 
               <div class="input-header pt-6">Category</div>
               <div class="input-sub pb-1">Select threat categories</div>
-              <v-form v-model="categoryValid" ref="categoryInput">
+              <v-form onSubmit="return false;" v-model="categoryValid" ref="categoryInput">
                 <v-select
                   id="post-category-select"
                   class="cat-select"
@@ -368,7 +368,7 @@
               <div class="input-sub">
                 Explain how the threat was detected and what tools were used?
               </div>
-              <v-form v-model="validDisc" ref="discoveryInput">
+              <v-form onSubmit="return false;" v-model="validDisc" ref="discoveryInput">
                 <v-textarea
                   id="post-discovery-textarea"
                   v-model.trim="uploadRespond.DiscoveryAndDetection"
@@ -394,7 +394,7 @@
               <div class="input-header pb-5 pt-7">Impact Range</div>
               <div class="input-sec-header">Affect Area</div>
               <div class="input-sub">Which systems and programs are affected by the threat?</div>
-              <v-form v-model="validAffect" ref="affectInput">
+              <v-form onSubmit="return false;" v-model="validAffect" ref="affectInput">
                 <v-combobox
                   id="post-affect-area-combobox"
                   v-model.trim="uploadRespond.AffectArea"
@@ -420,7 +420,7 @@
 
               <div class="input-sec-header pt-3">Scope</div>
               <div class="input-sub">How does it work and affect your systems?</div>
-              <v-form v-model="validScope" ref="scopeInput">
+              <v-form onSubmit="return false;" v-model="validScope" ref="scopeInput">
                 <v-text-field
                   id="post-scope-textfield"
                   @mouseover.native="hover = true"
