@@ -18,7 +18,6 @@
       :row-height="52"
     >
       <smart-widget
-        :title="item.title"
         fullscreen
         :key="item.i"
         v-for="(item, index) in layout"
@@ -26,6 +25,12 @@
         :padding="[0, 0]"
         :ref="`ref${item.i}`"
       >
+        <template v-slot:title>
+          <div class="widget-header__title">
+            <v-icon color="#2196f3">{{ item.icon }}</v-icon>
+            <span class="ml-2">{{ item.title }}</span>
+          </div>
+        </template>
         <template v-slot:toolbar>
           <v-icon
             style="margin-top: -25px; font-size: 18px;"
@@ -74,7 +79,8 @@ export default {
           minH: 3,
           i: Math.random().toString(),
           title: 'Phishing Reporter Users',
-          key: 'PhishingReporterUsers'
+          key: 'PhishingReporterUsers',
+          icon: 'mdi-account'
         },
         IncidentResponderHeader: {
           x: 0,
@@ -85,7 +91,8 @@ export default {
           minH: 3,
           i: Math.random().toString(),
           title: 'Incident Responder Header',
-          key: 'IncidentResponderHeader'
+          key: 'IncidentResponderHeader',
+          icon: 'mdi-view-dashboard'
         },
         PhishingReporterHeader: {
           x: 0,
@@ -96,7 +103,8 @@ export default {
           minH: 3,
           i: Math.random().toString(),
           title: 'Phishing Reporter Header',
-          key: 'PhishingReporterHeader'
+          key: 'PhishingReporterHeader',
+          icon: 'mdi-page-layout-header'
         },
         PhishingCampaigns: {
           x: 0,
@@ -107,7 +115,8 @@ export default {
           minH: 7,
           i: Math.random().toString(),
           title: 'Phishing Campaigns',
-          key: 'PhishingCampaigns'
+          key: 'PhishingCampaigns',
+          icon: 'mdi-chart-pie'
         },
         RecentInvestigations: {
           x: 0,
@@ -117,6 +126,7 @@ export default {
           h: 8,
           minH: 8,
           i: Math.random().toString(),
+          icon: 'mdi-glasses',
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
         }
@@ -240,5 +250,9 @@ export default {
 }
 .widget-header__title {
   padding-left: 12px !important;
+  font-weight: 600 !important;
+  color: #2196f3;
+  display: flex !important;
+  align-items: center;
 }
 </style>
