@@ -206,7 +206,7 @@
                   </v-list-item>
                   <v-list-item
                     style="cursor: not-allowed;"
-                    v-if="false"
+                    v-if="post.communityPrivacyStatusId !== 1"
                     :id="'share-btn' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -221,7 +221,7 @@
                         </v-list-item-content>
                       </template>
                       <span class="tooltip-span">
-                        You cannot share incident from private communities
+                        You cannot share incident from private or hidden communities
                       </span>
                     </v-tooltip>
                   </v-list-item>
