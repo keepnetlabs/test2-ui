@@ -235,4 +235,10 @@ export default {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none;
 }
+.vue-grid-layout {
+  margin-left: -12px;
+}
+.widget-header__title {
+  padding-left: 12px !important;
+}
 </style>
