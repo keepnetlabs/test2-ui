@@ -6,7 +6,7 @@ export function loginAction(payload) {
   const params = new URLSearchParams()
   params.append('grant_type', 'password')
   params.append('username', 'keepnetlabs@keepnetlabs.com')
-  params.append('password', 'Test123!')
+  params.append('password', 'gerqI9-xyvbaz-dudwyd')
   params.append('scope', 'api1')
   params.append('client_id', 'ui_client')
   params.append('client_secret', 'secret')
