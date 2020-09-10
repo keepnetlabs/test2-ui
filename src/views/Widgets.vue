@@ -1,15 +1,21 @@
 <template>
   <div class="k-widget__container">
-    <v-btn @click="editMode = true">
-      Edit
-    </v-btn>
-    <available-widgets :available-widgets="availableWidgets" @addWidget="addWidget" />
+    <div class="k-widget__header">
+      <available-widgets :available-widgets="availableWidgets" @addWidget="addWidget" />
+      <v-btn color="green" class="ml-4" @click="changeWidgetStatus">
+        <v-icon>{{ editMode ? 'mdi-plus' : 'mdi-pencil' }}</v-icon>
+
+        {{ editMode ? 'Save' : 'Edit' }}
+      </v-btn>
+    </div>
+
     <smart-widget-grid
       :layout="layout"
       :col-num="6"
       @layout-updated="layoutUpdated"
       @layout-mounted="layoutMounted"
       :is-static="!editMode"
+      :row-height="52"
     >
       <smart-widget
         :title="item.title"
@@ -17,6 +23,7 @@
         :key="item.i"
         v-for="(item, index) in layout"
         :slot="item.i"
+        :padding="[0, 0]"
         :ref="`ref${item.i}`"
       >
         <template v-slot:toolbar>
@@ -35,17 +42,19 @@
             >mdi-close-circle</v-icon
           >
         </template>
-        <component :is="getComponent(item.title)" />
+        <component :is="getComponent(item.key)" />
       </smart-widget>
     </smart-widget-grid>
   </div>
 </template>
 
 <script>
-import Users from '@/components/PhishingReporter/Users'
-import IncidentResponder from '@/views/IncidentResponder'
-import Comp from '@/components/Common/Widget/Comp'
+import PhishingReporterUsers from '@/components/PhishingReporter/Users'
 import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
+import PhishingReporterHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterHeader'
+import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
+import PhishingCampaigns from '@/components/Common/Widget/WidgetComponents/PhishingCampaigns'
+import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 export default {
   name: 'Widgets',
   components: {
@@ -56,42 +65,76 @@ export default {
       layout: [],
       editMode: false,
       allWidgets: {
-        Users: {
+        PhishingReporterUsers: {
           x: 0,
-          y: 12,
+          y: 0,
           w: 6,
-          h: 6,
+          minW: 2,
+          h: 7,
+          minH: 3,
           i: Math.random().toString(),
-          title: 'Users'
+          title: 'Phishing Reporter Users',
+          key: 'PhishingReporterUsers'
         },
-        IncidentResponder: {
+        IncidentResponderHeader: {
           x: 0,
-          y: 12,
-          w: 6,
+          y: 0,
+          w: 4,
+          minW: 4,
           h: 6,
+          minH: 3,
           i: Math.random().toString(),
-          title: 'Incident Responder'
+          title: 'Incident Responder Header',
+          key: 'IncidentResponderHeader'
         },
-        Comp: {
+        PhishingReporterHeader: {
           x: 0,
-          y: 12,
+          y: 0,
           w: 3,
-          h: 3,
+          minW: 3,
+          h: 4,
+          minH: 3,
           i: Math.random().toString(),
-          name: 'Comp'
+          title: 'Phishing Reporter Header',
+          key: 'PhishingReporterHeader'
+        },
+        PhishingCampaigns: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 7,
+          minH: 7,
+          i: Math.random().toString(),
+          title: 'Phishing Campaigns',
+          key: 'PhishingCampaigns'
+        },
+        RecentInvestigations: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 8,
+          minH: 8,
+          i: Math.random().toString(),
+          title: 'Recent Investigations',
+          key: 'RecentInvestigations'
         }
       },
       availableWidgets: [
-        { name: 'Users', key: 'Users' },
-        { name: 'Incident Responder', key: 'IncidentResponder' },
-        { name: 'Comp', key: 'Comp' }
+        { name: 'Phishing Reporter Users', key: 'PhishingReporterUsers' },
+        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
+        { name: 'Phishing Reporter Header', key: 'PhishingReporterHeader' },
+        { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
+        { name: 'Recent Investigations', key: 'RecentInvestigations' }
       ]
     }
   },
   methods: {
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
-      this.availableWidgets.push({ key: item.title.split(' ').join(''), name: item.title })
+      this.availableWidgets.push({ key: item.key, name: item.title })
+      localStorage.setItem('availableWidgets', JSON.stringify(this.availableWidgets))
       localStorage.setItem('widgetLayout', JSON.stringify(this.layout))
     },
     addWidget(widget) {
@@ -101,10 +144,20 @@ export default {
         }),
         1
       )
-      this.layout.unshift(this.allWidgets[widget.key])
+      localStorage.setItem('availableWidgets', JSON.stringify(this.availableWidgets))
+      this.layout.push(this.allWidgets[widget.key])
     },
     layoutUpdated(newLayout) {
       localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
+    },
+    changeWidgetStatus() {
+      /*
+      if (this.editMode) {
+        localStorage.setItem('widgetLayout', JSON.stringify(this.layout))
+      }
+
+       */
+      this.editMode = !this.editMode
     },
     layoutMounted(newLayout) {
       newLayout.map((item, index) => {
@@ -116,7 +169,7 @@ export default {
     collapse(item, index, ref) {
       if (this.layout[index].h === 1) {
         this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'block'
-        this.layout[index].h = 3
+        this.layout[index].h = this.allWidgets[item.key].minH
       } else {
         this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'none'
         this.layout[index].h = 1
@@ -125,12 +178,16 @@ export default {
 
     getComponent(componentString) {
       switch (componentString) {
-        case 'Users':
-          return Users
-        case 'Incident Responder':
-          return IncidentResponder
-        case 'Comp':
-          return Comp
+        case 'PhishingReporterUsers':
+          return PhishingReporterUsers
+        case 'IncidentResponderHeader':
+          return IncidentResponderHeader
+        case 'PhishingReporterHeader':
+          return PhishingReporterHeader
+        case 'PhishingCampaigns':
+          return PhishingCampaigns
+        case 'RecentInvestigations':
+          return RecentInvestigations
         default:
           break
       }
@@ -138,11 +195,22 @@ export default {
   },
   created() {
     this.layout = JSON.parse(localStorage.getItem('widgetLayout')) || []
+    this.availableWidgets =
+      JSON.parse(localStorage.getItem('availableWidgets')) || this.availableWidgets
   }
 }
 </script>
 
 <style lang="scss">
+.k-widget {
+  &__container {
+    padding: 11px 16px 16px 16px;
+  }
+  &__header {
+    display: flex;
+    align-items: center;
+  }
+}
 .widget__header {
   &-icon {
     position: absolute;
@@ -160,8 +228,11 @@ export default {
 }
 .widget-body__content {
   overflow-y: auto;
-}
-.k-widget__container {
-  padding: 11px 16px 16px 16px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
 }
 </style>
