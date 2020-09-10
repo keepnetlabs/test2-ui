@@ -24,7 +24,7 @@
     </app-dialog>
     <div class="new-community-inner">
       <v-card flat light class="pa-6" style="width: 600px;">
-        <v-list-item class="pl-0 pr-0">
+        <v-list-item class="pl-0 pr-0 new-community-inner__title-section">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">mdi-send</v-icon>
           </div>
@@ -232,7 +232,9 @@ export default {
               })
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
-              this.$router.push(`/threat-sharing`)
+              localStorage.setItem('communityName', this.name)
+              localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
+              this.$router.push(`/community/${response.data.data.resourceId}`)
             })
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
@@ -249,6 +251,8 @@ export default {
               })
               //refThis.$emit('closeAdd')
               this.isWantToAccept = false
+              localStorage.setItem('communityName', this.name)
+              localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
               this.$router.push(`/community/${response.data.data.resourceId}`)
             })
             .catch((error) => {
@@ -301,6 +305,11 @@ export default {
   height: 820px;
   overflow: visible;
   width: 100%;
+
+  .v-list-item__content {
+    overflow: visible;
+    padding-left: 10px;
+  }
   .k-checkbox .v-messages {
     position: absolute;
     bottom: 0;
@@ -358,6 +367,9 @@ export default {
     position: relative;
     display: flex;
     overflow: visible;
+    &__title-section {
+      padding-left: 10px !important;
+    }
   }
 
   .v-card-headline {
@@ -568,11 +580,11 @@ export default {
 }
 
 .edit-industry-area {
-  ::v-deep .v-list-item__content {
+  .v-list-item__content {
     overflow: visible;
   }
 
-  ::v-deep .v-text-field__details {
+  .v-text-field__details {
     position: absolute;
     left: 0;
     bottom: -28px;
