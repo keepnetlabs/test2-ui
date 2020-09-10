@@ -42,16 +42,12 @@
 
 <script>
 import DataTable from '../DataTable'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList,
   deletePhishingReporterUser
-} from '../../api/phishingReporter'
+} from '@/api/phishingReporter'
 
 import AppDialog from '../AppDialog'
 
@@ -226,7 +222,7 @@ export default {
 
           this.$refs.refUsersList.loadWithDataArray(results || [])
         })
-        .catch((error) => {
+        .catch(() => {
           /*
             this.$store.dispatch('common/createSnackBar', {
               errorState: true,
@@ -254,7 +250,7 @@ export default {
             link.download = `users.${exportType.toLocaleLowerCase()}`
             link.click()
           })
-          .catch((error) => {})
+          .catch(() => {})
       })
     },
     callForDeletePhishingReporterUser() {
@@ -268,7 +264,7 @@ export default {
           this.callForPhishingReporterUser()
           this.$emit('callForPhishingReporterSummary')
         })
-        .catch((error) => {})
+        .catch(() => {})
     },
     deleteUser() {
       this.callForDeletePhishingReporterUser()
@@ -277,7 +273,7 @@ export default {
     columnFilterChanged(filter) {
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
+      requestBody.map((x) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
@@ -285,7 +281,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -303,7 +299,7 @@ export default {
       let items = []
       let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }

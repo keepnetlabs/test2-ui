@@ -891,7 +891,7 @@ export default {
           bodies: bodyData,
           attachments: attachmentsData,
           isScanEnterpriseVault: false,
-          investigationType: 'Manuel',
+          investigationType: 'Manual',
           name: this.investgationName,
           startDate: this.date[0],
           endDate: this.date[1],
@@ -1079,7 +1079,7 @@ export default {
         this.selectedMail.urls.map((item) => {
           if (!item.isHidden) this.filterList.push({ option: 'url', text: item.url })
         })
-      this.investgationName = 'Manuel Investigation'
+      this.investgationName = 'Manual Investigation'
     }
     document.querySelector('.page-nav').style.zIndex = 8
   },

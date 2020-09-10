@@ -1,8 +1,7 @@
 <template>
   <v-container fill-height fluid tag="div">
     <v-list-item
-      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2"
-      style="max-width: 100%;"
+      class="pl-0 other-settings__list-item mt-0 pr-0 mr-2 diagnostic-tool__header"
       v-if="showHeader"
     >
       <v-list-item-content>
@@ -48,7 +47,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { generateDiagnosticTool, downloadDiagnosticTool } from '../../../api/phishingReporter'
+import { generateDiagnosticTool, downloadDiagnosticTool } from '@/api/phishingReporter'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 export default {
   name: 'DiagnosticTool',
@@ -145,6 +144,10 @@ export default {
 <style lang="scss">
 .diagnostic-tool {
   width: 100%;
+
+  &__header {
+    max-width: 100% !important;
+  }
 
   &__form-container {
     display: flex;

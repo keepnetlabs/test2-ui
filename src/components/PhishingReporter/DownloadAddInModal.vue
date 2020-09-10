@@ -41,7 +41,11 @@
               <v-icon left>mdi-download</v-icon>
               Download
               <template v-slot:loader>
-                <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" />
+                <img
+                  src="../../assets/img/spinner.svg"
+                  class="add-in-settings__spinner"
+                  alt="spinner"
+                />
                 <span style="font-size: 14px; text-transform: capitalize;">
                   Generating...
                 </span>
@@ -56,7 +60,7 @@
       </v-list-item>
       <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
         <div class="link__container">
-          <img src="../../assets/img/copy-icon.png" />
+          <img src="../../assets/img/copy-icon.png" alt="spinner" />
           <div class="link__text ml-2">Copy Link</div>
         </div>
       </v-list-item>
@@ -81,7 +85,11 @@
           <v-icon left>mdi-download</v-icon>
           Download
           <template v-slot:loader>
-            <img src="../../assets/img/spinner.svg" class="add-in-settings__spinner" />
+            <img
+              src="../../assets/img/spinner.svg"
+              class="add-in-settings__spinner"
+              alt="spinner"
+            />
             <span style="font-size: 14px; text-transform: capitalize;">
               Generating...
             </span>
@@ -114,7 +122,7 @@ import {
   downloadOutlookAddIn,
   generateDiagnosticTool,
   generateOutlookAddIn
-} from '../../api/phishingReporter'
+} from '@/api/phishingReporter'
 export default {
   name: 'DownloadAddInModal',
   props: {
@@ -133,7 +141,7 @@ export default {
           this.outlookSpinnerStatus = true
           this.callForDownloadOutlookAddIn(response.data.data.transactionId)
         })
-        .catch((error) => {})
+        .catch(() => {})
     },
     callForDownloadOutlookAddIn(transactionId) {
       downloadOutlookAddIn(transactionId)
@@ -148,7 +156,7 @@ export default {
         .catch((error) => {
           if (error.response.status === 404) {
             this.outlookSpinnerStatus = true
-            const timeout = setTimeout(() => {
+            setTimeout(() => {
               this.callForDownloadOutlookAddIn(transactionId)
             }, 7500)
           } else {
