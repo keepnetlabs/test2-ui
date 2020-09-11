@@ -869,7 +869,7 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 100,
-        orderBy: 'CommunityName',
+        orderBy: 'createTime',
         ascending: false,
         filter: {
           Condition: 'AND',
@@ -936,7 +936,7 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 100,
-        orderBy: 'CommunityName',
+        orderBy: 'createTime',
         ascending: false,
         filter: {
           Condition: 'AND',

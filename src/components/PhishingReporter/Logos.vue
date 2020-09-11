@@ -1,7 +1,7 @@
 <template>
   <div :class="wrapperClasses">
     <div>
-      <img src="../../assets/img/gsuite-logo.png" alt="gsuite-logo" />
+      <img src="../../assets/img/gsuite-logo.png" alt="g-suite-logo" />
     </div>
     <div>
       <img

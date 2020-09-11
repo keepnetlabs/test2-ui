@@ -95,7 +95,7 @@ export default {
 
 .pr-card {
   box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-  padding: 10px 24px 0px 24px !important;
+  padding: 10px 24px 0 24px !important;
   border-radius: 20px !important;
 }
 
@@ -104,8 +104,7 @@ export default {
 }
 
 .investigation-details {
-  padding: 16px;
-  padding-top: 11px;
+  padding: 11px 16px 16px 16px;
 
   &__container {
     &__stats {

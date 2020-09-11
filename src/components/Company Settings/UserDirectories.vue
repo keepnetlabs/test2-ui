@@ -1,6 +1,10 @@
 <template>
   <div class="user-directories">
-    <new-ldap-integration :status="ldapModalStatus" @closeOverlay="ldapModalStatus = false" />
+    <new-ldap-integration
+      v-if="ldapModalStatus"
+      :status="ldapModalStatus"
+      @closeOverlay="ldapModalStatus = false"
+    />
     <company-settings-header
       title="User Directories"
       sub-title="Manage user directory integrations like LDAP and MS Active Directory"
