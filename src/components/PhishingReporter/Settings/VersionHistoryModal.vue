@@ -49,8 +49,7 @@
 <script>
 import AppDialog from '../../AppDialog'
 import DataTable from '../../DataTable'
-import { getStoreValue, PROPERTY_STORE } from '../../../model/constants/commonConstants'
-import { searchGeneratedApplicationHistory } from '../../../api/phishingReporter'
+import { searchGeneratedApplicationHistory } from '@/api/phishingReporter'
 export default {
   name: 'VersionHistoryModal',
   components: {

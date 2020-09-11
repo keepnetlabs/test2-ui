@@ -5,6 +5,11 @@
       v-if="showDeleteSystemUserModal"
       @closeOverlay="toggleShowDeleteSystemUserModal"
     />
+    <cant-delete-user-role-modal
+      :status="showCantDeleteUserModal"
+      v-if="showCantDeleteUserModal"
+      @closeOverlay="toggleCantDeleteUserRoleModal"
+    />
     <div class="user-roles__container">
       <data-table
         ref="refUserRolesList"
@@ -14,7 +19,13 @@
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
+        :row-key="rowKey"
+        groupable
         :options="true"
+        :cluster-items="[
+          { name: 'id', selected: true },
+          { name: 'name', selected: false }
+        ]"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
@@ -30,9 +41,11 @@
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import DeleteSystemUserRoleModal from '@/components/SystemUsers/DeleteSystemUserRoleModal'
+import CantDeleteUserRoleModal from '@/components/SystemUsers/CantDeleteUserRoleModal'
 export default {
   name: 'UserRoles',
   components: {
+    CantDeleteUserRoleModal,
     DataTable,
     DeleteSystemUserRoleModal
   },
@@ -41,21 +54,10 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: PROPERTY_STORE.TITLE,
+            property: 'date',
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.TITLE),
-            sortable: true,
-            show: true,
-            fixed: 'left',
-            type: 'text',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.USERS,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.USERS),
+            label: 'Date',
             sortable: true,
             show: true,
             fixed: false,
@@ -63,10 +65,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.COMPANY,
+            property: 'name',
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.COMPANY),
+            label: 'Name',
             sortable: true,
             show: true,
             fixed: false,
@@ -74,25 +76,14 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.TYPE,
+            property: 'status',
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.TYPE),
+            label: 'Name',
             sortable: true,
             show: true,
             fixed: false,
             type: 'badge',
-            width: 150
-          },
-          {
-            property: PROPERTY_STORE.CREATEDATE,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
             width: 150
           }
         ],
@@ -120,14 +111,71 @@ export default {
           tooltip: 'Add a New System User'
         }
       },
-      showDeleteSystemUserModal: false
+      showDeleteSystemUserModal: false,
+      rowKey: 'id',
+      showCantDeleteUserModal: false
     }
   },
   methods: {
     handleAddNewUserRole() {},
     toggleShowDeleteSystemUserModal() {
       this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
+    },
+    toggleCantDeleteUserRoleModal() {
+      this.showCantDeleteUserModal = !this.showCantDeleteUserModal
     }
+  },
+  mounted() {
+    /*
+    this.$refs.refUserRolesList.loadWithDataArray([
+      {
+        id: 1,
+        date: '2016-05-02',
+        name: 'wangxiaohu',
+        status: 'Active'
+      },
+      {
+        id: 2,
+        date: '2016-05-04',
+        name: 'wangxiaohu',
+        status: 'Active',
+        children: [
+          {
+            id: 31,
+            date: '2016-05-01',
+            name: 'wangxiaohu',
+            status: 'Active'
+          },
+          {
+            id: 32,
+            date: '2016-05-05',
+            name: 'wangxiaohu',
+            status: 'Active'
+          }
+        ]
+      },
+      {
+        id: 3,
+        date: '2016-05-01',
+        name: 'wangxiaohu',
+        children: [
+          {
+            id: 33,
+            date: '2016-05-02',
+            name: 'wangxiaohu',
+            status: 'Inactive'
+          },
+          {
+            id: 34,
+            date: '2016-05-05',
+            name: 'wangxiaohu',
+            status: 'Inactive'
+          }
+        ]
+      }
+    ])
+
+     */
   }
 }
 </script>

@@ -6,14 +6,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "format": "vue-cli-service lint --fix",
-    "storybook:build": "vue-cli-service storybook:build -c config/storybook",
-    "storybook:serve": "vue-cli-service storybook:serve -p 6006 -c config/storybook"
+    "format": "vue-cli-service lint --fix"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
     "@fullstory/browser": "^1.4.5",
-    "@mdi/font": "^5.4.55",
+    "@mdi/font": "^5.5.55",
     "apexcharts": "^3.10.1",
     "axios": "^0.19.0",
     "babel-polyfill": "^6.26.0",
@@ -35,7 +33,7 @@
     "print-js": "^1.0.63",
     "v-mask": "^2.2.3",
     "v-offline": "^1.1.0",
-    "vue": "^2.6.10",
+    "vue": "^2.6.12",
     "vue-analytics": "^5.22.1",
     "vue-apexcharts": "^1.5.1",
     "vue-clamp": "^0.2.2",
@@ -54,15 +52,9 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.10.2",
-    "@storybook/addon-actions": ">=5.3.0",
-    "@storybook/addon-docs": ">=5.3.0",
-    "@storybook/addon-knobs": ">=5.3.0",
-    "@storybook/addon-links": ">=5.3.0",
-    "@storybook/addon-notes": ">=5.3.0",
-    "@storybook/vue": ">=5.3.0",
-    "@vue/cli-plugin-babel": "^4.4.4",
-    "@vue/cli-plugin-eslint": "^4.4.4",
-    "@vue/cli-service": "^4.4.4",
+    "@vue/cli-plugin-babel": "^4.5.6",
+    "@vue/cli-plugin-eslint": "^4.5.6",
+    "@vue/cli-service": "^4.5.6",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
     "deepmerge": "^4.0.0",
@@ -79,11 +71,10 @@
     "sass": "^1.26.7",
     "sass-loader": "^8.0.2",
     "vue-class-component": "^7.1.0",
-    "vue-cli-plugin-storybook": "~1.2.2",
-    "vue-cli-plugin-vuetify": "^2.0.5",
+    "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.5.0",
-    "webpack": "^4.43.0"
+    "webpack": "^4.44.1"
   },
   "eslintConfig": {
     "root": true,

@@ -108,7 +108,6 @@
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
-              @mouseover.native="hover = true"
               class="filter-field"
               placeholder="Search"
               outlined
@@ -118,16 +117,17 @@
               @keyup="searchChangedEvent"
             />
           </div>
-          <div class="table-settings" v-if="options" v-once>
+          <div class="table-settings" v-if="options">
             <v-btn
               class="clust-btn btn-hover mr-2"
               color="#2196f3"
               icon
               outlined
-              style="border-radius: 6px !important; order: 1;"
+              style="border-radius: 6px !important; order: 1; width: 40px;"
               v-if="groupable"
+              @click="handleListBulletedClick"
             >
-              <v-icon>mdi-format-list-bulleted</v-icon>
+              <v-icon style="font-size: 20px;">mdi-format-list-bulleted</v-icon>
             </v-btn>
             <v-btn
               class="clust-btn cluster-btn btn-hover mr-4"
@@ -136,8 +136,15 @@
               style="border-radius: 6px !important; order: 2;"
               v-if="groupable"
             >
-              <v-icon>mdi-format-list-text</v-icon>
-              <v-menu bottom offset-y transition="scale-transition" v-model="clusterChevron">
+              <v-icon style="font-size: 20px;">mdi-format-list-text</v-icon>
+              <v-menu
+                bottom
+                offset-y
+                transition="scale-transition"
+                v-model="clusterChevron"
+                min-width="130"
+                content-class="cluster-view"
+              >
                 <template v-slot:activator="{ on }">
                   <div @click="clusterChevron = !clusterChevron" class="header-list-item" v-on="on">
                     <v-icon :class="{ 'chevron-down': clusterChevron }">mdi-chevron-down</v-icon>
@@ -155,8 +162,16 @@
                     v-for="(item, key) of clusterItems"
                   >
                     <v-list-item-title>
-                      <span class="cluster-span">{{ item.name }}</span>
-                      <v-icon color="#2196f3" v-if="item.selected">mdi-check</v-icon>
+                      <span
+                        :class="[
+                          'cluster-view__item',
+                          isEqualCluster(item.name) && 'cluster-view__item--selected'
+                        ]"
+                        >{{ item.name }}</span
+                      >
+                      <v-icon class="ml-4 mt-n1" color="#2196f3" v-if="isEqualCluster(item.name)"
+                        >mdi-check</v-icon
+                      >
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -202,7 +217,7 @@
                   v-else-if="addUsers && addUsers.show && addUsers.action"
                   v-on="on"
                 >
-                  <v-icon @click="addUsersAction(addUsers.action, row)">mdi-plus</v-icon>
+                  <v-icon @click="addUsersAction(addUsers.action)">mdi-plus</v-icon>
                 </v-btn>
               </template>
               <span class="tooltip-span">{{ (addUsers && addUsers.tooltip) || 'Add' }}</span>
@@ -260,7 +275,7 @@
               </template>
               <span class="tooltip-span">Print Options</span>
             </v-tooltip>
-            <v-tooltip bottom opacity="1">
+            <v-tooltip bottom opacity="1" v-once>
               <template v-slot:activator="{ on }">
                 <v-btn
                   @click="isSettingsOpened = true"
@@ -388,13 +403,15 @@
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
+            @select="handleSelect"
             @sort-change="sortChangedEvent"
             :empty-text="empty.message"
+            @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
             lazy
             ref="elTableRef"
-            row-key="resourceId"
+            :row-key="rowKey"
             style="width: 100%;"
             v-if="!allHidden"
           >
@@ -522,7 +539,7 @@
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
-                  <span>{{ col.headerTooltip }}</span>
+                  <span>{{ col['headerTooltip'] }}</span>
                 </v-tooltip>
                 <template v-else>
                   {{ column.label }}
@@ -816,7 +833,7 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '../utils/functions'
+import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 export default {
   components: {
@@ -849,6 +866,10 @@ export default {
       default() {
         return {}
       }
+    },
+    rowKey: {
+      type: String,
+      default: 'resourceId'
     },
     isExtendedViewCreateMode: {
       type: Boolean,
@@ -992,6 +1013,7 @@ export default {
       sortProps: null,
       initialData: [],
       dataLength: 0,
+      selectedCluster: '',
       tableData: [],
       rowCount: 10,
       totalCount: 100,
@@ -1013,6 +1035,7 @@ export default {
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed: true,
+      clusteredItems: [],
       isRowActionsMenuOpen: [],
       download: {
         xls: false,
@@ -1026,17 +1049,27 @@ export default {
         id: 'table-container',
         popTitle: 'Datatable Print',
         extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
-        extraHead: '<meta http-equiv="Content-Language"content="zh-cn"/>'
+        extraHead: '<meta http-equiv="Content-Language" content="zh-cn"/>'
       },
       clusterChevron: false,
       actionsWidth: 0,
       init: true,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
-      selectionRowCheckboxDeterminate: false
+      selectionRowCheckboxDeterminate: false,
+      totalLength: 0
     }
   },
   watch: {
     tableData(data) {
+      if (data && this.groupable) {
+        this.totalLength = data.reduce((acc, item) => {
+          if (item.children) {
+            return acc + 1 + item.children.length
+          } else {
+            return acc + 1
+          }
+        }, 0)
+      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
@@ -1063,13 +1096,24 @@ export default {
     },
     multipleSelection(selecteds) {
       this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
-      if (selecteds.length === this.tableData.length) {
-        this.selectionCheckbox = true
-        this.selectionRowCheckboxDeterminate = false
-      } else if (selecteds.length > 0) {
-        this.selectionRowCheckboxDeterminate = true
+      if (this.groupable) {
+        if (selecteds.length === this.totalLength) {
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
+        } else if (selecteds.length > 0) {
+          this.selectionRowCheckboxDeterminate = true
+        } else {
+          this.selectionCheckbox = false
+        }
       } else {
-        this.selectionCheckbox = false
+        if (selecteds.length === this.tableData.length) {
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
+        } else if (selecteds.length > 0) {
+          this.selectionRowCheckboxDeterminate = true
+        } else {
+          this.selectionCheckbox = false
+        }
       }
     },
     columns: {
@@ -1128,6 +1172,12 @@ export default {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
     },
+    handleListBulletedClick() {
+      this.$emit('handleListBulleted')
+    },
+    isEqualCluster(name) {
+      return name === this.selectedCluster
+    },
     handleMultipleSelectedEdits() {
       this.extendedViewStyle = {
         top: `${48}px`
@@ -1137,6 +1187,35 @@ export default {
         isEditPopupOpen: true
       })
       this.isWantToEditRow = true
+    },
+    handleSelectAll(selection) {
+      if (this.groupable) {
+        if (this.clusteredItems.length) {
+          for (let item of this.clusteredItems) {
+            this.$refs.elTableRef.toggleRowSelection(item, false)
+          }
+          this.selection = []
+          this.clusteredItems = []
+        }
+
+        for (let item of selection) {
+          if (item.children) {
+            for (let child of item.children) {
+              this.$refs.elTableRef.toggleRowSelection(child, true)
+              this.clusteredItems.push(child)
+              if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
+                selection.push(child)
+              }
+            }
+          }
+        }
+
+        this.multipleSelection = selection
+        if (this.multipleSelection.length === 0) {
+          this.isWantToEditRow = false
+        }
+        this.$emit('handleSelectionChange', selection)
+      }
     },
     setCellClass(obj) {
       /*
@@ -1159,13 +1238,13 @@ export default {
     getDataTableFieldLabel(field) {
       return getDataTableFieldLabel(field)
     },
-    cellEnter(row, column, cell, event) {
+    cellEnter(row, column, cell) {
       this.hasOverflowTooltip(row, column, cell)
     },
     cellClick(row, column, event) {
       this.$emit('cellClick', { row, column, event })
     },
-    cellLeave(row, column, cell, event) {
+    cellLeave() {
       this.showOverFlowTooltip = false
     },
     hasOverflowTooltip(row, column, cell) {
@@ -1219,7 +1298,6 @@ export default {
         }
       }
     },
-
     sortFunction(data, sortProps) {
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
@@ -1409,7 +1487,7 @@ export default {
         return 'popup__badge'
       }
     },
-    getColumnLabel(key, value) {
+    getColumnLabel(key) {
       const answer = this.columns.find((item) => {
         return item['property'] === key
       })
@@ -1432,6 +1510,36 @@ export default {
         this.isWantToEditRow = false
       }
       this.$emit('handleSelectionChange', val)
+    },
+    handleSelect(selection, row) {
+      if (this.groupable) {
+        if (row.children) {
+          if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
+            for (let child of row.children) {
+              this.$refs.elTableRef.toggleRowSelection(child, true)
+              if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
+                this.clusteredItems.push(child)
+                selection.push(child)
+              }
+            }
+          } else {
+            for (let child of row.children) {
+              this.$refs.elTableRef.toggleRowSelection(child, false)
+              const ind = selection.findIndex(
+                (item) => JSON.stringify(item) === JSON.stringify(child)
+              )
+              if (ind > -1) {
+                selection.splice(ind, 1)
+              }
+            }
+          }
+        }
+        this.multipleSelection = selection
+        if (this.multipleSelection.length === 0) {
+          this.isWantToEditRow = false
+        }
+        this.$emit('handleSelectionChange', selection)
+      }
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
@@ -1560,7 +1668,8 @@ export default {
       // Do something
     },
     clusterSelected(name, ind) {
-      this.clusterItems[ind].selected = !this.clusterItems[ind].selected
+      this.selectedCluster = name
+      this.$emit('clusterChanged', name)
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },

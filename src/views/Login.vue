@@ -64,6 +64,7 @@
                         <v-form
                           @submit="(event) => event.preventDefault()"
                           v-model="validEmail"
+                          autocomplete="off"
                           ref="email"
                         >
                           <v-text-field
@@ -76,8 +77,7 @@
                             class="username-field"
                             required
                             label="Username"
-                            aria-autocomplete="on"
-                            autocomplete="on"
+                            autocomplete="off"
                             outlined
                             @keyup.enter="toNext"
                           ></v-text-field>
@@ -100,6 +100,7 @@
                             hint="At least 8 characters"
                             id="password"
                             v-model="password"
+                            autocomplete="disabled"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"

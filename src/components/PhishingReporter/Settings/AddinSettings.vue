@@ -38,7 +38,7 @@
     <v-form class="add-in-settings__form" lazy-validation ref="refForm" v-model="isValid">
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
-          <label class="add-in-settings__label" for="add-in-text">Add-in Name</label>
+          <label class="add-in-settings__label">Add-in Name</label>
           <v-text-field
             :rules="
               showForm
@@ -50,7 +50,6 @@
             "
             class="k-textfield mt-2"
             dense
-            id="add-in-text"
             outlined
             placeholder="Suspicious E-Mail Reporter"
             :readonly="!showForm"
@@ -61,7 +60,7 @@
 
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
-          <label class="add-in-settings__label" for="company-text">Brand Name</label>
+          <label class="add-in-settings__label">Brand Name</label>
           <v-text-field
             :rules="
               showForm
@@ -103,7 +102,7 @@
         <v-list-item-content>
           <div>
             <div class="add-in-settings__image-container">
-              <img class="add-in-settings__image" :src="getImagePreview()" />
+              <img class="add-in-settings__image" :src="getImagePreview()" alt="logo-preview" />
             </div>
           </div>
         </v-list-item-content>
@@ -400,7 +399,7 @@
 
       <v-list-item class="px-0 add-in-settings__list-item mt-2">
         <v-list-item-content>
-          <label class="add-in-settings__label" for="warning-text">Warning Label</label>
+          <label class="add-in-settings__label">Warning Label</label>
           <label class="add-in-settings__subtitle"
             >Appears on email header when suspicious email is opened</label
           >
@@ -416,7 +415,6 @@
             "
             class="k-textfield mt-2"
             dense
-            id="alertbox-text"
             outlined
             placeholder="Suspicious E-Mail"
             required
@@ -436,8 +434,8 @@
 </template>
 
 <script>
-import { maxLength, required } from '../../../utils/validations'
-import { getPhishingReporterImg } from '../../../api/phishingReporter'
+import { maxLength, required } from '@/utils/validations'
+import { getPhishingReporterImg } from '@/api/phishingReporter'
 import VersionHistoryModal from './VersionHistoryModal'
 import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
 import imageToBlob from 'image-to-blob'
@@ -523,9 +521,6 @@ export default {
     }
   },
   methods: {
-    onBtnSelectFileClick(e) {
-      this.$refs.uploader.click()
-    },
     getImagePreview() {
       return this.formValues.file && URL.createObjectURL(this.formValues.file)
     },

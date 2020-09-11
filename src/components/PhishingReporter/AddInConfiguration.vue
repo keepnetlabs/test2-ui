@@ -142,8 +142,8 @@ import {
   downloadOutlookAddIn,
   generateDiagnosticTool,
   generateOutlookAddIn
-} from '../../api/phishingReporter'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+} from '@/api/phishingReporter'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import DiagnosticTool from './Settings/DiagnosticTool'
 export default {
@@ -196,7 +196,7 @@ export default {
         .catch((error) => {
           if (error.response.status === 404) {
             this.outlookSpinnerStatus = true
-            const timeout = setTimeout(() => {
+            setTimeout(() => {
               this.callForDownloadOutlookAddIn(transactionId)
             }, 7500)
           } else {
@@ -266,6 +266,7 @@ export default {
           ret = this.$refs.refDiagnosticTool.formValues
           this.diagnosticTool = ret
           hasValidationError = false
+          break
         default:
           break
       }

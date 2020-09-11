@@ -113,7 +113,7 @@
                   <v-expansion-panel class="threat-sharing-content">
                     <div class="ts-header">
                       <div class="ts-title">
-                        <img src="../../assets/img/logo-min.png" alt="KeepNet" />
+                        <img src="../../assets/img/logo-min.png" alt="KeepNet" class="d-flex" />
                         <div class="community-info-wrapper">
                           <h2>{{ member.companyName }}</h2>
                           <div class="community-sub-info">
@@ -767,7 +767,6 @@ export default {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      margin-bottom: 20px !important;
     }
 
     .community-sub-info {
@@ -780,15 +779,15 @@ export default {
           padding-left: 0 !important;
         }
       }
-      position: absolute;
-      top: 40px;
       > div {
+        line-height: 10px;
         width: auto;
       }
 
       .company-mini-icon {
         font-size: 16px !important;
         margin-right: 8px;
+        top: 2px;
       }
 
       .company-mini-info {
