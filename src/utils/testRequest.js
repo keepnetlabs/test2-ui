@@ -5,7 +5,7 @@ import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const testService = axios.create({
-  baseURL: process.env.VUE_APP_WEB_API_TEST,
+  baseURL: APP_CONFIG.VUE_APP_WEB_API_TEST,
   timeout: 10000, //@note timeout changed from 50000 to 10000
   rejectUnauthorized: false
 })
@@ -16,7 +16,7 @@ testService.interceptors.request.use(
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] =
-        process.env.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
+        APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
       config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
       config.headers['Cache-Control'] = 'no-cache'
       //config.headers['X-IR-COMPANY-ID'] = 'TEST-COMPANY-2'

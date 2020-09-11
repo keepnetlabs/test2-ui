@@ -100,7 +100,7 @@
                             hint="At least 8 characters"
                             id="password"
                             v-model="password"
-                            autocomplete="off"
+                            autocomplete="disabled"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
