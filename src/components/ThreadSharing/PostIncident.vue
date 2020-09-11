@@ -1848,10 +1848,9 @@ export default {
     },
     descRule: {
       default: (v) => !!v || 'Description is required',
-      required: (v) => {
-        if (!v) return true
-        return (v && v.length <= 300) || 'Description should not be more than 300 characters long'
-      },
+      required: (v) =>
+        (!!v && v.length >= 5 && v.length <= 300) ||
+        'Description must be between 5 and 300 characters long',
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
