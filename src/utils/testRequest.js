@@ -5,8 +5,8 @@ import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const testService = axios.create({
-  baseURL: process.env.VUE_APP_WEB_API_TEST,
-  timeout: 50000,
+  baseURL: APP_CONFIG.VUE_APP_WEB_API_TEST,
+  timeout: 10000, //@note timeout changed from 50000 to 10000
   rejectUnauthorized: false
 })
 

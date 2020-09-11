@@ -6,7 +6,7 @@ import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import testService from './testRequest'
 
 const service = axios.create({
-  baseURL: process.env.VUE_APP_ROOT_API,
+  baseURL: APP_CONFIG.VUE_APP_ROOT_API,
   timeout: 50000,
   rejectUnauthorized: false
 })
