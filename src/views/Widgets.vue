@@ -16,6 +16,7 @@
       @layout-mounted="layoutMounted"
       :is-static="!editMode"
       :row-height="52"
+      ref="refGrid"
     >
       <smart-widget
         fullscreen
@@ -60,6 +61,9 @@ import PhishingReporterHeader from '@/components/Common/Widget/WidgetComponents/
 import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
 import PhishingCampaigns from '@/components/Common/Widget/WidgetComponents/PhishingCampaigns'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
+import ReportedEmails from '@/components/Common/Widget/WidgetComponents/ReportedEmails'
+import OverallStats from '@/components/Common/Widget/WidgetComponents/OverallStatsWidget'
+import CompanyInformationWidget from '@/components/Common/Widget/WidgetComponents/CompanyInformationWidget'
 export default {
   name: 'Widgets',
   components: {
@@ -77,6 +81,7 @@ export default {
           minW: 2,
           h: 7,
           minH: 3,
+          defaultH: 7,
           i: Math.random().toString(),
           title: 'Phishing Reporter Users',
           key: 'PhishingReporterUsers',
@@ -88,6 +93,7 @@ export default {
           w: 4,
           minW: 4,
           h: 5,
+          defaultH: 5,
           minH: 5,
           i: Math.random().toString(),
           title: 'Incident Responder Header',
@@ -100,6 +106,7 @@ export default {
           w: 3,
           minW: 2,
           h: 4,
+          defaultH: 4,
           minH: 3,
           i: Math.random().toString(),
           title: 'Phishing Reporter Header',
@@ -111,12 +118,26 @@ export default {
           y: 0,
           w: 2,
           minW: 2,
-          h: 7,
-          minH: 7,
+          h: 6,
+          defaultH: 6,
+          minH: 5,
           i: Math.random().toString(),
           title: 'Phishing Campaigns',
           key: 'PhishingCampaigns',
           icon: 'mdi-chart-pie'
+        },
+        ReportedEmails: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 2,
+          h: 10,
+          defaultH: 10,
+          minH: 3,
+          i: Math.random().toString(),
+          title: 'Reported Emails',
+          key: 'ReportedEmails',
+          icon: 'mdi-email'
         },
         RecentInvestigations: {
           x: 0,
@@ -124,11 +145,38 @@ export default {
           w: 3,
           minW: 3,
           h: 8,
+          defaultH: 8,
           minH: 8,
           i: Math.random().toString(),
-          icon: 'mdi-glasses',
+          icon: 'mdi-briefcase-variant',
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
+        },
+        OverallStats: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 11,
+          defaultH: 11,
+          minH: 8,
+          i: Math.random().toString(),
+          icon: 'mdi-chart-bar',
+          title: 'Overall Stats',
+          key: 'OverallStats'
+        },
+        CompanyInformation: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 5,
+          defaultH: 5,
+          minH: 5,
+          i: Math.random().toString(),
+          icon: 'mdi-information',
+          title: 'Company Information',
+          key: 'CompanyInformation'
         }
       },
       availableWidgets: [
@@ -136,7 +184,10 @@ export default {
         { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
         { name: 'Phishing Reporter Header', key: 'PhishingReporterHeader' },
         { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
-        { name: 'Recent Investigations', key: 'RecentInvestigations' }
+        { name: 'Recent Investigations', key: 'RecentInvestigations' },
+        { name: 'Reported Emails', key: 'ReportedEmails' },
+        { name: 'Overall Stats', key: 'OverallStats' },
+        { name: 'Company Information', key: 'CompanyInformation' }
       ]
     }
   },
@@ -179,12 +230,12 @@ export default {
     collapse(item, index, ref) {
       if (this.layout[index].h === 1) {
         this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'block'
-        this.layout[index].h = this.allWidgets[item.key].minH
+        this.layout[index].h = this.allWidgets[item.key].defaultH
       } else {
         this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'none'
         this.layout[index].h = 1
       }
-      console.log('this.layout', this.layout)
+      this.layout = [...this.layout]
     },
 
     getComponent(componentString) {
@@ -199,6 +250,12 @@ export default {
           return PhishingCampaigns
         case 'RecentInvestigations':
           return RecentInvestigations
+        case 'ReportedEmails':
+          return ReportedEmails
+        case 'OverallStats':
+          return OverallStats
+        case 'CompanyInformation':
+          return CompanyInformationWidget
         default:
           break
       }
@@ -208,6 +265,11 @@ export default {
     this.layout = JSON.parse(localStorage.getItem('widgetLayout')) || []
     this.availableWidgets =
       JSON.parse(localStorage.getItem('availableWidgets')) || this.availableWidgets
+  },
+  watch: {
+    layout(newLayout) {
+      localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
+    }
   }
 }
 </script>
