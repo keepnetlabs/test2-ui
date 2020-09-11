@@ -724,7 +724,7 @@ const threadSharing = {
         formData.append('CommunityPostId', postObj.CommunityPostId)
         // post incident id
         await axios
-          .post(process.env.VUE_APP_WEB_API + '/CommunityPostInner/Add', formData, {
+          .post(APP_CONFIG.VUE_APP_WEB_API + '/CommunityPostInner/Add', formData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               authorization: `Bearer ${AuthenticationService.getToken()}`,
