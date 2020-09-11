@@ -60,20 +60,19 @@
           required
           v-model="filteredSelectValueDate"
           @change="changeDateSelect"
+          placeholder="Select an option"
         ></v-select>
         <el-date-picker
-          v-show="filteredSelectValueDate !== 'between'"
+          v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
-          :default-time="['12:00:00']"
         />
         <el-date-picker
-          v-show="filteredSelectValueDate === 'between'"
+          v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
           type="datetimerange"
           style="margin-bottom: 14px;"
-          :default-time="['12:00:00']"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -194,11 +193,15 @@ export default {
     }
   },
   mounted() {
-    this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
+    this.filteredDateValue = this.$moment(Date.now() - 3600 * 1000 * 24 * 30).format(
+      'YYYY-MM-DD HH:mm:ss'
+    )
   },
   methods: {
     changeDateSelect(val) {
-      this.filteredDateValue = Date.now() - 3600 * 1000 * 24 * 30
+      this.filteredDateValue = this.$moment(Date.now() - 3600 * 1000 * 24 * 30).format(
+        'YYYY-MM-DD HH:mm:ss'
+      )
     },
     clearFilter() {
       this.menu = false
@@ -231,7 +234,7 @@ export default {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
-              Value: this.$moment(this.filteredDateValue[0]).format('YYYY-MM-DD  HH:mm:ss'),
+              Value: this.$moment(this.filteredDateValue[0]).format('YYYY-MM-DD HH:mm:ss'),
               FieldName: this.fieldName,
               Operator: '>='
             },
@@ -243,7 +246,7 @@ export default {
           ])
         } else {
           this.$emit('handleFilterColumn', {
-            Value: this.filteredDateValue,
+            Value: this.$moment(this.filteredDateValue).format('YYYY-MM-DD HH:mm:ss'),
             FieldName: this.fieldName,
             Operator: this.filteredSelectValueDate
           })

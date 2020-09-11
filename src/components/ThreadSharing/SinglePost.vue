@@ -1212,6 +1212,8 @@ export default {
           return 'Non-Malicious'
         case 'NGLCc9UCxJvw':
           return 'Phishing'
+        case 'Gwt67E1ftYtr':
+          return 'Spam'
         default:
           return ''
       }

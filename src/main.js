@@ -23,21 +23,22 @@ Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
-
-if (process.env.VUE_APP_SAAS_STATUS !== 'ONPREMISE') {
+console.log('APP_CONFIG', APP_CONFIG)
+if (APP_CONFIG.VUE_APP_IS_CLOUD) {
+  console.log('buralar hep cloud')
   const VueAnalytics = require('vue-analytics').default
   Vue.use(VueAnalytics, {
-    id: 'UA-131042304-2'
+    id: APP_CONFIG.VUE_APP_ANALYTICS_ID
   })
 
   const Hotjar = require('vue-hotjar').default
   Vue.use(Hotjar, {
-    id: '1724870' // Hotjar Site ID
+    id: APP_CONFIG.VUE_APP_HOTJAR_ID // Hotjar Site ID
   })
 
   const FullStory = require('@fullstory/browser')
 
-  FullStory.init({ orgId: 'TRDZX' })
+  FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
   Vue.prototype.$FullStory = FullStory
 }
 Vue.use(VueTour)
