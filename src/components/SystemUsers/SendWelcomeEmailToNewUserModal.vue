@@ -76,7 +76,7 @@
       <div class="send-welcome-email__footer">
         <v-btn
           @click="closeOverlay"
-          color="#2196f3"
+          color="#00bcd4"
           class="send-welcome-email__footer-button ml-n4"
           text
           >I’LL DO IT LATER</v-btn
