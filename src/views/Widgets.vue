@@ -1,12 +1,12 @@
 <template>
   <div class="k-widget__container">
     <div class="k-widget__header">
-      <available-widgets :available-widgets="availableWidgets" @addWidget="addWidget" />
-      <v-btn color="green" class="ml-4" @click="changeWidgetStatus">
-        <v-icon>{{ editMode ? 'mdi-plus' : 'mdi-pencil' }}</v-icon>
-
-        {{ editMode ? 'Save' : 'Edit' }}
-      </v-btn>
+      <available-widgets
+        @handleEdit="changeWidgetStatus"
+        :edit-mode="editMode"
+        :available-widgets="availableWidgets"
+        @addWidget="addWidget"
+      />
     </div>
 
     <smart-widget-grid
@@ -87,8 +87,8 @@ export default {
           y: 0,
           w: 4,
           minW: 4,
-          h: 6,
-          minH: 3,
+          h: 5,
+          minH: 5,
           i: Math.random().toString(),
           title: 'Incident Responder Header',
           key: 'IncidentResponderHeader',
@@ -98,7 +98,7 @@ export default {
           x: 0,
           y: 0,
           w: 3,
-          minW: 3,
+          minW: 2,
           h: 4,
           minH: 3,
           i: Math.random().toString(),
@@ -109,8 +109,8 @@ export default {
         PhishingCampaigns: {
           x: 0,
           y: 0,
-          w: 3,
-          minW: 3,
+          w: 2,
+          minW: 2,
           h: 7,
           minH: 7,
           i: Math.random().toString(),
@@ -184,6 +184,7 @@ export default {
         this.$refs[ref][0].$el.querySelector('.widget-body').style.display = 'none'
         this.layout[index].h = 1
       }
+      console.log('this.layout', this.layout)
     },
 
     getComponent(componentString) {

@@ -5,10 +5,16 @@
         <v-icon color="#2196f3">mdi-widgets</v-icon>
         <span class="ml-2">Available Widgets</span>
       </div>
-
-      <v-icon class="available-widget__icon" small>mdi-window-minimize</v-icon>
+      <div class="available-widget__header-right">
+        <v-icon @click="handleEdit" class="available-widget__icon" small>{{
+          editMode ? 'mdi-content-save-edit' : 'mdi-pencil'
+        }}</v-icon>
+        <v-icon @click="handleMinimize" class="available-widget__icon" small>{{
+          isMinimized ? 'mdi-plus' : 'mdi-window-minimize'
+        }}</v-icon>
+      </div>
     </div>
-    <div class="available-widget__body">
+    <div class="available-widget__body" v-if="!isMinimized">
       <span
         class="available-widget__item"
         @click="handleAddWidget(widget)"
@@ -31,11 +37,25 @@ export default {
     availableWidgets: {
       type: Array,
       default: () => []
+    },
+    editMode: {
+      type: Boolean
+    }
+  },
+  data() {
+    return {
+      isMinimized: false
     }
   },
   methods: {
     handleAddWidget(widget) {
       this.$emit('addWidget', widget)
+    },
+    handleMinimize() {
+      this.isMinimized = !this.isMinimized
+    },
+    handleEdit() {
+      this.$emit('handleEdit')
     }
   }
 }
