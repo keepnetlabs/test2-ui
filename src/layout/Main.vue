@@ -896,9 +896,9 @@ export default {
     this.baseUrl = `${window.location.origin}`
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
-        this.getMenus()
+        //this.getMenus()
         this.getCurrentUser()
-        this.getNotifications()
+        //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
             clearInterval(this.interval)

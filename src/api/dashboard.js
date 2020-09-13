@@ -1,4 +1,5 @@
 import request from '../utils/request'
+import webRequest from '../utils/webRequests'
 
 export function getPhishingCampaigns(payload) {
   return request.get(`campaign/summary/${payload}`)
@@ -13,7 +14,39 @@ export function getLastFiveCompaignsStats() {
 }
 
 export function getDropdownCompanies() {
-  return request.get('user/companies')
+  let payload = {
+    pageNumber: 1,
+    pageSize: 1000,
+    orderBy: 'LicenseTypeName',
+    ascending: true,
+    filter: {
+      Condition: 'AND',
+      FilterGroups: [
+        {
+          Condition: 'OR',
+          FilterItems: [
+            {
+              FieldName: 'CompanyName',
+              Operator: 'Contains',
+              Value: ''
+            },
+            {
+              FieldName: 'IndustryName',
+              Operator: 'Contains',
+              Value: ''
+            },
+            {
+              FieldName: 'LicenseTypeName',
+              Operator: 'Contains',
+              Value: ''
+            }
+          ],
+          FilterGroups: []
+        }
+      ]
+    }
+  }
+  return webRequest.post('companies/search', payload)
 }
 
 export function selectCompany(payload) {

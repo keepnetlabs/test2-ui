@@ -253,12 +253,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
-        this.getCurrentUser()
-        this.getPhishingCampaigns(999)
-        this.getLastFiveCompaignsStats()
-        this.getCompanyInformation()
         this.getDropdownCompanies()
-        this.getOverallStats(12)
       } else {
         this.$router.push('/login')
       }
@@ -267,14 +262,7 @@ export default {
   computed: {
     ...mapGetters({
       isTourActive: 'tour/isTourActive',
-      getTourData: 'tour/getTourData',
-      getPieChartLabels: 'dashboard/getPieChartLabels',
-      firstCampaignList: 'dashboard/getFirstCampaignList',
-      lastFiveCampaignList: 'dashboard/getLastFiveCampaignList',
-      singleCampaignList: 'dashboard/getSingleCampaignList',
-      menuList: 'dashboard/getMenuList',
-      overallStatsList: 'dashboard/getOverallStatsList',
-      notificationList: 'dashboard/getNotificationList'
+      getTourData: 'tour/getTourData'
     }),
     ...mapState({
       pieChartData: (state) => state.dashboard.pieChartData,
@@ -297,11 +285,7 @@ export default {
     },
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser',
-      getPhishingCampaigns: 'dashboard/getPhishingCampaigns',
-      getLastFiveCompaignsStats: 'dashboard/getLastFiveCompaignsStats',
-      getCompanyInformation: 'dashboard/getCompanyInformation',
       getDropdownCompanies: 'dashboard/getDropdownCompanies',
-      getMenus: 'dashboard/getMenus',
       getOverallStats: 'dashboard/getOverallStats'
     }),
     onPieChartDropdownSelect(item) {

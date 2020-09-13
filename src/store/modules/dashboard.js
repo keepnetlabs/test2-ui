@@ -104,7 +104,6 @@ const dashboard = {
         status: x.status
       }))
     },
-
     SET_COMPANY_INFORMATION(state, payload) {
       const scoreValue = getAwarenesColor(parseInt(payload.score))
       state.companyInformation = {}
@@ -117,6 +116,34 @@ const dashboard = {
       state.companyInformation.endsAt = `${date.getDate()}.${date.getMonth()}.${
         date.getFullYear() + 1
       }`
+    },
+    SET_OVERALL_STATS(state, payload) {
+      const newOverallStats = []
+      if (payload.phishingSimulatorScore.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Phishing Simulator Score',
+          data: payload.phishingSimulatorScore
+        })
+      }
+      if (payload.awarenessEducatorScore.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Awareness Educator',
+          data: payload.awarenessEducatorScore
+        })
+      }
+      if (payload.threatIntelligence.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Threat Intelligence',
+          data: payload.threatIntelligence
+        })
+      }
+      if (payload.incidentResponder.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Incident Responder',
+          data: payload.incidentResponder
+        })
+      }
+      state.overallStatsList = newOverallStats
     },
     SET_DROPDOWN_COMPANIES(state, payload) {
       state.dropdownCompanies = payload
@@ -250,34 +277,6 @@ const dashboard = {
         })
       })
       state.menuList = newList
-    },
-    SET_OVERALL_STATS(state, payload) {
-      const newOverallStats = []
-      if (payload.phishingSimulatorScore.filter((x) => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Phishing Simulator Score',
-          data: payload.phishingSimulatorScore
-        })
-      }
-      if (payload.awarenessEducatorScore.filter((x) => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Awareness Educator',
-          data: payload.awarenessEducatorScore
-        })
-      }
-      if (payload.threatIntelligence.filter((x) => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Threat Intelligence',
-          data: payload.threatIntelligence
-        })
-      }
-      if (payload.incidentResponder.filter((x) => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Incident Responder',
-          data: payload.incidentResponder
-        })
-      }
-      state.overallStatsList = newOverallStats
     },
     SET_NOTIFICATIONS(state, payload) {
       state.notificationList = payload
