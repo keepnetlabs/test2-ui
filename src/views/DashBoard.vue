@@ -66,18 +66,18 @@
           </v-list-item>
           <!-- eslint-disable -->
           <company-information
-            :key="companyInformation.name"
-            :companyInformation="companyInformation"
-            ><!-- eslint-disable-line --></company-information
+                  :key="companyInformation.name"
+                  :companyInformation="companyInformation"
+          ><!-- eslint-disable-line --></company-information
           >
         </v-card>
       </v-col>
       <v-col class="overall-stats-col pl-4 pt-1 pr-4" lg="12" md="12" xl="12">
         <v-card :class="{ z_index_custom_2: getTourData['2'] }">
           <div
-            v-show="isTourActive"
-            class="tour-btn-container tour-three"
-            :class="{ z_index_custom_1: getTourData['2'] }"
+                  v-show="isTourActive"
+                  class="tour-btn-container tour-three"
+                  :class="{ z_index_custom_1: getTourData['2'] }"
           >
             <div class="tour-btn-wrapper">
               <div class="tour-btn-circle">
@@ -97,28 +97,28 @@
             </v-list-item-content>
           </v-list-item>
           <overall-stats
-            :key="overallStatsList"
-            :dropdown-data="overallDropdownData"
-            :dropdown-current="dropdownCurrentOverallStats"
-            v-on:changeDropdownItem="onOverallStatsDropdownSelect($event)"
-            :chartData="overallStatsList"
-            :months="getMonths(dropdownCurrentOverallStats.key)"
-            :minMaxValues="minMaxValues"
-            ><!-- eslint-disable-line --></overall-stats
+                  :key="overallStatsList"
+                  :dropdown-data="overallDropdownData"
+                  :dropdown-current="dropdownCurrentOverallStats"
+                  v-on:changeDropdownItem="onOverallStatsDropdownSelect($event)"
+                  :chartData="overallStatsList"
+                  :months="getMonths(dropdownCurrentOverallStats.key)"
+                  :minMaxValues="minMaxValues"
+          ><!-- eslint-disable-line --></overall-stats
           >
         </v-card>
       </v-col>
       <v-col
-        class="last5-col pl-4 pt-1 pr-4"
-        lg="12"
-        md="12"
-        xl="12"
-        :class="{ z_index_custom_2: getTourData['3'] }"
+              class="last5-col pl-4 pt-1 pr-4"
+              lg="12"
+              md="12"
+              xl="12"
+              :class="{ z_index_custom_2: getTourData['3'] }"
       >
         <div
-          v-show="isTourActive"
-          class="tour-btn-container tour-four"
-          :class="{ z_index_custom_1: getTourData['3'] }"
+                v-show="isTourActive"
+                class="tour-btn-container tour-four"
+                :class="{ z_index_custom_1: getTourData['3'] }"
         >
           <div class="tour-btn-wrapper">
             <div class="tour-btn-circle">
@@ -127,10 +127,10 @@
           </div>
         </div>
         <LastFiveCampaigns
-          :key="lastFiveCampaignList.length"
-          :campaignList2="firstCampaignList"
-          :campaignList="lastFiveCampaignList"
-          :singleTableList="singleCampaignList"
+                :key="lastFiveCampaignList.length"
+                :campaignList2="firstCampaignList"
+                :campaignList="lastFiveCampaignList"
+                :singleTableList="singleCampaignList"
         />
       </v-col>
     </v-layout>
@@ -253,7 +253,12 @@ export default {
   mounted() {
     this.$nextTick(() => {
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
+        //this.getCurrentUser()
+        this.getPhishingCampaigns(999)
+        this.getLastFiveCompaignsStats()
+        this.getCompanyInformation()
         this.getDropdownCompanies()
+        this.getOverallStats(12)
       } else {
         this.$router.push('/login')
       }
@@ -262,7 +267,14 @@ export default {
   computed: {
     ...mapGetters({
       isTourActive: 'tour/isTourActive',
-      getTourData: 'tour/getTourData'
+      getTourData: 'tour/getTourData',
+      getPieChartLabels: 'dashboard/getPieChartLabels',
+      firstCampaignList: 'dashboard/getFirstCampaignList',
+      lastFiveCampaignList: 'dashboard/getLastFiveCampaignList',
+      singleCampaignList: 'dashboard/getSingleCampaignList',
+      menuList: 'dashboard/getMenuList',
+      overallStatsList: 'dashboard/getOverallStatsList',
+      notificationList: 'dashboard/getNotificationList'
     }),
     ...mapState({
       pieChartData: (state) => state.dashboard.pieChartData,
@@ -284,6 +296,10 @@ export default {
       return newMonths
     },
     ...mapActions({
+      getCurrentUser: 'auth/getCurrentUser',
+      getPhishingCampaigns: 'dashboard/getPhishingCampaigns',
+      getLastFiveCompaignsStats: 'dashboard/getLastFiveCompaignsStats',
+      getCompanyInformation: 'dashboard/getCompanyInformation',
       getDropdownCompanies: 'dashboard/getDropdownCompanies',
       getOverallStats: 'dashboard/getOverallStats'
     }),

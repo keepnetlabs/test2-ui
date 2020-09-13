@@ -127,7 +127,6 @@ export default {
       this.msgEmlFile = e
       uploadEmlOrMsg(this.msgEmlFile)
         .then((response) => {
-          debugger
           this.getGrapesWebModalDraw(response.data.data.body)
         })
         .catch((error) => {

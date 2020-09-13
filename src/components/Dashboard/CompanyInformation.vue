@@ -76,6 +76,7 @@ export default {
   },
   computed: {
     getCompLenght() {
+      debugger
       return this.company.awarenessScore.length
     }
   },

@@ -123,7 +123,7 @@ export function getCampaignSummary() {
   ]
 }
 
-export function getCompanyInformation() {
+export function getCompanyInformationDummy() {
   return {
     companyName: 'Keepnet Labs',
     campaignCount: 0,

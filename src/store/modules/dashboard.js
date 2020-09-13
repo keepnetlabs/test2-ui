@@ -13,6 +13,12 @@ import {
 } from '../../api/dashboard'
 import AuthenticationService from '../../services/authentication'
 import router from '../../router'
+import {
+  getCampaignSummary,
+  getCompanyOverallScore,
+  getLastCampaigns,
+  getCompanyInformationDummy
+} from '../../utils/constants'
 
 const dashboard = {
   namespaced: true,
@@ -299,10 +305,7 @@ const dashboard = {
       })
     },
     getOverallStats({ commit }, payload) {
-      getOverallStats(payload).then((response) => {
-        const result = response.data
-        commit('SET_OVERALL_STATS', result)
-      })
+      commit('SET_OVERALL_STATS', getCompanyOverallScore())
     },
     logoutUser({ commit }) {
       commit('common/SET_SNACK_STATUS', false, { root: true })
@@ -345,38 +348,13 @@ const dashboard = {
       })
     },
     getLastFiveCompaignsStats({ commit }) {
-      getLastFiveCompaignsStats().then((response) => {
-        const result = response.data
-        commit('SET_LAST_FIVE_CAMPAIGNS', result)
-      })
+      commit('SET_LAST_FIVE_CAMPAIGNS', getLastCampaigns())
     },
     getPhishingCampaigns({ commit }, payload) {
-      getPhishingCampaigns(payload)
-        .then((response) => {
-          const result = response.data
-          commit('SET_PHISHING_CAMPAIGNS', result)
-        })
-        .catch(() => {})
+      commit('SET_PHISHING_CAMPAIGNS', getCampaignSummary())
     },
     getCompanyInformation({ commit }) {
-      getCompanyInformation()
-        .then((response) => {
-          const result = response.data
-          commit('SET_COMPANY_INFORMATION', result)
-        })
-        .catch(() => {
-          const dummyComp = {
-            name: this.state.dashboard.selectedCompany.manager,
-            awarenessScore: '',
-            awarenessColor: '#e6a23c',
-            licenceStatus: '5000 registered users of 5000',
-            endsAt: '25.07.2020',
-            isLicenceStatusValid: false,
-            licenseStatusMessage:
-              'You reached the user license limit. To add more users, please contract your administrator to upgrade your plan.'
-          }
-          commit('SET_DUMMY_COMPANY_INFO', dummyComp)
-        })
+      commit('SET_DUMMY_COMPANY_INFO', getCompanyInformationDummy())
     },
     getDropdownCompanies({ commit }) {
       function getUnique(arr, comp) {

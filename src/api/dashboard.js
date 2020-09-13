@@ -56,7 +56,7 @@ export function getDropdownCompanies() {
 }
 
 export function selectCompany(payload) {
-  return request.post(`user/company/${payload.companyId}`)
+  return testRequest.get(`companies/${payload.companyId}`)
 }
 
 export function getMenus() {
