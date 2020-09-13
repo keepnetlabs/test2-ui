@@ -72,6 +72,7 @@ export default {
   data() {
     return {
       layout: [],
+      newItemY:0,
       editMode: false,
       allWidgets: {
         PhishingReporterUsers: {
@@ -206,7 +207,10 @@ export default {
         1
       )
       localStorage.setItem('availableWidgets', JSON.stringify(this.availableWidgets))
-      this.layout.push(this.allWidgets[widget.key])
+      const newItem=this.allWidgets[widget.key]
+      newItem["y"]=this.newItemY
+      this.newItemY+=newItem.h
+      this.layout.unshift(this.allWidgets[widget.key])
     },
     layoutUpdated(newLayout) {
       localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
