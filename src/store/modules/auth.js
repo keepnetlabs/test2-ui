@@ -21,6 +21,7 @@ const auth = {
   },
   actions: {
     getCurrentUser({ commit, dispatch }) {
+      let userData = JSON.parse(localStorage.getItem('auth-token')).token
       getCurrentUser().then((response) => {
         const datas = {
           companyId: response.data.currentCompany.id,

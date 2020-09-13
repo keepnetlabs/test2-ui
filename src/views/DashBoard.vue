@@ -284,7 +284,6 @@ export default {
       return newMonths
     },
     ...mapActions({
-      getCurrentUser: 'auth/getCurrentUser',
       getDropdownCompanies: 'dashboard/getDropdownCompanies',
       getOverallStats: 'dashboard/getOverallStats'
     }),

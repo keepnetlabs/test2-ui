@@ -16,12 +16,6 @@ export function loginAction(payload) {
     }
   })
 }
-export function loginAction2(payload) {
-  return request.post('account/token', {
-    email: payload.email,
-    password: payload.password
-  })
-}
 
 export function getCurrentUser() {
   return request.get('account/myself')

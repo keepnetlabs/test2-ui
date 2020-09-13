@@ -897,7 +897,7 @@ export default {
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
-        this.getCurrentUser()
+        this.getCurrentUser() //@arda login
         //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {

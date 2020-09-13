@@ -1,5 +1,5 @@
 import request from '../utils/request'
-import webRequest from '../utils/webRequests'
+import testRequest from '../utils/testRequest'
 
 export function getPhishingCampaigns(payload) {
   return request.get(`campaign/summary/${payload}`)
@@ -46,7 +46,13 @@ export function getDropdownCompanies() {
       ]
     }
   }
-  return webRequest.post('companies/search', payload)
+  return testRequest.post('companies/search', payload, {
+    headers: {
+      'X-IR-USER-ID': localStorage.getItem('userId'),
+      'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+      'X-IR-COMPANY-ID': localStorage.getItem('companyId')
+    }
+  })
 }
 
 export function selectCompany(payload) {
