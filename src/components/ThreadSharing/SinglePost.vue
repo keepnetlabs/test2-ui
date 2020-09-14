@@ -455,9 +455,11 @@
                   "
                 >
                   <span>{{ findCategory(post.categoryResourceIdArray[1]) }}</span>
+                  <span>{{ findCategory(post.categoryResourceIdArray[2]) }}</span>
                 </div>
                 <div v-else-if="!post.hasAttachment">
                   <span>{{ findCategory(post.categoryResourceIdArray[2]) }}</span>
+                  <span>{{ findCategory(post.categoryResourceIdArray[3]) }}</span>
                 </div>
               </div>
             </div>
