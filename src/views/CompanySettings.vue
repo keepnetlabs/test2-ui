@@ -8,6 +8,7 @@
           color="basil"
           class="k-tabs"
           v-model="tab"
+          show-arrows
         >
           <v-tab
             :key="tab"
