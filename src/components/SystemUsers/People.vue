@@ -22,6 +22,8 @@
         :sizeable="true"
         @handleAddNewSystemUsers="handleAddNewSystemUsers"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
       />
     </div>
   </div>
@@ -31,6 +33,7 @@
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
+import { getSystemUsers } from '@/api/systemUsers'
 export default {
   name: 'People',
   components: {
@@ -143,6 +146,48 @@ export default {
           tooltip: 'Add a New System User'
         }
       },
+      requestBody: {
+        pageNumber: 1,
+        pageSize: 5000,
+        orderBy: 'FirstName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'FirstName',
+                  Operator: 'Contains',
+                  Value: 'keep'
+                },
+                {
+                  FieldName: 'LastName',
+                  Operator: 'Contains',
+                  Value: 'keep'
+                },
+                {
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains',
+                  Value: 'keep'
+                },
+                {
+                  FieldName: 'PhoneNumber',
+                  Operator: 'Contains',
+                  Value: 'keep'
+                },
+                {
+                  FieldName: 'StatusId',
+                  Operator: '=',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       showCreateOrEditSystemUserModal: false
     }
   },
@@ -150,7 +195,56 @@ export default {
     handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+    },
+    callForListSystemUsers() {
+      getSystemUsers(this.requestBody).then((response) => {
+
+      }).catch(error=>{
+
+      })
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForListSystemUsers()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForListSystemUsers()
     }
+  },
+  created() {
+    this.callForListSystemUsers()
   }
 }
 </script>
