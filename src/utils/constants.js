@@ -1,3 +1,5 @@
+import { getAwarenesColor } from '../store/modules/dashboard'
+
 export function getLastCampaigns() {
   return [
     {
@@ -124,7 +126,7 @@ export function getCampaignSummary() {
 }
 
 export function getCompanyInformationDummy() {
-  return {
+  let data = {
     companyName: 'Keepnet Labs',
     campaignCount: 0,
     createDate: '2017-09-23T21:52:11.76',
@@ -135,6 +137,16 @@ export function getCompanyInformationDummy() {
     totalSentMail: 18763,
     score: '94'
   }
+  const scoreValue = getAwarenesColor(parseInt(data.score))
+  data.companyInformation = {}
+  data.companyInformation.awarenessColor = scoreValue.color
+  data.companyInformation.isLicenceStatusValid = true
+  data.companyInformation.name = data.companyName
+  data.companyInformation.licenceStatus = `${data.userCount} registered users of ${data.limits}`
+  data.companyInformation.awarenessScore = scoreValue.letter
+  const date = new Date(data.createDate)
+  data.companyInformation.endsAt = `${date.getDate()}.${date.getMonth()}.${date.getFullYear() + 1}`
+  return data
 }
 
 export function getCompanyOverallScore() {

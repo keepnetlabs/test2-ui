@@ -5,8 +5,8 @@ import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const testService = axios.create({
-  baseURL: APP_CONFIG.VUE_APP_WEB_API_TEST,
-  timeout: 10000, //@note timeout changed from 50000 to 10000
+  baseURL: APP_CONFIG.VUE_APP_APP_API_TEST,
+  timeout: 30000, //@note timeout changed from 50000 to 10000
   rejectUnauthorized: false
 })
 
@@ -15,7 +15,8 @@ testService.interceptors.request.use(
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
-      //config.headers['X-IR-COMPANY-ID'] = 'TEST-COMPANY-2'
+      config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
+      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
     }
     return config
   },

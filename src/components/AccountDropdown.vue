@@ -3,8 +3,8 @@
     <v-select
       v-model="selectedCompany"
       :items="getDropdown"
-      item-text="manager"
-      item-value="companyId"
+      item-text="name"
+      item-value="companyResourceId"
       single-line
       return-object
       :menu-props="{ offsetY: true }"

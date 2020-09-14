@@ -56,7 +56,7 @@ export function getDropdownCompanies() {
 }
 
 export function selectCompany(payload) {
-  return testRequest.get(`companies/${payload.companyId}`)
+  return testRequest.get(`companies/${localStorage.getItem('companyId')}`)
 }
 
 export function getMenus() {
