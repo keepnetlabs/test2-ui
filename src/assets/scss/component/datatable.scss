@@ -854,11 +854,12 @@
 
 
     .actions-label {
-      padding-right: 49px !important;
+     //padding-right: 49px !important;
+      text-align: center;
     }
 
     .actions-container {
-      padding-right: 17.5px !important;
+      //padding-right: 17.5px !important;
       /*
       &.actions-label{
         visibility: visible;
@@ -868,9 +869,23 @@
       }
 
        */
-
+      .cell{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       &--first {
-        padding-right: 40px !important;
+        .cell.actions-label{
+          padding-right: 0 !important;
+          padding-left: 0 !important;
+          text-align: center;
+        }
+        .cell{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        //padding-right: 40px !important;
         /*
         &.actions-label{
           visibility: visible;
@@ -974,4 +989,8 @@
   line-height: 1.58;
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.k-table__wrapper .card .table-wrapper .el-table th.actions-container--first > .cell  {
+  padding-left: 0 !important;
 }

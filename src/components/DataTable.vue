@@ -536,7 +536,7 @@
 
             <el-table-column
               :fixed="actionFixed"
-              :min-width="150"
+              :min-width="109"
               align="right"
               class-name="actions-container"
               label="Actions"
@@ -584,7 +584,7 @@
                     :return-value="isRowActionsMenuOpen[scope.$index]"
                   >
                     <template v-slot:activator="{ on }">
-                      <v-btn class="btn-hover" icon v-on="on">
+                      <v-btn class="btn-hover ml-1" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
                           >mdi-dots-vertical
                         </v-icon>
@@ -633,7 +633,7 @@
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
-              :min-width="150"
+              :min-width="100"
               align="right"
               class-name="actions-container--first"
               label="Actions"
@@ -658,7 +658,7 @@
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
-              :min-width="150"
+              :min-width="110"
               align="right"
               class-name="actions-container"
               label="Actions"
@@ -670,7 +670,7 @@
                   <template v-slot:activator="{ on }">
                     <v-btn
                       @click.native="rowAct(rowActions[0].action, scope.row)"
-                      class="btn-hover"
+                      class="btn-hover mr-1"
                       icon
                       v-on="on"
                     >
