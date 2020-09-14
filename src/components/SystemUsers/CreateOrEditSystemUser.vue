@@ -22,7 +22,7 @@
             placeholder="Enter first name"
             outlined
             dense
-            v-model.trim="formValues.firstName"
+            v-model.trim="formValues.FirstName"
             hint="*Required"
             persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
@@ -33,7 +33,7 @@
             placeholder="Enter last name"
             outlined
             dense
-            v-model.trim="formValues.lastName"
+            v-model.trim="formValues.LastName"
             hint="*Required"
             persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
@@ -44,7 +44,7 @@
             placeholder="Enter email address"
             outlined
             dense
-            v-model.trim="formValues.email"
+            v-model.trim="formValues.Email"
             hint="*Required"
             persistent-hint
             :rules="[
@@ -54,7 +54,7 @@
           ></v-text-field>
         </form-group>
         <form-group title="Phone Number">
-          <phone-number v-model="formValues.phoneNumber" />
+          <phone-number v-model="formValues.PhoneNumber" />
         </form-group>
         <form-group title="Status">
           <v-select
@@ -62,7 +62,7 @@
             outlined
             dense
             :items="statusItems"
-            v-model="formValues.status"
+            v-model.trim="formValues.status"
           ></v-select>
         </form-group>
         <form-group title="Role">
@@ -71,7 +71,7 @@
             outlined
             dense
             :items="roleItems"
-            v-model="formValues.role"
+            v-model.trim="formValues.role"
           ></v-select>
         </form-group>
         <form-group>
@@ -113,6 +113,7 @@ import { mail, maxLength, required } from '@/utils/validations'
 import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
+import { createSystemUser } from '@/api/systemUsers'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -138,10 +139,10 @@ export default {
   data() {
     return {
       formValues: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        PhoneNumber: '',
         status: '',
         role: '',
         isTwoStep: false,
@@ -167,17 +168,19 @@ export default {
       this.$emit('closeOverlay')
     },
     submit() {
-      this.toggleWelcomeEmailModal()
-      /*if (this.$refs.refForm.validate()) {
+      if (this.$refs.refForm.validate()) {
+        const formData = { ...this.formValues }
+        createSystemUser(formData).then((response) => {})
       }
-
-       */
     },
     toggleWelcomeEmailModal() {
       this.showWelcomeEmailModal = !this.showWelcomeEmailModal
     },
     handleSendEmail() {
       this.toggleWelcomeEmailModal()
+    },
+    callForCreateSystemUser() {
+      createSystemUser().then((response) => {})
     }
   },
   mounted() {
