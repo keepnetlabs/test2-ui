@@ -633,7 +633,7 @@
             </el-table-column>
             <el-table-column
               :fixed="actionFixed"
-              :min-width="100"
+              :min-width="110"
               align="right"
               class-name="actions-container--first"
               label="Actions"
