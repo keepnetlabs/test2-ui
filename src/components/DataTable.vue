@@ -76,7 +76,7 @@
             {{ col.label }}
             <v-switch v-model="col.show" color="#2196f3" />
           </div>
-          <slot name="settings-popup-body"> </slot>
+          <slot name="settings-popup-body"></slot>
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
           <div class="popup-row">
             First Column
@@ -98,13 +98,13 @@
           @closeEditPopup="closeEditPopup"
         >
           <template v-slot:body>
-            <slot name="extended-view-slot" :scope="multipleSelection"> </slot>
+            <slot name="extended-view-slot" :scope="multipleSelection"></slot>
           </template>
           <template v-slot:footer>
-            <slot name="extended-view-footer" :scope="multipleSelection"> </slot>
+            <slot name="extended-view-footer" :scope="multipleSelection"></slot>
           </template>
         </extended-view>
-        <slot name="extended-custom-view-slot"> </slot>
+        <slot name="extended-custom-view-slot"></slot>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
             <v-text-field
@@ -170,8 +170,8 @@
                         >{{ item.name }}</span
                       >
                       <v-icon class="ml-4 mt-n1" color="#2196f3" v-if="isEqualCluster(item.name)"
-                        >mdi-check</v-icon
-                      >
+                        >mdi-check
+                      </v-icon>
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
@@ -465,23 +465,14 @@
                 <data-table-service :col="col" :scope="scope" v-if="col.type === 'service'" />
                 <data-table-link :col="col" :scope="scope" v-if="col.type === 'link'" />
                 <div v-if="col.type === 'badge'">
-                  <v-tooltip bottom v-if="scope.row && scope.row[col.property]">
-                    <template v-slot:activator="{ on }">
-                      <badge
-                        :color="getBtnStatusColor(scope.row[col.property])"
-                        :listeners="on"
-                        :full-width="col.fullWidth"
-                        v-bind="col.props"
-                        :col="col"
-                        :text="getDataTableFieldLabel(scope.row[col.property])"
-                      />
-                    </template>
-                    <span class="tooltip-span">
-                      <slot name="status-tooltip-text" :scope="scope" :col="col">
-                        {{ scope.row[col.property] }}
-                      </slot>
-                    </span>
-                  </v-tooltip>
+                  <badge
+                    :color="getBtnStatusColor(scope.row[col.property])"
+                    :full-width="col.fullWidth"
+                    v-bind="col.props"
+                    :col="col"
+                    :text="getDataTableFieldLabel(scope.row[col.property])"
+                    v-if="scope.row && scope.row[col.property]"
+                  />
                   <span v-else>
                     {{ col.emptyText || '' }}
                   </span>
@@ -490,38 +481,24 @@
                   <data-table-small-badge :scope="scope" :col="col" />
                 </div>
                 <div v-if="col.type === 'status'">
-                  <v-tooltip bottom v-if="scope.row && scope.row['status']">
-                    <template v-slot:activator="{ on }">
-                      <badge
-                        :color="getBtnStatusColor(scope.row[col.property])"
-                        :listeners="on"
-                        :full-width="col.fullWidth"
-                        v-bind="col.props"
-                        :text="getDataTableFieldLabel(scope.row.status)"
-                      />
-                    </template>
-                    <span class="tooltip-span">
-                      <slot name="status-tooltip-text" :scope="scope" :col="col">
-                        {{ scope.row.status }}
-                      </slot>
-                    </span>
-                  </v-tooltip>
+                  <badge
+                    :color="getBtnStatusColor(scope.row[col.property])"
+                    :full-width="col.fullWidth"
+                    v-bind="col.props"
+                    v-if="scope.row && scope.row['status']"
+                    :text="getDataTableFieldLabel(scope.row.status)"
+                  />
                   <span v-else>
                     {{ col.emptyText || '' }}
                   </span>
                 </div>
                 <div v-if="col.type === 'priority'">
-                  <v-tooltip bottom opacity="1" v-if="scope.row && scope.row['priority']">
-                    <template v-slot:activator="{ on }">
-                      <badge
-                        :color="getBtnPriorityColor(scope.row[col.property])"
-                        :listeners="on"
-                        :full-width="col.fullWidth"
-                        :text="getDataTableFieldLabel(scope.row.priority)"
-                      />
-                    </template>
-                    <span class="tooltip-span">{{ scope.row.priority }}</span>
-                  </v-tooltip>
+                  <badge
+                    :color="getBtnPriorityColor(scope.row[col.property])"
+                    :full-width="col.fullWidth"
+                    :text="getDataTableFieldLabel(scope.row.priority)"
+                    v-if="scope.row && scope.row['priority']"
+                  />
                   <span v-else>
                     {{ col.emptyText || '' }}
                   </span>
@@ -609,8 +586,8 @@
                     <template v-slot:activator="{ on }">
                       <v-btn class="btn-hover" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
-                          >mdi-dots-vertical</v-icon
-                        >
+                          >mdi-dots-vertical
+                        </v-icon>
                       </v-btn>
                     </template>
                     <v-list class="v-cart-dropdown-list el-table__action-buttons">
@@ -825,6 +802,7 @@ import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
 import DataTableFilter from './DataTableComponents/DataTableFilter'
+
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -835,6 +813,7 @@ Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
+
 export default {
   components: {
     DataTableFilter,

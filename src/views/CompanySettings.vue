@@ -149,5 +149,21 @@ export default {
       width: 100%;
     }
   }
+  .v-slide-group__prev.v-slide-group__prev--disabled,
+  .v-slide-group__prev {
+    margin-left: -32px;
+    margin-top: 1px;
+
+    i {
+      margin-right: -8px;
+    }
+  }
+  .v-slide-group__next {
+    margin-right: -24px;
+    margin-top: 1px;
+    i {
+      margin-left: -8px;
+    }
+  }
 }
 </style>
