@@ -16,8 +16,6 @@ service.interceptors.request.use(
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
-      config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
-      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
     }
     return config
   },

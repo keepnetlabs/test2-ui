@@ -29,6 +29,7 @@ const login = {
   actions: {
     twoStepLogin({ commit, dispatch }, payload) {
       const jtwToken = AuthenticationService.getToken().token
+      debugger
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
       twoStepLogin({
         code: payload.code,
@@ -73,13 +74,14 @@ const login = {
     },
     loginAction({ commit, dispatch }, payload) {
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+      //@todo arda set expired
       loginAction(payload)
         .then((response) => {
           commit('common/SET_ERROR_STATE', false, { root: true })
           AuthenticationService.setToken(
-            response.data.token,
-            response.data.expiredIn,
-            response.data.status
+            response.data.access_token,
+            response.data.expiredIn || 9999999999999,
+            response.data.status || 1
           )
           if (response.data.status === 3) {
             commit('SET_PAGE_NUMBER', 4)
@@ -100,7 +102,10 @@ const login = {
             })
           } else {
             commit('common/SET_ERROR_STATE', true, { root: true })
-            commit('common/SET_ERROR_MESSAGE', 'Unknown Error Occured !!!', { root: true })
+            let content = error.response.data.error_description
+              ? error.response.data.error_description
+              : 'Unknown Error Occured !!!'
+            commit('common/SET_ERROR_MESSAGE', content, { root: true })
           }
         })
     }

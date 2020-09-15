@@ -72,7 +72,7 @@ export default {
   name: 'company-information',
   data: () => ({}),
   created() {
-    this.company = this.companyInformation
+    this.company = this.companyInformation.companyInformation
   },
   computed: {
     getCompLenght() {

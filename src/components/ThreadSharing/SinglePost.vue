@@ -857,7 +857,7 @@
                       </div>
                     </div>
                     <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(el.url)">
+                      <span class="copy-link" @click="contentCopy(att.sha512)">
                         <v-icon>mdi-content-copy</v-icon>Copy SHA 512 Hash
                       </span>
                     </div>

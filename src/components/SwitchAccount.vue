@@ -60,7 +60,7 @@
                         ></v-img>
                       </div>
                       <div class="switch-right-wrapper">
-                        <div class="swith-account-title">{{ item.manager }}</div>
+                        <div class="swith-account-title">{{ item.companyName }}</div>
                         <div v-if="index === 0" class="switch-account-description">
                           Manage all Companies as reseller
                         </div>
@@ -106,8 +106,16 @@ export default {
     onClickSelectedAccount(account) {
       this.setDialogBar(false)
       this.selectCompany(account).then((response) => {
-        localStorage.setItem('companyId', account.companyId)
-        localStorage.setItem('companyManager', account.manager)
+        localStorage.setItem('companyManager', account.companyName)
+        localStorage.setItem('isSelectCompany', 'true')
+        localStorage.setItem('companyId', account.companyResourceId)
+        localStorage.setItem('companyResourceId', account.companyResourceId)
+        localStorage.setItem('companyName', account.companyName)
+        localStorage.setItem('userId', account.companyResourceId)
+        localStorage.setItem('businessCatId', account.userCompany.licenseTypeResourceId)
+        localStorage.setItem('userName', account.fullName)
+        //dispatch('dashboard/selectCompany', account, { root: true })
+        //commit('SET_CURRENTUSER', account)
         this.$router.go(0)
       })
 

@@ -4,19 +4,18 @@ import AuthenticationService from '../services/authentication'
 import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
-const testService = axios.create({
-  baseURL: APP_CONFIG.VUE_APP_APP_API_TEST,
-  timeout: 30000, //@note timeout changed from 50000 to 10000
+const authTestService = axios.create({
+  baseURL: APP_CONFIG.VUE_APP_AUTH_API_TEST,
+  timeout: 50000,
   rejectUnauthorized: false
 })
 
-testService.interceptors.request.use(
+authTestService.interceptors.request.use(
   (config) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
-      config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
-      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
+      //config.headers['X-IR-COMPANY-ID'] = 'TEST-COMPANY-2'
     }
     return config
   },
@@ -25,7 +24,7 @@ testService.interceptors.request.use(
   }
 )
 
-testService.interceptors.response.use(
+authTestService.interceptors.response.use(
   (response) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (response.data.code === 'FAILED') {
@@ -52,10 +51,7 @@ testService.interceptors.response.use(
         'common/createSnackBar',
         {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message:
-            error.response.data.validationMessages[0] ||
-            error.response.data.message ||
-            error.response.data.Message
+          message: error.response.data.message || error.response.data.Message
         },
         { root: true }
       )
@@ -72,4 +68,4 @@ testService.interceptors.response.use(
   }
 )
 
-export default testService
+export default authTestService
