@@ -63,7 +63,7 @@ export function getMenus() {
 }
 
 export function logoutUser() {
-  return request.post('account/logout')
+  return testRequest.get('account/logout')
 }
 
 export function getOverallStats(payload) {
