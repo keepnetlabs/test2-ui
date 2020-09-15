@@ -20,7 +20,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @handleAddNewSystemUsers="handleAddNewSystemUsers"
+        @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -67,10 +67,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.COMPANY,
+            property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.COMPANY),
+            label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
             sortable: true,
             show: true,
             fixed: false,
@@ -78,7 +78,7 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.ROLE,
+            property: PROPERTY_STORE.ROLES,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.ROLE),
@@ -89,10 +89,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.PHONE,
+            property: PROPERTY_STORE.PHONENUMBER,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.PHONE),
+            label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
             sortable: true,
             show: true,
             fixed: false,
@@ -100,10 +100,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.STATUS,
-            align: 'left',
+            property: PROPERTY_STORE.STATUSNAME,
+            align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            label: getStoreValue(PROPERTY_STORE.STATUSNAME),
             sortable: true,
             show: true,
             fixed: false,
@@ -111,7 +111,7 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDATE),
@@ -119,7 +119,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 180
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
@@ -197,11 +197,13 @@ export default {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
     },
     callForListSystemUsers() {
-      getSystemUsers(this.requestBody).then((response) => {
-
-      }).catch(error=>{
-
-      })
+      getSystemUsers(this.requestBody)
+        .then((response) => {
+          const { data } = response.data
+          console.log('data', data.results)
+          this.$refs.refSystemUsersList.loadWithDataArray(data.results || [])
+        })
+        .catch((error) => {})
     },
     columnFilterChanged(filter) {
       let items = []
