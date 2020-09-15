@@ -653,111 +653,142 @@
           </v-tab-item>
           <v-tab-item>
             <div class="single-post__details">
-              <h1
-                v-if="
-                  (emailData && emailData.subject && emailData.isSubjectFlagged) ||
-                  (emailData.from && emailData.from.isFromFlagged) ||
-                  (emailData.urls && emailData.urls.some((a) => a.isFlagged)) ||
-                  (emailData.attachments && emailData.attachments.some((a) => a.isFlagged))
-                "
-                class="detected-items"
-              >
-                Detected Items
+              <h1 class="detected-items" v-if="emailData && emailData.subject">
+                <span> Subject: {{ emailData.subject }} </span>
               </h1>
               <div id="last-detail-parts" class="detail-parts">
                 <p
                   v-if="
-                    (emailData.subject && emailData.isSubjectFlagged) ||
-                    (!!emailData.from && emailData.isFromFlagged) ||
-                    (emailData.to && !!emailData.to.length && emailData.isToFlagged) ||
-                    (emailData.cc && !!emailData.cc.length && emailData.isCcFlagged) ||
-                    (emailData.bcc && !!emailData.bcc.length && emailData.isBccFlagged)
+                    (emailData && emailData.subject && !emailData.isSubjectHidden) ||
+                    (!!emailData.from && !emailData.isFromHidden) ||
+                    (emailData.to && !!emailData.to.length && !emailData.isToHidden) ||
+                    (emailData.cc && !!emailData.cc.length && !emailData.isCcHidden) ||
+                    (emailData.bcc && !!emailData.bcc.length && !emailData.isBccHidden)
                   "
                   class="detail-black disc-header single-post__details__section-header"
                 >
                   Header
                 </p>
-                <div>
-                  <p
-                    v-if="emailData.subject && emailData.isSubjectFlagged"
-                    :id="emailData.subject"
-                    class="detail-black detail-red single-post__details__section-header--sub"
-                  >
-                    Subject:
-                    {{ !emailData.isSubjectHidden ? emailData.subject : 'hidden by owner' }}
-                  </p>
-                  <p
-                    v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
-                    id="harmful-Subject"
-                    class="detail-black single-post__details__section-header--result"
-                  >
-                    Emails with this subject may include harmful content
-                  </p>
+                {{ /* Subject  */  }}
+                <div
+                  class="detail-part-item"
+                  v-if="emailData && emailData.subject && !emailData.isSubjectHidden"
+                >
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        Subject:
+                        <span class="detail-part-item__hide-overflow">
+                          {{ emailData.subject }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(emailData.subject)">
+                        <v-icon>mdi-content-copy</v-icon>Copy Subject
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="detail-part-item__col--warning">
+                    Subject from this sender may include harmful content
+                  </div>
                 </div>
-                <div>
-                  <p
-                    v-if="emailData.from && emailData.isFromFlagged"
-                    :id="emailData.from"
-                    class="detail-black detail-red single-post__details__section-header--sub"
-                  >
-                    From:
-                    {{ !emailData.isFromHidden ? emailData.from : 'hidden by owner' }}
-                  </p>
-                  <p
-                    v-if="emailData && emailData.from && emailData.isFromFlagged"
-                    id="harmful-sender"
-                    class="detail-black single-post__details__section-header--result"
-                  >
+                {{ /* From  */  }}
+                <div
+                  class="detail-part-item"
+                  v-if="emailData && emailData.from && !emailData.isFromHidden"
+                >
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        From:
+                        <span class="detail-part-item__hide-overflow">
+                          {{ emailData.from }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(emailData.from)">
+                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-part-item__col--warning">
                     Emails from this sender may include harmful content
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <p
-                    v-if="emailData.to && emailData.isToFlagged"
-                    class="detail-black detail-red single-post__details__section-header--sub"
-                  >
-                    To:
-                    {{ !emailData.isToHidden ? emailData.to.toString() : 'hidden by owner' }}
-                  </p>
-                  <p
-                    v-if="emailData && emailData.to && emailData.isToFlagged"
-                    id="harmful-to"
-                    class="detail-black single-post__details__section-header--result"
-                  >
+                {{ /* To  */  }}
+                <div
+                  class="detail-part-item"
+                  v-if="emailData && emailData.to && !emailData.isToHidden"
+                >
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        To:
+                        <span class="detail-part-item__hide-overflow">
+                          {{ emailData.to.toString() }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(emailData.to.toString())">
+                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-part-item__col--warning">
                     This email address may be targeted by emails include harmful content
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <p
-                    v-if="emailData.cc && !!emailData.cc.length && emailData.isCcFlagged"
-                    class="detail-black detail-red single-post__details__section-header--sub"
-                  >
-                    CC:
-                    {{ !emailData.isCcHidden ? emailData.cc.toString() : 'hidden by owner' }}
-                  </p>
-                  <p
-                    v-if="emailData && emailData.cc && emailData.isCcFlagged"
-                    id="harmful-cc"
-                    class="detail-black single-post__details__section-header--result"
-                  >
+                {{ /* Cc  */  }}
+                <div
+                  class="detail-part-item"
+                  v-if="emailData && emailData.cc && !emailData.isCcHidden"
+                >
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        Cc:
+                        <span class="detail-part-item__hide-overflow">
+                          {{ emailData.cc.toString() }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(emailData.cc.toString())">
+                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-part-item__col--warning">
                     This email address may be targeted by emails include harmful content
-                  </p>
+                  </div>
                 </div>
-                <div>
-                  <p
-                    v-if="emailData.bcc && emailData.isBccFlagged"
-                    class="detail-black detail-red single-post__details__section-header--sub"
-                  >
-                    BCC:
-                    {{ !emailData.isBccHidden ? emailData.bcc.toString() : 'hidden by owner' }}
-                  </p>
-                  <p
-                    v-if="emailData && emailData.bcc && emailData.isBccFlagged"
-                    id="harmful-bcc"
-                    class="detail-black single-post__details__section-header--result"
-                  >
+                {{ /* Bcc  */  }}
+                <div
+                  class="detail-part-item"
+                  v-if="emailData && emailData.bcc && !emailData.isBccHidden"
+                >
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        Cc:
+                        <span class="detail-part-item__hide-overflow">
+                          {{ emailData.bcc.toString() }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(emailData.bcc.toString())">
+                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-part-item__col--warning">
                     This email address may be targeted by emails include harmful content
-                  </p>
+                  </div>
                 </div>
               </div>
               <div
@@ -774,84 +805,66 @@
                 >
                   Body
                 </p>
-                <p
+
+                {{ /* Links  */  }}
+                <div
+                  class="detail-part-item"
                   v-for="(el, ind) of emailData.urls"
                   :key="ind + el.url"
                   v-if="el && !el.isHidden && el.isFlagged"
                   :id="'detail-links-' + el.name"
-                  class="detail-black detail-red single-post__details__section-header--sub"
                 >
-                  Link: {{ el.name }} ({{ el.url }})
-                  <span
-                    class="single-post__details__section-header--result--copy-link"
-                    @click="contentCopy(el.url)"
-                  >
-                    <v-icon class="single-post__details__section-header--result--copy-link__icon"
-                      >mdi-content-copy</v-icon
-                    >Copy Url
-                  </span>
-                  <br />
-                </p>
-                <div
-                  v-for="(att, ind) of emailData.urls"
-                  :key="ind + att.name"
-                  :id="'detail-malicious-' + att.name"
-                  v-if="att.isFlagged"
-                >
-                  <p
-                    class="attach-found-malicious single-post__details__section-header--result"
-                    v-if="ind === 0"
-                  >
-                    This link<span v-if="emailData.urls && emailData.urls.length > 1">s</span> has
-                    been reported as a phising link
-                  </p>
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        Link:
+                        <span class="detail-part-item__hide-overflow">
+                          {{ el.name }} ({{ el.url }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(el.url)">
+                        <v-icon>mdi-content-copy</v-icon>Copy Url
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-part-item__col--warning">
+                    This link has been reported as phishing
+                  </div>
                 </div>
               </div>
               <div
-                class="details-attchments-wrapper preview-footer"
+                class="preview-attch-wrapper detail-parts"
                 v-if="emailData.attachments && emailData.attachments.length"
               >
+                <p class="detail-black single-post__details__section-header">
+                  Attachments
+                </p>
+                {{ /* Attachments  */  }}
                 <div
+                  class="detail-part-item"
                   v-for="(att, ind) of emailData.attachments"
                   :key="ind + att.name"
                   v-if="att.isFlagged"
-                  class="preview-attch-wrapper details-attachments"
                 >
-                  <p v-if="ind === 0" class="single-post__details__section-header">Attachments</p>
-                  <div>
-                    <div :id="'detail-attachs-' + att.name" class="attachment">
-                      <div
-                        :id="'detail-name-' + att.name"
-                        v-if="!att.isHidden"
-                        class="file-name max-char single-post__details__section-header--sub"
-                      >
-                        {{ att.name }}
-                      </div>
-                      <div
-                        :id="'detail-name-' + att.name"
-                        v-if="att.isHidden"
-                        class="file-name max-char single-post__details__section-header--sub"
-                      >
-                        hidden by owner
+                  <div class="detail-part-item__col--wrapper">
+                    <div class="detail-part-item__col--major">
+                      <div class="detail-part-item__text">
+                        <span class="detail-part-item__hide-overflow">
+                          {{ !att.isHidden ? att.name : 'hidden by owner' }}
+                        </span>
                       </div>
                     </div>
+                    <div class="detail-part-item__col--slight">
+                      <span class="copy-link" @click="contentCopy(el.url)">
+                        <v-icon>mdi-content-copy</v-icon>Copy SHA 512 Hash
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div
-                  v-for="(att, ind) of emailData.attachments"
-                  :key="ind + att.name"
-                  :id="'detail-malicious-' + att.name"
-                  v-if="att.isFlagged"
-                >
-                  <p
-                    class="attach-found-malicious detail-black single-post__details__section-header--result"
-                    v-if="ind === 0"
-                  >
-                    This file<span v-if="emailData.attachments && emailData.attachments.length > 1"
-                      >s</span
-                    >
-                    has been reported as malicious content
-                  </p>
+                  <div class="detail-part-item__col--warning">
+                    This file has been reported as malicious content
+                  </div>
                 </div>
               </div>
               <div class="detail-discovery pb-4">
