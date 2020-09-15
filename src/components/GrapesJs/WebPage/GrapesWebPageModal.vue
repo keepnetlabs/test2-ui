@@ -13,6 +13,7 @@
 
 <script>
 import GrapesWebPageModal from 'grapesjs'
+import 'grapesjs-preset-newsletter'
 import 'grapesjs-blocks-basic'
 import 'grapesjs-preset-webpage'
 import 'grapesjs-plugin-forms'
@@ -24,6 +25,11 @@ import { setGrapesjsStyle } from '../Newsletter/assets/css/grapesStyle'
 export default {
   name: 'GrapesWebPageModal',
   components: GrapesWebPageModal,
+  props: {
+    htmlData: {
+      required: false
+    }
+  },
   data() {
     return {
       editor: null
@@ -42,17 +48,24 @@ export default {
         container: '#gjsWebPageModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-webpage', exportGrapes, cssParser],
+        plugins: ['gjs-preset-newsletter', cssParser],
         components: this.editorHtml || '',
         style: setGrapesjsStyle()
       })
       let pn = this.editor.Panels
       pn.getButton('options', 'sw-visibility').set('active', 1)
+      if (!!this.htmlData) {
+        this.getGrapesWebModalDraw(this.htmlData)
+      }
     },
-    getGrapesWebModalDraw() {
+    getGrapesWebModalDraw(html) {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
-      this.editor.setComponents(`<html><div>deneme</div></html>`)
+      this.editor.setComponents(html)
+    },
+    getGrapesEditorContent() {
+      let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
+      return htmlContent
     }
   }
 }
