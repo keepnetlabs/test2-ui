@@ -29,7 +29,6 @@ const login = {
   actions: {
     twoStepLogin({ commit, dispatch }, payload) {
       const jtwToken = AuthenticationService.getToken().token
-      debugger
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
       twoStepLogin({
         code: payload.code,

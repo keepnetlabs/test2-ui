@@ -214,7 +214,6 @@ export default {
       })
     },
     callForUpdateSystemUser(payload) {
-      debugger
       updateSystemUser(payload)
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -224,9 +223,7 @@ export default {
           })
           this.$emit('closeOverlayWithUpdate')
         })
-        .catch((error) => {
-          debugger
-        })
+        .catch((error) => {})
     }
   },
   mounted() {
@@ -236,7 +233,6 @@ export default {
   },
   created() {
     if (this.selectedRow) {
-      console.log('this.selecteRow', this.selectedRow)
       const { firstName, lastName, phoneNumber, roles, statusName } = this.selectedRow
       this.formValues.firstName = firstName
       this.formValues.lastName = lastName

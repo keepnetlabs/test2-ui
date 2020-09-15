@@ -11,3 +11,7 @@ export function createSystemUser(payload) {
 export function updateSystemUser(payload) {
   return testRequest.put(`/system-users/${payload.resourceId}`, payload)
 }
+
+export function getUserRoles(payload) {
+  return testRequest.post(`/roles/search`, payload)
+}

@@ -1506,7 +1506,6 @@ export default {
     },
     handleSelect(selection, row) {
       if (this.groupable) {
-        debugger
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
             for (let child of row.children) {

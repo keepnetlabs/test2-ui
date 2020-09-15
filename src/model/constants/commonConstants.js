@@ -68,7 +68,11 @@ export const LABEL_STORE = {
   ACCOUNTSID: 'Account SID',
   ROLE: 'Role',
   PHONENUMBER: 'Phone',
-  STATUSNAME: 'Status'
+  STATUSNAME: 'Status',
+  TYPENAME: 'Type',
+  TITLE: 'Title',
+  ROLENAME: 'Title',
+  USERCOUNT: 'Users'
 }
 
 export const PROPERTY_STORE = {
@@ -121,7 +125,10 @@ export const PROPERTY_STORE = {
   PHONENUMBER: 'phoneNumber',
   ROLES: 'roles',
   STATUSNAME: 'statusName',
-  CREATETIME: 'createTime'
+  CREATETIME: 'createTime',
+  ROLENAME: 'roleName',
+  USERCOUNT: 'userCount',
+  TYPENAME: 'typeName'
 }
 
 export function getStoreValue(key, type) {
