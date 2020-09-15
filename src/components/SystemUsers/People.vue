@@ -4,7 +4,9 @@
       <create-or-edit-system-user
         v-if="showCreateOrEditSystemUserModal"
         :status="showCreateOrEditSystemUserModal"
+        @closeOverlayWithUpdate="closeOverlayWithUpdate"
         @closeOverlay="toggleCreateOrEditSystemUser"
+        :selectedRow="selectedRow"
       />
       <data-table
         ref="refSystemUsersList"
@@ -20,6 +22,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
+        @editAction="handleEdit"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
@@ -53,7 +56,9 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'FirstName'
           },
           {
             property: PROPERTY_STORE.LASTNAME,
@@ -64,7 +69,9 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'LastName'
           },
           {
             property: PROPERTY_STORE.COMPANYNAME,
@@ -75,7 +82,9 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 180,
+            filterableType: 'text',
+            filterableCustomFieldName: 'CompanyName'
           },
           {
             property: PROPERTY_STORE.ROLES,
@@ -97,7 +106,9 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'PhoneNumber'
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
@@ -149,8 +160,8 @@ export default {
       requestBody: {
         pageNumber: 1,
         pageSize: 5000,
-        orderBy: 'FirstName',
-        ascending: true,
+        orderBy: 'CreateTime',
+        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
@@ -160,22 +171,22 @@ export default {
                 {
                   FieldName: 'FirstName',
                   Operator: 'Contains',
-                  Value: 'keep'
+                  Value: ''
                 },
                 {
                   FieldName: 'LastName',
                   Operator: 'Contains',
-                  Value: 'keep'
+                  Value: ''
                 },
                 {
                   FieldName: 'CompanyName',
                   Operator: 'Contains',
-                  Value: 'keep'
+                  Value: ''
                 },
                 {
                   FieldName: 'PhoneNumber',
                   Operator: 'Contains',
-                  Value: 'keep'
+                  Value: ''
                 },
                 {
                   FieldName: 'StatusId',
@@ -188,7 +199,8 @@ export default {
           ]
         }
       },
-      showCreateOrEditSystemUserModal: false
+      showCreateOrEditSystemUserModal: false,
+      selectedRow: null
     }
   },
   methods: {
@@ -196,11 +208,15 @@ export default {
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
     },
+    closeOverlayWithUpdate() {
+      this.toggleCreateOrEditSystemUser()
+      this.selectedRow = null
+      this.callForListSystemUsers()
+    },
     callForListSystemUsers() {
       getSystemUsers(this.requestBody)
         .then((response) => {
           const { data } = response.data
-          console.log('data', data.results)
           this.$refs.refSystemUsersList.loadWithDataArray(data.results || [])
         })
         .catch((error) => {})
@@ -243,6 +259,10 @@ export default {
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForListSystemUsers()
+    },
+    handleEdit(row) {
+      this.selectedRow = row
+      this.toggleCreateOrEditSystemUser()
     }
   },
   created() {

@@ -22,7 +22,7 @@
             placeholder="Enter first name"
             outlined
             dense
-            v-model.trim="formValues.FirstName"
+            v-model.trim="formValues.firstName"
             hint="*Required"
             persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
@@ -33,7 +33,7 @@
             placeholder="Enter last name"
             outlined
             dense
-            v-model.trim="formValues.LastName"
+            v-model.trim="formValues.lastName"
             hint="*Required"
             persistent-hint
             :rules="[(v) => validations.required(v, 'Required')]"
@@ -44,7 +44,7 @@
             placeholder="Enter email address"
             outlined
             dense
-            v-model.trim="formValues.Email"
+            v-model.trim="formValues.email"
             hint="*Required"
             persistent-hint
             :rules="[
@@ -54,7 +54,7 @@
           ></v-text-field>
         </form-group>
         <form-group title="Phone Number">
-          <phone-number v-model="formValues.PhoneNumber" />
+          <phone-number v-model="formValues.phoneNumber" />
         </form-group>
         <form-group title="Status">
           <v-select
@@ -62,7 +62,7 @@
             outlined
             dense
             :items="statusItems"
-            v-model.trim="formValues.status"
+            v-model.trim="formValues.statusName"
           ></v-select>
         </form-group>
         <form-group title="Role">
@@ -113,7 +113,8 @@ import { mail, maxLength, required } from '@/utils/validations'
 import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
-import { createSystemUser } from '@/api/systemUsers'
+import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -134,22 +135,25 @@ export default {
     bodyTitle: {
       type: String,
       default: 'Create New System User'
+    },
+    selectedRow: {
+      type: Object
     }
   },
   data() {
     return {
       formValues: {
-        FirstName: '',
-        LastName: '',
-        Email: '',
-        PhoneNumber: '',
-        status: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        statusName: '',
         role: '',
         isTwoStep: false,
         isLdap: false
       },
       showWelcomeEmailModal: false,
-      statusItems: [],
+      statusItems: ['Active'],
       roleItems: [],
       validations: {
         maxLength,
@@ -169,15 +173,28 @@ export default {
     },
     submit() {
       if (this.$refs.refForm.validate()) {
-        const { PhoneNumber } = this.formValues
-        const formData = {
-          ...this.formValues,
-          PhoneNumber: PhoneNumber.val ? `${PhoneNumber.code}${PhoneNumber.val}` : ''
+        if (this.selectedRow) {
+          const { phoneNumber } = this.formValues
+          const formData = {
+            resourceId: this.selectedRow.resourceId,
+            ...this.formValues,
+            phoneNumber: phoneNumber.val
+              ? `${phoneNumber.code}${phoneNumber.val}`
+              : this.selectedRow.phoneNumber
+              ? this.selectedRow.phoneNumber
+              : ''
+          }
+          this.callForUpdateSystemUser(formData)
+        } else {
+          const { phoneNumber } = this.formValues
+          const formData = {
+            ...this.formValues,
+            phoneNumber: phoneNumber.val ? `${phoneNumber.code}${phoneNumber.val}` : '',
+            roleResourceIdList: ['VwwzEXkFHHCe'],
+            companyResourceId: localStorage.getItem('companyResourceId')
+          }
+          this.callForCreateSystemUser(formData)
         }
-        /*
-        createSystemUser(formData).then((response) => {})
-
-         */
       }
     },
     toggleWelcomeEmailModal() {
@@ -186,14 +203,46 @@ export default {
     handleSendEmail() {
       this.toggleWelcomeEmailModal()
     },
-    callForCreateSystemUser() {
-      createSystemUser().then((response) => {})
+    callForCreateSystemUser(payload) {
+      createSystemUser(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          icon: 'mdi-check-circle',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+        })
+        this.$emit('closeOverlayWithUpdate')
+      })
+    },
+    callForUpdateSystemUser(payload) {
+      debugger
+      updateSystemUser(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+          this.$emit('closeOverlayWithUpdate')
+        })
+        .catch((error) => {
+          debugger
+        })
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.$refs.refForm.resetValidation()
     })
+  },
+  created() {
+    if (this.selectedRow) {
+      console.log('this.selecteRow', this.selectedRow)
+      const { firstName, lastName, phoneNumber, roles, statusName } = this.selectedRow
+      this.formValues.firstName = firstName
+      this.formValues.lastName = lastName
+      this.formValues.role = roles
+      this.formValues.statusName = statusName
+    }
   }
 }
 </script>
