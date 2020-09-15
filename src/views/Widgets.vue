@@ -70,6 +70,21 @@ export default {
     AvailableWidgets
   },
   data() {
+    /*
+     ReportedEmails: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 2,
+          h: 10,
+          defaultH: 10,
+          minH: 3,
+          i: Math.random().toString(),
+          title: 'Reported Emails',
+          key: 'ReportedEmails',
+          icon: 'mdi-email'
+        },*/
+
     return {
       layout: [],
       newItemY: 0,
@@ -127,19 +142,6 @@ export default {
           key: 'PhishingCampaigns',
           icon: 'mdi-chart-pie'
         },
-        ReportedEmails: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 2,
-          h: 10,
-          defaultH: 10,
-          minH: 3,
-          i: Math.random().toString(),
-          title: 'Reported Emails',
-          key: 'ReportedEmails',
-          icon: 'mdi-email'
-        },
         RecentInvestigations: {
           x: 0,
           y: 0,
@@ -186,11 +188,12 @@ export default {
         { name: 'Phishing Reporter Header', key: 'PhishingReporterHeader' },
         { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
         { name: 'Recent Investigations', key: 'RecentInvestigations' },
-        { name: 'Reported Emails', key: 'ReportedEmails' },
         { name: 'Overall Stats', key: 'OverallStats' },
         { name: 'Company Information', key: 'CompanyInformation' }
       ]
     }
+    /*
+      { name: 'Reported Emails', key: 'ReportedEmails' }, */
   },
   methods: {
     deleteWidget(item, index) {
