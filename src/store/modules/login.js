@@ -102,7 +102,10 @@ const login = {
             })
           } else {
             commit('common/SET_ERROR_STATE', true, { root: true })
-            commit('common/SET_ERROR_MESSAGE', 'Unknown Error Occured !!!', { root: true })
+            let content = error.response.data.error_description
+              ? error.response.data.error_description
+              : 'Unknown Error Occured !!!'
+            commit('common/SET_ERROR_MESSAGE', content, { root: true })
           }
         })
     }

@@ -24,8 +24,8 @@
         display: block;
         border-radius: 12px;
         box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
-          0 1px 1px 0 rgba(243, 243, 243, 0.14),
-          0 1px 1px -1px rgba(204, 204, 204, 0.12);
+        0 1px 1px 0 rgba(243, 243, 243, 0.14),
+        0 1px 1px -1px rgba(204, 204, 204, 0.12);
         padding-top: 16px;
 
         .table-container {
@@ -43,8 +43,8 @@
           border: 1px solid #2196f3;
           border-radius: 12px;
           box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
-            0 1px 1px 0 rgba(243, 243, 243, 0.14),
-            0 1px 1px -1px rgba(204, 204, 204, 0.12);
+          0 1px 1px 0 rgba(243, 243, 243, 0.14),
+          0 1px 1px -1px rgba(204, 204, 204, 0.12);
           padding: 18px 24px 16px 24px;
           position: absolute;
           right: 0;
@@ -767,8 +767,8 @@
       }
     }
     .el-table__row.el-table__row--level-1{
-     background-color: #f5f7fa !important;
-       td{
+      background-color: #f5f7fa !important;
+      td{
         padding-left: 24px !important;
 
       }
@@ -854,11 +854,11 @@
 
 
     .actions-label {
-      padding-right: 49px !important;
+      padding-right: 33px !important;
     }
 
     .actions-container {
-      padding-right: 17.5px !important;
+      padding-right: 6px !important;
       /*
       &.actions-label{
         visibility: visible;
@@ -868,9 +868,12 @@
       }
 
        */
+      .cell{
+
+      }
 
       &--first {
-        padding-right: 40px !important;
+        padding-right: 25px !important;
         /*
         &.actions-label{
           visibility: visible;

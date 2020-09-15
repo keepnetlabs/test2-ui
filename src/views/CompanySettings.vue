@@ -8,6 +8,7 @@
           color="basil"
           class="k-tabs"
           v-model="tab"
+          show-arrows
         >
           <v-tab
             :key="tab"
@@ -146,6 +147,22 @@ export default {
       padding: 10px 24px 0 24px !important;
       border-radius: 20px !important;
       width: 100%;
+    }
+  }
+  .v-slide-group__prev.v-slide-group__prev--disabled,
+  .v-slide-group__prev {
+    margin-left: -32px;
+    margin-top: 1px;
+
+    i {
+      margin-right: -8px;
+    }
+  }
+  .v-slide-group__next {
+    margin-right: -24px;
+    margin-top: 1px;
+    i {
+      margin-left: -8px;
     }
   }
 }

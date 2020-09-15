@@ -1,12 +1,13 @@
 import request from '../utils/request'
 import authTestRequest from '../utils/authTestRequest'
 import AuthenticationService from '../services/authentication'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 export function loginAction(payload) {
   const params = new URLSearchParams()
   params.append('grant_type', 'password')
-  params.append('username', 'keepnetlabs@keepnetlabs.com')
-  params.append('password', 'gerqI9-xyvbaz-dudwyd')
+  params.append('username', payload.email)
+  params.append('password', payload.password)
   params.append('scope', 'api1')
   params.append('client_id', 'ui_client')
   params.append('client_secret', 'secret')

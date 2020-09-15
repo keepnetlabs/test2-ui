@@ -126,7 +126,6 @@ export default {
     }
   },
   mounted() {
-    /*
     this.$refs.refUserRolesList.loadWithDataArray([
       {
         id: 1,
@@ -174,8 +173,6 @@ export default {
         ]
       }
     ])
-
-     */
   }
 }
 </script>

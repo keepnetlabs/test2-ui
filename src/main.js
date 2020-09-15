@@ -13,6 +13,11 @@ import 'echarts-gl'
 import VueMask from 'v-mask'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
+import { SmartWidget } from 'vue-smart-widget'
+import { SmartWidgetGrid } from 'vue-smart-widget'
+
+Vue.component('SmartWidget', SmartWidget)
+Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 
 Vue.component(
   'phishing-settings',

@@ -3,13 +3,13 @@
     <delete-modal
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
-      @confirmDelete="deleteConfirmedItem"
       @changeModalStatus="changeDeleteModalStatus"
+      @confirmDelete="deleteConfirmedItem"
     />
     <create-item-modal
       :is-show="isShowAddModal"
-      :selectedRow="selectedRow"
       :isEdit="editAddModal"
+      :selectedRow="selectedRow"
       @changeModalStatus="changeAddModalStatus"
       @companyGroupCreated="companyGroupCreated"
     />
@@ -20,21 +20,21 @@
       :countRow="5"
       :empty="tableOptions.iEmpty"
       :filterable="true"
+      :is-downloadable="false"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
-      :is-downloadable="false"
-      @delete="handleTableItemDelete"
       @addButton="addButton"
-      @onEmptyBtnClicked="addButton"
+      @delete="handleTableItemDelete"
       @editAction="editAction"
+      @onEmptyBtnClicked="addButton"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span :class="{ 'datatable-link': scope.row.companyCount !== 0 }" v-if="scope.row.name">
-          <span @click="goToDetails(scope.row)" v-if="scope.row.companyCount !== 0">{{
+        <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
+          <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
             scope.row.name
           }}</span>
           <span v-else>{{ scope.row.name }}</span>
@@ -46,19 +46,9 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import {
-  getCompanyGroups,
-  deleteCompanyGroup,
-  deleteCompany,
-  getCompanyByID
-} from '../../api/company'
+import { deleteCompanyGroup, getCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  LABEL_STORE,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 
 export default {
@@ -139,6 +129,22 @@ export default {
             action: 'delete'
           }
         ]
+      },
+      payload: {
+        pageNumber: 1,
+        pageSize: 3000,
+        orderBy: 'dateCreated',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
@@ -146,7 +152,8 @@ export default {
     this.getTableData()
   },
   methods: {
-    getTableData() {
+    getTableData(payload) {
+      const _payload = { ...this.payload, ...payload }
       getCompanyGroups()
         .then((response) => {
           this.$refs.refGroupDataList.loadWithDataArray(
@@ -190,7 +197,7 @@ export default {
     companyGroupCreated() {
       this.selectedRow = null
       this.editAddModal = false
-      this.getTableData()
+      this.getTableData({ orderBy: 'createdTime', ascending: false })
     },
     editAction(row) {
       this.changeAddModalStatus(true)
@@ -212,11 +219,13 @@ export default {
 <style lang="scss">
 .people {
   padding-top: 24px;
+
   .add-users__title {
     font-size: 14px;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
   }
+
   .edit-fields {
     display: flex;
     justify-content: flex-end;
@@ -228,6 +237,7 @@ export default {
     cursor: pointer;
     color: #2196f3;
   }
+
   .btn-add {
     width: 36px;
     height: 36px;
@@ -242,18 +252,21 @@ export default {
     }
   }
 }
+
 .clock-wise {
   .cell {
     * {
       visibility: visible !important;
     }
   }
+
   i {
     animation: antiClockwiseSpin 1s infinite ease-in;
     animation-delay: 0s;
     color: #2196f3 !important;
   }
 }
+
 @keyframes antiClockwiseSpin {
   0% {
     transform: rotate(360deg);

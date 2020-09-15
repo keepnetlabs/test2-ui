@@ -1022,7 +1022,9 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'detected'
+        type: 'detected',
+        filterableType: 'select',
+        filterableItems: ['Online', 'Offline']
       },
 
       {
@@ -1053,9 +1055,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        type: 'status',
-        filterableType: 'select',
-        filterableItems: ['Online', 'Offline']
+        type: 'status'
       },
       {
         property: 'scanType',
