@@ -21,6 +21,7 @@
         :isServerSide="false"
         :row-key="rowKey"
         groupable
+        :showClusterItemsRowAction="true"
         :options="true"
         :cluster-items="[
           { name: 'id', selected: true },
@@ -173,7 +174,8 @@ export default {
         ]
       }
     ])
-  }
+  },
+  created() {}
 }
 </script>
 

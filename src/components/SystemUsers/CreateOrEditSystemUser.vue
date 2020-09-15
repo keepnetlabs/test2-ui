@@ -169,8 +169,15 @@ export default {
     },
     submit() {
       if (this.$refs.refForm.validate()) {
-        const formData = { ...this.formValues }
+        const { PhoneNumber } = this.formValues
+        const formData = {
+          ...this.formValues,
+          PhoneNumber: PhoneNumber.val ? `${PhoneNumber.code}${PhoneNumber.val}` : ''
+        }
+        /*
         createSystemUser(formData).then((response) => {})
+
+         */
       }
     },
     toggleWelcomeEmailModal() {
