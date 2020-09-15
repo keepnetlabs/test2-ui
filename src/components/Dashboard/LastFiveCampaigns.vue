@@ -80,7 +80,7 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 100
+        width: 120
       },
       {
         property: PROPERTY_STORE.DELIVERY,

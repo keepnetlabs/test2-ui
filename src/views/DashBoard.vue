@@ -25,14 +25,16 @@
               <v-list-item-subtitle>Your phishing campaign statistics</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <phishing-campaigns-pie-chart
-            :dropdown-current="dropdownCurrent"
-            v-on:changeDropdownItem="onPieChartDropdownSelect($event)"
-            :dropdown-data="chartDropdownData"
-            :labels="pieChartDataLabels"
-            :pieData="pieChartData"
-            :chartOptionColors="chartOptionColors"
-          ></phishing-campaigns-pie-chart>
+          <v-skeleton-loader :loading="!pieChartData.length" type="table-tbody">
+            <phishing-campaigns-pie-chart
+              :dropdown-current="dropdownCurrent"
+              v-on:changeDropdownItem="onPieChartDropdownSelect($event)"
+              :dropdown-data="chartDropdownData"
+              :labels="pieChartDataLabels"
+              :pieData="pieChartData"
+              :chartOptionColors="chartOptionColors"
+            ></phishing-campaigns-pie-chart>
+          </v-skeleton-loader>
         </v-card>
       </v-col>
       <v-col
@@ -65,11 +67,13 @@
             </v-list-item-content>
           </v-list-item>
           <!-- eslint-disable -->
+          <v-skeleton-loader :loading="!companyInformation.name" type="article" class="mt-10">
           <company-information
             :key="companyInformation.name"
             :companyInformation="companyInformation"
             ><!-- eslint-disable-line --></company-information
           >
+          </v-skeleton-loader>
         </v-card>
       </v-col>
       <v-col class="overall-stats-col pl-4 pt-1 pr-4" lg="12" md="12" xl="12">
@@ -96,6 +100,7 @@
               <v-list-item-subtitle>Keepnet activity stats of your company</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
+          <v-skeleton-loader :loading="!overallStatsList.length" type="table">
           <overall-stats
             :key="overallStatsList"
             :dropdown-data="overallDropdownData"
@@ -106,6 +111,7 @@
             :minMaxValues="minMaxValues"
             ><!-- eslint-disable-line --></overall-stats
           >
+          </v-skeleton-loader>
         </v-card>
       </v-col>
       <v-col
@@ -126,12 +132,15 @@
             </div>
           </div>
         </div>
+        <v-skeleton-loader :loading="!overallStatsList.length" type="table">
+
         <LastFiveCampaigns
           :key="lastFiveCampaignList.length"
           :campaignList2="firstCampaignList"
           :campaignList="lastFiveCampaignList"
           :singleTableList="singleCampaignList"
         />
+        </v-skeleton-loader>
       </v-col>
     </v-layout>
   </v-container>
@@ -145,7 +154,7 @@ import OverallStats from '../components/Dashboard/OverallStats'
 import LastFiveCampaigns from '../components/Dashboard/LastFiveCampaigns'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
-
+import { vuetifySkeletonTypes } from '../model/constants/commonConstants'
 export default {
   components: {
     CompanyInformation,
@@ -154,6 +163,7 @@ export default {
     LastFiveCampaigns
   },
   data: () => ({
+    skeletonTypes: null,
     tour: {
       isActive: false,
       one: { active: false },
@@ -251,6 +261,7 @@ export default {
     minMaxValues: [0, 50000]
   }),
   mounted() {
+    this.skeletonTypes = vuetifySkeletonTypes()
     this.$nextTick(() => {
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
         this.getCurrentUser()
@@ -316,6 +327,9 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+.min-height-280px {
+  min-height: 280px;
+}
 ::v-deep .z_index_custom_1 {
   z-index: 99999 !important;
 }
