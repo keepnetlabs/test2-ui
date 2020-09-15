@@ -5,7 +5,7 @@ import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const testService = axios.create({
-  baseURL: APP_CONFIG.VUE_APP_APP_API_TEST,
+  baseURL: APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api',
   timeout: 30000, //@note timeout changed from 50000 to 10000
   rejectUnauthorized: false
 })
