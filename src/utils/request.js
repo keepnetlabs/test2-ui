@@ -37,6 +37,7 @@ service.interceptors.response.use(
     if (
       AuthenticationService.getToken() == null ||
       error.response.status === 401 ||
+      error.response.Code === '401_UNAUTHORIZED' ||
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()
