@@ -65,7 +65,9 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'RoleName'
           },
           {
             property: PROPERTY_STORE.USERCOUNT,
@@ -88,7 +90,9 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'text',
+            filterableCustomFieldName: 'CompanyName'
           },
           {
             property: PROPERTY_STORE.TYPENAME,
@@ -197,7 +201,7 @@ export default {
       }
 
       this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForListSystemUsers()
+      this.callForGetUserRoles()
     },
     columnFilterCleared(fieldName) {
       let items = []
@@ -211,7 +215,7 @@ export default {
 
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForListSystemUsers()
+      this.callForGetUserRoles()
     }
   },
   mounted() {
