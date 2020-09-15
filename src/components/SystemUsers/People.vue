@@ -207,10 +207,12 @@ export default {
     handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+      if (!this.showCreateOrEditSystemUserModal) {
+        this.selectedRow = null
+      }
     },
     closeOverlayWithUpdate() {
       this.toggleCreateOrEditSystemUser()
-      this.selectedRow = null
       this.callForListSystemUsers()
     },
     callForListSystemUsers() {

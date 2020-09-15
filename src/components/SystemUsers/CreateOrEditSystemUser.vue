@@ -15,7 +15,7 @@
         @closeOverlay="toggleWelcomeEmailModal"
         @sendEmail="handleSendEmail"
       />
-      <app-modal-body-header :title="bodyTitle" sub-title="Fill information below" />
+      <app-modal-body-header :title="getBodyTitle" sub-title="Fill information below" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="First Name" has-hint>
           <v-text-field
@@ -90,7 +90,7 @@
             label="LDAP Authentication"
           />
         </form-group>
-        <form-group v-if="systemUserId">
+        <form-group v-if="selectedRow">
           <v-btn
             color="#2196f3"
             rounded
@@ -129,13 +129,6 @@ export default {
       type: Boolean,
       default: false
     },
-    systemUserId: {
-      type: String
-    },
-    bodyTitle: {
-      type: String,
-      default: 'Create New System User'
-    },
     selectedRow: {
       type: Object
     }
@@ -164,7 +157,10 @@ export default {
   },
   computed: {
     getTitle() {
-      return this.systemUserId ? 'Edit System User' : 'New System User'
+      return this.selectedRow ? 'Edit System User' : 'New System User'
+    },
+    getBodyTitle() {
+      return this.selectedRow ? 'Edit System User' : 'Create New System User'
     }
   },
   methods: {
