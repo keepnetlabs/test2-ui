@@ -47,13 +47,22 @@ testService.interceptors.response.use(
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
+    } else if (
+      error.response.status === 401 ||
+      error.response.Code === '401_UNAUTHORIZED' ||
+      error.response.status === 306
+    ) {
+      AuthenticationService.removeToken()
+      router.push('/login')
     } else if (error.response && error.response.status !== 404) {
       store.dispatch(
         'common/createSnackBar',
         {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message:
-            error.response.data.validationMessages[0] ||
+            (error.response.data &&
+              error.response.data.validationMessages &&
+              error.response.data.validationMessages[0]) ||
             error.response.data.message ||
             error.response.data.Message
         },
