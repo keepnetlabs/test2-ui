@@ -48,7 +48,6 @@ export function getDropdownCompanies() {
   }
   return testRequest.post('companies/search', payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId'),
       'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
       'X-IR-COMPANY-ID': localStorage.getItem('companyId')
     }

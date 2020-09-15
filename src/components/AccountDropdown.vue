@@ -10,6 +10,7 @@
       :menu-props="{ offsetY: true }"
       solo
       flat
+      disabled
     />
   </div>
 </template>
