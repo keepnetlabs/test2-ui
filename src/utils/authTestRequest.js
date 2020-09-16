@@ -3,36 +3,58 @@ import router from '../router'
 import AuthenticationService from '../services/authentication'
 import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
-import testService from './testRequest'
 
-const service = axios.create({
-  baseURL: APP_CONFIG.VUE_APP_ROOT_API,
+const authTestService = axios.create({
+  baseURL: APP_CONFIG.VUE_APP_AUTH_API_TEST || 'https://test-api.keepnetlabs.com',
   timeout: 50000,
   rejectUnauthorized: false
 })
 
-service.interceptors.request.use(
+authTestService.interceptors.request.use(
   (config) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
+      //config.headers['X-IR-COMPANY-ID'] = 'TEST-COMPANY-2'
     }
     return config
   },
-  (error) => (error) => {
+  (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
 )
 
-service.interceptors.response.use(
+authTestService.interceptors.response.use(
   (response) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
-    return response
+    if (response.data.code === 'FAILED') {
+      store.dispatch(
+        'common/createSnackBar',
+        {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: response.data.message || response.data.Message,
+          icon: 'mdi-alert'
+        },
+        { root: true }
+      )
+      return response
+    } else {
+      return response
+    }
   },
   (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
+    } else if (error.response && error.response.status !== 404) {
+      store.dispatch(
+        'common/createSnackBar',
+        {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: error.response.data.message || error.response.data.Message
+        },
+        { root: true }
+      )
     }
     if (
       AuthenticationService.getToken() == null ||
@@ -47,4 +69,4 @@ service.interceptors.response.use(
   }
 )
 
-export default service
+export default authTestService

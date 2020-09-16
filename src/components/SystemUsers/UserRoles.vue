@@ -20,7 +20,7 @@
         :filterable="true"
         :isServerSide="false"
         :row-key="rowKey"
-        groupable
+        :showClusterItemsRowAction="true"
         :options="true"
         :cluster-items="[
           { name: 'id', selected: true },
@@ -32,6 +32,8 @@
         :selectable="true"
         :sizeable="true"
         @handleAddNewUserRole="handleAddNewUserRole"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
       />
     </div>
   </div>
@@ -42,6 +44,7 @@ import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants
 import DataTable from '@/components/DataTable'
 import DeleteSystemUserRoleModal from '@/components/SystemUsers/DeleteSystemUserRoleModal'
 import CantDeleteUserRoleModal from '@/components/SystemUsers/CantDeleteUserRoleModal'
+import { getUserRoles } from '@/api/systemUsers'
 export default {
   name: 'UserRoles',
   components: {
@@ -54,37 +57,64 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'date',
+            property: PROPERTY_STORE.ROLENAME,
             align: 'left',
             editable: false,
-            label: 'Date',
+            label: getStoreValue(PROPERTY_STORE.TITLE),
             sortable: true,
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'RoleName'
           },
           {
-            property: 'name',
+            property: PROPERTY_STORE.USERCOUNT,
             align: 'left',
             editable: false,
-            label: 'Name',
+            label: getStoreValue(PROPERTY_STORE.USERCOUNT),
             sortable: true,
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 100,
+            emptyText: '0'
           },
           {
-            property: 'status',
+            property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,
-            label: 'Name',
+            label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'text',
+            width: 180,
+            filterableType: 'text',
+            filterableCustomFieldName: 'CompanyName'
+          },
+          {
+            property: PROPERTY_STORE.TYPENAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.TYPENAME),
             sortable: true,
             show: true,
             fixed: false,
             type: 'badge',
             width: 150
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'text',
+            width: 180
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
@@ -113,7 +143,23 @@ export default {
       },
       showDeleteSystemUserModal: false,
       rowKey: 'id',
-      showCantDeleteUserModal: false
+      showCantDeleteUserModal: false,
+      requestBody: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'RoleName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
     }
   },
   methods: {
@@ -123,9 +169,57 @@ export default {
     },
     toggleCantDeleteUserRoleModal() {
       this.showCantDeleteUserModal = !this.showCantDeleteUserModal
+    },
+    callForGetUserRoles() {
+      getUserRoles(this.requestBody)
+        .then((response) => {
+          const { data } = response.data
+          this.$refs.refUserRolesList.loadWithDataArray(data.results || [])
+        })
+        .catch((error) => {})
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForGetUserRoles()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForGetUserRoles()
     }
   },
   mounted() {
+    /*
     this.$refs.refUserRolesList.loadWithDataArray([
       {
         id: 1,
@@ -173,6 +267,11 @@ export default {
         ]
       }
     ])
+  */
+  },
+
+  created() {
+    this.callForGetUserRoles()
   }
 }
 </script>

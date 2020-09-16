@@ -50,7 +50,7 @@ export function updateCommunity(id, payload) {
 export function updateCommunityPost(id, payload) {
   return testRequest.put(`community-posts/${id}`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -86,7 +86,7 @@ export function listThreatCategories() {
 export function getIncidentList(payload) {
   return testRequest.post(`community-posts/search`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -95,7 +95,7 @@ export function getIncidentList(payload) {
 export function getCOmmunityIncidentList(id, payload) {
   return testRequest.post(`community-posts/search/${id}`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -104,7 +104,7 @@ export function getCOmmunityIncidentList(id, payload) {
 export function getComments(id) {
   return testRequest.get(`community-posts/${id}/comments`, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -113,7 +113,7 @@ export function getComments(id) {
 export function createComments(id, payload) {
   return testRequest.post(`community-posts/${id}/comments`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -125,7 +125,7 @@ export function likePost(id) {
     {},
     {
       headers: {
-        'X-IR-USER-ID': localStorage.getItem('userId')
+        //'X-IR-USER-ID': localStorage.getItem('userId')
         //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
       }
     }
@@ -135,7 +135,7 @@ export function likePost(id) {
 export function getCommunityPost(id) {
   return testRequest.get(`community-posts/${id}`, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -144,7 +144,7 @@ export function getCommunityPost(id) {
 export function getMyLastPosts() {
   return testRequest.get(`community-posts/my-last-posts`, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -169,7 +169,7 @@ export function getsuggestedCommunities() {
 export function createCommunityPost(payload) {
   return testRequest.post(`community-posts`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -182,7 +182,7 @@ export function systemUser(systemUserData) {
 export function deleteCommunityPost(id) {
   return testRequest.delete(`community-posts/${id}`, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -190,7 +190,7 @@ export function deleteCommunityPost(id) {
 export function updateComments(id, payload) {
   return testRequest.put(`community-posts/comments/${id}`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -198,7 +198,7 @@ export function updateComments(id, payload) {
 export function deleteComments(id) {
   return testRequest.delete(`community-posts/comments/${id}`, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
       //'X-IR-USER-ID': 'D776CD92-74BD-4813-A4D8-4EBF90F1191B'
     }
   })
@@ -245,7 +245,7 @@ export function deleteCommunity(id) {
 export function shareAPost(id, payload) {
   return testRequest.post(`community-posts/${id}/share`, payload, {
     headers: {
-      'X-IR-USER-ID': localStorage.getItem('userId')
+      //'X-IR-USER-ID': localStorage.getItem('userId')
     }
   })
 }

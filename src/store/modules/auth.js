@@ -1,5 +1,6 @@
 import { profile, getCurrentUser } from '../../api/auth'
 import { systemUser } from '../../api/threadSharing'
+import jwt_decode from 'jwt-decode'
 
 const auth = {
   namespaced: true,
@@ -21,30 +22,111 @@ const auth = {
   },
   actions: {
     getCurrentUser({ commit, dispatch }) {
-      getCurrentUser().then((response) => {
-        const datas = {
-          companyId: response.data.currentCompany.id,
-          manager: response.data.currentCompany.name
+      if (localStorage.getItem('isSelectCompany')) {
+        let token = JSON.parse(localStorage.getItem('auth-token')).token
+        let tokenData = jwt_decode(token)
+        let currentUserData = {
+          id: tokenData.user_company_resourceid,
+          name: tokenData.user_company_name,
+          surname: tokenData.family_name,
+          email: tokenData.email,
+          fullName: tokenData.given_name,
+          countryCode: null,
+          phone: tokenData.phone_number,
+          status: null,
+          currentCompany: {
+            id: tokenData.user_company_resourceid,
+            name: tokenData.user_company_name,
+            logoPath: tokenData.user_company_logopath,
+            businessCategoryId: tokenData.user_company_industry_resourceid,
+            resellerId: tokenData.user_company_parentcompany_resourceid,
+            timeZone: null,
+            isDemo: false
+          },
+          userCompany: {
+            id: tokenData.user_company_resourceid,
+            name: tokenData.user_company_name,
+            logoPath: tokenData.user_company_logopath,
+            businessCategoryId: tokenData.user_company_industry_resourceid,
+            resellerId: tokenData.user_company_parentcompany_resourceid,
+            timeZone: null,
+            isDemo: false
+          },
+          role: {
+            name: tokenData.role.toString()
+          }
         }
-        localStorage.setItem('companyId', response.data.currentCompany.id)
-        localStorage.setItem('companyResourceId', 'uB4jcFz9x1My')
-        localStorage.setItem('companyName', response.data.currentCompany.name)
-        localStorage.setItem('userId', response.data.id)
-        localStorage.setItem('businessCatId', response.data.userCompany.businessCategoryId)
-        localStorage.setItem('userName', response.data.fullName)
-        dispatch('dashboard/selectCompany', datas, { root: true })
-        commit('SET_CURRENTUSER', response.data)
+        localStorage.setItem('companyId', currentUserData.currentCompany.id)
+        localStorage.setItem('companyResourceId', currentUserData.currentCompany.id)
+        localStorage.setItem('companyName', currentUserData.currentCompany.name)
+        localStorage.setItem('userId', currentUserData.id)
+        localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
+        localStorage.setItem('userName', currentUserData.fullName)
+        dispatch('dashboard/selectCompany', currentUserData, { root: true })
+        commit('SET_CURRENTUSER', currentUserData)
         let systemUserData = {
-          UserId: response.data.id,
-          FirstName: response.data.name,
-          LastName: response.data.surname,
-          Email: response.data.email,
-          CompanyId: response.data.userCompany.id,
-          CompanyName: response.data.userCompany.name
+          UserId: currentUserData.id,
+          FirstName: currentUserData.name,
+          LastName: currentUserData.surname,
+          Email: currentUserData.email,
+          CompanyId: currentUserData.userCompany.id,
+          CompanyName: currentUserData.userCompany.name
         }
-        systemUser(systemUserData).then()
-        return response.data // Permission_Administrator
-      })
+        //systemUser(systemUserData).then()
+        localStorage.removeItem('isSelectCompany')
+      } else {
+        let token = JSON.parse(localStorage.getItem('auth-token')).token
+        let tokenData = jwt_decode(token)
+        let currentUserData = {
+          id: tokenData.user_company_resourceid,
+          name: tokenData.user_company_name,
+          surname: tokenData.family_name,
+          email: tokenData.email,
+          fullName: tokenData.given_name,
+          countryCode: null,
+          phone: tokenData.phone_number,
+          status: null,
+          currentCompany: {
+            id: tokenData.user_company_resourceid,
+            name: tokenData.user_company_name,
+            logoPath: tokenData.user_company_logopath,
+            businessCategoryId: tokenData.user_company_industry_resourceid,
+            resellerId: tokenData.user_company_parentcompany_resourceid,
+            timeZone: null,
+            isDemo: false
+          },
+          userCompany: {
+            id: tokenData.user_company_resourceid,
+            name: tokenData.user_company_name,
+            logoPath: tokenData.user_company_logopath,
+            businessCategoryId: tokenData.user_company_industry_resourceid,
+            resellerId: tokenData.user_company_parentcompany_resourceid,
+            timeZone: null,
+            isDemo: false
+          },
+          role: {
+            name: tokenData.role.toString()
+          }
+        }
+        localStorage.setItem('companyId', currentUserData.currentCompany.id)
+        localStorage.setItem('companyResourceId', currentUserData.currentCompany.id)
+        localStorage.setItem('companyName', currentUserData.currentCompany.name)
+        localStorage.setItem('userId', currentUserData.id)
+        localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
+        localStorage.setItem('userName', currentUserData.fullName)
+        dispatch('dashboard/selectCompany', currentUserData, { root: true })
+        commit('SET_CURRENTUSER', currentUserData)
+        let systemUserData = {
+          UserId: currentUserData.id,
+          FirstName: currentUserData.name,
+          LastName: currentUserData.surname,
+          Email: currentUserData.email,
+          CompanyId: currentUserData.userCompany.id,
+          CompanyName: currentUserData.userCompany.name
+        }
+        //systemUser(systemUserData).then()
+        localStorage.removeItem('isSelectCompany')
+      }
     },
     getUserProfile({ commit }, payload) { // eslint-disable-line
       profile(payload).then(() => {})
