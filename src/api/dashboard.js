@@ -1,4 +1,5 @@
 import request from '../utils/request'
+import testRequest from '../utils/testRequest'
 
 export function getPhishingCampaigns(payload) {
   return request.get(`campaign/summary/${payload}`)
@@ -13,11 +14,48 @@ export function getLastFiveCompaignsStats() {
 }
 
 export function getDropdownCompanies() {
-  return request.get('user/companies')
+  let payload = {
+    pageNumber: 1,
+    pageSize: 1000,
+    orderBy: 'LicenseTypeName',
+    ascending: true,
+    filter: {
+      Condition: 'AND',
+      FilterGroups: [
+        {
+          Condition: 'OR',
+          FilterItems: [
+            {
+              FieldName: 'CompanyName',
+              Operator: 'Contains',
+              Value: ''
+            },
+            {
+              FieldName: 'IndustryName',
+              Operator: 'Contains',
+              Value: ''
+            },
+            {
+              FieldName: 'LicenseTypeName',
+              Operator: 'Contains',
+              Value: ''
+            }
+          ],
+          FilterGroups: []
+        }
+      ]
+    }
+  }
+  return testRequest.post('companies/search', payload, {
+    headers: {
+      'X-IR-API-KEY': APP_CONFIG.VUE_APP_API_KEY,
+      'X-IR-COMPANY-ID': localStorage.getItem('companyId')
+    }
+  })
 }
 
 export function selectCompany(payload) {
-  return request.post(`user/company/${payload.companyId}`)
+  return testRequest.get(`companies/${localStorage.getItem('companyId')}`)
 }
 
 export function getMenus() {
@@ -25,7 +63,7 @@ export function getMenus() {
 }
 
 export function logoutUser() {
-  return request.post('account/logout')
+  return testRequest.get('account/logout')
 }
 
 export function getOverallStats(payload) {

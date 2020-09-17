@@ -16,8 +16,6 @@ service.interceptors.request.use(
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
-      config.headers['X-IR-API-KEY'] = '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
-      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyId')
     }
     return config
   },
@@ -39,6 +37,7 @@ service.interceptors.response.use(
     if (
       AuthenticationService.getToken() == null ||
       error.response.status === 401 ||
+      error.response.Code === '401_UNAUTHORIZED' ||
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()

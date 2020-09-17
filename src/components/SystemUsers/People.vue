@@ -4,7 +4,9 @@
       <create-or-edit-system-user
         v-if="showCreateOrEditSystemUserModal"
         :status="showCreateOrEditSystemUserModal"
+        @closeOverlayWithUpdate="closeOverlayWithUpdate"
         @closeOverlay="toggleCreateOrEditSystemUser"
+        :selectedRow="selectedRow"
       />
       <data-table
         ref="refSystemUsersList"
@@ -20,8 +22,11 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @handleAddNewSystemUsers="handleAddNewSystemUsers"
+        @editAction="handleEdit"
+        @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
       />
     </div>
   </div>
@@ -31,6 +36,7 @@
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
+import { getSystemUsers } from '@/api/systemUsers'
 export default {
   name: 'People',
   components: {
@@ -50,7 +56,9 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'FirstName'
           },
           {
             property: PROPERTY_STORE.LASTNAME,
@@ -61,21 +69,25 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'LastName'
           },
           {
-            property: PROPERTY_STORE.COMPANY,
+            property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.COMPANY),
+            label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
             sortable: true,
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 180,
+            filterableType: 'text',
+            filterableCustomFieldName: 'CompanyName'
           },
           {
-            property: PROPERTY_STORE.ROLE,
+            property: PROPERTY_STORE.ROLES,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.ROLE),
@@ -86,21 +98,23 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.PHONE,
+            property: PROPERTY_STORE.PHONENUMBER,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.PHONE),
+            label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
             sortable: true,
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'PhoneNumber'
           },
           {
-            property: PROPERTY_STORE.STATUS,
-            align: 'left',
+            property: PROPERTY_STORE.STATUSNAME,
+            align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            label: getStoreValue(PROPERTY_STORE.STATUSNAME),
             sortable: true,
             show: true,
             fixed: false,
@@ -108,7 +122,7 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDATE),
@@ -116,7 +130,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 180
           }
         ],
         pageSizes: [5, 10, 25, 50, 100],
@@ -143,14 +157,118 @@ export default {
           tooltip: 'Add a New System User'
         }
       },
-      showCreateOrEditSystemUserModal: false
+      requestBody: {
+        pageNumber: 1,
+        pageSize: 5000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'FirstName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'LastName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'PhoneNumber',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'StatusId',
+                  Operator: '=',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      showCreateOrEditSystemUserModal: false,
+      selectedRow: null
     }
   },
   methods: {
     handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+      if (!this.showCreateOrEditSystemUserModal) {
+        this.selectedRow = null
+      }
+    },
+    closeOverlayWithUpdate() {
+      this.toggleCreateOrEditSystemUser()
+      this.callForListSystemUsers()
+    },
+    callForListSystemUsers() {
+      getSystemUsers(this.requestBody)
+        .then((response) => {
+          const { data } = response.data
+          this.$refs.refSystemUsersList.loadWithDataArray(data.results || [])
+        })
+        .catch((error) => {})
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForListSystemUsers()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForListSystemUsers()
+    },
+    handleEdit(row) {
+      this.selectedRow = row
+      this.toggleCreateOrEditSystemUser()
     }
+  },
+  created() {
+    this.callForListSystemUsers()
   }
 }
 </script>

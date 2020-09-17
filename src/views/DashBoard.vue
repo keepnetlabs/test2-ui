@@ -67,11 +67,11 @@
             </v-list-item-content>
           </v-list-item>
           <!-- eslint-disable -->
-          <v-skeleton-loader :loading="!companyInformation.name" type="article" class="mt-10">
+          <v-skeleton-loader :loading="!companyInformation.companyName" type="article" class="mt-10">
           <company-information
-            :key="companyInformation.name"
-            :companyInformation="companyInformation"
-            ><!-- eslint-disable-line --></company-information
+                  :key="companyInformation.companyName"
+                  :companyInformation="companyInformation"
+          ><!-- eslint-disable-line --></company-information
           >
           </v-skeleton-loader>
         </v-card>
@@ -79,9 +79,9 @@
       <v-col class="overall-stats-col pl-4 pt-1 pr-4" lg="12" md="12" xl="12">
         <v-card :class="{ z_index_custom_2: getTourData['2'] }">
           <div
-            v-show="isTourActive"
-            class="tour-btn-container tour-three"
-            :class="{ z_index_custom_1: getTourData['2'] }"
+                  v-show="isTourActive"
+                  class="tour-btn-container tour-three"
+                  :class="{ z_index_custom_1: getTourData['2'] }"
           >
             <div class="tour-btn-wrapper">
               <div class="tour-btn-circle">
@@ -102,29 +102,29 @@
           </v-list-item>
           <v-skeleton-loader :loading="!overallStatsList.length" type="table">
           <overall-stats
-            :key="overallStatsList"
-            :dropdown-data="overallDropdownData"
-            :dropdown-current="dropdownCurrentOverallStats"
-            v-on:changeDropdownItem="onOverallStatsDropdownSelect($event)"
-            :chartData="overallStatsList"
-            :months="getMonths(dropdownCurrentOverallStats.key)"
-            :minMaxValues="minMaxValues"
-            ><!-- eslint-disable-line --></overall-stats
+                  :key="overallStatsList"
+                  :dropdown-data="overallDropdownData"
+                  :dropdown-current="dropdownCurrentOverallStats"
+                  v-on:changeDropdownItem="onOverallStatsDropdownSelect($event)"
+                  :chartData="overallStatsList"
+                  :months="getMonths(dropdownCurrentOverallStats.key)"
+                  :minMaxValues="minMaxValues"
+          ><!-- eslint-disable-line --></overall-stats
           >
           </v-skeleton-loader>
         </v-card>
       </v-col>
       <v-col
-        class="last5-col pl-4 pt-1 pr-4"
-        lg="12"
-        md="12"
-        xl="12"
-        :class="{ z_index_custom_2: getTourData['3'] }"
+              class="last5-col pl-4 pt-1 pr-4"
+              lg="12"
+              md="12"
+              xl="12"
+              :class="{ z_index_custom_2: getTourData['3'] }"
       >
         <div
-          v-show="isTourActive"
-          class="tour-btn-container tour-four"
-          :class="{ z_index_custom_1: getTourData['3'] }"
+                v-show="isTourActive"
+                class="tour-btn-container tour-four"
+                :class="{ z_index_custom_1: getTourData['3'] }"
         >
           <div class="tour-btn-wrapper">
             <div class="tour-btn-circle">
@@ -135,10 +135,10 @@
         <v-skeleton-loader :loading="!overallStatsList.length" type="table">
 
         <LastFiveCampaigns
-          :key="lastFiveCampaignList.length"
-          :campaignList2="firstCampaignList"
-          :campaignList="lastFiveCampaignList"
-          :singleTableList="singleCampaignList"
+                :key="lastFiveCampaignList.length"
+                :campaignList2="firstCampaignList"
+                :campaignList="lastFiveCampaignList"
+                :singleTableList="singleCampaignList"
         />
         </v-skeleton-loader>
       </v-col>
@@ -264,7 +264,7 @@ export default {
     this.skeletonTypes = vuetifySkeletonTypes()
     this.$nextTick(() => {
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
-        this.getCurrentUser()
+        //this.getCurrentUser()
         this.getPhishingCampaigns(999)
         this.getLastFiveCompaignsStats()
         this.getCompanyInformation()
@@ -312,7 +312,6 @@ export default {
       getLastFiveCompaignsStats: 'dashboard/getLastFiveCompaignsStats',
       getCompanyInformation: 'dashboard/getCompanyInformation',
       getDropdownCompanies: 'dashboard/getDropdownCompanies',
-      getMenus: 'dashboard/getMenus',
       getOverallStats: 'dashboard/getOverallStats'
     }),
     onPieChartDropdownSelect(item) {

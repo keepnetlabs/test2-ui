@@ -1,10 +1,20 @@
 import request from '../utils/request'
+import authTestRequest from '../utils/authTestRequest'
 import AuthenticationService from '../services/authentication'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 export function loginAction(payload) {
-  return request.post('account/token', {
-    email: payload.email,
-    password: payload.password
+  const params = new URLSearchParams()
+  params.append('grant_type', 'password')
+  params.append('username', payload.email)
+  params.append('password', payload.password)
+  params.append('scope', 'api1')
+  params.append('client_id', 'ui_client')
+  params.append('client_secret', 'secret')
+  return authTestRequest.post('connect/token', params, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
   })
 }
 

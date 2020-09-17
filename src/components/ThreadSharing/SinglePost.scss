@@ -587,6 +587,60 @@
     margin-top: 16px;
   }
 
+  .detail-part-item {
+
+    &__text {
+      font-weight: 600;
+      line-height: 1.5;
+      color: rgba(219, 37, 37, 0.87);
+      font-size: 14px;
+      display: inline-flex;
+      max-width: 100%;
+    }
+
+    &__col {
+      &--wrapper{
+        display: flex;
+      }
+      &--major{
+        overflow: hidden;
+      }
+      &--slight{
+        white-space: nowrap;
+      }
+      &--warning {
+        opacity: 0.7;
+        font-size: 12px;
+        line-height: 1.58;
+        color: rgba(0, 0, 0, 0.87);
+        padding-bottom: 4px;
+      }
+    }
+    &__hide-overflow {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      padding-left: 3px;
+    }
+  }
+
+  .copy-link {
+    cursor: pointer;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: #2196f3;
+    font-size: 14px;
+    margin-left: 16px;
+    & > .v-icon {
+      font-size: 14px;
+      color: #2196f3;
+      margin-right: 4px;
+    }
+  }
+
   .detail-discovery {
     margin-top: 24px;
 

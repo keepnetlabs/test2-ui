@@ -840,6 +840,10 @@ export default {
       type: Array,
       required: true
     },
+    showClusterItemsRowAction: {
+      type: Boolean,
+      default: true
+    },
     extendedViewOptions: {
       type: Object,
       default() {
@@ -1108,6 +1112,9 @@ export default {
       this.initialData = this.table
       this.tableData = this.table
     }
+    if (!this.showClusterItemsRowAction) {
+      this.hideChildRowActions()
+    }
     //this.extendedViewOptions = this.columns
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
@@ -1166,6 +1173,13 @@ export default {
         isEditPopupOpen: true
       })
       this.isWantToEditRow = true
+    },
+    hideChildRowActions() {
+      const objStyle = document.createElement('style')
+      objStyle.innerHTML =
+        '.el-table__row.el-table__row--level-1 .actions-container button {visibility:hidden}'
+      const ref = document.querySelector('script')
+      ref.parentNode.insertBefore(objStyle, ref)
     },
     handleSelectAll(selection) {
       if (this.groupable) {
