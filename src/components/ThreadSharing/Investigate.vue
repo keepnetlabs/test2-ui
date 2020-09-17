@@ -1,7 +1,7 @@
 <template>
   <div class="investigate-container">
     <div class="investigate-inner">
-      <v-card light class="investigate-card pb-4 pa-6" style="border-radius: 0 !important">
+      <v-card light class="investigate-card pb-4 pa-6" style="border-radius: 0 !important;">
         <v-list-item class="pl-0 pr-0">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">
@@ -153,7 +153,7 @@
                     class="attachment red-attach"
                   >
                     <div class="attach-icon red-icon">
-                      <v-icon color="white" style="font-size: 20px">mdi-alert</v-icon>
+                      <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
                     </div>
                     <div class="file-name max-char">RG100055176610.doc</div>
                   </div>
@@ -172,7 +172,7 @@
                     class="attachment blue-attach"
                   >
                     <div class="attach-icon blue-icon">
-                      <v-icon color="white" style="font-size: 20px">mdi-paperclip</v-icon>
+                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                     </div>
                     <div class="file-name max-char">RG102342343240055176610.pdf</div>
                   </div>
@@ -190,11 +190,11 @@
               <div :class="{ 'minify-part': !filterOpened }" class="filter-header">
                 <div class="select-header" v-if="filterOpened">Select Attributes</div>
                 <v-icon @click="filterOpened = true" :class="{ 'display-none': filterOpened }"
-                  >mdi-arrow-left</v-icon
-                >
+                  >mdi-arrow-left
+                </v-icon>
                 <v-icon @click="filterOpened = false" :class="{ 'display-none': !filterOpened }"
-                  >mdi-arrow-right</v-icon
-                >
+                  >mdi-arrow-right
+                </v-icon>
               </div>
               <div :class="{ 'minify-part': !filterOpened }" class="filter-part">
                 <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
@@ -395,11 +395,11 @@
               <div class="input-sub">Select how many days the investigation will run</div>
               <v-select
                 :items="durations"
-                label="3 days"
+                placeholder="3 days"
                 outlined
                 class="input-select"
                 v-model="selectedDuration"
-                :rules="[v => !!v || 'Duration is required']"
+                :rules="[(v) => !!v || 'Duration is required']"
                 required
               ></v-select>
 
@@ -407,11 +407,11 @@
               <div class="input-sub">Select action to be executed if email is found</div>
               <v-select
                 :items="actions"
-                label="Delete email"
+                placeholder="Delete email"
                 outlined
                 class="input-select"
                 v-model="selectedAction"
-                :rules="[v => !!v || 'Action is required']"
+                :rules="[(v) => !!v || 'Action is required']"
                 required
               ></v-select>
             </div>
@@ -421,16 +421,32 @@
       <div class="footer-actions">
         <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
         <v-btn v-if="step === 1" class="create-btn" text color="#2196f3" @click="onContinue"
-          >Continue</v-btn
-        >
-        <v-btn v-else class="create-btn" text color="#2196f3" @click="onStart">Start</v-btn>
+          >NEXT
+        </v-btn>
+        <div v-if="step === 2">
+          <v-btn
+            style="border: 1px solid #2196f3 !important; border-radius: 20px;"
+            class="mr-4"
+            text
+            color="#2196f3"
+            @click="step = 1"
+            >BACK
+          </v-btn>
+          <v-btn class="create-btn" text color="#2196f3" @click="onStart">START</v-btn>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
+  props: {
+    selectedPostTitle: {
+      type: String
+    }
+  },
   data: () => ({
     step: 1,
     header: {
@@ -465,7 +481,7 @@ export default {
     actions: ['Delete email', 'Notify users', 'No action'],
     selectedAction: 'Delete email',
     valid: false,
-    autocomplete: [v => !!v || 'Target is required'],
+    autocomplete: [(v) => !!v || 'Target is required'],
     startDate: new Date().toISOString().substr(0, 10),
     endDate: new Date().toISOString().substr(0, 10),
     filterOpened: true,
@@ -484,56 +500,56 @@ export default {
     })
   },
   watch: {
-    'header.allHeader': function(newVal, oldVal) {
+    'header.allHeader': function (newVal, oldVal) {
       if (newVal === true && newVal != oldVal) {
         this.header.subject = true
         this.header.sender = true
         this.header.receiver = true
       }
     },
-    'header.subject': function(newVal, oldVal) {
+    'header.subject': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.header.allHeader = false
       }
     },
-    'header.sender': function(newVal, oldVal) {
+    'header.sender': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.header.allHeader = false
       }
     },
-    'header.receiver': function(newVal, oldVal) {
+    'header.receiver': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.header.allHeader = false
       }
     },
-    'body.phishingLinks': function(newVal, oldVal) {
+    'body.phishingLinks': function (newVal, oldVal) {
       if (newVal === true && newVal != oldVal) {
         this.body.phishing1 = true
         this.body.phishing2 = true
       }
     },
-    'body.phishing1': function(newVal, oldVal) {
+    'body.phishing1': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.body.phishingLinks = false
       }
     },
-    'body.phishing2': function(newVal, oldVal) {
+    'body.phishing2': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.body.phishingLinks = false
       }
     },
-    'footer.allAttachments': function(newVal, oldVal) {
+    'footer.allAttachments': function (newVal, oldVal) {
       if (newVal === true && newVal != oldVal) {
         this.footer.attachment1 = true
         this.footer.attachment2 = true
       }
     },
-    'footer.attachment1': function(newVal, oldVal) {
+    'footer.attachment1': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.footer.allAttachments = false
       }
     },
-    'footer.attachment2': function(newVal, oldVal) {
+    'footer.attachment2': function (newVal, oldVal) {
       if (newVal === false && newVal != oldVal) {
         this.footer.allAttachments = false
       }
@@ -553,7 +569,9 @@ export default {
     onStart() {
       if (this.$refs.form.validate()) {
         this.$emit('closeInvestigate')
-        this.$store.dispatch('threadSharing/investigationStarted')
+        this.$store.dispatch('threadSharing/investigationStarted', {
+          title: this.selectedPostTitle
+        })
       }
     },
     minDate() {
@@ -581,6 +599,10 @@ export default {
     allowedDates(val) {
       return val < this.endDate
     }
+  },
+  beforeDestroy() {
+    //this.$emit('closeInvestigate')
+    //this.$router.push("/threat-sharing")
   }
 }
 </script>
@@ -601,6 +623,7 @@ export default {
       padding: 32px 96px !important;
       padding-bottom: 100px !important;
     }
+
     .investigate-steps {
       display: flex;
       flex-direction: row;
@@ -642,9 +665,11 @@ export default {
           font-size: 14px;
           color: rgba(0, 0, 0, 0.87);
         }
+
         .active-step-num {
           border: solid 1px rgba(0, 0, 0, 0.87) !important;
         }
+
         .active-step-span {
           color: rgba(0, 0, 0, 0.87) !important;
         }
@@ -657,6 +682,7 @@ export default {
         }
       }
     }
+
     .investigate-header {
       p {
         font-family: 'Open Sans', sans-serif !important;
@@ -669,6 +695,7 @@ export default {
         color: rgba(0, 0, 0, 0.87);
         margin-bottom: 0 !important;
       }
+
       span {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
@@ -680,6 +707,7 @@ export default {
         color: rgba(0, 0, 0, 0.87);
       }
     }
+
     .investigation-content {
       display: flex;
       flex-direction: row;
@@ -746,6 +774,7 @@ export default {
                 padding-right: 8px;
               }
             }
+
             label {
               margin-top: 10px;
               margin-left: 5px;
@@ -776,19 +805,24 @@ export default {
               max-width: 100%;
             }
           }
+
           ::v-deep .accent--text {
             color: #2196f3 !important;
           }
+
           ::v-deep .theme--light.v-messages {
             display: none !important;
           }
         }
+
         .filter-part:last-child {
           border-bottom: unset !important;
         }
+
         .filter-part:nth-child(2) {
           height: 274px;
         }
+
         .filter-part:first-child {
           padding-top: 14.2px !important;
         }
@@ -796,6 +830,7 @@ export default {
     }
   }
 }
+
 .filters-content {
   display: flex;
   flex-direction: column;
@@ -811,6 +846,7 @@ export default {
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
   }
+
   .input-sub {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
@@ -822,6 +858,7 @@ export default {
     color: rgba(0, 0, 0, 0.87);
     margin-bottom: 16px;
   }
+
   .input-select {
     max-width: 205px;
     color: rgba(0, 0, 0, 0.72);
@@ -829,6 +866,7 @@ export default {
     font-size: 13px !important;
     margin-bottom: 32px;
   }
+
   .first-select {
     max-width: 554px;
   }
@@ -864,9 +902,11 @@ export default {
     margin-bottom: 7px;
   }
 }
+
 .post-wrapper {
   max-width: 696px;
 }
+
 .select-error {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 9px;
@@ -879,6 +919,7 @@ export default {
   margin-left: 8px;
   margin-top: 17px;
 }
+
 .select-row-wrap {
   display: flex;
   justify-content: space-between;
@@ -897,6 +938,7 @@ export default {
     }
   }
 }
+
 .email-name {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
@@ -907,10 +949,12 @@ export default {
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.87);
 }
+
 .email-icon {
   font-size: 19px !important;
   padding-right: 24px;
 }
+
 .email-type {
   height: 25px;
   border-radius: 4px;
@@ -929,6 +973,7 @@ export default {
   align-items: center;
   padding: 0 6px;
 }
+
 .email-time {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
@@ -950,6 +995,7 @@ export default {
   letter-spacing: normal;
   color: #000;
 }
+
 .v-card-sub-header {
   font-family: Helvetica;
   font-size: 15px;
@@ -960,6 +1006,7 @@ export default {
   letter-spacing: normal;
   color: #000 !important;
 }
+
 .edit-name-textfield,
 .edit-description,
 .edit-select {
@@ -1005,6 +1052,7 @@ export default {
     border-bottom: 1px solid #b3d4fc;
   }
 }
+
 .preview-body {
   margin-top: 24px;
   font-family: 'Open Sans', sans-serif !important;
@@ -1047,11 +1095,13 @@ export default {
     }
   }
 }
+
 .bodyExpanded {
   height: 100% !important;
   max-height: 100% !important;
   padding-bottom: 56px;
 }
+
 .preview-footer {
   display: flex;
   flex-direction: column;
@@ -1069,6 +1119,7 @@ export default {
     color: rgba(0, 0, 0, 0.87);
     padding-bottom: 16px;
   }
+
   .attachment-wrapper {
     display: flex;
     flex-direction: row;
@@ -1089,12 +1140,15 @@ export default {
         display: flex;
         justify-content: center;
       }
+
       .red-icon {
         background-color: #bb2a45 !important;
       }
+
       .blue-icon {
         background-color: #2196f3 !important;
       }
+
       .file-name {
         width: 142px;
         text-align: left;
@@ -1107,33 +1161,38 @@ export default {
         line-height: 1.58;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
-        padding-left: 7px;
       }
     }
+
     .red-attach {
       border: 1px solid #bb2a45;
     }
+
     .blue-attach {
       border: 1px solid #2196f3;
     }
   }
 }
+
 .unselected-warn {
   border-bottom: 1px solid #bb2a45;
   color: #bb2a45;
   padding: 0 2px !important;
 }
+
 ::v-deep .v-autocomplete {
   .v-input__slot {
     box-shadow: unset !important;
     border: 1px solid rgba(0, 0, 0, 0.24) !important;
   }
 }
+
 ::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
   margin-top: 0 !important;
   display: flex;
   align-items: center;
 }
+
 .first-date {
   ::v-deep .v-input__slot {
     border-top-right-radius: 0 !important;
@@ -1145,6 +1204,7 @@ export default {
     }
   }
 }
+
 .sec-date {
   ::v-deep .v-input__slot {
     border-top-left-radius: 0 !important;
@@ -1156,8 +1216,10 @@ export default {
     }
   }
 }
+
 .date-picker {
   font-family: 'Open Sans', sans-serif !important;
+
   ::v-deep .v-input__slot {
     box-shadow: unset !important;
     border: 1px solid rgba(0, 0, 0, 0.24);
@@ -1176,15 +1238,18 @@ export default {
       padding-left: 50px !important;
       padding-top: 8px !important;
     }
+
     label {
       padding-top: 0 !important;
     }
   }
+
   ::v-deep .v-input__slot::after,
   ::v-deep .v-input__slot::before {
     display: none;
   }
 }
+
 .date-col {
   position: relative;
 
@@ -1194,6 +1259,7 @@ export default {
     padding: 0 !important;
   }
 }
+
 .date-icon {
   top: 12px;
   left: 25px;
@@ -1201,6 +1267,7 @@ export default {
   font-size: 18px !important;
   z-index: 99;
 }
+
 .date-to {
   position: absolute;
   left: 0;
@@ -1215,6 +1282,7 @@ export default {
   color: rgba(0, 0, 0, 0.72);
   z-index: 13;
 }
+
 .max-char {
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1222,6 +1290,7 @@ export default {
   display: block;
   max-width: 100%;
 }
+
 .text-selected {
   border-radius: 1px !important;
   background-color: #d1e9fc !important;
@@ -1229,38 +1298,46 @@ export default {
   color: rgba(0, 0, 0, 0.87) !important;
   width: max-content;
 }
+
 .clean-link {
   padding: 0 2px !important;
   border-radius: 1px !important;
   border-bottom: 1px solid #2196f3 !important;
   color: #2196f3 !important;
 }
+
 .selected-link {
   background-color: #d1e9fc !important;
 }
+
 .phishing-link {
   background-color: #f3e1e5 !important;
   border-bottom: 1px solid #bb2a45 !important;
   color: #bb2a45 !important;
   width: max-content;
 }
+
 .clean-attach {
   background-color: #f1f8fe;
   border: 1px solid transparent !important;
 }
+
 .malicious-attach {
   background-color: #f3e1e5;
   border: 1px solid transparent !important;
 }
+
 ::v-deep .v-input > .v-input__control > .v-text-field__details {
   bottom: -24px !important;
   position: absolute;
   left: 0;
 }
+
 ::v-deep .v-application input {
   border-radius: 8px !important;
   border: solid 1px rgba(0, 0, 0, 0.16) !important;
 }
+
 .required {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 9px;
@@ -1273,31 +1350,37 @@ export default {
   margin-left: 6px;
   margin-top: -2px;
 }
+
 .close-incident {
   position: absolute;
   right: 26px;
   top: 26px;
 }
+
 ::v-deep
   .affect-input.v-text-field.v-text-field--solo:not(.v-text-field--solo-flat)
   > .v-input__control
   > .v-input__slot {
   border: none !important;
 }
+
 .row-with-icon {
   align-items: center;
   display: flex;
   flex-direction: row;
 }
+
 .icon-btn {
   margin-top: unset;
   margin-left: -5px;
   height: 25px !important;
   width: 25px !important;
 }
+
 .step-name {
   width: max-content;
 }
+
 .filter-header {
   align-items: center;
   display: none;
@@ -1323,14 +1406,17 @@ export default {
     font-size: 27px;
   }
 }
+
 .minify-filter {
   width: 120px !important;
 }
+
 .minify-part,
 .minify-switch {
   padding-left: 10px;
   width: 100% !important;
 }
+
 .footer-actions {
   align-items: center;
   bottom: 0;
@@ -1350,11 +1436,13 @@ export default {
     border: solid 1px #f56c6c !important;
     color: #f56c6c !important;
   }
+
   .previous-btn {
     border-radius: 18px !important;
     border: solid 1px #2196f3 !important;
     color: #2196f3 !important;
   }
+
   .create-btn {
     border-radius: 18px !important;
     box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
@@ -1362,6 +1450,7 @@ export default {
     color: #fff !important;
   }
 }
+
 @media only screen and (max-width: 1025px) {
   .hide-step {
     display: none !important;
@@ -1370,6 +1459,7 @@ export default {
     display: flex;
   }
 }
+
 .display-none {
   display: none !important;
 }

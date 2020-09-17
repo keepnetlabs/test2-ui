@@ -263,7 +263,7 @@ export default {
       this.desserts = [
         {
           campaignName: 'Whatsapp Farklı Konumdan Erişildi',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '4/4',
@@ -271,7 +271,7 @@ export default {
         },
         {
           campaignName: 'e-Devlet Kapısına Eklenen Yeni Hizmetler',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: [],
           behaviourData: [],
           delivery: '4/4',
@@ -279,7 +279,7 @@ export default {
         },
         {
           campaignName: 'Spotify Parola Sıfırlama',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '5/5',
@@ -287,7 +287,7 @@ export default {
         },
         {
           campaignName: 'Bienvenue dans Mail iCloud-23121321',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '7/7',
@@ -295,7 +295,7 @@ export default {
         },
         {
           campaignName: 'SOmeone Sent a Document - Excel-Test',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '5/5',

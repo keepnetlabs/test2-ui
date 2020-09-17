@@ -23,6 +23,7 @@
 
 <script>
 import Datatable from '../DataTable'
+import { getStoreValue, PROPERTY_STORE } from '../../model/constants/commonConstants'
 
 export default {
   components: {
@@ -60,10 +61,10 @@ export default {
         width: 480
       },
       {
-        property: 'company',
+        property: PROPERTY_STORE.COMPANY,
         align: 'left',
         editable: false,
-        label: 'Company',
+        label: getStoreValue(PROPERTY_STORE.COMPANY),
         fixed: false,
         sortable: true,
         show: true,
@@ -79,13 +80,13 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 80
+        width: 100
       },
       {
-        property: 'delivery',
+        property: PROPERTY_STORE.DELIVERY,
         align: 'right',
         editable: false,
-        label: 'Delivery',
+        label: getStoreValue(PROPERTY_STORE.DELIVERY),
         fixed: false,
         sortable: false,
         show: true,
@@ -93,10 +94,10 @@ export default {
         width: 110
       },
       {
-        property: 'status',
+        property: PROPERTY_STORE.STATUS,
         align: 'right',
         editable: false,
-        label: 'Status',
+        label: getStoreValue(PROPERTY_STORE.STATUS),
         fixed: false,
         sortable: false,
         show: true,
@@ -187,7 +188,7 @@ export default {
       this.desserts = [
         {
           campaignName: 'Whatsapp Farklı Konumdan Erişildi',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '4/4',
@@ -195,7 +196,7 @@ export default {
         },
         {
           campaignName: 'e-Devlet Kapısına Eklenen Yeni Hizmetler',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: [],
           behaviourData: [],
           delivery: '4/4',
@@ -203,7 +204,7 @@ export default {
         },
         {
           campaignName: 'Spotify Parola Sıfırlama',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '5/5',
@@ -211,7 +212,7 @@ export default {
         },
         {
           campaignName: 'Bienvenue dans Mail iCloud-23121321',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '7/7',
@@ -219,7 +220,7 @@ export default {
         },
         {
           campaignName: 'SOmeone Sent a Document - Excel-Test',
-          company: 'Keepnet Labs',
+          company: 'Company',
           behaviour: ['19 No response', '2 Read', '2 Clicked', '1 Data Submitted'],
           behaviourData: [19, 2, 2, 1],
           delivery: '5/5',

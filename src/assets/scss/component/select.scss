@@ -1,0 +1,105 @@
+.v-select__slot {
+  //margin-bottom: 3px !important;
+  .v-label {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    letter-spacing: normal !important;
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+  input {
+    &::placeholder {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: normal !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+}
+.v-select__selection {
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: normal !important;
+  font-stretch: normal !important;
+  font-style: normal !important;
+  letter-spacing: normal !important;
+  color: rgba(0, 0, 0, 0.87);
+}
+.v-select__slot {
+  .v-label {
+    top: 10px !important;
+  }
+  .v-label--active {
+    top: 16px !important;
+  }
+  .v-input__append-inner {
+    margin-top: 9px !important;
+  }
+}
+.v-data-footer__select {
+  .v-select {
+    margin: 0 !important;
+    margin-left: 32px !important;
+  }
+  .v-text-field > .v-input__control > .v-input__slot:after {
+    border: none !important;
+    display: none !important;
+  }
+  .theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+    border: none !important;
+  }
+  .v-input__append-inner {
+    margin-left: 0 !important;
+    margin-top: 3px !important;
+    margin-right: 5px !important;
+    padding-left: 0 !important;
+  }
+  .v-select__slot {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 27px !important;
+    background-color: #f2f2f2 !important;
+
+    .v-select__selections {
+      margin-left: 10px;
+    }
+  }
+  .v-input__icon {
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+  }
+}
+.input-select {
+  max-width: 205px;
+  color: rgba(0, 0, 0, 0.72);
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 13px !important;
+  margin-bottom: 32px;
+}
+.input-select > .v-input__control {
+  max-width: 554px !important;
+  align-items: center;
+  display: flex;
+  height: 40px !important;
+}
+.input-select {
+  max-width: 205px;
+  color: rgba(0, 0, 0, 0.72);
+  font-family: 'Open Sans', sans-serif !important;
+  font-size: 13px !important;
+  margin-bottom: 32px;
+}
+.input-select > .v-input__control {
+  max-width: 554px !important;
+  align-items: center;
+  display: flex;
+  height: 40px !important;
+}

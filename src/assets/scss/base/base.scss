@@ -1,0 +1,131 @@
+.v-application {
+  font-family: "Open Sans", sans-serif;
+}
+
+.mw-100 {
+  max-width: 100%;
+}
+
+.malicious-style {
+  //edit
+  color: #bb2a45 !important;
+  border-bottom: 1px solid #bb2a45 !important;
+  border-color: #bb2a45 !important;
+  background-color: #f3e1e5 !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid;
+  position:relative;
+  z-index: 9;
+  text-indent: 0;
+}
+
+.malicious-style {
+  &-hidden{
+    background: #757575;
+    color: white;
+  }
+}
+
+
+
+.malicious-icon {
+  top: 0px;
+  background: transparent;
+  color: #f56c6c;
+  font-size: 22px !important;
+  padding: 0;
+}
+
+.red-malicious-alert {
+  color: #f56c6c !important;
+  caret-color: #f56c6c !important;
+  text-decoration: unset !important;
+  text-decoration-color: transparent !important;
+  font-size: inherit !important;
+  overflow: hidden;
+}
+
+.red-malicious-alert::before {
+  border: unset !important;
+}
+
+.malicious-style {
+  .red-malicious-alert:not(:first-child) {
+    display: none !important;
+  }
+}
+
+.malicious-tooltip--span{
+  background: #6d6d6d !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 12px;
+  text-decoration:none;
+  white-space: nowrap;
+  z-index: 99999;
+  border-radius: 4px;
+}
+
+.notification-wrapper__v-list{
+  .v-list-item--active{
+    border-left: none !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    i{
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+ }
+
+.single-post__details{
+  &__section-header{
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 4px !important;
+    &--sub{
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(219, 37, 37, 0.87);
+      font-size: 14px;
+      margin-bottom: 0 !important;
+      word-break: break-all;
+    }
+    &--result{
+      opacity: 0.7;
+      font-size: 12px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.58;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 4px !important;
+      &--copy-link{
+        cursor: pointer;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.29;
+        letter-spacing: normal;
+        color: #2196f3;
+        font-size: 14px;
+        margin-left: 16px;
+        &__icon{
+          font-size: 14px !important;
+          color: #2196f3 !important;
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}
+.v-tooltip__content{
+  z-index: 99 !important;
+}

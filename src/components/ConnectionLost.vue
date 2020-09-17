@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="pa-6">
-      <v-list-item class=" pl-0">
+      <v-list-item class="pl-0">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">
             mdi-wifi-strength-off
@@ -10,7 +10,7 @@
         <v-list-item-content>
           <v-list-item-title class="v-card-headline">Connection Is Lost</v-list-item-title>
           <v-list-item-subtitle class="connection-lost-title"
-            >Keepnet Labs cannot connect to the web</v-list-item-subtitle
+            >Cannot connect to the web</v-list-item-subtitle
           >
         </v-list-item-content>
       </v-list-item>

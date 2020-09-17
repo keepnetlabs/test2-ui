@@ -151,12 +151,12 @@
                     shareSettings.senderInfo &&
                     shareSettings.senderInfo[0] &&
                     shareSettings.senderInfo[0].IsMalicious) ||
-                    (shareSettings.receiverInfo &&
-                      shareSettings.receiverInfo[0] &&
-                      shareSettings.receiverInfo[0].IsMalicious) ||
-                    (shareSettings.links && shareSettings.links.some(a => a.IsMalicious)) ||
-                    (shareSettings.attachments &&
-                      shareSettings.attachments.some(a => a.IsMalicious))
+                  (shareSettings.receiverInfo &&
+                    shareSettings.receiverInfo[0] &&
+                    shareSettings.receiverInfo[0].IsMalicious) ||
+                  (shareSettings.links && shareSettings.links.some((a) => a.IsMalicious)) ||
+                  (shareSettings.attachments &&
+                    shareSettings.attachments.some((a) => a.IsMalicious))
                 "
                 class="detected-items"
               >
@@ -170,10 +170,10 @@
                       shareSettings.senderInfo[0] &&
                       shareSettings.senderInfo[0].IsShow &&
                       shareSettings.senderInfo[0].IsMalicious) ||
-                      (shareSettings.receiverInfo &&
-                        shareSettings.receiverInfo[0] &&
-                        shareSettings.receiverInfo[0].IsShow &&
-                        shareSettings.receiverInfo[0].IsMalicious)
+                    (shareSettings.receiverInfo &&
+                      shareSettings.receiverInfo[0] &&
+                      shareSettings.receiverInfo[0].IsShow &&
+                      shareSettings.receiverInfo[0].IsMalicious)
                   "
                   class="detail-black"
                 >
@@ -182,10 +182,10 @@
                 <p
                   v-if="
                     shareSettings &&
-                      shareSettings.senderInfo &&
-                      shareSettings.senderInfo[0] &&
-                      shareSettings.senderInfo[0].IsShow &&
-                      shareSettings.senderInfo[0].IsMalicious
+                    shareSettings.senderInfo &&
+                    shareSettings.senderInfo[0] &&
+                    shareSettings.senderInfo[0].IsShow &&
+                    shareSettings.senderInfo[0].IsMalicious
                   "
                   :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
                   class="detail-black detail-red"
@@ -195,10 +195,10 @@
                 <p
                   v-if="
                     shareSettings &&
-                      shareSettings.senderInfo &&
-                      shareSettings.senderInfo[0] &&
-                      shareSettings.senderInfo[0].IsShow &&
-                      shareSettings.senderInfo[0].IsMalicious
+                    shareSettings.senderInfo &&
+                    shareSettings.senderInfo[0] &&
+                    shareSettings.senderInfo[0].IsShow &&
+                    shareSettings.senderInfo[0].IsMalicious
                   "
                   class="detail-black"
                 >
@@ -209,10 +209,10 @@
                 <p
                   v-if="
                     shareSettings &&
-                      shareSettings.receiverInfo &&
-                      shareSettings.receiverInfo[0] &&
-                      shareSettings.receiverInfo[0].IsShow &&
-                      shareSettings.receiverInfo[0].IsMalicious
+                    shareSettings.receiverInfo &&
+                    shareSettings.receiverInfo[0] &&
+                    shareSettings.receiverInfo[0].IsShow &&
+                    shareSettings.receiverInfo[0].IsMalicious
                   "
                   :id="'from' + postDetail.Data.CommunityPostEmails[0].From"
                   class="detail-black detail-red"
@@ -222,10 +222,10 @@
                 <p
                   v-if="
                     shareSettings &&
-                      shareSettings.receiverInfo &&
-                      shareSettings.receiverInfo[0] &&
-                      shareSettings.receiverInfo[0].IsShow &&
-                      shareSettings.receiverInfo[0].IsMalicious
+                    shareSettings.receiverInfo &&
+                    shareSettings.receiverInfo[0] &&
+                    shareSettings.receiverInfo[0].IsShow &&
+                    shareSettings.receiverInfo[0].IsMalicious
                   "
                   class="detail-black"
                 >
@@ -239,8 +239,8 @@
                 <p
                   v-if="
                     shareSettings &&
-                      shareSettings.links &&
-                      shareSettings.links.some(a => a.IsShow && a.IsMalicious)
+                    shareSettings.links &&
+                    shareSettings.links.some((a) => a.IsShow && a.IsMalicious)
                   "
                   class="detail-black"
                 >
@@ -353,10 +353,10 @@
                   :id="'detail-subject-' + el.Id"
                   v-if="
                     postDetail &&
-                      postDetail.Data &&
-                      postDetail.Data.CommunityPostEmails[0] &&
-                      postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                      el.IsShow
+                    postDetail.Data &&
+                    postDetail.Data.CommunityPostEmails[0] &&
+                    postDetail.Data.CommunityPostEmails[0].Subject.length &&
+                    el.IsShow
                   "
                 >
                   <span :class="[el.IsMalicious ? 'malicious-style' : '']"
@@ -376,10 +376,10 @@
                   :key="ind + el.Id"
                   v-else-if="
                     postDetail &&
-                      postDetail.Data &&
-                      postDetail.Data.CommunityPostEmails[0] &&
-                      postDetail.Data.CommunityPostEmails[0].Subject.length &&
-                      !el.IsShow
+                    postDetail.Data &&
+                    postDetail.Data.CommunityPostEmails[0] &&
+                    postDetail.Data.CommunityPostEmails[0].Subject.length &&
+                    !el.IsShow
                   "
                   :id="'detail-subject-' + el.Id"
                 >
@@ -402,10 +402,10 @@
                     :id="'detail-sender-' + el.Id"
                     v-if="
                       postDetail &&
-                        postDetail.Data &&
-                        postDetail.Data.CommunityPostEmails[0] &&
-                        postDetail.Data.CommunityPostEmails[0].From.length &&
-                        el.IsShow
+                      postDetail.Data &&
+                      postDetail.Data.CommunityPostEmails[0] &&
+                      postDetail.Data.CommunityPostEmails[0].From.length &&
+                      el.IsShow
                     "
                   >
                     <span :class="[el.IsMalicious ? 'malicious-style' : '']"
@@ -426,8 +426,8 @@
                     :key="ind + el.Id"
                     v-else-if="
                       postDetail.Data.CommunityPostEmails[0] &&
-                        postDetail.Data.CommunityPostEmails[0].From.length &&
-                        !el.IsShow
+                      postDetail.Data.CommunityPostEmails[0].From.length &&
+                      !el.IsShow
                     "
                     :id="'detail-from-' + el.Id"
                   >
@@ -449,8 +449,8 @@
                     :id="'detail-to-' + el.Id"
                     v-if="
                       postDetail.Data.CommunityPostEmails[0] &&
-                        postDetail.Data.CommunityPostEmails[0].To.length &&
-                        el.IsShow
+                      postDetail.Data.CommunityPostEmails[0].To.length &&
+                      el.IsShow
                     "
                   >
                     <span :class="[el.IsMalicious ? 'malicious-style' : '']"
@@ -470,8 +470,8 @@
                     :key="ind + el.Id"
                     v-else-if="
                       postDetail.Data.CommunityPostEmails[0] &&
-                        postDetail.Data.CommunityPostEmails[0].To.length &&
-                        !el.IsShow
+                      postDetail.Data.CommunityPostEmails[0].To.length &&
+                      !el.IsShow
                     "
                     :id="'detail-to-' + el.Id"
                   >
@@ -492,8 +492,8 @@
                     :key="ind + el.Id"
                     v-if="
                       postDetail.Data.CommunityPostEmails[0] &&
-                        postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                        el.IsShow
+                      postDetail.Data.CommunityPostEmails[0].Cc.length &&
+                      el.IsShow
                     "
                     :id="'detail-cc-' + el.Id"
                   >
@@ -514,8 +514,8 @@
                     :key="ind + el.Id"
                     v-else-if="
                       postDetail.Data.CommunityPostEmails[0] &&
-                        postDetail.Data.CommunityPostEmails[0].Cc.length &&
-                        !el.IsShow
+                      postDetail.Data.CommunityPostEmails[0].Cc.length &&
+                      !el.IsShow
                     "
                     :id="'detail-cc-' + el.Id"
                   >
@@ -566,13 +566,13 @@
                       <v-tooltip v-if="att.IsMalicious" bottom opacity="1">
                         <template v-slot:activator="{ on }">
                           <div v-on="on" class="attach-icon red-icon">
-                            <v-icon color="white" style="font-size: 20px">mdi-alert</v-icon>
+                            <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
                           </div>
                         </template>
                         <span>This attachment has been reported as a malicious file</span>
                       </v-tooltip>
                       <div v-else class="attach-icon blue-icon">
-                        <v-icon color="white" style="font-size: 20px">mdi-paperclip</v-icon>
+                        <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                       </div>
                       <div v-if="att.IsShow" class="file-name max-char pl-2">{{ att.Name }}</div>
                       <div v-if="!att.IsShow" class="file-name max-char pl-2">hidden by owner</div>
@@ -657,19 +657,19 @@ export default {
       ) {
         const ShareSettings = {
           senderInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'SenderInfo'
+            (f) => f.Type === 'SenderInfo'
           ),
-          subject: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Subject'),
+          subject: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Subject'),
           receiverInfo: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'ReceiverInfo'
+            (f) => f.Type === 'ReceiverInfo'
           ),
           attachments: datas.CommunityPostEmails[0].ShareSettings.filter(
-            f => f.Type === 'Attachment'
+            (f) => f.Type === 'Attachment'
           ),
-          links: datas.CommunityPostEmails[0].ShareSettings.filter(f => f.Type === 'Link')
+          links: datas.CommunityPostEmails[0].ShareSettings.filter((f) => f.Type === 'Link')
         }
         if (ShareSettings.links && ShareSettings.links.length) {
-          setTimeout(function() {
+          setTimeout(function () {
             for (let a of ShareSettings.links) {
               var els = document.querySelectorAll('[href="' + a.Value + '"]')
               for (var i = 0, l = els.length; i < l; i++) {
@@ -710,8 +710,6 @@ export default {
       // TO-DO
       // Incident posted email email come here.
       // You have to getIncident dispatch here apply it to the page.
-      console.log(this.$route.query)
-      console.log(this.postDetail)
     }
   }
 }
@@ -1877,25 +1875,11 @@ export default {
   text-decoration: underline !important;
 }
 .malicious-icon {
-  font-size: 18px !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-}
-::v-deep .red-malicious-alert {
-  border: unset !important;
-  border-color: transparent !important;
-  border-bottom-color: transparent !important;
-  border-image: none !important;
-  border-image-width: 0 !important;
-  color: #bb2a45 !important;
-  caret-color: #bb2a45 !important;
-  text-decoration: unset !important;
-  text-decoration-color: transparent !important;
-  font-size: 18px !important;
-  margin-top: -2px;
-  padding-right: 3px;
-  height: 16px !important;
-  overflow: hidden;
+  top: 0px;
+  background: transparent;
+  color: #f56c6c;
+  font-size: 22px !important;
+  padding: 0;
 }
 ::v-deep .red-malicious-alert::before {
   border: unset !important;

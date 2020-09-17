@@ -1,117 +1,12 @@
 <template>
-  <div>
-    <v-container class="main-content container mt-0 pt-0 ml-0 pl-0 pr-0 mr-0">
-      <v-layout wrap>
-        <v-col class="phishing-col pl-4 pr-2" md="6" sm="12">
-          <v-card :class="{ z_index_custom_2: getTourData['0'] }">
-            <div
-              v-show="isTourActive"
-              class="tour-btn-container tour-one"
-              :class="{ z_index_custom_1: getTourData['0'] }"
-            >
-              <div class="tour-btn-wrapper">
-                <div class="tour-btn-circle">
-                  <div class="tour-btn-circle-inner"></div>
-                </div>
-              </div>
-            </div>
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper">
-                <v-icon medium left color="blue" class="ml-2">
-                  mdi-email
-                </v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline">Phishing Campaigns</v-list-item-title>
-                <v-list-item-subtitle>Your phishing campaign statistics</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <phishing-campaigns-pie-chart
-              :dropdown-current="dropdownCurrent"
-              v-on:changeDropdownItem="onPieChartDropdownSelect($event)"
-              :dropdown-data="chartDropdownData"
-              :labels="pieChartDataLabels"
-              :pieData="pieChartData"
-              :chartOptionColors="chartOptionColors"
-            ></phishing-campaigns-pie-chart>
-          </v-card>
-        </v-col>
-        <v-col
-          class="company-info-col pl-2 pr-4"
-          md="6"
-          sm="12"
-          :class="{ z_index_custom: tour.one.active }"
-        >
-          <v-card height="100%" :class="{ z_index_custom_2: getTourData['1'] }">
-            <div
-              v-show="isTourActive"
-              class="tour-btn-container tour-two"
-              :class="{ z_index_custom_1: getTourData['1'] }"
-            >
-              <div class="tour-btn-wrapper">
-                <div class="tour-btn-circle">
-                  <div class="tour-btn-circle-inner"></div>
-                </div>
-              </div>
-            </div>
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper" id="tour-1">
-                <v-icon medium left color="blue" class="ml-2">
-                  mdi-domain
-                </v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline">Company Information</v-list-item-title>
-                <v-list-item-subtitle>Summary of your company</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <!-- eslint-disable -->
-            <company-information
-              :key="companyInformation.name"
-              :companyInformation="companyInformation"
-            ><!-- eslint-disable-line --></company-information>
-          </v-card>
-        </v-col>
-        <v-col class="overall-stats-col pl-4 pt-1 pr-4" lg="12" md="12" xl="12">
-          <v-card :class="{ z_index_custom_2: getTourData['2'] }">
-            <div
-              v-show="isTourActive"
-              class="tour-btn-container tour-three"
-              :class="{ z_index_custom_1: getTourData['2'] }"
-            >
-              <div class="tour-btn-wrapper">
-                <div class="tour-btn-circle">
-                  <div class="tour-btn-circle-inner"></div>
-                </div>
-              </div>
-            </div>
-            <v-list-item class="pl-0 pr-0">
-              <div class="v-btn v-cart-icon-wrapper">
-                <v-icon medium left color="blue" class="ml-2">
-                  mdi-chart-bar
-                </v-icon>
-              </div>
-              <v-list-item-content class="pt-0 pb-0">
-                <v-list-item-title class="v-card-headline">Overall Stats</v-list-item-title>
-                <v-list-item-subtitle>Keepnet activity stats of your company</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <overall-stats
-              :key="overallStatsList"
-              :dropdown-data="overallDropdownData"
-              :dropdown-current="dropdownCurrentOverallStats"
-              v-on:changeDropdownItem="onOverallStatsDropdownSelect($event)"
-              :chartData="overallStatsList"
-              :months="getMonths(dropdownCurrentOverallStats.key)"
-              :minMaxValues="minMaxValues"
-            ><!-- eslint-disable-line --></overall-stats>
-          </v-card>
-        </v-col>
-        <v-col class="last5-col pl-4 pt-1 pr-4" lg="12" md="12" xl="12" :class="{ z_index_custom_2: getTourData['3'] }">
+  <v-container class="main-content container mt-0 pt-0 ml-0 pl-0 pr-0 mr-0">
+    <v-layout wrap>
+      <v-col class="phishing-col pl-4 pr-2" md="6" sm="12">
+        <v-card :class="{ z_index_custom_2: getTourData['0'] }">
           <div
             v-show="isTourActive"
-            class="tour-btn-container tour-four"
-            :class="{ z_index_custom_1: getTourData['3'] }"
+            class="tour-btn-container tour-one"
+            :class="{ z_index_custom_1: getTourData['0'] }"
           >
             <div class="tour-btn-wrapper">
               <div class="tour-btn-circle">
@@ -119,16 +14,127 @@
               </div>
             </div>
           </div>
-          <LastFiveCampaigns
-            :key="lastFiveCampaignList.length"
-            :campaignList2="firstCampaignList"
-            :campaignList="lastFiveCampaignList"
-            :singleTableList="singleCampaignList"
-          ><!-- eslint-disable-line --></LastFiveCampaigns>
-        </v-col>
-      </v-layout>
-    </v-container>
-  </div>
+          <v-list-item class="pl-0 pr-0">
+            <div class="v-btn v-cart-icon-wrapper">
+              <v-icon medium left color="blue" class="ml-2">
+                mdi-email
+              </v-icon>
+            </div>
+            <v-list-item-content class="pt-0 pb-0">
+              <v-list-item-title class="v-card-headline">Phishing Campaigns</v-list-item-title>
+              <v-list-item-subtitle>Your phishing campaign statistics</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <phishing-campaigns-pie-chart
+            :dropdown-current="dropdownCurrent"
+            v-on:changeDropdownItem="onPieChartDropdownSelect($event)"
+            :dropdown-data="chartDropdownData"
+            :labels="pieChartDataLabels"
+            :pieData="pieChartData"
+            :chartOptionColors="chartOptionColors"
+          ></phishing-campaigns-pie-chart>
+        </v-card>
+      </v-col>
+      <v-col
+        class="company-info-col pl-2 pr-4"
+        md="6"
+        sm="12"
+        :class="{ z_index_custom: tour.one.active }"
+      >
+        <v-card height="100%" :class="{ z_index_custom_2: getTourData['1'] }">
+          <div
+            v-show="isTourActive"
+            class="tour-btn-container tour-two"
+            :class="{ z_index_custom_1: getTourData['1'] }"
+          >
+            <div class="tour-btn-wrapper">
+              <div class="tour-btn-circle">
+                <div class="tour-btn-circle-inner"></div>
+              </div>
+            </div>
+          </div>
+          <v-list-item class="pl-0 pr-0">
+            <div class="v-btn v-cart-icon-wrapper" id="tour-1">
+              <v-icon medium left color="blue" class="ml-2">
+                mdi-domain
+              </v-icon>
+            </div>
+            <v-list-item-content class="pt-0 pb-0">
+              <v-list-item-title class="v-card-headline">Company Information</v-list-item-title>
+              <v-list-item-subtitle>Summary of your company</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <!-- eslint-disable -->
+          <company-information
+                  :key="companyInformation.name"
+                  :companyInformation="companyInformation"
+          ><!-- eslint-disable-line --></company-information
+          >
+        </v-card>
+      </v-col>
+      <v-col class="overall-stats-col pl-4 pt-1 pr-4" lg="12" md="12" xl="12">
+        <v-card :class="{ z_index_custom_2: getTourData['2'] }">
+          <div
+                  v-show="isTourActive"
+                  class="tour-btn-container tour-three"
+                  :class="{ z_index_custom_1: getTourData['2'] }"
+          >
+            <div class="tour-btn-wrapper">
+              <div class="tour-btn-circle">
+                <div class="tour-btn-circle-inner"></div>
+              </div>
+            </div>
+          </div>
+          <v-list-item class="pl-0 pr-0">
+            <div class="v-btn v-cart-icon-wrapper">
+              <v-icon medium left color="blue" class="ml-2">
+                mdi-chart-bar
+              </v-icon>
+            </div>
+            <v-list-item-content class="pt-0 pb-0">
+              <v-list-item-title class="v-card-headline">Overall Stats</v-list-item-title>
+              <v-list-item-subtitle>Keepnet activity stats of your company</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <overall-stats
+                  :key="overallStatsList"
+                  :dropdown-data="overallDropdownData"
+                  :dropdown-current="dropdownCurrentOverallStats"
+                  v-on:changeDropdownItem="onOverallStatsDropdownSelect($event)"
+                  :chartData="overallStatsList"
+                  :months="getMonths(dropdownCurrentOverallStats.key)"
+                  :minMaxValues="minMaxValues"
+          ><!-- eslint-disable-line --></overall-stats
+          >
+        </v-card>
+      </v-col>
+      <v-col
+              class="last5-col pl-4 pt-1 pr-4"
+              lg="12"
+              md="12"
+              xl="12"
+              :class="{ z_index_custom_2: getTourData['3'] }"
+      >
+        <div
+                v-show="isTourActive"
+                class="tour-btn-container tour-four"
+                :class="{ z_index_custom_1: getTourData['3'] }"
+        >
+          <div class="tour-btn-wrapper">
+            <div class="tour-btn-circle">
+              <div class="tour-btn-circle-inner"></div>
+            </div>
+          </div>
+        </div>
+        <LastFiveCampaigns
+                :key="lastFiveCampaignList.length"
+                :campaignList2="firstCampaignList"
+                :campaignList="lastFiveCampaignList"
+                :singleTableList="singleCampaignList"
+        />
+      </v-col>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -247,7 +253,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
-        this.getCurrentUser()
+        //this.getCurrentUser()
         this.getPhishingCampaigns(999)
         this.getLastFiveCompaignsStats()
         this.getCompanyInformation()
@@ -271,10 +277,10 @@ export default {
       notificationList: 'dashboard/getNotificationList'
     }),
     ...mapState({
-      pieChartData: state => state.dashboard.pieChartData,
-      pieChartDataLabels: state => state.dashboard.pieChartDataLabels,
-      chartOptionColors: state => state.dashboard.chartOptionColors,
-      companyInformation: state => state.dashboard.companyInformation
+      pieChartData: (state) => state.dashboard.pieChartData,
+      pieChartDataLabels: (state) => state.dashboard.pieChartDataLabels,
+      chartOptionColors: (state) => state.dashboard.chartOptionColors,
+      companyInformation: (state) => state.dashboard.companyInformation
     })
   },
   methods: {
@@ -295,7 +301,6 @@ export default {
       getLastFiveCompaignsStats: 'dashboard/getLastFiveCompaignsStats',
       getCompanyInformation: 'dashboard/getCompanyInformation',
       getDropdownCompanies: 'dashboard/getDropdownCompanies',
-      getMenus: 'dashboard/getMenus',
       getOverallStats: 'dashboard/getOverallStats'
     }),
     onPieChartDropdownSelect(item) {

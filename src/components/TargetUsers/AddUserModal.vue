@@ -1,0 +1,376 @@
+<template>
+  <app-modal
+    :status="status"
+    @closeOverlay="status = false"
+    :icon-name="getIcon"
+    :title="getTitle"
+    className="add-user-overlay"
+  >
+    <template v-slot:overlay-body>
+      <v-list-item class="add-user-overlay__list-item mt-8">
+        <v-list-item-content>
+          <v-list-item-title class="add-user-overlay__main-title">
+            {{ editData ? 'Edit  User Manually' : 'Add New User Manually' }}
+          </v-list-item-title>
+          <v-list-item-subtitle class="add-user-overlay__main-sub-title"
+            >Define user properties
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item mt-6">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="firstName">First Name</label>
+          <v-text-field
+            placeholder="Enter first name"
+            outlined
+            dense
+            v-model.trim="formValues.firstName"
+            id="firstName"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="lastName">Last Name</label>
+          <v-text-field
+            placeholder="Enter last name"
+            outlined
+            dense
+            v-model.trim="formValues.lastName"
+            id="lastName"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="email">Email</label>
+          <v-text-field
+            placeholder="Enter email address"
+            outlined
+            dense
+            v-model.trim="formValues.email"
+            hint="*Required"
+            persistent-hint
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.mail(v, 'Invalid email address')
+            ]"
+            id="email"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="department">Department</label>
+          <v-text-field
+            placeholder="Enter department name"
+            outlined
+            dense
+            v-model.trim="formValues.department"
+            id="department"
+            height="40"
+          ></v-text-field>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item
+        class="add-user-overlay__list-item"
+        :key="index"
+        v-for="(item, index) in customFields"
+      >
+        <v-list-item-content>
+          <label class="add-user-overlay__label">{{ item.name }}</label>
+          <v-text-field
+            outlined
+            dense
+            v-model.trim="customFieldsModels[item.name]"
+            :placeholder="`Enter ${item.name}`"
+            height="40"
+            :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
+            v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
+          ></v-text-field>
+          <el-date-picker
+            v-model.trim="customFieldsModels[item.name]"
+            :placeholder="`Enter ${item.name}`"
+            type="date"
+            v-else-if="item.fieldDataType === 'Date'"
+          />
+          <v-checkbox
+            v-model.trim="customFieldsModels[item.name]"
+            :label="item.name"
+            v-if="item.fieldDataType === 'Boolean'"
+          />
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="priority">Priority</label>
+          <v-select
+            :items="priorityItems"
+            outlined
+            dense
+            v-model.trim="formValues.priority"
+            id="department"
+            height="40"
+          ></v-select>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item class="add-user-overlay__list-item">
+        <v-list-item-content>
+          <label class="add-user-overlay__label" for="isActive">Active</label>
+          <v-switch
+            id="isActive"
+            v-model="formValues.isActive"
+            color="#2196f3"
+            :label="formValues.isActive ? 'Yes' : 'No'"
+          />
+        </v-list-item-content>
+      </v-list-item>
+    </template>
+    <template v-slot:overlay-footer>
+      <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
+        CANCEL
+      </v-btn>
+      <v-btn
+        class="add-user-overlay__footer-btn-save white--text"
+        color="#2196f3"
+        rounded
+        @click="submit"
+      >
+        SAVE
+      </v-btn>
+    </template>
+  </app-modal>
+</template>
+
+<script>
+import { required, mail } from '../../utils/validations'
+import { createTargetUser, getTargetGroups, updateTargetUser } from '../../api/targetUsers'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import AppModal from '../AppModal'
+export default {
+  name: 'AddUserModal',
+  components: { AppModal },
+  props: {
+    status: {
+      type: Boolean
+    },
+    editData: {
+      type: Object
+    },
+    customFields: {
+      type: Array
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.editData ? 'Edit User' : 'Add New User'
+    },
+    getIcon() {
+      return this.editData ? 'mdi-account-edit' : 'mdi-account-plus'
+    }
+  },
+  data() {
+    return {
+      formValues: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        department: '',
+        priority: 'Medium',
+        isActive: true
+      },
+      customFieldsModels: {},
+      priorityItems: [
+        { text: 'Very Low', value: 'VeryLow' },
+        'Low',
+        'Medium',
+        'High',
+        { text: 'Very High', value: 'VeryHigh' }
+      ],
+      validations: {
+        required,
+        mail
+      }
+    }
+  },
+  methods: {
+    closeOverlay() {
+      this.$emit('closeAddUserModal')
+    },
+    submit() {
+      if (this.editData) {
+        this.callForUpdateTargetUser()
+      } else {
+        this.callForCreateTargetUser()
+      }
+    },
+    callForCreateTargetUser() {
+      const payload = {
+        ...this.formValues
+      }
+
+      createTargetUser(payload)
+        .then(({ data }) => {
+          if (data.status === 'FAILED') {
+            this.$store.dispatch('common/createSnackBar', {
+              message: data.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+            })
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: '1 user added to Users List ',
+              icon: 'mdi-check-circle-outline',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
+            this.$emit('closeAddUserModalWithUpdate')
+          }
+        })
+        .catch((error) => {})
+    },
+    callForUpdateTargetUser() {
+      const payload = {
+        ...this.formValues
+      }
+      delete payload.status
+      updateTargetUser(payload)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+          }
+          this.$emit('closeAddUserModalWithUpdate')
+        })
+        .catch((error) => {})
+    },
+    callForTargetGroups() {
+      getTargetGroups().then((response) => {
+        const { data } = response.data
+        this.autoCompleteItems = data
+      })
+    }
+  },
+  created() {
+    /*
+    this.callForTargetGroups()
+     */
+    if (this.editData) {
+      this.formValues = {
+        ...this.editData,
+        isActive: this.editData.status === 'Active'
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.add-user-overlay {
+  .v-overlay__content {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+  }
+
+  &__list-item {
+    padding: 0 !important;
+    margin-top: 1px;
+    .v-list-item__content {
+      padding: 0;
+      max-width: 554px;
+      overflow: visible;
+    }
+  }
+
+  &__container {
+    padding: 32px 96px 0 96px;
+    box-shadow: none;
+  }
+
+  &__footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f5f7fa;
+    padding: 16px 96px !important;
+    display: flex;
+    justify-content: space-between;
+    z-index: 9;
+
+    &-btn-cancel {
+      color: #f56c6c !important;
+      border: 1px solid #f56c6c !important;
+      box-shadow: none !important;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+      width: 86px;
+      height: 36px !important;
+    }
+
+    &-btn-save {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+      width: 72px;
+      height: 36px !important;
+      border-radius: 18px;
+      background-color: #2196f3;
+    }
+  }
+
+  &__main-title {
+    font-size: 24px;
+    font-weight: normal;
+    line-height: 1.29;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__main-sub-title {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  &__label {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: normal;
+    margin-bottom: 8px !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  .v-input--switch {
+    margin-top: 0;
+    label {
+      font-size: 16px;
+      font-weight: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
+      margin-left: 8px;
+    }
+    .v-messages {
+      display: none;
+    }
+  }
+}
+</style>

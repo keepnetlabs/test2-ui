@@ -126,9 +126,9 @@ const tour = {
     ]
   },
   getters: {
-    isTourActive: state => state.tour.isActive,
-    getTourData: state => state.tour,
-    getSteps: state => state.steps
+    isTourActive: (state) => state.tour.isActive,
+    getTourData: (state) => state.tour,
+    getSteps: (state) => state.steps
   },
   mutations: {
     SET_TOUR_STATUS(state, payload) {

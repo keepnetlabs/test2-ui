@@ -1,0 +1,44 @@
+.el-picker-panel__body-wrapper, .el-picker-panel{
+  font-family: "Open Sans", sans-serif !important;
+}
+.el-picker-panel{
+  z-index:9999999 !important;
+}
+.el-range-editor.el-input__inner{
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  padding: 3px 10px;
+  width: 100%;
+  height:auto;
+  border-radius: 8px;
+  border: solid 1px rgba(0, 0, 0, 0.16);
+  .el-range__icon{
+    color: rgba(0, 0, 0, 0.72);
+  }
+  .el-range__close-icon{
+    margin-left: 40px;
+  }
+
+  input{
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+    &::placeholder {
+      font-size: 13px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.72);
+
+    }
+  }
+}

@@ -6,8 +6,6 @@ const AuthenticationService = {
     let tokenModel = this.getTokenModel()
     if (tokenModel == null) {
       return AuthenticationStatus.UNAUTHENTICATED
-    } else if (new Date(tokenModel.expired) <= Date.now()) {
-      return AuthenticationStatus.EXPIRED
     } else if (tokenModel.status === 3) {
       return AuthenticationStatus.REQUIRETWOSTEP
     } else {

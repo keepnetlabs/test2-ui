@@ -1,0 +1,464 @@
+<template>
+  <div class="company-list">
+    <v-dialog
+      v-if="isShowCreateOrEditModal"
+      v-model="isShowCreateOrEditModal"
+      fullscreen
+      scrollable
+      persistent
+      no-click-animation
+      hide-overlay
+    >
+      <CompanyCreateOrEdit
+        @cancelForm="cancelCreateOrEditForm"
+        :selectedRow="selectedRow"
+        :selectedExtend="selectedExtend"
+        :edit="editModal"
+      />
+    </v-dialog>
+    <delete-modal
+      :is-show="isShowDeleteModal"
+      :selectedRow="selectedRow"
+      @confirmDelete="deleteConfirmedItem"
+      @changeModalStatus="changeDeleteModalStatus"
+    />
+    <AddGroupToModal
+      :companyIdArray="companyIdArray"
+      :status="showAddGroupToModal"
+      v-if="showAddGroupToModal"
+      @changeStatus="handleStatusAddGroupToModal"
+    />
+    <create-item-modal
+      :is-show="showCreateNewGroupWithCompany"
+      :selectedRow="selectedRow"
+      :forCompany="true"
+      @changeModalStatus="(status) => (showCreateNewGroupWithCompany = status)"
+    />
+    <datatable
+      ref="refDataList"
+      :addButton="tableOptions.addButton"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :empty="tableOptions.iEmpty"
+      :filterable="true"
+      :options="true"
+      :pageSizes="tableOptions.pageSizes"
+      :refName="'companyList'"
+      :rowActions="tableOptions.rowActions"
+      :selectEvent="tableOptions.selectEvent"
+      :selectable="true"
+      @edit="handleTableItemEdit"
+      @delete="handleTableItemDelete"
+      @cellClick="handleCompanyNameClick"
+      @downloadEvent="handleTableDownload"
+      @addButton="addButton"
+      @onEmptyBtnClicked="addButton"
+      @editAction="editAction"
+      @AddGroupToModal="handleAddGroupToModal"
+      @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+    >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span class="datatable-link" v-if="scope.row.companyName">
+          {{ scope.row.companyName }}
+        </span>
+      </template>
+      <template v-slot:extended-custom-view-slot>
+        <company-list-extend
+          v-show="isShowExtended"
+          :selectedRow="selectedRow"
+          :top="extendTop"
+          :tableHeight="tableHeight"
+          :selectedExtend="selectedExtend"
+          @editAction="editAction"
+          @close="closeExtend"
+        />
+      </template>
+    </datatable>
+  </div>
+</template>
+
+<script>
+import Datatable from '../../components/DataTable'
+import { searchCompanies, deleteCompany, getCompanyByID, exportCompanies } from '../../api/company'
+import DeleteModal from './DeleteModal'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  LABEL_STORE,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
+import CompanyListExtend from '@/components/Companies/CompanyListExtend'
+import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
+import AddGroupToModal from '@/components/Companies/AddToGroupModal'
+import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
+
+export default {
+  name: 'CompanyList',
+  components: {
+    CreateItemModal,
+    AddGroupToModal,
+    CompanyCreateOrEdit,
+    CompanyListExtend,
+    Datatable,
+    DeleteModal
+  },
+  data: () => ({
+    tableHeight: 0,
+    extendTop: 0,
+    editModal: false,
+    isShowDeleteModal: false,
+    isShowExtended: false,
+    isShowCreateOrEditModal: false,
+    companyIdArray: [],
+    showAddGroupToModal: false,
+    showCreateNewGroupWithCompany: false,
+    selectedExtend: {},
+    selectedRow: {},
+    tableOptions: {
+      columns: [
+        {
+          property: PROPERTY_STORE.COMPANYNAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
+          fixed: 'left',
+          sortable: true,
+          show: true,
+          type: 'slot',
+          minWidth: 180
+        },
+        {
+          property: PROPERTY_STORE.INDUSTRYNAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
+
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 150
+        },
+        {
+          property: PROPERTY_STORE.LICENSETYPENAME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
+
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 150
+        },
+        {
+          property: PROPERTY_STORE.NUMBEROFUSERS,
+          align: 'right',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 130
+        },
+        {
+          property: PROPERTY_STORE.LICENSEENDDATE,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
+
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 180
+        },
+        {
+          property: 'createTime',
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: 180
+        }
+      ],
+      pageSizes: [5, 10, 25, 50, 100],
+      selectEvent: {
+        clipboard: true,
+        edit: true,
+        delete: true,
+        download: true
+      },
+      iEmpty: {
+        message: 'No company defined',
+        btn: 'ADD A COMPANY',
+        icon: 'mdi-account-plus'
+      },
+      addButton: {
+        show: true,
+        action: 'addButton',
+        tooltip: 'Add Company'
+      },
+      rowActions: [
+        {
+          name: 'Edit this row',
+          icon: 'mdi-pencil',
+          action: 'editAction',
+          isNotShow: true
+        },
+        {
+          name: 'Add to a company group',
+          icon: 'mdi-account-multiple-plus',
+          action: 'AddGroupToModal'
+        },
+        {
+          name: 'Create a new company group with company',
+          icon: 'mdi-account-multiple',
+          action: 'createNewGroupWithCompany'
+        },
+        {
+          name: 'Delete',
+          icon: 'mdi-delete',
+          action: 'delete'
+        }
+      ]
+    },
+    payload: {
+      pageSize: 3000,
+      orderBy: 'LicenseTypeName',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: []
+      }
+    }
+  }),
+  watch: {
+    isShowCreateOrEditModal() {
+      document.querySelector('html').classList.toggle('overflow-y-hidden')
+    }
+  },
+  mounted() {
+    this.getTableData()
+  },
+  methods: {
+    getTableData(payload) {
+      const _payload = { ...this.payload, ...payload }
+      searchCompanies(_payload)
+        .then((response) => {
+          this.$refs.refDataList.loadWithDataArray(
+            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+              ? response.data.data.results
+              : []
+          )
+        })
+        .catch((error) => {
+          this.$refs.refDataList.loadWithDataArray([])
+        })
+    },
+    handleTableItemEdit(row) {},
+    handleTableItemDelete(selectedItem) {
+      this.selectedRow = selectedItem
+      this.changeDeleteModalStatus(true)
+    },
+    deleteConfirmedItem(selectedItem) {
+      deleteCompany(selectedItem.companyResourceId)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.getTableData()
+          }
+        })
+        .catch((error) => {})
+    },
+    changeDeleteModalStatus(status) {
+      this.isShowDeleteModal = status
+    },
+    changeCreateOrEditModalStatus(status) {
+      this.isShowCreateOrEditModal = status
+    },
+    handleCompanyNameClick({ row, column, event }) {
+      if (column.property === 'companyName') {
+        this.selectedRow = row
+        this.selectedExtend = {}
+        this.isShowExtended = true
+        this.tableHeight = this.$refs.refDataList.$el.clientHeight
+        this.extendTop = event.offsetTop
+        getCompanyByID(row.companyResourceId)
+          .then((response) => {
+            this.selectedExtend = response.data.data
+          })
+          .catch((error) => {
+            this.isShowExtended = false
+            this.$store.dispatch('common/createSnackBar', {
+              message: error.data.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
+          })
+      }
+    },
+    handleTableDownload(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: 'LicenseTypeName',
+          ascending: true,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: [
+                  {
+                    FieldName: 'CompanyName',
+                    Operator: 'Contains',
+                    Value: ''
+                  },
+                  {
+                    FieldName: 'IndustryName',
+                    Operator: 'Contains',
+                    Value: ''
+                  },
+                  {
+                    FieldName: 'LicenseTypeName',
+                    Operator: 'Contains',
+                    Value: ''
+                  }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
+        }
+        exportCompanies(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Companies.${item.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
+    },
+    addButton() {
+      this.changeCreateOrEditModalStatus(true)
+    },
+    editAction(row) {
+      this.selectedRow = row
+      this.editModal = true
+      this.isShowExtended = false
+
+      getCompanyByID(row.companyResourceId)
+        .then((response) => {
+          this.selectedExtend = response.data.data
+          this.changeCreateOrEditModalStatus(true)
+        })
+        .catch((error) => {
+          this.isShowExtended = false
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
+    },
+    cancelCreateOrEditForm() {
+      this.isShowCreateOrEditModal = false
+      this.editModal = false
+      this.selectedExtend = {}
+      this.selectedRow = {}
+      this.getTableData({ orderBy: 'createdTime', ascending: false })
+    },
+    closeExtend() {
+      this.isShowExtended = false
+      this.selectedRow = {}
+      this.selectedExtend = {}
+    },
+    handleAddGroupToModal(v) {
+      if (Array.isArray(v)) {
+        this.companyIdArray = v.map((x) => x.companyResourceId)
+      } else {
+        this.companyIdArray = [v.companyResourceId]
+      }
+      this.showAddGroupToModal = true
+    },
+    handleStatusAddGroupToModal(status) {
+      this.showAddGroupToModal = status
+      if (status === false) {
+        this.getTableData()
+      }
+    },
+    handleCreateNewGroupWithCompany(row) {
+      this.selectedRow = { ...row, ...{ name: null }, ...{ resourceId: row.companyResourceId } }
+      this.showCreateNewGroupWithCompany = true
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.company-list {
+  margin-top: 24px;
+}
+.people {
+  padding-top: 24px;
+  .add-users__title {
+    font-size: 14px;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+  .edit-fields {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.71;
+    letter-spacing: normal;
+    margin-top: 10px;
+    cursor: pointer;
+    color: #2196f3;
+  }
+  .btn-add {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+    background-color: #2196f3;
+    color: white;
+
+    .v-icon {
+      font-size: 18px !important;
+      color: white;
+    }
+  }
+}
+.clock-wise {
+  .cell {
+    * {
+      visibility: visible !important;
+    }
+  }
+  i {
+    animation: antiClockwiseSpin 1s infinite ease-in;
+    animation-delay: 0s;
+    color: #2196f3 !important;
+  }
+}
+@keyframes antiClockwiseSpin {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+</style>
