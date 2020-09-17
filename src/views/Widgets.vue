@@ -25,6 +25,8 @@
         :slot="item.i"
         :padding="[0, 0]"
         :ref="`ref${item.i}`"
+        :shadow="'never'"
+        :simple="!editMode"
       >
         <template v-slot:title>
           <div class="widget-header__title">
@@ -48,7 +50,7 @@
             >mdi-close-circle</v-icon
           >
         </template>
-        <component :is="getComponent(item.key)" />
+        <component v-once :is="getComponent(item.key)" :resizable="false" />
       </smart-widget>
     </smart-widget-grid>
   </div>
@@ -64,6 +66,7 @@ import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/Re
 import ReportedEmails from '@/components/Common/Widget/WidgetComponents/ReportedEmails'
 import OverallStats from '@/components/Common/Widget/WidgetComponents/OverallStatsWidget'
 import CompanyInformationWidget from '@/components/Common/Widget/WidgetComponents/CompanyInformationWidget'
+import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 export default {
   name: 'Widgets',
   components: {
@@ -71,25 +74,53 @@ export default {
   },
   data() {
     /*
-     ReportedEmails: {
+
+ PhishingCampaigns: {
           x: 0,
           y: 0,
-          w: 6,
+          w: 2,
           minW: 2,
-          h: 10,
-          defaultH: 10,
-          minH: 3,
+          h: 6,
+          defaultH: 6,
+          minH: 5,
           i: Math.random().toString(),
-          title: 'Reported Emails',
-          key: 'ReportedEmails',
-          icon: 'mdi-email'
-        },*/
+          title: 'Phishing Campaigns',
+          key: 'PhishingCampaigns',
+          icon: 'mdi-chart-pie'
+        },
+ OverallStats: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 11,
+          defaultH: 11,
+          minH: 8,
+          i: Math.random().toString(),
+          icon: 'mdi-chart-bar',
+          title: 'Overall Stats',
+          key: 'OverallStats'
+        },
+        */
 
     return {
       layout: [],
       newItemY: 0,
       editMode: false,
       allWidgets: {
+        ReportedEmails: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 2,
+          h: 12,
+          defaultH: 12,
+          minH: 3,
+          i: Math.random().toString(),
+          title: 'Reported Emails',
+          key: 'ReportedEmails',
+          icon: 'mdi-email'
+        },
         PhishingReporterUsers: {
           x: 0,
           y: 0,
@@ -129,53 +160,40 @@ export default {
           key: 'PhishingReporterHeader',
           icon: 'mdi-page-layout-header'
         },
-        PhishingCampaigns: {
+        RecentInvestigations: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 7,
+          defaultH: 7,
+          minH: 7,
+          i: Math.random().toString(),
+          icon: 'mdi-briefcase-variant',
+          title: 'Recent Investigations',
+          key: 'RecentInvestigations'
+        },
+        TopRules: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          h: 7,
+          defaultH: 7,
+          minH: 7,
+          i: Math.random().toString(),
+          icon: 'mdi-briefcase-variant',
+          title: 'Top Rules',
+          key: 'TopRules'
+        },
+        CompanyInformation: {
           x: 0,
           y: 0,
           w: 2,
           minW: 2,
           h: 6,
           defaultH: 6,
-          minH: 5,
-          i: Math.random().toString(),
-          title: 'Phishing Campaigns',
-          key: 'PhishingCampaigns',
-          icon: 'mdi-chart-pie'
-        },
-        RecentInvestigations: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          h: 8,
-          defaultH: 8,
-          minH: 8,
-          i: Math.random().toString(),
-          icon: 'mdi-briefcase-variant',
-          title: 'Recent Investigations',
-          key: 'RecentInvestigations'
-        },
-        OverallStats: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          h: 11,
-          defaultH: 11,
-          minH: 8,
-          i: Math.random().toString(),
-          icon: 'mdi-chart-bar',
-          title: 'Overall Stats',
-          key: 'OverallStats'
-        },
-        CompanyInformation: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
+          minH: 6,
           i: Math.random().toString(),
           icon: 'mdi-information',
           title: 'Company Information',
@@ -186,14 +204,21 @@ export default {
         { name: 'Phishing Reporter Users', key: 'PhishingReporterUsers' },
         { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
         { name: 'Phishing Reporter Header', key: 'PhishingReporterHeader' },
-        { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
         { name: 'Recent Investigations', key: 'RecentInvestigations' },
-        { name: 'Overall Stats', key: 'OverallStats' },
-        { name: 'Company Information', key: 'CompanyInformation' }
-      ]
+        { name: 'Top Rules', key: 'TopRules' },
+        { name: 'Company Information', key: 'CompanyInformation' },
+        { name: 'Reported Emails', key: 'ReportedEmails' }
+      ],
+      style:
+        '.vue-grid-layout.smartwidget {box-shadow:none;' +
+        'background:transparent ;' +
+        ' border:none}'
     }
     /*
-      { name: 'Reported Emails', key: 'ReportedEmails' }, */
+
+      { name: 'Overall Stats', key: 'OverallStats' },
+       { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
+      */
   },
   methods: {
     deleteWidget(item, index) {
@@ -232,7 +257,9 @@ export default {
         if (newLayout[index].h === 1) {
           this.$refs[`ref${item.i}`][0].$el.querySelector('.widget-body').style.display = 'none'
         }
+        this.newItemY += item.h
       })
+      this.handleDeleteShadows()
     },
     collapse(item, index, ref) {
       if (this.layout[index].h === 1) {
@@ -263,9 +290,25 @@ export default {
           return OverallStats
         case 'CompanyInformation':
           return CompanyInformationWidget
+        case 'TopRules':
+          return TopRules
         default:
           break
       }
+    },
+    handleDeleteShadows() {
+      document.querySelectorAll('.smartwidget').forEach((item) => {
+        item.style.boxShadow = 'none'
+        item.style.backgroundColor = 'transparent'
+        item.style.border = 'none'
+      })
+    },
+    handleAddShadows() {
+      document.querySelectorAll('.smartwidget').forEach((item) => {
+        item.style.boxShadow = ''
+        item.style.backgroundColor = ''
+        item.style.border = ''
+      })
     }
   },
   created() {
@@ -276,6 +319,19 @@ export default {
   watch: {
     layout(newLayout) {
       localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
+    },
+    editMode(val) {
+      if (!val) {
+        this.layout = this.layout.map((item) => {
+          return { ...item, h: item.h - 1 }
+        })
+        this.handleDeleteShadows()
+      } else {
+        this.layout = this.layout.map((item) => {
+          return { ...item, h: item.h + 1 }
+        })
+        this.handleAddShadows()
+      }
     }
   }
 }
@@ -285,6 +341,7 @@ export default {
 .k-widget {
   &__container {
     padding: 11px 16px 16px 16px;
+    width: 100%;
   }
   &__header {
     display: flex;
@@ -304,16 +361,22 @@ export default {
   }
 }
 ::v-deep .widget-body__content {
-  overflow-y: auto;
+  //n overflow-y: auto;
 }
 .widget-body__content {
-  overflow-y: auto;
+  //overflow-y: auto;
+  .users {
+    padding-top: 0;
+    .v-card {
+      padding-bottom: 0 !important;
+    }
+  }
   &::-webkit-scrollbar {
-    display: none;
+    //display: none;
   }
 
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none;
+  //  -ms-overflow-style: none; /* IE and Edge */
+  // scrollbar-width: none;
 }
 .vue-grid-layout {
   margin-left: -12px;

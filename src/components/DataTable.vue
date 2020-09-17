@@ -427,6 +427,7 @@
               :prop="col.property"
               :sortable="col.hideSort ? false : 'custom'"
               :width="col.width || ''"
+              :resizable="resizable"
               v-for="(col, ind) of columns"
               v-if="col.show"
             >
@@ -850,6 +851,10 @@ export default {
         return {}
       }
     },
+    resizable: {
+      type: Boolean,
+      default: true
+    },
     rowKey: {
       type: String,
       default: 'resourceId'
@@ -1255,7 +1260,7 @@ export default {
         let text
         switch (typeOfProp) {
           case 'object':
-            text = row[column.property].join(',')
+            text = row[column.property] && row[column.property].join(',')
             break
           case 'string':
             text = row[column.property]

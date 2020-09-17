@@ -1,5 +1,5 @@
 <template>
-  <company-information :key="companyInformation.name" :companyInformation="companyInformation"
+  <company-information :companyInformation="companyInformation"
   ><!-- eslint-disable-line --></company-information
   >
 </template>
@@ -28,8 +28,4 @@ export default {
 }
 </script>
 
-<style>
-.v-cart-content-wrapper.mt-10 {
-  margin-top: 0 !important;
-}
-</style>
+<style></style>

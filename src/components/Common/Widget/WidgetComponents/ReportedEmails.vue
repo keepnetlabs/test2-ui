@@ -1,7 +1,7 @@
 <template>
   <div class="incident-responder-parent">
-    <div class="table-row">
-      <v-card>
+    <div class="table-row pa-0 ma-0">
+      <v-card style="padding-bottom: 0 !important;">
         <div class="header">
           <div class="title">
             <h2>Reported Emails</h2>
@@ -15,7 +15,6 @@
           ref="refReportedEmails"
           :columns="emails.columns"
           :countRow="5"
-          :extended-view-options="emails.extendedViewOptions"
           :pageSizes="emails.pageSizes"
           :defaultSort="'createDate'"
           :selectable="true"
@@ -24,9 +23,52 @@
           :rowActions="emails.rowActions"
           :addUsers="emails.addUsers"
           :empty="emails.iEmpty"
-          :groupable="true"
+          :groupable="false"
+          :resizable="false"
           :selectEvent="emails.selectEvent"
         >
+          <template v-slot:datatable-custom-column="{ scope, col }">
+            <template v-if="scope.column.property === 'source'">
+              <span
+                v-if="
+                  scope.row &&
+                  scope.row.matchingPlaybooks &&
+                  scope.row.matchingPlaybooks.length === 0
+                "
+              >
+                {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+              </span>
+              <span
+                v-else
+                v-for="item in scope.row.matchingPlaybooks"
+                :key="item.resourceId"
+                class="incident-responder-parent__link"
+                >{{ item.name }}</span
+              >
+            </template>
+            <template v-if="scope.column.property === 'status'">
+              <template v-if="scope.row.status === 'BeingAnalyzed'">
+                <span class="analysis-link">
+                  <div>
+                    In Analysis...
+                  </div>
+                  <div>
+                    <img
+                      src="../../../../assets/img/spinner.png"
+                      class="add-in-settings__spinner"
+                    />
+                  </div>
+                </span>
+              </template>
+              <template v-else>
+                <data-table-colorful-text
+                  :col="col"
+                  :scope="scope"
+                  :text="getDataTableFieldLabel(scope.row.status)"
+                />
+              </template>
+            </template>
+          </template>
         </data-table>
       </v-card>
     </div>
@@ -37,10 +79,13 @@
 import DataTable from '@/components/DataTable'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { searchNotifiedMail } from '@/api/incidentResponder'
+import DataTableColorfulText from '@/components/DataTableComponents/DataTableColorfulText'
+import { getDataTableFieldLabel } from '@/utils/functions'
 export default {
   name: 'ReportedEmails',
   components: {
-    DataTable
+    DataTable,
+    DataTableColorfulText
   },
   data() {
     return {
@@ -396,6 +441,11 @@ export default {
       const tableData = results
       this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
     })
+  },
+  methods: {
+    getDataTableFieldLabel(field) {
+      return getDataTableFieldLabel(field)
+    }
   }
 }
 </script>

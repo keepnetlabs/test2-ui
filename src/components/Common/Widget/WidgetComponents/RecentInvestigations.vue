@@ -1,43 +1,51 @@
 <template>
-  <v-card class="double-table">
-    <div class="header recent-investigations__header">
-      <div class="title">
-        <h2>Recent Investigations</h2>
-        <p>Most recent investigations</p>
-      </div>
-      <div class="action">
-        <v-btn
-          class="btn-action btn-investigations"
-          style="padding: 0 13px !important;"
-          block
-          rounded
-          @click.native="$router.push('/investigations')"
-        >
-          Investigations
-          <v-icon class="pl-2">mdi-arrow-right</v-icon>
-        </v-btn>
+  <div class="incident-responder-parent">
+    <div class="incident-responder pa-0 ma-0">
+      <div class="double-table mt-0">
+        <div class="column ma-0" style="width: 100%;">
+          <v-card style="padding-bottom: 0 !important;">
+            <div class="header mb-2">
+              <div class="title">
+                <h2>Recent Investigations</h2>
+                <p>Most recent investigations</p>
+              </div>
+              <div class="action">
+                <v-btn
+                  class="btn-action btn-investigations"
+                  style="padding: 0 13px !important;"
+                  block
+                  rounded
+                  @click.native="$router.push('/investigations')"
+                >
+                  Investigations
+                  <v-icon class="pl-2">mdi-arrow-right</v-icon>
+                </v-btn>
+              </div>
+            </div>
+            <div class="table investigations">
+              <data-table
+                :refName="'recentInv'"
+                ref="refRecentInv"
+                :columns="recentInv.columns"
+                :countRow="5"
+                :pageSizes="[]"
+                :defaultSort="'priority'"
+                :selectable="false"
+                :filterable="false"
+                :rowActions="[]"
+                :addUsers="recentInv.addMenu"
+                :empty="recentInv.iEmpty"
+                :selectEvent="recentInv.selectEvent"
+                :border="false"
+                :showHeader="false"
+                class="no-sub-border-datatable"
+              />
+            </div>
+          </v-card>
+        </div>
       </div>
     </div>
-    <div class="table investigations">
-      <data-table
-        :refName="'recentInv'"
-        ref="refRecentInv"
-        :columns="recentInv.columns"
-        :countRow="5"
-        :pageSizes="[]"
-        :defaultSort="'priority'"
-        :selectable="false"
-        :filterable="false"
-        :rowActions="[]"
-        :addUsers="recentInv.addMenu"
-        :empty="recentInv.iEmpty"
-        :selectEvent="recentInv.selectEvent"
-        :border="false"
-        :showHeader="false"
-        class="no-sub-border-datatable"
-      />
-    </div>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -110,12 +118,12 @@ export default {
     getRunningInvestigations()
       .then((response) => {
         const {
-          data: { data, status }
+          data: { data }
         } = response
         this.investigationListData = data
         this.$refs.refRecentInv.loadWithDataArray(data || [])
       })
-      .catch((error) => {
+      .catch(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the recent investigations! '
@@ -135,8 +143,7 @@ export default {
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  padding: 24px;
-  padding-bottom: 0;
+  padding: 24px 24px 0 24px;
   .btn-action {
     font-size: 14px;
     font-weight: 600;
@@ -148,6 +155,33 @@ export default {
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
     border: solid 1px #2196f3;
+  }
+  .title {
+    font-size: 1.25rem !important;
+    font-weight: 500;
+    line-height: 2rem;
+    letter-spacing: 0.0125em !important;
+    font-family: 'Roboto', sans-serif !important;
+    h2 {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.15;
+      letter-spacing: normal;
+      color: #2196f3;
+    }
+    p {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 16px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+    }
   }
 }
 </style>

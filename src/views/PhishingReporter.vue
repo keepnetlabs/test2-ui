@@ -188,7 +188,6 @@ export default {
     },
     getPhishingReportSummary() {
       const dateObj = this.getDates()
-      console.log('dateObj', dateObj)
       getPhishingReportSummary({
         startDate: dateObj.startDate,
         endDate: dateObj.endDate

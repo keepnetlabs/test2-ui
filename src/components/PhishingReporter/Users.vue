@@ -28,6 +28,7 @@
       :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
       :selectable="true"
+      :resizable="resizable"
       :sizeable="true"
       @deleteAction="handleDelete"
       @handleEdit="handleEdit"
@@ -56,6 +57,12 @@ export default {
   components: {
     DataTable,
     AppDialog
+  },
+  props: {
+    resizable: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
