@@ -28,8 +28,4 @@ export default {
 }
 </script>
 
-<style>
-.v-cart-content-wrapper.mt-10 {
-  margin-top: 0 !important;
-}
-</style>
+<style></style>

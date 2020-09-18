@@ -1,5 +1,34 @@
 <template>
   <div class="incident-wrapper">
+    <app-modal
+      :status="showWebPageGrapes"
+      v-if="showWebPageGrapes"
+      icon-name="mdi-check"
+      title="Grapes JS On Modal"
+      z-index="999999"
+    >
+      <template v-slot:overlay-body>
+        <GrapesWebPageModal
+          ref="grapesJsPostIncident"
+          :htmlData="editHtmlData"
+        ></GrapesWebPageModal>
+      </template>
+      <template v-slot:overlay-footer>
+        <v-btn class="new-integration__footer-btn-cancel" rounded @click="closeGrapesJs()">
+          CANCEL
+        </v-btn>
+        <div class="new-integration__footer__right-col">
+          <v-btn
+            class="new-integration__footer-btn-save white--text"
+            color="#2196f3"
+            rounded
+            @click="saveGrapesJs()"
+          >
+            SAVE
+          </v-btn>
+        </div>
+      </template>
+    </app-modal>
     <div class="incident-container">
       <div class="incident-inner">
         <v-card
@@ -502,7 +531,22 @@
             <div class="investigation-content">
               <div class="mail-preview">
                 <PreviewHeader :uploadRespond="uploadRespond" />
-                <div id="last-preview-body-preview" class="preview-body">
+                <div class="preview-header position-relative">
+                  <h2
+                    v-if="uploadRespond.body"
+                    style="padding: 0 2px; border-bottom: 1px solid transparent;"
+                  >
+                    Body
+                  </h2>
+                  <v-btn
+                    class="create-btn v-btn v-btn--flat v-btn--text theme--dark v-size--default edit-html-template-button"
+                    @click="editHtmlTemplate"
+                  >
+                    <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
+                  >
+                </div>
+
+                <div v-if="uploadRespond.body" id="last-preview-body-preview" class="preview-body">
                   <k-shadow-frame
                     id="last-preview-body-shadow-root"
                     :content="uploadRespond.body"
@@ -1665,7 +1709,8 @@ import {
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-
+import AppModal from '../AppModal'
+import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1758,7 +1803,9 @@ export default {
   components: {
     KFileUpload,
     VClamp,
-    PreviewHeader
+    PreviewHeader,
+    GrapesWebPageModal,
+    AppModal
   },
   props: {
     editItem: {
@@ -1815,6 +1862,8 @@ export default {
     }
   },
   data: () => ({
+    editHtmlData: null,
+    showWebPageGrapes: false,
     value: [
       {
         text: 'TLP: GREEN',
@@ -2033,6 +2082,18 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    closeGrapesJs() {
+      this.showWebPageGrapes = false
+    },
+    saveGrapesJs() {
+      let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      this.uploadRespond.body = editedHtml
+      this.showWebPageGrapes = false
+    },
+    editHtmlTemplate() {
+      this.editHtmlData = this.uploadRespond.body
+      this.showWebPageGrapes = true
+    },
     removeTLP(item) {
       this.value.splice(this.value.indexOf(item), 1)
       this.value = [...this.value]
@@ -2839,6 +2900,14 @@ export default {
       color: #fff !important;
       z-index: 9999;
     }
+  }
+
+  .create-btn {
+    border-radius: 18px !important;
+    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+    background-color: #2196f3 !important;
+    color: #fff !important;
+    z-index: 9999;
   }
 
   .v-text-field--outlined.error--text fieldset {
@@ -4845,5 +4914,10 @@ input[type=file]::-webkit-file-upload-button {
 
 .detail-parts {
   margin-top: 16px;
+}
+.edit-html-template-button {
+  position: absolute;
+  top: -10px;
+  right: 0px;
 }
 </style>

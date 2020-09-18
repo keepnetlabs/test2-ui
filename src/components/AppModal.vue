@@ -3,7 +3,7 @@
     :value="status"
     :opacity="1"
     v-if="status"
-    :z-index="99"
+    :z-index="zIndex || 99"
     color="white"
     class="k-overlay"
     :class="className"
@@ -64,6 +64,9 @@ export default {
       type: String
     },
     className: {
+      type: String
+    },
+    zIndex: {
       type: String
     }
   },

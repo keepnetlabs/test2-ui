@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="v-cart-content-wrapper mt-10">
+    <div class="v-cart-content-wrapper">
       <div class="d-flex v-cart-company-information-wrapper">
         <v-avatar class="company-information-avatar" max-height="40" max-width="40">
           <img src="../../assets/img/logo-kep.png" alt="John" />

@@ -545,36 +545,38 @@
           </template>
 
           <template v-if="!filter || filter.length < 1" slot="no-data">
-            <div class="empty-communities" v-if="selectedTab === 'tab-1'">
-              <div class="empty-communities-inline">
-                <span class="no-community">
-                  No community has been created, yet
-                </span>
-                <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
-                  Create Community
-                </v-btn>
+            <v-skeleton-loader :loading="communityLoading" type="table-tbody">
+              <div class="empty-communities" v-if="selectedTab === 'tab-1'">
+                <div class="empty-communities-inline">
+                  <span class="no-community">
+                    No community has been created, yet
+                  </span>
+                  <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
+                    Create Community
+                  </v-btn>
+                </div>
               </div>
-            </div>
-            <div class="empty-communities" v-if="selectedTab === 'tab-0'">
-              <div class="empty-communities-inline">
-                <span class="no-community">
-                  You haven’t joined any communities, yet
-                </span>
-                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
-                  Browse Communities
-                </v-btn>
+              <div class="empty-communities" v-if="selectedTab === 'tab-0'">
+                <div class="empty-communities-inline">
+                  <span class="no-community">
+                    You haven’t joined any communities, yet
+                  </span>
+                  <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                    Browse Communities
+                  </v-btn>
+                </div>
               </div>
-            </div>
-            <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
-              <div class="empty-communities-inline">
-                <span class="no-community">
-                  You don't have any invitations from communities
-                </span>
-                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
-                  Browse Communities
-                </v-btn>
+              <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
+                <div class="empty-communities-inline">
+                  <span class="no-community">
+                    You don't have any invitations from communities
+                  </span>
+                  <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                    Browse Communities
+                  </v-btn>
+                </div>
               </div>
-            </div>
+            </v-skeleton-loader>
           </template>
         </v-data-iterator>
       </v-card-text>
@@ -645,7 +647,8 @@ export default {
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
     filter: '',
-    listData: []
+    listData: [{}],
+    communityLoading: true
   }),
   props: {
     refresh: {
@@ -748,9 +751,11 @@ export default {
       this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
+      this.communityLoading = true
       getInvitationCount()
         .then((response) => {
           this.invitationsCount = response.data.data.count
+          this.communityLoading = false
         })
 
         .catch((error) => {
@@ -760,7 +765,9 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.invitationsCount = []
+            this.communityLoading = false
           }
+          this.communityLoading = false
         })
       /*
         .catch(() => {
@@ -859,13 +866,28 @@ export default {
     },
     getInvitions() {
       this.listData = []
-      getInvitations().then((response) => {
-        const { data } = response
-        this.listData = data.data
-      })
+      this.communityLoading = true
+      getInvitations()
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data
+          this.communityLoading = false
+        })
+        .catch((error) => {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
+            this.listData = []
+            this.communityLoading = false
+          }
+          this.communityLoading = false
+        })
     },
     getAllCommunitiesListData() {
       this.listData = []
+      this.communityLoading = true
       const payload = {
         pageNumber: 1,
         pageSize: 100,
@@ -919,6 +941,7 @@ export default {
         .then((response) => {
           const { data } = response
           this.listData = data.data.results
+          this.communityLoading = false
         })
 
         .catch((error) => {
@@ -928,11 +951,14 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.listData = []
+            this.communityLoading = false
           }
+          this.communityLoading = false
         })
     },
     getMyCommunitiesListData() {
       this.listData = []
+      this.communityLoading = true
       const payload = {
         pageNumber: 1,
         pageSize: 100,
@@ -986,6 +1012,7 @@ export default {
         .then((response) => {
           const { data } = response
           this.listData = data.data.results
+          this.communityLoading = false
         })
         .catch((error) => {
           if (
@@ -994,7 +1021,9 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.listData = []
+            this.communityLoading = false
           }
+          this.communityLoading = false
         })
     },
     communityDetails(item) {
