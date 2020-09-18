@@ -6,10 +6,10 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import Widgets from '@/views/Widgets'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
-import Widgets from '@/views/Widgets'
-
+import { vuetifySkeletonTypes } from '../model/constants/commonConstants'
 export default {
   components: {
     Widgets
