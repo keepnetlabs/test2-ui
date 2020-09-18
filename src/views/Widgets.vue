@@ -112,9 +112,10 @@ export default {
           x: 0,
           y: 0,
           w: 6,
+          defaultW: 6,
           minW: 2,
-          h: 10,
-          defaultH: 10,
+          h: 9,
+          defaultH: 9,
           minH: 3,
           i: Math.random().toString(),
           title: 'Reported Emails',
@@ -125,10 +126,11 @@ export default {
           x: 0,
           y: 0,
           w: 6,
+          defaultW: 6,
           minW: 2,
-          h: 7,
+          h: 8,
           minH: 3,
-          defaultH: 7,
+          defaultH: 8,
           i: Math.random().toString(),
           title: 'Phishing Reporter Users',
           key: 'PhishingReporterUsers',
@@ -137,7 +139,8 @@ export default {
         IncidentResponderHeader: {
           x: 0,
           y: 0,
-          w: 4,
+          w: 6,
+          defaultW: 6,
           minW: 4,
           h: 5,
           defaultH: 5,
@@ -150,8 +153,9 @@ export default {
         PhishingReporterHeader: {
           x: 0,
           y: 0,
-          w: 3,
+          w: 4,
           minW: 2,
+          defaultW: 4,
           h: 4,
           defaultH: 4,
           minH: 3,
@@ -165,6 +169,7 @@ export default {
           y: 0,
           w: 3,
           minW: 3,
+          defaultW: 3,
           h: 7,
           defaultH: 7,
           minH: 7,
@@ -178,6 +183,7 @@ export default {
           y: 0,
           w: 3,
           minW: 3,
+          defaultW: 3,
           h: 7,
           defaultH: 7,
           minH: 7,
@@ -190,6 +196,7 @@ export default {
           x: 0,
           y: 0,
           w: 2,
+          defaultW: 2,
           minW: 2,
           h: 6,
           defaultH: 6,
@@ -230,13 +237,23 @@ export default {
     addWidget(widget) {
       this.removeAvailableWidget(widget)
       let newItem
-      if (window.innerWidth < 1023) {
+      const widgetObj = { ...this.allWidgets[widget.key] }
+      if (window.innerWidth < 1100 && window.innerWidth > 900) {
+        widgetObj.w = 6
+      } else if (window.innerWidth < 900) {
+        widgetObj.w = 6
+        if (widget.key === 'IncidentResponderHeader') {
+          widgetObj.h = widgetObj.h + 4
+        } else if (widget.key === 'PhishingReporterHeader') {
+          widgetObj.h = widgetObj.h + 1
+        }
       } else {
-        newItem = this.allWidgets[widget.key]
+        this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW
       }
+      newItem = widgetObj
       newItem['y'] = this.newItemY
       this.newItemY += newItem.h
-      this.layout.unshift(this.allWidgets[widget.key])
+      this.layout.unshift(widgetObj)
     },
     removeAvailableWidget(widget) {
       this.availableWidgets.splice(
@@ -442,7 +459,7 @@ export default {
             y: 9,
             w: 6,
             minW: 2,
-            h: 3,
+            h: 4,
             defaultH: 4,
             minH: 3,
             i: '0.12610356662045974',
