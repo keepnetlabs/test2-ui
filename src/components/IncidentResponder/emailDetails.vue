@@ -389,17 +389,26 @@
                   <div v-else class="attach-icon blue-icon">
                     <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                   </div>
-                  <v-tooltip bottom opacity="1" z-index="9999">
+                  <v-menu
+                    content-class="email-preview__attachment-container-menu"
+                    bottom
+                    right
+                    offset-y
+                    transition="scale-transition"
+                  >
                     <template v-slot:activator="{ on }">
-                      <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
-                        {{ att.name }}
-                      </div>
-                      <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
-                        hidden by owner
+                      <div v-on="on" class="pl-2 email-preview__attachment-container">
+                        <span> {{ att.name }} </span>
+                        <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
                       </div>
                     </template>
-                    <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
-                  </v-tooltip>
+                    <v-list class="v-cart-dropdown-list el-table__action-buttons">
+                      <v-list-item @click="handleAttachmentClick(ind)">
+                        <v-icon>mdi-text-box-multiple</v-icon>
+                        <span class="ml-4"> Attachment Details</span>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </div>
               </div>
             </div>
@@ -920,6 +929,13 @@ export default {
       }
       return result
     },
+    handleAttachmentClick(index) {
+      this.tab = 4
+      setTimeout(() => {
+        this.panel.push(index)
+        this.showSecondCollapse.push(index)
+      }, 100)
+    },
     getResultOfAttachmentList(list) {
       let result = ''
       for (let item of list) {
@@ -1111,6 +1127,11 @@ export default {
   created() {
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
+    }
+  },
+  watch: {
+    panel(val) {
+      console.log('panel', val)
     }
   }
 }
@@ -1835,7 +1856,6 @@ export default {
       min-height: auto;
 
       .attachment {
-        width: 182px;
         min-width: 182px;
         height: 32px;
         align-items: center;
@@ -2419,5 +2439,35 @@ export default {
   letter-spacing: normal;
   text-align: center;
   color: #2196f3 !important;
+}
+.email-preview__attachment-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  &-menu {
+    border-radius: 20px !important;
+    box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
+      0 3px 14px 2px rgba(80, 80, 80, 0.12) !important;
+    span {
+      font-size: 14px;
+    }
+  }
+  span {
+    font-size: 12px;
+    line-height: 1.58;
+    letter-spacing: normal;
+    text-align: left !important;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  i {
+    visibility: hidden;
+  }
+  &:hover {
+    i {
+      cursor: pointer;
+      visibility: visible;
+    }
+  }
 }
 </style>
