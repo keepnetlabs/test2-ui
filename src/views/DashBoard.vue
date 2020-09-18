@@ -15,6 +15,7 @@ export default {
     Widgets
   },
   data: () => ({
+    skeletonTypes: null,
     tour: {
       isActive: false,
       one: { active: false },
@@ -112,6 +113,7 @@ export default {
     minMaxValues: [0, 50000]
   }),
   mounted() {
+    this.skeletonTypes = vuetifySkeletonTypes()
     this.$nextTick(() => {
       if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
         //this.getCurrentUser()
@@ -176,6 +178,9 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+.min-height-280px {
+  min-height: 280px;
+}
 ::v-deep .z_index_custom_1 {
   z-index: 99999 !important;
 }

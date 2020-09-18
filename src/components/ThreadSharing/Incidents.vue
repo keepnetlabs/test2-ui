@@ -82,24 +82,26 @@
             </div>
           </template>
           <template v-slot:default="props">
-            <v-expansion-panels :accordion="false" :multiple="false">
-              <v-expansion-panel
-                v-for="(item, ind) of props.items"
-                :key="ind + item.communityPostResourceId"
-                style="border-image: none !important;"
-                class="mb-4 mt-0"
-                id="edit-incident-post"
-                popout
-              >
-                <singlePost
-                  @refreshData="refreshDataFunc"
-                  :post="item"
-                  :postIndex="ind"
-                  :totalPostCount="props.items.length"
-                  @openEditPopupItem="openEditPopupItemFunc"
-                />
-              </v-expansion-panel>
-            </v-expansion-panels>
+            <v-skeleton-loader :loading="incidentLoading" type="table-tbody">
+              <v-expansion-panels :accordion="false" :multiple="false">
+                <v-expansion-panel
+                  v-for="(item, ind) of props.items"
+                  :key="ind + item.communityPostResourceId"
+                  style="border-image: none !important;"
+                  class="mb-4 mt-0"
+                  id="edit-incident-post"
+                  popout
+                >
+                  <singlePost
+                    @refreshData="refreshDataFunc"
+                    :post="item"
+                    :postIndex="ind"
+                    :totalPostCount="props.items.length"
+                    @openEditPopupItem="openEditPopupItemFunc"
+                  />
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-skeleton-loader>
           </template>
           <template slot="no-data">
             <div class="empty-communities">
@@ -166,7 +168,8 @@ export default {
     items2: ['Incidents', 'Communities', 'Members'],
     toggle: false,
     tab: null,
-    incidentList: []
+    incidentList: [],
+    incidentLoading: true
   }),
   watch: {
     openEditPopupItem: function (newVal, oldVal) {
@@ -275,6 +278,7 @@ export default {
           ]
         }
       }
+      this.incidentLoading = true
       //const _this = this
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
@@ -283,6 +287,7 @@ export default {
             this.incidentList = this.incidentList.map((item) => {
               return { ...item, isToggle: false }
             })
+            this.incidentLoading = false
           })
           .catch((error) => {
             if (
@@ -291,6 +296,7 @@ export default {
               error.response.data.code === 'RESOURCE_NOT_FOUND'
             ) {
               this.incidentList = []
+              this.incidentLoading = false
             }
           })
       } else {
@@ -301,6 +307,7 @@ export default {
               this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
+              this.incidentLoading = false
             })
             .catch((error) => {
               if (
@@ -309,6 +316,7 @@ export default {
                 error.response.data.code === 'RESOURCE_NOT_FOUND'
               ) {
                 this.incidentList = []
+                this.incidentLoading = false
               }
             })
         } else {
@@ -318,6 +326,9 @@ export default {
               this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
+              setTimeout(() => {
+                this.incidentLoading = false
+              }, 2000)
             })
             .catch((error) => {
               if (
@@ -326,6 +337,7 @@ export default {
                 error.response.data.code === 'RESOURCE_NOT_FOUND'
               ) {
                 this.incidentList = []
+                this.incidentLoading = false
               }
             })
         }

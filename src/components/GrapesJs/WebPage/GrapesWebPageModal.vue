@@ -13,6 +13,7 @@
 
 <script>
 import GrapesWebPageModal from 'grapesjs'
+import 'grapesjs-preset-newsletter'
 import 'grapesjs-blocks-basic'
 import 'grapesjs-preset-webpage'
 import 'grapesjs-plugin-forms'
@@ -20,10 +21,28 @@ import custom from 'grapesjs-custom-code'
 import exportGrapes from 'grapesjs-plugin-export'
 import cssParser from 'grapesjs-parser-postcss'
 import { setGrapesjsStyle } from '../Newsletter/assets/css/grapesStyle'
+import exampleComponent from '../Newsletter/components/exampleComponent'
+import exampleComponent2 from '../Newsletter/components/exampleComponent2'
+import to from '../Newsletter/mergedTexts/to'
+import toName from '../Newsletter/mergedTexts/toName'
+import subject from '../Newsletter/mergedTexts/subject'
+import macroForm from '../Newsletter/mergedTexts/macroForm'
+import macroAttachment from '../Newsletter/mergedTexts/macroAttachment'
+import mergedFrom from '../Newsletter/mergedTexts/from'
+import fromName from '../Newsletter/mergedTexts/fromName'
+import customMacroAttachment from '../Newsletter/mergedTexts/customMacroAttachment'
+import trainingUrl from '../Newsletter/mergedTexts/trainingUrl'
+import phishingUrl from '../Newsletter/mergedTexts/phishingUrl'
+import macroUrl from '../Newsletter/mergedTexts/macroUrl'
 
 export default {
   name: 'GrapesWebPageModal',
   components: GrapesWebPageModal,
+  props: {
+    htmlData: {
+      required: false
+    }
+  },
   data() {
     return {
       editor: null
@@ -42,17 +61,38 @@ export default {
         container: '#gjsWebPageModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-webpage', exportGrapes, cssParser],
+        plugins: ['gjs-preset-newsletter', cssParser],
         components: this.editorHtml || '',
         style: setGrapesjsStyle()
       })
       let pn = this.editor.Panels
+      let blockManager = this.editor.BlockManager
+      blockManager.add('exampleComponent', exampleComponent)
+      blockManager.add('exampleComponent2', exampleComponent2)
+      blockManager.add('to', to)
+      blockManager.add('toName', toName)
+      blockManager.add('subject', subject)
+      blockManager.add('macroFrom', macroForm)
+      blockManager.add('macroAttachment', macroAttachment)
+      blockManager.add('from', mergedFrom)
+      blockManager.add('fromName', fromName)
+      blockManager.add('customMacroAttachment', customMacroAttachment)
+      blockManager.add('trainingUrl', trainingUrl)
+      blockManager.add('phishingUrl', phishingUrl)
+      blockManager.add('macroUrl', macroUrl)
       pn.getButton('options', 'sw-visibility').set('active', 1)
+      if (!!this.htmlData) {
+        this.getGrapesWebModalDraw(this.htmlData)
+      }
     },
-    getGrapesWebModalDraw() {
+    getGrapesWebModalDraw(html) {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
-      this.editor.setComponents(`<html><div>deneme</div></html>`)
+      this.editor.setComponents(html)
+    },
+    getGrapesEditorContent() {
+      let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
+      return htmlContent
     }
   }
 }

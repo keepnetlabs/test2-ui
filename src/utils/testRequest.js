@@ -12,7 +12,9 @@ const testService = axios.create({
 
 testService.interceptors.request.use(
   (config) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
+    config &&
+      config.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
@@ -21,13 +23,13 @@ testService.interceptors.request.use(
     return config
   },
   (error) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    if (!config.loader) store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
 )
 
 testService.interceptors.response.use(
   (response) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    response.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (response.data.code === 'FAILED') {
       store.dispatch(
         'common/createSnackBar',
