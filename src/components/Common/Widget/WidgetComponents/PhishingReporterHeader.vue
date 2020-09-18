@@ -1,107 +1,109 @@
 <template>
   <div class="phishing-reporter__header-container">
-    <div class="phishing-reporter__stats">
-      <div class="phishing-reporter__header-left-column">
-        <div class="phishing-reporter__stats-cards">
-          <div class="phishing-reporter__stats-card">
-            <div class="phishing-reporter__stats-card-left">
-              <div
-                class="phishing-reporter__stats-card-left-icon"
-                style="background-color: #2196f3;"
-              >
-                <v-icon color="white" left medium>mdi-puzzle</v-icon>
+    <v-skeleton-loader :loading="isLoading" type="card" tile>
+      <div class="phishing-reporter__stats">
+        <div class="phishing-reporter__header-left-column">
+          <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-card">
+              <div class="phishing-reporter__stats-card-left">
+                <div
+                  class="phishing-reporter__stats-card-left-icon"
+                  style="background-color: #2196f3;"
+                >
+                  <v-icon color="white" left medium>mdi-puzzle</v-icon>
+                </div>
+              </div>
+              <div class="phishing-reporter__stats-card-right">
+                <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
+                  {{ getAddOnStatus }}
+                </h3>
+                <p class="phishing-reporter__stats-card-right-stats">
+                  Users have the add-in
+                </p>
               </div>
             </div>
-            <div class="phishing-reporter__stats-card-right">
-              <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                {{ getAddOnStatus }}
-              </h3>
-              <p class="phishing-reporter__stats-card-right-stats">
-                Users have the add-in
-              </p>
+          </div>
+          <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-card">
+              <div class="phishing-reporter__stats-card-left">
+                <div
+                  class="phishing-reporter__stats-card-left-icon"
+                  style="background-color: #00bcd4;"
+                >
+                  <v-icon color="white" left medium>mdi-account</v-icon>
+                </div>
+              </div>
+              <div class="phishing-reporter__stats-card-right">
+                <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
+                  {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
+                </h3>
+                <p class="phishing-reporter__stats-card-right-stats">
+                  Users Online
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <div class="phishing-reporter__stats-cards">
-          <div class="phishing-reporter__stats-card">
-            <div class="phishing-reporter__stats-card-left">
-              <div
-                class="phishing-reporter__stats-card-left-icon"
-                style="background-color: #00bcd4;"
-              >
-                <v-icon color="white" left medium>mdi-account</v-icon>
-              </div>
-            </div>
-            <div class="phishing-reporter__stats-card-right">
-              <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
-                {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
-              </h3>
-              <p class="phishing-reporter__stats-card-right-stats">
-                Users Online
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="phishing-reporter__header-right-column">
-        <div class="phishing-reporter__stats-cards">
-          <div class="phishing-reporter__stats-card">
-            <div class="phishing-reporter__stats-card-left">
-              <div
-                class="phishing-reporter__stats-card-left-icon"
-                style="background-color: #f56c6c;"
-              >
-                <v-icon color="white" left medium>mdi-account-outline</v-icon>
+        <div class="phishing-reporter__header-right-column">
+          <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-card">
+              <div class="phishing-reporter__stats-card-left">
+                <div
+                  class="phishing-reporter__stats-card-left-icon"
+                  style="background-color: #f56c6c;"
+                >
+                  <v-icon color="white" left medium>mdi-account-outline</v-icon>
+                </div>
               </div>
-            </div>
-            <div class="phishing-reporter__stats-card-right">
-              <h3 class="phishing-reporter__stats-card-right-title" style="color: #f56c6c;">
-                {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
-              </h3>
-              <p class="phishing-reporter__stats-card-right-stats">
-                Users Offline
-              </p>
+              <div class="phishing-reporter__stats-card-right">
+                <h3 class="phishing-reporter__stats-card-right-title" style="color: #f56c6c;">
+                  {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
+                </h3>
+                <p class="phishing-reporter__stats-card-right-stats">
+                  Users Offline
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="phishing-reporter__stats-cards">
-          <div class="phishing-reporter__stats-card">
-            <div class="phishing-reporter__stats-card-left">
-              <div
-                class="phishing-reporter__stats-card-left-icon"
-                style="background-color: #2196f3;"
-              >
-                <img src="../../../../assets/img/account-tree.png" alt="" />
+          <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-card">
+              <div class="phishing-reporter__stats-card-left">
+                <div
+                  class="phishing-reporter__stats-card-left-icon"
+                  style="background-color: #2196f3;"
+                >
+                  <img src="../../../../assets/img/account-tree.png" alt="" />
+                </div>
               </div>
-            </div>
-            <div class="phishing-reporter__stats-card-right">
-              <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                v{{ (phishingReportSummary && phishingReportSummary['addInVersion']) || 0 }}
-              </h3>
-              <p class="phishing-reporter__stats-card-right-stats">
-                Latest Release
-              </p>
+              <div class="phishing-reporter__stats-card-right">
+                <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
+                  v{{ (phishingReportSummary && phishingReportSummary['addInVersion']) || 0 }}
+                </h3>
+                <p class="phishing-reporter__stats-card-right-stats">
+                  Latest Release
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="phishing-reporter__header-container-panel">
-      <v-menu bottom offset-y min-width="133">
-        <template v-slot:activator="{ on }">
-          <div v-on="on" class="phishing-reporter__header-container-panel-right-col">
-            <div class="phishing-reporter__header-container-panel-text">{{ selectedDate }}</div>
-            <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
-          </div>
-        </template>
-        <v-list>
-          <v-list-item @click="handleListItemClick(item)" :key="item" v-for="item in listItems">
-            <v-list-item-title>{{ item }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </div>
+      <div class="phishing-reporter__header-container-panel">
+        <v-menu bottom offset-y min-width="133">
+          <template v-slot:activator="{ on }">
+            <div v-on="on" class="phishing-reporter__header-container-panel-right-col">
+              <div class="phishing-reporter__header-container-panel-text">{{ selectedDate }}</div>
+              <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
+            </div>
+          </template>
+          <v-list>
+            <v-list-item @click="handleListItemClick(item)" :key="item" v-for="item in listItems">
+              <v-list-item-title>{{ item }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+    </v-skeleton-loader>
   </div>
 </template>
 
@@ -120,6 +122,7 @@ export default {
         ref: 'refFirstTime',
         formData: null
       },
+      isLoading: true,
       selectedDate: 'Last 4 minutes',
       listItems: [
         'Last 4 minutes',
@@ -157,9 +160,11 @@ export default {
           } = response
 
           this.phishingReportSummary = data
+          this.isLoading = false
         })
         .catch(() => {
           this.phishingReportSummary = {}
+          this.isLoading = false
         })
     },
     getDates() {

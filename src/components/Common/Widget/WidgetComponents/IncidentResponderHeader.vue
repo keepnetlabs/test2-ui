@@ -260,7 +260,9 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      isLoading: true
+    }
   },
   methods: {
     isPhishingEmpty(data) {
@@ -307,7 +309,14 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('investigations/getIrSummary')
+    this.$store
+      .dispatch('investigations/getIrSummary')
+      .then(() => {
+        this.isLoading = false
+      })
+      .catch(() => {
+        this.isLoading = false
+      })
   }
 }
 </script>

@@ -231,8 +231,7 @@ export default {
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
-      localStorage.setItem('availableWidgets', JSON.stringify(this.availableWidgets))
-      localStorage.setItem('widgetLayout', JSON.stringify(this.layout))
+      localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
     addWidget(widget) {
       this.removeAvailableWidget(widget)
@@ -262,10 +261,10 @@ export default {
         }),
         1
       )
-      localStorage.setItem('availableWidgets', JSON.stringify(this.availableWidgets))
+      localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
     layoutUpdated(newLayout) {
-      localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
+      // localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
     },
     changeWidgetStatus() {
       /*
@@ -492,20 +491,18 @@ export default {
   },
   created() {
     //JSON.parse(localStorage.getItem('widgetLayout'))
-    this.layout = JSON.parse(localStorage.getItem('widgetLayout')) || this.getDefaultLayoutObject()
+    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || this.getDefaultLayoutObject()
 
     this.availableWidgets =
-      JSON.parse(localStorage.getItem('availableWidgets')) || this.availableWidgets
+      JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },
   watch: {
-    layout(newLayout) {
-      localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
-    },
     editMode(val) {
       if (!val) {
         this.layout = this.layout.map((item) => {
           return { ...item, h: item.h - 1 }
         })
+        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         this.handleDeleteShadows()
       } else {
         this.layout = this.layout.map((item) => {

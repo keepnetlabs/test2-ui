@@ -1,66 +1,68 @@
 <template>
   <div class="incident-responder-parent">
-    <div class="incident-responder pa-0 ma-0">
-      <div class="double-table mt-0">
-        <div class="column ma-0" style="width: 100%;">
-          <v-card style="padding-bottom: 0 !important;">
-            <div class="header mb-2">
-              <div class="title">
-                <h2>Top Rules</h2>
-                <p>Most triggered Playbook rules</p>
+    <v-skeleton-loader :loading="isLoading" type="table-heading,table-tbody">
+      <div class="incident-responder pa-0 ma-0">
+        <div class="double-table mt-0">
+          <div class="column ma-0" style="width: 100%;">
+            <v-card style="padding-bottom: 0 !important;">
+              <div class="header mb-2">
+                <div class="title">
+                  <h2>Top Rules</h2>
+                  <p>Most triggered Playbook rules</p>
+                </div>
+                <div class="action">
+                  <v-btn
+                    class="btn-action btn-playbook"
+                    block
+                    rounded
+                    @click="$router.push('/playbook')"
+                  >
+                    Playbook
+                    <v-icon class="pl-2">mdi-arrow-right</v-icon>
+                  </v-btn>
+                </div>
               </div>
-              <div class="action">
-                <v-btn
-                  class="btn-action btn-playbook"
-                  block
-                  rounded
-                  @click="$router.push('/playbook')"
+              <div class="table">
+                <data-table
+                  :refName="'topRules'"
+                  ref="refTopRules"
+                  :columns="topRules.columns"
+                  :table="topRules.table"
+                  :countRow="5"
+                  :pageSizes="[]"
+                  :defaultSort="'status'"
+                  :selectable="false"
+                  :filterable="false"
+                  :rowActions="[]"
+                  :addUsers="topRules.addMenu"
+                  :empty="topRules.iEmpty"
+                  :selectEvent="topRules.selectEvent"
+                  :border="false"
+                  :showHeader="false"
+                  @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
+                  class="no-sub-border-datatable"
                 >
-                  Playbook
-                  <v-icon class="pl-2">mdi-arrow-right</v-icon>
-                </v-btn>
+                  <template v-slot:datatable-column-popup="{ scope, col }">
+                    <span v-if="scope.row[col.property] === 0">
+                      No Matches
+                    </span>
+                    <span v-else class="popup-link">
+                      {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+                    </span>
+                  </template>
+                  <template v-slot:datatable-custom-column="{ scope }">
+                    <span class="datatable-link" v-if="scope.row.ruleName">
+                      {{ scope.row.ruleName }}
+                    </span>
+                    <span v-else> </span>
+                  </template>
+                </data-table>
               </div>
-            </div>
-            <div class="table">
-              <data-table
-                :refName="'topRules'"
-                ref="refTopRules"
-                :columns="topRules.columns"
-                :table="topRules.table"
-                :countRow="5"
-                :pageSizes="[]"
-                :defaultSort="'status'"
-                :selectable="false"
-                :filterable="false"
-                :rowActions="[]"
-                :addUsers="topRules.addMenu"
-                :empty="topRules.iEmpty"
-                :selectEvent="topRules.selectEvent"
-                :border="false"
-                :showHeader="false"
-                @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
-                class="no-sub-border-datatable"
-              >
-                <template v-slot:datatable-column-popup="{ scope, col }">
-                  <span v-if="scope.row[col.property] === 0">
-                    No Matches
-                  </span>
-                  <span v-else class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
-                  </span>
-                </template>
-                <template v-slot:datatable-custom-column="{ scope }">
-                  <span class="datatable-link" v-if="scope.row.ruleName">
-                    {{ scope.row.ruleName }}
-                  </span>
-                  <span v-else> </span>
-                </template>
-              </data-table>
-            </div>
-          </v-card>
+            </v-card>
+          </div>
         </div>
       </div>
-    </div>
+    </v-skeleton-loader>
   </div>
 </template>
 
@@ -75,6 +77,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       topRules: {
         table: [],
         columns: [
@@ -134,17 +137,19 @@ export default {
   created() {
     getTopRules()
       .then((response) => {
+        this.isLoading = false
         const {
           data: { data, status }
         } = response
-
-        this.$refs.refTopRules.loadWithDataArray(data || [])
+        console.log('this.$refs')
+        this.topRules.table = data || []
       })
       .catch((error) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting the top rules!'
         })
+        this.isLoading = false
       })
   },
   methods: {
