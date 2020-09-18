@@ -90,3 +90,5 @@ Then we can call them like on line 260.
 PUBLIC folder includes our predefined index.html for entry point and the favicon also.
 
 The DIST folder created after 'yarn build' or 'npm run build' commands run. This commands transpile and build our applicaion for Publish.
+
+Thanks.
