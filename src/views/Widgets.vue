@@ -182,7 +182,7 @@ export default {
           defaultH: 7,
           minH: 7,
           i: Math.random().toString(),
-          icon: 'mdi-briefcase-variant',
+          icon: 'mdi-ruler',
           title: 'Top Rules',
           key: 'TopRules'
         },
@@ -228,17 +228,24 @@ export default {
       localStorage.setItem('widgetLayout', JSON.stringify(this.layout))
     },
     addWidget(widget) {
+      this.removeAvailableWidget(widget)
+      let newItem
+      if (window.innerWidth < 1023) {
+      } else {
+        newItem = this.allWidgets[widget.key]
+      }
+      newItem['y'] = this.newItemY
+      this.newItemY += newItem.h
+      this.layout.unshift(this.allWidgets[widget.key])
+    },
+    removeAvailableWidget(widget) {
       this.availableWidgets.splice(
         this.availableWidgets.findIndex((item) => {
-          return JSON.stringify(item) === JSON.stringify(widget)
+          return item.key === widget.key
         }),
         1
       )
       localStorage.setItem('availableWidgets', JSON.stringify(this.availableWidgets))
-      const newItem = this.allWidgets[widget.key]
-      newItem['y'] = this.newItemY
-      this.newItemY += newItem.h
-      this.layout.unshift(this.allWidgets[widget.key])
     },
     layoutUpdated(newLayout) {
       localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
@@ -309,10 +316,167 @@ export default {
         item.style.backgroundColor = ''
         item.style.border = ''
       })
+    },
+    getDefaultLayoutObject() {
+      const width = window.innerWidth
+      let retValue = ''
+      if (width > 1023) {
+        retValue = [
+          {
+            x: 0,
+            y: 9,
+            w: 3,
+            minW: 3,
+            h: 6,
+            defaultH: 7,
+            minH: 7,
+            i: '0.9609571524431146',
+            icon: 'mdi-ruler',
+            title: 'Top Rules',
+            key: 'TopRules',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 0,
+            w: 6,
+            minW: 4,
+            h: 4,
+            defaultH: 5,
+            minH: 5,
+            i: '0.013946941616145292',
+            title: 'Incident Responder Header',
+            key: 'IncidentResponderHeader',
+            icon: 'mdi-view-dashboard',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 5,
+            w: 6,
+            minW: 2,
+            h: 3,
+            defaultH: 4,
+            minH: 3,
+            i: '0.4881174107990931',
+            title: 'Phishing Reporter Header',
+            key: 'PhishingReporterHeader',
+            icon: 'mdi-page-layout-header',
+            moved: false
+          },
+          {
+            x: 3,
+            y: 9,
+            w: 3,
+            minW: 3,
+            h: 6,
+            defaultH: 7,
+            minH: 7,
+            i: '0.9192270992839009',
+            icon: 'mdi-briefcase-variant',
+            title: 'Recent Investigations',
+            key: 'RecentInvestigations',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 16,
+            w: 3,
+            minW: 2,
+            h: 5,
+            defaultH: 6,
+            minH: 6,
+            i: '0.6093637144487283',
+            icon: 'mdi-information',
+            title: 'Company Information',
+            key: 'CompanyInformation',
+            moved: false
+          }
+        ]
+      } else {
+        retValue = [
+          {
+            x: 0,
+            y: 27,
+            w: 6,
+            minW: 2,
+            h: 5,
+            defaultH: 6,
+            minH: 6,
+            i: '0.8439874928535207',
+            icon: 'mdi-information',
+            title: 'Company Information',
+            key: 'CompanyInformation',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 20,
+            w: 6,
+            minW: 3,
+            h: 6,
+            defaultH: 7,
+            minH: 7,
+            i: '0.0027368488746000175',
+            icon: 'mdi-briefcase-variant',
+            title: 'Recent Investigations',
+            key: 'RecentInvestigations',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 13,
+            w: 6,
+            minW: 3,
+            h: 6,
+            defaultH: 7,
+            minH: 7,
+            i: '0.5387173486278651',
+            icon: 'mdi-ruler',
+            title: 'Top Rules',
+            key: 'TopRules',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 9,
+            w: 6,
+            minW: 2,
+            h: 3,
+            defaultH: 4,
+            minH: 3,
+            i: '0.12610356662045974',
+            title: 'Phishing Reporter Header',
+            key: 'PhishingReporterHeader',
+            icon: 'mdi-page-layout-header',
+            moved: false
+          },
+          {
+            x: 0,
+            y: 0,
+            w: 6,
+            minW: 4,
+            h: 8,
+            defaultH: 5,
+            minH: 5,
+            i: '0.4797311077466353',
+            title: 'Incident Responder Header',
+            key: 'IncidentResponderHeader',
+            icon: 'mdi-view-dashboard',
+            moved: false
+          }
+        ]
+      }
+      retValue.map((widget) => {
+        this.removeAvailableWidget(widget)
+      })
+      return retValue
     }
   },
   created() {
-    this.layout = JSON.parse(localStorage.getItem('widgetLayout')) || []
+    //JSON.parse(localStorage.getItem('widgetLayout'))
+    this.layout = JSON.parse(localStorage.getItem('widgetLayout')) || this.getDefaultLayoutObject()
+
     this.availableWidgets =
       JSON.parse(localStorage.getItem('availableWidgets')) || this.availableWidgets
   },
@@ -365,6 +529,13 @@ export default {
 }
 .widget-body__content {
   //overflow-y: auto;
+  overflow: hidden;
+  .incident-responder-parent .columns-row .dashboard-cards .card-body .body-row__text {
+    line-height: 1;
+  }
+  .incident-responder-parent .columns-row .dashboard-cards .card-footer {
+    line-height: 1;
+  }
   .users {
     padding-top: 0;
     .v-card {

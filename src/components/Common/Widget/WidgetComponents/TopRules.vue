@@ -146,6 +146,9 @@ export default {
           message: 'Error when getting the top rules!'
         })
       })
+  },
+  methods: {
+    onTopRulesEmptyBtnClicked() {}
   }
 }
 </script>
