@@ -508,20 +508,12 @@
                         {{ attachment.sha512 }}
                       </div>
                       <v-btn
-                        @click="
-                          isCopiedShaClipboard.findIndex((item) => item === index) === -1
-                            ? writeToNavigator(attachment.sha512, index, 'sha')
-                            : null
-                        "
+                        @click="handleIsSha512Copied(index, attachment)"
                         text
                         color="#2196f3"
                         class="details-content--item--clipboard"
                       >
-                        {{
-                          isCopiedShaClipboard.findIndex((item) => item === index) > -1
-                            ? 'COPIED!'
-                            : 'COPY TO CLIPBOARD'
-                        }}
+                        {{ getSha512Text(index) }}
                       </v-btn>
                     </div>
                     <div class="details-content--item">
@@ -534,20 +526,12 @@
                         {{ attachment.md5 }}
                       </div>
                       <v-btn
-                        @click="
-                          isCopiedMd5Clipboard.findIndex((item) => item === index) === -1
-                            ? writeToNavigator(attachment.md5, index, 'md5')
-                            : null
-                        "
+                        @click="handleIsMd5Copied(index, attachment)"
                         text
                         color="#2196f3"
                         class="details-content--item--clipboard"
                       >
-                        {{
-                          isCopiedMd5Clipboard.findIndex((item) => item === index) > -1
-                            ? 'COPIED!'
-                            : 'COPY TO CLIPBOARD'
-                        }}
+                        {{ getMd5Text(index) }}
                       </v-btn>
                     </div>
                     <div class="details-content--item">
@@ -911,6 +895,14 @@ export default {
         return !!data.length
       }
     },
+    handleIsSha512Copied(index, attachment) {
+      this.isCopiedShaClipboard.findIndex((item) => item === index) === -1 &&
+        this.writeToNavigator(attachment.sha512, index, 'sha')
+    },
+    handleIsMd5Copied(index, attachment) {
+      this.isCopiedMd5Clipboard.findIndex((item) => item === index) === -1 &&
+        this.writeToNavigator(attachment.md5, index, 'md5')
+    },
     getTextOfType(list) {
       return this.getResultOfAttachmentList(list)
     },
@@ -1122,6 +1114,16 @@ export default {
             message: 'Error when getting analysis engine types!'
           })
         })
+    },
+    getMd5Text(index) {
+      return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1
+        ? 'COPIED!'
+        : 'COPY TO CLIPBOARD'
+    },
+    getSha512Text(index) {
+      return this.isCopiedShaClipboard.findIndex((item) => item === index) > -1
+        ? 'COPIED!'
+        : 'COPY TO CLIPBOARD'
     }
   },
   created() {
