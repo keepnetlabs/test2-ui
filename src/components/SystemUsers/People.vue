@@ -8,6 +8,13 @@
         @closeOverlay="toggleCreateOrEditSystemUser"
         :selectedRow="selectedRow"
       />
+      <delete-system-user-modal
+        :status="showDeleteSystemUserModal"
+        :selected-row="selectedDeleteRow"
+        v-if="showDeleteSystemUserModal"
+        @handleDelete="callForDeleteUser"
+        @closeOverlay="toggleShowDeleteSystemUserModal"
+      />
       <data-table
         ref="refSystemUsersList"
         :refName="'systemUsersList'"
@@ -23,6 +30,7 @@
         :selectable="true"
         :sizeable="true"
         @editAction="handleEdit"
+        @deleteAction="handleDelete"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
@@ -37,11 +45,13 @@ import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 import { getSystemUsers } from '@/api/systemUsers'
+import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 export default {
   name: 'People',
   components: {
     DataTable,
-    CreateOrEditSystemUser
+    CreateOrEditSystemUser,
+    DeleteSystemUserModal
   },
   data() {
     return {
@@ -200,7 +210,9 @@ export default {
         }
       },
       showCreateOrEditSystemUserModal: false,
-      selectedRow: null
+      selectedRow: null,
+      showDeleteSystemUserModal: false,
+      selectedDeleteRow: null
     }
   },
   methods: {
@@ -216,12 +228,10 @@ export default {
       this.callForListSystemUsers()
     },
     callForListSystemUsers() {
-      getSystemUsers(this.requestBody)
-        .then((response) => {
-          const { data } = response.data
-          this.$refs.refSystemUsersList.loadWithDataArray(data.results || [])
-        })
-        .catch((error) => {})
+      getSystemUsers(this.requestBody).then((response) => {
+        const { data } = response.data
+        this.$refs.refSystemUsersList.loadWithDataArray(data.results || [])
+      })
     },
     columnFilterChanged(filter) {
       let items = []
@@ -265,7 +275,18 @@ export default {
     handleEdit(row) {
       this.selectedRow = row
       this.toggleCreateOrEditSystemUser()
-    }
+    },
+    toggleShowDeleteSystemUserModal() {
+      if (this.showDeleteSystemUserModal) {
+        this.selectedDeleteRow = null
+      }
+      this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
+    },
+    handleDelete(row) {
+      this.selectedDeleteRow = row
+      this.toggleShowDeleteSystemUserModal()
+    },
+    callForDeleteUser(row) {}
   },
   created() {
     this.callForListSystemUsers()
