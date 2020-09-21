@@ -1,5 +1,5 @@
 <template>
-  <company-information :key="companyInformation.name" :companyInformation="companyInformation"
+  <company-information :companyInformation="companyInformation"
   ><!-- eslint-disable-line --></company-information
   >
 </template>

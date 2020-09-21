@@ -9,12 +9,12 @@
         <v-icon @click="handleEdit" class="available-widget__icon" small>{{
           editMode ? 'mdi-content-save-edit' : 'mdi-pencil'
         }}</v-icon>
-        <v-icon @click="handleMinimize" class="available-widget__icon" small>{{
+        <v-icon v-if="false" @click="handleMinimize" class="available-widget__icon" small>{{
           isMinimized ? 'mdi-plus' : 'mdi-window-minimize'
         }}</v-icon>
       </div>
     </div>
-    <div class="available-widget__body" v-if="!isMinimized">
+    <div class="available-widget__body" v-if="editMode">
       <span
         class="available-widget__item"
         @click="handleAddWidget(widget)"

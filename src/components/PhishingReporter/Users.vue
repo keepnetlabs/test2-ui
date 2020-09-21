@@ -17,26 +17,30 @@
         </div>
       </template>
     </app-dialog>
-    <data-table
-      :addButton="tableOptions.addButton"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.empty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'usersListTable'"
-      :row-actions="tableOptions.rowActions"
-      :selectable="true"
-      :sizeable="true"
-      @deleteAction="handleDelete"
-      @handleEdit="handleEdit"
-      @downloadEvent="exportPhishingReporterUserList"
-      id="usersList"
-      ref="refUsersList"
-      @columnFilterChanged="columnFilterChanged"
-      @columnFilterCleared="columnFilterCleared"
-    />
+    <v-skeleton-loader :loading="isLoading" type="table-heading,table-tbody">
+      <data-table
+        :addButton="tableOptions.addButton"
+        :columns="tableOptions.columns"
+        :countRow="5"
+        :empty="tableOptions.empty"
+        :filterable="true"
+        :options="true"
+        :pageSizes="tableOptions.pageSizes"
+        :refName="'usersListTable'"
+        :row-actions="tableOptions.rowActions"
+        :selectable="true"
+        :resizable="resizable"
+        :sizeable="true"
+        @deleteAction="handleDelete"
+        :table="tableOptions.table"
+        @handleEdit="handleEdit"
+        @downloadEvent="exportPhishingReporterUserList"
+        id="usersList"
+        ref="refUsersList"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
+      />
+    </v-skeleton-loader>
   </div>
 </template>
 
@@ -57,9 +61,17 @@ export default {
     DataTable,
     AppDialog
   },
+  props: {
+    resizable: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
+      isLoading: true,
       tableOptions: {
+        table: [],
         columns: [
           {
             property: PROPERTY_STORE.FIRSTNAME,
@@ -220,7 +232,8 @@ export default {
             }
           } = response
 
-          this.$refs.refUsersList.loadWithDataArray(results || [])
+          this.tableOptions.table = results || []
+          this.isLoading = false
         })
         .catch(() => {
           /*
@@ -230,6 +243,7 @@ export default {
               message: "Error when getting the user phishing reporter! "
             })
              */
+          this.isLoading = false
         })
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {

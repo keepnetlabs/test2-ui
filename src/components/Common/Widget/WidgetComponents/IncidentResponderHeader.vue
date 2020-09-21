@@ -2,7 +2,7 @@
   <div class="incident-responder-parent">
     <div class="columns-row">
       <div
-        class="dashboard-cards phishing-reporter mr-2"
+        class="dashboard-cards phishing-reporter mr-2 ml-0"
         :class="{
           'no-data__opacity-blue': isPhishingEmpty(irSummary)
         }"
@@ -20,8 +20,8 @@
             <div class="biggest">
               {{
                 (irSummary &&
-                  irSummary.phishingReporterUserStatusCount &&
-                  irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
+                  irSummary['phishingReporterUserStatusCount'] &&
+                  irSummary['phishingReporterUserStatusCount']['onlineUsersCount']) ||
                 0
               }}
             </div>
@@ -30,9 +30,9 @@
             of
             {{
               (irSummary &&
-                irSummary.phishingReporterUserStatusCount &&
-                irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-                  irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
+                irSummary['phishingReporterUserStatusCount'] &&
+                irSummary['phishingReporterUserStatusCount']['onlineUsersCount'] +
+                  irSummary['phishingReporterUserStatusCount']['offlineUsersCount']) ||
               0
             }}
             users are
@@ -57,7 +57,7 @@
           style="bottom: 10px; right: 0;"
           :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
         >
-          <img src="../../../../assets/img/shape.svg" />
+          <img src="../../../../assets/img/shape.svg" alt="shape" />
         </div>
       </div>
       <div
@@ -74,8 +74,8 @@
             <div class="biggest">
               {{
                 (irSummary &&
-                  irSummary.notifiedEmailResultCount &&
-                  irSummary.notifiedEmailResultCount.harmfulCount) ||
+                  irSummary['notifiedEmailResultCount'] &&
+                  irSummary['notifiedEmailResultCount']['harmfulCount']) ||
                 0
               }}
             </div>
@@ -84,8 +84,8 @@
             of
             {{
               (irSummary &&
-                irSummary.notifiedEmailResultCount &&
-                irSummary.notifiedEmailResultCount.reportedMailCount) ||
+                irSummary['notifiedEmailResultCount'] &&
+                irSummary['notifiedEmailResultCount']['reportedMailCount']) ||
               0
             }}
             reported emails
@@ -100,7 +100,7 @@
         </button>-->
         </div>
         <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
-          <img src="../../../../assets/img/ic-warning.svg" />
+          <img src="../../../../assets/img/ic-warning.svg" alt="warning" />
         </div>
       </div>
       <div
@@ -127,8 +127,8 @@
               <span class="body-row__number">
                 {{
                   (irSummary &&
-                    irSummary.investigationTypeCount &&
-                    irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                    irSummary['investigationTypeCount'] &&
+                    irSummary['investigationTypeCount']['automaticInvestigationCount']) ||
                   0
                 }}
               </span>
@@ -139,8 +139,8 @@
               <span class="body-row__number"
                 >{{
                   (irSummary &&
-                    irSummary.investigationTypeCount &&
-                    irSummary.investigationTypeCount.manualInvestigationCount) ||
+                    irSummary['investigationTypeCount'] &&
+                    irSummary['investigationTypeCount']['manualInvestigationCount']) ||
                   0
                 }}
               </span>
@@ -162,7 +162,7 @@
           </v-btn>
         </div>
         <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
-          <img src="../../../../assets/img/ic-check-box.svg" />
+          <img src="../../../../assets/img/ic-check-box.svg" alt="icon" />
         </div>
       </div>
       <div
@@ -180,7 +180,7 @@
         <div class="card-body">
           <div class="body-row" style="margin-top: 22px;">
             <span class="body-row__number">
-              {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+              {{ (irSummary && irSummary['roiSummary'] && irSummary['roiSummary'].time) || 0 }}h
             </span>
             <span>and</span>
           </div>
@@ -190,7 +190,7 @@
         </div>
         <div class="card-status">Saved</div>
         <div class="bg-image">
-          <img src="../../../../assets/img/ic-insert-chart.svg" />
+          <img src="../../../../assets/img/ic-insert-chart.svg" alt="chart" />
         </div>
       </div>
     </div>
@@ -209,8 +209,8 @@ export default {
       irSummary: 'investigations/irSummaryGetter' // for using getters
     }),
     getRoiSummaryValue() {
-      if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
-        let revenue = Number(this.irSummary.roiSummary.revenue)
+      if (this.irSummary && this.irSummary['roiSummary'] && this.irSummary['roiSummary'].revenue) {
+        let revenue = Number(this.irSummary['roiSummary'].revenue)
         if (revenue < 1000) {
           return `$${revenue}`
         } else if (revenue >= 1000 && revenue < 1000000) {
@@ -260,43 +260,39 @@ export default {
     }
   },
   data() {
-    return {}
+    return {
+      isLoading: true
+    }
   },
   methods: {
     isPhishingEmpty(data) {
-      if (data && !data.phishingReporterUserStatusCount) {
+      if (data && !data['phishingReporterUserStatusCount']) {
         return true
-      } else if (
-        data &&
-        data.phishingReporterUserStatusCount &&
-        (data.phishingReporterUserStatusCount.onlineUsersCount ||
-          data.phishingReporterUserStatusCount.offlineUsersCount)
-      ) {
-        return false
-      } else {
-        return true
-      }
+      } else
+        return !(
+          data &&
+          data['phishingReporterUserStatusCount'] &&
+          (data['phishingReporterUserStatusCount']['onlineUsersCount'] ||
+            data['phishingReporterUserStatusCount']['offlineUsersCount'])
+        )
     },
     isNotifiedEmailEmpty(data) {
-      if (data && !data.notifiedEmailResultCount) {
+      if (data && !data['notifiedEmailResultCount']) {
         return true
-      } else if (
-        data &&
-        data.notifiedEmailResultCount &&
-        data.notifiedEmailResultCount.reportedMailCount
-      ) {
-        return false
-      } else {
-        return true
-      }
+      } else
+        return !(
+          data &&
+          data['notifiedEmailResultCount'] &&
+          data['notifiedEmailResultCount']['reportedMailCount']
+        )
     },
     isInvestigationsEmpty(summary) {
-      if (summary && summary.investigationTypeCount) {
-        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount)
+      if (summary && summary['investigationTypeCount']) {
+        const investigationTypeCountKeys = Object.keys(summary['investigationTypeCount'])
         if (investigationTypeCountKeys.length > 0) {
           let hasValue = false
           for (let key of investigationTypeCountKeys) {
-            if (summary.investigationTypeCount[key]) {
+            if (summary['investigationTypeCount'][key]) {
               hasValue = true
             }
           }
@@ -313,7 +309,14 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('investigations/getIrSummary')
+    this.$store
+      .dispatch('investigations/getIrSummary')
+      .then(() => {
+        this.isLoading = false
+      })
+      .catch(() => {
+        this.isLoading = false
+      })
   }
 }
 </script>

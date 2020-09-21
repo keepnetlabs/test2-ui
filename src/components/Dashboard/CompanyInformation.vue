@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-card>
     <div class="v-cart-content-wrapper">
       <div class="d-flex v-cart-company-information-wrapper">
         <v-avatar class="company-information-avatar" max-height="40" max-width="40">
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -72,7 +72,7 @@ export default {
   name: 'company-information',
   data: () => ({}),
   created() {
-    this.company = this.companyInformation.companyInformation
+    this.company = this.companyInformation
   },
   computed: {
     getCompLenght() {
@@ -81,8 +81,7 @@ export default {
   },
   props: {
     companyInformation: {
-      type: Object,
-      required: true
+      type: Object
     }
   }
 }

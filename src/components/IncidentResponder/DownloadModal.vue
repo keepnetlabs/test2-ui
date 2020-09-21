@@ -11,14 +11,11 @@
     <template v-slot:app-dialog-body>
       <v-list-item class="px-0 py-0">
         <v-list-item-content class="py-0">
-          <label class="add-in-settings__label" for="zip-password"
-            >Set a password for the .zip file</label
-          >
+          <label class="add-in-settings__label">Set a password for the .zip file</label>
           <v-text-field
             :rules="[(v) => validations.required(v, 'Required')]"
             class="k-textfield mt-2"
             dense
-            id="zip-password"
             outlined
             placeholder="Zip Password..."
             v-model="zipPassword"
@@ -45,9 +42,9 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { required } from '../../utils/validations'
-import { downloadMsgFiles } from '../../api/notifiedEmail'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { required } from '@/utils/validations'
+import { downloadMsgFiles } from '@/api/notifiedEmail'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'DownloadModal',
