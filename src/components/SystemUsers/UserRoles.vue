@@ -3,6 +3,7 @@
     <delete-system-user-role-modal
       :status="showDeleteSystemUserModal"
       v-if="showDeleteSystemUserModal"
+      :selected-row="selectedDeleteRow"
       @closeOverlay="toggleShowDeleteSystemUserModal"
     />
     <cant-delete-user-role-modal
@@ -31,6 +32,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
+        @deleteAction="handleDelete"
         @handleAddNewUserRole="handleAddNewUserRole"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -159,24 +161,26 @@ export default {
             }
           ]
         }
-      }
+      },
+      selectedDeleteRow: null
     }
   },
   methods: {
     handleAddNewUserRole() {},
     toggleShowDeleteSystemUserModal() {
+      if (this.showDeleteSystemUserModal) {
+        this.selectedDeleteRow = null
+      }
       this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
     },
     toggleCantDeleteUserRoleModal() {
       this.showCantDeleteUserModal = !this.showCantDeleteUserModal
     },
     callForGetUserRoles() {
-      getUserRoles(this.requestBody)
-        .then((response) => {
-          const { data } = response.data
-          this.$refs.refUserRolesList.loadWithDataArray(data.results || [])
-        })
-        .catch((error) => {})
+      getUserRoles(this.requestBody).then((response) => {
+        const { data } = response.data
+        this.$refs.refUserRolesList.loadWithDataArray(data.results || [])
+      })
     },
     columnFilterChanged(filter) {
       let items = []
@@ -216,6 +220,10 @@ export default {
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForGetUserRoles()
+    },
+    handleDelete(row) {
+      this.selectedDeleteRow = row
+      this.toggleShowDeleteSystemUserModal()
     }
   },
   mounted() {

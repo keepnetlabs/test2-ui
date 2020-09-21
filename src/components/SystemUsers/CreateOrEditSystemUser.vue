@@ -210,16 +210,14 @@ export default {
       })
     },
     callForUpdateSystemUser(payload) {
-      updateSystemUser(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-          this.$emit('closeOverlayWithUpdate')
+      updateSystemUser(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          icon: 'mdi-check-circle',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
         })
-        .catch((error) => {})
+        this.$emit('closeOverlayWithUpdate')
+      })
     }
   },
   mounted() {
