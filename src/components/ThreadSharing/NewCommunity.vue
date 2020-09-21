@@ -109,15 +109,25 @@
             <v-list-item-content class="pt-1 pb-0">
               <div class="d-flex" style="margin-bottom: 8px;">
                 <v-checkbox
-                  class="k-checkbox"
+                  id="accept-terms-and-conditions-post-incident"
+                  class="k-checkbox accept-terms-and-conditions-checkbox"
                   color="#2196f3"
                   v-model="acceptCheckbox"
-                  :rules="[checkboxRulex.required]"
+                  :rules="[checkboxRule.required]"
                   @change="checkCheckboxValidation()"
                 />
-                <span class="k-checkbox__checkbox-text"
-                  >I accept <a>terms and conditions</a> for posting an incident</span
-                >
+                <div class="d-flex accept-terms-and-conditions-label-group">
+                  <label :for="'accept-terms-and-conditions-post-incident'" class="mr-1"
+                    >I accept
+                  </label>
+                  <a
+                    :href="termsAndConditionsUrl"
+                    @click="(event) => event.stopPropagation()"
+                    class="mr-1"
+                    >terms and conditions</a
+                  >
+                  <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
+                </div>
               </div>
             </v-list-item-content>
           </v-list-item>
@@ -151,6 +161,7 @@ export default {
   },
   data() {
     return {
+      termsAndConditionsUrl: '#',
       isWantToAccept: false,
       oldPrivacyValue: null,
       name: '',
@@ -170,7 +181,7 @@ export default {
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
       },
-      checkboxRulex: {
+      checkboxRule: {
         required: (v) => {
           return v || 'You must accept terms and conditions before creating the community'
         }
@@ -221,7 +232,8 @@ export default {
           name: this.name,
           description: this.description,
           privacystatusid: this.privacystatusid,
-          industryresourceid: this.selectedCategory.resourceId
+          industryresourceid: this.selectedCategory.resourceId,
+          istermsandconditionsaccepted: this.acceptCheckbox
         }
         if (!!this.resourceId) {
           updateCommunity(this.resourceId, payload)
@@ -327,6 +339,7 @@ export default {
       line-height: 1.5;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
+      cursor: pointer;
     }
   }
   .v-text-field__slot input,
