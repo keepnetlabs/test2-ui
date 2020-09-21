@@ -15,7 +15,6 @@ authTestService.interceptors.request.use(
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER)
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
-      //config.headers['X-IR-COMPANY-ID'] = 'TEST-COMPANY-2'
     }
     return config
   },

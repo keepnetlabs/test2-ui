@@ -314,6 +314,8 @@ const dashboard = {
     },
     selectCompany({ commit, dispatch }, payload) {
       payload.companyResourceId && localStorage.setItem('companyId', payload.companyResourceId)
+      payload.companyResourceId &&
+        localStorage.setItem('companyRequestId', payload.companyResourceId)
       return selectCompany(payload).then(() => {
         commit('SET_SELECTED_COMPANY', payload)
         if (window.location.pathname !== '/') {

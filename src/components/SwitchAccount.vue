@@ -109,6 +109,7 @@ export default {
         localStorage.setItem('companyManager', account.companyName)
         localStorage.setItem('isSelectCompany', 'true')
         localStorage.setItem('companyId', account.companyResourceId)
+        localStorage.setItem('companyRequestId', account.companyResourceId)
         localStorage.setItem('companyResourceId', account.companyResourceId)
         localStorage.setItem('companyName', account.companyName)
         localStorage.setItem('userId', account.companyResourceId)
