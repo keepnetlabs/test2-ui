@@ -129,3 +129,33 @@
 .v-tooltip__content{
   z-index: 99 !important;
 }
+
+.accept-terms-and-conditions{
+  &-checkbox{
+    position: relative;
+    .v-messages{
+      position: absolute;
+      top: 30px;
+      left: 5px;
+      min-width: 400px;
+    }
+  }
+  &-label-group {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    align-items: center;
+
+    label {
+      cursor: pointer;
+    }
+
+    a {
+      text-decoration: none;
+    }
+  }
+}
