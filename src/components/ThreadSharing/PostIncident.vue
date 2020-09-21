@@ -2193,7 +2193,7 @@ export default {
           el.setAttribute('target', '_blank')
           if (url.isHidden) {
             el.innerHTML = 'hidden by owner'
-            el.setAttribute('href', '#')
+            //el.setAttribute('href', '#')
           } else if (!!url && !!url.name) {
             el.innerHTML = url.name
             el.setAttribute('href', url.url)
@@ -2233,7 +2233,7 @@ export default {
           hiddenEl.setAttribute('target', '_blank')
           if (url.isHidden) {
             hiddenEl.innerHTML = 'hidden by owner'
-            hiddenEl.setAttribute('href', '#')
+            //hiddenEl.setAttribute('href', '#')
           } else if (!!url && !!url.urlHtml) {
             hiddenEl.innerHTML = url.urlHtml
             hiddenEl.setAttribute('href', url.url)
@@ -2274,13 +2274,13 @@ export default {
               el.setAttribute('target', '_blank')
               if (url.isHidden) {
                 el.innerHTML = 'hidden by owner'
-                el.setAttribute('href', '#')
+                //el.setAttribute('href', '#')
               } else if (!!url && !!url.name) {
                 el.innerHTML = url.name
-                el.setAttribute('href', '#')
+                //el.setAttribute('href', '#')
               } else if (!!url && !!url.urlHtml) {
                 el.innerHTML = url.urlHtml
-                el.setAttribute('href', '#')
+                //el.setAttribute('href', '#')
               }
               if (url.isFlagged) {
                 const el = els[i]
@@ -2314,7 +2314,7 @@ export default {
               hiddenEl.setAttribute('target', '_blank')
               if (url.isHidden) {
                 hiddenEl.innerHTML = 'hidden by owner'
-                hiddenEl.setAttribute('href', '#')
+                //hiddenEl.setAttribute('href', '#')
               } else if (!!url && !!url.name) {
                 hiddenEl.innerHTML = url.name
                 hiddenEl.setAttribute('href', url.url)
