@@ -47,7 +47,6 @@ import NotificationTemplates from '@/components/Company Settings/NotificationTem
 import DataAnonymization from '@/components/Company Settings/DataAnonymization'
 import RestApi from '@/components/Company Settings/RestApi'
 import CustomApi from '@/components/Company Settings/CustomApi'
-
 export default {
   name: 'CompanySettings',
   components: {
