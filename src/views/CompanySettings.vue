@@ -44,9 +44,6 @@
           <v-tab-item>
             <custom-api />
           </v-tab-item>
-          <v-tab-item>
-            <server-settings />
-          </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-layout>
@@ -62,7 +59,6 @@ import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import RestApi from '@/components/Company Settings/RestApi'
 import SmsSettings from '@/components/Company Settings/SmsSettings'
 import CustomApi from '@/components/Company Settings/CustomApi'
-import ServerSettings from '@/components/Company Settings/ServerSettings'
 export default {
   name: 'CompanySettings',
   components: {
@@ -73,8 +69,7 @@ export default {
     WhiteLabeling,
     RestApi,
     SmsSettings,
-    CustomApi,
-    ServerSettings
+    CustomApi
   },
   data() {
     return {
@@ -87,8 +82,7 @@ export default {
         'White Labeling',
         'Rest API',
         'SMS Settings',
-        'Custom API',
-        'Server Settings'
+        'Custom API'
       ]
     }
   },

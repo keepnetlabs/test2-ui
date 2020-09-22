@@ -1253,7 +1253,7 @@ export default {
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
-      const spanWidth = span.getBoundingClientRect().width + 15 + this.cellPadding
+      const spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]

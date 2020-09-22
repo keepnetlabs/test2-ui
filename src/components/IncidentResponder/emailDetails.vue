@@ -389,17 +389,26 @@
                   <div v-else class="attach-icon blue-icon">
                     <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                   </div>
-                  <v-tooltip bottom opacity="1" z-index="9999">
+                  <v-menu
+                    content-class="email-preview__attachment-container-menu"
+                    bottom
+                    right
+                    offset-y
+                    transition="scale-transition"
+                  >
                     <template v-slot:activator="{ on }">
-                      <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
-                        {{ att.name }}
-                      </div>
-                      <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
-                        hidden by owner
+                      <div v-on="on" class="pl-2 email-preview__attachment-container">
+                        <span> {{ att.name }} </span>
+                        <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
                       </div>
                     </template>
-                    <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
-                  </v-tooltip>
+                    <v-list class="v-cart-dropdown-list el-table__action-buttons">
+                      <v-list-item @click="handleAttachmentClick(ind)">
+                        <v-icon>mdi-text-box-multiple</v-icon>
+                        <span class="ml-4"> Attachment Details</span>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </div>
               </div>
             </div>
@@ -426,7 +435,7 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails">
-            <v-expansion-panels :multiple="false">
+            <v-expansion-panels :multiple="true" v-model="panel">
               <v-expansion-panel
                 class="attachment-analysis-item"
                 v-for="(attachment, index) in mailDetails.attachments"
@@ -435,68 +444,81 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div class="ed-title">
                     <div class="d-flex" style="align-items: center;">
-                      <p class="mr-6 attachment-name">Attachment Name</p>
-                      <p class="mr-6 wrf">{{ attachment.name }}</p>
-                      <div
-                        @click="handleDownloadAttachment(attachment)"
-                        class="mr-6 cursor-pointer download"
-                      >
-                        <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                        DOWNLOAD FILE
+                      <div class="left-side d-flex align-center">
+                        <p class="attachment-name">{{ attachment.name }}</p>
+                        <p
+                          class="ml-6 not-found"
+                          v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
+                        >
+                          *This file was not uploaded to any integration
+                        </p>
                       </div>
-                      <p
-                        class="mr-6 cursor-pointer not-found"
-                        v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
-                      >
-                        *This file was not uploaded to any integration
-                      </p>
                     </div>
                   </div>
-                  <div class="ed-header-btn-1 collapse-details">
+                  <div class="ed-header-btn-1 collapse-details d-flex align-center">
+                    <badge
+                      :text="getTextOfType(mailDetails.attachments[index].analysisList)"
+                      :color="getColorOfType(mailDetails.attachments[index].analysisList)"
+                      size="small"
+                      class-name="mr-4 badge"
+                    />
+                    <div
+                      @click="handleDownloadAttachment(attachment)"
+                      class="cursor-pointer download"
+                      style="min-width: 167px;"
+                    >
+                      <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                      DOWNLOAD FILE
+                    </div>
+
                     <v-expansion-panel-header
                       class="pa-0"
                       style="min-height: 36px;"
                       disable-icon-rotate
                     >
-                      <template v-slot:actions mandatory="true">
+                      <template v-slot:actions>
                         <v-btn
                           @click.native="setSecondCollapse($event, index)"
                           outlined
                           rounded
+                          class="panel-header-btn"
                           medium
                           color="blue"
-                          >{{ showSecondCollapse === index ? 'COLLAPSE' : 'EXPAND' }}
+                          >{{
+                            showSecondCollapse.findIndex((item) => item === index) > -1
+                              ? 'COLLAPSE'
+                              : 'DETAILS'
+                          }}
                         </v-btn>
                       </template>
                     </v-expansion-panel-header>
                   </div>
                 </div>
                 <v-expansion-panel-content
-                  v-if="showSecondCollapse === index"
-                  eager
+                  v-if="showSecondCollapse.findIndex((item) => item === index) > -1"
                   transition="scale-transition"
                   class="pa-0 no-shadow"
                 >
                   <div class="details-content">
-                    <div class="details-content--item mt-2">
-                      <div class="details-content--item--key attachment-item text-right">
+                    <div class="details-content--item mt-4">
+                      <div class="details-content--item--key attachment-item">
                         SHA512
                       </div>
                       <div class="details-content--item--value">
                         {{ attachment.sha512 }}
                       </div>
                       <v-btn
-                        @click="writeToNavigator(attachment.sha512)"
+                        @click="handleIsSha512Copied(index, attachment)"
                         text
                         color="#2196f3"
                         class="details-content--item--clipboard"
                       >
-                        COPY TO CLIPBOARD
+                        {{ getSha512Text(index) }}
                       </v-btn>
                     </div>
                     <div class="details-content--item">
                       <div
-                        class="details-content--item--key details-content--item--key--md5 attachment-item text-right"
+                        class="details-content--item--key details-content--item--key--md5 attachment-item"
                       >
                         MD5
                       </div>
@@ -504,16 +526,16 @@
                         {{ attachment.md5 }}
                       </div>
                       <v-btn
-                        @click="writeToNavigator(attachment.md5)"
+                        @click="handleIsMd5Copied(index, attachment)"
                         text
                         color="#2196f3"
                         class="details-content--item--clipboard"
                       >
-                        COPY TO CLIPBOARD
+                        {{ getMd5Text(index) }}
                       </v-btn>
                     </div>
                     <div class="details-content--item">
-                      <div class="details-content--item--key attachment-item text-right">
+                      <div class="details-content--item--key attachment-item">
                         Content Type
                       </div>
                       <div class="details-content--item--value">
@@ -559,7 +581,7 @@
 
 <script>
 import KShadowFrame from '../KShadowFrame'
-
+import Badge from '@/components/Badge'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -642,10 +664,14 @@ import {
 export default {
   components: {
     Datatable,
-    DownloadModal
+    DownloadModal,
+    Badge
   },
   props: {},
   data: () => ({
+    panel: [],
+    isCopiedShaClipboard: [],
+    isCopiedMd5Clipboard: [],
     attachmentTableOptions: {
       iEmpty: {
         message: 'The attachment is not analyzed'
@@ -869,7 +895,66 @@ export default {
         return !!data.length
       }
     },
-    writeToNavigator(value) {
+    handleIsSha512Copied(index, attachment) {
+      this.isCopiedShaClipboard.findIndex((item) => item === index) === -1 &&
+        this.writeToNavigator(attachment.sha512, index, 'sha')
+    },
+    handleIsMd5Copied(index, attachment) {
+      this.isCopiedMd5Clipboard.findIndex((item) => item === index) === -1 &&
+        this.writeToNavigator(attachment.md5, index, 'md5')
+    },
+    getTextOfType(list) {
+      return this.getResultOfAttachmentList(list)
+    },
+    getColorOfType(list) {
+      let result = this.getResultOfAttachmentList(list)
+
+      switch (result) {
+        case 'Clean':
+          return '#00bcd4'
+        case 'Malicious':
+          return '#e6a23c'
+        case 'Phishing':
+          return '#f56c6c'
+        default:
+          return 'black'
+      }
+      return result
+    },
+    handleAttachmentClick(index) {
+      this.tab = 4
+      setTimeout(() => {
+        this.panel.push(index)
+        this.showSecondCollapse.push(index)
+      }, 100)
+    },
+    getResultOfAttachmentList(list) {
+      let result = ''
+      for (let item of list) {
+        if (item.result === 'Malicious') {
+          result = 'Malicious'
+          break
+        }
+        if (item.result === 'Phishing') {
+          result = 'Phishing'
+          continue
+        }
+        if (item.result === 'Clean' && result !== 'Phishing' && result !== 'Malicious') {
+          result = 'Clean'
+        }
+      }
+      return result
+    },
+    writeToNavigator(value, index, type) {
+      if (type === 'sha') {
+        this.isCopiedShaClipboard.push(index)
+      } else if (type === 'md5') {
+        this.isCopiedMd5Clipboard.push(index)
+      }
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'Copied to clipboard',
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+      })
       navigator.clipboard.writeText(value)
     },
     handleDownloadEmail() {
@@ -884,9 +969,20 @@ export default {
 
     setSecondCollapse(event, index) {
       if (event.target.textContent.startsWith('COLLAPSE')) {
-        this.showSecondCollapse = -1
+        this.showSecondCollapse.splice(
+          this.showSecondCollapse.findIndex((item) => item === index),
+          1
+        )
+        const shaIndex = this.isCopiedShaClipboard.findIndex((item) => item === index)
+        if (shaIndex > -1) {
+          this.isCopiedShaClipboard.splice(shaIndex, 1)
+        }
+        const md5Index = this.isCopiedMd5Clipboard.findIndex((item) => item === index)
+        if (md5Index > -1) {
+          this.isCopiedMd5Clipboard.splice(md5Index, 1)
+        }
       } else {
-        this.showSecondCollapse = index
+        this.showSecondCollapse.push(index)
       }
     },
     handleDownloadAttachment(attachment) {
@@ -952,6 +1048,7 @@ export default {
           })
           this.columns = [...this.columns, ...colObj]
           this.tableData = tableData
+          console.log('this.mailDetails', this.mailDetails)
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
@@ -1017,11 +1114,26 @@ export default {
             message: 'Error when getting analysis engine types!'
           })
         })
+    },
+    getMd5Text(index) {
+      return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1
+        ? 'COPIED!'
+        : 'COPY TO CLIPBOARD'
+    },
+    getSha512Text(index) {
+      return this.isCopiedShaClipboard.findIndex((item) => item === index) > -1
+        ? 'COPIED!'
+        : 'COPY TO CLIPBOARD'
     }
   },
   created() {
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
+    }
+  },
+  watch: {
+    panel(val) {
+      console.log('panel', val)
     }
   }
 }
@@ -1118,13 +1230,21 @@ export default {
   .attachment-analysis-item {
     border-radius: 20px;
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #ffffff;
-    padding: 26px;
+    padding: 24px 24px 24px 24px;
     position: relative;
     margin-bottom: 16px;
     p {
       margin-bottom: 0 !important;
+    }
+    .badge.v-btn:not(.v-btn--round).v-size--default,
+    .badge.v-btn--icon.v-size--default {
+      height: 28px !important;
+    }
+
+    &::after {
+      display: none;
     }
   }
 
@@ -1137,15 +1257,11 @@ export default {
   }
 
   .attachment-name {
-    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding-left: 24px;
+    color: rgba(0, 0, 0, 0.87) !important;
   }
 
   .wrf {
@@ -1576,6 +1692,9 @@ export default {
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #fff;
     border: unset !important;
+    .k-table__wrapper {
+      padding-bottom: 0;
+    }
   }
 
   .v-expansion-panel::before {
@@ -1598,6 +1717,7 @@ export default {
   }
 
   .v-expansion-panel-content__wrap {
+    padding: 0 !important;
     border-radius: 12px;
     background-color: #ffffff;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
@@ -1738,7 +1858,6 @@ export default {
       min-height: auto;
 
       .attachment {
-        width: 182px;
         min-width: 182px;
         height: 32px;
         align-items: center;
@@ -2223,6 +2342,7 @@ export default {
 }
 .details-content--item--value {
   line-break: anywhere;
+  max-width: 550px;
 }
 .details-content--item--clipboard {
   font-size: 14px;
@@ -2312,6 +2432,44 @@ export default {
 
   @media (max-width: 1300px) {
     min-width: auto !important;
+  }
+}
+.panel-header-btn {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.71;
+  letter-spacing: normal;
+  text-align: center;
+  color: #2196f3 !important;
+}
+.email-preview__attachment-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  &-menu {
+    border-radius: 20px !important;
+    box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
+      0 3px 14px 2px rgba(80, 80, 80, 0.12) !important;
+    span {
+      font-size: 14px;
+    }
+  }
+  span {
+    font-size: 12px;
+    line-height: 1.58;
+    letter-spacing: normal;
+    text-align: left !important;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  i {
+    visibility: hidden;
+  }
+  &:hover {
+    i {
+      cursor: pointer;
+      visibility: visible;
+    }
   }
 }
 </style>

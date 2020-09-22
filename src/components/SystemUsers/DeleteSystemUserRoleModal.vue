@@ -2,11 +2,13 @@
   <app-dialog
     :status="status"
     icon="mdi-alert"
-    title="Delete User"
-    subtitle="Do you want to delete this rule?"
+    title="Delete Role"
+    subtitle="Do you want to delete this role?"
     @changeStatus="closeOverlay"
   >
-    <template v-slot:app-dialog-body> This rule will be permanently deleted. </template>
+    <template v-slot:app-dialog-body>
+      {{ getTitle }} will be deleted and removed from roles.
+    </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
         <v-btn class="users__button" text color="#f56c6c" @click="closeOverlay">CANCEL</v-btn>
@@ -27,6 +29,10 @@ export default {
     status: {
       type: Boolean,
       default: false
+    },
+    selectedRow: {
+      type: Object,
+      default: null
     }
   },
   methods: {
@@ -35,6 +41,11 @@ export default {
     },
     handleDelete() {
       this.$emit('handleDelete')
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.selectedRow && this.selectedRow['roleName']
     }
   }
 }

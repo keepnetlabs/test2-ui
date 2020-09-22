@@ -1617,6 +1617,30 @@
                 </v-expansion-panel>
               </v-expansion-panels>
             </div>
+            <v-form ref="accept_terms_and_conditions_checkbox">
+              <div class="d-flex" style="margin-bottom: 8px;">
+                <v-checkbox
+                  id="accept-terms-and-conditions-post-incident"
+                  class="k-checkbox accept-terms-and-conditions-checkbox"
+                  color="#2196f3"
+                  v-model="acceptCheckbox"
+                  :rules="[checkboxRule.required]"
+                  @change="checkCheckboxValidation()"
+                />
+                <div class="d-flex accept-terms-and-conditions-label-group">
+                  <label :for="'accept-terms-and-conditions-post-incident'" class="mr-1"
+                    >I accept
+                  </label>
+                  <a
+                    :href="termsAndConditionsUrl"
+                    @click="(event) => event.stopPropagation()"
+                    class="mr-1"
+                    >terms and conditions</a
+                  >
+                  <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
+                </div>
+              </div>
+            </v-form>
           </div>
         </v-card>
         <div id="post-footer-actions" class="footer-actions">
@@ -1862,6 +1886,8 @@ export default {
     }
   },
   data: () => ({
+    termsAndConditionsUrl: '#',
+    acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
     value: [
@@ -1996,6 +2022,12 @@ export default {
         return (v && !v.startsWith(' ')) || 'Description cannot start with space'
       }
     },
+
+    checkboxRule: {
+      required: (v) => {
+        return v || 'You must accept terms and conditions before creating the community'
+      }
+    },
     explanationRules: {
       default: (v) => !!v || 'Explanation is required',
       required: (v) =>
@@ -2082,6 +2114,9 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    checkCheckboxValidation() {
+      this.isCheckboxChecked = this.acceptCheckbox
+    },
     closeGrapesJs() {
       this.showWebPageGrapes = false
     },
@@ -2158,7 +2193,7 @@ export default {
           el.setAttribute('target', '_blank')
           if (url.isHidden) {
             el.innerHTML = 'hidden by owner'
-            el.setAttribute('href', '#')
+            //el.setAttribute('href', '#')
           } else if (!!url && !!url.name) {
             el.innerHTML = url.name
             el.setAttribute('href', url.url)
@@ -2198,7 +2233,7 @@ export default {
           hiddenEl.setAttribute('target', '_blank')
           if (url.isHidden) {
             hiddenEl.innerHTML = 'hidden by owner'
-            hiddenEl.setAttribute('href', '#')
+            //hiddenEl.setAttribute('href', '#')
           } else if (!!url && !!url.urlHtml) {
             hiddenEl.innerHTML = url.urlHtml
             hiddenEl.setAttribute('href', url.url)
@@ -2239,13 +2274,13 @@ export default {
               el.setAttribute('target', '_blank')
               if (url.isHidden) {
                 el.innerHTML = 'hidden by owner'
-                el.setAttribute('href', '#')
+                //el.setAttribute('href', '#')
               } else if (!!url && !!url.name) {
                 el.innerHTML = url.name
-                el.setAttribute('href', '#')
+                //el.setAttribute('href', '#')
               } else if (!!url && !!url.urlHtml) {
                 el.innerHTML = url.urlHtml
-                el.setAttribute('href', '#')
+                //el.setAttribute('href', '#')
               }
               if (url.isFlagged) {
                 const el = els[i]
@@ -2279,7 +2314,7 @@ export default {
               hiddenEl.setAttribute('target', '_blank')
               if (url.isHidden) {
                 hiddenEl.innerHTML = 'hidden by owner'
-                hiddenEl.setAttribute('href', '#')
+                //hiddenEl.setAttribute('href', '#')
               } else if (!!url && !!url.name) {
                 hiddenEl.innerHTML = url.name
                 hiddenEl.setAttribute('href', url.url)
@@ -2493,7 +2528,9 @@ export default {
     },
     onFinish() {
       //CommunityResourceId: this.$route.params.id,
-
+      if (!this.$refs.accept_terms_and_conditions_checkbox.validate()) {
+        return false
+      }
       if (this.editItem) {
         const payload = {
           CommunityResourceId: this.$route.params.id || this.editItem.communityResourceId,
@@ -2525,7 +2562,8 @@ export default {
             urls: this.uploadRespond.urls,
             attachments: this.uploadRespond.attachments,
             emailTexts: []
-          }
+          },
+          IsTermsAndConditionsAccepted: this.acceptCheckbox
         }
         //CommunityResourceId:this.$route.params.id ,
         updateCommunityPost(this.editItem.communityPostResourceId, payload)
@@ -2607,19 +2645,6 @@ export default {
           this.search = ''
         })
       })
-    },
-    updateRightCol() {
-      if (this.$router.currentRoute.name !== 'Community') {
-        this.$router.push('/community/' + localStorage.getItem('communityName'))
-      } else {
-        this.$store.dispatch('threadSharing/getCommunityInfo')
-        this.$store.dispatch('threadSharing/getTopPosts', localStorage.getItem('companyId'))
-        const yourPostsObj = {
-          compId: localStorage.getItem('companyId'),
-          userId: localStorage.getItem('userId')
-        }
-        this.$store.dispatch('threadSharing/getYourPosts', yourPostsObj)
-      }
     },
     closePreview() {
       this.selectedEmail = ''
