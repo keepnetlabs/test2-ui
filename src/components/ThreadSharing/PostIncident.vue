@@ -2127,6 +2127,7 @@ export default {
     },
     editHtmlTemplate() {
       this.editHtmlData = this.uploadRespond.body
+      console.log('this.editHtmlData', this.editHtmlData)
       this.showWebPageGrapes = true
     },
     removeTLP(item) {
