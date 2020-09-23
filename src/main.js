@@ -10,11 +10,11 @@ import ECharts from 'vue-echarts'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 import 'echarts-gl'
-import VueMask from 'v-mask'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
 import { SmartWidget } from 'vue-smart-widget'
 import { SmartWidgetGrid } from 'vue-smart-widget'
+import VueMask, { VueMaskDirective } from 'v-mask'
 
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
@@ -46,6 +46,7 @@ Vue.component('v-chart', ECharts)
 Vue.use(require('vue-moment'))
 
 Vue.use(VueMask)
+Vue.directive('mask', VueMaskDirective)
 Vue.config.productionTip = false
 
 Vue.filter('formatSize', function (size) {

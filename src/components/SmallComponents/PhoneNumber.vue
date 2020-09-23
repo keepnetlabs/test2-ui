@@ -3,9 +3,13 @@
     placeholder="Enter phone number"
     outlined
     dense
-    :rules="[(v) => validations.maxLength(v, 11, '10 characters')]"
+    :rules="[
+      (v) => validations.maxLength(v, 14, '10 characters'),
+      (v) => validations.minLength(v, 12, '10 characters')
+    ]"
     ref="refTextField"
     :value="value.val"
+    v-mask="'### ### ## ##'"
     @input="onPhoneNumberChange"
   >
     <template v-slot:prepend-inner>
@@ -54,15 +58,7 @@ export default {
       this.$emit('input', { ...this.value, code })
     },
     onPhoneNumberChange(val) {
-      const numberVal = Number(val)
-      const newVal = isNaN(numberVal) ? '' : val
-      const renderedValue = /[0-9]/gi.test(newVal)
-        ? newVal
-        : val.length === 0
-        ? val
-        : this.value.val
-      this.$refs.refTextField.lazyValue = renderedValue
-      this.$emit('input', { ...this.value, val: renderedValue })
+      this.$emit('input', { ...this.value, val })
     }
   },
   created() {
