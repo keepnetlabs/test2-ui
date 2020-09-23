@@ -27,9 +27,6 @@
             <notification-templates />
           </v-tab-item>
           <v-tab-item>
-            <data-anonymization />
-          </v-tab-item>
-          <v-tab-item>
             <rest-api />
           </v-tab-item>
           <v-tab-item>
@@ -52,7 +49,6 @@ export default {
   components: {
     SMTPSettings,
     NotificationTemplates,
-    DataAnonymization,
     RestApi,
     CustomApi
   },
