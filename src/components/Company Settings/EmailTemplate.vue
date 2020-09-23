@@ -1,5 +1,18 @@
 <template>
   <v-card class="email-template__container">
+    <app-modal
+      :status="showGrapesModal"
+      v-if="showGrapesModal"
+      icon-name="mdi-check"
+      title="Grapes JS On Modal"
+      z-index="999999"
+      @submit="saveGrapeJs"
+      @closeOverlay="toggleShowGrapesModal"
+    >
+      <template v-slot:overlay-body>
+        <GrapesWebPageModal ref="grapesJsPostIncident" :htmlData="htmlData"></GrapesWebPageModal>
+      </template>
+    </app-modal>
     <v-tabs
       active-class="pr-tab-active"
       background-color="transparent"
@@ -42,7 +55,8 @@
       </div>
     </v-tabs>
     <v-tabs-items v-model="tab">
-      <v-tab-item>
+      <v-tab-item :key="item" v-for="item in getRenderedTabItems">
+        <div style="display: none;">{{ item }}</div>
         <div class="email-template__item">
           <label>Subject</label>
           <v-text-field
@@ -70,6 +84,7 @@
             v-model.trim="formValues.email"
           ></v-text-field>
         </div>
+        <v-divider class="email-template__divider mb-6" />
         <div class="email-template-preview">
           <div class="email-template-preview__header">
             <div class="email-template-preview__logo-container">
@@ -90,11 +105,37 @@
             <div class="email-template-preview__body-header">
               Let’s design an email template
             </div>
-            <div class="email-template-preview__body-sub-header">
+            <div class="email-template-preview__body-sub-header my-4">
               <span>
                 To design an email template, first click the Edit button to enter design mode
               </span>
             </div>
+            <p>
+              Once there choose the layout, use blocks, text, images and other features you need to
+              design a responsive email, really fast.
+            </p>
+            <p>
+              Give your content a style by changing fonts, colors, borders and other properties.
+            </p>
+            <p>
+              Use shortcodes to define user names, email addresses, URLs, training pieces, dates and
+              many more properties
+            </p>
+            <p>Upload files as attachments to track who downloads and runs suspicious files</p>
+          </div>
+          <v-divider class="email-template__divider mt-2" />
+          <div class="email-template-preview__logos">
+            <v-icon class="email-template-preview__logos--facebook" color="#45619d"
+              >mdi-facebook</v-icon
+            >
+            <v-icon class="email-template-preview__logos--twitter" color="#fff">mdi-twitter</v-icon>
+            <v-icon class="email-template-preview__logos--instagram" color="#fff"
+              >mdi-instagram</v-icon
+            >
+          </div>
+          <v-divider class="email-template__divider mt-4" />
+          <div class="email-template-preview__footer">
+            <p>This email is sent by {User_Name} from {Company_Name} on {Date_Sent}</p>
           </div>
         </div>
       </v-tab-item>
@@ -103,17 +144,78 @@
 </template>
 
 <script>
+import AppModal from '@/components/AppModal'
+import GrapesWebPageModal from '@/components/GrapesJs/WebPage/GrapesWebPageModal'
 export default {
   name: 'EmailTemplate',
+  components: {
+    AppModal,
+    GrapesWebPageModal
+  },
   data() {
     return {
       tabItems: ['English', 'Turkish', 'German', 'Arabic', 'Sweden'],
       tab: 0,
+      showGrapesModal: false,
       formValues: {
         subject: '',
         fromName: '',
         email: ''
-      }
+      },
+      htmlData:
+        '  <div class="email-template-preview">\n' +
+        '          <div class="email-template-preview__header">\n' +
+        '            <div class="email-template-preview__logo-container">\n' +
+        '              <div class="email-template-preview__logo">\n' +
+        '                Logo Here\n' +
+        '              </div>\n' +
+        '            </div>\n' +
+        '            <v-btn\n' +
+        '              rounded\n' +
+        '              color="#2196f3"\n' +
+        '              class="email-template-preview__button"\n' +
+        '              @click="editHtmlTemplate"\n' +
+        '            >\n' +
+        '              <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn\n' +
+        '            >\n' +
+        '          </div>\n' +
+        '          <div class="email-template-preview__body">\n' +
+        '            <div class="email-template-preview__body-header">\n' +
+        '              Let’s design an email template\n' +
+        '            </div>\n' +
+        '            <div class="email-template-preview__body-sub-header my-4">\n' +
+        '              <span>\n' +
+        '                To design an email template, first click the Edit button to enter design mode\n' +
+        '              </span>\n' +
+        '            </div>\n' +
+        '            <p>\n' +
+        '              Once there choose the layout, use blocks, text, images and other features you need to\n' +
+        '              design a responsive email, really fast.\n' +
+        '            </p>\n' +
+        '            <p>\n' +
+        '              Give your content a style by changing fonts, colors, borders and other properties.\n' +
+        '            </p>\n' +
+        '            <p>\n' +
+        '              Use shortcodes to define user names, email addresses, URLs, training pieces, dates and\n' +
+        '              many more properties\n' +
+        '            </p>\n' +
+        '            <p>Upload files as attachments to track who downloads and runs suspicious files</p>\n' +
+        '          </div>\n' +
+        '          <v-divider class="email-template__divider mt-2" />\n' +
+        '          <div class="email-template-preview__logos">\n' +
+        '            <v-icon class="email-template-preview__logos--facebook" color="#45619d"\n' +
+        '              >mdi-facebook</v-icon\n' +
+        '            >\n' +
+        '            <v-icon class="email-template-preview__logos--twitter" color="#fff">mdi-twitter</v-icon>\n' +
+        '            <v-icon class="email-template-preview__logos--instagram" color="#fff"\n' +
+        '              >mdi-instagram</v-icon\n' +
+        '            >\n' +
+        '          </div>\n' +
+        '          <v-divider class="email-template__divider mt-4" />\n' +
+        '          <div class="email-template-preview__footer">\n' +
+        '            <p>This email is sent by {User_Name} from {Company_Name} on {Date_Sent}</p>\n' +
+        '          </div>\n' +
+        '        </div>'
     }
   },
   methods: {
@@ -124,7 +226,17 @@ export default {
     addLanguage() {
       this.tabItems.push('randomLang')
     },
-    editHtmlTemplate() {}
+    editHtmlTemplate() {
+      this.toggleShowGrapesModal()
+    },
+    toggleShowGrapesModal() {
+      this.showGrapesModal = !this.showGrapesModal
+    },
+    saveGrapeJs() {
+      let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      this.htmlData = editedHtml
+      this.toggleShowGrapesModal()
+    }
   },
   computed: {
     getTabCountStatus() {
@@ -177,6 +289,9 @@ export default {
       margin-top: -20px;
     }
   }
+  &__divider {
+    border-color: #b3d4fc !important;
+  }
   &-preview {
     &__header {
       display: flex;
@@ -212,7 +327,6 @@ export default {
         color: #ffffff;
       }
     }
-
     &__body {
       max-width: 550px;
       display: flex;
@@ -231,6 +345,53 @@ export default {
         line-height: normal;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
+      }
+      p {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.87) !important;
+        margin-bottom: 8px;
+      }
+    }
+    .email-template__divider {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    &__logos {
+      max-width: 240px;
+      margin: 16px auto 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      &--facebook {
+        font-size: 35px !important;
+      }
+      &--twitter {
+        background-color: #55acee;
+        padding: 4px;
+        height: 32px;
+        border-radius: 50%;
+      }
+      &--instagram {
+        background-color: #2a5b83;
+        padding: 4px;
+        height: 32px;
+        border-radius: 50%;
+      }
+    }
+    &__footer {
+      max-width: 550px;
+      margin: 16px auto 0 auto;
+      p {
+        font-weight: normal;
+        line-height: 1.5;
+        letter-spacing: normal;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.87) !important;
+        font-size: 14px;
+        margin-bottom: 0;
       }
     }
   }
