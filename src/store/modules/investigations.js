@@ -1,318 +1,371 @@
 import axios from 'axios'
 import AuthenticationService from '../../services/authentication'
 import router from '../../router/index'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import {
-    investigationList,
-    cancelInvestigation,
-    investigationDetails,
-    createInvestigation,
-    InvestigationGroups,
-    getTargetUsers,
-    saveNewInvestigation,
-    getStatsAndMenuDataFunction,
-    getInvestigationDetailsDataFunction,
-    SET_INVESTIGATIONLISTEMPY,
-    investigationDetailsListFunction,
-    investigationDetailsTargetUsersListFunction,
-    sendInvestigationWarningMessage,
-    deleteInvestigationDetailsItem,
+  investigationList,
+  cancelInvestigation,
+  investigationDetails,
+  createInvestigation,
+  InvestigationGroups,
+  getTargetUsers,
+  saveNewInvestigation,
+  getStatsAndMenuDataFunction,
+  getInvestigationDetailsDataFunction,
+  SET_INVESTIGATIONLISTEMPY,
+  investigationDetailsListFunction,
+  investigationDetailsTargetUsersListFunction,
+  sendInvestigationWarningMessage,
+  deleteInvestigationDetailsItem,
+  irSummary
 } from '../../api/investigations'
 
 const investigations = {
-    namespaced: true,
-    state: {
-        investigationList: [],
-        targetUsersList: [],
-        getStatsAndMenuData: {},
-        getInvestigationDetailsData: {},
-        getInvestigationDetailsListData: [],
-        getInvestigationDetailsTargetUsersListData: []
+  namespaced: true,
+  state: {
+    investigationList: [],
+    targetUsersList: [],
+    getStatsAndMenuData: {},
+    getInvestigationDetailsData: {},
+    getInvestigationDetailsListData: [],
+    getInvestigationDetailsTargetUsersListData: [],
+    irSummary: {}
+  },
+  getters: {
+    // create global getters for the target users list and investigaiton list
+    investigationListGetter: (state) => state.investigationList,
+    getTargetUsersListGetter: (state) => state.targetUsersList,
+    statsAndMenuGetter: (state) => state.getStatsAndMenuData,
+    investigationDetailsDataGetter: (state) => state.getInvestigationDetailsData,
+    getInvestigationDetailsListGetter: (state) => state.getInvestigationDetailsListData,
+    getInvestigationDetailsTargetUsersListGetter: (state) =>
+      state.getInvestigationDetailsTargetUsersListData,
+    irSummaryGetter: (state) => state.irSummary
+  },
+  mutations: {
+    SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
+      let data = payload.data
+      state.getInvestigationDetailsTargetUsersListData = data
     },
-    getters: {
-        // create global getters for the target users list and investigaiton list
-        investigationListGetter: state => state.investigationList,
-        getTargetUsersListGetter: state => state.targetUsersList,
-        statsAndMenuGetter: state => state.getStatsAndMenuData,
-        investigationDetailsDataGetter: state => state.getInvestigationDetailsData,
-        getInvestigationDetailsListGetter: state => state.getInvestigationDetailsListData,
-        getInvestigationDetailsTargetUsersListGetter: state => state.getInvestigationDetailsTargetUsersListData
+    SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
+      let data = payload.data
+      state.getInvestigationDetailsListData = data
     },
-    mutations: {
-        SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
-            let data = payload.data
-            state.getInvestigationDetailsTargetUsersListData = data
-        },
-        SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
-            let data = payload.data
-            data.results[0].to.push('asdasdsa') // @arda delete
-            data.results[0].attachmentCount = 2 // @arda delete
-            state.getInvestigationDetailsListData = data
-        },
-        SET_INVESTIGATIONLISTEMPY(state, payload) {
-            state.state.investigationList = [{}]
-        },
-        SET_INVESTIGATIONDETAILSDATA(state, payload) {
-            //set target list data to vuex store
-            let data = payload.data
-            state.getInvestigationDetailsData = data
-        },
-        SET_STATSANDMENUDATA(state, payload) {
-            //set target list data to vuex store
-            let data = payload.data
-            state.getStatsAndMenuData = data
-        },
-        SET_INVESTIGATIONLIST(state, payload) {
-            // added dummy data
-            // set response to vuex store
-            let data = payload.data.results
-                /*data.unshift(
-                  {
-                    id: 1,
-                    incident: 'File Format Exploits',
-                    detected: 'Malicious',
-                    source: 'Attachment',
-                    status: 'Cancelled',
-                    startDate: '07.09.2019 13:06',
-                    expireDate: '08.09.2019 13:06',
-                    userStatus: [13, 75, 5, 7],
-                    progress: 87
-                  },
-                  {
-                    id: 3,
-                    incident: 'Facebook Change Password',
-                    detected: 'None',
-                    source: 'Rule Name',
-                    status: 'Running',
-                    startDate: '07.09.2019 13:06',
-                    expireDate: '08.09.2019 13:06',
-                    userStatus: [13, 75, 5, 7],
-                    progress: 100
-                  }
-                )*/
-            state.investigationList = data
-        },
-        SET_TARGETUSERSLIST(state, payload) {
-            //set target list data to vuex store
-            let data = payload.data
-                //data.unshift({ name: 'All', groupId: 'all' })
-            state.targetUsersList = data
-        }
+    SET_INVESTIGATIONLISTEMPY(state, payload) {
+      state.state.investigationList = [{}]
     },
-    actions: {
-        SET_INVESTIGATIONLISTEMPY(state, payload) {
-            state.state.investigationList = []
-        },
+    SET_INVESTIGATIONDETAILSDATA(state, payload) {
+      //set target list data to vuex store
+      let data = payload.data
+      //data.asd = new Date()
+      state.getInvestigationDetailsData = data
+    },
+    SET_STATSANDMENUDATA(state, payload) {
+      //set target list data to vuex store
+      let data = payload.data
+      state.getStatsAndMenuData = data
+    },
+    SET_INVESTIGATIONLIST(state, payload) {
+      const pagination = {}
+      let data = payload.data
+      data.results.userStats = payload.data.results
+      let stateData = data.results.map((item) => {
+        return { ...item, userStatus: [item.completedUsersCount, item.scannedUsersCount] }
+      })
 
-        async deleteInvestigationDetailsItem({ commit }, obj) {
-            // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await deleteInvestigationDetailsItem(obj.data, obj.id)
-                .then(response => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Investigations Details Item Has Been Deleted Succesfully', { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error When Item Deleted', { root: true })
-                })
-        },
-        async sendInvestigationWarningMessage({ commit }, obj) {
-            // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await sendInvestigationWarningMessage(obj.data, obj.id)
-                .then(response => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'User Warning Message Has Been Sent Succesfully', { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when User Warning Message Sent', { root: true })
-                })
-        },
-        async cancelInvestigation({ commit }, id) {
-            // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await cancelInvestigation(id)
-                .then(response => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Investigation Stopped Succesfully', { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when cancelling Investigation', { root: true })
-                })
-        },
-        async getInvestigationDetailsTargetUsersListData({ commit }, obj) {
-            // get investigaiton details
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await investigationDetailsTargetUsersListFunction(obj.data, obj.id)
-                .then(response => {
-                    const result = response.data
-                    commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting investigation details', { root: true })
-                })
-        },
-        async getInvestigationDetailsListData({ commit }, obj) {
-            // get investigaiton details
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await investigationDetailsListFunction(obj.data, obj.id)
-                .then(response => {
-                    const result = response.data
-                    commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting investigation details', { root: true })
-                })
-        },
-        async getInvestigationDetailsData({ commit }, id) {
-            // get investigaiton details
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await getInvestigationDetailsDataFunction(id)
-                .then(response => {
-                    const result = response.data
-                    commit('SET_INVESTIGATIONDETAILSDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting investigation details', { root: true })
-                })
-        },
-        async getStatsAndMenuData({ commit }, id) {
-            // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await getStatsAndMenuDataFunction(id)
-                .then(response => {
-                    const result = response.data
-                    commit('SET_STATSANDMENUDATA', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting investigation details', { root: true })
-                })
-        },
-        async getInvestigationList({ commit }, obj) {
-            // get investigaiton list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await investigationList(obj)
-                .then(response => {
-                    const result = response.data
-                    commit('SET_INVESTIGATIONLIST', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting the investigation List', { root: true })
-                })
-        },
-        async getTargetUsersList({ commit }) {
-            // get target list via axious
-            commit('common/SET_IS_LOADING', true, { root: true })
-            await getTargetUsers()
-                .then(response => {
-                    const result = response.data
-                    commit('SET_TARGETUSERSLIST', result)
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when getting the communities', { root: true })
-                })
-        },
-        async createInvestigation({ commit, dispatch }, obj) {
-            // create investigaiton list via axious. obj is a data parameter ( body ).
-            // if you want to manipulate the obj, do it before.
-            await saveNewInvestigation(obj)
-                .then(resp => {
-                    commit('common/SET_IS_LOADING', false, { root: true })
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Investigation Created Succesfully', { root: true })
-                })
-                .catch(resp => {
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when creating the investigation, try again.', {
-                        root: true
-                    })
-                })
-        },
-        async getNotifications({ commit }, id) {
-            await listNotifications(id, localStorage.getItem('companyId'))
-                .then(response => {
-                    const res = response.data
-                    commit('SET_NOTIFICATIONS', res)
-                })
-                .catch(() => {
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Notifications could not fetch', { root: true })
-                })
-        },
-        async saveNotifications({ commit, dispatch }, obj) {
-            await saveNotifications(obj)
-                .then(() => {
-                    commit('SET_NOTIFICATIONS', obj)
-                    dispatch('common/SET_SNACK_STATUS', true, { root: true })
-                    dispatch('common/setErrorMessage', 'Saved Succesfully', { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-                })
-                .catch(() => {
-                    commit('common/SET_SNACK_STATUS', true, { root: true })
-                    commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-                    commit('common/SET_ERROR_STATE', true, { root: true })
-                    commit('common/SET_ERROR_MESSAGE', 'Error when saving the notifications, try again.', {
-                        root: true
-                    })
-                })
-        }
+      state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
+    },
+    SET_IRSUMMARY(state, payload) {
+      let data = payload.data
+      state.irSummary = data
+    },
+    SET_TARGETUSERSLIST(state, payload) {
+      //set target list data to vuex store
+      let data = payload.data
+      //data.unshift({ name: 'All', groupId: 'all' })
+      state.targetUsersList = data
     }
+  },
+  actions: {
+    SET_INVESTIGATIONLISTEMPY(state, payload) {
+      state.state.investigationList = []
+    },
+    async deleteInvestigationDetailsItem({ commit, dispatch }, obj) {
+      // get investigaiton list via axious
+
+      await deleteInvestigationDetailsItem(obj.data, obj.id)
+        .then((response) => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Investigations Details Item Has Been Deleted Successfully'
+            },
+            { root: true }
+          )
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error When Item Deleted'
+            },
+            { root: true }
+          )
+        })
+    },
+    async sendInvestigationWarningMessage({ commit, dispatch }, obj) {
+      // get investigaiton list via axious
+
+      await sendInvestigationWarningMessage(obj.data, obj.id)
+        .then((response) => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'User Warning Message Has Been Sent Successfully'
+            },
+            { root: true }
+          )
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when User Warning Message Sent'
+            },
+            { root: true }
+          )
+        })
+    },
+    async cancelInvestigation({ commit, dispatch }, id) {
+      // get investigaiton list via axious
+
+      await cancelInvestigation(id)
+        .then((response) => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Investigation Stopped Successfully'
+            },
+            { root: true }
+          )
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when cancelling Investigation'
+            },
+            { root: true }
+          )
+        })
+    },
+    async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
+      // get investigaiton details
+      await investigationDetailsTargetUsersListFunction(obj.data, obj.id)
+        .then((response) => {
+          const result = response.data
+          commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
+        })
+        .catch(() => {
+          /*dispatch('common/createSnackBar', {
+            errorState: true,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting investigation details'
+          }, {root: true})*/
+        })
+    },
+    async getInvestigationDetailsListData({ commit, dispatch }, obj) {
+      // get investigaiton details
+      await investigationDetailsListFunction(obj.data, obj.id)
+        .then((response) => {
+          const result = response.data
+
+          commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
+        })
+        .catch((error) => {
+          const payload = {
+            data: {
+              pageNumber: 1,
+              pageSize: 1,
+              results: [],
+              totalNumberOfPages: 1,
+              totalNumberOfRecords: 1
+            }
+          }
+          commit('SET_INVESTIGATIONDETAILSLISTDATA', payload)
+        })
+    },
+    async getInvestigationDetailsData({ commit, dispatch }, id) {
+      // get investigaiton details
+      await getInvestigationDetailsDataFunction(id)
+        .then((response) => {
+          const result = response.data
+
+          commit('SET_INVESTIGATIONDETAILSDATA', result)
+        })
+        .catch(() => {
+          /*dispatch('common/createSnackBar', {
+            errorState: true,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting investigation details'
+          }, {root: true})*/
+        })
+    },
+    async getStatsAndMenuData({ commit, dispatch }, id) {
+      // get investigaiton list via axious
+
+      await getStatsAndMenuDataFunction(id)
+        .then((response) => {
+          const result = response.data
+          commit('SET_STATSANDMENUDATA', result)
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting stats and menus data.'
+            },
+            { root: true }
+          )
+        })
+    },
+    async getInvestigationList({ commit, dispatch }, obj) {
+      // get investigaiton list via axious
+      await investigationList(obj)
+        .then((response) => {
+          const result = response.data
+          commit('SET_INVESTIGATIONLIST', result)
+        })
+        .catch(() => {
+          /*dispatch('common/createSnackBar', {
+            errorState: true,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when getting investigation details'
+          }, {root: true})*/
+        })
+    },
+    async getIrSummary({ commit, dispatch }, obj) {
+      // get investigaiton list via axious
+
+      await irSummary(obj)
+        .then((response) => {
+          const result = response.data
+          commit('SET_IRSUMMARY', result)
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting the summary'
+            },
+            { root: true }
+          )
+        })
+    },
+
+    async getTargetUsersList({ commit, dispatch }) {
+      // get target list via axious
+
+      await getTargetUsers()
+        .then((response) => {
+          const result = response.data
+          commit('SET_TARGETUSERSLIST', result)
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting the user groups'
+            },
+            { root: true }
+          )
+        })
+    },
+    async createInvestigation({ commit, dispatch }, obj) {
+      // create investigaiton list via axious. obj is a data parameter ( body ).
+      // if you want to manipulate the obj, do it before.
+      return await saveNewInvestigation(obj)
+        .then((resp) => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Investigation Created Successfully'
+            },
+            { root: true }
+          )
+          return Promise.resolve(resp)
+        })
+        .catch((resp) => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when creating the investigation, try again.'
+            },
+            { root: true }
+          )
+        })
+    },
+    async getNotifications({ commit, dispatch }, id) {
+      await listNotifications(id, localStorage.getItem('companyId'))
+        .then((response) => {
+          const res = response.data
+          commit('SET_NOTIFICATIONS', res)
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Notifications could not fetch'
+            },
+            { root: true }
+          )
+        })
+    },
+    async saveNotifications({ commit, dispatch }, obj) {
+      await saveNotifications(obj)
+        .then(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Saved Successfully'
+            },
+            { root: true }
+          )
+          commit('SET_NOTIFICATIONS', obj)
+        })
+        .catch(() => {
+          dispatch(
+            'common/createSnackBar',
+            {
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when saving the notifications, try again.'
+            },
+            { root: true }
+          )
+        })
+    }
+  }
 }
 
 export default investigations

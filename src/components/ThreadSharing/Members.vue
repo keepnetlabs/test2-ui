@@ -1,62 +1,82 @@
 <template>
   <v-card flat color="basil">
-    <v-overlay
-      id="delete-community-overlay"
-      fixed
-      :opacity="0.46"
-      :value="isWantToRemoveMember"
-      :z-index="999"
+    <app-dialog
+      :status="showAppointANewOwnerModal"
+      @changeStatus="showAppointANewOwnerModal = false"
+      icon="mdi-lock"
+      title="Give admin privileges?"
+      :body="`${appointUserName} will be able to access to all settings such as removing users or deleting the community.`"
     >
-      <v-card
-        id="delete-community-card"
-        light
-        class="confirm-dialog pb-4 pa-6"
-        style="width: 444px;"
-      >
-        <v-list-item class="pl-0 pr-0">
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">mdi-account-outline</v-icon>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button mr-2"
+              text
+              color="#f56c6c"
+              @click="showAppointANewOwnerModal = false"
+              >CANCEL
+            </v-btn>
           </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline"
-              >Remove user from community?</v-list-item-title
-            >
-            <v-list-item-subtitle class="v-card-sub-header">
-              User will be removed from community
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="pl-0 pr-0 pt-7 pb-6">
-          <span class="delete-info"
-            >User will be removed and won’t be able to access the community
-          </span>
-        </v-list-item>
-        <div class="d-flex flex-row flex-wrap justify-end">
-          <v-btn
-            id="delete-community-cancel-btn"
-            text
-            color="#f56c6c"
-            @click="isWantToRemoveMember = false"
-            >CANCEL</v-btn
-          >
-          <v-btn id="delete-community-delete-btn" text color="#2196f3" @click="onRemoveMember"
-            >REMOVE</v-btn
-          >
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="appointANewOwnerConfirm"
+              >ACCEPT
+            </v-btn>
+          </div>
         </div>
-      </v-card>
-    </v-overlay>
+      </template>
+    </app-dialog>
+    <app-dialog
+      :status="showRemoveFromCommunityModal"
+      @changeStatus="showRemoveFromCommunityModal = false"
+      icon="mdi-account"
+      title="Remove user from community?"
+      :subtitle="removeFromCommunityUserName"
+      :body="`${removeFromCommunityUserName} will be removed and won’t be able to access the community`"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <div>
+            <v-btn
+              class="pa-0 k-dialog__button mr-2"
+              text
+              color="#f56c6c"
+              @click="showRemoveFromCommunityModal = false"
+              >CANCEL
+            </v-btn>
+          </div>
+          <div class="d-flex flex-row flex-end">
+            <v-btn
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="removeFromCommunityConfirm"
+              >REMOVE
+            </v-btn>
+          </div>
+        </div>
+      </template>
+    </app-dialog>
     <v-card-text class="pt-2">
       <v-tabs v-model="tab" class="community-selector">
         <v-tab @click="getMembers()">Members</v-tab>
         <v-tab
+          @click="getRequestMembers()"
           v-if="
-            isOwnerOfTheCommunity() && (communityPrivacy === 'true' || communityPrivacy === true)
+            communityDetails &&
+            communityDetails.myMembershipStatusId &&
+            communityDetails.myMembershipStatusId == 1 &&
+            communityDetails.privacyStatusId &&
+            communityDetails.privacyStatusId === 2
           "
-          @click="listRequests"
         >
           Requests
-          <span v-if="memberRequests.length" class="request-count">
-            {{ memberRequests.length }}
+          <span v-if="requestMembers.length" class="request-count">
+            {{ requestMembers.length }}
           </span>
         </v-tab>
       </v-tabs>
@@ -67,14 +87,13 @@
             :items="members"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
-            :search="search"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
             <template v-slot:header>
               <div class="search-wrapper">
                 <v-text-field
                   @mouseover.native="hover = true"
-                  label="Filter by attributes or keywords"
+                  placeholder="Filter by attributes or keywords"
                   outlined
                   dense
                   class="filter-field pt-6"
@@ -94,53 +113,40 @@
                   <v-expansion-panel class="threat-sharing-content">
                     <div class="ts-header">
                       <div class="ts-title">
-                        <img src="../../assets/img/logo-min.png" alt="KeepNet" />
+                        <img src="../../assets/img/logo-min.png" alt="KeepNet" class="d-flex" />
                         <div class="community-info-wrapper">
-                          <h2>{{ member.CompanyName }}</h2>
+                          <h2>{{ member.companyName }}</h2>
                           <div class="community-sub-info">
                             <div class="pa-0">
                               <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                              <span class="company-mini-info">{{ member.UserCount }} users</span>
+                              <span class="company-mini-info">{{ member.userCount }} users</span>
                             </div>
                             <div class="pl-4 pa-0">
                               <v-icon class="company-mini-icon">mdi-domain</v-icon>
                               <span class="company-mini-info">{{
-                                member.CategoryName || 'Unknown'
+                                member.industryName || 'Unknown'
                               }}</span>
                             </div>
                             <div class="pl-4 pa-0">
                               <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
                               <span class="company-mini-info"
-                                >{{ member.PostCount }} threat posts</span
+                                >{{ member.postCount }} threat posts</span
                               >
                             </div>
                           </div>
                         </div>
                       </div>
                       <div class="flex-grow-1"></div>
-                      <v-expansion-panel-header
-                        @click="toggles[ind] = !toggles[ind]"
-                        disable-icon-rotate
-                      >
-                        <template v-slot:actions mandatory="true">
-                          <v-btn v-if="toggles[ind]" outlined rounded medium color="blue">
-                            COLLAPSE
-                          </v-btn>
-                          <v-btn v-else outlined rounded medium color="blue">
-                            DETAILS
-                          </v-btn>
-                        </template>
-                      </v-expansion-panel-header>
                       <v-menu offset-y transition="scale-transition">
                         <template v-slot:activator="{ on }">
-                          <v-btn icon color="blue" v-on="on" style="order: 2">
+                          <v-btn icon color="blue" v-on="on" style="order: 2;">
                             <v-icon>mdi-dots-vertical</v-icon>
                           </v-btn>
                         </template>
                         <div class="notification-wrapper">
-                          <v-list dense flat>
+                          <v-list dense flat class="notification-wrapper__v-list">
                             <v-list-item-group color="primary">
-                              <v-list-item>
+                              <v-list-item @click="seePostedIncidentsClick(member)">
                                 <v-list-item-icon>
                                   <v-icon>mdi-magnify</v-icon>
                                 </v-list-item-icon>
@@ -149,8 +155,19 @@
                                 </v-list-item-content>
                               </v-list-item>
                               <v-list-item
-                                v-if="isOwnerOfTheCommunity()"
-                                @click="removeFromCommunity(member.CompanyId)"
+                                @click="appointANewOwner(member)"
+                                v-if="!isOwnCompany(member) && isCommunityOwner()"
+                              >
+                                <v-list-item-icon>
+                                  <v-icon>mdi-account-multiple-plus</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                  <v-list-item-title>Assign as owner</v-list-item-title>
+                                </v-list-item-content>
+                              </v-list-item>
+                              <v-list-item
+                                @click="removeFromCommunity(member)"
+                                v-if="!isOwnCompany(member) && isCommunityOwner()"
                               >
                                 <v-list-item-icon>
                                   <v-icon>mdi-delete</v-icon>
@@ -210,12 +227,24 @@
         </v-tab-item>
         <v-tab-item>
           <v-data-iterator
-            :items="memberRequests"
+            :items="requestMembers"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
-            :search="search"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
+            <template v-slot:header>
+              <div class="search-wrapper">
+                <v-text-field
+                  @mouseover.native="hover = true"
+                  placeholder="Filter by attributes or keywords"
+                  outlined
+                  dense
+                  class="filter-field pt-6"
+                  v-model="search"
+                ></v-text-field>
+                <v-icon class="filter-icon">mdi-filter-variant</v-icon>
+              </div>
+            </template>
             <template v-slot:default="props">
               <v-expansion-panels
                 v-if="props.items && props.items.length > 0"
@@ -232,21 +261,21 @@
                     <div class="ts-title">
                       <img src="../../assets/img/logo-min.png" alt="Keepnet" />
                       <div class="community-info-wrapper">
-                        <h2>{{ req.CompanyName }}</h2>
+                        <h2>{{ req.companyName }}</h2>
                         <div class="community-sub-info">
                           <div class="pa-0">
                             <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                            <span class="company-mini-info">{{ req.UserCount }} users</span>
+                            <span class="company-mini-info">{{ req.userCount }} users</span>
                           </div>
                           <div class="pl-4 pa-0">
                             <v-icon class="company-mini-icon">mdi-domain</v-icon>
                             <span class="company-mini-info"
-                              >{{ req.BusinessCategory || 'No Category defined' }}
+                              >{{ req.industryName || 'No Category defined' }}
                             </span>
                           </div>
                           <div class="pl-4 pa-0">
                             <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
-                            <span class="company-mini-info">{{ req.PostCount }} threat posts</span>
+                            <span class="company-mini-info">{{ req.postCount }} threat posts</span>
                           </div>
                         </div>
                       </div>
@@ -257,7 +286,7 @@
                         block
                         rounded
                         medium
-                        @click="refuseRequest(req.CommunityCompanyRequestId)"
+                        @click="refuseRequest(req.communityRequestResourceId)"
                       >
                         Refuse
                       </v-btn>
@@ -266,7 +295,7 @@
                         block
                         rounded
                         medium
-                        @click="acceptRequest(req.CommunityCompanyRequestId)"
+                        @click="acceptRequest(req.communityRequestResourceId)"
                       >
                         Accept
                       </v-btn>
@@ -306,21 +335,45 @@
 </template>
 <script>
 import VueApexCharts from 'vue-apexcharts'
-import { mapGetters } from 'vuex'
+import {
+  acceptCommunityMembershipRequest,
+  appointNewOwner,
+  getCommunityDetails,
+  getCommunityMembers,
+  getCommunityMembersRequest,
+  refuseCommunityMembershipRequest,
+  removeFromCommunity
+} from '../../api/threadSharing'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import AppDialog from '../AppDialog'
 
 export default {
   components: {
-    apexchart: VueApexCharts
+    apexchart: VueApexCharts,
+    AppDialog
   },
   data: () => ({
+    appointUserName: null,
+    appointNewOwnerId: null,
+    showAppointANewOwnerModal: false,
+    removeFromCommunityUserName: null,
+    removeCommunityId: null,
+    showRemoveFromCommunityModal: false,
+    newOwnerRule: {
+      limit: (v) => (v && v.length <= 5) || 'You have reached to max limit'
+    },
+    AppointedCompanyResourceId: null,
+    openNewOwnerModal: false,
+    communityDetails: null,
     tab: null,
-    members: ['dummy community', 'dummy 32'],
+    members: [],
+    requestMembers: [],
     search: '',
     itemsPerPageOptions: [5, 10, 20],
     itemsPerPage: 5,
     toggle: false,
     toggles: [],
-    series: [44, 55],
+    series: [44, 80],
     chartOptions: {
       labels: ['Phishing', 'Malicious'],
       fill: {
@@ -383,13 +436,6 @@ export default {
     memberCompId: null
   }),
   computed: {
-    ...mapGetters({
-      memberList: 'threadSharing/membersGetter',
-      selectedCommunity: 'threadSharing/selectedCommunityGetter',
-      memberRequests: 'threadSharing/memberRequestsGetter',
-      fetchedCommunity: 'threadSharing/fetchedCommunGetter',
-      getSelectedCompany: 'dashboard/getSelectedCompany'
-    }),
     communityPrivacy() {
       return (
         this.$store.state.threadSharing.selectedCommunity.privacy ||
@@ -401,113 +447,222 @@ export default {
     }
   },
   methods: {
-    listRequests() {
-      this.$store.dispatch(
-        'threadSharing/getMemberRequests',
-        this.selectedCommunity.id || localStorage.getItem('communityId')
-      )
+    seePostedIncidentsClick(item) {
+      this.$emit('selectedMemberPost', item)
     },
-    refuseRequest(reqId) {
-      this.$store
-        .dispatch('threadSharing/declineMemberRequest', {
-          CommunityCompanyRequestId: reqId,
-          ModifyUserId: localStorage.getItem('userId')
+    isCommunityOwner() {
+      return localStorage.getItem('isCommunityOwner') === 'owner'
+    },
+    isOwnCompany(item) {
+      return item.membershipStatusId == 1
+    },
+    appointANewOwner(item) {
+      this.appointNewOwnerId = item.companyResourceId
+      this.appointUserName = item.companyName
+      this.showAppointANewOwnerModal = true
+    },
+    appointANewOwnerConfirm() {
+      const payload = {
+        AppointedCompanyResourceId: this.appointNewOwnerId
+      }
+      appointNewOwner(this.$route.params.id, payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'New community owner request has been sent successfully'
         })
-        .then(() => {
-          this.listRequests()
+        this.getMembers()
+        this.showAppointANewOwnerModal = false
+      })
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
+    getCommunityDetails() {
+      getCommunityDetails(this.$route.params.id).then((response) => {
+        this.communityDetails = response.data.data
+        this.getMembers()
+        this.getRequestMembers()
+      })
+    },
+    listRequests() {},
+    refuseRequest(reqId) {
+      refuseCommunityMembershipRequest(reqId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Membership refuse request has been accepted successfully'
+          })
+          this.getMembers()
+          this.getRequestMembers()
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when refuse membership request'
+          })
         })
     },
     acceptRequest(reqId) {
-      this.$store
-        .dispatch('threadSharing/acceptMemberRequest', {
-          CommunityCompanyRequestId: reqId,
-          ModifyUserId: localStorage.getItem('userId')
+      acceptCommunityMembershipRequest(reqId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Membership accept request has been accepted successfully'
+          })
+          this.getMembers()
+          this.getRequestMembers()
         })
-        .then(() => {
-          this.$store.dispatch('threadSharing/getCommunityInfo')
-          this.listRequests()
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when accept membership request'
+          })
         })
     },
-    isOwnerOfTheCommunity() {
-      const creator = localStorage.getItem('communityCompanyId')
-      const user = localStorage.getItem('companyId')
-      if (
-        user == creator ||
-        this.getSelectedCompany.companyId === this.selectedCommunity.communityCompanyId
-      ) {
-        return true
-      } else {
-        return false
-      }
+    isOwnerOfTheCommunity() {},
+    removeFromCommunity(item) {
+      this.removeCommunityId = item.companyResourceId
+      this.removeFromCommunityUserName = item.companyName
+      this.showRemoveFromCommunityModal = true
     },
-    removeFromCommunity(compId) {
-      this.isWantToRemoveMember = true
-      this.memberCompId = compId
+    removeFromCommunityConfirm() {
+      removeFromCommunity(this.$route.params.id, this.removeCommunityId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: '' // @atakan @nejat mesaj
+          })
+          this.getMembers()
+          this.showRemoveFromCommunityModal = false
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Error when remove a community member'
+          })
+        })
     },
-    onRemoveMember() {
-      const obj = {
-        CommunityId: localStorage.getItem('communityId'),
-        ModifyUserId: localStorage.getItem('userId'),
-        CompanyId: this.memberCompId
-      }
-      this.$store.dispatch('threadSharing/deleteCompFromCommunity', obj).then(() => {
-        this.getMembers()
-        this.isWantToRemoveMember = false
-      })
-    },
+    onRemoveMember() {},
     getMembers() {
-      this.$store.dispatch('threadSharing/getMembers')
-      this.$store.dispatch(
-        'threadSharing/getMemberRequests',
-        this.selectedCommunity.id || localStorage.getItem('communityId')
-      )
+      const payload = {
+        pageNumber: 1,
+        pageSize: 5,
+        orderBy: 'CompanyName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains',
+                  Value: this.search
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      getCommunityMembers(this.$route.params.id, payload)
+        .then((response) => {
+          const { data } = response
+          this.members = data.data.results
+        })
+
+        .catch((error) => {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.code === 'RESOURCE_NOT_FOUND'
+          ) {
+            this.members = []
+          }
+        })
+    },
+    getRequestMembers() {
+      if (
+        this.communityDetails.myMembershipStatusId == 1 &&
+        this.communityDetails.privacyStatusId == 2
+      ) {
+        const payload = {
+          pageNumber: 1,
+          pageSize: 5,
+          orderBy: 'CompanyName',
+          ascending: true,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [
+                  {
+                    FieldName: 'CompanyName',
+                    Operator: 'Contains',
+                    Value: this.search
+                  }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
+        }
+        getCommunityMembersRequest(this.$route.params.id, payload)
+          .then((response) => {
+            const { data } = response
+            this.requestMembers = data.data.results
+          })
+
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
+              this.requestMembers = []
+            }
+          })
+      }
     }
   },
   watch: {
-    memberList(val) {
-      if (val) this.members = val
-    },
     getSelectedCompany(val) {
       if (val) this.getMembers()
+    },
+    search: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.debounce(() => {
+          if (this.tab === 0) {
+            this.getMembers()
+          } else {
+            this.getRequestMembers()
+          }
+        }, 500)
+      }
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+.notification-wrapper {
+  padding: 0 !important;
+  width: 100%;
+  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
+    0 3px 14px 2px rgba(255, 255, 255, 0.12);
+}
 ::v-deep .community-selector {
   .v-tabs-bar {
     height: 44px !important;
   }
 }
-::v-deep .community-selector .v-slide-group__wrapper {
-  background-color: #f5f7fa !important;
-  height: 44px !important;
-  padding-left: 0 !important;
 
-  .v-tab {
-    font-weight: 400;
-    font-size: 14px !important;
-    margin-top: 6px;
-    margin-right: 32px !important;
-  }
-}
-::v-deep .community-selector .v-slide-group__wrapper > div {
-  height: 100%;
-  margin-right: 0 !important;
-}
-.v-tab {
-  padding: 0 3px !important;
-  font-size: 20px;
-  font-weight: 400;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.15;
-  letter-spacing: normal;
-  text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
-  min-width: min-content !important;
-  text-align: left !important;
-}
 .search-wrapper {
   align-items: center;
   display: flex;
@@ -525,8 +680,10 @@ export default {
   .filter-icon {
     color: rgba(0, 0, 0, 0.34) !important;
     cursor: pointer;
+    margin-top: 15px;
   }
 }
+
 .threat-sharing-content {
   width: 100%;
   border-radius: 20px !important;
@@ -534,12 +691,15 @@ export default {
     0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   background-color: #ffffff;
 }
+
 .threat-sharing-content.community-rqts {
   margin-bottom: 16px;
 }
+
 .threat-sharing-content.community-rqts::after {
   border-top: none !important;
 }
+
 .ts-header {
   align-items: center;
   display: flex;
@@ -556,6 +716,7 @@ export default {
     max-width: 36px !important;
   }
 }
+
 .ts-title {
   display: flex;
   align-items: center;
@@ -611,25 +772,24 @@ export default {
     .community-sub-info {
       display: flex;
       flex-direction: row;
-      padding-top: 5px;
-
       @media only screen and (max-width: 750px) {
         flex-direction: column;
         padding-left: 13px;
-
         .pl-4 {
           padding-left: 0 !important;
         }
       }
-
       > div {
+        line-height: 10px;
         width: auto;
       }
 
       .company-mini-icon {
         font-size: 16px !important;
         margin-right: 8px;
+        top: 2px;
       }
+
       .company-mini-info {
         font-size: 12px;
         font-weight: normal;
@@ -642,6 +802,7 @@ export default {
     }
   }
 }
+
 .ts-body {
   margin-top: 8px;
   font-family: 'Open Sans', sans-serif !important;
@@ -653,6 +814,7 @@ export default {
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.87);
 }
+
 .ts-user-comp {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 12px;
@@ -671,10 +833,12 @@ export default {
     font-weight: bold;
   }
 }
+
 .ts-user-comp-detail {
   align-items: center;
   display: flex;
 }
+
 .ts-community-industry {
   font-family: 'Open Sans', sans-serif !important;
   color: rgba(0, 0, 0, 0.87) !important;
@@ -684,34 +848,19 @@ export default {
   font-style: normal;
   line-height: 1.71;
 }
+
 .ts-people-icon {
   font-size: 16px;
 }
+
 .notification-wrapper {
   background-color: #fff;
 }
-.v-menu__content {
-  border-radius: 8px !important;
-  box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
 
-  .v-list-item {
-    padding-left: 29px !important;
-    padding-right: 16px !important;
-  }
-  .v-list-item__title {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
 .v-application--is-ltr .v-list-item__icon:first-child {
   margin-right: 10px !important;
 }
+
 .v-expansion-panel-header {
   max-width: 120px !important;
   padding: 0 !important;
@@ -720,6 +869,7 @@ export default {
     max-width: 95px !important;
   }
 }
+
 .member-company-body {
   align-items: center;
   display: flex;
@@ -744,6 +894,7 @@ export default {
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
     }
+
     .members-post-list {
       display: flex;
       flex-direction: column;
@@ -764,6 +915,7 @@ export default {
         width: 100%;
       }
     }
+
     .members-post-see-all > a {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
@@ -776,6 +928,7 @@ export default {
       color: #2196f3;
     }
   }
+
   .members-pie {
     float: left;
     width: 50%;
@@ -786,13 +939,16 @@ export default {
     }
   }
 }
+
 ::v-deep .apexcharts-legend-marker {
   margin-right: 16px !important;
 }
+
 ::v-deep .apexcharts-legend-series {
   align-items: center;
   display: flex;
 }
+
 .request-btns {
   display: flex;
   flex-direction: row;
@@ -809,6 +965,7 @@ export default {
     margin-right: 14px;
     text-transform: capitalize !important;
   }
+
   .accept-btn {
     color: #fff !important;
     border-radius: 18px !important;
@@ -819,11 +976,13 @@ export default {
     height: 36px !important;
     text-transform: capitalize !important;
   }
+
   @media only screen and (max-width: 950px) {
     justify-content: center;
     padding-top: 20px;
   }
 }
+
 .request-count {
   align-items: center;
   background-color: #d32f2f;
@@ -839,14 +998,17 @@ export default {
   height: 16px;
   width: 16px;
 }
+
 ::v-deep .v-expansion-panel:before {
   box-shadow: unset !important;
 }
+
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   ::v-deep .v-expansion-panel-header > div {
     margin-top: 5px;
   }
 }
+
 .empty-members {
   padding-top: 40px !important;
 
@@ -873,6 +1035,7 @@ export default {
   letter-spacing: normal;
   color: #2196f3;
 }
+
 .v-card-sub-header {
   font-family: Helvetica;
   font-size: 15px;
@@ -883,6 +1046,7 @@ export default {
   letter-spacing: normal;
   color: #000 !important;
 }
+
 .edit-name-textfield,
 .edit-description,
 .edit-select {
@@ -898,6 +1062,7 @@ export default {
   border: solid 1px rgba(100, 181, 246, 0.5);
   background-color: #e3f2fd;
 }
+
 .delete-info {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 13px;

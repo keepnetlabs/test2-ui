@@ -13,6 +13,12 @@ import {
 } from '../../api/dashboard'
 import AuthenticationService from '../../services/authentication'
 import router from '../../router'
+import {
+  getCampaignSummary,
+  getCompanyOverallScore,
+  getLastCampaigns,
+  getCompanyInformationDummy
+} from '../../utils/constants'
 
 const dashboard = {
   namespaced: true,
@@ -38,46 +44,36 @@ const dashboard = {
       }
     ],
     isSwitchDialogOpen: false,
-    companyInformation: {
-      name: '',
-      awarenessScore: '',
-      awarenessColor: '#e6a23c',
-      licenceStatus: '5000 registered users of 5000',
-      endsAt: '25.07.2020',
-      isLicenceStatusValid: false,
-      licenseStatusMessage:
-        'You reached the user license limit. To add more users, please contract your administrator to upgrade your plan.'
-    }
+    companyInformation: getCompanyInformationDummy()
   },
   getters: {
-    isPopupOpened: state => state.popupFeedback,
-    getIsSessionExpired: state => state.isSessionExpired,
-    getOverallMonths: state => state.overallMonths,
-    getNotificationList: state => state.notificationList,
-    getOverallStatsList: state => state.overallStatsList,
-    getMenuList: state => state.menuList,
-    getIsSwitchDialogOpen: state => state.isSwitchDialogOpen,
-    getSwitchAccountDropdown: state => state.switchAccountDropdown,
-    getSelectedCompany: state => state.selectedCompany,
-    getCompanyDropdowns: state => state.dropdownCompanies,
-    getPieChartLabels: state => state.pieChartDataLabels,
-    getFirstCampaignList: state => state.firstCampaignList,
-    getLastFiveCampaignList: state => state.lastFiveCampaignList,
-    getSingleCampaignList: state => state.singleCampaignList,
-    getcompanyName: state => state.companyName
+    isPopupOpened: (state) => state.popupFeedback,
+    getIsSessionExpired: (state) => state.isSessionExpired,
+    getOverallMonths: (state) => state.overallMonths,
+    getNotificationList: (state) => state.notificationList,
+    getOverallStatsList: (state) => state.overallStatsList,
+    getMenuList: (state) => state.menuList,
+    getIsSwitchDialogOpen: (state) => state.isSwitchDialogOpen,
+    getSwitchAccountDropdown: (state) => state.switchAccountDropdown,
+    getSelectedCompany: (state) => state.selectedCompany,
+    getCompanyDropdowns: (state) => state.dropdownCompanies,
+    getPieChartLabels: (state) => state.pieChartDataLabels,
+    getFirstCampaignList: (state) => state.firstCampaignList,
+    getLastFiveCampaignList: (state) => state.lastFiveCampaignList,
+    getSingleCampaignList: (state) => state.singleCampaignList
   },
   mutations: {
     SET_PHISHING_CAMPAIGNS(state, payload) {
       payload.sort((x, y) => (x.campaignCount < y.campaignCount ? 1 : -1))
-      state.chartOptionColors = payload.map(x => x.color)
-      state.pieChartDataLabels = payload.map(x => `${x.description} (${x.campaignCount})`)
-      state.pieChartData = payload.map(x => x.campaignCount)
+      state.chartOptionColors = payload.map((x) => x.color)
+      state.pieChartDataLabels = payload.map((x) => `${x.description} (${x.campaignCount})`)
+      state.pieChartData = payload.map((x) => x.campaignCount)
     },
     SET_LAST_FIVE_CAMPAIGNS(state, payload) {
-      state.firstCampaignList = payload.map(x => ({
+      state.firstCampaignList = payload.map((x) => ({
         campaignName: x.name
       }))
-      state.lastFiveCampaignList = payload.map(x => ({
+      state.lastFiveCampaignList = payload.map((x) => ({
         // campaignName: x.Name,
         company: x.companyName,
         behaviour: [
@@ -90,7 +86,7 @@ const dashboard = {
         delivery: '4/4',
         status: x.status
       }))
-      state.singleCampaignList = payload.map(x => ({
+      state.singleCampaignList = payload.map((x) => ({
         campaignName: x.name,
         company: x.companyName,
         behaviour: [
@@ -104,30 +100,46 @@ const dashboard = {
         status: x.status
       }))
     },
-
-    SET_COMPANY_INFORMATION(state, payload) {
-      const scoreValue = getAwarenesColor(parseInt(payload.score))
-      state.companyInformation = {}
-      state.companyInformation.awarenessColor = scoreValue.color
-      state.companyInformation.isLicenceStatusValid = true
-      state.companyInformation.name = payload.companyName
-      state.companyInformation.licenceStatus = `${payload.userCount} registered users of ${payload.limits}`
-      state.companyInformation.awarenessScore = scoreValue.letter
-      const date = new Date(payload.createDate)
-      state.companyInformation.endsAt = `${date.getDate()}.${date.getMonth()}.${date.getFullYear() +
-        1}`
+    SET_OVERALL_STATS(state, payload) {
+      const newOverallStats = []
+      if (payload.phishingSimulatorScore.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Phishing Simulator Score',
+          data: payload.phishingSimulatorScore
+        })
+      }
+      if (payload.awarenessEducatorScore.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Awareness Educator',
+          data: payload.awarenessEducatorScore
+        })
+      }
+      if (payload.threatIntelligence.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Threat Intelligence',
+          data: payload.threatIntelligence
+        })
+      }
+      if (payload.incidentResponder.filter((x) => x !== 0).length > 0) {
+        newOverallStats.push({
+          name: 'Incident Responder',
+          data: payload.incidentResponder
+        })
+      }
+      state.overallStatsList = newOverallStats
     },
     SET_DROPDOWN_COMPANIES(state, payload) {
       state.dropdownCompanies = payload
     },
     SET_SELECTED_COMPANY(state, payload) {
       const defaultAccountDropdown = []
+
       state.selectedCompany = payload
       defaultAccountDropdown.push(payload)
       defaultAccountDropdown.push({
         companyId: 'default',
-        manager: 'Switch Account',
-        index: this.state.auth.user.role.id
+        name: 'Switch Account',
+        index: 5 // this.state.auth.user.role.id
       })
       state.switchAccountDropdown = defaultAccountDropdown
     },
@@ -226,10 +238,10 @@ const dashboard = {
         active: true,
         childs: []
       })
-      payload.forEach(item => {
+      payload.forEach((item) => {
         let childs = []
         if (item.parents != undefined && item.parents.length > 0) {
-          childs = item.parents.map(child => ({
+          childs = item.parents.map((child) => ({
             id: child.menuId,
             title: child.text,
             icon: null,
@@ -250,39 +262,11 @@ const dashboard = {
       })
       state.menuList = newList
     },
-    SET_OVERALL_STATS(state, payload) {
-      const newOverallStats = []
-      if (payload.phishingSimulatorScore.filter(x => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Phishing Simulator Score',
-          data: payload.phishingSimulatorScore
-        })
-      }
-      if (payload.awarenessEducatorScore.filter(x => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Awareness Educator',
-          data: payload.awarenessEducatorScore
-        })
-      }
-      if (payload.threatIntelligence.filter(x => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Threat Intelligence',
-          data: payload.threatIntelligence
-        })
-      }
-      if (payload.incidentResponder.filter(x => x !== 0).length > 0) {
-        newOverallStats.push({
-          name: 'Incident Responder',
-          data: payload.incidentResponder
-        })
-      }
-      state.overallStatsList = newOverallStats
-    },
     SET_NOTIFICATIONS(state, payload) {
       state.notificationList = payload
     },
     SET_DUMMY_COMPANY_INFO(state, payload) {
-      state.companyInformation = payload
+      //state.companyInformation = payload
     },
     CHANGE_FEEDBACK_POPUP(state, payload) {
       state.popupFeedback = payload
@@ -293,30 +277,34 @@ const dashboard = {
       notificationSeen(payload.id).then(() => {})
     },
     getNotifications({ commit }) {
-      getNotifications().then(response => {
+      getNotifications().then((response) => {
         const result = response.data
         commit('SET_NOTIFICATIONS', result)
       })
     },
     getOverallStats({ commit }, payload) {
-      getOverallStats(payload).then(response => {
-        const result = response.data
-        commit('SET_OVERALL_STATS', result)
-      })
+      commit('SET_OVERALL_STATS', getCompanyOverallScore())
     },
     logoutUser({ commit }) {
-      AuthenticationService.removeToken()
       commit('common/SET_SNACK_STATUS', false, { root: true })
       commit('common/SET_SNACKBAR_COLOR', '', { root: true })
       commit('common/SET_ERROR_MESSAGE', '', {
         root: true
       })
       commit('common/SET_ERROR_STATE', false, { root: true })
-      router.push('/login')
+
       logoutUser()
+        .then((response) => {
+          AuthenticationService.removeToken()
+          router.push('/login')
+        })
+        .catch((error) => {
+          AuthenticationService.removeToken()
+          router.push('/login')
+        })
     },
     getMenus({ commit }) {
-      getMenus().then(response => {
+      getMenus().then((response) => {
         const result = response.data
         commit('SET_MENUS', result)
       })
@@ -325,76 +313,57 @@ const dashboard = {
       commit('SET_SWITCH_DIALOG', payload)
     },
     selectCompany({ commit, dispatch }, payload) {
-      selectCompany(payload).then(() => {
+      payload.companyResourceId && localStorage.setItem('companyId', payload.companyResourceId)
+      return selectCompany(payload).then(() => {
         commit('SET_SELECTED_COMPANY', payload)
-        dispatch('getLastFiveCompaignsStats')
-        dispatch('getPhishingCampaigns', 999)
-        dispatch('getOverallStats', 12)
-        dispatch('getCompanyInformation')
-        dispatch('getDropdownCompanies')
-        commit('threadSharing/SET_COLLAPSE_TO_INCIDENTS', false, { root: true })
+        if (window.location.pathname !== '/') {
+          dispatch('getLastFiveCompaignsStats')
+          dispatch('getPhishingCampaigns', 999)
+          dispatch('getOverallStats', 12)
+          dispatch('getCompanyInformation')
+          dispatch('getDropdownCompanies')
+          //commit('threadSharing/SET_COLLAPSE_TO_INCIDENTS', false, { root: true })
+        }
       })
     },
     getLastFiveCompaignsStats({ commit }) {
-      getLastFiveCompaignsStats().then(response => {
-        const result = response.data
-        commit('SET_LAST_FIVE_CAMPAIGNS', result)
-      })
+      commit('SET_LAST_FIVE_CAMPAIGNS', getLastCampaigns())
     },
     getPhishingCampaigns({ commit }, payload) {
-      getPhishingCampaigns(payload)
-        .then(response => {
-          const result = response.data
-          commit('SET_PHISHING_CAMPAIGNS', result)
-        })
-        .catch(() => {})
+      commit('SET_PHISHING_CAMPAIGNS', getCampaignSummary())
     },
     getCompanyInformation({ commit }) {
-      getCompanyInformation()
-        .then(response => {
-          const result = response.data
-          commit('SET_COMPANY_INFORMATION', result)
-        })
-        .catch(() => {
-          const dummyComp = {
-            name: this.state.dashboard.selectedCompany.manager,
-            awarenessScore: '',
-            awarenessColor: '#e6a23c',
-            licenceStatus: '5000 registered users of 5000',
-            endsAt: '25.07.2020',
-            isLicenceStatusValid: false,
-            licenseStatusMessage:
-              'You reached the user license limit. To add more users, please contract your administrator to upgrade your plan.'
-          }
-          commit('SET_DUMMY_COMPANY_INFO', dummyComp)
-        })
+      commit('SET_DUMMY_COMPANY_INFO', getCompanyInformationDummy())
     },
     getDropdownCompanies({ commit }) {
+      let _this = this
       function getUnique(arr, comp) {
         const unique = arr
-          .map(e => e[comp])
+          .map((e) => e[comp])
 
           // store the keys of the unique objects
           .map((e, i, final) => final.indexOf(e) === i && i)
 
           // eliminate the dead keys & store unique objects
-          .filter(e => arr[e])
-          .map(e => arr[e])
+          .filter((e) => arr[e])
+          .map((e) => arr[e])
 
         return unique
       }
 
-      getDropdownCompanies().then(response => {
-        const result = response.data
+      getDropdownCompanies().then((response) => {
+        const result = response.data.data && response.data.data.results
         const orderedArr = []
-        if (this.state.auth.user && this.state.auth.user.userCompany) {
-          const curCompany = result.find(c => c.companyId === this.state.auth.user.userCompany.id)
-          orderedArr.push(curCompany)
+        if (_this.state.auth.user && _this.state.auth.user.userCompany) {
+          const curCompany = result.find(
+            (c) => c.companyResourceId === localStorage.getItem('companyId')
+          )
+          curCompany && orderedArr.push(curCompany)
           const filteredArr = result.filter(
-            comp => comp.companyId !== this.state.auth.user.userCompany.id
+            (comp) => comp.companyResourceId !== localStorage.getItem('companyId')
           )
           const orderAccount = [...orderedArr, ...filteredArr]
-          commit('SET_DROPDOWN_COMPANIES', getUnique(orderAccount, 'companyId'))
+          commit('SET_DROPDOWN_COMPANIES', getUnique(orderAccount, 'companyResourceId'))
         }
       })
     },

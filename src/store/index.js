@@ -5,9 +5,10 @@ import login from './modules/login'
 import permission from './modules/permissions'
 import auth from './modules/auth'
 import dashboard from './modules/dashboard'
-import threadSharing from './modules/threadSharing'
 import tour from './modules/tour'
 import investigations from './modules/investigations'
+import playbook from './modules/playbook'
+import rightColumn from './modules/rightColumn'
 
 Vue.use(Vuex)
 
@@ -18,8 +19,9 @@ export default new Vuex.Store({
     login,
     auth,
     dashboard,
-    threadSharing,
     tour,
-    investigations
+    investigations,
+    playbook,
+    rightColumn
   }
 })

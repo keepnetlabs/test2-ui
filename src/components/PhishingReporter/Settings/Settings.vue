@@ -1,0 +1,226 @@
+<template>
+  <div
+    class="settings"
+    id="settings"
+    :class="[
+      inModal && 'settings__in-modal',
+      applicationType === 'DiagnosticTool' && 'settings__in-modal--diagnostic-tool'
+    ]"
+  >
+    <download-add-in-modal
+      :status="downloadAddInModalStatus"
+      v-if="downloadAddInModalStatus"
+      @handleClose="downloadAddInModalStatus = false"
+    />
+    <v-tabs
+      id="settings-tabs"
+      class="k-sub-tabs"
+      v-model="tab"
+      background-color="#f5f7fa"
+      centered
+      color="basil"
+      active-class="k-sub-tabs__tab--active"
+      v-if="!inModal || applicationType === 'Outlook'"
+    >
+      <v-tab
+        v-if="!inModal || applicationType === 'Outlook'"
+        id="pr-tab-users"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(0)"
+      >
+        Add-in Settings
+      </v-tab>
+      <v-tab
+        v-if="!inModal || applicationType === 'Outlook'"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(1)"
+        >Email Settings
+      </v-tab>
+      <v-tab
+        v-if="!inModal || applicationType === 'Outlook'"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(2)"
+        >Other Settings
+      </v-tab>
+      <v-tab
+        v-if="!inModal || applicationType === 'DiagnosticTool'"
+        class="k-sub-tabs__tab p-2"
+        @click="changeTabStatus(3)"
+        >Diagnostic Tool
+      </v-tab>
+    </v-tabs>
+    <v-tabs-items
+      v-if="!inModal || applicationType === 'Outlook'"
+      v-model="tab"
+      class="k-sub-tabs__container"
+    >
+      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
+        <addin-settings
+          ref="refAddinSettings"
+          :formData="formData"
+          @updateForm="callForCreatePhishingReporter"
+          :spinnerStatus="spinnerStatus"
+          :show-footer="!inModal"
+          :show-header-link="!inModal"
+          :showForm="!inModal"
+        />
+      </v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
+        <email-settings
+          ref="refEmailSettings"
+          :formData="formData"
+          @updateForm="callForCreatePhishingReporter"
+          :show-footer="!inModal"
+          :showHeaderLink="!inModal"
+          :showForm="!inModal"
+        />
+      </v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
+        <other-settings
+          :formData="formData"
+          ref="refOtherSettings"
+          @updateForm="callForCreatePhishingReporter"
+          :show-footer="!inModal"
+          :show-header-link="!inModal"
+          :showForm="!inModal"
+        />
+      </v-tab-item>
+      <v-tab-item v-if="!inModal || applicationType === 'DiagnosticTool'">
+        <diagnostic-tool
+          ref="refDiagnosticTool"
+          :formData="formData"
+          @updateForm="callForCreatePhishingReporter"
+          :show-footer="!inModal"
+          :show-header-link="!inModal"
+          :showForm="!inModal"
+        />
+      </v-tab-item>
+    </v-tabs-items>
+    <div v-else>
+      <diagnostic-tool
+        ref="refDiagnosticTool"
+        :formData="formData"
+        @updateForm="callForCreatePhishingReporter"
+        :show-footer="!inModal"
+        :show-header-link="!inModal"
+        :showForm="!inModal"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import AddinSettings from './AddinSettings'
+import DiagnosticTool from './DiagnosticTool'
+import EmailSettings from './EmailSettings'
+import OtherSettings from './OtherSettings'
+import { createPhishingReporter } from '@/api/phishingReporter'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import DownloadAddInModal from '../DownloadAddInModal'
+export default {
+  name: 'Settings',
+  props: {
+    formData: {
+      type: Object,
+      default: null
+    },
+    inModal: {
+      type: Boolean,
+      default: false
+    },
+    applicationType: {
+      type: String,
+      default: COMMON_CONSTANTS.OUTLOOK
+    }
+  },
+  components: {
+    DownloadAddInModal,
+    AddinSettings,
+    EmailSettings,
+    OtherSettings,
+    DiagnosticTool
+  },
+  data() {
+    return {
+      tab: 0,
+      spinnerStatus: false,
+      downloadAddInModalStatus: false
+    }
+  },
+  methods: {
+    changeTabStatus(status) {
+      this.tab = status
+    },
+    callForCreatePhishingReporter(updatedValues) {
+      const addinSettings =
+        this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
+      const emailSettings =
+        this.$refs.refEmailSettings && this.$refs.refEmailSettings.getFormValues()
+      const otherSettings =
+        this.$refs.refOtherSettings && this.$refs.refOtherSettings.getFormValues()
+      const diagnosticTool =
+        this.$refs.refDiagnosticTool && this.$refs.refDiagnosticTool.getFormValues()
+
+      const newFormData = {
+        ...this.formData,
+        ...addinSettings,
+        ...emailSettings,
+        ...otherSettings,
+        ...diagnosticTool,
+        ...updatedValues
+      }
+
+      const formData = new FormData()
+      Object.keys(newFormData).map((key) => {
+        formData.append(
+          key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1),
+          newFormData[key] === null ? '' : newFormData[key]
+        )
+      })
+
+      /*
+      formData.append('File', addinSettings.file)
+      formData.append('file', addinSettings.file)
+
+       */
+      createPhishingReporter(formData)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Phishing Reporter Saved Successfully!',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+          this.$emit('getPhishingReport')
+          if (updatedValues.isAddIn) {
+            this.downloadAddInModalStatus = true
+          }
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+          })
+          this.$emit('getPhishingReport')
+        })
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.settings {
+  &__in-modal {
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5);
+    background-color: #ffffff;
+    padding: 24px 24px 16px 24px;
+    margin-top: -8px;
+    margin-bottom: 24px;
+    &--diagnostic-tool {
+      padding-left: 24px;
+      padding-top: 24px;
+      margin-bottom: 0;
+    }
+  }
+}
+</style>

@@ -1,0 +1,108 @@
+.k-tab{
+
+  &.v-tab{
+    font-size: 16px !important;
+    font-weight: normal !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    letter-spacing: normal !important;
+    text-transform: capitalize !important;
+    font-stretch: normal !important;;
+    font-style: normal !important;;
+    line-height: normal !important;;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+    min-width: fit-content;
+    &:not(:last-child) {
+      margin-right: 35px;
+    }
+
+    &:before {
+      background-color: white;
+    }
+  }
+
+  &.v-tab--active{
+    color: #2196f3 !important;
+    font-weight: 600 !important;
+  }
+
+&s{
+  .v-slide-group__content {
+    border-bottom: 2px solid #e4e7ed;
+  }
+
+  .v-tabs-slider-wrapper {
+    bottom: -1px !important;
+    color: #0486fe !important;
+  }
+  .v-slide-group__content.v-tabs-bar__content:after {
+    display: none;
+  }
+  .v-tabs-slider {
+    width: 100%;
+  }
+}
+}
+
+.v-tab {
+  font-size: 16px !important;
+  font-weight: normal !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  letter-spacing: normal !important;
+  text-transform: capitalize !important;
+  font-stretch: normal !important;;
+  font-style: normal !important;;
+  line-height: normal !important;;
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+  min-width: fit-content;
+  &--active{
+    color: #2196f3 !important;
+    font-weight: 600 !important;
+  }
+  &:not(:last-child) {
+    margin-right: 35px;
+  }
+}
+.v-tabs-bar {
+  height: 48px !important;
+  border-radius: 0 !important;
+  &__details-tab{
+    height: 48px;
+    padding: 0;
+    background-color: #f5f7fa;
+    border-radius: 0!important;
+    .v-tabs-slider {
+      width: calc(100% + 16px);
+      margin-left: -8px;
+    }
+    .v-tab{
+      font-size: 14px !important;
+      font-weight: normal !important;;
+      font-stretch: normal !important;;
+      font-style: normal !important;;
+      line-height: 1.29 !important;;
+      letter-spacing: normal !important;;
+      color: #212121 !important;
+      &--active{
+      color: #2196f3!important;
+      font-weight: 600 !important;
+      }
+    }
+  }
+}
+.sub-tab__content{
+  font-size: 14px !important;
+  font-weight: normal !important;;
+  font-stretch: normal !important;;
+  font-style: normal !important;;
+  line-height: 1.29 !important;;
+  letter-spacing: normal !important;;
+  color: #212121 !important;
+  &.v-tab--active{
+    color: #2196f3!important;
+    font-weight: 600 !important;
+  }
+}

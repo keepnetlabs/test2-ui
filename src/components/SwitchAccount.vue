@@ -47,7 +47,7 @@
                   <v-card style="border-radius: 20px;">
                     <div
                       class="switch-account-wrapper d-flex flex-wrap flex-row"
-                      v-on:click="onClickSelectedAccount(item)"
+                      @click="onClickSelectedAccount(item)"
                     >
                       <div class="switch-account-logo">
                         <v-img
@@ -60,7 +60,7 @@
                         ></v-img>
                       </div>
                       <div class="switch-right-wrapper">
-                        <div class="swith-account-title">{{ item.manager }}</div>
+                        <div class="swith-account-title">{{ item.companyName }}</div>
                         <div v-if="index === 0" class="switch-account-description">
                           Manage all Companies as reseller
                         </div>
@@ -104,16 +104,21 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
     onClickSelectedAccount(account) {
-      this.$store.dispatch('common/activateLoader', true)
-      const refThis = this
-      setTimeout(() => {
-        refThis.$store.dispatch('common/activateLoader', false)
-      }, 1000)
       this.setDialogBar(false)
-      this.selectCompany(account)
-      this.$store.dispatch('threadSharing/getCommunities', account.companyId)
-      localStorage.setItem('companyId', account.companyId)
-      localStorage.setItem('companyManager', account.manager)
+      this.selectCompany(account).then((response) => {
+        localStorage.setItem('companyManager', account.companyName)
+        localStorage.setItem('isSelectCompany', 'true')
+        localStorage.setItem('companyId', account.companyResourceId)
+        localStorage.setItem('companyResourceId', account.companyResourceId)
+        localStorage.setItem('companyName', account.companyName)
+        localStorage.setItem('userId', account.companyResourceId)
+        localStorage.setItem('businessCatId', account.userCompany.licenseTypeResourceId)
+        localStorage.setItem('userName', account.fullName)
+        //dispatch('dashboard/selectCompany', account, { root: true })
+        //commit('SET_CURRENTUSER', account)
+        this.$router.go(0)
+      })
+
       this.search = ''
     }
   },
@@ -124,7 +129,7 @@ export default {
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen'
     }),
     ...mapState({
-      currentCompany: state => state.dashboard.selectedCompany
+      currentCompany: (state) => state.dashboard.selectedCompany
     }),
     isLoading: {
       get() {

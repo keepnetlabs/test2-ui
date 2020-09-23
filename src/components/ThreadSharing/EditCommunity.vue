@@ -29,11 +29,11 @@
         </v-list-item>
         <div class="d-flex flex-row flex-wrap justify-end">
           <v-btn id="privacy-cancel-all-btn" text color="#f56c6c" @click="cancelPrivateToPublic()"
-            >CANCEL</v-btn
-          >
+            >CANCEL
+          </v-btn>
           <v-btn id="privacy-accept-all-btn" text color="#2196f3" @click="privateToPublic = false"
-            >ACCEPT ALL</v-btn
-          >
+            >ACCEPT ALL
+          </v-btn>
         </div>
       </v-card>
     </v-overlay>
@@ -45,8 +45,8 @@
         <v-list-item-content class="pt-0 pb-0">
           <v-list-item-title class="v-card-headline">Edit Community</v-list-item-title>
           <v-list-item-subtitle class="v-card-sub-header"
-            >Edit general information and settings</v-list-item-subtitle
-          >
+            >Edit general information and settings
+          </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
       <v-form ref="form" v-model="valid" lazy-validation>
@@ -59,12 +59,12 @@
               placeholder="Placeholder"
               outlined
               :rules="[nameRules.regex, nameRules.required, nameRules.empty]"
-              :class="{ 'error-border': communNameAvailable }"
+              :class="{ 'error-border': communNameAvailableForUpdate }"
               class="edit-name-textfield"
               @blur="checkCommunName()"
-            ></v-text-field>
+            />
             <p
-              v-if="communNameAvailable && nameRules.regex() && nameRules.required()"
+              v-if="communNameAvailableForUpdate && nameRules.regex() && nameRules.required()"
               style="margin-top: -10px; margin-left: 12px;"
               class="v-messages theme--light error--text"
             >
@@ -87,7 +87,7 @@
               placeholder="Description"
               required
               no-resize
-            ></v-textarea>
+            />
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="edit-industry-area pb-4 pa-0">
@@ -96,20 +96,20 @@
             <label class="edit-sub-labels">Select an industry category</label>
             <v-select
               :items="categories"
-              :label="categories[0]"
+              :placeholder="categories[0]"
               outlined
               class="edit-select"
               v-model="selectedCategory"
               :rules="[categoryRule]"
               required
-            ></v-select>
+            />
           </v-list-item-content>
         </v-list-item>
       </v-form>
       <v-list-item class="edit-privacy-area pb-6 pt-4 pa-0">
         <v-list-item-content class="pt-0 pb-0">
           <label class="edit-labels">Privacy</label>
-          <label class="edit-sub-labels">Select an industry category</label>
+          <label class="edit-sub-labels">Select a privacy option</label>
           <div class="edit-privacy-buttons">
             <button :class="{ btnActive: !privacy }" @click="privacy = false" class="public-btn">
               PUBLIC
@@ -132,31 +132,33 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
       name: '',
+      communId: '',
       description: '',
       privacy: false,
       categories: [],
       selectedCategory: '',
       valid: false,
       nameRules: {
-        required: v =>
+        required: (v) =>
           (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
-        regex: v =>
+        regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+        empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
       },
       descriptionRules: {
-        required: v =>
+        required: (v) =>
           (!!v && v.length >= 5 && v.length <= 300) ||
           'Description required and must between 5-300 characters.',
-        regex: v =>
+        regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: v => (v && !v.startsWith(' ')) || 'Descriptions cannot start with space'
+        empty: (v) => (v && !v.startsWith(' ')) || 'Descriptions cannot start with space'
       },
       privateToPublic: false,
       mountedPrivacy: null
@@ -167,7 +169,7 @@ export default {
       selectedCommunity: 'threadSharing/selectedCommunityGetter',
       fetchedCommunity: 'threadSharing/fetchedCommunGetter',
       businessCategories: 'threadSharing/businessCategoryGetter',
-      communNameAvailable: 'threadSharing/communNameAvailableGetter'
+      communNameAvailableForUpdate: 'threadSharing/communNameAvailableForUpdateGetter'
     }),
     categoryRule() {
       if (this.selectedCategory && this.selectedCategory.length) {
@@ -190,36 +192,45 @@ export default {
       this.name = ''
       this.description = ''
       this.selectedCategory = ''
+      this.$store.commit('threadSharing/SET_COMMUN_NAME', false)
     },
     onSaveClicked() {
-      if (this.$refs.form.validate() && !this.communNameAvailable) {
-        const updateObj = {
-          communityId: this.selectedCommunity.id || localStorage.getItem('communityId'),
-          name: this.name,
-          description: this.description,
-          privacy: this.privacy,
-          userId: localStorage.getItem('userId'),
-          ikey: this.getIKEY(),
-          companyId: localStorage.getItem('companyId'),
-          industry: this.selectedCategory
+      this.checkCommunName()
+      setTimeout(() => {
+        if (this.$refs.form.validate() && !this.communNameAvailableForUpdate) {
+          const updateObj = {
+            communityId: this.selectedCommunity.id || localStorage.getItem('communityId'),
+            name: this.name,
+            description: this.description,
+            privacy: this.privacy,
+            userId: localStorage.getItem('userId'),
+            ikey: this.getIKEY(),
+            companyId: localStorage.getItem('companyId'),
+            industry: this.selectedCategory
+          }
+          const refThis = this
+          this.$store.dispatch('threadSharing/updateCommunity', updateObj).then(() => {
+            refThis.$emit('closeEdit')
+            localStorage.setItem('communityName', refThis.name)
+            localStorage.setItem('communityDesc', refThis.description)
+            localStorage.setItem('communityPrivacy', refThis.privacy)
+            this.$store.dispatch('threadSharing/getCommunities')
+          })
         }
-        const refThis = this
-        this.$store.dispatch('threadSharing/updateCommunity', updateObj).then(() => {
-          refThis.$emit('closeEdit')
-          localStorage.setItem('communityName', refThis.name)
-          localStorage.setItem('communityDesc', refThis.description)
-          localStorage.setItem('communityPrivacy', refThis.privacy)
-          this.$store.dispatch('threadSharing/getCommunities')
-        })
-      }
+      }, 500)
     },
     getIKEY() {
-      let theIKEY = this.businessCategories.filter(c => c.IDESC == this.selectedCategory)
+      let theIKEY = this.businessCategories.filter((c) => c.IDESC == this.selectedCategory)
       return theIKEY[0].IKEY
     },
     checkCommunName() {
-      if (this.name.length && !this.name.startsWith(' '))
-        this.$store.dispatch('threadSharing/checkName', this.name)
+      if (this.name.length && !this.name.startsWith(' ')) {
+        let obj = {
+          name: this.name,
+          communId: this.communId
+        }
+        this.$store.dispatch('threadSharing/checkNameForUpdate', obj)
+      }
     },
     cancelPrivateToPublic() {
       this.privateToPublic = false
@@ -239,6 +250,7 @@ export default {
     this.name = this.selectedCommunity.name || localStorage.getItem('communityName')
     this.description = this.selectedCommunity.description || localStorage.getItem('communityDesc')
     this.selectedCategory = this.selectedCommunity.industry || localStorage.getItem('communityCat')
+    this.communId = this.selectedCommunity.id || localStorage.getItem('communityId')
     let businessCats = []
     for (let cat of this.businessCategories) {
       businessCats.push(cat.IDESC)
@@ -258,6 +270,7 @@ export default {
   letter-spacing: normal;
   color: #2196f3;
 }
+
 .v-card-sub-header {
   font-family: Helvetica;
   font-size: 15px;
@@ -268,6 +281,7 @@ export default {
   letter-spacing: normal;
   color: #000 !important;
 }
+
 .edit-name-textfield,
 .edit-description,
 .edit-select {
@@ -296,6 +310,7 @@ export default {
   margin-bottom: 0 !important;
   padding-bottom: 3px;
 }
+
 .edit-sub-labels {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 12px;
@@ -308,6 +323,7 @@ export default {
   margin-bottom: 0 !important;
   padding-bottom: 8px;
 }
+
 ::v-deep .edit-select > .v-input__control {
   align-items: center;
   display: flex;
@@ -317,6 +333,7 @@ export default {
 ::v-deep .v-text-field.v-text-field--enclosed .v-input__append-inner {
   margin-top: 8px !important;
 }
+
 .edit-privacy-buttons {
   align-items: center;
   display: flex;
@@ -334,6 +351,7 @@ export default {
     text-transform: none !important;
     padding: 0 16px !important;
   }
+
   .public-btn {
     border: 1px solid #757575;
     border-top-right-radius: 0 !important;
@@ -341,6 +359,7 @@ export default {
     height: 36px;
     margin-left: 4px;
   }
+
   .private-btn {
     border: 1px solid #757575;
     border-top-left-radius: 0 !important;
@@ -349,6 +368,7 @@ export default {
     margin-left: 9px;
   }
 }
+
 .edit-privacy-bottom-label {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
@@ -361,6 +381,7 @@ export default {
   padding-top: 8px;
   margin: 0 !important;
 }
+
 .edit-privacy-bottom-label {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 14px;
@@ -373,21 +394,26 @@ export default {
   padding-top: 8px;
   margin: 0 !important;
 }
+
 .theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
   background-color: unset;
 }
+
 .v-btn:not(.v-btn--text):not(.v-btn--outlined).v-btn--active:before {
   opacity: 1;
 }
+
 .v-btn-toggle > .v-btn.v-btn--active,
 .v-btn-toggle > .v-btn.v-btn--active::before {
   color: #fff;
 }
+
 .btnActive {
   height: 36px;
   border-radius: 18px;
   border: solid 1px #757575;
 }
+
 .btnActive,
 .btnActive:active,
 .btnActive:hover,
@@ -395,25 +421,30 @@ export default {
   border: unset !important;
   outline: 0 !important;
 }
+
 .btnActive,
 .btnActive::before {
   border: unset !important;
   border-color: unset !important;
   color: #fff;
-  background-color: #2196f3 !important;
+  background-color: #2196f3;
   box-shadow: 0 2px 5px 0 #2196f3 !important;
 }
+
 .private-btn.v-btn.v-btn--active {
   border-left: transparent !important;
 }
+
 .v-btn-toggle--group > .v-btn.v-btn {
   border-color: #757575;
   border-left: 1px solid #757575 !important;
 }
+
 .v-btn:before {
   top: -1px !important;
   left: -1px !important;
 }
+
 .error-border {
   ::v-deep fieldset {
     border: 2px solid #ff5252 !important;
@@ -427,6 +458,7 @@ export default {
 
   width: 600px;
 }
+
 .accept-info {
   font-family: 'Open Sans', sans-serif !important;
   font-size: 13px;
@@ -443,11 +475,7 @@ export default {
   @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
     .edit-community-container {
       overflow-y: auto;
-
-      .edit-community {
-        top: 250px;
-        margin-bottom: 200px;
-      }
+      max-height: 100vh;
     }
   }
 
@@ -461,6 +489,7 @@ export default {
           padding-top: 0 !important;
           padding-bottom: 0 !important;
         }
+
         top: 0 !important;
         margin-bottom: 0 !important;
       }

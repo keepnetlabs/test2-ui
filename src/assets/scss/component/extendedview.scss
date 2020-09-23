@@ -1,0 +1,201 @@
+.edit-popup{
+    padding: 18px 16px 16px 16px !important;
+    width: 360px !important;
+
+  &__header{
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding-bottom: 19px;
+
+    .settings-span {
+      text-overflow: ellipsis;
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 100%;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+    }
+
+    .close-icon {
+      cursor: pointer;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+    }
+  }
+
+  &__body {
+    width: 100%;
+    position: relative;
+
+    .items-wrapper {
+      display: flex;
+      flex-direction: column;
+      > .row-edit-div {
+        width: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 7px;
+
+        > div {
+          display: flex;
+          align-items: center;
+
+          .v-input--checkbox.v-input--indeterminate{
+            .v-icon{
+              color:#2196f3 ;
+            }
+          }
+        }
+
+
+        .v-text-field__details,.v-messages{
+          display: none;
+        }
+
+
+      }
+
+      label {
+        width: 120px;
+        min-width: 120px;
+        text-transform: capitalize;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        overflow: hidden;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      span {
+        max-width: 100%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        overflow: hidden;
+        font-size: 12px;
+      }
+    }
+  }
+
+  &__edit-actions{
+      max-width: 100%;
+      display: flex;
+      flex-direction: row;
+      margin-left: 24px;
+      margin-right: -9px;
+  }
+
+  &__edit-component{
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color:#2196f3 !important;
+    margin-right: -16px;
+    &:hover{
+      background-color: transparent;
+    }
+  }
+
+  &__footer {
+    border-radius: 0;
+    background-color: #f1f8fe;
+    margin: 0 -16px;
+    display: flex;
+    margin-bottom: -16px;
+    padding: 17px;
+    margin-top:9px;
+    align-items: center;
+    justify-content: space-between;
+    .edit-footer-date {
+      display: flex;
+      flex-direction: row;
+
+      .edit-date-created {
+        display: flex;
+        flex-direction: column;
+        margin-right: 54px;
+
+        label {
+          font-size: 12px;
+          font-weight: 600;
+          font-stretch: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+        }
+
+        span {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.87);
+        }
+      }
+    }
+  }
+  .v-input--dense > .v-input__control > .v-input__slot {
+    margin-bottom: 0;
+  }
+.multiple-values-input{
+
+  input[placeholder] {
+    font-style: italic;
+  }
+  .v-input__append-inner{
+    display: block !important;
+    .mdi-menu-down{
+      display: none;
+    }
+  }
+}
+  .edit-combo-box{
+
+    .v-chip{
+      margin: 2px 2px 2px 2px !important;
+      height: auto !important;
+      border-radius: 4px !important;
+      background: #2196f3 !important;
+      color:#fff !important;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.33;
+      letter-spacing: normal;
+      text-align: center;
+      padding: 4px 5px 5px 6px;
+    }
+
+    .v-chip__content{
+      max-width: 150px;
+      padding-top: 1.5px;
+      overflow: visible;
+      button{
+        margin-top: -1px;
+        margin-left: 2px !important;
+        color: white;
+        font-size: 16px !important;
+        margin-right: -1px !important;
+      }
+      .mdi-close-circle:before{
+        content: "\F0156" !important;
+      }
+    }
+    .v-select__selections {
+      min-height: 44px !important;
+      input{
+        max-height: max-content;
+      }
+    }
+
+    .v-input__append-inner{
+      display: none;
+    }
+  }
+}

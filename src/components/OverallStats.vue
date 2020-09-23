@@ -15,8 +15,7 @@
         >
           <template v-slot:activator="{ on }">
             <div
-              class="v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light
-              v-size--default black--text pr-0 pl-2"
+              class="v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text pr-0 pl-2"
               v-on="on"
             >
               {{ dropdownCurrent.value }}

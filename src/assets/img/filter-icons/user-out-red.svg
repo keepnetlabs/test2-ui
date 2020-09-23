@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="18px" viewBox="0 0 20 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>user-out-red</title>
+    <defs>
+        <path d="M6.23,6.1670198 C7.93,6.1670198 9.308,4.799 9.308,3.111 C9.30535345,2.29758836 8.97948045,1.51858851 8.40215557,0.945577624 C7.82483069,0.372566738 7.04340861,0.0525456432 6.23,0.0559723228 C5.41710987,0.0530773777 4.63635317,0.373196508 4.05949013,0.945933739 C3.48262709,1.51867097 3.15691215,2.29710983 3.154,3.11 C3.15611785,3.92341081 3.48148257,4.70262023 4.05843192,5.27600586 C4.63538128,5.84939148 5.41659168,6.16992202 6.23,6.1670198 Z M6.23,7.694 C4.178,7.694 0.078,8.718 0.078,10.75 L0.078,12.278 L12.386,12.278 L12.386,10.75 C12.386,8.718 8.286,7.694 6.232,7.694 L6.23,7.694 Z" id="path-1"></path>
+        <polygon id="path-3" points="4.538 0.833 3.888 1.48 6.463 4.042 0.846 4.042 0.846 4.958 6.463 4.958 3.888 7.52 4.538 8.167 8.231 4.5"></polygon>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="user-out-red">
+            <g id="Clipped">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="a"></g>
+                <g id="c-link" mask="url(#mask-2)" fill="#F56C6C" fill-rule="nonzero">
+                    <g transform="translate(-13.000000, -12.930000)" id="c">
+                        <polygon points="0 0 38.462 0 38.462 38.194 0 38.194"></polygon>
+                    </g>
+                </g>
+            </g>
+            <g id="Clipped" transform="translate(10.923000, 9.000000)">
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <g id="d"></g>
+                <g id="f-link" mask="url(#mask-4)" fill="#F56C6C" fill-rule="nonzero">
+                    <g transform="translate(-7.000000, -6.958000)" id="f">
+                        <polygon points="0 0 23.077 0 23.077 22.917 0 22.917"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
