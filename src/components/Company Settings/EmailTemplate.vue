@@ -85,58 +85,127 @@
           ></v-text-field>
         </div>
         <v-divider class="email-template__divider mb-6" />
+        <v-btn
+          rounded
+          color="#2196f3"
+          class="email-template-preview__button"
+          @click="editHtmlTemplate"
+        >
+          <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
+        >
         <div class="email-template-preview">
-          <div class="email-template-preview__header">
-            <div class="email-template-preview__logo-container">
-              <div class="email-template-preview__logo">
-                Logo Here
-              </div>
-            </div>
-            <v-btn
-              rounded
-              color="#2196f3"
-              class="email-template-preview__button"
-              @click="editHtmlTemplate"
-            >
-              <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
-            >
-          </div>
-          <div class="email-template-preview__body">
-            <div class="email-template-preview__body-header">
-              Let’s design an email template
-            </div>
-            <div class="email-template-preview__body-sub-header my-4">
-              <span>
-                To design an email template, first click the Edit button to enter design mode
-              </span>
-            </div>
-            <p>
-              Once there choose the layout, use blocks, text, images and other features you need to
-              design a responsive email, really fast.
-            </p>
-            <p>
-              Give your content a style by changing fonts, colors, borders and other properties.
-            </p>
-            <p>
-              Use shortcodes to define user names, email addresses, URLs, training pieces, dates and
-              many more properties
-            </p>
-            <p>Upload files as attachments to track who downloads and runs suspicious files</p>
-          </div>
-          <v-divider class="email-template__divider mt-2" />
-          <div class="email-template-preview__logos">
-            <v-icon class="email-template-preview__logos--facebook" color="#45619d"
-              >mdi-facebook</v-icon
-            >
-            <v-icon class="email-template-preview__logos--twitter" color="#fff">mdi-twitter</v-icon>
-            <v-icon class="email-template-preview__logos--instagram" color="#fff"
-              >mdi-instagram</v-icon
-            >
-          </div>
-          <v-divider class="email-template__divider mt-4" />
-          <div class="email-template-preview__footer">
-            <p>This email is sent by {User_Name} from {Company_Name} on {Date_Sent}</p>
-          </div>
+          <div v-if="htmlData" v-html="htmlData" ref="refPreview" />
+          <table v-else style="width: 100%;" ref="refPreview">
+            <tbody>
+              <tr
+                style="
+                  font-size: 24px;
+                  line-height: 1.29;
+                  letter-spacing: normal;
+                  color: rgba(0, 0, 0, 0.87);
+                  opacity: 0.7;
+                  max-width: 200px;
+                  min-height: 72px;
+                  display: flex;
+                  justify-content: center;
+                  border-radius: 4px;
+                  margin: 0 auto 30px auto;
+                  vertical-align: middle;
+                  background-color: #e0e0e0;
+                  align-items: center;
+                "
+              >
+                <td>
+                  <p style="margin: 0;">Logo Here</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p :style="getHeaderStyle()">
+                    Let’s design an email template
+                  </p>
+                </td>
+              </tr>
+              <tr :style="[{ marginTop: '16px' }]">
+                <td>
+                  <p :style="getSubHeaderStyle()">
+                    To design an email template, first click the Edit button to enter design mode
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p :style="getPStyle()">
+                    Once there choose the layout, use blocks, text, images and other features you
+                    need to design a responsive email, really fast.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p :style="getPStyle()">
+                    Give your content a style by changing fonts, colors, borders and other
+                    properties.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p :style="getPStyle()">
+                    Use shortcodes to define user names, email addresses, URLs, training pieces,
+                    dates and many more properties
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p :style="getPStyle()">
+                    Upload files as attachments to track who downloads and runs suspicious files
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <hr
+                    style="margin: 8px auto 16px auto; max-width: 600px; border: 1px solid #b3d4fc;"
+                  />
+                </td>
+              </tr>
+              <tr :style="{ marginTop: '16px', justifyContent: 'center' }">
+                <td style="text-align: center;">
+                  <img src="../../assets/img/iconfinder-facebook-834722.svg" alt="facebook-icon" />
+                  <img
+                    src="../../assets/img/iconfinder-twitter-834708.svg"
+                    alt="twitter-icon"
+                    style="margin-left: 48px;"
+                  />
+                  <img
+                    src="../../assets/img/iconfinder-instagram-2-834717.svg"
+                    style="margin-left: 48px;"
+                    alt="instagram-icon"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <hr
+                    style="
+                      margin: 14px auto 14px auto;
+                      max-width: 600px;
+                      border: 1px solid #b3d4fc;
+                    "
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p :style="{ ...getPStyle(), textAlign: 'center', marginBottom: '0' }">
+                    This email is sent by {User_Name} from {Company_Name} on {Date_Sent}
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </v-tab-item>
     </v-tabs-items>
@@ -162,60 +231,7 @@ export default {
         fromName: '',
         email: ''
       },
-      htmlData:
-        '  <div class="email-template-preview">\n' +
-        '          <div class="email-template-preview__header">\n' +
-        '            <div class="email-template-preview__logo-container">\n' +
-        '              <div class="email-template-preview__logo">\n' +
-        '                Logo Here\n' +
-        '              </div>\n' +
-        '            </div>\n' +
-        '            <v-btn\n' +
-        '              rounded\n' +
-        '              color="#2196f3"\n' +
-        '              class="email-template-preview__button"\n' +
-        '              @click="editHtmlTemplate"\n' +
-        '            >\n' +
-        '              <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn\n' +
-        '            >\n' +
-        '          </div>\n' +
-        '          <div class="email-template-preview__body">\n' +
-        '            <div class="email-template-preview__body-header">\n' +
-        '              Let’s design an email template\n' +
-        '            </div>\n' +
-        '            <div class="email-template-preview__body-sub-header my-4">\n' +
-        '              <span>\n' +
-        '                To design an email template, first click the Edit button to enter design mode\n' +
-        '              </span>\n' +
-        '            </div>\n' +
-        '            <p>\n' +
-        '              Once there choose the layout, use blocks, text, images and other features you need to\n' +
-        '              design a responsive email, really fast.\n' +
-        '            </p>\n' +
-        '            <p>\n' +
-        '              Give your content a style by changing fonts, colors, borders and other properties.\n' +
-        '            </p>\n' +
-        '            <p>\n' +
-        '              Use shortcodes to define user names, email addresses, URLs, training pieces, dates and\n' +
-        '              many more properties\n' +
-        '            </p>\n' +
-        '            <p>Upload files as attachments to track who downloads and runs suspicious files</p>\n' +
-        '          </div>\n' +
-        '          <v-divider class="email-template__divider mt-2" />\n' +
-        '          <div class="email-template-preview__logos">\n' +
-        '            <v-icon class="email-template-preview__logos--facebook" color="#45619d"\n' +
-        '              >mdi-facebook</v-icon\n' +
-        '            >\n' +
-        '            <v-icon class="email-template-preview__logos--twitter" color="#fff">mdi-twitter</v-icon>\n' +
-        '            <v-icon class="email-template-preview__logos--instagram" color="#fff"\n' +
-        '              >mdi-instagram</v-icon\n' +
-        '            >\n' +
-        '          </div>\n' +
-        '          <v-divider class="email-template__divider mt-4" />\n' +
-        '          <div class="email-template-preview__footer">\n' +
-        '            <p>This email is sent by {User_Name} from {Company_Name} on {Date_Sent}</p>\n' +
-        '          </div>\n' +
-        '        </div>'
+      htmlData: null
     }
   },
   methods: {
@@ -227,8 +243,42 @@ export default {
       this.tabItems.push('randomLang')
     },
     editHtmlTemplate() {
+      this.htmlData = this.$refs.refPreview[0].outerHTML
       this.toggleShowGrapesModal()
     },
+    getPStyle() {
+      return {
+        maxWidth: '550px',
+        margin: '0 auto 6px auto',
+        fontSize: '14px',
+        lineHeight: 1.5,
+        color: 'rgba(0, 0, 0, 0.87)',
+        letterSpacing: 'normal'
+      }
+    },
+    getSubHeaderStyle() {
+      return {
+        maxWidth: '550px',
+        margin: '0 auto 14px auto',
+        fontSize: '18px',
+        fontWeight: 600,
+        lineHeight: 'normal',
+        letterSpacing: 'normal',
+        color: 'rgba(0, 0, 0, 0.87)'
+      }
+    },
+    getHeaderStyle() {
+      return {
+        maxWidth: '550px',
+        margin: '0 auto 14px auto',
+        fontSize: '34px',
+        fontWeight: 'normal',
+        lineHeight: 1.15,
+        letterSpacing: 'normal',
+        color: 'rgba(0, 0, 0, 0.87)'
+      }
+    },
+
     toggleShowGrapesModal() {
       this.showGrapesModal = !this.showGrapesModal
     },
@@ -326,6 +376,8 @@ export default {
         letter-spacing: normal;
         color: #ffffff;
       }
+      position: absolute;
+      right: 0;
     }
     &__body {
       max-width: 550px;
