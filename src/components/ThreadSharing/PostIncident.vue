@@ -3674,6 +3674,10 @@ export default {
           letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87);
           padding-left: 7px;
+          &:before {
+            content: '';
+            display: block;
+          }
         }
       }
 

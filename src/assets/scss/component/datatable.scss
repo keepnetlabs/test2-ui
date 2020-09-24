@@ -227,6 +227,10 @@
         .cell > div {
           text-overflow: ellipsis;
           overflow: hidden;
+          &:before{
+            content: '';
+            display: block;
+          }
         }
         .cell span {
           @media not all and (min-resolution:.001dpcm) {
@@ -235,6 +239,10 @@
               overflow: hidden;
             }
           }
+        &:before{
+          content: '';
+          display: block;
+        }
         }
 
         .el-table th > .cell {
