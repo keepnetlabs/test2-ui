@@ -295,7 +295,11 @@
                         </div>
                         <v-tooltip bottom opacity="1" z-index="9999">
                           <template v-slot:activator="{ on }">
-                            <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
+                            <div
+                              v-on="on"
+                              v-if="!att.isHidden"
+                              class="file-name safari-hide-tooltip max-char pl-2"
+                            >
                               {{ att.name }}
                             </div>
                             <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
@@ -578,7 +582,11 @@
                       </div>
                       <v-tooltip bottom opacity="1" z-index="9999">
                         <template v-slot:activator="{ on }">
-                          <div v-on="on" v-if="!att.isHidden" class="file-name max-char pl-2">
+                          <div
+                            v-on="on"
+                            v-if="!att.isHidden"
+                            class="file-name safari-hide-tooltip max-char pl-2"
+                          >
                             {{ att.name }}
                           </div>
                           <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
@@ -1292,7 +1300,7 @@
                                     <div
                                       v-on="on"
                                       v-if="!att.isHidden"
-                                      class="file-name max-char pl-2"
+                                      class="file-name safari-hide-tooltip max-char pl-2"
                                     >
                                       {{ att.name }}
                                     </div>
@@ -1530,7 +1538,7 @@
                                   <div
                                     :id="'detail-name-' + att.name"
                                     v-if="!att.isHidden"
-                                    class="file-name max-char single-post__details__section-header--sub"
+                                    class="file-name max-char safari-hide-tooltip single-post__details__section-header--sub"
                                   >
                                     {{ att.name }}
                                   </div>
