@@ -2424,7 +2424,7 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 500000,
-        orderBy: 'createDate',
+        orderBy: 'createTime',
         ascending: false
       }
       searchNotifiedMail(payload).then((response) => {
