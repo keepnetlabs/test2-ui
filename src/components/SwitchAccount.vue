@@ -60,7 +60,7 @@
                         ></v-img>
                       </div>
                       <div class="switch-right-wrapper">
-                        <div class="swith-account-title">{{ item.companyName }}</div>
+                        <div class="swith-account-title">{{ item.name }}</div>
                         <div v-if="index === 0" class="switch-account-description">
                           Manage all Companies as reseller
                         </div>
@@ -82,6 +82,9 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import { getCompanyByID } from '../api/company'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import { setGlobalUserData } from '../utils/functions'
 
 export default {
   name: 'SwitchAccount',
@@ -103,20 +106,28 @@ export default {
       selectCompany: 'dashboard/selectCompany',
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
+    getSelectedCompanyDetails(account) {
+      localStorage.setItem('isSelectCompany', true)
+      localStorage.setItem('companyId', account.resourceId)
+      localStorage.setItem('companyRequestId', account.resourceId)
+      localStorage.setItem('selectedCompanyRequestId', account.resourceId)
+      localStorage.setItem('selectedCompanyName', account.name)
+      this.$router.go(0)
+    },
     onClickSelectedAccount(account) {
+      this.getSelectedCompanyDetails(account)
       this.setDialogBar(false)
       this.selectCompany(account).then((response) => {
-        localStorage.setItem('companyManager', account.companyName)
-        localStorage.setItem('isSelectCompany', 'true')
+        /*localStorage.setItem('companyManager', account.companyName)
         localStorage.setItem('companyId', account.companyResourceId)
+        localStorage.setItem('companyRequestId', account.companyResourceId)
         localStorage.setItem('companyResourceId', account.companyResourceId)
         localStorage.setItem('companyName', account.companyName)
         localStorage.setItem('userId', account.companyResourceId)
         localStorage.setItem('businessCatId', account.userCompany.licenseTypeResourceId)
-        localStorage.setItem('userName', account.fullName)
+        localStorage.setItem('userName', account.fullName)*/
         //dispatch('dashboard/selectCompany', account, { root: true })
         //commit('SET_CURRENTUSER', account)
-        this.$router.go(0)
       })
 
       this.search = ''

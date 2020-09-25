@@ -682,12 +682,6 @@ export default {
         this.industryList = response.data.data
       })
     },
-    getAllCommunityTabsData() {
-      this.getAllCommunitiesListData()
-      this.getMyCommunitiesListData()
-      this.getInvitions()
-      this.getInvitationCount()
-    },
     isOwner(community) {
       return isOwner(community.membershipStatusId)
     },
@@ -751,11 +745,9 @@ export default {
       this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
-      this.communityLoading = true
       getInvitationCount()
         .then((response) => {
           this.invitationsCount = response.data.data.count
-          this.communityLoading = false
         })
 
         .catch((error) => {
@@ -765,9 +757,7 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.invitationsCount = []
-            this.communityLoading = false
           }
-          this.communityLoading = false
         })
       /*
         .catch(() => {
@@ -880,8 +870,9 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.listData = []
-            this.communityLoading = false
           }
+        })
+        .finally(() => {
           this.communityLoading = false
         })
     },
@@ -941,7 +932,6 @@ export default {
         .then((response) => {
           const { data } = response
           this.listData = data.data.results
-          this.communityLoading = false
         })
 
         .catch((error) => {
@@ -951,14 +941,14 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.listData = []
-            this.communityLoading = false
           }
+        })
+        .finally(() => {
           this.communityLoading = false
         })
     },
     getMyCommunitiesListData() {
       this.listData = []
-      this.communityLoading = true
       const payload = {
         pageNumber: 1,
         pageSize: 100,
@@ -1012,7 +1002,6 @@ export default {
         .then((response) => {
           const { data } = response
           this.listData = data.data.results
-          this.communityLoading = false
         })
         .catch((error) => {
           if (
@@ -1021,9 +1010,7 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.listData = []
-            this.communityLoading = false
           }
-          this.communityLoading = false
         })
     },
     communityDetails(item) {
@@ -1064,12 +1051,6 @@ export default {
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         }, 500)
       })
-      /*.catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to send join request'
-          })
-        })*/
     },
     createNewCommunity() {
       this.isWantToAddNewCommunity = true

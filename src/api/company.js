@@ -18,7 +18,7 @@ export function deleteCompanyGroup(id) {
   return testRequest.delete(`/company-groups/${id}`)
 }
 export function getCompanyByID(id) {
-  return testRequest.get(`/companies/${id}`)
+  return testRequest.get(`/companies/${id}`, { loading: true })
 }
 export function getCompanyGroups() {
   return testRequest.get(`/company-groups`)
@@ -57,4 +57,8 @@ export function updateCompany(id, payload) {
 }
 export function updateCompanyGroup(id, payload) {
   return testRequest.put(`/company-groups/${id}`, payload)
+}
+
+export function getCompanyList() {
+  return testRequest.get('/companies/my')
 }

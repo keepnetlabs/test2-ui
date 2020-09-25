@@ -19,6 +19,7 @@ import {
   getLastCampaigns,
   getCompanyInformationDummy
 } from '../../utils/constants'
+import { getCompanyList } from '../../api/company'
 
 const dashboard = {
   namespaced: true,
@@ -133,7 +134,13 @@ const dashboard = {
     },
     SET_SELECTED_COMPANY(state, payload) {
       const defaultAccountDropdown = []
-
+      if (localStorage.getItem('isSelectCompany')) {
+        payload.name = localStorage.getItem('selectedCompanyName')
+        payload.id = localStorage.getItem('selectedCompanyRequestId')
+        localStorage.removeItem('isSelectCompany')
+        localStorage.removeItem('selectedCompanyName')
+        localStorage.removeItem('selectedCompanyRequestId')
+      }
       state.selectedCompany = payload
       defaultAccountDropdown.push(payload)
       defaultAccountDropdown.push({
@@ -314,6 +321,8 @@ const dashboard = {
     },
     selectCompany({ commit, dispatch }, payload) {
       payload.companyResourceId && localStorage.setItem('companyId', payload.companyResourceId)
+      payload.companyResourceId &&
+        localStorage.setItem('companyRequestId', payload.companyResourceId)
       return selectCompany(payload).then(() => {
         commit('SET_SELECTED_COMPANY', payload)
         if (window.location.pathname !== '/') {
@@ -337,34 +346,20 @@ const dashboard = {
     },
     getDropdownCompanies({ commit }) {
       let _this = this
-      function getUnique(arr, comp) {
+      /*function getUnique(arr, comp) {
         const unique = arr
           .map((e) => e[comp])
-
           // store the keys of the unique objects
           .map((e, i, final) => final.indexOf(e) === i && i)
-
           // eliminate the dead keys & store unique objects
           .filter((e) => arr[e])
           .map((e) => arr[e])
-
         return unique
-      }
+      }*/
 
-      getDropdownCompanies().then((response) => {
-        const result = response.data.data && response.data.data.results
-        const orderedArr = []
-        if (_this.state.auth.user && _this.state.auth.user.userCompany) {
-          const curCompany = result.find(
-            (c) => c.companyResourceId === localStorage.getItem('companyId')
-          )
-          curCompany && orderedArr.push(curCompany)
-          const filteredArr = result.filter(
-            (comp) => comp.companyResourceId !== localStorage.getItem('companyId')
-          )
-          const orderAccount = [...orderedArr, ...filteredArr]
-          commit('SET_DROPDOWN_COMPANIES', getUnique(orderAccount, 'companyResourceId'))
-        }
+      getCompanyList().then((response) => {
+        const result = response.data.data && response.data.data
+        commit('SET_DROPDOWN_COMPANIES', result)
       })
     },
     changeFeedbackPopup({ commit }, payload) {

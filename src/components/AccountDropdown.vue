@@ -1,5 +1,5 @@
 <template>
-  <div v-if="companyDD && companyDD.length > 0" class="account-select d-none d-md-block">
+  <div v-if="companyDD" class="account-select d-none d-md-block">
     <v-select
       v-model="selectedCompany"
       :items="getDropdown"
@@ -10,7 +10,6 @@
       :menu-props="{ offsetY: true }"
       solo
       flat
-      disabled
     />
   </div>
 </template>
