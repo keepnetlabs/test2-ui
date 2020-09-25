@@ -1109,7 +1109,7 @@ export default {
     requestBodyReportedEmails: {
       pageNumber: 1,
       pageSize: 500000,
-      orderBy: 'createDate',
+      orderBy: 'createTime',
       ascending: false,
       filter: {
         Condition: 'AND',
