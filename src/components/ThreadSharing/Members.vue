@@ -443,7 +443,8 @@ export default {
       )
     },
     userCompany() {
-      return this.$store.state.auth.user.currentCompany.id
+      //return this.$store.state.auth.user.currentCompany.id @todo arda delete
+      return localStorage.getItem('companyName')
     }
   },
   methods: {
