@@ -21,25 +21,13 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <user-directories />
-          </v-tab-item>
-          <v-tab-item>
             <s-m-t-p-settings />
           </v-tab-item>
           <v-tab-item>
             <notification-templates />
           </v-tab-item>
           <v-tab-item>
-            <data-anonymization />
-          </v-tab-item>
-          <v-tab-item>
-            <white-labeling />
-          </v-tab-item>
-          <v-tab-item>
             <rest-api />
-          </v-tab-item>
-          <v-tab-item>
-            <sms-settings />
           </v-tab-item>
           <v-tab-item>
             <custom-api />
@@ -51,39 +39,23 @@
 </template>
 
 <script>
-import UserDirectories from '@/components/Company Settings/UserDirectories'
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import DataAnonymization from '@/components/Company Settings/DataAnonymization'
-import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import RestApi from '@/components/Company Settings/RestApi'
-import SmsSettings from '@/components/Company Settings/SmsSettings'
 import CustomApi from '@/components/Company Settings/CustomApi'
 export default {
   name: 'CompanySettings',
   components: {
     SMTPSettings,
-    UserDirectories,
     NotificationTemplates,
-    DataAnonymization,
-    WhiteLabeling,
     RestApi,
-    SmsSettings,
     CustomApi
   },
   data() {
     return {
       tab: 0,
-      tabItems: [
-        'User Directories',
-        'SMTP Settings',
-        'Notification Templates',
-        'Data Anonymization',
-        'White Labeling',
-        'Rest API',
-        'SMS Settings',
-        'Custom API'
-      ]
+      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API', 'Custom API']
     }
   },
   methods: {

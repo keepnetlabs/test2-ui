@@ -168,7 +168,7 @@
               <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Received Header</v-card-title>
                 <div class="email-details__received-header">
-                  <div :key="item.value + item.key" v-for="item in headersTable.data">
+                  <div :key="JSON.stringify(item)" v-for="item in headersTable.data">
                     {{
                       item.key.substring(0, 1).toUpperCase() +
                       item.key.substring(1, item.key.length)
@@ -374,7 +374,7 @@
               <div class="attachment-wrapper">
                 <div
                   v-for="(att, ind) of mailDetails.attachments"
-                  :key="ind + att.id"
+                  :key="att.resourceId"
                   :id="'attachment-' + att.name"
                   class="attachment red-attach"
                   :class="[
@@ -403,7 +403,7 @@
                       </div>
                     </template>
                     <v-list class="v-cart-dropdown-list el-table__action-buttons">
-                      <v-list-item @click="handleAttachmentClick(ind)">
+                      <v-list-item @click="handleAttachmentClick(ind, att.sha512)">
                         <v-icon>mdi-text-box-multiple</v-icon>
                         <span class="ml-4"> Attachment Details</span>
                       </v-list-item>
@@ -440,6 +440,7 @@
                 class="attachment-analysis-item"
                 v-for="(attachment, index) in mailDetails.attachments"
                 :key="attachment.resourceId"
+                :id="attachment.sha512"
               >
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div class="ed-title">
@@ -921,12 +922,15 @@ export default {
       }
       return result
     },
-    handleAttachmentClick(index) {
+    handleAttachmentClick(index, id) {
       this.tab = 4
+      this.panel.push(index)
+      this.showSecondCollapse.push(index)
       setTimeout(() => {
-        this.panel.push(index)
-        this.showSecondCollapse.push(index)
-      }, 100)
+        const anchor = document.createElement('a')
+        anchor.href = `#${id}`
+        anchor.click()
+      }, 800)
     },
     getResultOfAttachmentList(list) {
       let result = ''
@@ -948,13 +952,15 @@ export default {
     writeToNavigator(value, index, type) {
       if (type === 'sha') {
         this.isCopiedShaClipboard.push(index)
+        setTimeout(() => {
+          this.isCopiedShaClipboard.splice(index, 1)
+        }, 5000)
       } else if (type === 'md5') {
         this.isCopiedMd5Clipboard.push(index)
+        setTimeout(() => {
+          this.isCopiedMd5Clipboard.splice(index, 1)
+        }, 5000)
       }
-      this.$store.dispatch('common/createSnackBar', {
-        message: 'Copied to clipboard',
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-      })
       navigator.clipboard.writeText(value)
     },
     handleDownloadEmail() {

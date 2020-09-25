@@ -74,22 +74,6 @@
             v-model.trim="formValues.role"
           ></v-select>
         </form-group>
-        <form-group>
-          <v-checkbox
-            v-model="formValues.isTwoStep"
-            color="#2196f3"
-            class="mt-n3"
-            label="Two Step Authentication"
-          />
-        </form-group>
-        <form-group>
-          <v-checkbox
-            class="mt-n1"
-            v-model="formValues.isLdap"
-            color="#2196f3"
-            label="LDAP Authentication"
-          />
-        </form-group>
         <form-group v-if="selectedRow">
           <v-btn
             color="#2196f3"
@@ -232,6 +216,10 @@ export default {
       this.formValues.lastName = lastName
       this.formValues.role = roles
       this.formValues.statusName = statusName
+      this.formValues.phoneNumber = {
+        code: phoneNumber.substring(0, 3),
+        val: phoneNumber.substring(3, phoneNumber.length)
+      }
     }
   }
 }

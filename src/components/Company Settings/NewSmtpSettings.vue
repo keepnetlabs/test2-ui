@@ -97,24 +97,6 @@
           label="Has SMTP Relay"
         />
       </form-group>
-      <form-group
-        title="Make Available For"
-        sub-title="Companies that will see this setting in their libraries"
-        has-hint
-      >
-        <v-select
-          v-model.trim="formValues.company"
-          :items="companyItems"
-          class="new-integration__select"
-          dense
-          multiple
-          outlined
-          hint="*Required"
-          persistent-hint
-          :rules="[(v) => validations.required(v, 'Required')]"
-          placeholder="Select option"
-        ></v-select>
-      </form-group>
       <form-group title="Reply to">
         <v-text-field
           placeholder="Enter Reply to"
@@ -199,7 +181,6 @@ export default {
         isAuth: false,
         isSSL: false,
         isSmtpRelay: false,
-        company: '',
         replyTo: '',
         errorTo: '',
         cc: '',

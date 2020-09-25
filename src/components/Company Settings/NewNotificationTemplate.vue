@@ -67,6 +67,9 @@
             v-model.trim="formValues.subject"
           ></v-text-field>
         </form-group>
+        <form-group title="Email Template" class-name="email-template">
+          <email-template />
+        </form-group>
       </v-form>
     </template>
   </app-modal>
@@ -77,9 +80,11 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { mail } from '@/utils/validations'
+import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 export default {
   name: 'NewNotificationTemplate',
   components: {
+    EmailTemplate,
     AppModal,
     AppModalBodyHeader,
     FormGroup
