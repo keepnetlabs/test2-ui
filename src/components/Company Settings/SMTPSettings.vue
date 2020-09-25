@@ -122,7 +122,7 @@ export default {
         empty: {
           message: 'You do not have any SMTP configuration, yet',
           subMes: 'Create a new user directory integration',
-          btn: 'Create Integration',
+          btn: 'Create SMTP Configuration',
           icon: 'mdi-plus'
         },
         addButton: {

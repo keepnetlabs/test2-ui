@@ -55,7 +55,7 @@ export default {
         empty: {
           message: LABEL_STORE.NO_NOTIFICATION_TEMPLATE_DEFINED,
           subMes: 'Create a new user directory integration',
-          btn: 'Create Integration',
+          btn: 'Create Notification Template',
           icon: 'mdi-plus'
         }
       },
