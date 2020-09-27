@@ -167,10 +167,10 @@
                           'cluster-view__item',
                           isEqualCluster(item.name) && 'cluster-view__item--selected'
                         ]"
-                        >{{ item.name }}</span
+                      >{{ item.name }}</span
                       >
                       <v-icon class="ml-4 mt-n1" color="#2196f3" v-if="isEqualCluster(item.name)"
-                        >mdi-check
+                      >mdi-check
                       </v-icon>
                     </v-list-item-title>
                   </v-list-item>
@@ -237,8 +237,8 @@
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{
-                  (addButton && addButton.tooltip) || 'Add Users'
-                }}</span>
+                    (addButton && addButton.tooltip) || 'Add Users'
+                  }}</span>
               </v-tooltip>
             </slot>
             <v-menu bottom left offset-y v-if="isDownloadable">
@@ -587,7 +587,7 @@
                     <template v-slot:activator="{ on }">
                       <v-btn class="btn-hover ml-1" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
-                          >mdi-dots-vertical
+                        >mdi-dots-vertical
                         </v-icon>
                       </v-btn>
                     </template>
@@ -1050,13 +1050,7 @@ export default {
   watch: {
     tableData(data) {
       if (data && this.groupable) {
-        this.totalLength = data.reduce((acc, item) => {
-          if (item.children) {
-            return acc + 1 + item.children.length
-          } else {
-            return acc + 1
-          }
-        }, 0)
+        this.totalLength = this.getTotalLength(data)
       }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
@@ -1197,15 +1191,7 @@ export default {
         }
 
         for (let item of selection) {
-          if (item.children) {
-            for (let child of item.children) {
-              this.$refs.elTableRef.toggleRowSelection(child, true)
-              this.clusteredItems.push(child)
-              if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
-                selection.push(child)
-              }
-            }
-          }
+          this.selectChildren(item, selection)
         }
 
         this.multipleSelection = selection
@@ -1214,6 +1200,32 @@ export default {
         }
         this.$emit('handleSelectionChange', selection)
       }
+    },
+    selectChildren(item, selection) {
+      if (item.children) {
+        for (let child of item.children) {
+          if (child.children) {
+            this.selectChildren(child, selection)
+          }
+          this.$refs.elTableRef.toggleRowSelection(child, true)
+          this.clusteredItems.push(child)
+          if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
+            selection.push(child)
+          }
+        }
+      }
+    },
+    calculateLength(children) {
+      return children.reduce((acc, item) => {
+        if (item.children) {
+          return acc + 1 + this.calculateLength(item.children)
+        } else {
+          return acc + 1
+        }
+      }, 0)
+    },
+    getTotalLength(data) {
+      return this.calculateLength(data)
     },
     setCellClass(obj) {
       /*
@@ -1301,7 +1313,7 @@ export default {
         const isDate = data.reduce((acc, item) => {
           acc.push(
             new Date(item[sortProps.prop]) !== 'Invalid Date' &&
-              !isNaN(new Date(item[sortProps.prop]))
+            !isNaN(new Date(item[sortProps.prop]))
           )
           return acc
         }, [])
@@ -1509,11 +1521,39 @@ export default {
       }
       this.$emit('handleSelectionChange', val)
     },
+    selectChildrenByRowCheckbox(rows = [], selection = []) {
+      console.log('rows', rows)
+      for (let row of rows) {
+        if (row.children) {
+          this.selectChildrenByRowCheckbox(row.children, selection)
+        }
+        this.$refs.elTableRef.toggleRowSelection(row, true)
+        if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
+          this.clusteredItems.push(row)
+          selection.push(row)
+        }
+      }
+    },
+    unSelectChildrenByRowCheckbox(rows = [], selection = []) {
+      for (let row of rows) {
+        if (row.children) {
+          this.unSelectChildrenByRowCheckbox(row.children, selection)
+        }
+        this.$refs.elTableRef.toggleRowSelection(row, false)
+        const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row))
+        if (ind > -1) {
+          selection.splice(ind, 1)
+        }
+      }
+    },
     handleSelect(selection, row) {
       if (this.groupable) {
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
             for (let child of row.children) {
+              if (child.children) {
+                this.selectChildrenByRowCheckbox(child.children, selection)
+              }
               this.$refs.elTableRef.toggleRowSelection(child, true)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
                 this.clusteredItems.push(child)
@@ -1522,6 +1562,9 @@ export default {
             }
           } else {
             for (let child of row.children) {
+              if (child.children) {
+                this.unSelectChildrenByRowCheckbox(child.children, selection)
+              }
               this.$refs.elTableRef.toggleRowSelection(child, false)
               const ind = selection.findIndex(
                 (item) => JSON.stringify(item) === JSON.stringify(child)
