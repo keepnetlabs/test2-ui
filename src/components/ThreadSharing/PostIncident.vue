@@ -605,423 +605,388 @@
                 :class="{ 'minify-filter': !filterOpened }"
                 class="investigation-filters"
               >
-                <div :class="{ 'minify-part': !filterOpened }" class="filter-header">
-                  <div class="select-header" v-if="filterOpened">Select Attributes</div>
-                  <v-icon @click="filterOpened = true" :class="{ 'display-none': filterOpened }"
-                    >mdi-arrow-left
-                  </v-icon>
-                  <v-icon @click="filterOpened = false" :class="{ 'display-none': !filterOpened }"
-                    >mdi-arrow-right
-                  </v-icon>
-                </div>
-                <div :class="{ 'minify-part': !filterOpened }" class="filter-part">
-                  <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/header-all.svg" />
+                <div class="investigation-filters__area">
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex">
+                      <span class="investigation-filters__area--filter__title">Share</span>
                     </div>
-                    <v-switch v-model="allHeader" @change="headerValChange"></v-switch>
-                    <label v-if="filterOpened">All Header</label>
+                    <div class="d-flex">
+                      <span class="investigation-filters__area--filter__title mr-4">Mark as</span>
+                    </div>
                   </div>
-                  <div
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                    v-if="uploadRespond.subject"
-                  >
-                    <div v-if="!uploadRespond.isSubjectFlagged" class="img-wrapper">
-                      <v-icon>mdi-text-short</v-icon>
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex" v-if="uploadRespond.subject">
+                      <v-checkbox
+                        v-model="allHeader"
+                        @change="headerValChange"
+                        hide-details
+                        :indeterminate="!allHeader"
+                      ></v-checkbox>
+                      <label v-if="filterOpened">All Header</label>
                     </div>
-                    <div v-else class="img-wrapper">
-                      <v-icon color="#f56c6c">mdi-text-short</v-icon>
+                    <div class="d-flex">
+                      <div class="img-wrapper mr-10">
+                        <v-icon>mdi-menu</v-icon>
+                        <span class="investigation-filters__area--filter__all-header">All</span>
+                      </div>
                     </div>
-                    <v-switch
-                      v-model="uploadRespond.isSubjectHidden"
-                      @change="subjectValChange"
-                    ></v-switch>
-                    <label v-if="filterOpened">Subject</label>
-                    <v-menu v-model="subSettings" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': subSettings }"
-                            v-on="on"
-                            @click="subSettings = !subSettings"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isSubjectFlagged = false"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!uploadRespond.isSubjectFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isSubjectFlagged = true"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="uploadRespond.isSubjectFlagged">mdi-check</v-icon>
-                            </div>
-                            Flagged Subject
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
                   </div>
-                  <div
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                    v-if="uploadRespond.from"
-                  >
-                    <div v-if="!uploadRespond.isFromFlagged" class="img-wrapper">
-                      <v-icon>mdi-account-arrow-left</v-icon>
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex" v-if="uploadRespond.subject">
+                      <v-checkbox
+                        v-model="uploadRespond.isSubjectHidden"
+                        @change="subjectValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">Subject</label>
                     </div>
-                    <div v-else class="img-wrapper">
-                      <v-icon color="#f56c6c">mdi-account-arrow-left</v-icon>
+                    <div class="d-flex">
+                      <div v-if="!uploadRespond.isSubjectFlagged" class="img-wrapper">
+                        <v-icon>mdi-text-short</v-icon>
+                      </div>
+                      <div v-else class="img-wrapper">
+                        <v-icon color="#f56c6c">mdi-text-short</v-icon>
+                      </div>
+                      <v-menu v-model="subSettings" right offset-x transition="scale-transition">
+                        <template v-slot:activator="{ on }">
+                          <v-btn class="chevron-btn-menu" icon>
+                            <v-icon
+                              :class="{ 'chevron-down': subSettings }"
+                              v-on="on"
+                              @click="subSettings = !subSettings"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isSubjectFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isSubjectFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isSubjectFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isSubjectFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged Subject
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
                     </div>
-                    <v-switch
-                      v-model="uploadRespond.isFromHidden"
-                      @change="fromValChange"
-                    ></v-switch>
-                    <label v-if="filterOpened">From</label>
-                    <v-menu v-model="fromSettings" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': fromSettings }"
-                            v-on="on"
-                            @click="fromSettings = !fromSettings"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isFromFlagged = false"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!uploadRespond.isFromFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isFromFlagged = true"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="uploadRespond.isFromFlagged">mdi-check</v-icon>
-                            </div>
-                            Flagged From
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
                   </div>
-                  <div
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                    v-if="uploadRespond.to && !!uploadRespond.to.length"
-                  >
-                    <div v-if="!uploadRespond.isToFlagged" class="img-wrapper">
-                      <v-icon>mdi-account-arrow-right</v-icon>
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex" v-if="uploadRespond.from">
+                      <v-checkbox
+                        v-model="uploadRespond.isFromHidden"
+                        @change="fromValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">From</label>
                     </div>
-                    <div v-else class="img-wrapper">
-                      <v-icon color="#f56c6c">mdi-account-arrow-right</v-icon>
+                    <div class="d-flex">
+                      <div v-if="!uploadRespond.isFromFlagged" class="img-wrapper">
+                        <v-icon>mdi-account-arrow-right</v-icon>
+                      </div>
+                      <div v-else class="img-wrapper">
+                        <v-icon color="#f56c6c">mdi-account-arrow-right</v-icon>
+                      </div>
+                      <v-menu v-model="fromSettings" right offset-x transition="scale-transition">
+                        <template v-slot:activator="{ on }">
+                          <v-btn class="chevron-btn-menu" icon>
+                            <v-icon
+                              :class="{ 'chevron-down': fromSettings }"
+                              v-on="on"
+                              @click="fromSettings = !fromSettings"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isFromFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isFromFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isFromFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isFromFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged From
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
                     </div>
-                    <v-switch v-model="uploadRespond.isToHidden" @change="toValChange"></v-switch>
-                    <label v-if="filterOpened">To</label>
-                    <v-menu v-model="toSettings" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': toSettings }"
-                            v-on="on"
-                            @click="toSettings = !toSettings"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isToFlagged = false"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!uploadRespond.isToFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isToFlagged = true"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="uploadRespond.isToFlagged">mdi-check</v-icon>
-                            </div>
-                            Flagged To
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
                   </div>
-                  <div
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                    v-if="uploadRespond.cc && !!uploadRespond.cc.length"
-                  >
-                    <div v-if="!uploadRespond.isCcFlagged" class="img-wrapper">
-                      <v-icon>mdi-account-arrow-right</v-icon>
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex" v-if="uploadRespond.to && uploadRespond.to.length">
+                      <v-checkbox
+                        v-model="uploadRespond.isToHidden"
+                        @change="toValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">To</label>
                     </div>
-                    <div v-else class="img-wrapper">
-                      <v-icon color="#f56c6c">mdi-account-arrow-right</v-icon>
+                    <div class="d-flex">
+                      <div class="img-wrapper">
+                        <v-icon :color="uploadRespond.isToFlagged ? '#f56c6c' : ''"
+                          >mdi-account-arrow-left</v-icon
+                        >
+                      </div>
+                      <v-menu v-model="toSettings" right offset-x transition="scale-transition">
+                        <template v-slot:activator="{ on }">
+                          <v-btn class="chevron-btn-menu" icon>
+                            <v-icon
+                              :class="{ 'chevron-down': toSettings }"
+                              v-on="on"
+                              @click="toSettings = !toSettings"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isToFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isToFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isToFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isToFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged To
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
                     </div>
-                    <v-switch v-model="uploadRespond.isCcHidden" @change="ccValChange"></v-switch>
-                    <label v-if="filterOpened">CC</label>
-                    <v-menu v-model="ccSettings" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': ccSettings }"
-                            v-on="on"
-                            @click="ccSettings = !ccSettings"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isCcFlagged = false"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!uploadRespond.isCcFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isCcFlagged = true"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="uploadRespond.isCcFlagged">mdi-check</v-icon>
-                            </div>
-                            Flagged CC
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-                  <div
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
-                    v-if="uploadRespond.bcc && !!uploadRespond.bcc.length"
-                  >
-                    <div v-if="!uploadRespond.isBccFlagged" class="img-wrapper">
-                      <v-icon>mdi-account-arrow-right</v-icon>
-                    </div>
-                    <div v-else class="img-wrapper">
-                      <v-icon color="#f56c6c">mdi-account-arrow-right</v-icon>
-                    </div>
-                    <v-switch v-model="uploadRespond.isBccHidden" @change="bccValChange"></v-switch>
-                    <label v-if="filterOpened">BCC</label>
-                    <v-menu v-model="bccSettings" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': bccSettings }"
-                            v-on="on"
-                            @click="bccSettings = !bccSettings"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isBccFlagged = false"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!uploadRespond.isBccFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="uploadRespond.isBccFlagged = true"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="uploadRespond.isBccFlagged">mdi-check</v-icon>
-                            </div>
-                            Flagged BCC
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
                   </div>
                 </div>
                 <div
-                  :class="{ 'minify-part': !filterOpened }"
-                  class="filter-part pt-5"
+                  class="investigation-filters__area--breaker"
                   v-if="uploadRespond.urls && !!uploadRespond.urls.length"
                 >
-                  <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/link.svg" />
+                  <div class="investigation-filters__area--breaker__line"></div>
+                </div>
+                <div
+                  class="investigation-filters__area"
+                  v-if="uploadRespond.urls && !!uploadRespond.urls.length"
+                >
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex">
+                      <v-checkbox
+                        v-model="allLinks"
+                        @change="allUrlsValChange"
+                        :indeterminate="!allLinks"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">All Links</label>
                     </div>
-                    <v-switch v-model="allLinks" @change="allUrlsValChange"></v-switch>
-                    <label v-if="filterOpened">All Links</label>
+                    <div class="d-flex">
+                      <div class="img-wrapper mr-10">
+                        <v-icon>mdi-link</v-icon
+                        ><span class="investigation-filters__area--filter__all-header">All</span>
+                      </div>
+                    </div>
                   </div>
                   <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
                     v-for="(url, ind) of uploadRespond.urls"
                     :key="ind + url.url + 'url'"
                     :id="ind + url.url + 'url'"
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
                   >
-                    <div v-if="!url.isFlagged" class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/link.svg" />
-                    </div>
-                    <div v-else class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/link-red.svg" />
-                    </div>
-                    <v-switch
-                      :id="'attach-switch-' + url.url"
-                      v-model="url.isHidden"
-                      @change="urlSwitchChange(url, ind)"
-                    ></v-switch>
-                    <v-tooltip bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
-                        <label v-on="on" v-if="filterOpened">{{ url.name || url.url }}</label>
-                      </template>
-                      <span>{{ url.name || url.url }}</span>
-                    </v-tooltip>
-                    <v-menu v-model="attcChevron[ind]" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': attcChevron[ind] }"
+                    <div class="d-flex">
+                      <v-checkbox
+                        v-model="url.isHidden"
+                        @change="urlSwitchChange(url, ind)"
+                        hide-details
+                      ></v-checkbox>
+                      <v-tooltip bottom opacity="1" z-index="9999">
+                        <template v-slot:activator="{ on }">
+                          <label
                             v-on="on"
-                            @click="attcChevron[ind] = !attcChevron[ind]"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="url.isFlagged = false"
-                          @change="urlSwitchChange(url, ind)"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!url.isFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="url.isFlagged = true"
-                          @change="urlSwitchChange(url, ind)"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="url.isFlagged">mdi-check</v-icon>
-                            </div>
-                            Phishing Link
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                            v-if="filterOpened"
+                            class="investigation-filters__area--filter--label"
+                            >{{ url.name || url.url }}</label
+                          >
+                        </template>
+                        <span>{{ url.name || url.url }}</span>
+                      </v-tooltip>
+                    </div>
+                    <div class="d-flex">
+                      <div class="img-wrapper">
+                        <v-icon :color="url.isFlagged ? '#f56c6c' : ''">mdi-link</v-icon>
+                      </div>
+                      <v-menu
+                        v-model="attcChevron[ind]"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-btn class="chevron-btn-menu" icon>
+                            <v-icon
+                              :class="{ 'chevron-down': attcChevron[ind] }"
+                              v-on="on"
+                              @click="attcChevron[ind] = !attcChevron[ind]"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="url.isFlagged = false"
+                            @change="urlSwitchChange(url, ind)"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!url.isFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="url.isFlagged = true"
+                            @change="urlSwitchChange(url, ind)"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="url.isFlagged">mdi-check</v-icon>
+                              </div>
+                              Phishing Link
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
                   </div>
                 </div>
-
                 <div
-                  :class="{ 'minify-part': !filterOpened }"
-                  class="filter-part pt-5"
+                  class="investigation-filters__area--breaker"
                   v-if="uploadRespond.attachments && !!uploadRespond.attachments.length"
                 >
-                  <div :class="{ 'minify-switch': !filterOpened }" class="switch-row">
-                    <div class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/header-all.svg" />
+                  <div class="investigation-filters__area--breaker__line"></div>
+                </div>
+                <div
+                  class="investigation-filters__area"
+                  v-if="uploadRespond.attachments && !!uploadRespond.attachments.length"
+                >
+                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                    <div class="d-flex">
+                      <v-checkbox
+                        v-model="allAttachments"
+                        @change="allAttachmentsValChange"
+                        :indeterminate="!allAttachments"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">All Attachments</label>
                     </div>
-                    <v-switch v-model="allAttachments" @change="allAttachmentsValChange"></v-switch>
-                    <label v-if="filterOpened">All Attachments</label>
+                    <div class="d-flex">
+                      <div class="img-wrapper mr-10">
+                        <v-icon>mdi-paperclip</v-icon
+                        ><span class="investigation-filters__area--filter__all-header">All</span>
+                      </div>
+                    </div>
                   </div>
                   <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
                     v-for="(attachment, ind) of uploadRespond.attachments"
                     :key="ind + attachment.name"
-                    :class="{ 'minify-switch': !filterOpened }"
-                    class="switch-row"
                   >
-                    <div v-if="!attachment.isFlagged" class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/attach-file.svg" />
-                    </div>
-                    <div v-else class="img-wrapper">
-                      <img src="../../assets/img/filter-icons/attach-red.svg" />
-                    </div>
-                    <v-switch
-                      :id="'attach-switch-' + attachment.name"
-                      v-model="attachment.isHidden"
-                      @change="checkAttachmentsChangeForAllLinksSwitch()"
-                    ></v-switch>
-                    <label v-if="filterOpened">{{ attachment.name }}</label>
-                    <v-menu v-model="urls[ind]" right offset-x transition="scale-transition">
-                      <template v-slot:activator="{ on }">
-                        <v-btn class="chevron-btn-menu" icon>
-                          <v-icon
-                            :class="{ 'chevron-down': urls[ind] }"
+                    <div class="d-flex">
+                      <v-checkbox
+                        v-model="attachment.isHidden"
+                        @change="checkAttachmentsChangeForAllLinksSwitch()"
+                        hide-details
+                      ></v-checkbox>
+                      <v-tooltip bottom opacity="1" z-index="9999">
+                        <template v-slot:activator="{ on }">
+                          <label
                             v-on="on"
-                            @click="urls[ind] = !urls[ind]"
-                            >mdi-chevron-down
-                          </v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="attachment.isFlagged = false"
+                            v-if="filterOpened"
+                            class="investigation-filters__area--filter--label"
+                            >{{ attachment.name }}</label
+                          >
+                        </template>
+                        <span>{{ attachment.name }}</span>
+                      </v-tooltip>
+                    </div>
+                    <div class="d-flex">
+                      <div class="img-wrapper">
+                        <v-icon :color="attachment.isFlagged ? '#f56c6c' : ''"
+                          >mdi-paperclip</v-icon
                         >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="!attachment.isFlagged">mdi-check</v-icon>
-                            </div>
-                            None
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          class="pl-1 mal-list-wrapper"
-                          @click="attachment.isFlagged = true"
-                        >
-                          <v-list-item-title class="mal-list-row">
-                            <div class="mal-icon-wrapper">
-                              <v-icon v-if="attachment.isFlagged">mdi-check</v-icon>
-                            </div>
-                            Malicious File
-                          </v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
+                      </div>
+                      <v-menu v-model="urls[ind]" right offset-x transition="scale-transition">
+                        <template v-slot:activator="{ on }">
+                          <v-btn class="chevron-btn-menu" icon>
+                            <v-icon
+                              :class="{ 'chevron-down': urls[ind] }"
+                              v-on="on"
+                              @click="urls[ind] = !urls[ind]"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="attachment.isFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!attachment.isFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="attachment.isFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="attachment.isFlagged">mdi-check</v-icon>
+                              </div>
+                              Malicious File
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
                   </div>
                 </div>
                 <span v-if="allFiltersClosed()" class="filter-no-selected" id="select-one-attr"
@@ -2899,6 +2864,10 @@ export default {
     }
   }
 
+  .img-wrapper {
+    position: relative;
+  }
+
   .footer-actions {
     align-items: center;
     bottom: 0;
@@ -3408,6 +3377,57 @@ export default {
         line-height: normal;
         letter-spacing: normal;
         color: #d0021b;
+      }
+
+      &__area {
+        width: 100%;
+        padding: 24px;
+        max-height: 300px;
+        &--breaker {
+          padding: 0 24px;
+          width: 100%;
+          &__line {
+            background-color: #b3d4fc;
+            height: 1px;
+            width: 100%;
+          }
+        }
+        &--filter {
+          width: 100%;
+          line-height: 2.3;
+          padding: 3px 0;
+          font-size: 14px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
+          &__title {
+            font-size: 12px;
+            font-weight: 600;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: normal;
+            letter-spacing: normal;
+            color: rgba(0, 0, 0, 0.87);
+          }
+          &--label {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          &__all-header {
+            color: #757575;
+            position: absolute;
+            bottom: -5px;
+            right: -8px;
+            font-size: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            cursor: default;
+          }
+        }
       }
     }
   }
@@ -4745,8 +4765,6 @@ input[type=file]::-webkit-file-upload-button {
   .v-btn--icon.v-size--default.chevron-btn-menu {
     height: 30px !important;
     width: 30px !important;
-    margin-top: 10px;
-
     i {
       height: 30px !important;
       width: 30px !important;
