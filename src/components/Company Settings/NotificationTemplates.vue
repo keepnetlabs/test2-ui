@@ -54,12 +54,12 @@ export default {
           {
             property: PROPERTY_STORE.NAME,
             align: 'left',
-            label: getStoreValue(PROPERTY_STORE.NAME),
+            label: 'Company Name',
             fixed: true,
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
+            width: 200,
             isEditable: true
           }
         ],
@@ -120,7 +120,7 @@ export default {
         children: [
           {
             id: 40,
-            name: 'Türk Hava Yolları Uçak Bakım'
+            name: 'Türk Hava Yolları Uçak'
           }
         ]
       },
