@@ -949,6 +949,7 @@ export default {
     },
     getMyCommunitiesListData() {
       this.listData = []
+      this.communityLoading = true
       const payload = {
         pageNumber: 1,
         pageSize: 100,
@@ -1012,6 +1013,7 @@ export default {
             this.listData = []
           }
         })
+        .finally(() => (this.communityLoading = false))
     },
     communityDetails(item) {
       if (isOwnerOrMember(item.membershipStatusId)) {

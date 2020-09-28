@@ -44,7 +44,6 @@
             </div>
           </div>
         </div>
-
         <div class="phishing-reporter__header-right-column">
           <div class="phishing-reporter__stats-cards">
             <div class="phishing-reporter__stats-card">
@@ -142,16 +141,18 @@ import Settings from '../components/PhishingReporter/Settings/Settings'
 import Users from '../components/PhishingReporter/Users'
 import FirstTime from '../components/PhishingReporter/Settings/FirstTime'
 import { getPhishingReporter, getPhishingReportSummary } from '@/api/phishingReporter'
-
+import PhishingReporterTopBar from '../components/SkeletonLoading/PhishingReporterTopBar'
 export default {
   name: 'PhishingReporter',
   components: {
     Settings,
     Users,
-    FirstTime
+    FirstTime,
+    PhishingReporterTopBar
   },
   data() {
     return {
+      loading: true,
       tab: 0,
       phishingReportSummary: null,
       tabComponent: {
@@ -187,6 +188,7 @@ export default {
       this.getPhishingReportSummary()
     },
     getPhishingReportSummary() {
+      this.loading = true
       const dateObj = this.getDates()
       getPhishingReportSummary({
         startDate: dateObj.startDate,
@@ -202,6 +204,7 @@ export default {
         .catch(() => {
           this.phishingReportSummary = {}
         })
+        .finally(() => (this.loading = false))
     },
     getDateValue(value) {
       value = typeof value == 'string' ? value : value.toString()

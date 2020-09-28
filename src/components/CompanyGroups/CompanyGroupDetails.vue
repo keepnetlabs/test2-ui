@@ -35,28 +35,32 @@
       @changeModalStatus="handleCreateItemModal"
       :is-edit="editCreateGroup"
     />
-
-    <datatable
-      ref="refDataList"
-      :addButton="tableOptions.addButton"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'companyList'"
-      :rowActions="tableOptions.rowActions"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      :is-downloadable="false"
-      @addButton="addButton"
-      @edit="handleTableItemEdit"
-      @remove="handleTableItemRemove"
-      @editAction="editAction"
-      @AddGroupToModal="handleAddGroupToModal"
-      @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
-    />
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          ref="refDataList"
+          :addButton="tableOptions.addButton"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.iEmpty"
+          :filterable="true"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'companyList'"
+          :rowActions="tableOptions.rowActions"
+          :selectEvent="tableOptions.selectEvent"
+          :selectable="true"
+          :is-downloadable="false"
+          @addButton="addButton"
+          @edit="handleTableItemEdit"
+          @remove="handleTableItemRemove"
+          @editAction="editAction"
+          @AddGroupToModal="handleAddGroupToModal"
+          @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+        />
+      </template>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -79,7 +83,7 @@ import {
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'CompanyGroupDetails',
   components: {
@@ -87,7 +91,8 @@ export default {
     AddGroupToModal,
     CompanyCreateOrEdit,
     Datatable,
-    RemoveModal
+    RemoveModal,
+    DatatableLoading
   },
   props: {
     groupId: {
@@ -96,6 +101,7 @@ export default {
     }
   },
   data: () => ({
+    loading: true,
     editCreateGroup: false,
     forCompany: true,
     tableData: [],
@@ -249,17 +255,18 @@ export default {
   },
   methods: {
     getTableData() {
+      this.loading = true
       searchGroupCompanies(this.groupId, this.payload)
         .then((response) => {
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? response.data.data.results
               : []
-          this.$refs.refDataList.loadWithDataArray(this.tableData)
         })
         .catch((error) => {
-          this.$refs.refDataList.loadWithDataArray([])
+          this.tableData = []
         })
+        .finally(() => (this.loading = false))
     },
     handleTableItemEdit(row) {},
     handleTableItemRemove(selectedItem) {

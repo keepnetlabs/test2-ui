@@ -30,55 +30,62 @@
       @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
       v-if="isWantToShowCustomFieldsModal"
     />
-
-    <datatable
-      :addButton="tableOptions.addButton"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'peopleTable'"
-      :rowActions="tableOptions.rowActions"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      :setClassName="setCellClassName"
-      @addToGroup="handleAddToGroup"
-      @createGroupWithUser="handleCreateGroupWithUser"
-      @submenuItemClick="handleSubMenuItemClick"
-      @syncUser="handleSyncUser"
-      @delete="handleDelete"
-      ref="refPeopleTable"
-      @editTargetUsers="handleEditTargetUsers"
-      @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
-    >
-      <template v-slot:addUsers>
-        <v-menu :offset-y="true" bottom left>
-          <template v-slot:activator="{ on: menu }">
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          :addButton="tableOptions.addButton"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.iEmpty"
+          :filterable="true"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'peopleTable'"
+          :rowActions="tableOptions.rowActions"
+          :selectEvent="tableOptions.selectEvent"
+          :selectable="true"
+          :setClassName="setCellClassName"
+          @addToGroup="handleAddToGroup"
+          @createGroupWithUser="handleCreateGroupWithUser"
+          @submenuItemClick="handleSubMenuItemClick"
+          @syncUser="handleSyncUser"
+          @delete="handleDelete"
+          ref="refPeopleTable"
+          @editTargetUsers="handleEditTargetUsers"
+          @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+        >
+          <template v-slot:addUsers>
+            <v-menu :offset-y="true" bottom left>
+              <template v-slot:activator="{ on: menu }">
+                <v-tooltip bottom opacity="1">
+                  <template v-slot:activator="{ on: tooltip }">
+                    <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                  </template>
+                  <span class="tooltip-span">{{ 'Add User' }}</span>
+                </v-tooltip>
               </template>
-              <span class="tooltip-span">{{ 'Add User' }}</span>
-            </v-tooltip>
+              <v-list>
+                <v-list-item
+                  :key="item"
+                  @click="handleAddUsers(item)"
+                  v-for="item in addUsersItems"
+                >
+                  <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
-          <v-list>
-            <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
-              <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          <template v-slot:settings-popup-body>
+            <div class="edit-fields" @click="handleEditFieldsClick">
+              EDIT FIELDS
+            </div>
+          </template>
+        </datatable>
       </template>
-
-      <template v-slot:settings-popup-body>
-        <div class="edit-fields" @click="handleEditFieldsClick">
-          EDIT FIELDS
-        </div>
-      </template>
-    </datatable>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -100,7 +107,7 @@ import {
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'People',
   components: {
@@ -109,9 +116,12 @@ export default {
     DeleteUserModal,
     Datatable,
     AddUsersManuallyModal,
-    AddUserModal
+    AddUserModal,
+    DatatableLoading
   },
   data: () => ({
+    tableData: [],
+    loading: true,
     isWantToShowDeleteUserModal: false,
     selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
@@ -383,16 +393,17 @@ export default {
         orderBy: 'CreateTime',
         ascending: false
       }
+      this.loading = true
       getTargetUsers(payload)
         .then((response) => {
-          const { data } = response.data
-          this.$refs.refPeopleTable.loadWithDataArray(
+          let data = response.data.data
+          this.tableData =
             data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
-          )
         })
         .catch((error) => {
-          this.$refs.refPeopleTable.loadWithDataArray([])
+          this.tableData = []
         })
+        .finally(() => (this.loading = false))
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       getTargetUserCustomFieldsByCompanyId()

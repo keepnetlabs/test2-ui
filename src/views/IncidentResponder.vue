@@ -61,200 +61,219 @@
         :selectedMail="selectedEmail"
       />
       <div class="columns-row">
-        <div
-          class="dashboard-cards phishing-reporter mr-2"
-          :class="{
-            'no-data__opacity-blue': isPhishingEmpty(irSummary)
-          }"
-        >
-          <div class="card-header">
-            <span class="head">Phishing Reporter</span>
-            <router-link to="/phishing-reporter">
-              <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
-                >mdi-open-in-new</v-icon
-              >
-            </router-link>
-          </div>
-          <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
-            <div class="card-body">
-              <div class="biggest">
-                {{
-                  (irSummary &&
-                    irSummary.phishingReporterUserStatusCount &&
-                    irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
-                  0
-                }}
-              </div>
-            </div>
-            <div class="card-footer">
-              of
-              {{
-                (irSummary &&
-                  irSummary.phishingReporterUserStatusCount &&
-                  irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-                    irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
-                0
-              }}
-              users are
-            </div>
-            <div class="card-status">Currently Online</div>
-          </div>
-          <div class="columns-row__body" v-else>
-            <div class="card-footer no-data-text">
-              No add-ins installed
-            </div>
-            <v-btn
-              class="btn-action btn-playbook btn-playbook__no-data"
-              rounded
-              color="white"
-              style="box-shadow: none !important; margin-top: 29px;"
-              @click="emptyPhishingButtonClick"
+        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+          <template v-slot:skeleton-content>
+            <div
+              class="dashboard-cards phishing-reporter mr-2"
+              :class="{
+                'no-data__opacity-blue': isPhishingEmpty(irSummary)
+              }"
             >
-              Install Now
-            </v-btn>
-          </div>
-          <div
-            class="bg-image"
-            style="bottom: 10px; right: 0;"
-            :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
-          >
-            <img src="../assets/img/shape.svg" />
-          </div>
-        </div>
-        <div
-          class="dashboard-cards incident-analysis mr-2"
-          :class="{
-            'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
-          }"
-        >
-          <div class="card-header">
-            <span class="head">Incident Analysis</span>
-          </div>
-          <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
-            <div class="card-body">
-              <div class="biggest">
-                {{
-                  (irSummary &&
-                    irSummary.notifiedEmailResultCount &&
-                    irSummary.notifiedEmailResultCount.harmfulCount) ||
-                  0
-                }}
+              <div class="card-header">
+                <span class="head">Phishing Reporter</span>
+                <router-link to="/phishing-reporter">
+                  <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
+                    >mdi-open-in-new</v-icon
+                  >
+                </router-link>
+              </div>
+              <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
+                <div class="card-body">
+                  <div class="biggest">
+                    {{
+                      (irSummary &&
+                        irSummary.phishingReporterUserStatusCount &&
+                        irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
+                      0
+                    }}
+                  </div>
+                </div>
+                <div class="card-footer">
+                  of
+                  {{
+                    (irSummary &&
+                      irSummary.phishingReporterUserStatusCount &&
+                      irSummary.phishingReporterUserStatusCount.onlineUsersCount +
+                        irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
+                    0
+                  }}
+                  users are
+                </div>
+                <div class="card-status">Currently Online</div>
+              </div>
+              <div class="columns-row__body" v-else>
+                <div class="card-footer no-data-text">
+                  No add-ins installed
+                </div>
+                <v-btn
+                  class="btn-action btn-playbook btn-playbook__no-data"
+                  rounded
+                  color="white"
+                  style="box-shadow: none !important; margin-top: 29px;"
+                  @click="emptyPhishingButtonClick"
+                >
+                  Install Now
+                </v-btn>
+              </div>
+              <div
+                class="bg-image"
+                style="bottom: 10px; right: 0;"
+                :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
+              >
+                <img src="../assets/img/shape.svg" />
               </div>
             </div>
-            <div class="card-footer">
-              of
-              {{
-                (irSummary &&
-                  irSummary.notifiedEmailResultCount &&
-                  irSummary.notifiedEmailResultCount.reportedMailCount) ||
-                0
-              }}
-              reported emails
-            </div>
-            <div class="card-status">Found harmful</div>
-          </div>
-          <div class="columns-row__body" v-else>
-            <div class="card-footer no-data-text">No emails analysed</div>
-            <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
+          </template>
+        </CardLoading>
+        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+          <template v-slot:skeleton-content>
+            <div
+              class="dashboard-cards incident-analysis mr-2"
+              :class="{
+                'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+              }"
+            >
+              <div class="card-header">
+                <span class="head">Incident Analysis</span>
+              </div>
+              <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
+                <div class="card-body">
+                  <div class="biggest">
+                    {{
+                      (irSummary &&
+                        irSummary.notifiedEmailResultCount &&
+                        irSummary.notifiedEmailResultCount.harmfulCount) ||
+                      0
+                    }}
+                  </div>
+                </div>
+                <div class="card-footer">
+                  of
+                  {{
+                    (irSummary &&
+                      irSummary.notifiedEmailResultCount &&
+                      irSummary.notifiedEmailResultCount.reportedMailCount) ||
+                    0
+                  }}
+                  reported emails
+                </div>
+                <div class="card-status">Found harmful</div>
+              </div>
+              <div class="columns-row__body" v-else>
+                <div class="card-footer no-data-text">No emails analysed</div>
+                <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
                   @click="emptyNotifiedEmailButtonClick">
             Start Now
           </button>-->
-          </div>
-          <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
-            <img src="../assets/img/ic-warning.svg" />
-          </div>
-        </div>
-        <div
-          class="dashboard-cards investigations mr-2"
-          :class="{
-            'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
-          }"
-        >
-          <div class="card-header">
-            <span class="head">Investigations</span>
-            <router-link :to="'/investigations'">
-              <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
-                >mdi-open-in-new</v-icon
+              </div>
+              <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
+                <img src="../assets/img/ic-warning.svg" />
+              </div>
+            </div>
+          </template>
+        </CardLoading>
+        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+          <template v-slot:skeleton-content>
+            <div
+              class="dashboard-cards investigations mr-2"
+              :class="{
+                'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
+              }"
+            >
+              <div class="card-header">
+                <span class="head">Investigations</span>
+                <router-link :to="'/investigations'">
+                  <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
+                    >mdi-open-in-new</v-icon
+                  >
+                </router-link>
+              </div>
+              <div
+                class="columns-row__body"
+                style="margin-top: 22px;"
+                v-if="isInvestigationsEmpty(irSummary)"
               >
-            </router-link>
-          </div>
-          <div
-            class="columns-row__body"
-            style="margin-top: 22px;"
-            v-if="isInvestigationsEmpty(irSummary)"
-          >
-            <div class="card-body">
-              <div class="body-row">
-                <span class="body-row__number">
-                  {{
-                    (irSummary &&
-                      irSummary.investigationTypeCount &&
-                      irSummary.investigationTypeCount.automaticInvestigationCount) ||
-                    0
-                  }}
-                </span>
+                <div class="card-body">
+                  <div class="body-row">
+                    <span class="body-row__number">
+                      {{
+                        (irSummary &&
+                          irSummary.investigationTypeCount &&
+                          irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                        0
+                      }}
+                    </span>
 
-                <span class="body-row__text">automated</span>
-              </div>
-              <div class="body-row mt-4">
-                <span class="body-row__number"
-                  >{{
-                    (irSummary &&
-                      irSummary.investigationTypeCount &&
-                      irSummary.investigationTypeCount.manualInvestigationCount) ||
-                    0
-                  }}
-                </span>
+                    <span class="body-row__text">automated</span>
+                  </div>
+                  <div class="body-row mt-4">
+                    <span class="body-row__number"
+                      >{{
+                        (irSummary &&
+                          irSummary.investigationTypeCount &&
+                          irSummary.investigationTypeCount.manualInvestigationCount) ||
+                        0
+                      }}
+                    </span>
 
-                <span class="body-row__text">manual</span>
+                    <span class="body-row__text">manual</span>
+                  </div>
+                </div>
+                <div class="card-status mt-7">Incidents resolved</div>
+              </div>
+              <div class="columns-row__body" v-else>
+                <div class="card-footer no-data-text">No investigation started</div>
+                <v-btn
+                  class="btn-action btn-playbook btn-playbook__no-data"
+                  rounded
+                  color="white"
+                  style="box-shadow: none !important; margin-top: 29px;"
+                  @click="emptyInvestigationButtonClick"
+                >
+                  Start Now
+                </v-btn>
+              </div>
+              <div
+                class="bg-image"
+                :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]"
+              >
+                <img src="../assets/img/ic-check-box.svg" />
               </div>
             </div>
-            <div class="card-status mt-7">Incidents resolved</div>
-          </div>
-          <div class="columns-row__body" v-else>
-            <div class="card-footer no-data-text">No investigation started</div>
-            <v-btn
-              class="btn-action btn-playbook btn-playbook__no-data"
-              rounded
-              color="white"
-              style="box-shadow: none !important; margin-top: 29px;"
-              @click="emptyInvestigationButtonClick"
+          </template>
+        </CardLoading>
+        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+          <template v-slot:skeleton-content>
+            <div
+              class="dashboard-cards roi-summary"
+              :class="{
+                'no-data__opacity-purple': isPhishingEmpty(irSummary)
+              }"
             >
-              Start Now
-            </v-btn>
-          </div>
-          <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
-            <img src="../assets/img/ic-check-box.svg" />
-          </div>
-        </div>
-        <div
-          class="dashboard-cards roi-summary"
-          :class="{
-            'no-data__opacity-purple': isPhishingEmpty(irSummary)
-          }"
-        >
-          <div class="card-header">
-            <span class="head">ROI Summary</span>
-            <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
-              >mdi-cog</v-icon
-            >
-          </div>
-          <div class="card-body">
-            <div class="body-row" style="margin-top: 22px;">
-              <span class="body-row__number">
-                {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
-              </span>
-              <span>and</span>
+              <div class="card-header">
+                <span class="head">ROI Summary</span>
+                <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
+                  >mdi-cog</v-icon
+                >
+              </div>
+              <div class="card-body">
+                <div class="body-row" style="margin-top: 22px;">
+                  <span class="body-row__number">
+                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+                  </span>
+                  <span>and</span>
+                </div>
+                <div class="body-row mt-4">
+                  <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
+                </div>
+              </div>
+              <div class="card-status">Saved</div>
+              <div class="bg-image">
+                <img src="../assets/img/ic-insert-chart.svg" />
+              </div>
             </div>
-            <div class="body-row mt-4">
-              <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
-            </div>
-          </div>
-          <div class="card-status">Saved</div>
-          <div class="bg-image">
-            <img src="../assets/img/ic-insert-chart.svg" />
-          </div>
-        </div>
+          </template>
+        </CardLoading>
       </div>
       <div class="double-table">
         <div class="column">
@@ -277,89 +296,93 @@
               </div>
             </div>
             <div class="table">
-              <datatable
-                :refName="'topRules'"
-                ref="refTopRules"
-                :columns="topRules.columns"
-                :table="topRules.table"
-                :countRow="5"
-                :pageSizes="[]"
-                :defaultSort="'status'"
-                :selectable="false"
-                :filterable="false"
-                :rowActions="[]"
-                :addUsers="topRules.addMenu"
-                :empty="topRules.iEmpty"
-                :selectEvent="topRules.selectEvent"
-                :border="false"
-                :showHeader="false"
-                @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
-                class="no-sub-border-datatable"
-              >
-                <template v-slot:datatable-column-popup="{ scope, col }">
-                  <span v-if="scope.row[col.property] === 0">
-                    No Matches
-                  </span>
-                  <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
-                  </span>
-                  <app-dialog
-                    :status="scope.row.resourceId === selectedMatch.resourceId"
-                    icon="mdi-email"
-                    title="Matching Incidents"
-                    v-if="showMatchingModal"
-                    :subtitle="getSelectedMatchingIncidentsSubtitle"
-                    @changeStatus="showMatchingModal = false"
-                    size="maximum"
-                    class-name="matching-modal"
+              <IRSummaryLoading :loading="topRulesLoading">
+                <template v-slot:skeleton-content>
+                  <datatable
+                    :refName="'topRules'"
+                    ref="refTopRules"
+                    :columns="topRules.columns"
+                    :table="topRules.table"
+                    :countRow="5"
+                    :pageSizes="[]"
+                    :defaultSort="'status'"
+                    :selectable="false"
+                    :filterable="false"
+                    :rowActions="[]"
+                    :addUsers="topRules.addMenu"
+                    :empty="topRules.iEmpty"
+                    :selectEvent="topRules.selectEvent"
+                    :border="false"
+                    :showHeader="false"
+                    @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
+                    class="no-sub-border-datatable"
                   >
-                    <template v-slot:app-dialog-body>
-                      <v-card light>
-                        <v-list-item class="matching-modal__list-item">
-                          <v-list-item-content>
-                            <datatable
-                              :refName="'matchingInvestigation'"
-                              ref="refMatchingInvestigation"
-                              :columns="matchingInvestigation.columns"
-                              :countRow="5"
-                              :pageSizes="[5, 10, 20, 50, 100]"
-                              :showHeader="true"
-                              :defaultSort="'subject'"
-                              :selectable="false"
-                              :filterable="true"
-                              :options="true"
-                              :rowActions="[]"
-                              :cell-padding="15"
-                              :empty="matchingInvestigation.iEmpty"
-                            />
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-card>
+                    <template v-slot:datatable-column-popup="{ scope, col }">
+                      <span v-if="scope.row[col.property] === 0">
+                        No Matches
+                      </span>
+                      <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
+                        {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+                      </span>
+                      <app-dialog
+                        :status="scope.row.resourceId === selectedMatch.resourceId"
+                        icon="mdi-email"
+                        title="Matching Incidents"
+                        v-if="showMatchingModal"
+                        :subtitle="getSelectedMatchingIncidentsSubtitle"
+                        @changeStatus="showMatchingModal = false"
+                        size="maximum"
+                        class-name="matching-modal"
+                      >
+                        <template v-slot:app-dialog-body>
+                          <v-card light>
+                            <v-list-item class="matching-modal__list-item">
+                              <v-list-item-content>
+                                <datatable
+                                  :refName="'matchingInvestigation'"
+                                  ref="refMatchingInvestigation"
+                                  :columns="matchingInvestigation.columns"
+                                  :countRow="5"
+                                  :pageSizes="[5, 10, 20, 50, 100]"
+                                  :showHeader="true"
+                                  :defaultSort="'subject'"
+                                  :selectable="false"
+                                  :filterable="true"
+                                  :options="true"
+                                  :rowActions="[]"
+                                  :cell-padding="15"
+                                  :empty="matchingInvestigation.iEmpty"
+                                />
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-card>
+                        </template>
+                        <template v-slot:app-dialog-footer>
+                          <div class="d-flex" style="justify-content: flex-end;">
+                            <v-btn
+                              class="pa-0 k-dialog__button"
+                              text
+                              color="#2196f3"
+                              @click="showMatchingModal = false"
+                              >CLOSE
+                            </v-btn>
+                          </div>
+                        </template>
+                      </app-dialog>
                     </template>
-                    <template v-slot:app-dialog-footer>
-                      <div class="d-flex" style="justify-content: flex-end;">
-                        <v-btn
-                          class="pa-0 k-dialog__button"
-                          text
-                          color="#2196f3"
-                          @click="showMatchingModal = false"
-                          >CLOSE
-                        </v-btn>
-                      </div>
+                    <template v-slot:datatable-custom-column="{ scope }">
+                      <span
+                        @click="handeRuleNameClick(scope.row.resourceId)"
+                        class="datatable-link"
+                        v-if="scope.row.ruleName"
+                      >
+                        {{ scope.row.ruleName }}
+                      </span>
+                      <span v-else> </span>
                     </template>
-                  </app-dialog>
+                  </datatable>
                 </template>
-                <template v-slot:datatable-custom-column="{ scope }">
-                  <span
-                    @click="handeRuleNameClick(scope.row.resourceId)"
-                    class="datatable-link"
-                    v-if="scope.row.ruleName"
-                  >
-                    {{ scope.row.ruleName }}
-                  </span>
-                  <span v-else> </span>
-                </template>
-              </datatable>
+              </IRSummaryLoading>
             </div>
           </v-card>
         </div>
@@ -384,24 +407,29 @@
               </div>
             </div>
             <div class="table investigations">
-              <datatable
-                :refName="'recentInv'"
-                ref="refRecentInv"
-                :columns="recentInv.columns"
-                :countRow="5"
-                :pageSizes="[]"
-                :defaultSort="'priority'"
-                :selectable="false"
-                :filterable="false"
-                :rowActions="[]"
-                :addUsers="recentInv.addMenu"
-                :empty="recentInv.iEmpty"
-                :selectEvent="recentInv.selectEvent"
-                :border="false"
-                :showHeader="false"
-                @onEmptyBtnClicked="onEmptyBtnClicked"
-                class="no-sub-border-datatable"
-              />
+              <IRSummaryLoading :loading="investigationsLoading">
+                <template v-slot:skeleton-content>
+                  <datatable
+                    :table="investigationsData"
+                    :refName="'recentInv'"
+                    ref="refRecentInv"
+                    :columns="recentInv.columns"
+                    :countRow="5"
+                    :pageSizes="[]"
+                    :defaultSort="'priority'"
+                    :selectable="false"
+                    :filterable="false"
+                    :rowActions="[]"
+                    :addUsers="recentInv.addMenu"
+                    :empty="recentInv.iEmpty"
+                    :selectEvent="recentInv.selectEvent"
+                    :border="false"
+                    :showHeader="false"
+                    @onEmptyBtnClicked="onEmptyBtnClicked"
+                    class="no-sub-border-datatable"
+                  />
+                </template>
+              </IRSummaryLoading>
             </div>
           </v-card>
         </div>
@@ -416,142 +444,147 @@
               </p>
             </div>
           </div>
-          <datatable
-            :refName="'reportedEmails'"
-            ref="refReportedEmails"
-            :columns="emails.columns"
-            :countRow="5"
-            :extended-view-options="emails.extendedViewOptions"
-            :extendedViewValue="extendedViewValue"
-            :pageSizes="emails.pageSizes"
-            :defaultSort="'createDate'"
-            :selectable="true"
-            :filterable="true"
-            :options="true"
-            :rowActions="emails.rowActions"
-            :addUsers="emails.addUsers"
-            :empty="emails.iEmpty"
-            :groupable="true"
-            :selectEvent="emails.selectEvent"
-            :extended-view-style="{ top: '-120px' }"
-            @downloadEvent="exportReportedListEmails"
-            @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
-            @irPreview="irPreviewOnClick"
-            @handleInvestigate="handleReportedEmailInvestigate"
-            @handleDetails="irDetailsOnClick"
-            @onEditClick="onEditClick"
-            @handleEdit="handleEdit"
-            @columnFilterChanged="columnFilterChanged"
-            @columnFilterCleared="columnFilterCleared"
-          >
-            <template v-slot:datatable-custom-column="{ scope, col }">
-              <template v-if="scope.column.property === 'source'">
-                <span
-                  v-if="
-                    scope.row &&
-                    scope.row.matchingPlaybooks &&
-                    scope.row.matchingPlaybooks.length === 0
-                  "
-                >
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
-                </span>
-                <span
-                  v-else
-                  v-for="item in scope.row.matchingPlaybooks"
-                  :key="item.resourceId"
-                  class="incident-responder-parent__link"
-                  @click="togglePlaybookModalWithSelected(item.resourceId)"
-                  >{{ item.name }}</span
-                >
-              </template>
-              <template v-if="scope.column.property === 'status'">
-                <template v-if="scope.row.status === 'BeingAnalyzed'">
-                  <span class="analysis-link">
-                    <div>
-                      In Analysis...
-                    </div>
-                    <div>
-                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
-                    </div>
-                  </span>
-                </template>
-                <template v-else>
-                  <data-table-colorful-text
-                    :col="col"
-                    :scope="scope"
-                    :text="getDataTableFieldLabel(scope.row.status)"
-                  />
-                </template>
-              </template>
-            </template>
-            <template v-slot:extended-view-slot>
-              <div class="row-edit-div">
-                <div>
-                  <label>Notes</label>
-                  <v-textarea
-                    outlined
-                    dense
-                    v-model="extendedView.note"
-                    rows="2"
-                    row-height="20"
-                    :placeholder="
-                      selectedReportedMails.length > 1 && hasMultipleNoteValue
-                        ? 'Multiple Values'
-                        : 'Enter notes'
-                    "
-                    :readonly="hasMultipleNoteValue"
-                  >
-                    <template
-                      v-slot:append
-                      v-if="selectedReportedMails.length > 1 && hasMultipleNoteValue"
-                    >
-                      <v-btn
-                        @click="hasMultipleNoteValue = false"
-                        text
-                        class="edit-popup__edit-component"
-                      >
-                        EDIT
-                      </v-btn>
-                    </template>
-                  </v-textarea>
-                </div>
-              </div>
-              <div class="row-edit-div">
-                <v-checkbox
-                  color="#2196f3"
-                  label="Notify reporting user about this update"
-                  v-model="extendedView.isNotify"
-                  @change="handleIsNotify"
-                  :disabled="selectedRowsOfReportedEmailsLength > 1"
-                ></v-checkbox>
-              </div>
-              <div class="row-edit-div">
-                <v-checkbox
-                  color="#2196f3"
-                  label="Add Custom Message"
-                  v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
-                ></v-checkbox>
-              </div>
-              <div
-                class="row-edit-div"
-                v-if="
-                  extendedView.isMessage &&
-                  extendedView.isNotify &&
-                  selectedRowsOfReportedEmailsLength <= 1
-                "
+          <DatatableLoading :loading="reportedEmailsLoading">
+            <template v-slot:skeleton-content>
+              <datatable
+                :table="reportedEmailsData"
+                :refName="'reportedEmails'"
+                ref="refReportedEmails"
+                :columns="emails.columns"
+                :countRow="5"
+                :extended-view-options="emails.extendedViewOptions"
+                :extendedViewValue="extendedViewValue"
+                :pageSizes="emails.pageSizes"
+                :defaultSort="'createDate'"
+                :selectable="true"
+                :filterable="true"
+                :options="true"
+                :rowActions="emails.rowActions"
+                :addUsers="emails.addUsers"
+                :empty="emails.iEmpty"
+                :groupable="true"
+                :selectEvent="emails.selectEvent"
+                :extended-view-style="{ top: '-120px' }"
+                @downloadEvent="exportReportedListEmails"
+                @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
+                @irPreview="irPreviewOnClick"
+                @handleInvestigate="handleReportedEmailInvestigate"
+                @handleDetails="irDetailsOnClick"
+                @onEditClick="onEditClick"
+                @handleEdit="handleEdit"
+                @columnFilterChanged="columnFilterChanged"
+                @columnFilterCleared="columnFilterCleared"
               >
-                <v-textarea
-                  outlined
-                  dense
-                  v-model="extendedView.customMessage"
-                  rows="3"
-                  placeholder="Write custom messages for recipients"
-                  row-height="30"
-                ></v-textarea>
-              </div>
+                <template v-slot:datatable-custom-column="{ scope, col }">
+                  <template v-if="scope.column.property === 'source'">
+                    <span
+                      v-if="
+                        scope.row &&
+                        scope.row.matchingPlaybooks &&
+                        scope.row.matchingPlaybooks.length === 0
+                      "
+                    >
+                      {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                    </span>
+                    <span
+                      v-else
+                      v-for="item in scope.row.matchingPlaybooks"
+                      :key="item.resourceId"
+                      class="incident-responder-parent__link"
+                      @click="togglePlaybookModalWithSelected(item.resourceId)"
+                      >{{ item.name }}</span
+                    >
+                  </template>
+                  <template v-if="scope.column.property === 'status'">
+                    <template v-if="scope.row.status === 'BeingAnalyzed'">
+                      <span class="analysis-link">
+                        <div>
+                          In Analysis...
+                        </div>
+                        <div>
+                          <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                        </div>
+                      </span>
+                    </template>
+                    <template v-else>
+                      <data-table-colorful-text
+                        :col="col"
+                        :scope="scope"
+                        :text="getDataTableFieldLabel(scope.row.status)"
+                      />
+                    </template>
+                  </template>
+                </template>
+                <template v-slot:extended-view-slot>
+                  <div class="row-edit-div">
+                    <div>
+                      <label>Notes</label>
+                      <v-textarea
+                        outlined
+                        dense
+                        v-model="extendedView.note"
+                        rows="2"
+                        row-height="20"
+                        :placeholder="
+                          selectedReportedMails.length > 1 && hasMultipleNoteValue
+                            ? 'Multiple Values'
+                            : 'Enter notes'
+                        "
+                        :readonly="hasMultipleNoteValue"
+                      >
+                        <template
+                          v-slot:append
+                          v-if="selectedReportedMails.length > 1 && hasMultipleNoteValue"
+                        >
+                          <v-btn
+                            @click="hasMultipleNoteValue = false"
+                            text
+                            class="edit-popup__edit-component"
+                          >
+                            EDIT
+                          </v-btn>
+                        </template>
+                      </v-textarea>
+                    </div>
+                  </div>
+                  <div class="row-edit-div">
+                    <v-checkbox
+                      color="#2196f3"
+                      label="Notify reporting user about this update"
+                      v-model="extendedView.isNotify"
+                      @change="handleIsNotify"
+                      :disabled="selectedRowsOfReportedEmailsLength > 1"
+                    ></v-checkbox>
+                  </div>
+                  <div class="row-edit-div">
+                    <v-checkbox
+                      color="#2196f3"
+                      label="Add Custom Message"
+                      v-model="extendedView.isMessage"
+                      :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                    ></v-checkbox>
+                  </div>
+                  <div
+                    class="row-edit-div"
+                    v-if="
+                      extendedView.isMessage &&
+                      extendedView.isNotify &&
+                      selectedRowsOfReportedEmailsLength <= 1
+                    "
+                  >
+                    <v-textarea
+                      outlined
+                      dense
+                      v-model="extendedView.customMessage"
+                      rows="3"
+                      placeholder="Write custom messages for recipients"
+                      row-height="30"
+                    ></v-textarea>
+                  </div>
+                </template>
+              </datatable>
             </template>
-          </datatable>
+          </DatatableLoading>
         </v-card>
       </div>
     </div>
@@ -583,17 +616,28 @@ import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/consta
 import AppDialog from '../components/AppDialog'
 import { maxLength, required } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
-
+import DatatableLoading from '../components/SkeletonLoading/DatatableLoading'
+import CardLoading from '../components/SkeletonLoading/CardLoading'
+import IRSummaryLoading from '../components/SkeletonLoading/IRSummaryLoading'
 export default {
   components: {
     Datatable,
     NewInvestigation,
     AppDialog,
     DataTableColorfulText,
-    CreateOrEditRule
+    CreateOrEditRule,
+    DatatableLoading,
+    CardLoading,
+    IRSummaryLoading
   },
 
   data: () => ({
+    topRulesLoading: true,
+    investigationsLoading: true,
+    investigationsData: [],
+    reportedEmailsData: [],
+    reportedEmailsLoading: true,
+    incidentLoading: true,
     showPlaybookModal: false,
     selectedPlaybookId: null,
     roiRate: '',
@@ -1183,7 +1227,11 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('investigations/getIrSummary').finally(() => (this.showDatatable = true)) //module name than method name
+    this.incidentLoading = true
+    this.$store.dispatch('investigations/getIrSummary').finally(() => {
+      this.showDatatable = true
+      this.incidentLoading = false
+    }) //module name than method name
     this.addQuery()
   },
   created() {
@@ -1365,48 +1413,62 @@ export default {
       this.isWantToAddNewInvestigation = false
     },
     callForGetRunningInvestigations() {
+      this.investigationsLoading = true
       getRunningInvestigations()
         .then((response) => {
           const {
             data: { data, status }
           } = response
           this.investigationListData = data
-          this.$refs.refRecentInv.loadWithDataArray(data || [])
+          this.investigationsData = data || []
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting the recent investigations! '
           })
+          this.investigationsData = []
+        })
+        .finally(() => {
+          this.investigationsLoading = false
         })
     },
     callForGetTopRules() {
+      this.topRulesLoading = true
       getTopRules()
         .then((response) => {
           const {
             data: { data, status }
           } = response
 
-          this.$refs.refTopRules.loadWithDataArray(data || [])
+          this.topRules.table = data || []
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting the top rules!'
           })
+          this.topRules.table = []
         })
+        .finally(() => (this.topRulesLoading = false))
     },
     callForSearchNotifiedMail() {
-      searchNotifiedMail(this.requestBodyReportedEmails).then((response) => {
-        const {
-          data: {
-            data: { results },
-            status
-          }
-        } = response
-        const tableData = results
-        this.$refs.refReportedEmails.loadWithDataArray(tableData || [])
-      })
+      this.reportedEmailsLoading = true
+      searchNotifiedMail(this.requestBodyReportedEmails)
+        .then((response) => {
+          const {
+            data: {
+              data: { results },
+              status
+            }
+          } = response
+          const tableData = results
+          this.reportedEmailsData = tableData || []
+        })
+        .catch(() => {
+          this.reportedEmailsData = []
+        })
+        .finally(() => (this.reportedEmailsLoading = false))
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
@@ -1680,12 +1742,20 @@ export default {
     }
 
     .dashboard-cards {
-      width: 25%;
       min-height: 225px;
       border-radius: 8px;
       margin: 8px;
       padding: 16px;
       position: relative;
+
+      &__skeleton-loading {
+        width: 25%;
+        min-height: 225px;
+        border-radius: 8px;
+        margin: 8px;
+        padding: 16px;
+        position: relative;
+      }
 
       .card-header {
         display: flex;
