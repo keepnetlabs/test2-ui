@@ -15,27 +15,32 @@
         @handleDelete="callForDeleteUser"
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
-      <data-table
-        ref="refSystemUsersList"
-        :refName="'systemUsersList'"
-        :columns="tableOptions.columns"
-        :countRow="5"
-        :empty="tableOptions.empty"
-        :filterable="true"
-        :isServerSide="false"
-        :options="true"
-        :addButton="tableOptions.addButton"
-        :pageSizes="tableOptions.pageSizes"
-        :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
-        @editAction="handleEdit"
-        @deleteAction="handleDelete"
-        @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
-        @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-      />
+      <DatatableLoading :loading="loading">
+        <template v-slot:skeleton-content>
+          <data-table
+            :table="tableData"
+            ref="refSystemUsersList"
+            :refName="'systemUsersList'"
+            :columns="tableOptions.columns"
+            :countRow="5"
+            :empty="tableOptions.empty"
+            :filterable="true"
+            :isServerSide="false"
+            :options="true"
+            :addButton="tableOptions.addButton"
+            :pageSizes="tableOptions.pageSizes"
+            :row-actions="tableOptions.rowActions"
+            :selectable="true"
+            :sizeable="true"
+            @editAction="handleEdit"
+            @deleteAction="handleDelete"
+            @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
+            @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
+            @columnFilterChanged="columnFilterChanged"
+            @columnFilterCleared="columnFilterCleared"
+          />
+        </template>
+      </DatatableLoading>
     </div>
   </div>
 </template>
@@ -46,15 +51,19 @@ import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 import { getSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'People',
   components: {
     DataTable,
     CreateOrEditSystemUser,
-    DeleteSystemUserModal
+    DeleteSystemUserModal,
+    DatatableLoading
   },
   data() {
     return {
+      loading: true,
+      tableData: [],
       tableOptions: {
         columns: [
           {
@@ -228,10 +237,16 @@ export default {
       this.callForListSystemUsers()
     },
     callForListSystemUsers() {
-      getSystemUsers(this.requestBody).then((response) => {
-        const { data } = response.data
-        this.$refs.refSystemUsersList.loadWithDataArray(data.results || [])
-      })
+      this.loading = true
+      getSystemUsers(this.requestBody)
+        .then((response) => {
+          const { data } = response.data
+          this.tableData = data.results || []
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter) {
       let items = []

@@ -11,43 +11,48 @@
       @handleDelete="handleDeleteGroup"
       :selected-row="selectedRow"
     />
-    <datatable
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'groupsTable'"
-      :rowActions="tableOptions.rowActions"
-      :extended-view-options="tableOptions.extendedViewOptions"
-      :extendedViewValue="extendedViewValue"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      ref="refGroupsTable"
-      @syncWithLDAP="handleSyncWithLDAP"
-      @handleEdit="handleEdit"
-      @onEditClick="onEditClick"
-      @delete="handleDelete"
-      @onEmptyBtnClicked="showNewUserGroupModal = true"
-      titleKey="name"
-    >
-      <template v-slot:addUsers>
-        <v-tooltip bottom opacity="1">
-          <template v-slot:activator="{ on: tooltip }">
-            <v-btn
-              class="btn-add mr-1"
-              icon
-              v-on="{ ...tooltip }"
-              @click.native="showNewUserGroupModal = true"
-            >
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.iEmpty"
+          :filterable="true"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'groupsTable'"
+          :rowActions="tableOptions.rowActions"
+          :extended-view-options="tableOptions.extendedViewOptions"
+          :extendedViewValue="extendedViewValue"
+          :selectEvent="tableOptions.selectEvent"
+          :selectable="true"
+          ref="refGroupsTable"
+          @syncWithLDAP="handleSyncWithLDAP"
+          @handleEdit="handleEdit"
+          @onEditClick="onEditClick"
+          @delete="handleDelete"
+          @onEmptyBtnClicked="showNewUserGroupModal = true"
+          titleKey="name"
+        >
+          <template v-slot:addUsers>
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn
+                  class="btn-add mr-1"
+                  icon
+                  v-on="{ ...tooltip }"
+                  @click.native="showNewUserGroupModal = true"
+                >
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">{{ 'Add Groups' }}</span>
+            </v-tooltip>
           </template>
-          <span class="tooltip-span">{{ 'Add Groups' }}</span>
-        </v-tooltip>
+        </datatable>
       </template>
-    </datatable>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -61,7 +66,7 @@ import {
   deleteTargetGroup
 } from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import DeleteGroupModal from './DeleteGroupModal'
 import {
   COMMON_CONSTANTS,
@@ -76,10 +81,13 @@ export default {
   components: {
     DeleteGroupModal,
     CreateNewUserGroupModal,
-    datatable: DataTable
+    datatable: DataTable,
+    DatatableLoading
   },
   data() {
     return {
+      loading: true,
+      tableData: [],
       tableOptions: {
         columns: [
           {
@@ -275,14 +283,16 @@ export default {
       })
     },
     callForTargetGroups() {
+      this.loading = true
       getTargetGroups()
         .then((response) => {
-          const { data } = response.data
-          this.$refs.refGroupsTable.loadWithDataArray(data)
+          let data = response.data.data
+          this.tableData = data.length ? data : []
         })
         .catch((error) => {
-          this.$refs.refGroupsTable.loadWithDataArray([])
+          this.tableData = []
         })
+        .finally(() => (this.loading = false))
     },
     callForDeleteGroup() {
       //TODO

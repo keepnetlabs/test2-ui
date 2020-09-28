@@ -34,46 +34,51 @@
       :forCompany="true"
       @changeModalStatus="(status) => (showCreateNewGroupWithCompany = status)"
     />
-    <datatable
-      ref="refDataList"
-      :addButton="tableOptions.addButton"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'companyList'"
-      :rowActions="tableOptions.rowActions"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      @edit="handleTableItemEdit"
-      @delete="handleTableItemDelete"
-      @cellClick="handleCompanyNameClick"
-      @downloadEvent="handleTableDownload"
-      @addButton="addButton"
-      @onEmptyBtnClicked="addButton"
-      @editAction="editAction"
-      @AddGroupToModal="handleAddGroupToModal"
-      @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
-    >
-      <template v-slot:datatable-custom-column="{ scope }">
-        <span class="datatable-link" v-if="scope.row.companyName">
-          {{ scope.row.companyName }}
-        </span>
-      </template>
-      <template v-slot:extended-custom-view-slot>
-        <company-list-extend
-          v-show="isShowExtended"
-          :selectedRow="selectedRow"
-          :top="extendTop"
-          :tableHeight="tableHeight"
-          :selectedExtend="selectedExtend"
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          ref="refDataList"
+          :addButton="tableOptions.addButton"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.iEmpty"
+          :filterable="true"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'companyList'"
+          :rowActions="tableOptions.rowActions"
+          :selectEvent="tableOptions.selectEvent"
+          :selectable="true"
+          @edit="handleTableItemEdit"
+          @delete="handleTableItemDelete"
+          @cellClick="handleCompanyNameClick"
+          @downloadEvent="handleTableDownload"
+          @addButton="addButton"
+          @onEmptyBtnClicked="addButton"
           @editAction="editAction"
-          @close="closeExtend"
-        />
+          @AddGroupToModal="handleAddGroupToModal"
+          @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+        >
+          <template v-slot:datatable-custom-column="{ scope }">
+            <span class="datatable-link" v-if="scope.row.companyName">
+              {{ scope.row.companyName }}
+            </span>
+          </template>
+          <template v-slot:extended-custom-view-slot>
+            <company-list-extend
+              v-show="isShowExtended"
+              :selectedRow="selectedRow"
+              :top="extendTop"
+              :tableHeight="tableHeight"
+              :selectedExtend="selectedExtend"
+              @editAction="editAction"
+              @close="closeExtend"
+            />
+          </template>
+        </datatable>
       </template>
-    </datatable>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -91,7 +96,7 @@ import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'CompanyList',
   components: {
@@ -100,9 +105,12 @@ export default {
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
-    DeleteModal
+    DeleteModal,
+    DatatableLoading
   },
   data: () => ({
+    loading: true,
+    tableData: [],
     tableHeight: 0,
     extendTop: 0,
     editModal: false,
@@ -244,17 +252,18 @@ export default {
   methods: {
     getTableData(payload) {
       const _payload = { ...this.payload, ...payload }
+      this.loading = true
       searchCompanies(_payload)
         .then((response) => {
-          this.$refs.refDataList.loadWithDataArray(
+          this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? response.data.data.results
               : []
-          )
         })
         .catch((error) => {
-          this.$refs.refDataList.loadWithDataArray([])
+          this.tableData = []
         })
+        .finally(() => (this.loading = false))
     },
     handleTableItemEdit(row) {},
     handleTableItemDelete(selectedItem) {
