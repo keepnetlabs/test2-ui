@@ -17,30 +17,32 @@
         </div>
       </template>
     </app-dialog>
-    <v-skeleton-loader :loading="isLoading" type="table-heading,table-tbody">
-      <data-table
-        :addButton="tableOptions.addButton"
-        :columns="tableOptions.columns"
-        :countRow="5"
-        :empty="tableOptions.empty"
-        :filterable="true"
-        :options="true"
-        :pageSizes="tableOptions.pageSizes"
-        :refName="'usersListTable'"
-        :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :resizable="resizable"
-        :sizeable="true"
-        @deleteAction="handleDelete"
-        :table="tableOptions.table"
-        @handleEdit="handleEdit"
-        @downloadEvent="exportPhishingReporterUserList"
-        id="usersList"
-        ref="refUsersList"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-      />
-    </v-skeleton-loader>
+    <DatatableLoading :loading="isLoading">
+      <template v-slot:skeleton-content>
+        <data-table
+          :addButton="tableOptions.addButton"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.empty"
+          :filterable="true"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'usersListTable'"
+          :row-actions="tableOptions.rowActions"
+          :selectable="true"
+          :resizable="resizable"
+          :sizeable="true"
+          @deleteAction="handleDelete"
+          :table="tableOptions.table"
+          @handleEdit="handleEdit"
+          @downloadEvent="exportPhishingReporterUserList"
+          id="usersList"
+          ref="refUsersList"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
+        />
+      </template>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -54,12 +56,13 @@ import {
 } from '@/api/phishingReporter'
 
 import AppDialog from '../AppDialog'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'Users',
   components: {
     DataTable,
-    AppDialog
+    AppDialog,
+    DatatableLoading
   },
   props: {
     resizable: {

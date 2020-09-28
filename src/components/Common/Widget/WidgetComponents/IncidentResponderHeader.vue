@@ -321,4 +321,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.dashboard-cards {
+  width: 25%;
+}
+</style>

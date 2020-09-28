@@ -167,10 +167,10 @@
                           'cluster-view__item',
                           isEqualCluster(item.name) && 'cluster-view__item--selected'
                         ]"
-                      >{{ item.name }}</span
+                        >{{ item.name }}</span
                       >
                       <v-icon class="ml-4 mt-n1" color="#2196f3" v-if="isEqualCluster(item.name)"
-                      >mdi-check
+                        >mdi-check
                       </v-icon>
                     </v-list-item-title>
                   </v-list-item>
@@ -237,8 +237,8 @@
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{
-                    (addButton && addButton.tooltip) || 'Add Users'
-                  }}</span>
+                  (addButton && addButton.tooltip) || 'Add Users'
+                }}</span>
               </v-tooltip>
             </slot>
             <v-menu bottom left offset-y v-if="isDownloadable">
@@ -587,7 +587,7 @@
                     <template v-slot:activator="{ on }">
                       <v-btn class="btn-hover ml-1" icon v-on="on">
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
-                        >mdi-dots-vertical
+                          >mdi-dots-vertical
                         </v-icon>
                       </v-btn>
                     </template>
@@ -814,7 +814,7 @@ Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
-
+import DatatableLoading from './SkeletonLoading/DatatableLoading'
 export default {
   components: {
     DataTableFilter,
@@ -1313,7 +1313,7 @@ export default {
         const isDate = data.reduce((acc, item) => {
           acc.push(
             new Date(item[sortProps.prop]) !== 'Invalid Date' &&
-            !isNaN(new Date(item[sortProps.prop]))
+              !isNaN(new Date(item[sortProps.prop]))
           )
           return acc
         }, [])
