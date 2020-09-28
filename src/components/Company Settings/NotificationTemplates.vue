@@ -6,7 +6,7 @@
     />
     <new-notification-template
       :status="newNotificationTemplateStatus"
-      @closeOverlay="newNotificationTemplateStatus = false"
+      @closeOverlay="toggleNewNotificationTemplate"
     />
     <delete-notification-template-modal :status="showDeleteNotificationTemplateModal" />
     <div class="notification-templates__container">
@@ -25,8 +25,8 @@
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
-        @handleAddNotificationTemplates="handleAddNotificationTemplates"
-        @onEmptyBtnClicked="newNotificationTemplateStatus = true"
+        @handleAddNotificationTemplates="toggleNewNotificationTemplate"
+        @onEmptyBtnClicked="toggleNewNotificationTemplate"
       />
     </div>
   </div>
@@ -35,7 +35,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import { getStoreValue, LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DeleteNotificationTemplateModal from '@/components/Company Settings/DeleteNotificationTemplateModal'
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate'
 export default {
@@ -94,7 +94,9 @@ export default {
     }
   },
   methods: {
-    handleAddNotificationTemplates() {}
+    toggleNewNotificationTemplate() {
+      this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
+    }
   },
   created() {
     this.tableOptions.tableData = [

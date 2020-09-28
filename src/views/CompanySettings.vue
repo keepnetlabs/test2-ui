@@ -27,9 +27,6 @@
             <notification-templates />
           </v-tab-item>
           <v-tab-item>
-            <rest-api />
-          </v-tab-item>
-          <v-tab-item>
             <custom-api />
           </v-tab-item>
         </v-tabs-items>
@@ -41,7 +38,6 @@
 <script>
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
-import DataAnonymization from '@/components/Company Settings/DataAnonymization'
 import RestApi from '@/components/Company Settings/RestApi'
 import CustomApi from '@/components/Company Settings/CustomApi'
 export default {
@@ -49,13 +45,12 @@ export default {
   components: {
     SMTPSettings,
     NotificationTemplates,
-    RestApi,
     CustomApi
   },
   data() {
     return {
       tab: 0,
-      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API', 'Custom API']
+      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API']
     }
   },
   methods: {
