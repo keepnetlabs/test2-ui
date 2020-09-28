@@ -1004,10 +1004,10 @@ export default {
           }
         },
         {
-          property: PROPERTY_STORE.CREATEDATE,
+          property: PROPERTY_STORE.CREATETIME,
           align: 'left',
           editable: false,
-          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          label: getStoreValue(PROPERTY_STORE.CREATETIME),
           fixed: false,
           sortable: true,
           show: true,
