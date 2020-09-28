@@ -11,43 +11,45 @@
       @handleDelete="handleDeleteGroup"
       :selected-row="selectedRow"
     />
-    <datatable
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'groupsTable'"
-      :rowActions="tableOptions.rowActions"
-      :extended-view-options="tableOptions.extendedViewOptions"
-      :extendedViewValue="extendedViewValue"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      ref="refGroupsTable"
-      @syncWithLDAP="handleSyncWithLDAP"
-      @handleEdit="handleEdit"
-      @onEditClick="onEditClick"
-      @delete="handleDelete"
-      @onEmptyBtnClicked="showNewUserGroupModal = true"
-      titleKey="name"
-    >
-      <template v-slot:addUsers>
-        <v-tooltip bottom opacity="1">
-          <template v-slot:activator="{ on: tooltip }">
-            <v-btn
-              class="btn-add mr-1"
-              icon
-              v-on="{ ...tooltip }"
-              @click.native="showNewUserGroupModal = true"
-            >
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-          </template>
-          <span class="tooltip-span">{{ 'Add Groups' }}</span>
-        </v-tooltip>
-      </template>
-    </datatable>
+    <DatatableLoading :loading="true">
+      <datatable
+        :columns="tableOptions.columns"
+        :countRow="5"
+        :empty="tableOptions.iEmpty"
+        :filterable="true"
+        :options="true"
+        :pageSizes="tableOptions.pageSizes"
+        :refName="'groupsTable'"
+        :rowActions="tableOptions.rowActions"
+        :extended-view-options="tableOptions.extendedViewOptions"
+        :extendedViewValue="extendedViewValue"
+        :selectEvent="tableOptions.selectEvent"
+        :selectable="true"
+        ref="refGroupsTable"
+        @syncWithLDAP="handleSyncWithLDAP"
+        @handleEdit="handleEdit"
+        @onEditClick="onEditClick"
+        @delete="handleDelete"
+        @onEmptyBtnClicked="showNewUserGroupModal = true"
+        titleKey="name"
+      >
+        <template v-slot:addUsers>
+          <v-tooltip bottom opacity="1">
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn
+                class="btn-add mr-1"
+                icon
+                v-on="{ ...tooltip }"
+                @click.native="showNewUserGroupModal = true"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            <span class="tooltip-span">{{ 'Add Groups' }}</span>
+          </v-tooltip>
+        </template>
+      </datatable>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -61,7 +63,7 @@ import {
   deleteTargetGroup
 } from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import DeleteGroupModal from './DeleteGroupModal'
 import {
   COMMON_CONSTANTS,
@@ -76,7 +78,8 @@ export default {
   components: {
     DeleteGroupModal,
     CreateNewUserGroupModal,
-    datatable: DataTable
+    datatable: DataTable,
+    DatatableLoading
   },
   data() {
     return {

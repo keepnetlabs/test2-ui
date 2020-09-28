@@ -1,14 +1,18 @@
 <template>
-  <v-skeleton-loader v-bind="attrs" type="article, actions"></v-skeleton-loader>
+  <v-skeleton-loader :loading="loading" v-bind="attrs" type="table"></v-skeleton-loader>
 </template>
 
 <script>
 export default {
   name: 'DatatableLoading',
-  attrs: {
-    class: 'mb-6',
-    boilerplate: false,
-    elevation: 2
+  data() {
+    return {
+      attrs: {
+        class: 'mb-6',
+        boilerplate: false,
+        elevation: 2
+      }
+    }
   }
 }
 </script>
