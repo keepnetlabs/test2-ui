@@ -3384,8 +3384,11 @@ export default {
 
       &__area {
         width: 100%;
-        padding: 24px;
+        padding: 0 24px;
         max-height: 300px;
+        overflow-y: auto;
+        position: relative;
+        margin: 24px 0;
         &--breaker {
           padding: 0 24px;
           width: 100%;
@@ -3405,6 +3408,7 @@ export default {
           font-style: normal;
           letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87);
+          height: 33px;
           &__title {
             font-size: 12px;
             font-weight: 600;
@@ -3423,7 +3427,7 @@ export default {
           &__all-header {
             color: #757575;
             position: absolute;
-            bottom: -5px;
+            bottom: -10px;
             right: -8px;
             font-size: 8px;
             text-transform: uppercase;
