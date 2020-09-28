@@ -1,208 +1,243 @@
 <template>
   <div class="incident-responder-parent">
     <div class="columns-row">
-      <div
-        class="dashboard-cards phishing-reporter mr-2 ml-0"
-        :class="{
-          'no-data__opacity-blue': isPhishingEmpty(irSummary)
-        }"
+      <CardLoading
+        :loading="isLoading"
+        class="dashboard-cards__skeleton-loading"
+        :class="[isLoading && 'dashboard-cards-loading']"
       >
-        <div class="card-header">
-          <span class="head">Phishing Reporter</span>
-          <router-link to="/phishing-reporter">
-            <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
-              >mdi-open-in-new</v-icon
-            >
-          </router-link>
-        </div>
-        <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
-          <div class="card-body">
-            <div class="biggest">
-              {{
-                (irSummary &&
-                  irSummary['phishingReporterUserStatusCount'] &&
-                  irSummary['phishingReporterUserStatusCount']['onlineUsersCount']) ||
-                0
-              }}
-            </div>
-          </div>
-          <div class="card-footer">
-            of
-            {{
-              (irSummary &&
-                irSummary['phishingReporterUserStatusCount'] &&
-                irSummary['phishingReporterUserStatusCount']['onlineUsersCount'] +
-                  irSummary['phishingReporterUserStatusCount']['offlineUsersCount']) ||
-              0
-            }}
-            users are
-          </div>
-          <div class="card-status">Currently Online</div>
-        </div>
-        <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text">
-            No add-ins installed
-          </div>
-          <v-btn
-            class="btn-action btn-playbook btn-playbook__no-data"
-            rounded
-            color="white"
-            style="box-shadow: none !important; margin-top: 29px;"
+        <template v-slot:skeleton-content>
+          <div
+            class="dashboard-cards phishing-reporter mr-2 ml-0"
+            :class="{
+              'no-data__opacity-blue': isPhishingEmpty(irSummary)
+            }"
           >
-            Install Now
-          </v-btn>
-        </div>
-        <div
-          class="bg-image"
-          style="bottom: 10px; right: 0;"
-          :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
-        >
-          <img src="../../../../assets/img/shape.svg" alt="shape" />
-        </div>
-      </div>
-      <div
-        class="dashboard-cards incident-analysis mr-2"
-        :class="{
-          'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
-        }"
-      >
-        <div class="card-header">
-          <span class="head">Incident Analysis</span>
-        </div>
-        <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
-          <div class="card-body">
-            <div class="biggest">
-              {{
-                (irSummary &&
-                  irSummary['notifiedEmailResultCount'] &&
-                  irSummary['notifiedEmailResultCount']['harmfulCount']) ||
-                0
-              }}
+            <div class="card-header">
+              <span class="head">Phishing Reporter</span>
+              <router-link to="/phishing-reporter">
+                <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
+                  >mdi-open-in-new</v-icon
+                >
+              </router-link>
+            </div>
+            <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
+              <div class="card-body">
+                <div class="biggest">
+                  {{
+                    (irSummary &&
+                      irSummary['phishingReporterUserStatusCount'] &&
+                      irSummary['phishingReporterUserStatusCount']['onlineUsersCount']) ||
+                    0
+                  }}
+                </div>
+              </div>
+              <div class="card-footer">
+                of
+                {{
+                  (irSummary &&
+                    irSummary['phishingReporterUserStatusCount'] &&
+                    irSummary['phishingReporterUserStatusCount']['onlineUsersCount'] +
+                      irSummary['phishingReporterUserStatusCount']['offlineUsersCount']) ||
+                  0
+                }}
+                users are
+              </div>
+              <div class="card-status">Currently Online</div>
+            </div>
+            <div class="columns-row__body" v-else>
+              <div class="card-footer no-data-text">
+                No add-ins installed
+              </div>
+              <v-btn
+                class="btn-action btn-playbook btn-playbook__no-data"
+                rounded
+                color="white"
+                style="box-shadow: none !important; margin-top: 29px;"
+              >
+                Install Now
+              </v-btn>
+            </div>
+            <div
+              class="bg-image"
+              style="bottom: 10px; right: 0;"
+              :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
+            >
+              <img src="../../../../assets/img/shape.svg" alt="shape" />
             </div>
           </div>
-          <div class="card-footer">
-            of
-            {{
-              (irSummary &&
-                irSummary['notifiedEmailResultCount'] &&
-                irSummary['notifiedEmailResultCount']['reportedMailCount']) ||
-              0
-            }}
-            reported emails
-          </div>
-          <div class="card-status">Found harmful</div>
-        </div>
-        <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text">No emails analysed</div>
-          <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
+        </template>
+      </CardLoading>
+      <CardLoading
+        :loading="isLoading"
+        class="dashboard-cards__skeleton-loading"
+        :class="[isLoading && 'dashboard-cards-loading']"
+      >
+        <template v-slot:skeleton-content>
+          <div
+            class="dashboard-cards incident-analysis mr-2"
+            :class="{
+              'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+            }"
+          >
+            <div class="card-header">
+              <span class="head">Incident Analysis</span>
+            </div>
+            <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
+              <div class="card-body">
+                <div class="biggest">
+                  {{
+                    (irSummary &&
+                      irSummary['notifiedEmailResultCount'] &&
+                      irSummary['notifiedEmailResultCount']['harmfulCount']) ||
+                    0
+                  }}
+                </div>
+              </div>
+              <div class="card-footer">
+                of
+                {{
+                  (irSummary &&
+                    irSummary['notifiedEmailResultCount'] &&
+                    irSummary['notifiedEmailResultCount']['reportedMailCount']) ||
+                  0
+                }}
+                reported emails
+              </div>
+              <div class="card-status">Found harmful</div>
+            </div>
+            <div class="columns-row__body" v-else>
+              <div class="card-footer no-data-text">No emails analysed</div>
+              <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
                 @click="emptyNotifiedEmailButtonClick">
           Start Now
         </button>-->
-        </div>
-        <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
-          <img src="../../../../assets/img/ic-warning.svg" alt="warning" />
-        </div>
-      </div>
-      <div
-        class="dashboard-cards investigations mr-2"
-        :class="{
-          'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
-        }"
+            </div>
+            <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
+              <img src="../../../../assets/img/ic-warning.svg" alt="warning" />
+            </div>
+          </div>
+        </template>
+      </CardLoading>
+      <CardLoading
+        :loading="isLoading"
+        class="dashboard-cards__skeleton-loading"
+        :class="[isLoading && 'dashboard-cards-loading']"
       >
-        <div class="card-header">
-          <span class="head">Investigations</span>
-          <router-link :to="'/investigations'">
-            <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
-              >mdi-open-in-new</v-icon
+        <template v-slot:skeleton-content>
+          <div
+            class="dashboard-cards investigations mr-2"
+            :class="{
+              'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
+            }"
+          >
+            <div class="card-header">
+              <span class="head">Investigations</span>
+              <router-link :to="'/investigations'">
+                <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
+                  >mdi-open-in-new</v-icon
+                >
+              </router-link>
+            </div>
+            <div
+              class="columns-row__body"
+              style="margin-top: 22px;"
+              v-if="isInvestigationsEmpty(irSummary)"
             >
-          </router-link>
-        </div>
-        <div
-          class="columns-row__body"
-          style="margin-top: 22px;"
-          v-if="isInvestigationsEmpty(irSummary)"
-        >
-          <div class="card-body">
-            <div class="body-row">
-              <span class="body-row__number">
-                {{
-                  (irSummary &&
-                    irSummary['investigationTypeCount'] &&
-                    irSummary['investigationTypeCount']['automaticInvestigationCount']) ||
-                  0
-                }}
-              </span>
+              <div class="card-body">
+                <div class="body-row">
+                  <span class="body-row__number">
+                    {{
+                      (irSummary &&
+                        irSummary['investigationTypeCount'] &&
+                        irSummary['investigationTypeCount']['automaticInvestigationCount']) ||
+                      0
+                    }}
+                  </span>
 
-              <span class="body-row__text">automated</span>
+                  <span class="body-row__text">automated</span>
+                </div>
+                <div class="body-row mt-4">
+                  <span class="body-row__number"
+                    >{{
+                      (irSummary &&
+                        irSummary['investigationTypeCount'] &&
+                        irSummary['investigationTypeCount']['manualInvestigationCount']) ||
+                      0
+                    }}
+                  </span>
+
+                  <span class="body-row__text">manual</span>
+                </div>
+              </div>
+              <div class="card-status mt-7">Incidents resolved</div>
             </div>
-            <div class="body-row mt-4">
-              <span class="body-row__number"
-                >{{
-                  (irSummary &&
-                    irSummary['investigationTypeCount'] &&
-                    irSummary['investigationTypeCount']['manualInvestigationCount']) ||
-                  0
-                }}
-              </span>
-
-              <span class="body-row__text">manual</span>
+            <div class="columns-row__body" v-else>
+              <div class="card-footer no-data-text">No investigation started</div>
+              <v-btn
+                class="btn-action btn-playbook btn-playbook__no-data"
+                rounded
+                color="white"
+                style="box-shadow: none !important; margin-top: 29px;"
+              >
+                Start Now
+              </v-btn>
+            </div>
+            <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
+              <img src="../../../../assets/img/ic-check-box.svg" alt="icon" />
             </div>
           </div>
-          <div class="card-status mt-7">Incidents resolved</div>
-        </div>
-        <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text">No investigation started</div>
-          <v-btn
-            class="btn-action btn-playbook btn-playbook__no-data"
-            rounded
-            color="white"
-            style="box-shadow: none !important; margin-top: 29px;"
-          >
-            Start Now
-          </v-btn>
-        </div>
-        <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
-          <img src="../../../../assets/img/ic-check-box.svg" alt="icon" />
-        </div>
-      </div>
-      <div
-        class="dashboard-cards roi-summary"
-        :class="{
-          'no-data__opacity-purple': isPhishingEmpty(irSummary)
-        }"
+        </template>
+      </CardLoading>
+      <CardLoading
+        :loading="isLoading"
+        class="dashboard-cards__skeleton-loading"
+        :class="[isLoading && 'dashboard-cards-loading']"
       >
-        <div class="card-header">
-          <span class="head">ROI Summary</span>
-          <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
-            >mdi-cog</v-icon
+        <template v-slot:skeleton-content>
+          <div
+            class="dashboard-cards roi-summary"
+            :class="{
+              'no-data__opacity-purple': isPhishingEmpty(irSummary)
+            }"
           >
-        </div>
-        <div class="card-body">
-          <div class="body-row" style="margin-top: 22px;">
-            <span class="body-row__number">
-              {{ (irSummary && irSummary['roiSummary'] && irSummary['roiSummary'].time) || 0 }}h
-            </span>
-            <span>and</span>
+            <div class="card-header">
+              <span class="head">ROI Summary</span>
+              <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
+                >mdi-cog</v-icon
+              >
+            </div>
+            <div class="card-body">
+              <div class="body-row" style="margin-top: 22px;">
+                <span class="body-row__number">
+                  {{ (irSummary && irSummary['roiSummary'] && irSummary['roiSummary'].time) || 0 }}h
+                </span>
+                <span>and</span>
+              </div>
+              <div class="body-row mt-4">
+                <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
+              </div>
+            </div>
+            <div class="card-status">Saved</div>
+            <div class="bg-image">
+              <img src="../../../../assets/img/ic-insert-chart.svg" alt="chart" />
+            </div>
           </div>
-          <div class="body-row mt-4">
-            <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
-          </div>
-        </div>
-        <div class="card-status">Saved</div>
-        <div class="bg-image">
-          <img src="../../../../assets/img/ic-insert-chart.svg" alt="chart" />
-        </div>
-      </div>
+        </template>
+      </CardLoading>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-
+import CardLoading from '@/components/SkeletonLoading/CardLoading'
 export default {
   name: 'IncidentResponderHeader',
   props: {},
+  components: {
+    CardLoading
+  },
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
@@ -306,6 +341,32 @@ export default {
     },
     isRoiSummaryEmpty(summary) {
       return !!summary
+    },
+    addQuery() {
+      const navigatorWidth = document.querySelector('nav.page-nav').style.width
+      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
+      if (width < 1050 && width > 750) {
+        document
+          .querySelectorAll(
+            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
+          )
+          .forEach((item) => {
+            item.style =
+              'width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
+          })
+
+        document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
+      } else {
+        document
+          .querySelectorAll(
+            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
+          )
+          .forEach((item) => {
+            item.style = ''
+          })
+        const columnsRowContainer = document.querySelector('.columns-row')
+        if (columnsRowContainer) document.querySelector('.columns-row').style = ''
+      }
     }
   },
   created() {
@@ -317,12 +378,15 @@ export default {
       .catch(() => {
         this.isLoading = false
       })
+      .finally(() => {
+        this.isLoading = false
+      })
+    window.addEventListener('resize', this.addQuery)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.addQuery)
   }
 }
 </script>
 
-<style scoped>
-.dashboard-cards {
-  width: 25%;
-}
-</style>
+<style></style>
