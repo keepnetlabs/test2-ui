@@ -1,9 +1,9 @@
 <template>
   <div class="custom-api">
     <div class="custom-apis__container">
-      <new-custom-api :status="showNewCustomApi" @closeOverlay="showNewCustomApi = false" />
+      <new-custom-api :status="showNewCustomApi" @closeOverlay="toggleNewCustomApiStatus" />
       <company-settings-header
-        title="Custom API"
+        title="Rest API"
         sub-title="Create API Key to your customers for integration"
       />
       <data-table
@@ -20,8 +20,8 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="showNewCustomApi = true"
-        @handleAddNewCustomApi="handleAddNewCustomApi"
+        @onEmptyBtnClicked="toggleNewCustomApiStatus"
+        @handleAddNewCustomApi="toggleNewCustomApiStatus"
       />
     </div>
   </div>
@@ -97,15 +97,15 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any Custom API',
-          subMes: 'Create a new custom API',
-          btn: 'Create a New Custom API',
+          message: 'You do not have any Rest API',
+          subMes: 'Create a new rest API',
+          btn: 'Create a New Rest API',
           icon: 'mdi-plus'
         },
         addButton: {
           show: true,
           action: 'handleAddNewCustomApi',
-          tooltip: 'Add a New Custom Api'
+          tooltip: 'Add a New Rest Api'
         }
       },
       showNewCustomApi: false
@@ -117,7 +117,9 @@ export default {
     NewCustomApi
   },
   methods: {
-    handleAddNewCustomApi() {}
+    toggleNewCustomApiStatus() {
+      this.showNewCustomApi = !this.showNewCustomApi
+    }
   }
 }
 </script>
