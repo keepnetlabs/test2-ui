@@ -109,8 +109,8 @@
                   @click="changeDropdownItem(item)"
                 >
                   <v-list-item-title>
-                    <v-icon>{{ item[0].icon }}</v-icon>
-                    {{ item[0].text }}
+                    <v-icon>{{ item.icon }}</v-icon>
+                    {{ item.text }}
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -757,8 +757,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getMenuStatus: 'common/getStatusOfCompany',
-      getStatusOfCompany: 'common/getStatusOfCompany',
+      getMenuStatus: 'common/getMenuStatus',
       getErrors: 'common/getErrors',
       getColor: 'common/getColor',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
