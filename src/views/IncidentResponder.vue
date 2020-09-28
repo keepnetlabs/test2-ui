@@ -61,7 +61,11 @@
         :selectedMail="selectedEmail"
       />
       <div class="columns-row">
-        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+        <CardLoading
+          :loading="incidentLoading"
+          class="dashboard-cards__skeleton-loading"
+          :class="[incidentLoading && 'dashboard-cards-loading']"
+        >
           <template v-slot:skeleton-content>
             <div
               class="dashboard-cards phishing-reporter mr-2"
@@ -125,7 +129,11 @@
             </div>
           </template>
         </CardLoading>
-        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+        <CardLoading
+          :loading="incidentLoading"
+          class="dashboard-cards__skeleton-loading"
+          :class="[incidentLoading && 'dashboard-cards-loading']"
+        >
           <template v-slot:skeleton-content>
             <div
               class="dashboard-cards incident-analysis mr-2"
@@ -172,7 +180,11 @@
             </div>
           </template>
         </CardLoading>
-        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+        <CardLoading
+          :loading="incidentLoading"
+          class="dashboard-cards__skeleton-loading"
+          :class="[incidentLoading && 'dashboard-cards-loading']"
+        >
           <template v-slot:skeleton-content>
             <div
               class="dashboard-cards investigations mr-2"
@@ -242,7 +254,11 @@
             </div>
           </template>
         </CardLoading>
-        <CardLoading :loading="incidentLoading" class="dashboard-cards__skeleton-loading">
+        <CardLoading
+          :loading="incidentLoading"
+          class="dashboard-cards__skeleton-loading"
+          :class="[incidentLoading && 'dashboard-cards-loading']"
+        >
           <template v-slot:skeleton-content>
             <div
               class="dashboard-cards roi-summary"
@@ -1260,7 +1276,9 @@ export default {
       const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
       if (width < 1050 && width > 750) {
         document
-          .querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards')
+          .querySelectorAll(
+            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
+          )
           .forEach((item) => {
             item.style =
               'width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
@@ -1269,7 +1287,9 @@ export default {
         document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
       } else {
         document
-          .querySelectorAll('.incident-responder-parent .columns-row .dashboard-cards')
+          .querySelectorAll(
+            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
+          )
           .forEach((item) => {
             item.style = ''
           })
@@ -1729,13 +1749,13 @@ export default {
     @media only screen and (max-width: 1023px) {
       flex-wrap: wrap;
 
-      .dashboard-cards {
+      .dashboard-cards__skeleton-loading {
         width: calc(50% - 16px) !important;
         max-width: calc(50% - 16px) !important;
       }
     }
     @media only screen and (max-width: 500px) {
-      .dashboard-cards {
+      .dashboard-cards__skeleton-loading {
         width: calc(100% - 16px) !important;
         max-width: calc(100% - 16px) !important;
       }
@@ -1752,8 +1772,6 @@ export default {
         width: 25%;
         min-height: 225px;
         border-radius: 8px;
-        margin: 8px;
-        padding: 16px;
         position: relative;
       }
 
@@ -2236,5 +2254,8 @@ export default {
   letter-spacing: normal;
   align-items: center;
   justify-content: center;
+}
+.dashboard-cards-loading {
+  width: 24% !important;
 }
 </style>
