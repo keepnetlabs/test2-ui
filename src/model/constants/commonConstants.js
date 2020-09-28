@@ -11,6 +11,7 @@ export const COMMON_CONSTANTS = {
 
 export const LABEL_STORE = {
   CREATEDATE: 'Date Created',
+  CREATETIME: 'Date Created',
   FIRSTNAME: 'First Name',
   LASTNAME: 'Last Name',
   EMAIL: 'E-Mail',
