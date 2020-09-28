@@ -981,3 +981,10 @@
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.87) !important;
 }
+
+.el-table--border th, .el-table__fixed-right-patch {
+  @media (min-width:1800px) {
+    border-bottom: 1px solid #EBEEF5 !important;
+  }
+  border-bottom: none !important; ;
+}
