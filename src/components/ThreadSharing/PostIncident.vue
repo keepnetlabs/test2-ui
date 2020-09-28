@@ -2151,6 +2151,8 @@ export default {
           return 'Non-Malicious'
         case 'NGLCc9UCxJvw':
           return 'Phishing'
+        case 'Gwt67E1ftYtr':
+          return 'Spam'
         default:
           return ''
       }
@@ -2586,7 +2588,8 @@ export default {
             urls: this.uploadRespond.urls,
             attachments: this.uploadRespond.attachments,
             emailTexts: []
-          }
+          },
+          IsTermsAndConditionsAccepted: this.acceptCheckbox
         }
         createCommunityPost(payload)
           .then((response) => {
