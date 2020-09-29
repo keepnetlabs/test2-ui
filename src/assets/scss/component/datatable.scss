@@ -143,7 +143,6 @@
         }
 
         .el-table tr {
-          height: 48px !important;
           border-top: #b3d4fc 1px solid;
           border-bottom: #b3d4fc 1px solid;
           &:first-child{
@@ -159,7 +158,10 @@
 
         .el-table th {
           padding: 5px 0 !important;
-
+          height: 49px;
+          @media (max-width:1700px){
+            height: 48px;
+          }
           .el-checkbox {
             z-index: 2;
           }
@@ -777,7 +779,7 @@
     @for $i from 1 through 3 {
       .el-table__row.el-table__row--level-#{$i}{
         background-color: #f5f7fa !important;
-        td{
+        td:not(:last-child){
           padding-left: #{24 * $i}px !important;
         }
         .el-table-column--selection .cell{
@@ -987,4 +989,8 @@
     border-bottom: 1px solid #EBEEF5 !important;
   }
   border-bottom: none !important; ;
+}
+
+.k-table-header{
+  //height: 48px;
 }
