@@ -102,15 +102,15 @@ export default {
     this.tableOptions.tableData = [
       {
         id: 3,
-        name: 'Doğus Holding',
+        name: '1',
         children: [
           {
             id: 33,
-            name: 'Garanti Bankası',
+            name: '1.1',
             children: [
               {
                 id: 38,
-                name: 'Garanti Yatırım'
+                name: '1.1.1'
               }
             ]
           }
@@ -118,17 +118,17 @@ export default {
       },
       {
         id: 34,
-        name: 'Türk Hava Yolları',
+        name: '2',
         children: [
           {
             id: 40,
-            name: 'Türk Hava Yolları Uçak'
+            name: '2.1'
           }
         ]
       },
       {
         id: 55,
-        name: 'Mercedes Benz Türk AŞ'
+        name: '3'
       }
     ]
   }
