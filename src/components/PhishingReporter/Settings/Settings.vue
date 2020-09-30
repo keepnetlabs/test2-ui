@@ -151,6 +151,9 @@ export default {
     changeTabStatus(status) {
       this.tab = status
     },
+    activateLoader(value = 1) {
+      this.$store.dispatch('common/activateLoader', value)
+    },
     callForCreatePhishingReporter(updatedValues) {
       const addinSettings =
         this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
@@ -183,6 +186,10 @@ export default {
       formData.append('file', addinSettings.file)
 
        */
+      if (updatedValues.isAddIn) {
+        this.activateLoader()
+      }
+
       createPhishingReporter(formData)
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
@@ -192,6 +199,7 @@ export default {
           })
           this.$emit('getPhishingReport')
           if (updatedValues.isAddIn) {
+            this.activateLoader(-1)
             this.downloadAddInModalStatus = true
           }
         })
@@ -201,6 +209,9 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
           })
           this.$emit('getPhishingReport')
+          if (updatedValues.isAddIn) {
+            this.activateLoader(-1)
+          }
         })
     }
   }
