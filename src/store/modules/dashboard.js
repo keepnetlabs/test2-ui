@@ -41,7 +41,7 @@ const dashboard = {
     switchAccountDropdown: [
       {
         companyId: 'default',
-        manager: 'Switch Account'
+        manager: 'Switch Company'
       }
     ],
     isSwitchDialogOpen: false,
@@ -145,7 +145,7 @@ const dashboard = {
       defaultAccountDropdown.push(payload)
       defaultAccountDropdown.push({
         companyId: 'default',
-        name: 'Switch Account',
+        name: 'Switch Company',
         index: 5 // this.state.auth.user.role.id
       })
       state.switchAccountDropdown = defaultAccountDropdown
