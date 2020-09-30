@@ -47,7 +47,7 @@ testService.interceptors.response.use(
     }
   },
   (error) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    //store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
     } else if (
