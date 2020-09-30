@@ -59,6 +59,50 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            width: 150,
+            isEditable: true
+          },
+          {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            label: 'Email',
+            fixed: true,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 280,
+            isEditable: true
+          },
+          {
+            property: PROPERTY_STORE.DESCRIPTION,
+            align: 'left',
+            label: 'Description',
+            fixed: true,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 250,
+            isEditable: true
+          },
+          {
+            property: PROPERTY_STORE.DESCRIPTION,
+            align: 'left',
+            label: 'Description',
+            fixed: true,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 250,
+            isEditable: true
+          },
+          {
+            property: PROPERTY_STORE.STATUS,
+            align: 'left',
+            label: 'Status',
+            fixed: true,
+            sortable: true,
+            show: true,
+            type: 'badge',
             width: 200,
             isEditable: true
           }
@@ -102,15 +146,24 @@ export default {
     this.tableOptions.tableData = [
       {
         id: 3,
-        name: 'Doğus Holding',
+        name: '1',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        status: 'Active',
+        description: 'Description Description',
         children: [
           {
             id: 33,
-            name: 'Garanti Bankası',
+            name: '1.1',
+            email: 'gurkan.ugurlu@keepnetlabs.com',
+            status: 'Active',
+            description: 'Description Description',
             children: [
               {
                 id: 38,
-                name: 'Garanti Yatırım'
+                name: '1.1.1',
+                email: 'gurkan.ugurlu@keepnetlabs.com',
+                status: 'Active',
+                description: 'Description Description'
               }
             ]
           }
@@ -118,17 +171,26 @@ export default {
       },
       {
         id: 34,
-        name: 'Türk Hava Yolları',
+        name: '2',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        description: 'Description Description',
+        status: 'Active',
         children: [
           {
             id: 40,
-            name: 'Türk Hava Yolları Uçak'
+            name: '2.1',
+            email: 'gurkan.ugurlu@keepnetlabs.com',
+            description: 'Description Description',
+            status: 'Active'
           }
         ]
       },
       {
         id: 55,
-        name: 'Mercedes Benz Türk AŞ'
+        name: '3',
+        email: 'gurkan.ugurlu@keepnetlabs.com',
+        description: 'Description Description',
+        status: 'Active'
       }
     ]
   }

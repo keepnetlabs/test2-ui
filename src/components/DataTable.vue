@@ -400,6 +400,7 @@
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
             :show-header="showHeader"
+            :header-row-class-name="'k-table-header'"
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
@@ -1265,7 +1266,14 @@ export default {
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
-      const spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
+      let spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
+      const padding = getComputedStyle(cell).paddingLeft.slice(0, -2)
+      if (![...cell.classList].some((item) => item === 'el-table-column--selection')) {
+        if (padding) {
+          spanWidth += Number(padding)
+        }
+      }
+
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]
@@ -1283,7 +1291,7 @@ export default {
         this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + 60}px`,
-          left: `${parentRect.left + this.cellPadding}px`
+          left: `${parentRect.left + this.cellPadding + Number(padding)}px`
         }
       }
     },

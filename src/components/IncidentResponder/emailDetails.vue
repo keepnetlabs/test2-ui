@@ -951,14 +951,14 @@ export default {
     },
     writeToNavigator(value, index, type) {
       if (type === 'sha') {
-        this.isCopiedShaClipboard.push(index)
+        const pushedIndex = this.isCopiedShaClipboard.push(index) - 1
         setTimeout(() => {
-          this.isCopiedShaClipboard.splice(index, 1)
+          this.isCopiedShaClipboard.splice(pushedIndex, 1)
         }, 5000)
       } else if (type === 'md5') {
-        this.isCopiedMd5Clipboard.push(index)
+        const pushedIndex = this.isCopiedMd5Clipboard.push(index) - 1
         setTimeout(() => {
-          this.isCopiedMd5Clipboard.splice(index, 1)
+          this.isCopiedMd5Clipboard.splice(pushedIndex, 1)
         }, 5000)
       }
       navigator.clipboard.writeText(value)

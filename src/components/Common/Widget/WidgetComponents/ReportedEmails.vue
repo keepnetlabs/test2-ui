@@ -322,10 +322,10 @@ export default {
             }
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             fixed: false,
             sortable: true,
             show: true,
@@ -419,7 +419,7 @@ export default {
       requestBodyReportedEmails: {
         pageNumber: 1,
         pageSize: 500000,
-        orderBy: 'createDate',
+        orderBy: 'createTime',
         ascending: false,
         filter: {
           Condition: 'AND',
@@ -443,6 +443,7 @@ export default {
             status
           }
         } = response
+        this.isLoading = false
         const tableData = results
         this.emails.table = tableData
       })
