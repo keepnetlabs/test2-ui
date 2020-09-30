@@ -77,39 +77,43 @@
         </div>
       </template>
     </app-dialog>
-    <datatable
-      ref="refRulesList"
-      :refName="'rulesListTable'"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
-      :row-actions="tableOptions.rowActions"
-      :pageSizes="tableOptions.pageSizes"
-      :empty="tableOptions.empty"
-      :addButton="tableOptions.addButton"
-      :selectEvent="tableOptions.selectEvent"
-      @deleteFunction="deleteRule($event)"
-      @addAction="toggleRuleModal"
-      @onEmptyBtnClicked="toggleRuleModal"
-      @downloadEvent="exportPlaybookRules"
-      @deleteAction="deleteRule($event)"
-      @editAction="handleEdit"
-      @columnFilterChanged="columnFilterChanged"
-      @columnFilterCleared="columnFilterCleared"
-    >
-      <template v-slot:datatable-column-popup="{ scope, col }">
-        <span v-if="scope.row[col.property] === 0">
-          No Match
-        </span>
-        <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
-        </span>
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          ref="refRulesList"
+          :refName="'rulesListTable'"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :selectable="true"
+          :filterable="true"
+          :options="true"
+          :sizeable="true"
+          :row-actions="tableOptions.rowActions"
+          :pageSizes="tableOptions.pageSizes"
+          :empty="tableOptions.empty"
+          :addButton="tableOptions.addButton"
+          :selectEvent="tableOptions.selectEvent"
+          @deleteFunction="deleteRule($event)"
+          @addAction="toggleRuleModal"
+          @onEmptyBtnClicked="toggleRuleModal"
+          @downloadEvent="exportPlaybookRules"
+          @deleteAction="deleteRule($event)"
+          @editAction="handleEdit"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
+        >
+          <template v-slot:datatable-column-popup="{ scope, col }">
+            <span v-if="scope.row[col.property] === 0">
+              No Match
+            </span>
+            <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
+              {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+            </span>
+          </template>
+        </datatable>
       </template>
-    </datatable>
-
+    </DatatableLoading>
     <v-dialog v-model="showRuleModal" fullscreen scrollable persistent no-click-animation>
       <CreateOrEditRule
         :playbookId="selectedPlaybookId"
@@ -134,13 +138,14 @@ import {
 import { getMatchingIncidents } from '../../api/incidentResponder'
 import AppDialog from '../AppDialog'
 import { exportPlaybookRules, deletePlaybookRule } from '../../api/playbook'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'Rules',
   components: {
     Datatable,
     CreateOrEditRule,
-    AppDialog
+    AppDialog,
+    DatatableLoading
   },
   props: {
     playbookId: {
@@ -149,6 +154,8 @@ export default {
   },
   data() {
     return {
+      tableData: [],
+      loading: true,
       showRuleModal: false,
       selectedMatch: null,
       showMatchingModal: false,
@@ -361,9 +368,12 @@ export default {
     },
     updateTable() {
       this.toggleRuleModal()
-      this.getPlaybookList(this.tableCredientials).then(() => {
-        this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
-      })
+      this.loading = true
+      this.getPlaybookList(this.tableCredientials)
+        .then(() => {
+          this.tableData = this.playbookList.results
+        })
+        .finally(() => (this.loading = false))
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
@@ -377,9 +387,7 @@ export default {
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
           const tableData = response.data.data
-          this.$refs.refmatchingInvestigationPlaybookRules.loadWithDataArray(
-            tableData.results || []
-          )
+          this.tableData = tableData.results || []
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -435,9 +443,13 @@ export default {
               message: 'Playbook rule deleted successfully!'
             })
             this.isWantToDelete = false
-            _this.getPlaybookList(_this.tableCredientials).then(() => {
-              _this.$refs.refRulesList.loadWithDataArray(_this.playbookList.results)
-            })
+            this.loading = true
+            _this
+              .getPlaybookList(_this.tableCredientials)
+              .then(() => {
+                this.tableData = _this.playbookList.results
+              })
+              .finally(() => (this.loading = false))
           })
           .catch((error) => {
             _this.$store.dispatch('common/createSnackBar', {
@@ -495,15 +507,21 @@ export default {
       this.getTableData()
     },
     getTableData() {
-      this.getPlaybookList(this.tableCredientials).then(() => {
-        this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
-      })
+      this.loading = true
+      this.getPlaybookList(this.tableCredientials)
+        .then(() => {
+          this.tableData = this.playbookList.results
+        })
+        .finally(() => (this.loading = false))
     }
   },
   mounted() {
-    this.getPlaybookList(this.tableCredientials).then(() => {
-      this.$refs.refRulesList.loadWithDataArray(this.playbookList.results)
-    })
+    this.loading = true
+    this.getPlaybookList(this.tableCredientials)
+      .then(() => {
+        this.tableData = this.playbookList.results
+      })
+      .finally(() => (this.loading = false))
 
     if (this.playbookId) {
       this.selectedPlaybookId = this.playbookId

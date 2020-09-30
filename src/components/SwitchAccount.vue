@@ -6,7 +6,7 @@
           <v-icon medium left color="blue" class="ml-2">mdi-swap-horizontal</v-icon>
         </div>
         <v-list-item-content>
-          <v-list-item-title class="v-card-headline">Switch Account</v-list-item-title>
+          <v-list-item-title class="v-card-headline">Switch Company</v-list-item-title>
           <v-list-item-subtitle class="connection-lost-title"
             >Switch between reseller and company accounts</v-list-item-subtitle
           >
