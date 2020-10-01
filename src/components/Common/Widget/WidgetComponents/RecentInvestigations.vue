@@ -59,9 +59,7 @@ import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
-import { COMMON_CONSTANTS, getStoreValue } from '@/model/constants/commonConstants'
 import { getRunningInvestigations } from '@/api/incidentResponder'
-import DataTableProgress from '@/components/DataTableComponents/DataTableProgress'
 export default {
   name: 'RecentInvestigations',
   components: {

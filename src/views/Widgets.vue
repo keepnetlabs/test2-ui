@@ -39,11 +39,10 @@
 
 <script>
 import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
-import PhishingReporterHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterHeader'
-import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
+import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 export default {
   name: 'Widgets',
   components: {
@@ -115,12 +114,27 @@ export default {
           i: Math.random().toString(),
           key: 'Reporters',
           title: 'Reporters'
+        },
+        IncidentClusters: {
+          x: 0,
+          y: 0,
+          w: 8,
+          minW: 8,
+          defaultW: 8,
+          h: 5,
+          defaultH: 5,
+          minH: 5,
+          maxH: 5,
+          i: Math.random().toString(),
+          key: 'IncidentClusters',
+          title: 'Incident Clusters'
         }
       },
       availableWidgets: [
         { name: 'Recent Investigations', key: 'RecentInvestigations' },
         { name: 'Top Rules', key: 'TopRules' },
-        { name: 'Reporters', key: 'Reporters' }
+        { name: 'Reporters', key: 'Reporters' },
+        { name: 'Incident Clusters', key: 'IncidentClusters' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -137,7 +151,6 @@ export default {
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
-      localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
     addWidget(widget) {
       this.removeAvailableWidget(widget)
@@ -167,7 +180,6 @@ export default {
         }),
         1
       )
-      localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
     layoutResized() {},
     changeWidgetStatus() {
@@ -203,6 +215,8 @@ export default {
           return Reporters
         case 'TopRules':
           return TopRules
+        case 'IncidentClusters':
+          return IncidentClusters
         default:
           break
       }
@@ -386,6 +400,7 @@ export default {
       if (!val) {
         this.handleDeleteShadows()
         localStorage.setItem('widget-layout', JSON.stringify(this.layout))
+        localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
       } else {
         this.handleAddShadows()
       }

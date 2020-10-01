@@ -16,5 +16,6 @@ export default {
   box-shadow: -10px 9px 21px 0 rgba(128, 152, 213, 0.08);
   background-color: #ffffff;
   padding: 24px 24px 16px 24px;
+  height: 100%;
 }
 </style>

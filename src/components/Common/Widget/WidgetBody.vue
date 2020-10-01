@@ -13,5 +13,6 @@ export default {
 <style lang="scss">
 .k-widget-body {
   margin-top: 16px;
+  height: 100%;
 }
 </style>
