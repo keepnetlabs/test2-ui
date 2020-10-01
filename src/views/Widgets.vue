@@ -11,61 +11,38 @@
 
     <smart-widget-grid
       :layout="layout"
-      :col-num="6"
-      @layout-updated="layoutUpdated"
+      :col-num="colNum"
       @layout-mounted="layoutMounted"
       :is-static="!editMode"
-      :row-height="52"
+      :row-height="54"
       ref="refGrid"
     >
       <smart-widget
-        fullscreen
         :key="item.i"
         v-for="(item, index) in layout"
         :slot="item.i"
         :padding="[0, 0]"
         :ref="`ref${item.i}`"
         :shadow="'never'"
-        :simple="!editMode"
+        :simple="true"
       >
-        <template v-slot:title>
-          <div class="widget-header__title">
-            <v-icon color="#2196f3">{{ item.icon }}</v-icon>
-            <span class="ml-2">{{ item.title }}</span>
-          </div>
-        </template>
-        <template v-slot:toolbar>
-          <v-icon
-            style="margin-top: -25px; font-size: 18px;"
-            small
-            @click="collapse(item, index, `ref${item.i}`)"
-            class="widget__header-icon ml-1"
-            >mdi-window-minimize</v-icon
-          >
-          <v-icon
-            style="margin-top: -25px; font-size: 18px;"
-            small
-            @click="deleteWidget(item, index)"
-            class="widget__header-icon ml-1"
-            >mdi-close-circle</v-icon
-          >
-        </template>
-        <component v-once :is="getComponent(item.key)" :resizable="false" />
+        <component
+          :is="getComponent(item.key)"
+          :resizable="false"
+          :editMode="editMode"
+          @deleteWidget="deleteWidget(item, index)"
+        />
       </smart-widget>
     </smart-widget-grid>
   </div>
 </template>
 
 <script>
-import PhishingReporterUsers from '@/components/PhishingReporter/Users'
 import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
 import PhishingReporterHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterHeader'
 import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
-import PhishingCampaigns from '@/components/Common/Widget/WidgetComponents/PhishingCampaigns'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
-import ReportedEmails from '@/components/Common/Widget/WidgetComponents/ReportedEmails'
-import OverallStats from '@/components/Common/Widget/WidgetComponents/OverallStatsWidget'
-import CompanyInformationWidget from '@/components/Common/Widget/WidgetComponents/CompanyInformationWidget'
+//import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 export default {
   name: 'Widgets',
@@ -100,27 +77,6 @@ export default {
           icon: 'mdi-chart-bar',
           title: 'Overall Stats',
           key: 'OverallStats'
-        },
-        */
-
-    return {
-      layout: [],
-      newItemY: 0,
-      editMode: false,
-      allWidgets: {
-        ReportedEmails: {
-          x: 0,
-          y: 0,
-          w: 6,
-          defaultW: 6,
-          minW: 2,
-          h: 9,
-          defaultH: 9,
-          minH: 3,
-          i: Math.random().toString(),
-          title: 'Reported Emails',
-          key: 'ReportedEmails',
-          icon: 'mdi-email'
         },
         PhishingReporterUsers: {
           x: 0,
@@ -164,17 +120,25 @@ export default {
           key: 'PhishingReporterHeader',
           icon: 'mdi-page-layout-header'
         },
+        */
+
+    return {
+      layout: [],
+      newItemY: 0,
+      colNum: 12,
+      editMode: false,
+      allWidgets: {
         RecentInvestigations: {
           x: 0,
           y: 0,
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 7,
-          defaultH: 7,
-          minH: 7,
+          h: 5,
+          defaultH: 5,
+          minH: 5,
+          maxH: 5,
           i: Math.random().toString(),
-          icon: 'mdi-briefcase-variant',
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
         },
@@ -184,37 +148,33 @@ export default {
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 7,
-          defaultH: 7,
-          minH: 7,
+          h: 5,
+          defaultH: 5,
+          minH: 5,
+          maxH: 5,
           i: Math.random().toString(),
-          icon: 'mdi-ruler',
-          title: 'Top Rules',
-          key: 'TopRules'
+          key: 'TopRules',
+          title: 'TopRules'
         },
-        CompanyInformation: {
+        Reporters: {
           x: 0,
           y: 0,
-          w: 2,
-          defaultW: 2,
-          minW: 2,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          h: 5,
+          defaultH: 5,
+          minH: 5,
+          maxH: 5,
           i: Math.random().toString(),
-          icon: 'mdi-information',
-          title: 'Company Information',
-          key: 'CompanyInformation'
+          key: 'Reporters',
+          title: 'Reporters'
         }
       },
       availableWidgets: [
-        { name: 'Phishing Reporter Users', key: 'PhishingReporterUsers' },
-        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
-        { name: 'Phishing Reporter Header', key: 'PhishingReporterHeader' },
         { name: 'Recent Investigations', key: 'RecentInvestigations' },
         { name: 'Top Rules', key: 'TopRules' },
-        { name: 'Company Information', key: 'CompanyInformation' },
-        { name: 'Reported Emails', key: 'ReportedEmails' }
+        { name: 'Reporters', key: 'Reporters' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -263,25 +223,19 @@ export default {
       )
       localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
-    layoutUpdated(newLayout) {
-      // localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
-    },
+    layoutResized() {},
     changeWidgetStatus() {
-      /*
-      if (this.editMode) {
-        localStorage.setItem('widgetLayout', JSON.stringify(this.layout))
-      }
-
-       */
       this.editMode = !this.editMode
     },
-    layoutMounted(newLayout) {
+    layoutMounted() {
+      /*
       newLayout.map((item, index) => {
         if (newLayout[index].h === 1) {
           this.$refs[`ref${item.i}`][0].$el.querySelector('.widget-body').style.display = 'none'
         }
         this.newItemY += item.h
       })
+       */
       this.handleDeleteShadows()
     },
     collapse(item, index, ref) {
@@ -297,22 +251,10 @@ export default {
 
     getComponent(componentString) {
       switch (componentString) {
-        case 'PhishingReporterUsers':
-          return PhishingReporterUsers
-        case 'IncidentResponderHeader':
-          return IncidentResponderHeader
-        case 'PhishingReporterHeader':
-          return PhishingReporterHeader
-        case 'PhishingCampaigns':
-          return PhishingCampaigns
         case 'RecentInvestigations':
           return RecentInvestigations
-        case 'ReportedEmails':
-          return ReportedEmails
-        case 'OverallStats':
-          return OverallStats
-        case 'CompanyInformation':
-          return CompanyInformationWidget
+        case 'Reporters':
+          return Reporters
         case 'TopRules':
           return TopRules
         default:
@@ -344,13 +286,12 @@ export default {
             w: 3,
             minW: 3,
             h: 6,
-            defaultH: 7,
-            minH: 7,
+            defaultH: 6,
+            minH: 6,
             i: '0.9609571524431146',
             icon: 'mdi-ruler',
             title: 'Top Rules',
-            key: 'TopRules',
-            moved: false
+            key: 'TopRules'
           },
           {
             x: 0,
@@ -490,24 +431,16 @@ export default {
     }
   },
   created() {
-    //JSON.parse(localStorage.getItem('widgetLayout'))
-    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || this.getDefaultLayoutObject()
-
+    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || []
     this.availableWidgets =
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },
   watch: {
     editMode(val) {
       if (!val) {
-        this.layout = this.layout.map((item) => {
-          return { ...item, h: item.h - 1 }
-        })
-        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         this.handleDeleteShadows()
+        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
       } else {
-        this.layout = this.layout.map((item) => {
-          return { ...item, h: item.h + 1 }
-        })
         this.handleAddShadows()
       }
     }
