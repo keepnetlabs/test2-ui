@@ -42,7 +42,7 @@ import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
 import PhishingReporterHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterHeader'
 import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
-//import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
+import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 export default {
   name: 'Widgets',
@@ -52,46 +52,6 @@ export default {
   data() {
     /*
 
- PhishingCampaigns: {
-          x: 0,
-          y: 0,
-          w: 2,
-          minW: 2,
-          h: 6,
-          defaultH: 6,
-          minH: 5,
-          i: Math.random().toString(),
-          title: 'Phishing Campaigns',
-          key: 'PhishingCampaigns',
-          icon: 'mdi-chart-pie'
-        },
- OverallStats: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          h: 11,
-          defaultH: 11,
-          minH: 8,
-          i: Math.random().toString(),
-          icon: 'mdi-chart-bar',
-          title: 'Overall Stats',
-          key: 'OverallStats'
-        },
-        PhishingReporterUsers: {
-          x: 0,
-          y: 0,
-          w: 6,
-          defaultW: 6,
-          minW: 2,
-          h: 8,
-          minH: 3,
-          defaultH: 8,
-          i: Math.random().toString(),
-          title: 'Phishing Reporter Users',
-          key: 'PhishingReporterUsers',
-          icon: 'mdi-account'
-        },
         IncidentResponderHeader: {
           x: 0,
           y: 0,
@@ -106,21 +66,7 @@ export default {
           key: 'IncidentResponderHeader',
           icon: 'mdi-view-dashboard'
         },
-        PhishingReporterHeader: {
-          x: 0,
-          y: 0,
-          w: 4,
-          minW: 2,
-          defaultW: 4,
-          h: 4,
-          defaultH: 4,
-          minH: 3,
-          i: Math.random().toString(),
-          title: 'Phishing Reporter Header',
-          key: 'PhishingReporterHeader',
-          icon: 'mdi-page-layout-header'
-        },
-        */
+    */
 
     return {
       layout: [],
