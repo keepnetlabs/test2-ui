@@ -46,6 +46,7 @@ import IncidentClusters from '@/components/Common/Widget/WidgetComponents/Incide
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
+import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
 export default {
   name: 'Widgets',
   components: {
@@ -92,6 +93,21 @@ export default {
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
+        },
+        RecentlyReportedIncidents: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          title: 'Recently Reported Incidents',
+          key: 'RecentlyReportedIncidents'
         },
         RecentlyPostedThreats: {
           x: 0,
@@ -175,7 +191,8 @@ export default {
         { name: 'Top Posts', key: 'TopPosts' },
         { name: 'Reporters', key: 'Reporters' },
         { name: 'Incident Clusters', key: 'IncidentClusters' },
-        { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' }
+        { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
+        { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -262,6 +279,8 @@ export default {
           return IncidentClusters
         case 'RecentlyPostedThreats':
           return RecentlyPostedThreats
+        case 'RecentlyReportedIncidents':
+          return RecentlyReportedIncidents
         default:
           break
       }
