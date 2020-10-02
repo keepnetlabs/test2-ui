@@ -464,7 +464,7 @@ export default {
       const that = this
       window.addEventListener('resize', () => {
         if (window.innerWidth > 1025 && this.oldLayout) {
-          that.layout = [...that.oldLayout]
+          //that.layout = [...that.oldLayout]
         } else if (window.innerWidth < 1025 && window.innerWidth > 768) {
           let x = 0,
             y = 0,
@@ -482,6 +482,7 @@ export default {
             }
           })
           that.layout = that.layout.map((item) => {
+            debugger
             const itemWidth = item.w > item.midW ? item.w : item.midW
             beforeX = x
             x += itemWidth || 6

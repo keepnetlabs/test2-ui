@@ -146,6 +146,6 @@ export default {
   margin-top: -2px;
 }
 .widget-badge {
-  min-width: 90px !important;
+  max-width: 90px !important;
 }
 </style>
