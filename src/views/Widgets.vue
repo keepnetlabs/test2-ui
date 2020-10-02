@@ -13,8 +13,9 @@
       :layout="layout"
       :col-num="colNum"
       @layout-mounted="layoutMounted"
+      @containerResized="containerResized"
       :is-static="!editMode"
-      :row-height="54"
+      :row-height="50"
       ref="refGrid"
     >
       <smart-widget
@@ -43,9 +44,12 @@ import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/Re
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
+import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
+import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 export default {
   name: 'Widgets',
   components: {
+    KSmartGrid,
     AvailableWidgets
   },
   data() {
@@ -68,6 +72,7 @@ export default {
     */
 
     return {
+      activeBreakpoint: 'lg',
       layout: [],
       newItemY: 0,
       colNum: 12,
@@ -79,10 +84,11 @@ export default {
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
-          maxH: 5,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
@@ -93,13 +99,29 @@ export default {
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
-          maxH: 5,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
           key: 'TopRules',
-          title: 'TopRules'
+          title: 'Top Rules'
+        },
+        TopPosts: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'TopPosts',
+          title: 'Top Posts'
         },
         Reporters: {
           x: 0,
@@ -107,10 +129,11 @@ export default {
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
-          maxH: 5,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
           key: 'Reporters',
           title: 'Reporters'
@@ -121,10 +144,11 @@ export default {
           w: 8,
           minW: 8,
           defaultW: 8,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
-          maxH: 5,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
           key: 'IncidentClusters',
           title: 'Incident Clusters'
@@ -133,6 +157,7 @@ export default {
       availableWidgets: [
         { name: 'Recent Investigations', key: 'RecentInvestigations' },
         { name: 'Top Rules', key: 'TopRules' },
+        { name: 'Top Posts', key: 'TopPosts' },
         { name: 'Reporters', key: 'Reporters' },
         { name: 'Incident Clusters', key: 'IncidentClusters' }
       ],
@@ -147,10 +172,18 @@ export default {
        { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
       */
   },
+  provide() {
+    return {
+      layout: this.layout
+    }
+  },
   methods: {
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
+    },
+    containerResized() {
+      console.log('resized')
     },
     addWidget(widget) {
       this.removeAvailableWidget(widget)
@@ -215,6 +248,8 @@ export default {
           return Reporters
         case 'TopRules':
           return TopRules
+        case 'TopPosts':
+          return TopPosts
         case 'IncidentClusters':
           return IncidentClusters
         default:
@@ -394,6 +429,68 @@ export default {
     this.layout = JSON.parse(localStorage.getItem('widget-layout')) || []
     this.availableWidgets =
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
+  },
+  mounted() {
+    this.$nextTick(() => {
+      const that = this
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1025 && this.oldLayout) {
+          that.layout = [...that.oldLayout]
+        } else if (window.innerWidth < 1025 && window.innerWidth > 768) {
+          let x = 0,
+            y = 0,
+            row = 0,
+            col = 0,
+            beforeX = 0
+          that.oldLayout = [...that.layout]
+          that.layout.sort((a, b) => {
+            if (a.y > b.y) {
+              return 1
+            } else if (a.y === b.y) {
+              return 0
+            } else {
+              return -1
+            }
+          })
+          that.layout = that.layout.map((item) => {
+            const itemWidth = item.w > item.midW ? item.w : item.midW
+            beforeX = x
+            x += itemWidth || 6
+
+            if (x > 12) {
+              x = 0
+              beforeX = 0
+              y += item.h
+            } else if (x === 12 && beforeX === 0) {
+              x = 0
+              beforeX = 0
+              y += item.h
+            }
+
+            return { ...item, w: itemWidth, x, y }
+          })
+        } else if (window.innerWidth < 768) {
+          that.oldLayout = [...that.layout]
+          that.layout.sort((a, b) => {
+            if (a.y > b.y) {
+              return 1
+            } else if (a.y === b.y) {
+              return 0
+            } else {
+              return -1
+            }
+          })
+          let x = 0,
+            y = 0,
+            row = 0,
+            col = 0
+          that.layout = that.layout.map((item) => {
+            y += item.y
+            return { ...item, w: 12, x: 0, y }
+          })
+        }
+      })
+    })
   },
   watch: {
     editMode(val) {

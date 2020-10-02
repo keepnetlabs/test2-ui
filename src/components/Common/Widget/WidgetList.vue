@@ -5,7 +5,7 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <table class="k-widget-list">
+    <table class="k-widget-list" :style="getTableStyle">
       <thead class="k-widget-list__header-container">
         <th
           :key="col.label"
@@ -64,6 +64,9 @@ export default {
     },
     colStyle: {
       type: Object
+    },
+    auto: {
+      type: Boolean
     }
   },
   data() {
@@ -71,6 +74,11 @@ export default {
       showOverFlowTooltip: false,
       overFlowTooltipStyle: {},
       overFlowTooltipContent: ''
+    }
+  },
+  computed: {
+    getTableStyle() {
+      return this.auto ? 'table-layout:auto' : 'table-layout:fixed'
     }
   },
   methods: {
@@ -106,10 +114,13 @@ export default {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  @media (max-width: 1200px) {
+    table-layout: fixed !important;
+  }
   position: relative;
   tr {
     border-bottom: 1px solid #e0e0e0;
-    height: 40px;
+    height: 48px;
   }
   td {
     color: #2196f3 !important;
