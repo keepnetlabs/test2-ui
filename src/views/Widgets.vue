@@ -13,7 +13,6 @@
       :layout="layout"
       :col-num="colNum"
       @layout-mounted="layoutMounted"
-      @containerResized="containerResized"
       :is-static="!editMode"
       :row-height="50"
       ref="refGrid"
@@ -46,6 +45,7 @@ import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
+import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 export default {
   name: 'Widgets',
   components: {
@@ -92,6 +92,21 @@ export default {
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
+        },
+        RecentlyPostedThreats: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          title: 'Recently Posted Threats',
+          key: 'RecentlyPostedThreats'
         },
         TopRules: {
           x: 0,
@@ -159,7 +174,8 @@ export default {
         { name: 'Top Rules', key: 'TopRules' },
         { name: 'Top Posts', key: 'TopPosts' },
         { name: 'Reporters', key: 'Reporters' },
-        { name: 'Incident Clusters', key: 'IncidentClusters' }
+        { name: 'Incident Clusters', key: 'IncidentClusters' },
+        { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -172,18 +188,10 @@ export default {
        { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
       */
   },
-  provide() {
-    return {
-      layout: this.layout
-    }
-  },
   methods: {
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
-    },
-    containerResized() {
-      console.log('resized')
     },
     addWidget(widget) {
       this.removeAvailableWidget(widget)
@@ -252,6 +260,8 @@ export default {
           return TopPosts
         case 'IncidentClusters':
           return IncidentClusters
+        case 'RecentlyPostedThreats':
+          return RecentlyPostedThreats
         default:
           break
       }
