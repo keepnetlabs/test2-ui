@@ -7,7 +7,7 @@
       @deleteWidget="$emit('deleteWidget')"
     />
     <widget-body>
-      <apexchart type="bubble" height="200" :options="chartOptions" :series="series" />
+      <bubble />
     </widget-body>
   </widget-container>
 </template>
@@ -17,13 +17,14 @@ import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import VueApexCharts from 'vue-apexcharts'
+import Bubble from '@/components/Common/Charts/Bubble'
 export default {
   name: 'IncidentClusters',
   components: {
+    Bubble,
     WidgetHeader,
     WidgetBody,
-    WidgetContainer,
-    apexchart: VueApexCharts
+    WidgetContainer
   },
   props: {
     editMode: {
