@@ -1,13 +1,13 @@
 <template>
   <widget-container>
     <widget-header
-      title="Incident Clusters"
+      title="Reported Email Trends"
       :link="{ href: '/incident-responder', text: 'Incident Responder' }"
       :edit-mode="editMode"
       @deleteWidget="$emit('deleteWidget')"
     />
     <widget-body>
-      <bubble />
+      <line-chart />
     </widget-body>
   </widget-container>
 </template>
@@ -16,15 +16,14 @@
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
-import VueApexCharts from 'vue-apexcharts'
-import Bubble from '@/components/Common/Charts/Bubble'
+import Line from '@/components/Common/Charts/Line'
 export default {
-  name: 'IncidentClusters',
+  name: 'ReportedEmailTrends',
   components: {
-    Bubble,
     WidgetHeader,
     WidgetBody,
-    WidgetContainer
+    WidgetContainer,
+    'line-chart': Line
   },
   props: {
     editMode: {

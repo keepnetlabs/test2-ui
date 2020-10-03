@@ -44,13 +44,13 @@ import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
-import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
+
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
+import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
 export default {
   name: 'Widgets',
   components: {
-    KSmartGrid,
     AvailableWidgets
   },
   data() {
@@ -175,14 +175,29 @@ export default {
           w: 8,
           minW: 8,
           defaultW: 8,
-          h: 6,
+          h: 7,
           midW: 12,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
+          defaultH: 7,
+          minH: 7,
+          maxH: 7,
           i: Math.random().toString(),
           key: 'IncidentClusters',
           title: 'Incident Clusters'
+        },
+        ReportedEmailTrends: {
+          x: 0,
+          y: 0,
+          w: 8,
+          minW: 8,
+          defaultW: 8,
+          h: 7,
+          midW: 12,
+          defaultH: 7,
+          minH: 7,
+          maxH: 7,
+          i: Math.random().toString(),
+          key: 'ReportedEmailTrends',
+          title: 'Reported Email Trends'
         }
       },
       availableWidgets: [
@@ -192,7 +207,8 @@ export default {
         { name: 'Reporters', key: 'Reporters' },
         { name: 'Incident Clusters', key: 'IncidentClusters' },
         { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
-        { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' }
+        { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' },
+        { name: 'Reported Email Trends', key: 'ReportedEmailTrends' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -281,6 +297,8 @@ export default {
           return RecentlyPostedThreats
         case 'RecentlyReportedIncidents':
           return RecentlyReportedIncidents
+        case 'ReportedEmailTrends':
+          return ReportedEmailTrends
         default:
           break
       }
@@ -460,6 +478,7 @@ export default {
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },
   mounted() {
+    /*
     this.$nextTick(() => {
       const that = this
       window.addEventListener('resize', () => {
@@ -521,6 +540,8 @@ export default {
         }
       })
     })
+
+     */
   },
   watch: {
     editMode(val) {

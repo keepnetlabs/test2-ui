@@ -14,5 +14,10 @@ export default {
 .k-widget-body {
   margin-top: 16px;
   height: 100%;
+  position: relative;
+  > div {
+    height: 80%;
+    position: relative;
+  }
 }
 </style>
