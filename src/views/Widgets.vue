@@ -43,6 +43,7 @@ import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
+import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
 import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
 import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
@@ -50,6 +51,7 @@ import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/R
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
 import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
+import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
 export default {
   name: 'Widgets',
   components: {
@@ -67,12 +69,12 @@ export default {
         IncidentResponderHeader: {
           x: 0,
           y: 0,
-          w: 6,
-          defaultW: 6,
-          minW: 4,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
+          w: 12,
+          defaultW: 12,
+          minW: 12,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
           i: Math.random().toString(),
           title: 'Incident Responder Header',
           key: 'IncidentResponderHeader'
@@ -91,6 +93,36 @@ export default {
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
+        },
+        PhishingReporterIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'PhishingReporterIrHeader',
+          title: 'Phishing Reporter Ir Header'
+        },
+        IncidentAnalysisIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'IncidentAnalysisIrHeader',
+          title: 'Incident Analysis Ir Header'
         },
         RecentlyReportedIncidents: {
           x: 0,
@@ -207,22 +239,20 @@ export default {
         { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
         { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' },
         { name: 'Reported Email Trends', key: 'ReportedEmailTrends' },
-        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' }
+        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
+        { name: 'Phishing Reporter Ir Header', key: 'PhishingReporterIrHeader' },
+        { name: 'Incident Analysis Ir Header', key: 'IncidentAnalysisIrHeader' },
+        { name: 'Incident Analysis Ir Header', key: 'IncidentAnalysisIrHeader' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
         'background:transparent ;' +
         ' border:none}'
     }
-    /*
-
-      { name: 'Overall Stats', key: 'OverallStats' },
-       { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
-      */
   },
   methods: {
-    breakpointChanged({ newBreakPoint, newLayout }) {
-      console.log('newBreakPoint', newLayout)
+    breakpointChanged({ newBreakpoint, newLayout }) {
+      this.layout = newLayout
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
@@ -247,7 +277,7 @@ export default {
       newItem = widgetObj
       newItem['y'] = this.newItemY
       this.newItemY += newItem.h
-      this.layout.unshift(widgetObj)
+      this.layout.push(widgetObj)
     },
     removeAvailableWidget(widget) {
       this.availableWidgets.splice(
@@ -303,6 +333,10 @@ export default {
           return ReportedEmailTrends
         case 'IncidentResponderHeader':
           return IncidentResponderHeader
+        case 'PhishingReporterIrHeader':
+          return PhishingReporterIrHeader
+        case 'IncidentAnalysisIrHeader':
+          return IncidentAnalysisIrHeader
         default:
           break
       }
@@ -342,8 +376,8 @@ export default {
           {
             x: 0,
             y: 0,
-            w: 6,
-            minW: 4,
+            w: 12,
+            minW: 12,
             h: 2,
             defaultH: 2,
             minH: 2,
@@ -553,9 +587,13 @@ export default {
         this.handleDeleteShadows()
         localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
+        this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
       } else {
         this.handleAddShadows()
       }
+    },
+    layout() {
+      console.log('widgetslayout updated')
     }
   }
 }

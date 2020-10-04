@@ -1,6 +1,6 @@
 <template>
-  <div class="incident-responder-parent">
-    <div class="incident-responder">
+  <div class="incident-responder-parent incident-responder-widget" style="padding: 0; margin: 0;">
+    <div class="incident-responder" style="margin: 0; padding: 0;">
       <div class="columns-row">
         <CardLoading
           :loading="isLoading"
@@ -399,4 +399,9 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+.incident-responder-widget.incident-responder-parent .columns-row .dashboard-cards {
+  margin-left: 0;
+  margin-top: 0;
+}
+</style>

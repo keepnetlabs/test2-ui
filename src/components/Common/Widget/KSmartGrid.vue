@@ -4,7 +4,10 @@
     v-bind="layoutAttrs"
     v-on="gridLayoutEvents"
     @breakpoint-changed="breakPointChanged"
-    :cols="{ lg: 12, md: 12, sm: 12, xs: 6 }"
+    :breakpoints="{ lg: 1000, sm: 700, xs: 450 }"
+    :cols="{ lg: 12, sm: 12, xs: 2 }"
+    ref="gridLayout"
+    :key="keyGrid"
   >
     <grid-item
       v-for="item in layout"
@@ -80,7 +83,8 @@ export default {
         verticalCompact: true,
         useCssTransforms: false,
         responsive: true
-      }
+      },
+      keyGrid: `key-${Math.random()}`
     }
   },
   created() {
@@ -120,6 +124,9 @@ export default {
     },
     breakPointChanged(newBreakpoint, newLayout) {
       this.$emit('breakpointChanged', { newBreakpoint, newLayout })
+    },
+    forceRenderGrid() {
+      this.keyGrid = `key-${Math.random()}`
     }
   }
 }
