@@ -856,7 +856,8 @@
                             v-on="on"
                             v-if="filterOpened"
                             class="investigation-filters__area--filter--label"
-                            >{{ url.name || url.url }}</label
+                            >{{ url.name || url.url }}
+                            <span class="url-badge">{{ url.index }}</span></label
                           >
                         </template>
                         <span>{{ url.name || url.url }}</span>
@@ -1820,6 +1821,21 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
   background-color: #757575;
   color: #ffffff;
 }
+
+.url-badge{
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  color: white;
+  background-color: #757575;
+  height: 10px;
+  width: 10px;
+  text-align: center;
+  border-radius: 30px;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.6 !important;
+}
  `
 })
 
@@ -2194,12 +2210,14 @@ export default {
         for (let i = 0, l = els.length; i < l; i++) {
           let el = els[i]
           el.setAttribute('target', '_blank')
+          el.setAttribute('index', url.index)
           if (url.isHidden) {
             url.isFlagged = false
             el.innerHTML = url.urlHtml || url.name || url.url
             el.innerHTML = el.innerHTML + `<span class="hidden-icon mdi mdi-eye-off"></span>`
             el.style.backgroundColor = '#757575'
             el.style.color = '#ffffff'
+            el.style.position = 'relative'
           } else if (!!url && !!url.name) {
             el.innerHTML = url.name
             el.setAttribute('href', url.url)
@@ -2225,6 +2243,8 @@ export default {
             el.style.backgroundColor = 'inherit'
             el.style.color = 'inherit'
           }
+          if (this.step === 4)
+            el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.index}</span>`
         }
       }
       let hiddenEls = document.getElementsByClassName(url.url)
@@ -2250,11 +2270,12 @@ export default {
       }
     },
     setShadowRootMalicousLink(id) {
+      let _this = this
       setTimeout(() => {
         let recrusiveFunctionForDom = () =>
           document.getElementById(id) && document.getElementById(id).shadowRoot
         if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
-        this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
+        _this.uploadRespond.urls = _this.uploadRespond.urls.map((item, index) => {
           let urlItem = document
             .getElementById(id)
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
@@ -2262,7 +2283,8 @@ export default {
             ...item,
             url: item.url.replace(/amp;/g, ''),
             name: item.name,
-            urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
+            urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
+            index: index + 1
           }
         })
 
@@ -3357,7 +3379,8 @@ export default {
         max-height: 300px;
         overflow-y: auto;
         position: relative;
-        margin: 24px 0;
+        margin: 24px 0 12px 0;
+        min-height: 180px;
         &--breaker {
           padding: 0 24px;
           width: 100%;
@@ -3388,10 +3411,11 @@ export default {
             color: rgba(0, 0, 0, 0.87);
           }
           &--label {
-            max-width: 150px;
+            width: 150px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            position: relative;
           }
           &__all-header {
             color: #757575;

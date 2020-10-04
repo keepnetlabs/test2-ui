@@ -482,7 +482,7 @@
         </v-tabs>
         <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
           <v-tab-item>
-            <PreviewHeader :uploadRespond="emailData" />
+            <PreviewHeaderForSinglePost :uploadRespond="emailData" />
 
             <div id="single-post-body" class="preview-body">
               <k-shadow-frame
@@ -937,6 +937,7 @@ import PreviewHeader from './PreviewHeader'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { getNotifiedEmail } from '../../api/notifiedEmail'
 import { copyToClipboard, isOwner, isPostedByMe } from '../../utils/functions'
+import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1001,14 +1002,30 @@ position:relative;
 .red-malicious-alert::before {
   border: unset !important;
 }
+
+.url-badge{
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  color: white;
+  background-color: #757575;
+  height: 10px;
+  width: 10px;
+  text-align: center;
+  border-radius: 30px;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.6 !important;
+}
+
  `
 })
 export default {
   components: {
+    PreviewHeaderForSinglePost,
     VClamp,
     NewInvestigation,
-    AppDialog,
-    PreviewHeader
+    AppDialog
   },
   props: {
     openEditPopupItem: {

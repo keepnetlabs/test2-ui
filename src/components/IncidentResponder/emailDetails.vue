@@ -643,6 +643,21 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     overflow: hidden;
 }
 
+.url-badge{
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  color: white;
+  background-color: #757575;
+  height: 10px;
+  width: 10px;
+  text-align: center;
+  border-radius: 30px;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.6 !important;
+}
+
 .red-malicious-alert::before {
   border: unset !important;
 }
