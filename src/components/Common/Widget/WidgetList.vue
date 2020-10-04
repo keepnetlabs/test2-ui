@@ -114,7 +114,7 @@ export default {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  @media (max-width: 1200px) {
+  @media (max-width: 1300px) {
     table-layout: fixed !important;
   }
   position: relative;

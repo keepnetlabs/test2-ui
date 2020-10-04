@@ -9,13 +9,14 @@
       />
     </div>
 
-    <smart-widget-grid
+    <k-smart-grid
       :layout="layout"
       :col-num="colNum"
       @layout-mounted="layoutMounted"
       :is-static="!editMode"
       :row-height="50"
       ref="refGrid"
+      @breakpointChanged="breakpointChanged"
     >
       <smart-widget
         :key="item.i"
@@ -33,7 +34,7 @@
           @deleteWidget="deleteWidget(item, index)"
         />
       </smart-widget>
-    </smart-widget-grid>
+    </k-smart-grid>
   </div>
 </template>
 
@@ -44,18 +45,25 @@ import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
-
+import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
 import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
+import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 export default {
   name: 'Widgets',
   components: {
+    KSmartGrid,
     AvailableWidgets
   },
   data() {
-    /*
-
+    return {
+      activeBreakpoint: 'lg',
+      layout: [],
+      newItemY: 0,
+      colNum: 12,
+      editMode: false,
+      allWidgets: {
         IncidentResponderHeader: {
           x: 0,
           y: 0,
@@ -67,18 +75,8 @@ export default {
           minH: 5,
           i: Math.random().toString(),
           title: 'Incident Responder Header',
-          key: 'IncidentResponderHeader',
-          icon: 'mdi-view-dashboard'
+          key: 'IncidentResponderHeader'
         },
-    */
-
-    return {
-      activeBreakpoint: 'lg',
-      layout: [],
-      newItemY: 0,
-      colNum: 12,
-      editMode: false,
-      allWidgets: {
         RecentInvestigations: {
           x: 0,
           y: 0,
@@ -208,7 +206,8 @@ export default {
         { name: 'Incident Clusters', key: 'IncidentClusters' },
         { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
         { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' },
-        { name: 'Reported Email Trends', key: 'ReportedEmailTrends' }
+        { name: 'Reported Email Trends', key: 'ReportedEmailTrends' },
+        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -222,6 +221,9 @@ export default {
       */
   },
   methods: {
+    breakpointChanged({ newBreakPoint, newLayout }) {
+      console.log('newBreakPoint', newLayout)
+    },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
@@ -299,6 +301,8 @@ export default {
           return RecentlyReportedIncidents
         case 'ReportedEmailTrends':
           return ReportedEmailTrends
+        case 'IncidentResponderHeader':
+          return IncidentResponderHeader
         default:
           break
       }
@@ -340,9 +344,9 @@ export default {
             y: 0,
             w: 6,
             minW: 4,
-            h: 4,
-            defaultH: 5,
-            minH: 5,
+            h: 2,
+            defaultH: 2,
+            minH: 2,
             i: '0.013946941616145292',
             title: 'Incident Responder Header',
             key: 'IncidentResponderHeader',
