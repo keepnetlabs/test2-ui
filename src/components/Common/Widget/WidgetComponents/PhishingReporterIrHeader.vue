@@ -182,6 +182,29 @@ export default {
       font-stretch: normal;
       font-style: normal;
     }
+    .body-row {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      &__number {
+        font-size: 48px;
+        line-height: 1;
+        letter-spacing: normal;
+        color: #ffffff;
+      }
+      &__text {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: normal;
+        color: #ffffff;
+        opacity: 0.7;
+      }
+    }
   }
 
   .card-footer {
@@ -213,8 +236,15 @@ export default {
     position: absolute;
   }
 
+  &.phishing-reporter {
+    background-image: linear-gradient(to bottom, #5bcffd, #2196f3);
+  }
+
   &.no-data__opacity-blue {
     background-image: linear-gradient(to bottom, #3c768e, #25608a) !important;
+  }
+  &.no-data__opacity-purple {
+    background-image: linear-gradient(to bottom, #b27fc2, #66257a 96%);
   }
   .columns-row__body {
     margin-top: 16px;

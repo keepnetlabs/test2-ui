@@ -2,7 +2,7 @@
   <CardLoading
     :loading="isLoading"
     class="dashboard-cards__skeleton-loading"
-    :class="[isLoading && 'dashboard-cards-loading']"
+    :class="[isLoading && 'widget-card-loading']"
   >
     <template v-slot:skeleton-content>
       <div
@@ -76,7 +76,7 @@ export default {
   },
   data() {
     return {
-      isLoading: false
+      isLoading: true
     }
   },
   computed: {

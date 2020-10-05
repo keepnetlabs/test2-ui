@@ -2,17 +2,25 @@
   <CardLoading
     :loading="isLoading"
     class="dashboard-cards__skeleton-loading"
-    :class="[isLoading && 'dashboard-cards-loading']"
+    :class="[isLoading && 'widget-card-loading']"
   >
     <template v-slot:skeleton-content>
       <div
-        class="dashboard-cards investigations mr-2"
+        class="dashboard-cards investigations"
         :class="{
           'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
         }"
       >
         <div class="card-header">
           <span class="head">Investigations</span>
+          <v-icon
+            v-if="editMode"
+            style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
+            small
+            @click="$emit('deleteWidget')"
+            class="widget__header-icon ml-1"
+            >mdi-close-circle</v-icon
+          >
           <router-link :to="'/investigations'">
             <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
               >mdi-open-in-new</v-icon
@@ -80,6 +88,11 @@ export default {
   components: {
     CardLoading
   },
+  props: {
+    editMode: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       isLoading: true
@@ -130,4 +143,8 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.dashboard-cards.investigations {
+  background-image: linear-gradient(to bottom, #71c876, #43a047);
+}
+</style>

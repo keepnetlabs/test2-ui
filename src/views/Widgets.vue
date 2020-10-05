@@ -17,6 +17,7 @@
       :row-height="50"
       ref="refGrid"
       @breakpointChanged="breakpointChanged"
+      @layout-updated="layoutUpdated"
     >
       <smart-widget
         :key="item.i"
@@ -46,12 +47,13 @@ import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
 import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
-import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
 import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
 import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
+import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
+import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
 export default {
   name: 'Widgets',
   components: {
@@ -66,19 +68,6 @@ export default {
       colNum: 12,
       editMode: false,
       allWidgets: {
-        IncidentResponderHeader: {
-          x: 0,
-          y: 0,
-          w: 12,
-          defaultW: 12,
-          minW: 12,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
-          i: Math.random().toString(),
-          title: 'Incident Responder Header',
-          key: 'IncidentResponderHeader'
-        },
         RecentInvestigations: {
           x: 0,
           y: 0,
@@ -123,6 +112,36 @@ export default {
           i: Math.random().toString(),
           key: 'IncidentAnalysisIrHeader',
           title: 'Incident Analysis Ir Header'
+        },
+        InvestigationsIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'InvestigationsIrHeader',
+          title: 'Investigations Ir Header'
+        },
+        ROISummaryIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'ROISummaryIrHeader',
+          title: 'ROI Summary Ir Header'
         },
         RecentlyReportedIncidents: {
           x: 0,
@@ -239,10 +258,10 @@ export default {
         { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
         { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' },
         { name: 'Reported Email Trends', key: 'ReportedEmailTrends' },
-        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
         { name: 'Phishing Reporter Ir Header', key: 'PhishingReporterIrHeader' },
         { name: 'Incident Analysis Ir Header', key: 'IncidentAnalysisIrHeader' },
-        { name: 'Incident Analysis Ir Header', key: 'IncidentAnalysisIrHeader' }
+        { name: 'Investigations Ir Header', key: 'InvestigationsIrHeader' },
+        { name: 'ROI Summary Ir Header', key: 'ROISummaryIrHeader' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -254,6 +273,7 @@ export default {
     breakpointChanged({ newBreakpoint, newLayout }) {
       this.layout = newLayout
     },
+    layoutUpdated(newLayout) {},
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
@@ -266,18 +286,13 @@ export default {
         widgetObj.w = 6
       } else if (window.innerWidth < 900) {
         widgetObj.w = 6
-        if (widget.key === 'IncidentResponderHeader') {
-          widgetObj.h = widgetObj.h + 4
-        } else if (widget.key === 'PhishingReporterHeader') {
-          widgetObj.h = widgetObj.h + 1
-        }
       } else {
         this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW
       }
       newItem = widgetObj
       newItem['y'] = this.newItemY
       this.newItemY += newItem.h
-      this.layout.push(widgetObj)
+      this.layout.unshift(widgetObj)
     },
     removeAvailableWidget(widget) {
       this.availableWidgets.splice(
@@ -331,12 +346,14 @@ export default {
           return RecentlyReportedIncidents
         case 'ReportedEmailTrends':
           return ReportedEmailTrends
-        case 'IncidentResponderHeader':
-          return IncidentResponderHeader
         case 'PhishingReporterIrHeader':
           return PhishingReporterIrHeader
         case 'IncidentAnalysisIrHeader':
           return IncidentAnalysisIrHeader
+        case 'InvestigationsIrHeader':
+          return InvestigationsIrHeader
+        case 'ROISummaryIrHeader':
+          return RoiSummaryIrHeader
         default:
           break
       }
@@ -372,20 +389,6 @@ export default {
             icon: 'mdi-ruler',
             title: 'Top Rules',
             key: 'TopRules'
-          },
-          {
-            x: 0,
-            y: 0,
-            w: 12,
-            minW: 12,
-            h: 2,
-            defaultH: 2,
-            minH: 2,
-            i: '0.013946941616145292',
-            title: 'Incident Responder Header',
-            key: 'IncidentResponderHeader',
-            icon: 'mdi-view-dashboard',
-            moved: false
           },
           {
             x: 0,
@@ -487,20 +490,6 @@ export default {
             key: 'PhishingReporterHeader',
             icon: 'mdi-page-layout-header',
             moved: false
-          },
-          {
-            x: 0,
-            y: 0,
-            w: 6,
-            minW: 4,
-            h: 8,
-            defaultH: 5,
-            minH: 5,
-            i: '0.4797311077466353',
-            title: 'Incident Responder Header',
-            key: 'IncidentResponderHeader',
-            icon: 'mdi-view-dashboard',
-            moved: false
           }
         ]
       }
@@ -515,78 +504,14 @@ export default {
     this.availableWidgets =
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },
-  mounted() {
-    /*
-    this.$nextTick(() => {
-      const that = this
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 1025 && this.oldLayout) {
-          //that.layout = [...that.oldLayout]
-        } else if (window.innerWidth < 1025 && window.innerWidth > 768) {
-          let x = 0,
-            y = 0,
-            row = 0,
-            col = 0,
-            beforeX = 0
-          that.oldLayout = [...that.layout]
-          that.layout.sort((a, b) => {
-            if (a.y > b.y) {
-              return 1
-            } else if (a.y === b.y) {
-              return 0
-            } else {
-              return -1
-            }
-          })
-          that.layout = that.layout.map((item) => {
-            debugger
-            const itemWidth = item.w > item.midW ? item.w : item.midW
-            beforeX = x
-            x += itemWidth || 6
-
-            if (x > 12) {
-              x = 0
-              beforeX = 0
-              y += item.h
-            } else if (x === 12 && beforeX === 0) {
-              x = 0
-              beforeX = 0
-              y += item.h
-            }
-
-            return { ...item, w: itemWidth, x, y }
-          })
-        } else if (window.innerWidth < 768) {
-          that.oldLayout = [...that.layout]
-          that.layout.sort((a, b) => {
-            if (a.y > b.y) {
-              return 1
-            } else if (a.y === b.y) {
-              return 0
-            } else {
-              return -1
-            }
-          })
-          let x = 0,
-            y = 0,
-            row = 0,
-            col = 0
-          that.layout = that.layout.map((item) => {
-            y += item.y
-            return { ...item, w: 12, x: 0, y }
-          })
-        }
-      })
-    })
-
-     */
-  },
+  mounted() {},
   watch: {
     editMode(val) {
       if (!val) {
         this.handleDeleteShadows()
         localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
+        console.log('layout', this.layout)
         this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
       } else {
         this.handleAddShadows()
