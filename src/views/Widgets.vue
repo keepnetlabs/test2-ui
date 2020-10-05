@@ -221,14 +221,14 @@ export default {
         IncidentClusters: {
           x: 0,
           y: 0,
-          w: 8,
-          minW: 8,
-          defaultW: 8,
-          h: 7,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
           midW: 12,
-          defaultH: 7,
-          minH: 7,
-          maxH: 7,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
           key: 'IncidentClusters',
           title: 'Incident Clusters'
@@ -236,14 +236,14 @@ export default {
         ReportedEmailTrends: {
           x: 0,
           y: 0,
-          w: 8,
-          minW: 8,
-          defaultW: 8,
-          h: 7,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
           midW: 12,
-          defaultH: 7,
-          minH: 7,
-          maxH: 7,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
           key: 'ReportedEmailTrends',
           title: 'Reported Email Trends'
@@ -271,7 +271,40 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint, newLayout }) {
-      this.layout = newLayout
+      console.log('newBreakpoint', newBreakpoint)
+      const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
+      let x = 0,
+        row = 0,
+        nextX = 0,
+        beforeX = 0,
+        xValue = 0,
+        y = 0
+      this.layout.sort((a, b) => {
+        if (a.y > b.y) {
+          return 1
+        } else if (a.y === b.y) {
+          if (a.x > b.x) {
+            return 1
+          } else if (a.x < b.x) {
+            return -1
+          }
+          return 0
+        } else {
+          return -1
+        }
+      })
+      this.layout = this.layout.map((item) => {
+        const itemWidth = item.w
+        xValue = x
+        x += itemWidth
+        if (x > bdCol) {
+          x = itemWidth
+          y += item.h
+          xValue = 0
+        }
+
+        return { ...item, w: itemWidth, x: xValue, y }
+      })
     },
     layoutUpdated(newLayout) {},
     deleteWidget(item, index) {
