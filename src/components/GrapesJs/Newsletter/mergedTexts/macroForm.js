@@ -5,7 +5,7 @@ const macroForm = {
   category: 'Merged Texts',
   attributes: {
     title: 'To',
-    class: 'fa fa-square-o gjs-block gjs-one-bg gjs-four-color-h',
+    class: 'merged-text',
     icon: 'fa fa-text'
   },
   content: {

@@ -1492,7 +1492,6 @@ export default {
       this.activeMenu = menu
       this.showTargetUsersDetails = false
       this.showEmails = false
-      debugger
       this.loading = true
       this.investigationDetailsList = null
       if (menu != 'targetUsers') {
