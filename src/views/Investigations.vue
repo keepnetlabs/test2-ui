@@ -262,28 +262,8 @@ export default {
       download: true
     },
     chartOptions: {
-      chart: {
-        type: 'pie'
-      },
-      summary: {
-        show: true,
-        seperator: '/'
-      },
+      backgroundColor: ['#3f51b5', '#00bcd4'],
       labels: ['Scanned User Count', 'Not Scanned Users Count'],
-
-      colors: ['#3f51b5', '#00bcd4'],
-      legend: {
-        show: false
-      },
-      tooltip: {
-        enabled: false
-      },
-      dataLabels: {
-        enabled: false
-      },
-      plotOptions: {
-        pie: {}
-      },
       showTooltipLine: true
     },
     bodyData: {

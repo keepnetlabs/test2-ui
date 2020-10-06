@@ -410,6 +410,7 @@
             @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
+            :indent="32"
             lazy
             ref="elTableRef"
             :row-key="rowKey"

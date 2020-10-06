@@ -13,7 +13,7 @@
     >
       <template v-slot:activator="{ on }">
         <div v-on="on">
-          <apexchart :options="chartOptions" :series="scope.row[col.property]" :width="56" />
+          <pie :data="scope.row[col.property]" :chart-options="chartOptions" />
         </div>
       </template>
       <div
@@ -29,11 +29,11 @@
 </template>
 
 <script>
-import VueApexCharts from 'vue-apexcharts'
+import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'DataTableChart',
   components: {
-    apexchart: VueApexCharts
+    Pie
   },
   methods: {
     getChartSummary(property, seperator = '/') {
@@ -58,6 +58,13 @@ export default {
 .datatable-chart {
   display: flex;
   justify-content: center;
+  > div {
+    > div {
+      margin-top: -8px;
+      width: 43px;
+      height: 43px;
+    }
+  }
   &__text {
     margin-top: -18px;
     margin-left: 2px;

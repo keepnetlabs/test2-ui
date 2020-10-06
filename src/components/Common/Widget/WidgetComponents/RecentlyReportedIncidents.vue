@@ -4,7 +4,7 @@
       <v-btn style="display: none;" />
       <widget-container>
         <widget-header
-          title="Recently Posted Threats"
+          title="Recently Reported Incidents"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
