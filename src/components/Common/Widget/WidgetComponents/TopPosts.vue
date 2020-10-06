@@ -9,7 +9,7 @@
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData" auto>
+          <widget-list :columns="columns" :data="tableData">
             <template v-slot:commentCount="{ row }">
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">

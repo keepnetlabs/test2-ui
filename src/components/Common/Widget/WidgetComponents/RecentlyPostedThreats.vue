@@ -9,7 +9,7 @@
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData" auto>
+          <widget-list :columns="columns" :data="tableData">
             <template v-slot:title="{ value, row }">
               <span class="k-widget-list__item" v-if="value">
                 {{ value }}

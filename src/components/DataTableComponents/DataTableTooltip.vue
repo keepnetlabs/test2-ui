@@ -24,6 +24,7 @@ export default {
   position: fixed;
   color: #fff;
   letter-spacing: normal;
+  word-break: break-all;
   padding: 4px 16px;
   z-index: 12;
   border-radius: 4px;

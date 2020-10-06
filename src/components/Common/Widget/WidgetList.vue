@@ -5,7 +5,7 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <table class="k-widget-list" :style="getTableStyle">
+    <table class="k-widget-list" :style="getTableStyle" :id="tableId">
       <thead class="k-widget-list__header-container">
         <th
           :key="col.label"
@@ -24,6 +24,7 @@
             :style="columns[index]['tdStyle'] && columns[index]['tdStyle']"
             v-for="(value, key, index) in row"
             @mouseenter="handleMouseEnterTd($event, row[columns[index].property], rowIndex)"
+            @mouseup="handleMouseEnterTd($event, row[columns[index].property], rowIndex)"
             @mouseleave="handleMouseLeaveTd($event, row[columns[index].property], rowIndex)"
           >
             <slot
@@ -73,7 +74,8 @@ export default {
     return {
       showOverFlowTooltip: false,
       overFlowTooltipStyle: {},
-      overFlowTooltipContent: ''
+      overFlowTooltipContent: '',
+      tableId: `table-${Math.random()}`
     }
   },
   computed: {
@@ -82,7 +84,7 @@ export default {
     }
   },
   methods: {
-    handleMouseEnterTd(event, value, index) {
+    handleMouseEnterTd(event = {}, value = '', index = 0) {
       const { target: parent } = event
       const parentRECT = parent.getBoundingClientRect()
       const parentWidth = Math.floor(parentRECT.width)
@@ -90,18 +92,20 @@ export default {
         parent.querySelector('.k-widget-list__item') &&
         parent.querySelector('.k-widget-list__item').getBoundingClientRect()
       if (childRECT && parentRECT) {
+        const tableLeft = document.getElementById(this.tableId).getBoundingClientRect().left
         const childWidth = Math.floor(childRECT.width) + 14
         value = value.toString()
         if (value && childWidth > parentWidth) {
           this.overFlowTooltipStyle = {
-            top: `${80 + (index + 1) * 40}px`
+            top: `${80 + (index + 1) * 48}px`,
+            left: `${childRECT.left - tableLeft}px`
           }
           this.overFlowTooltipContent = value
           this.showOverFlowTooltip = true
         }
       }
     },
-    handleMouseLeaveTd(e) {
+    handleMouseLeaveTd() {
       this.showOverFlowTooltip = false
     }
   },
@@ -172,6 +176,8 @@ export default {
     line-height: normal;
     letter-spacing: normal;
     color: #757575;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>

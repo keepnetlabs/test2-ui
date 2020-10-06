@@ -9,7 +9,24 @@
           :link="{ href: '/phishing-reporter', text: 'All' }"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData"> </widget-list>
+          <widget-list :columns="columns" :data="tableData">
+            <template v-slot:threats="{ row, value }">
+              <span
+                class="k-widget-list__item"
+                v-if="value"
+                style="color: #212121 !important; opacity: 0.7;"
+              >
+                {{ value }}
+              </span>
+              <div
+                class="k-widget-list__sub-item"
+                v-if="row['email']"
+                style="color: #474747; opacity: 0.64;"
+              >
+                {{ row['email'] }}
+              </div>
+            </template>
+          </widget-list>
         </widget-body>
       </widget-container>
     </template>
