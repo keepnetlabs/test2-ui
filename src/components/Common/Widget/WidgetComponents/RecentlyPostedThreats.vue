@@ -59,7 +59,13 @@ export default {
       columns: [
         {
           property: 'title',
-          label: 'Post Title'
+          label: 'Post Title',
+          thStyle: {
+            width: '60%'
+          },
+          tdStyle: {
+            width: '60%'
+          }
         },
         {
           property: 'communityName',

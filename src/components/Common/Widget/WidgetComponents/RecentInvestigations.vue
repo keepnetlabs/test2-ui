@@ -81,7 +81,13 @@ export default {
       columns: [
         {
           property: 'name',
-          label: 'Investigation Name'
+          label: 'Investigation Name',
+          thStyle: {
+            width: '60%'
+          },
+          tdStyle: {
+            width: '60%'
+          }
         },
         {
           property: 'progress',

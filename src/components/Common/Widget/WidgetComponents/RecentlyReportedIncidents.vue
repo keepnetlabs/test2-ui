@@ -67,7 +67,13 @@ export default {
       columns: [
         {
           property: 'subject',
-          label: 'Subject'
+          label: 'Subject',
+          thStyle: {
+            width: '60%'
+          },
+          tdStyle: {
+            width: '60%'
+          }
         },
         {
           property: 'result',

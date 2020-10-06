@@ -59,7 +59,13 @@ export default {
         {
           property: 'postTitle',
           label: 'Post Title',
-          subItem: 'communityName'
+          subItem: 'communityName',
+          thStyle: {
+            width: '70%'
+          },
+          tdStyle: {
+            width: '70%'
+          }
         },
         {
           property: 'commentCount',

@@ -96,6 +96,14 @@ export function getTextColor(type) {
       return '#e6a23c'
     case 'closed':
       return '#43a047'
+    case 'very high':
+      return '#43a047'
+    case 'medium':
+      return '#00bcd4'
+    case 'low':
+      return '#e6a23c'
+    case 'very low':
+      return '#f56c6c'
     default:
       break
   }

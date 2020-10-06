@@ -59,11 +59,7 @@ export default {
       type: Boolean
     }
   },
-  watch: {
-    editMode(val) {
-      console.log('val', val)
-    }
-  },
+
   data() {
     return {
       isLoading: true,
@@ -73,7 +69,13 @@ export default {
       columns: [
         {
           property: 'ruleName',
-          label: 'Rule Name'
+          label: 'Rule Name',
+          thStyle: {
+            width: '60%'
+          },
+          tdStyle: {
+            width: '60%'
+          }
         },
         {
           property: 'matchCount',
