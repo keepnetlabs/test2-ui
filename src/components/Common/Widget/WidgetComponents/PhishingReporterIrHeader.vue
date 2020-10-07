@@ -243,8 +243,16 @@ export default {
   &.no-data__opacity-blue {
     background-image: linear-gradient(to bottom, #3c768e, #25608a) !important;
   }
+
+  &.no-data__opacity-red {
+    background-image: linear-gradient(to bottom, #895f5f, #8a4646) !important;
+  }
+
   &.no-data__opacity-purple {
     background-image: linear-gradient(to bottom, #b27fc2, #66257a 96%);
+  }
+  &.no-data__opacity-green {
+    background-image: linear-gradient(to bottom, #268a50, #265229) !important;
   }
   .columns-row__body {
     margin-top: 16px;

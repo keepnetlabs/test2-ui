@@ -271,7 +271,6 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint, newLayout }) {
-      console.log('newBreakpoint', newBreakpoint)
       const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
       let x = 0,
         row = 0,
@@ -325,7 +324,7 @@ export default {
       newItem = widgetObj
       newItem['y'] = this.newItemY
       this.newItemY += newItem.h
-      this.layout.unshift(widgetObj)
+      this.layout.push(widgetObj)
     },
     removeAvailableWidget(widget) {
       this.availableWidgets.splice(
@@ -534,6 +533,10 @@ export default {
   },
   created() {
     this.layout = JSON.parse(localStorage.getItem('widget-layout')) || []
+    this.newItemY = this.layout.reduce((acc, item) => {
+      return (acc += item.h)
+    }, 0)
+    console.log('this.newItemY', this.newItemY)
     this.availableWidgets =
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },
@@ -544,14 +547,11 @@ export default {
         this.handleDeleteShadows()
         localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
-        console.log('layout', this.layout)
-        this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
+
+        //this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
       } else {
         this.handleAddShadows()
       }
-    },
-    layout() {
-      console.log('widgetslayout updated')
     }
   }
 }
