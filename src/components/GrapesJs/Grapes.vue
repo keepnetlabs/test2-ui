@@ -343,7 +343,7 @@ export default {
     width: 100%;
     height: 100%;
   }
-  .gjs-block {
+  tableData .gjs-block {
     width: auto;
     height: auto;
     min-height: auto;

@@ -59,3 +59,14 @@ export function createTargetUserCustomField(payload) {
 export function updateTargetUserCustomField(payload) {
   return testRequest.put(`/custom-fields/${payload.resourceId}`, payload)
 }
+
+export function uploadExcelOrCsvForTargetUsers(file) {
+  const formData = new FormData()
+  formData.append('File', file)
+  return testRequest.post(`/`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    loading: true
+  })
+}
