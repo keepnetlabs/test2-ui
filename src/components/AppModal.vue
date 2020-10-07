@@ -11,7 +11,7 @@
     <v-card light class="k-overlay__container">
       <v-form lazy-validation ref="refForm">
         <slot name="overlay-header">
-          <v-list-item class="k-overlay__list-item">
+          <v-list-item class="k-overlay__list-item k-overlay__header">
             <div class="v-btn v-cart-icon-wrapper">
               <v-icon class="ml-2" color="blue" left medium>{{ iconName }}</v-icon>
             </div>

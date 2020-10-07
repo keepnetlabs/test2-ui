@@ -30,6 +30,11 @@
       @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
       v-if="isWantToShowCustomFieldsModal"
     />
+    <target-user-import-from-a-file
+      :status="isWantToImportFile"
+      @closeAddUserModal="closeImportModal"
+      v-if="isWantToImportFile"
+    />
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>
         <datatable
@@ -108,6 +113,7 @@ import {
 } from '../../model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 export default {
   name: 'People',
   components: {
@@ -117,9 +123,11 @@ export default {
     Datatable,
     AddUsersManuallyModal,
     AddUserModal,
-    DatatableLoading
+    DatatableLoading,
+    TargetUserImportFromAFile
   },
   data: () => ({
+    isWantToImportFile: false,
     tableData: [],
     loading: true,
     isWantToShowDeleteUserModal: false,
@@ -276,6 +284,9 @@ export default {
     addUsersItems: ['Add users manually', 'Import from a file', 'LDAP Integration']
   }),
   methods: {
+    closeImportModal() {
+      this.isWantToImportFile = false
+    },
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
@@ -283,7 +294,7 @@ export default {
           this.isWantToShowAddUsersModal = true
           break
         case this.addUsersItems[1]:
-          //this.isWantToShowImportUsersFromFileModal = true
+          this.isWantToImportFile = true
           break
         default:
           break
