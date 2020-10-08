@@ -92,14 +92,14 @@
       </div>
       <div class="company-list-extend__body-item">
         <div class="company-list-extend__body-key d-flex align-center">Phishing</div>
-        <div class="company-list-extend__body-value">
-          <apexchart :options="chartOptions" :series="series" :width="56" />
+        <div class="company-list-extend__body-value" style="width: 44px; margin-top: -4px;">
+          <pie :data="series" :chart-options="chartOptions" />
         </div>
       </div>
       <div class="company-list-extend__body-item">
         <div class="company-list-extend__body-key d-flex align-center">Training</div>
-        <div class="company-list-extend__body-value">
-          <apexchart :options="chartOptions" :series="series" :width="56" />
+        <div class="company-list-extend__body-value" style="width: 44px; margin-top: -4px;">
+          <pie :data="series" :chart-options="chartOptions" />
         </div>
       </div>
       <div class="company-list-extend__body-item">
@@ -132,11 +132,11 @@
 </template>
 
 <script>
-import VueApexCharts from 'vue-apexcharts'
+import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'CompanyListExtend',
   components: {
-    apexchart: VueApexCharts
+    Pie
   },
   props: {
     selectedRow: {
@@ -163,29 +163,7 @@ export default {
       groupCount: 0,
       series: [2, 2, 2, 8],
       chartOptions: {
-        chart: {
-          type: 'pie'
-        },
-        summary: {
-          show: true,
-          seperator: '/'
-        },
-        labels: ['Scanned User Count', 'Not Scanned Users Count'],
-
-        colors: ['#ffcc33', '#409eff', '#f56c6c', '#67c23a'],
-        legend: {
-          show: false
-        },
-        tooltip: {
-          enabled: false
-        },
-        dataLabels: {
-          enabled: false
-        },
-        plotOptions: {
-          pie: {}
-        },
-        showTooltipLine: true
+        backgroundColor: ['#ffcc33', '#409eff', '#f56c6c', '#67c23a']
       }
     }
   },

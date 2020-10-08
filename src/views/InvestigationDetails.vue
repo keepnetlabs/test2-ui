@@ -1200,24 +1200,7 @@ export default {
       deleteAndNotify: true
     },
     chartOptions: {
-      chart: {
-        width: 60,
-        height: 60,
-        type: 'pie',
-        offsetX: -1,
-        offsetY: 1
-      },
-      labels: ['Team A', 'Team B'],
-      colors: ['#3f51b5', '#00bcd4'],
-      legend: {
-        show: false
-      },
-      tooltip: {
-        enabled: false
-      },
-      dataLabels: {
-        enabled: false
-      }
+      backgroundColor: ['#3f51b5', '#00bcd4']
     },
     bodyData: {
       // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda

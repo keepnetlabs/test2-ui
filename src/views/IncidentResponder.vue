@@ -113,7 +113,7 @@
                   class="btn-action btn-playbook btn-playbook__no-data"
                   rounded
                   color="white"
-                  style="box-shadow: none !important; margin-top: 29px;"
+                  style="box-shadow: none !important; margin-top: 16px;"
                   @click="emptyPhishingButtonClick"
                 >
                   Install Now
@@ -202,10 +202,10 @@
               </div>
               <div
                 class="columns-row__body"
-                style="margin-top: 22px;"
+                style="margin-top: 13px;"
                 v-if="isInvestigationsEmpty(irSummary)"
               >
-                <div class="card-body">
+                <div class="card-body d-flex">
                   <div class="body-row">
                     <span class="body-row__number">
                       {{
@@ -216,9 +216,9 @@
                       }}
                     </span>
 
-                    <span class="body-row__text">automated</span>
+                    <span class="body-row__text">auto</span>
                   </div>
-                  <div class="body-row mt-4">
+                  <div class="body-row" style="margin-left: 81px;">
                     <span class="body-row__number"
                       >{{
                         (irSummary &&
@@ -239,7 +239,7 @@
                   class="btn-action btn-playbook btn-playbook__no-data"
                   rounded
                   color="white"
-                  style="box-shadow: none !important; margin-top: 29px;"
+                  style="box-shadow: none !important; margin-top: 16px;"
                   @click="emptyInvestigationButtonClick"
                 >
                   Start Now
@@ -273,14 +273,17 @@
                 >
               </div>
               <div class="card-body">
-                <div class="body-row" style="margin-top: 22px;">
+                <div class="body-row" style="margin-top: 14px;">
                   <span class="body-row__number">
-                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+                    {{ getRoiSummaryValue }}
                   </span>
-                  <span>and</span>
                 </div>
-                <div class="body-row mt-4">
-                  <span class="body-row__number"> {{ getRoiSummaryValue }} </span>
+                <div class="body-row">
+                  <span class="roi-number">
+                    {{
+                      (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0
+                    }}h</span
+                  >
                 </div>
               </div>
               <div class="card-status">Saved</div>
@@ -1739,7 +1742,7 @@ export default {
     cursor: pointer;
   }
   .columns-row__body {
-    margin-top: 24px;
+    margin-top: 16px;
   }
   .columns-row {
     display: flex;
@@ -1762,7 +1765,8 @@ export default {
     }
 
     .dashboard-cards {
-      min-height: 225px;
+      min-height: 170px;
+      max-height: 170px;
       border-radius: 8px;
       margin: 8px;
       padding: 16px;
@@ -1770,7 +1774,7 @@ export default {
 
       &__skeleton-loading {
         width: 25%;
-        min-height: 225px;
+        min-height: 170px;
         border-radius: 8px;
         position: relative;
       }
@@ -1809,28 +1813,35 @@ export default {
         }
 
         .biggest {
-          font-size: 80px;
+          font-size: 48px;
           line-height: 1;
           font-weight: normal;
           font-stretch: normal;
           font-style: normal;
         }
 
+        .body-row {
+          display: flex;
+          flex-direction: column;
+        }
+
         .body-row:first-child {
-          width: 100%;
+          //width: 100%;
         }
 
         .body-row__number {
           font-size: 48px;
-          line-height: 0.81;
+          line-height: 1;
           letter-spacing: normal;
           color: #ffffff;
         }
         .body-row__text {
-          font-size: 20px;
-          line-height: 1;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1.25;
           letter-spacing: normal;
           color: #ffffff;
+          opacity: 0.7;
         }
 
         .body-row:nth-child(2) {
@@ -1838,13 +1849,12 @@ export default {
       }
 
       .card-footer {
-        font-size: 20px;
-        font-weight: normal;
-        line-height: 1.25;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: normal;
         letter-spacing: normal;
-        color: #fff;
-        margin-top: 8px;
-        margin-bottom: 8px;
+        color: #ffffff;
+        opacity: 0.7;
         //padding-bottom: 16px;
 
         &.no-data-text {
@@ -1852,7 +1862,7 @@ export default {
           line-height: 1.25;
           letter-spacing: normal;
           color: #ffffff;
-          margin-top: 61px;
+          margin-top: 36px;
         }
       }
 
@@ -2257,5 +2267,13 @@ export default {
 }
 .dashboard-cards-loading {
   width: 24% !important;
+}
+.roi-number {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #ffffff;
+  opacity: 0.7;
 }
 </style>

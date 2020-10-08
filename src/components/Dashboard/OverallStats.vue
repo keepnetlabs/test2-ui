@@ -59,13 +59,9 @@
   </div>
 </template>
 <script>
-import VueApexCharts from 'vue-apexcharts'
-
 export default {
   name: 'overall-stats',
-  components: {
-    apexchart: VueApexCharts
-  },
+  components: {},
   data: () => ({
     /* monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
           'July', 'August', 'September', 'October', 'November', 'December',

@@ -9,174 +9,169 @@
       />
     </div>
 
-    <smart-widget-grid
+    <k-smart-grid
       :layout="layout"
-      :col-num="6"
-      @layout-updated="layoutUpdated"
+      :col-num="colNum"
       @layout-mounted="layoutMounted"
       :is-static="!editMode"
-      :row-height="52"
+      :row-height="50"
       ref="refGrid"
+      @breakpointChanged="breakpointChanged"
+      @layout-updated="layoutUpdated"
     >
       <smart-widget
-        fullscreen
         :key="item.i"
         v-for="(item, index) in layout"
         :slot="item.i"
         :padding="[0, 0]"
         :ref="`ref${item.i}`"
         :shadow="'never'"
-        :simple="!editMode"
+        :simple="true"
       >
-        <template v-slot:title>
-          <div class="widget-header__title">
-            <v-icon color="#2196f3">{{ item.icon }}</v-icon>
-            <span class="ml-2">{{ item.title }}</span>
-          </div>
-        </template>
-        <template v-slot:toolbar>
-          <v-icon
-            style="margin-top: -25px; font-size: 18px;"
-            small
-            @click="collapse(item, index, `ref${item.i}`)"
-            class="widget__header-icon ml-1"
-            >mdi-window-minimize</v-icon
-          >
-          <v-icon
-            style="margin-top: -25px; font-size: 18px;"
-            small
-            @click="deleteWidget(item, index)"
-            class="widget__header-icon ml-1"
-            >mdi-close-circle</v-icon
-          >
-        </template>
-        <component v-once :is="getComponent(item.key)" :resizable="false" />
+        <component
+          :is="getComponent(item.key)"
+          :resizable="false"
+          :editMode="editMode"
+          @deleteWidget="deleteWidget(item, index)"
+        />
       </smart-widget>
-    </smart-widget-grid>
+    </k-smart-grid>
   </div>
 </template>
 
 <script>
-import PhishingReporterUsers from '@/components/PhishingReporter/Users'
 import AvailableWidgets from '@/components/Common/Widget/AvailableWidgets'
-import PhishingReporterHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterHeader'
-import IncidentResponderHeader from '@/components/Common/Widget/WidgetComponents/IncidentResponderHeader'
-import PhishingCampaigns from '@/components/Common/Widget/WidgetComponents/PhishingCampaigns'
 import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/RecentInvestigations'
-import ReportedEmails from '@/components/Common/Widget/WidgetComponents/ReportedEmails'
-import OverallStats from '@/components/Common/Widget/WidgetComponents/OverallStatsWidget'
-import CompanyInformationWidget from '@/components/Common/Widget/WidgetComponents/CompanyInformationWidget'
+import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
+import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
+import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
+import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
+import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
+import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
+import ReportedEmailTrends from '@/components/Common/Widget/WidgetComponents/ReportedEmailTrends'
+import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
+import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
+import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
+import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
 export default {
   name: 'Widgets',
   components: {
+    KSmartGrid,
     AvailableWidgets
   },
   data() {
-    /*
-
- PhishingCampaigns: {
-          x: 0,
-          y: 0,
-          w: 2,
-          minW: 2,
-          h: 6,
-          defaultH: 6,
-          minH: 5,
-          i: Math.random().toString(),
-          title: 'Phishing Campaigns',
-          key: 'PhishingCampaigns',
-          icon: 'mdi-chart-pie'
-        },
- OverallStats: {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          h: 11,
-          defaultH: 11,
-          minH: 8,
-          i: Math.random().toString(),
-          icon: 'mdi-chart-bar',
-          title: 'Overall Stats',
-          key: 'OverallStats'
-        },
-        */
-
     return {
+      activeBreakpoint: 'lg',
       layout: [],
       newItemY: 0,
+      colNum: 12,
       editMode: false,
       allWidgets: {
-        ReportedEmails: {
-          x: 0,
-          y: 0,
-          w: 6,
-          defaultW: 6,
-          minW: 2,
-          h: 9,
-          defaultH: 9,
-          minH: 3,
-          i: Math.random().toString(),
-          title: 'Reported Emails',
-          key: 'ReportedEmails',
-          icon: 'mdi-email'
-        },
-        PhishingReporterUsers: {
-          x: 0,
-          y: 0,
-          w: 6,
-          defaultW: 6,
-          minW: 2,
-          h: 8,
-          minH: 3,
-          defaultH: 8,
-          i: Math.random().toString(),
-          title: 'Phishing Reporter Users',
-          key: 'PhishingReporterUsers',
-          icon: 'mdi-account'
-        },
-        IncidentResponderHeader: {
-          x: 0,
-          y: 0,
-          w: 6,
-          defaultW: 6,
-          minW: 4,
-          h: 5,
-          defaultH: 5,
-          minH: 5,
-          i: Math.random().toString(),
-          title: 'Incident Responder Header',
-          key: 'IncidentResponderHeader',
-          icon: 'mdi-view-dashboard'
-        },
-        PhishingReporterHeader: {
-          x: 0,
-          y: 0,
-          w: 4,
-          minW: 2,
-          defaultW: 4,
-          h: 4,
-          defaultH: 4,
-          minH: 3,
-          i: Math.random().toString(),
-          title: 'Phishing Reporter Header',
-          key: 'PhishingReporterHeader',
-          icon: 'mdi-page-layout-header'
-        },
         RecentInvestigations: {
           x: 0,
           y: 0,
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 7,
-          defaultH: 7,
-          minH: 7,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
-          icon: 'mdi-briefcase-variant',
           title: 'Recent Investigations',
           key: 'RecentInvestigations'
+        },
+        PhishingReporterIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'PhishingReporterIrHeader',
+          title: 'Phishing Reporter Ir Header'
+        },
+        IncidentAnalysisIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'IncidentAnalysisIrHeader',
+          title: 'Incident Analysis Ir Header'
+        },
+        InvestigationsIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'InvestigationsIrHeader',
+          title: 'Investigations Ir Header'
+        },
+        ROISummaryIrHeader: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: Math.random().toString(),
+          key: 'ROISummaryIrHeader',
+          title: 'ROI Summary Ir Header'
+        },
+        RecentlyReportedIncidents: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          title: 'Recently Reported Incidents',
+          key: 'RecentlyReportedIncidents'
+        },
+        RecentlyPostedThreats: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          title: 'Recently Posted Threats',
+          key: 'RecentlyPostedThreats'
         },
         TopRules: {
           x: 0,
@@ -184,54 +179,136 @@ export default {
           w: 3,
           minW: 3,
           defaultW: 3,
-          h: 7,
-          defaultH: 7,
-          minH: 7,
-          i: Math.random().toString(),
-          icon: 'mdi-ruler',
-          title: 'Top Rules',
-          key: 'TopRules'
-        },
-        CompanyInformation: {
-          x: 0,
-          y: 0,
-          w: 2,
-          defaultW: 2,
-          minW: 2,
+          midW: 6,
           h: 6,
           defaultH: 6,
           minH: 6,
+          maxH: 6,
           i: Math.random().toString(),
-          icon: 'mdi-information',
-          title: 'Company Information',
-          key: 'CompanyInformation'
+          key: 'TopRules',
+          title: 'Top Rules'
+        },
+        TopPosts: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'TopPosts',
+          title: 'Top Posts'
+        },
+        Reporters: {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'Reporters',
+          title: 'Reporters'
+        },
+        IncidentClusters: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'IncidentClusters',
+          title: 'Incident Clusters'
+        },
+        ReportedEmailTrends: {
+          x: 0,
+          y: 0,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: Math.random().toString(),
+          key: 'ReportedEmailTrends',
+          title: 'Reported Email Trends'
         }
       },
       availableWidgets: [
-        { name: 'Phishing Reporter Users', key: 'PhishingReporterUsers' },
-        { name: 'Incident Responder Header', key: 'IncidentResponderHeader' },
-        { name: 'Phishing Reporter Header', key: 'PhishingReporterHeader' },
         { name: 'Recent Investigations', key: 'RecentInvestigations' },
         { name: 'Top Rules', key: 'TopRules' },
-        { name: 'Company Information', key: 'CompanyInformation' },
-        { name: 'Reported Emails', key: 'ReportedEmails' }
+        { name: 'Top Posts', key: 'TopPosts' },
+        { name: 'Reporters', key: 'Reporters' },
+        { name: 'Incident Clusters', key: 'IncidentClusters' },
+        { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
+        { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' },
+        { name: 'Reported Email Trends', key: 'ReportedEmailTrends' },
+        { name: 'Phishing Reporter Ir Header', key: 'PhishingReporterIrHeader' },
+        { name: 'Incident Analysis Ir Header', key: 'IncidentAnalysisIrHeader' },
+        { name: 'Investigations Ir Header', key: 'InvestigationsIrHeader' },
+        { name: 'ROI Summary Ir Header', key: 'ROISummaryIrHeader' }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
         'background:transparent ;' +
         ' border:none}'
     }
-    /*
-
-      { name: 'Overall Stats', key: 'OverallStats' },
-       { name: 'Phishing Campaigns', key: 'PhishingCampaigns' },
-      */
   },
   methods: {
+    breakpointChanged({ newBreakpoint, newLayout }) {
+      const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
+      let x = 0,
+        row = 0,
+        nextX = 0,
+        beforeX = 0,
+        xValue = 0,
+        y = 0
+      this.layout.sort((a, b) => {
+        if (a.y > b.y) {
+          return 1
+        } else if (a.y === b.y) {
+          if (a.x > b.x) {
+            return 1
+          } else if (a.x < b.x) {
+            return -1
+          }
+          return 0
+        } else {
+          return -1
+        }
+      })
+      this.layout = this.layout.map((item) => {
+        const itemWidth = item.w
+        xValue = x
+        x += itemWidth
+        if (x > bdCol) {
+          x = itemWidth
+          y += item.h
+          xValue = 0
+        }
+
+        return { ...item, w: itemWidth, x: xValue, y }
+      })
+    },
+    layoutUpdated(newLayout) {},
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
-      localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
     addWidget(widget) {
       this.removeAvailableWidget(widget)
@@ -241,18 +318,13 @@ export default {
         widgetObj.w = 6
       } else if (window.innerWidth < 900) {
         widgetObj.w = 6
-        if (widget.key === 'IncidentResponderHeader') {
-          widgetObj.h = widgetObj.h + 4
-        } else if (widget.key === 'PhishingReporterHeader') {
-          widgetObj.h = widgetObj.h + 1
-        }
       } else {
         this.allWidgets[widget.key].w = this.allWidgets[widget.key].defaultW
       }
       newItem = widgetObj
       newItem['y'] = this.newItemY
       this.newItemY += newItem.h
-      this.layout.unshift(widgetObj)
+      this.layout.push(widgetObj)
     },
     removeAvailableWidget(widget) {
       this.availableWidgets.splice(
@@ -261,27 +333,20 @@ export default {
         }),
         1
       )
-      localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
     },
-    layoutUpdated(newLayout) {
-      // localStorage.setItem('widgetLayout', JSON.stringify(newLayout))
-    },
+    layoutResized() {},
     changeWidgetStatus() {
-      /*
-      if (this.editMode) {
-        localStorage.setItem('widgetLayout', JSON.stringify(this.layout))
-      }
-
-       */
       this.editMode = !this.editMode
     },
-    layoutMounted(newLayout) {
+    layoutMounted() {
+      /*
       newLayout.map((item, index) => {
         if (newLayout[index].h === 1) {
           this.$refs[`ref${item.i}`][0].$el.querySelector('.widget-body').style.display = 'none'
         }
         this.newItemY += item.h
       })
+       */
       this.handleDeleteShadows()
     },
     collapse(item, index, ref) {
@@ -297,24 +362,30 @@ export default {
 
     getComponent(componentString) {
       switch (componentString) {
-        case 'PhishingReporterUsers':
-          return PhishingReporterUsers
-        case 'IncidentResponderHeader':
-          return IncidentResponderHeader
-        case 'PhishingReporterHeader':
-          return PhishingReporterHeader
-        case 'PhishingCampaigns':
-          return PhishingCampaigns
         case 'RecentInvestigations':
           return RecentInvestigations
-        case 'ReportedEmails':
-          return ReportedEmails
-        case 'OverallStats':
-          return OverallStats
-        case 'CompanyInformation':
-          return CompanyInformationWidget
+        case 'Reporters':
+          return Reporters
         case 'TopRules':
           return TopRules
+        case 'TopPosts':
+          return TopPosts
+        case 'IncidentClusters':
+          return IncidentClusters
+        case 'RecentlyPostedThreats':
+          return RecentlyPostedThreats
+        case 'RecentlyReportedIncidents':
+          return RecentlyReportedIncidents
+        case 'ReportedEmailTrends':
+          return ReportedEmailTrends
+        case 'PhishingReporterIrHeader':
+          return PhishingReporterIrHeader
+        case 'IncidentAnalysisIrHeader':
+          return IncidentAnalysisIrHeader
+        case 'InvestigationsIrHeader':
+          return InvestigationsIrHeader
+        case 'ROISummaryIrHeader':
+          return RoiSummaryIrHeader
         default:
           break
       }
@@ -334,180 +405,225 @@ export default {
       })
     },
     getDefaultLayoutObject() {
-      const width = window.innerWidth
-      let retValue = ''
-      if (width > 1023) {
-        retValue = [
-          {
-            x: 0,
-            y: 9,
-            w: 3,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.9609571524431146',
-            icon: 'mdi-ruler',
-            title: 'Top Rules',
-            key: 'TopRules',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 0,
-            w: 6,
-            minW: 4,
-            h: 4,
-            defaultH: 5,
-            minH: 5,
-            i: '0.013946941616145292',
-            title: 'Incident Responder Header',
-            key: 'IncidentResponderHeader',
-            icon: 'mdi-view-dashboard',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 5,
-            w: 6,
-            minW: 2,
-            h: 3,
-            defaultH: 4,
-            minH: 3,
-            i: '0.4881174107990931',
-            title: 'Phishing Reporter Header',
-            key: 'PhishingReporterHeader',
-            icon: 'mdi-page-layout-header',
-            moved: false
-          },
-          {
-            x: 3,
-            y: 9,
-            w: 3,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.9192270992839009',
-            icon: 'mdi-briefcase-variant',
-            title: 'Recent Investigations',
-            key: 'RecentInvestigations',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 16,
-            w: 3,
-            minW: 2,
-            h: 5,
-            defaultH: 6,
-            minH: 6,
-            i: '0.6093637144487283',
-            icon: 'mdi-information',
-            title: 'Company Information',
-            key: 'CompanyInformation',
-            moved: false
-          }
-        ]
-      } else {
-        retValue = [
-          {
-            x: 0,
-            y: 27,
-            w: 6,
-            minW: 2,
-            h: 5,
-            defaultH: 6,
-            minH: 6,
-            i: '0.8439874928535207',
-            icon: 'mdi-information',
-            title: 'Company Information',
-            key: 'CompanyInformation',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 20,
-            w: 6,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.0027368488746000175',
-            icon: 'mdi-briefcase-variant',
-            title: 'Recent Investigations',
-            key: 'RecentInvestigations',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 13,
-            w: 6,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.5387173486278651',
-            icon: 'mdi-ruler',
-            title: 'Top Rules',
-            key: 'TopRules',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 9,
-            w: 6,
-            minW: 2,
-            h: 4,
-            defaultH: 4,
-            minH: 3,
-            i: '0.12610356662045974',
-            title: 'Phishing Reporter Header',
-            key: 'PhishingReporterHeader',
-            icon: 'mdi-page-layout-header',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 0,
-            w: 6,
-            minW: 4,
-            h: 8,
-            defaultH: 5,
-            minH: 5,
-            i: '0.4797311077466353',
-            title: 'Incident Responder Header',
-            key: 'IncidentResponderHeader',
-            icon: 'mdi-view-dashboard',
-            moved: false
-          }
-        ]
-      }
-      retValue.map((widget) => {
+      const widgets = [
+        {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.9489486239728215',
+          key: 'PhishingReporterIrHeader',
+          title: 'Phishing Reporter Ir Header',
+          moved: false
+        },
+        {
+          x: 3,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.8328270853333473',
+          key: 'InvestigationsIrHeader',
+          title: 'Investigations Ir Header',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.16451336987429976',
+          key: 'ROISummaryIrHeader',
+          title: 'ROI Summary Ir Header',
+          moved: false
+        },
+        {
+          x: 9,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.8301868043104172',
+          key: 'IncidentAnalysisIrHeader',
+          title: 'Incident Analysis Ir Header',
+          moved: false
+        },
+        {
+          x: 0,
+          y: 3,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.21225235037341061',
+          key: 'ReportedEmailTrends',
+          title: 'Reported Email Trends',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.8058270967437318',
+          key: 'Reporters',
+          title: 'Reporters',
+          moved: false
+        },
+        {
+          x: 9,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.643903946151402',
+          key: 'TopRules',
+          title: 'Top Rules',
+          moved: false
+        },
+        {
+          x: 0,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.9830881287326376',
+          key: 'TopPosts',
+          title: 'Top Posts',
+          moved: false
+        },
+        {
+          x: 3,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.2491442618891324',
+          title: 'Recently Reported Incidents',
+          key: 'RecentlyReportedIncidents',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 3,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.6010779283659464',
+          key: 'IncidentClusters',
+          title: 'Incident Clusters',
+          moved: false
+        },
+        {
+          x: 0,
+          y: 15,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.8320114648536163',
+          title: 'Recent Investigations',
+          key: 'RecentInvestigations',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 15,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.6093859272491078',
+          title: 'Recently Posted Threats',
+          key: 'RecentlyPostedThreats',
+          moved: false
+        }
+      ]
+      for (let widget of widgets) {
         this.removeAvailableWidget(widget)
-      })
-      return retValue
+      }
+
+      return widgets
     }
   },
   created() {
-    //JSON.parse(localStorage.getItem('widgetLayout'))
     this.layout = JSON.parse(localStorage.getItem('widget-layout')) || this.getDefaultLayoutObject()
-
+    this.newItemY = this.layout.reduce((acc, item) => {
+      return (acc += item.h)
+    }, 0)
     this.availableWidgets =
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },
+  mounted() {},
   watch: {
     editMode(val) {
       if (!val) {
-        this.layout = this.layout.map((item) => {
-          return { ...item, h: item.h - 1 }
-        })
-        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         this.handleDeleteShadows()
+        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
+        localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
+
+        //this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
       } else {
-        this.layout = this.layout.map((item) => {
-          return { ...item, h: item.h + 1 }
-        })
         this.handleAddShadows()
       }
     }

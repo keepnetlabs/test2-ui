@@ -1,5 +1,9 @@
 <template>
-  <v-skeleton-loader :loading="loading" v-bind="attrs" type="table-heading,table-tbody"
+  <v-skeleton-loader
+    :loading="loading"
+    v-bind="attrs"
+    type="table-heading,table-tbody"
+    class="data-table-loading"
     ><slot name="skeleton-content"></slot
   ></v-skeleton-loader>
 </template>
@@ -18,4 +22,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style>
+.data-table-loading {
+  height: 100%;
+}
+</style>

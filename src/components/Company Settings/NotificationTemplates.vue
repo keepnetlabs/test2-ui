@@ -17,7 +17,7 @@
         :table="tableOptions.tableData"
         :empty="tableOptions.empty"
         :filterable="true"
-        :row-key="'id'"
+        :row-key="'name'"
         :groupable="true"
         :options="true"
         :addButton="tableOptions.addButton"
@@ -55,7 +55,7 @@ export default {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             label: 'Company Name',
-            fixed: true,
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -66,7 +66,7 @@ export default {
             property: PROPERTY_STORE.EMAIL,
             align: 'left',
             label: 'Email',
-            fixed: true,
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -77,7 +77,7 @@ export default {
             property: PROPERTY_STORE.DESCRIPTION,
             align: 'left',
             label: 'Description',
-            fixed: true,
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -88,7 +88,7 @@ export default {
             property: PROPERTY_STORE.DESCRIPTION,
             align: 'left',
             label: 'Description',
-            fixed: true,
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
@@ -99,7 +99,7 @@ export default {
             property: PROPERTY_STORE.STATUS,
             align: 'left',
             label: 'Status',
-            fixed: true,
+            fixed: false,
             sortable: true,
             show: true,
             type: 'badge',

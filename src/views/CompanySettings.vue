@@ -21,13 +21,13 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <s-m-t-p-settings />
+            <s-m-t-p-settings ref="refSmtpSettings" />
           </v-tab-item>
           <v-tab-item>
-            <notification-templates />
+            <notification-templates ref="refNotificationTemplates" />
           </v-tab-item>
           <v-tab-item>
-            <custom-api />
+            <custom-api ref="refCustomApi" />
           </v-tab-item>
         </v-tabs-items>
       </v-card>
@@ -50,12 +50,30 @@ export default {
   data() {
     return {
       tab: 0,
-      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API']
+      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
+      ENUM: {
+        COMPANYSETTINGS: 'Company Settings'
+      }
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs
+    if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
+      refSmtpSettings.toggleSmtpModalStatus()
+      next(false)
+    } else if (refNotificationTemplates && refNotificationTemplates.newNotificationTemplateStatus) {
+      refNotificationTemplates.toggleNewNotificationTemplate()
+      next(false)
+    } else if (refCustomApi && refCustomApi.showNewCustomApi) {
+      refCustomApi.toggleNewCustomApiStatus()
+      next(false)
+    } else {
+      next()
     }
   }
 }
