@@ -9,7 +9,7 @@
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData">
+          <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:name="{ value, row }">
               <router-link
                 class="k-widget-list__item"
@@ -97,7 +97,10 @@ export default {
           }
         }
       ],
-      tableData: []
+      tableData: [],
+      empty: {
+        message: "There isn't any recent investigations, yet"
+      }
     }
   },
   created() {

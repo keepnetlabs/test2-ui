@@ -61,7 +61,9 @@
           <div class="card-status mt-7">Incidents resolved</div>
         </div>
         <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text">No investigation started</div>
+          <div class="card-footer no-data-text" style="margin-top: 39px;">
+            No investigation started
+          </div>
           <v-btn
             class="btn-action btn-playbook btn-playbook__no-data"
             rounded

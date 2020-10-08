@@ -15,7 +15,7 @@
           :link="{ href: '/playbook', text: 'Playbook' }"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData">
+          <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:matchCount="{ value, row }">
               <span class="k-widget-list__no-match" v-if="value === 0">
                 No Match
@@ -85,14 +85,14 @@ export default {
           thStyle: { textAlign: 'center' },
           tdStyle: { textAlign: 'center' }
         }
-      ]
+      ],
+      empty: {
+        message: "There isn't any top rules, yet"
+      }
     }
   },
   created() {
     this.callForTopRules()
-  },
-  updated() {
-    console.log('editMode', this.editMode)
   },
   methods: {
     callForTopRules() {

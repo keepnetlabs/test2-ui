@@ -9,7 +9,7 @@
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData">
+          <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:title="{ value, row }">
               <span class="k-widget-list__item" v-if="value">
                 {{ value }}
@@ -72,7 +72,10 @@ export default {
           label: 'Community'
         }
       ],
-      tableData: []
+      tableData: [],
+      empty: {
+        message: "There isn't any recently posted threats, yet"
+      }
     }
   },
   created() {

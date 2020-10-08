@@ -9,7 +9,7 @@
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData">
+          <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:commentCount="{ row }">
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">
@@ -72,7 +72,10 @@ export default {
           label: 'Engagement'
         }
       ],
-      tableData: []
+      tableData: [],
+      empty: {
+        message: "There isn't any top posts, yet"
+      }
     }
   },
   created() {

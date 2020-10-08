@@ -5,12 +5,12 @@
       <widget-container>
         <widget-header
           title="Recently Reported Incidents"
-          :link="{ href: '/threat-sharing', text: 'All' }"
+          :link="{ href: '/incident-responder', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData">
+          <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:subject="{ value, row }">
               <router-link
                 class="k-widget-list__item"
@@ -86,7 +86,10 @@ export default {
           }
         }
       ],
-      tableData: []
+      tableData: [],
+      empty: {
+        message: "There isn't any reported incidents, yet"
+      }
     }
   },
   created() {
@@ -107,7 +110,6 @@ export default {
               data: { results = [] }
             }
           } = response
-          console.log('results', results)
           this.tableData = results
           this.isLoading = false
         })

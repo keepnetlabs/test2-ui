@@ -405,138 +405,212 @@ export default {
       })
     },
     getDefaultLayoutObject() {
-      const width = window.innerWidth
-      let retValue = ''
-      if (width > 1023) {
-        retValue = [
-          {
-            x: 0,
-            y: 9,
-            w: 3,
-            minW: 3,
-            h: 6,
-            defaultH: 6,
-            minH: 6,
-            i: '0.9609571524431146',
-            icon: 'mdi-ruler',
-            title: 'Top Rules',
-            key: 'TopRules'
-          },
-          {
-            x: 0,
-            y: 5,
-            w: 6,
-            minW: 2,
-            h: 3,
-            defaultH: 4,
-            minH: 3,
-            i: '0.4881174107990931',
-            title: 'Phishing Reporter Header',
-            key: 'PhishingReporterHeader',
-            icon: 'mdi-page-layout-header',
-            moved: false
-          },
-          {
-            x: 3,
-            y: 9,
-            w: 3,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.9192270992839009',
-            icon: 'mdi-briefcase-variant',
-            title: 'Recent Investigations',
-            key: 'RecentInvestigations',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 16,
-            w: 3,
-            minW: 2,
-            h: 5,
-            defaultH: 6,
-            minH: 6,
-            i: '0.6093637144487283',
-            icon: 'mdi-information',
-            title: 'Company Information',
-            key: 'CompanyInformation',
-            moved: false
-          }
-        ]
-      } else {
-        retValue = [
-          {
-            x: 0,
-            y: 27,
-            w: 6,
-            minW: 2,
-            h: 5,
-            defaultH: 6,
-            minH: 6,
-            i: '0.8439874928535207',
-            icon: 'mdi-information',
-            title: 'Company Information',
-            key: 'CompanyInformation',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 20,
-            w: 6,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.0027368488746000175',
-            icon: 'mdi-briefcase-variant',
-            title: 'Recent Investigations',
-            key: 'RecentInvestigations',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 13,
-            w: 6,
-            minW: 3,
-            h: 6,
-            defaultH: 7,
-            minH: 7,
-            i: '0.5387173486278651',
-            icon: 'mdi-ruler',
-            title: 'Top Rules',
-            key: 'TopRules',
-            moved: false
-          },
-          {
-            x: 0,
-            y: 9,
-            w: 6,
-            minW: 2,
-            h: 4,
-            defaultH: 4,
-            minH: 3,
-            i: '0.12610356662045974',
-            title: 'Phishing Reporter Header',
-            key: 'PhishingReporterHeader',
-            icon: 'mdi-page-layout-header',
-            moved: false
-          }
-        ]
-      }
-      retValue.map((widget) => {
+      const widgets = [
+        {
+          x: 0,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.9489486239728215',
+          key: 'PhishingReporterIrHeader',
+          title: 'Phishing Reporter Ir Header',
+          moved: false
+        },
+        {
+          x: 3,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.8328270853333473',
+          key: 'InvestigationsIrHeader',
+          title: 'Investigations Ir Header',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.16451336987429976',
+          key: 'ROISummaryIrHeader',
+          title: 'ROI Summary Ir Header',
+          moved: false
+        },
+        {
+          x: 9,
+          y: 0,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.8301868043104172',
+          key: 'IncidentAnalysisIrHeader',
+          title: 'Incident Analysis Ir Header',
+          moved: false
+        },
+        {
+          x: 0,
+          y: 3,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.21225235037341061',
+          key: 'ReportedEmailTrends',
+          title: 'Reported Email Trends',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.8058270967437318',
+          key: 'Reporters',
+          title: 'Reporters',
+          moved: false
+        },
+        {
+          x: 9,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.643903946151402',
+          key: 'TopRules',
+          title: 'Top Rules',
+          moved: false
+        },
+        {
+          x: 0,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.9830881287326376',
+          key: 'TopPosts',
+          title: 'Top Posts',
+          moved: false
+        },
+        {
+          x: 3,
+          y: 9,
+          w: 3,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.2491442618891324',
+          title: 'Recently Reported Incidents',
+          key: 'RecentlyReportedIncidents',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 3,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
+          h: 6,
+          midW: 12,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.6010779283659464',
+          key: 'IncidentClusters',
+          title: 'Incident Clusters',
+          moved: false
+        },
+        {
+          x: 0,
+          y: 15,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.8320114648536163',
+          title: 'Recent Investigations',
+          key: 'RecentInvestigations',
+          moved: false
+        },
+        {
+          x: 6,
+          y: 15,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.6093859272491078',
+          title: 'Recently Posted Threats',
+          key: 'RecentlyPostedThreats',
+          moved: false
+        }
+      ]
+      for (let widget of widgets) {
         this.removeAvailableWidget(widget)
-      })
-      return retValue
+      }
+
+      return widgets
     }
   },
   created() {
-    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || []
+    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || this.getDefaultLayoutObject()
     this.newItemY = this.layout.reduce((acc, item) => {
       return (acc += item.h)
     }, 0)
-    console.log('this.newItemY', this.newItemY)
     this.availableWidgets =
       JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
   },

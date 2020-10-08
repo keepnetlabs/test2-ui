@@ -5,7 +5,7 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <table class="k-widget-list" :style="getTableStyle" :id="tableId">
+    <table class="k-widget-list" :style="getTableStyle" :id="tableId" v-if="getTableStatus">
       <thead class="k-widget-list__header-container">
         <th
           :key="col.label"
@@ -45,6 +45,17 @@
         </tr>
       </tbody>
     </table>
+    <div class="k-widget-list__empty" v-else>
+      <div class="k-widget-list__empty-inline">
+        <h2>{{ empty.message }}</h2>
+        <p>{{ empty.subMes }}</p>
+        <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
+          <!-- empty action -->
+          <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+          {{ empty.btn }}
+        </v-btn>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,6 +79,9 @@ export default {
     },
     auto: {
       type: Boolean
+    },
+    empty: {
+      type: Object
     }
   },
   data() {
@@ -81,6 +95,9 @@ export default {
   computed: {
     getTableStyle() {
       return this.auto ? 'table-layout:auto' : 'table-layout:fixed'
+    },
+    getTableStatus() {
+      return this.data.length > 0
     }
   },
   methods: {
@@ -93,7 +110,7 @@ export default {
         parent.querySelector('.k-widget-list__item').getBoundingClientRect()
       if (childRECT && parentRECT) {
         const tableLeft = document.getElementById(this.tableId).getBoundingClientRect().left
-        const childWidth = Math.floor(childRECT.width) + 14
+        const childWidth = Math.floor(childRECT.width) + 16
         value = value.toString()
         if (value && childWidth > parentWidth) {
           this.overFlowTooltipStyle = {
@@ -107,6 +124,9 @@ export default {
     },
     handleMouseLeaveTd() {
       this.showOverFlowTooltip = false
+    },
+    onEmptyBtnClicked() {
+      this.$emit('onEmptyBtnClicked')
     }
   },
   created() {}
@@ -120,6 +140,26 @@ export default {
   table-layout: fixed;
   @media (max-width: 1300px) {
     table-layout: fixed !important;
+  }
+
+  &__empty {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &-inline {
+      h2 {
+        font-size: 16px;
+        line-height: 1.29;
+        letter-spacing: normal;
+        font-weight: 600;
+      }
+      p {
+        font-size: 16px;
+        letter-spacing: normal;
+        margin-bottom: 14px !important;
+      }
+    }
   }
   position: relative;
   tr {

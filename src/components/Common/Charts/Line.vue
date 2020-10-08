@@ -64,7 +64,8 @@ export default {
       legend: {
         display: true,
         labels: {
-          usePointStyle: true
+          usePointStyle: true,
+          lineDashOffset: 0
         }
       }
     }

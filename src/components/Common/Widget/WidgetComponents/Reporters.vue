@@ -9,7 +9,7 @@
           :link="{ href: '/phishing-reporter', text: 'All' }"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData">
+          <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:threats="{ row, value }">
               <span
                 class="k-widget-list__item"
@@ -29,7 +29,11 @@
             <template v-slot:reliability="{ value }">
               <div
                 class="k-widget-list__item"
-                :style="{ color: `${getTextColor(value)} !important` }"
+                :style="{
+                  color: `${getTextColor(value)} !important`,
+                  overflow: 'hidden',
+                  textOverflow: 'hidden'
+                }"
               >
                 {{ value }}
               </div>
@@ -98,7 +102,10 @@ export default {
           }
         }
       ],
-      tableData: []
+      tableData: [],
+      empty: {
+        message: "There isn't any reporters, yet"
+      }
     }
   },
   methods: {
