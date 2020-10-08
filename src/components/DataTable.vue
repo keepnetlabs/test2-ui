@@ -1109,9 +1109,9 @@ export default {
     }
   },
   created() {
-    console.log(this.columns)
+    //Init column standardisation
     this.columnStandardisation(this.columns)
-    console.log(this.columns)
+
     if (this.table && this.table.length) {
       this.initialData = this.table
       this.tableData = this.table
@@ -1157,6 +1157,11 @@ export default {
     }, 1)
   },
   methods: {
+    /**
+     * Override column props with standards
+     *
+     * @param {array} columns Datatable column props.
+     */
     columnStandardisation(columns) {
       columnStandards.forEach((x) => {
         let index = columns.findIndex((col) => col.property === x.property)
