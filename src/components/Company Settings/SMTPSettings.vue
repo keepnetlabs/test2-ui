@@ -1,7 +1,7 @@
 <template>
   <div class="smtp-settings">
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
-    <new-smtp-settings :status="newSmtpModalStatus" @closeOverlay="newSmtpModalStatus = false" />
+    <new-smtp-settings :status="newSmtpModalStatus" @closeOverlay="toggleSmtpModalStatus" />
     <div class="smtp-settings__container">
       <data-table
         ref="refSmtpSettingsList"
@@ -17,7 +17,7 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        @onEmptyBtnClicked="newSmtpModalStatus = true"
+        @onEmptyBtnClicked="toggleSmtpModalStatus"
       />
     </div>
   </div>
@@ -132,6 +132,11 @@ export default {
         }
       },
       newSmtpModalStatus: false
+    }
+  },
+  methods: {
+    toggleSmtpModalStatus() {
+      this.newSmtpModalStatus = !this.newSmtpModalStatus
     }
   }
 }

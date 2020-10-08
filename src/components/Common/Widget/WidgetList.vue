@@ -153,6 +153,7 @@ export default {
         line-height: 1.29;
         letter-spacing: normal;
         font-weight: 600;
+        text-align: center;
       }
       p {
         font-size: 16px;
