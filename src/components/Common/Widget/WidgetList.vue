@@ -46,15 +46,17 @@
       </tbody>
     </table>
     <div class="k-widget-list__empty" v-else>
-      <div class="k-widget-list__empty-inline">
-        <h2>{{ empty.message }}</h2>
-        <p>{{ empty.subMes }}</p>
-        <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
-          <!-- empty action -->
-          <v-icon class="mr-2">{{ empty.icon }}</v-icon>
-          {{ empty.btn }}
-        </v-btn>
-      </div>
+      <slot name="empty-widget-list">
+        <div class="k-widget-list__empty-inline">
+          <h2 v-if="empty.message">{{ empty.message }}</h2>
+          <p v-if="empty.subMes">{{ empty.subMes }}</p>
+          <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
+            <!-- empty action -->
+            <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+            {{ empty.btn }}
+          </v-btn>
+        </div>
+      </slot>
     </div>
   </div>
 </template>
@@ -67,10 +69,16 @@ export default {
     DataTableTooltip
   },
   props: {
+    /*
+    Columns of the Widget List
+     */
     columns: {
       type: Array,
       required: true
     },
+    /*
+    Data of the List
+     */
     data: {
       type: Array
     },
@@ -80,6 +88,11 @@ export default {
     auto: {
       type: Boolean
     },
+    /*
+    Empty status of widgetlist.
+    has message, subMessage and btn values
+    has empty-widget-list slot.
+     */
     empty: {
       type: Object
     }
