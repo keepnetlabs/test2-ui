@@ -418,19 +418,19 @@
           >
             <el-table-column align="center" type="selection" v-if="selectable" width="60" />
             <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :maxWidth="col.maxWidth || ''"
-              reserve-selection
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.hideSort ? false : 'custom'"
-              :width="col.width || ''"
-              :resizable="resizable"
               v-for="(col, ind) of columns"
               v-if="col.show"
+              :key="col.property + ind"
+              :align="col.align"
+              :fixed="col.fixed"
+              :label="col.label"
+              :maxWidth="col.maxWidth || ''"
+              :minWidth="col.minWidth || ''"
+              :prop="col.property"
+              :resizable="resizable"
+              :sortable="col.hideSort ? false : 'custom'"
+              :width="col.width || ''"
+              reserve-selection
             >
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
@@ -814,6 +814,7 @@ import { mapGetters } from 'vuex'
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
+import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 export default {
@@ -1108,6 +1109,9 @@ export default {
     }
   },
   created() {
+    console.log(this.columns)
+    this.columnStandardisation(this.columns)
+    console.log(this.columns)
     if (this.table && this.table.length) {
       this.initialData = this.table
       this.tableData = this.table
@@ -1152,8 +1156,13 @@ export default {
       _this.setDatatableUI = true
     }, 1)
   },
-
   methods: {
+    columnStandardisation(columns) {
+      columnStandards.forEach((x) => {
+        let index = columns.findIndex((col) => col.property === x.property)
+        columns[index] = { ...columns[index], ...x }
+      })
+    },
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
