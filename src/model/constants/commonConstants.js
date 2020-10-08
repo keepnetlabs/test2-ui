@@ -73,7 +73,8 @@ export const LABEL_STORE = {
   TYPENAME: 'Type',
   TITLE: 'Title',
   ROLENAME: 'Title',
-  USERCOUNT: 'Users'
+  USERCOUNT: 'Users',
+  JOBTITLE: 'Job Title'
 }
 
 export const PROPERTY_STORE = {
@@ -129,7 +130,8 @@ export const PROPERTY_STORE = {
   CREATETIME: 'createTime',
   ROLENAME: 'roleName',
   USERCOUNT: 'userCount',
-  TYPENAME: 'typeName'
+  TYPENAME: 'typeName',
+  JOBTITLE: 'jobTitle'
 }
 
 export function getStoreValue(key, type) {
@@ -183,3 +185,13 @@ export function vuetifySkeletonTypes() {
     text: 'text'
   }
 }
+
+export const columnStandards = [
+  { property: 'firstName', width: '120' },
+  { property: 'lastName', width: '180' },
+  { property: 'email', width: '240' },
+  { property: 'department', width: '240' },
+  { property: 'jobTitle', width: '120' },
+  { property: 'companyName', width: '180' },
+  { property: 'subject', width: '240' }
+]
