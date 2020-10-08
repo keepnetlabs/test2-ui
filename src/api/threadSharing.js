@@ -72,7 +72,6 @@ export function uploadEmlOrMsg(file) {
     }
   })
 }
-7
 
 export function listThreatCategories() {
   return testRequest.get(`lookups/9`)

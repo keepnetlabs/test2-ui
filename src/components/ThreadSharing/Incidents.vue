@@ -104,13 +104,15 @@
             </v-skeleton-loader>
           </template>
           <template slot="no-data">
-            <div class="empty-communities">
-              <div class="empty-communities-inline">
-                <span class="no-community pt-4">
-                  No incident has been posted in your communities, yet
-                </span>
+            <v-skeleton-loader :loading="incidentLoading" type="table-tbody">
+              <div class="empty-communities">
+                <div class="empty-communities-inline">
+                  <span class="no-community pt-4">
+                    No incident has been posted in your communities, yet
+                  </span>
+                </div>
               </div>
-            </div>
+            </v-skeleton-loader>
           </template>
         </v-data-iterator>
       </v-card-text>

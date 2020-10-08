@@ -373,7 +373,7 @@
 
           <div class="page-header__breadcrumb">
             <router-link class="breadcrumb-links" to="/">
-              {{ $store.state.dashboard.selectedCompany.manager || 'Company' }}
+              {{ companyName || 'Company' }}
             </router-link>
 
             <router-link
@@ -770,7 +770,7 @@ export default {
       isLoadingFromStore: 'common/getIsLoading'
     }),
     companyName() {
-      return localStorage.getItem('companyName')
+      return localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
     },
     routerName() {
       return this.$route.name

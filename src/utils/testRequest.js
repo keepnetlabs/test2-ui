@@ -29,7 +29,8 @@ testService.interceptors.request.use(
 
 testService.interceptors.response.use(
   (response) => {
-    response.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    response.config.loading &&
+      store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (response.data.code === 'FAILED') {
       store.dispatch(
         'common/createSnackBar',
@@ -46,7 +47,8 @@ testService.interceptors.response.use(
     }
   },
   (error) => {
-    store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    //store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
     } else if (

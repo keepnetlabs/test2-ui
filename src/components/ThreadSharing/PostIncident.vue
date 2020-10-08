@@ -647,7 +647,13 @@
                       <div v-else class="img-wrapper">
                         <v-icon color="#f56c6c">mdi-text-short</v-icon>
                       </div>
-                      <v-menu v-model="subSettings" right offset-x transition="scale-transition">
+                      <v-menu
+                        :disabled="uploadRespond.isSubjectHidden"
+                        v-model="subSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                      >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
                             <v-icon
@@ -701,7 +707,13 @@
                       <div v-else class="img-wrapper">
                         <v-icon color="#f56c6c">mdi-account-arrow-right</v-icon>
                       </div>
-                      <v-menu v-model="fromSettings" right offset-x transition="scale-transition">
+                      <v-menu
+                        :disabled="uploadRespond.isFromHidden"
+                        v-model="fromSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                      >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
                             <v-icon
@@ -754,7 +766,13 @@
                           >mdi-account-arrow-left</v-icon
                         >
                       </div>
-                      <v-menu v-model="toSettings" right offset-x transition="scale-transition">
+                      <v-menu
+                        :disabled="uploadRespond.isToHidden"
+                        v-model="toSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                      >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
                             <v-icon
@@ -838,7 +856,8 @@
                             v-on="on"
                             v-if="filterOpened"
                             class="investigation-filters__area--filter--label"
-                            >{{ url.name || url.url }}</label
+                            >{{ url.name || url.url }}
+                            <span class="url-badge">{{ url.index }}</span></label
                           >
                         </template>
                         <span>{{ url.name || url.url }}</span>
@@ -853,6 +872,7 @@
                         right
                         offset-x
                         transition="scale-transition"
+                        :disabled="url.isHidden"
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
@@ -1714,7 +1734,10 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://fonts.googleapis.com/css?family=Material+Icons');
  @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
-
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
+}
 .malicious-style,
 .malicious-link {
    color: #bb2a45 !important;
@@ -1792,6 +1815,26 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 
 .red-malicious-alert::before {
   border: unset !important;
+}
+
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
+}
+
+.url-badge{
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  color: white;
+  background-color: #757575;
+  height: 10px;
+  width: 10px;
+  text-align: center;
+  border-radius: 30px;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.6 !important;
 }
  `
 })
@@ -2157,49 +2200,51 @@ export default {
           return ''
       }
     },
-    urlSwitchChange(url) {
+    urlSwitchChange(url, id, rootId) {
       //this.setShadowRootMalicousLink('last-preview-body-shadow-root')
       this.checkUrlChangeForAllLinksSwitch()
       let els = document
-        .getElementById('last-preview-body-shadow-root')
+        .getElementById(rootId || 'last-preview-body-shadow-root')
         .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
       if (els && els.length) {
         for (let i = 0, l = els.length; i < l; i++) {
           let el = els[i]
           el.setAttribute('target', '_blank')
+          el.setAttribute('index', url.index)
           if (url.isHidden) {
-            el.innerHTML = 'hidden by owner'
-            //el.setAttribute('href', '#')
+            url.isFlagged = false
+            el.innerHTML = url.urlHtml || url.name || url.url
+            el.innerHTML = el.innerHTML + `<span class="hidden-icon mdi mdi-eye-off"></span>`
+            el.style.backgroundColor = '#757575'
+            el.style.color = '#ffffff'
+            el.style.position = 'relative'
           } else if (!!url && !!url.name) {
             el.innerHTML = url.name
             el.setAttribute('href', url.url)
+            el.style.backgroundColor = 'inherit'
+            el.style.color = 'inherit'
           } else if (!!url && !!url.urlHtml) {
             el.innerHTML = url.urlHtml
             el.setAttribute('href', url.url)
+            el.style.backgroundColor = 'inherit'
+            el.style.color = 'inherit'
           }
           if (url.isFlagged) {
             const el = els[i]
             el.setAttribute('target', '_blank')
             el.setAttribute('data-title', 'This link has been reported as a phishing')
-            /*if (!a.IsShow) {
-                if (!el.hasChildNodes()) {
-                  el.innerHTML = 'hidden by owner'
-                } else {
-                  el.lastChild.innerHTML = 'hidden by owner'
-                }
-                el.setAttribute('href', '#')
-              }*/
-            //if (a) {
-            el.classList.add('malicious-style')
-            const iEl = document.createElement('i')
-            iEl.className +=
-              'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-            el.appendChild(iEl)
-            // }
-          } else {
-            const el = els[i]
-            el.classList.remove('malicious-style')
+            el.style.backgroundColor = '#f3e1e5'
+            el.style.color = '#bb2a45'
+            el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+
+            //el.appendChild(iEl)
+          } else if (!url.isFlagged && !url.isHidden) {
+            el.innerHTML = url.urlHtml || url.name || url.url
+            el.style.backgroundColor = 'inherit'
+            el.style.color = 'inherit'
           }
+          if (this.step === 4)
+            el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.index}</span>`
         }
       }
       let hiddenEls = document.getElementsByClassName(url.url)
@@ -2225,11 +2270,12 @@ export default {
       }
     },
     setShadowRootMalicousLink(id) {
+      let _this = this
       setTimeout(() => {
         let recrusiveFunctionForDom = () =>
           document.getElementById(id) && document.getElementById(id).shadowRoot
         if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
-        this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
+        _this.uploadRespond.urls = _this.uploadRespond.urls.map((item, index) => {
           let urlItem = document
             .getElementById(id)
             .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
@@ -2237,76 +2283,13 @@ export default {
             ...item,
             url: item.url.replace(/amp;/g, ''),
             name: item.name,
-            urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null
+            urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
+            index: index + 1
           }
         })
+
         for (let url of this.uploadRespond.urls) {
-          let els = document
-            .getElementById(id)
-            .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
-          if (els && els.length) {
-            for (let i = 0, l = els.length; i < l; i++) {
-              let el = els[i]
-              el.setAttribute('target', '_blank')
-              if (url.isHidden) {
-                el.innerHTML = 'hidden by owner'
-                //el.setAttribute('href', '#')
-              } else if (!!url && !!url.name) {
-                el.innerHTML = url.name
-                //el.setAttribute('href', '#')
-              } else if (!!url && !!url.urlHtml) {
-                el.innerHTML = url.urlHtml
-                //el.setAttribute('href', '#')
-              }
-              if (url.isFlagged) {
-                const el = els[i]
-                el.setAttribute('target', '_blank')
-                el.setAttribute('data-title', 'This link has been reported as a phishing')
-                /*if (!a.IsShow) {
-                    if (!el.hasChildNodes()) {
-                      el.innerHTML = 'hidden by owner'
-                    } else {
-                      el.lastChild.innerHTML = 'hidden by owner'
-                    }
-                    el.setAttribute('href', '#')
-                  }*/
-                //if (a) {
-                el.classList.add('malicious-style')
-                const iEl = document.createElement('i')
-                iEl.className +=
-                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                el.appendChild(iEl)
-                // }
-              } else {
-                const el = els[i]
-                el.classList.remove('malicious-style')
-              }
-            }
-          }
-          let hiddenEls = document.getElementsByClassName(url.url)
-          if (hiddenEls && hiddenEls.length) {
-            for (let i = 0, l = hiddenEls.length; i < l; i++) {
-              let hiddenEl = hiddenEls[i]
-              hiddenEl.setAttribute('target', '_blank')
-              if (url.isHidden) {
-                hiddenEl.innerHTML = 'hidden by owner'
-                //hiddenEl.setAttribute('href', '#')
-              } else if (!!url && !!url.name) {
-                hiddenEl.innerHTML = url.name
-                hiddenEl.setAttribute('href', url.url)
-              } else if (!!url && !!url.urlHtml) {
-                hiddenEl.innerHTML = url.urlHtml
-                hiddenEl.setAttribute('href', url.url)
-              }
-              if (url.isFlagged) {
-                hiddenEl.classList.add('malicious-link')
-                let iEl = document.createElement('span')
-                iEl.className +=
-                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                hiddenEl.appendChild(iEl)
-              }
-            }
-          }
+          this.urlSwitchChange(url, null, id)
         }
       }, 500)
     },
@@ -2344,12 +2327,15 @@ export default {
         (!this.uploadRespond.bcc.length || this.uploadRespond.isBccHidden)
     },
     subjectValChange(val) {
+      if (val) this.uploadRespond.isSubjectFlagged = false
       this.checkAllHeaderCheck()
     },
     fromValChange(val) {
+      if (val) this.uploadRespond.isFromFlagged = false
       this.checkAllHeaderCheck()
     },
     toValChange(val) {
+      if (val) this.uploadRespond.isToFlagged = false
       this.checkAllHeaderCheck()
     },
     ccValChange(val) {
@@ -2726,6 +2712,11 @@ export default {
 }
 </script>
 <style lang="scss">
+.hidden-icon-link {
+  background-color: #757575 !important;
+  color: #ffffff !important;
+}
+
 .tlp-select {
   &__chip {
     &--green {
@@ -3388,7 +3379,8 @@ export default {
         max-height: 300px;
         overflow-y: auto;
         position: relative;
-        margin: 24px 0;
+        margin: 24px 0 12px 0;
+        min-height: 180px;
         &--breaker {
           padding: 0 24px;
           width: 100%;
@@ -3419,10 +3411,11 @@ export default {
             color: rgba(0, 0, 0, 0.87);
           }
           &--label {
-            max-width: 150px;
+            width: 150px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            position: relative;
           }
           &__all-header {
             color: #757575;

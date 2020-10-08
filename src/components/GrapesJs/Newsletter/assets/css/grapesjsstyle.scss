@@ -1,28 +1,47 @@
-.grapes-container-modal {
+/*.grapes-container-modal {
 #gjsNewsletterModal {
     border: 3px solid #444;
 }
-/* Theming */
 
-/* Primary color for the background */
 .gjs-one-bg {
     background-color: #78366a;
 }
 
-/* Secondary color for the text color */
 .gjs-two-color {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Tertiary color for the background */
 .gjs-three-bg {
     background-color: #ec5896;
     color: white;
 }
 
-/* Quaternary color for the text color */
 .gjs-four-color,
 .gjs-four-color-h:hover {
     color: #ec5896;
 }
+}
+*/
+.merged-text{
+  min-height: 40px;
+  .gjs-block-label{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+  }
+}
+.gjs-one-bg {
+  background-color: #494949 !important;
+}
+.gjs-four-color-h:hover {
+  color: #B3D4FC !important;
+  background: rgb(0 0 0 / 15%) !important;
+}
+.gjs-four-color {
+  color: #B3D4FC !important;
+}
+.gjs-block {
+  margin: 4px 0 1% 2% !important;
+  box-shadow: 0 !important;
 }
