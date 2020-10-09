@@ -3,14 +3,7 @@
 </template>
 
 <script>
-import ECharts from 'vue-echarts'
-import 'echarts/lib/chart/line'
-import 'echarts/lib/component/polar'
-
 export default {
-  components: {
-    'v-chart': ECharts
-  },
   name: 'FlatSimplePie',
   created() {
     const indexColors = ['#67c23a', '#ffcc33', '#409eff', '#f56c6c']
