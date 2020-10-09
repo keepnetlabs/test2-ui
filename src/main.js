@@ -6,10 +6,6 @@ import router from './router/index'
 import store from './store/index'
 import vuetify from './plugins/vuetify'
 import 'vue-tour/dist/vue-tour.css'
-import ECharts from 'vue-echarts'
-import 'echarts/lib/chart/bar'
-import 'echarts/lib/component/tooltip'
-import 'echarts-gl'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
 import { SmartWidget } from 'vue-smart-widget'
@@ -42,7 +38,6 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
   Vue.prototype.$FullStory = FullStory
 }
 Vue.use(VueTour)
-Vue.component('v-chart', ECharts)
 Vue.use(require('vue-moment'))
 
 Vue.use(VueMask)
