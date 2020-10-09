@@ -4,5 +4,5 @@ export function postWidgets(payload) {
   return testRequest.post(API_URL, payload)
 }
 export function getWidgets() {
-  return testRequest.get(API_URL)
+  return testRequest.get(API_URL, { loading: true })
 }

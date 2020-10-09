@@ -55,6 +55,7 @@ import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponent
 import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
 import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
 import { getWidgets, postWidgets } from '@/api/widgets'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'Widgets',
@@ -614,34 +615,53 @@ export default {
         },
         { settings: [] }
       )
-      /* postWidgets(payload)
-        .then((response) => {})
-        .catch(() => {})
-
-      */
+      postWidgets(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+      })
     },
     callForGetWidgets() {
-      getWidgets().then((response) => {})
-      return JSON.parse(localStorage.getItem('widget-layout'))
+      return getWidgets()
+        .then((response) => {
+          return response.data.data || []
+        })
+        .catch((error) => {
+          return []
+        })
     }
   },
   created() {
-    this.layout = this.callForGetWidgets() || this.getDefaultLayoutObject()
-    this.newItemY = this.layout.reduce((acc, item) => {
-      return (acc += item.h)
-    }, 0)
-    this.availableWidgets =
-      JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
+    this.callForGetWidgets()
+      .then((response) => {
+        if (response.settings.length) {
+          this.layout = response.settings.reduce((acc, item) => {
+            const widget = { ...this.allWidgets[item.key], ...item }
+            this.removeAvailableWidget(item)
+            acc.push(widget)
+            return acc
+          }, [])
+
+          this.newItemY = this.layout.reduce((acc, item) => {
+            return (acc += item.h)
+          }, 0)
+          setTimeout(() => {
+            this.handleDeleteShadows()
+          }, 10)
+        }
+      })
+      .catch(() => {
+        this.layout = this.getDefaultLayoutObject()
+      })
   },
   mounted() {},
   watch: {
     editMode(val) {
       if (!val) {
         this.handleDeleteShadows()
-        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
-        localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
         this.callForPostWidgets()
-        //this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
       } else {
         this.handleAddShadows()
       }

@@ -1467,10 +1467,11 @@ export default {
           this.topRules.table = data || []
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
+          /* this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting the top rules!'
           })
+          */
           this.topRules.table = []
         })
         .finally(() => (this.topRulesLoading = false))
