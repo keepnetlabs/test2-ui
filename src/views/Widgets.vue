@@ -54,6 +54,8 @@ import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
 import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
 import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
+import { getWidgets, postWidgets } from '@/api/widgets'
+
 export default {
   name: 'Widgets',
   components: {
@@ -270,12 +272,9 @@ export default {
     }
   },
   methods: {
-    breakpointChanged({ newBreakpoint, newLayout }) {
+    breakpointChanged({ newBreakpoint }) {
       const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
       let x = 0,
-        row = 0,
-        nextX = 0,
-        beforeX = 0,
         xValue = 0,
         y = 0
       this.layout.sort((a, b) => {
@@ -604,10 +603,30 @@ export default {
       }
 
       return widgets
+    },
+    callForPostWidgets() {
+      const payload = this.layout.reduce(
+        (acc, widget) => {
+          const { settings } = acc
+          const { x, y, w, h, title, key } = widget
+          settings.push({ x, y, w, h, title, key })
+          return acc
+        },
+        { settings: [] }
+      )
+      /* postWidgets(payload)
+        .then((response) => {})
+        .catch(() => {})
+
+      */
+    },
+    callForGetWidgets() {
+      getWidgets().then((response) => {})
+      return JSON.parse(localStorage.getItem('widget-layout'))
     }
   },
   created() {
-    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || this.getDefaultLayoutObject()
+    this.layout = this.callForGetWidgets() || this.getDefaultLayoutObject()
     this.newItemY = this.layout.reduce((acc, item) => {
       return (acc += item.h)
     }, 0)
@@ -621,7 +640,7 @@ export default {
         this.handleDeleteShadows()
         localStorage.setItem('widget-layout', JSON.stringify(this.layout))
         localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
-
+        this.callForPostWidgets()
         //this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
       } else {
         this.handleAddShadows()
