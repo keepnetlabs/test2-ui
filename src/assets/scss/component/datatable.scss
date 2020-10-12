@@ -35,6 +35,14 @@
           #data-table-container {
             margin-left: 0;
           }
+          .el-table-column--selection{
+            .cell{
+              padding-left: 16px !important;
+              padding-right: 16px !important;
+              overflow: visible;
+            }
+
+          }
         }
 
         .settings-popup {
@@ -262,7 +270,7 @@
           }
 
           .el-checkbox:first-child {
-            margin-left: -2.5px !important;
+
           }
 
           .el-checkbox__input.is-checked .el-checkbox__inner {
@@ -780,13 +788,16 @@
       .el-table__row.el-table__row--level-#{$i}{
         background-color: #f5f7fa !important;
         td:not(:last-child){
-          padding-left: #{24 * $i}px !important;
+          padding-left: #{32 * $i}px;
         }
         .el-table-column--selection .cell{
           overflow: visible !important;
         }
         .el-table-column--selection{
-          padding-left: #{32 * $i}px !important;
+          .el-checkbox__input{
+            line-height: 1.25;
+          }
+          padding-left: #{11 + ($i*32)}px !important;
         }
       }
     }
