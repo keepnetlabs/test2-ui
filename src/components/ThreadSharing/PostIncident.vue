@@ -653,13 +653,11 @@
                         right
                         offset-x
                         transition="scale-transition"
+                        @click="subSettings = !subSettings"
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
-                            <v-icon
-                              :class="{ 'chevron-down': subSettings }"
-                              v-on="on"
-                              @click="subSettings = !subSettings"
+                            <v-icon :class="{ 'chevron-down': subSettings }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
                           </v-btn>
@@ -713,13 +711,11 @@
                         right
                         offset-x
                         transition="scale-transition"
+                        @click="fromSettings = !fromSettings"
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
-                            <v-icon
-                              :class="{ 'chevron-down': fromSettings }"
-                              v-on="on"
-                              @click="fromSettings = !fromSettings"
+                            <v-icon :class="{ 'chevron-down': fromSettings }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
                           </v-btn>
@@ -772,13 +768,11 @@
                         right
                         offset-x
                         transition="scale-transition"
+                        @click="toSettings = !toSettings"
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
-                            <v-icon
-                              :class="{ 'chevron-down': toSettings }"
-                              v-on="on"
-                              @click="toSettings = !toSettings"
+                            <v-icon :class="{ 'chevron-down': toSettings }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
                           </v-btn>
@@ -841,8 +835,8 @@
                   <div
                     class="d-flex justify-space-between investigation-filters__area--filter"
                     v-for="(url, ind) of uploadRespond.urls"
-                    :key="ind + url.url + 'url'"
-                    :id="ind + url.url + 'url'"
+                    :key="ind + url.url"
+                    :id="ind + url.url"
                   >
                     <div class="d-flex">
                       <v-checkbox
@@ -860,7 +854,7 @@
                             <span class="url-badge">{{ url.index }}</span></label
                           >
                         </template>
-                        <span>{{ url.name || url.url }}</span>
+                        <span class="tool">{{ url.name || url.url }}</span>
                       </v-tooltip>
                     </div>
                     <div class="d-flex">
@@ -873,13 +867,11 @@
                         offset-x
                         transition="scale-transition"
                         :disabled="url.isHidden"
+                        @click="attcChevron[ind] = !attcChevron[ind]"
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
-                            <v-icon
-                              :class="{ 'chevron-down': attcChevron[ind] }"
-                              v-on="on"
-                              @click="attcChevron[ind] = !attcChevron[ind]"
+                            <v-icon :class="{ 'chevron-down': attcChevron[ind] }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
                           </v-btn>
@@ -970,13 +962,16 @@
                           >mdi-paperclip</v-icon
                         >
                       </div>
-                      <v-menu v-model="urls[ind]" right offset-x transition="scale-transition">
+                      <v-menu
+                        v-model="urls[ind]"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                        @click="urls[ind] = !urls[ind]"
+                      >
                         <template v-slot:activator="{ on }">
                           <v-btn class="chevron-btn-menu" icon>
-                            <v-icon
-                              :class="{ 'chevron-down': urls[ind] }"
-                              v-on="on"
-                              @click="urls[ind] = !urls[ind]"
+                            <v-icon :class="{ 'chevron-down': urls[ind] }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
                           </v-btn>
@@ -2142,8 +2137,8 @@ export default {
       this.showWebPageGrapes = false
     },
     editHtmlTemplate() {
+      debugger
       this.editHtmlData = this.uploadRespond.body
-      console.log('this.editHtmlData', this.editHtmlData)
       this.showWebPageGrapes = true
     },
     removeTLP(item) {
@@ -4754,8 +4749,8 @@ input[type=file]::-webkit-file-upload-button {
   }
 
   .chevron-down {
-    transition: 0.3s all ease-in-out;
-    transform: rotate(180deg);
+    //transition: 0.3s all ease-in-out;
+    //transform: rotate(180deg);
 
     i {
       text-decoration: none !important;

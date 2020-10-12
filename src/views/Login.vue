@@ -51,7 +51,7 @@
                   <div v-if="isErrorActive" class="login-error-container">
                     <div v-if="isErrorActive" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
-                        <v-icon dark large color="red">mdi-close-circle</v-icon>
+                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
                       <div class="login-error-message pr-1">
                         {{ getErrors }}
@@ -67,6 +67,7 @@
                           autocomplete="off"
                           ref="email"
                         >
+                          <label class="new-password-wrapper__label p-0 mb-2">Username</label>
                           <v-text-field
                             id="email"
                             :type="'email'"
@@ -91,6 +92,7 @@
                           v-model="validPassword"
                           ref="password"
                         >
+                          <label class="new-password-wrapper__label p-0 mb-2">Password</label>
                           <v-text-field
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
@@ -160,6 +162,16 @@
                   <div class="login-desc">
                     Enter your email address to recieve the reset password link
                   </div>
+                  <div v-if="resetPasswordError" class="login-error-container">
+                    <div v-if="resetPasswordError" class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div class="login-error-message pr-1">
+                        {{ resetPasswordErrorText }}
+                      </div>
+                    </div>
+                  </div>
                   <div class="reset-password-wrapper">
                     <v-row align="center" justify="center">
                       <v-col md="6" sm="12">
@@ -169,29 +181,44 @@
                             :rules="[rules.required, rules.email, rules.max]"
                             label="Email Address"
                             class="reset-pass-textfield"
-                            v-on:keyup.enter="onResetClick"
+                            @click="resetPasswordError = false"
+                            :append-icon="show3 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                            :type="show3 ? '' : 'password'"
+                            @click:append="show3 = !show3"
+                            autocomplete="disabled"
                             outlined
                           ></v-text-field>
+                          <div class="captcha-wrapper p-0">
+                            <vue-recaptcha
+                              :sitekey="recaptcha"
+                              :loadRecaptchaScript="true"
+                              ref="resetRecaptcha"
+                              @verify="captchaVerifiedForReset"
+                              @expired="onCaptchaExpired"
+                            ></vue-recaptcha>
+                          </div>
                         </v-form>
                       </v-col>
                     </v-row>
                   </div>
                 </v-card-text>
                 <v-card-actions class="justify-center">
-                  <v-btn
-                    color="blue"
-                    class="pr-4 mr-2 white--text"
-                    rounded
-                    @click="() => (pageNumber = 1)"
-                  >
-                    <v-icon right dark class="pr-2">mdi-arrow-left</v-icon>
-                    BACK
-                  </v-btn>
                   <v-btn color="blue" class="pl-4 white--text" rounded @click="onResetClick">
                     SEND RESET LINK
                     <v-icon right dark>mdi-arrow-right</v-icon>
                   </v-btn>
                 </v-card-actions>
+              </div>
+              <div v-if="pageNumber == 3" class="reset-password-wrapper__success">
+                <v-card-text>
+                  <div class="login-title">
+                    Reset Your Password
+                  </div>
+                  <div class="login-desc">
+                    We have sent an email to your email address. Click the link the email to reset
+                    your password
+                  </div>
+                </v-card-text>
               </div>
               <div v-if="pageNumber == 4">
                 <v-card-text>
@@ -222,7 +249,7 @@
                     rounded
                     @click="() => (pageNumber = 1)"
                   >
-                    <v-icon right dark class="pr-2">mdi-arrow-left</v-icon>
+                    <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                     BACK
                   </v-btn>
                   <v-btn color="blue" class="pl-4 white--text" rounded @click="onTwoStepLogin">
@@ -230,6 +257,83 @@
                     <v-icon right dark>mdi-arrow-right</v-icon>
                   </v-btn>
                 </v-card-actions>
+              </div>
+              <div v-if="pageNumber == 5">
+                <v-card-text>
+                  <div class="login-title">
+                    Reset Your Password
+                  </div>
+                  <div class="login-desc">
+                    Enter your new password
+                  </div>
+                  <div v-if="newPasswordError" class="login-error-container">
+                    <div v-if="newPasswordError" class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div class="login-error-message pr-1">
+                        {{ newPasswordErrorText }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="new-password-wrapper">
+                    <v-row align="center" justify="center">
+                      <v-col sm="12">
+                        <v-form ref="newPassword">
+                          <div>
+                            <label class="new-password-wrapper__label">New Password</label>
+                            <v-text-field
+                              :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                              :type="show2 ? '' : 'password'"
+                              @click:append="show2 = !show2"
+                              autocomplete="disabled"
+                              v-model="newPassword"
+                              label="Enter new password"
+                              class="reset-pass-textfield mb-6"
+                              :rules="[rules.required, rules.minPassword, rules.equal]"
+                              @click="newPasswordError = false"
+                              outlined
+                              hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                            ></v-text-field>
+                          </div>
+                          <div>
+                            <PasswordChecker :password="newPassword" />
+                          </div>
+                          <div>
+                            <label class="new-password-wrapper__label">Confirm Password</label>
+                            <v-text-field
+                              v-model="reNewPassword"
+                              :rules="[rules.required, rules.minPassword, rules.equal]"
+                              label="Enter new password again"
+                              class="reset-pass-textfield"
+                              @click="newPasswordError = false"
+                              autocomplete="disabled"
+                              outlined
+                            ></v-text-field>
+                          </div>
+                        </v-form>
+                      </v-col>
+                    </v-row>
+                  </div>
+                </v-card-text>
+                <v-card-actions class="justify-center">
+                  <v-btn color="blue" class="pl-4 white--text" rounded @click="setPassword">
+                    SET PASSWORD
+                    <v-icon right dark>mdi-arrow-right</v-icon>
+                  </v-btn>
+                </v-card-actions>
+              </div>
+              <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
+                <div class="back-to-login" @click="() => (pageNumber = 1)">
+                  <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
+                  BACK TO LOGIN
+                </div>
+              </div>
+              <div v-if="pageNumber === 3">
+                <div class="back-to-reset-password" @click="() => (pageNumber = 2)">
+                  I didn’t recieve the email
+                  <v-icon right dark class="pr-2">mdi-arrow-right</v-icon>
+                </div>
               </div>
             </v-card>
           </v-col>
@@ -244,26 +348,42 @@ import VueRecaptcha from 'vue-recaptcha'
 import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
-
+import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../api/auth'
+import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 export default {
   name: 'Login',
-  components: { VueRecaptcha },
+  components: { VueRecaptcha, PasswordChecker },
   data() {
     return {
+      resetType: null,
+      newPassword: null,
+      reNewPassword: null,
+      newPasswordError: null,
+      newPasswordErrorText: null,
+      resetPasswordError: null,
+      resetPasswordErrorText: null,
+      captchaVerified: false,
       email: '',
       password: '',
       verificationCode: '',
       resePasswordModel: '',
       rememberMe: '',
       show1: false,
+      show2: false,
+      show3: false,
       rules: {
-        required: (value) => !!value || 'Required.',
         email: (value) => {
           const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
           return pattern.test(value) || 'Invalid e-mail.'
         },
         min: (v) => v.length >= 8 || 'Minimum 8 characters',
-        max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters'
+        max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
+        required: (value) => !!value || 'Required.',
+        minPassword: (value) => {
+          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
+          return pattern.test(value) || "Password doesn't match with the password criteria"
+        },
+        equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
       },
       recaptcha: '6LfA498UAAAAACJkiU-j27rjI3KBL0nl95yVcdj9',
       validEmail: false,
@@ -295,6 +415,18 @@ export default {
         this.$router.push(`/community/${this.$route.query.CommunityId}`)
       } else {
         this.$router.push('/')
+      }
+    }
+
+    if (this.$route.query) {
+      if (this.$route.query.cp) {
+        this.pageNumber = 5
+        this.token = this.getToken('cp', window.location.href)
+        this.resetType = 'createPassword'
+      } else if (this.$route.query.rp) {
+        this.pageNumber = 5
+        this.token = this.getToken('rp', window.location.href)
+        this.resetType = 'resetPassword'
       }
     }
   },
@@ -355,9 +487,49 @@ export default {
       loginAction2: 'login/loginAction',
       setPageNumber: 'login/setPageNumber',
       setSnackStatus: 'common/setSnackStatus',
-      resetPassword: 'login/resetPassword',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    getToken(name, url) {
+      if (!url) url = location.href
+      name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]')
+      let regexS = '[\\?&]' + name + '=([^&#]*)'
+      let regex = new RegExp(regexS)
+      let results = regex.exec(url)
+      return results == null ? null : results[1]
+    },
+    setPassword() {
+      if (this.$refs.newPassword.validate()) {
+        let payload = {
+          Token: this.token,
+          NewPassword: this.newPassword,
+          ConfirmNewPassword: this.reNewPassword
+        }
+        switch (this.resetType) {
+          case 'createPassword':
+            createPasswordByToken(payload)
+              .then((response) => {
+                this.pageNumber = 1
+              })
+              .catch((error) => {
+                this.newPasswordError = true
+                this.newPasswordErrorText = error.response.data.Message
+              })
+            break
+          case 'resetPassword':
+            resetPasswordByToken(payload)
+              .then((response) => {
+                this.pageNumber = 1
+              })
+              .catch((error) => {
+                this.newPasswordError = true
+                this.newPasswordErrorText = error.response.data.Message
+              })
+            break
+          default:
+            break
+        }
+      }
+    },
     toNext() {
       this.$refs.password.$el[1].focus()
     },
@@ -433,11 +605,27 @@ export default {
       })
     },
     onCaptchaExpired() {
+      this.captchaVerified = false
       this.$refs.recaptcha.reset()
     },
+    captchaVerifiedForReset() {
+      this.resetPasswordError = false
+      this.captchaVerified = true
+      this.onResetClick()
+    },
     onResetClick() {
-      if (this.$refs.resetEmail.validate()) {
-        this.resetPassword(this.resePasswordModel)
+      if (this.$refs.resetEmail.validate() && this.captchaVerified) {
+        resetPassword(this.resePasswordModel)
+          .then((response) => {
+            this.resetPasswordError = false
+            this.resetPasswordErrorText = null
+            this.pageNumber = 3
+          })
+          .catch((error) => {
+            this.resetPasswordError = true
+            this.resetPasswordErrorText = error.response.data.message
+          })
+          .finally((response) => {})
       }
     }
   }
@@ -445,7 +633,61 @@ export default {
 </script>
 
 <style lang="scss">
+.back-to-login {
+  background-color: white;
+  position: absolute;
+  bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.71;
+  letter-spacing: normal;
+  color: #2196f3;
+  display: flex;
+
+  i {
+    color: #2196f3;
+  }
+  cursor: pointer;
+}
+
 .login-page {
+  .new-password-wrapper {
+    &__label {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding: 0 15px;
+      margin-bottom: 8px;
+    }
+  }
+  .back-to-reset-password {
+    display: flex;
+    background-color: white;
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #2196f3;
+    text-transform: uppercase;
+    i {
+      color: #2196f3;
+    }
+    cursor: pointer;
+  }
+  .reset-pass-textfield {
+    padding: 0 15px !important;
+  }
   .login-error-container {
     align-items: center;
     display: flex;
@@ -455,7 +697,7 @@ export default {
   }
 
   .login-error-wrapper {
-    max-width: 303px;
+    width: 300px;
     border-radius: 3px;
     background-color: rgba(245, 108, 108, 0.2);
     padding: 22px 16px;
@@ -463,6 +705,10 @@ export default {
     flex-direction: row;
 
     .login-error-icon {
+      i {
+        font-size: 24px !important;
+        margin-bottom: -1px;
+      }
     }
 
     .login-error-message {
@@ -480,6 +726,9 @@ export default {
     .v-text-field.v-text-field--solo .v-input__control {
       min-height: 20px !important;
       padding: 0;
+    }
+    &__success {
+      min-height: 300px;
     }
   }
 
@@ -529,7 +778,7 @@ export default {
   .v-input .v-label {
     font-family: 'Open Sans', sans-serif;
     font-size: 12px;
-    height: 16px;
+    height: 20px;
     font-weight: 600;
   }
 
@@ -619,6 +868,7 @@ export default {
     justify-content: center;
     padding-bottom: 30px;
     width: 100%;
+    margin-top: 16px;
 
     > div {
       max-width: 300px;
