@@ -54,6 +54,9 @@ import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
 import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
 import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
+import { getWidgets, postWidgets } from '@/api/widgets'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+
 export default {
   name: 'Widgets',
   components: {
@@ -270,12 +273,9 @@ export default {
     }
   },
   methods: {
-    breakpointChanged({ newBreakpoint, newLayout }) {
+    breakpointChanged({ newBreakpoint }) {
       const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
       let x = 0,
-        row = 0,
-        nextX = 0,
-        beforeX = 0,
         xValue = 0,
         y = 0
       this.layout.sort((a, b) => {
@@ -604,25 +604,64 @@ export default {
       }
 
       return widgets
+    },
+    callForPostWidgets() {
+      const payload = this.layout.reduce(
+        (acc, widget) => {
+          const { settings } = acc
+          const { x, y, w, h, title, key } = widget
+          settings.push({ x, y, w, h, title, key })
+          return acc
+        },
+        { settings: [] }
+      )
+      postWidgets(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+      })
+    },
+    callForGetWidgets() {
+      return getWidgets()
+        .then((response) => {
+          return response.data.data || []
+        })
+        .catch((error) => {
+          return []
+        })
     }
   },
   created() {
-    this.layout = JSON.parse(localStorage.getItem('widget-layout')) || this.getDefaultLayoutObject()
-    this.newItemY = this.layout.reduce((acc, item) => {
-      return (acc += item.h)
-    }, 0)
-    this.availableWidgets =
-      JSON.parse(localStorage.getItem('available-widgets')) || this.availableWidgets
+    this.callForGetWidgets()
+      .then((response) => {
+        if (response.settings.length) {
+          this.layout = response.settings.reduce((acc, item) => {
+            const widget = { ...this.allWidgets[item.key], ...item }
+            this.removeAvailableWidget(item)
+            acc.push(widget)
+            return acc
+          }, [])
+
+          this.newItemY = this.layout.reduce((acc, item) => {
+            return (acc += item.h)
+          }, 0)
+          setTimeout(() => {
+            this.handleDeleteShadows()
+          }, 10)
+        }
+      })
+      .catch(() => {
+        this.layout = this.getDefaultLayoutObject()
+      })
   },
   mounted() {},
   watch: {
     editMode(val) {
       if (!val) {
         this.handleDeleteShadows()
-        localStorage.setItem('widget-layout', JSON.stringify(this.layout))
-        localStorage.setItem('available-widgets', JSON.stringify(this.availableWidgets))
-
-        //this.$refs.refGrid && this.$refs.refGrid.forceRenderGrid()
+        this.callForPostWidgets()
       } else {
         this.handleAddShadows()
       }

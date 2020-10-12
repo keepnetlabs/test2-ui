@@ -105,10 +105,12 @@ export default {
           this.tableData = data || []
         })
         .catch((error) => {
+          /*
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Error when getting the top rules!'
           })
+          */
           this.isLoading = false
         })
     },

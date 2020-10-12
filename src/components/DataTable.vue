@@ -417,7 +417,7 @@
             style="width: 100%;"
             v-if="!allHidden"
           >
-            <el-table-column align="center" type="selection" v-if="selectable" width="60" />
+            <el-table-column align="center" type="selection" v-if="selectable" width="48" />
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
