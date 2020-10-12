@@ -4,7 +4,7 @@
     v-bind="layoutAttrs"
     v-on="gridLayoutEvents"
     @breakpoint-changed="breakPointChanged"
-    :breakpoints="{ lg: 1000, sm: 700, xs: 450, xxs: 200 }"
+    :breakpoints="{ lg: 1300, sm: 1100, xs: 500, xxs: 200 }"
     :cols="{ lg: 12, sm: 12, xs: 6, xxs: 2 }"
     ref="gridLayout"
     :key="keyGrid"
