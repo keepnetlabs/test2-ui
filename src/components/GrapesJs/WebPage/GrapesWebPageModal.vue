@@ -17,6 +17,7 @@ import 'grapesjs-preset-newsletter'
 import 'grapesjs-blocks-basic'
 import 'grapesjs-preset-webpage'
 import 'grapesjs-plugin-forms'
+import s3 from 'grapesjs-plugin-s3'
 import custom from 'grapesjs-custom-code'
 import exportGrapes from 'grapesjs-plugin-export'
 import cssParser from 'grapesjs-parser-postcss'
@@ -65,6 +66,23 @@ export default {
         components: this.editorHtml || '',
         style: setGrapesjsStyle()
       })
+      /* this.editor = GrapesWebPageModal.init({
+       container: '#gjsWebPageModal',
+       fromElement: 1,
+       storageManager: { type: 0 },
+       plugins: ['gjs-preset-newsletter', cssParser, s3],
+       pluginsOpts: {
+         'gjs-plugin-s3': {
+           accessKeyId: '<AWS Access key Id>',
+           secretAccessKey: '<Aws secret access key>',
+           sessionToken: '<AWS Sessions Token>',
+           bucketName: '<AWS S3 Bucket Name>',
+           prefix: '<Folder Name in s3 bucket.>'
+         }
+       },
+       components: this.editorHtml || '',
+       style: setGrapesjsStyle()
+     })*/
       let pn = this.editor.Panels
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)

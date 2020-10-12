@@ -16,7 +16,7 @@ export function getMyCommunityList(payload) {
 }
 
 export function joinCommunity(id) {
-  return testRequest.post(`communities/${id}/join/`, {})
+  return testRequest.post(`communities/${id}/join`, {})
 }
 
 export function acceptCommunityMembershipRequest(id, payload) {
