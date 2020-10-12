@@ -8,7 +8,7 @@ const APP_CONFIG = (() => {
     VUE_APP_WEB_API: 'https://tsback.keepnetlabs.com/api',
     VUE_APP_WEB_API_TEST: 'https://apitest.keepnetlabs.com/api',
     VUE_APP_API_KEY: '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
-    VUE_APP_AUTH_API_TEST: 'https://test-api.keepnetlabs.com',
-    VUE_APP_APP_API_TEST: 'https://test-api.keepnetlabs.com/api'
+    VUE_APP_AUTH_API_TEST: 'https://dev-api.keepnetlabs.com',
+    VUE_APP_APP_API_TEST: 'https://dev-api.keepnetlabs.com/api'
   }
 })()
