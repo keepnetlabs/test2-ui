@@ -35,6 +35,7 @@ import customMacroAttachment from '../Newsletter/mergedTexts/customMacroAttachme
 import trainingUrl from '../Newsletter/mergedTexts/trainingUrl'
 import phishingUrl from '../Newsletter/mergedTexts/phishingUrl'
 import macroUrl from '../Newsletter/mergedTexts/macroUrl'
+import { GrapesS3Options } from '../../../model/constants/commonConstants'
 
 export default {
   name: 'GrapesWebPageModal',
@@ -66,19 +67,14 @@ export default {
         components: this.editorHtml || '',
         style: setGrapesjsStyle()
       })
-      /* this.editor = GrapesWebPageModal.init({
+      /*
+      this.editor = GrapesWebPageModal.init({
        container: '#gjsWebPageModal',
        fromElement: 1,
        storageManager: { type: 0 },
        plugins: ['gjs-preset-newsletter', cssParser, s3],
        pluginsOpts: {
-         'gjs-plugin-s3': {
-           accessKeyId: '<AWS Access key Id>',
-           secretAccessKey: '<Aws secret access key>',
-           sessionToken: '<AWS Sessions Token>',
-           bucketName: '<AWS S3 Bucket Name>',
-           prefix: '<Folder Name in s3 bucket.>'
-         }
+         'gjs-plugin-s3': GrapesS3Options
        },
        components: this.editorHtml || '',
        style: setGrapesjsStyle()

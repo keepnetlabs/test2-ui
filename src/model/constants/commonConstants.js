@@ -200,3 +200,11 @@ export const columnStandards = [
   { property: 'companyName', width: '180' },
   { property: 'subject', width: '240' }
 ]
+
+export const GrapesS3Options = {
+  accessKeyId: '<AWS Access key Id>',
+  secretAccessKey: '<Aws secret access key>',
+  sessionToken: '<AWS Sessions Token>',
+  bucketName: '<AWS S3 Bucket Name>',
+  prefix: '<Folder Name in s3 bucket.>'
+}
