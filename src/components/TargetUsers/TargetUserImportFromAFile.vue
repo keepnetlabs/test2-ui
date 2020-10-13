@@ -150,6 +150,9 @@ export default {
     },
     customFields: {
       type: Array
+    },
+    columns: {
+      required: true
     }
   },
   computed: {
@@ -170,6 +173,17 @@ export default {
       stepLock: null,
       totalStep: 2,
       mappingData: {
+        customFields: [
+          { name: 'First Name', disabled: false },
+          { name: 'Last Name', disabled: false },
+          { name: 'Email', disabled: false },
+          { name: 'Department', disabled: false },
+          { name: 'Job Title', disabled: false },
+          { name: 'Company', disabled: false },
+          { name: 'City', disabled: false },
+          { name: 'Big Numeros', disabled: false },
+          { name: 'Phone', disabled: false }
+        ],
         headers: [
           { name: 'First Name', disabled: false },
           { name: 'Last Name', disabled: false },
@@ -189,9 +203,7 @@ export default {
             department: 'Department',
             jobTitle: 'Job Title',
             company: 'Company',
-            city: 'City',
-            bigNumeros: 'Big_Numeros',
-            phone: 'Phone'
+            city: 'City'
           },
           {
             firstName: 'First Name22',
@@ -200,9 +212,7 @@ export default {
             department: 'Department22',
             jobTitle: 'Job Title22',
             company: 'Company22',
-            city: 'City',
-            bigNumeros: 'Big_Numeros',
-            phone: 'Phone'
+            city: 'City'
           },
           {
             firstName: 'First Name2233',
@@ -211,9 +221,7 @@ export default {
             department: 'Department2233',
             jobTitle: 'Job Title2233',
             company: 'Company2233',
-            city: 'City',
-            bigNumeros: 'Big_Numeros',
-            phone: 'Phone'
+            city: 'City'
           }
         ]
       }
@@ -234,54 +242,41 @@ export default {
           })
         })
         .finally((response) => {
-          this.mappingData = {
-            headers: [
-              { name: 'First Name', val: null },
-              { name: 'Last Name', val: null },
-              { name: 'Email', val: null },
-              { name: 'Department', val: null },
-              { name: 'Job Title', val: null },
-              { name: 'Company', val: null },
-              { name: 'City', val: null },
-              { name: 'Big Numeros', val: null },
-              { name: 'Phone', val: null }
-            ],
-            tableData: [
-              {
-                firstName: 'First Name',
-                lastName: 'Last Name',
-                email: 'Email',
-                department: 'Department',
-                jobTitle: 'Job Title',
-                company: 'Company',
-                city: 'City',
-                bigNumeros: 'Big_Numeros',
-                phone: 'Phone'
-              },
-              {
-                firstName: 'First Name22',
-                lastName: 'Last Name22',
-                email: 'Email22',
-                department: 'Department22',
-                jobTitle: 'Job Title22',
-                company: 'Company22',
-                city: 'City',
-                bigNumeros: 'Big_Numeros',
-                phone: 'Phone'
-              },
-              {
-                firstName: 'First Name2233',
-                lastName: 'Last Name2233',
-                email: 'Email2233',
-                department: 'Department2233',
-                jobTitle: 'Job Title2233',
-                company: 'Company2233',
-                city: 'City',
-                bigNumeros: 'Big_Numeros',
-                phone: 'Phone'
-              }
-            ]
-          }
+          this.mappingData.tableData = [
+            {
+              firstName: 'First Name',
+              lastName: 'Last Name',
+              email: 'Email',
+              department: 'Department',
+              jobTitle: 'Job Title',
+              company: 'Company',
+              city: 'City',
+              bigNumeros: 'Big_Numeros',
+              Country: 'Country'
+            },
+            {
+              firstName: 'First Name22',
+              lastName: 'Last Name22',
+              email: 'Email22',
+              department: 'Department22',
+              jobTitle: 'Job Title22',
+              company: 'Company22',
+              city: 'City',
+              bigNumeros: 'Big_Numeros',
+              Country: 'Country'
+            },
+            {
+              firstName: 'First Name2233',
+              lastName: 'Last Name2233',
+              email: 'Email2233',
+              department: 'Department2233',
+              jobTitle: 'Job Title2233',
+              company: 'Company2233',
+              city: 'City',
+              bigNumeros: 'Big_Numeros',
+              Country: 'Country'
+            }
+          ]
         })
     },
     submit() {},
@@ -304,7 +299,11 @@ export default {
       console.log(this.$refs.refMapTable.exportMapTableData())
     }
   },
-  created() {}
+  created() {
+    this.mappingData.customFields = this.columns.map((item) => {
+      return { name: item.label, disabled: false }
+    })
+  }
 }
 </script>
 

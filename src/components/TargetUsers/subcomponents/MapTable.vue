@@ -5,7 +5,7 @@
         <th v-for="(header, index) in mapTableData && mapTableData.headers" :key="index">
           {{ header.name }}
           <v-select
-            :items="headerItems"
+            :items="customFields"
             outlined
             class="input-select standard-height mt-4 target-users-map__header-select"
             placeholder="- None Selected -"
@@ -23,44 +23,6 @@
       >
         <td v-for="excel in item" :key="excel">{{ excel }}</td>
       </tr>
-      <!--<tr class="target-users-map__body">
-        <td>This</td>
-        <td>is also</td>
-        <td>
-          equidistributed equidistributed equidistributed equidistributed equidistributed
-          equidistributed.
-        </td>
-        <td>This</td>
-        <td>is</td>
-        <td>
-          equidistributed equidistributed equidistributed equidistributed equidistributed
-          equidistributed.
-        </td>
-        <td>
-          equidistributed equidistributed equidistributed equidistributed equidistributed
-          equidistributed.
-        </td>
-        <td>is</td>
-      </tr>
-      <tr class="target-users-map__body">
-        <td>This</td>
-        <td>is also</td>
-        <td>
-          equidistributed equidistributed equidistributed equidistributed equidistributed
-          equidistributed.
-        </td>
-        <td>This</td>
-        <td>is</td>
-        <td>
-          equidistributed equidistributed equidistributed equidistributed equidistributed
-          equidistributed.
-        </td>
-        <td>
-          equidistributed equidistributed equidistributed equidistributed equidistributed
-          equidistributed.
-        </td>
-        <td>is</td>
-      </tr>-->
     </table>
   </div>
 </template>
@@ -69,8 +31,8 @@
 export default {
   name: 'MapTable',
   computed: {
-    headerItems() {
-      return !this.mapTableData ? [] : this.mapTableData.headers
+    customFields() {
+      return !this.mapTableData ? [] : this.mapTableData.customFields
     }
   },
   data() {
@@ -81,7 +43,7 @@ export default {
   props: { mapTableData: { required: true } },
   methods: {
     setSelectDisableItems(item) {
-      this.mapTableData.headers.find((i) => i.name === item).disabled = true
+      this.mapTableData.customFields.find((i) => i.name === item).disabled = true
     },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {

@@ -4,7 +4,7 @@
       :status="showWebPageGrapes"
       v-if="showWebPageGrapes"
       icon-name="mdi-check"
-      title="Grapes JS On Modal"
+      title="Edit Post Email"
       z-index="999999"
     >
       <template v-slot:overlay-body>
@@ -1818,19 +1818,21 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 
 .url-badge{
+  font-family: "Open Sans", sans-serif;
   position: absolute;
-  top: -9px;
-  right: -9px;
-  color: white;
-  background-color: #757575;
-  height: 10px;
-  width: 10px;
-  text-align: center;
-  border-radius: 30px;
-  font-size: 8px;
-  font-weight: 900;
-  line-height: 1.6 !important;
+    top: -4px;
+    right: -5px;
+    color: white;
+    background-color: #757575;
+    height: 10px;
+    width: 10px;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1.2 !important;
 }
+a{position:relative}
  `
 })
 
@@ -2137,7 +2139,6 @@ export default {
       this.showWebPageGrapes = false
     },
     editHtmlTemplate() {
-      debugger
       this.editHtmlData = this.uploadRespond.body
       this.showWebPageGrapes = true
     },
@@ -2238,8 +2239,9 @@ export default {
             el.style.backgroundColor = 'inherit'
             el.style.color = 'inherit'
           }
-          if (this.step === 4)
+          if (this.step === 4) {
             el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.index}</span>`
+          }
         }
       }
       let hiddenEls = document.getElementsByClassName(url.url)
