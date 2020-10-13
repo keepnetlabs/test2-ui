@@ -34,6 +34,8 @@
           @delete="handleDelete"
           @onEmptyBtnClicked="showNewUserGroupModal = true"
           titleKey="name"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
         >
           <template v-slot:addUsers>
             <v-tooltip bottom opacity="1">
@@ -107,6 +109,7 @@ export default {
             hrefKey: 'resourceId',
             width: 300,
             isEditable: true,
+            filterableType: 'text',
             editOptions: {
               component: 'textfield',
               props: {
@@ -235,7 +238,23 @@ export default {
       showNewUserGroupModal: false,
       showDeleteGroupModal: false,
       selectedRow: {},
-      extendedViewValue: []
+      extendedViewValue: [],
+      tableCredientials: {
+        pageNumber: 1,
+        pageSize: 500,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
     }
   },
   methods: {
@@ -331,6 +350,45 @@ export default {
           }
         })
         .catch((error) => {})
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForTargetGroups()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForTargetGroups()
     }
   },
   created() {
