@@ -380,7 +380,7 @@ export default {
         max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
         required: (value) => !!value || 'Required.',
         minPassword: (value) => {
-          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
+          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
           return pattern.test(value) || "Password doesn't match with the password criteria"
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
