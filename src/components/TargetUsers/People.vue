@@ -60,6 +60,8 @@
           ref="refPeopleTable"
           @editTargetUsers="handleEditTargetUsers"
           @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
         >
           <template v-slot:addUsers>
             <v-menu :offset-y="true" bottom left>
@@ -128,6 +130,22 @@ export default {
     TargetUserImportFromAFile
   },
   data: () => ({
+    tableCredientials: {
+      pageNumber: 1,
+      pageSize: 500,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
     isWantToImportFile: false,
     tableData: [],
     loading: true,
@@ -197,7 +215,7 @@ export default {
           show: true,
           type: 'text',
           width: 150,
-          showHeaderTooltip: true
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.LASTNAME,
@@ -207,7 +225,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 150,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.EMAIL,
@@ -217,7 +236,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 275
+          width: 275,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.DEPARTMENT,
@@ -227,7 +247,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 150,
+          filterableType: 'text'
         }
       ],
       pageSizes: [5, 10, 25, 50, 100],
@@ -399,14 +420,8 @@ export default {
         .catch((error) => {})
     },
     callForTargetUsers() {
-      const payload = {
-        pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateTime',
-        ascending: false
-      }
       this.loading = true
-      getTargetUsers(payload)
+      getTargetUsers(this.tableCredientials)
         .then((response) => {
           let data = response.data.data
           this.tableData =
@@ -451,6 +466,45 @@ export default {
         .finally((fin) => {
           this.callForTargetUsers()
         })
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForTargetUsers()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForTargetUsers()
     }
   },
   created() {
