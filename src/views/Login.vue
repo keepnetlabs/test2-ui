@@ -182,9 +182,6 @@
                             label="Email Address"
                             class="reset-pass-textfield"
                             @click="resetPasswordError = false"
-                            :append-icon="show3 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                            :type="show3 ? '' : 'password'"
-                            @click:append="show3 = !show3"
                             autocomplete="disabled"
                             outlined
                           ></v-text-field>
@@ -380,7 +377,7 @@ export default {
         max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
         required: (value) => !!value || 'Required.',
         minPassword: (value) => {
-          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/
+          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return pattern.test(value) || "Password doesn't match with the password criteria"
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
