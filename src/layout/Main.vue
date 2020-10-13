@@ -326,6 +326,15 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/mailConfiguration" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Mail Configuration</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
         </v-list-group>
         <router-link to="/phishing-reporter" class="menu-link-default">
           <v-list-item class="menu-list-item">
@@ -508,6 +517,18 @@
 
             <router-link
               class="breadcrumb-links"
+              to="/mailConfiguration"
+              style="display: flex; align-items: center;"
+              v-if="routerName === 'MailConfiguration'"
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              {{ breadcrumbs[1].text }}
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              Mail Configuration
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
               to="/incident-responder"
               v-if="routerName === 'Analysis Details'"
             >
@@ -567,7 +588,8 @@
                 routerName !== 'Incident Responder' &&
                 routerName !== 'Investigations' &&
                 routerName !== 'Playbook' &&
-                routerName !== 'Phishing Reporter'
+                routerName !== 'Phishing Reporter' &&
+                routerName !== 'Mail Configuration'
               "
               style="color: #fff; font-size: 16px;"
               >mdi-chevron-right
@@ -577,7 +599,8 @@
                 routerName !== 'Incident Responder' &&
                 routerName !== 'Investigations' &&
                 routerName !== 'Playbook' &&
-                routerName !== 'Phishing Reporter'
+                routerName !== 'Phishing Reporter' &&
+                routerName !== 'Mail Configuration'
               "
               :to="$route.path"
               class="bread-last-step breadcrumb-links"

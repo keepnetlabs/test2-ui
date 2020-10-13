@@ -78,6 +78,10 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  COMPANYID: 'companyId',
+  DIRECTORYID: 'directoryId',
+  APPLICATIONID: 'applicationId',
+  APPLICATIONSECRET: 'applicationSecret',
   NAME: 'name',
   PRIORITY: 'priority',
   CREATEDATE: 'createDate',
@@ -131,7 +135,8 @@ export const PROPERTY_STORE = {
   ROLENAME: 'roleName',
   USERCOUNT: 'userCount',
   TYPENAME: 'typeName',
-  JOBTITLE: 'jobTitle'
+  JOBTITLE: 'jobTitle',
+  PLATFORM: 'platform'
 }
 
 export function getStoreValue(key, type) {
