@@ -45,6 +45,19 @@ export function domain(value, message) {
   value = getValue(value)
   return /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
 }
+export function phone(value, message) {
+  //e.164
+  value = getValue(value)
+  return /^\+[1-9]\d{10,14}$/gi.test(value) || message
+}
+export function email(value, message) {
+  value = getValue(value)
+  return (
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gi.test(
+      value
+    ) || message
+  )
+}
 
 export function extension(value, message) {
   value = getValue(value)
