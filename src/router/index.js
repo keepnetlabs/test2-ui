@@ -19,6 +19,7 @@ import InvestigationDetailsComponent from '../views/InvestigationDetails.vue'
 import PhishingReporter from '../views/PhishingReporter'
 import Integrations from '../views/Integrations'
 import Playbook from '../views/Playbook'
+import MailConfiguration from '../components/MailConfiguration/MailConfiguration'
 import store from '../store'
 import Companies from '@/views/Companies'
 import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
@@ -176,6 +177,16 @@ const router = new Router({
           path: '/playbook',
           name: 'Playbook',
           component: Playbook,
+          meta: {
+            isAuthenticated: true
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/mailConfiguration',
+          name: 'MailConfiguration',
+          component: MailConfiguration,
           meta: {
             isAuthenticated: true
           },
