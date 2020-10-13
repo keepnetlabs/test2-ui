@@ -523,8 +523,6 @@
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               {{ breadcrumbs[1].text }}
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              Mail Configuration
             </router-link>
 
             <router-link
@@ -588,8 +586,7 @@
                 routerName !== 'Incident Responder' &&
                 routerName !== 'Investigations' &&
                 routerName !== 'Playbook' &&
-                routerName !== 'Phishing Reporter' &&
-                routerName !== 'Mail Configuration'
+                routerName !== 'Phishing Reporter'
               "
               style="color: #fff; font-size: 16px;"
               >mdi-chevron-right
@@ -599,8 +596,7 @@
                 routerName !== 'Incident Responder' &&
                 routerName !== 'Investigations' &&
                 routerName !== 'Playbook' &&
-                routerName !== 'Phishing Reporter' &&
-                routerName !== 'Mail Configuration'
+                routerName !== 'Phishing Reporter'
               "
               :to="$route.path"
               class="bread-last-step breadcrumb-links"

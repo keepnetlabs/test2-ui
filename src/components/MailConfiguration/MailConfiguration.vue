@@ -106,6 +106,11 @@
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item class="add-user-overlay__list-item">
+            <v-list-item-content>
+              <TestConnection />
+            </v-list-item-content>
+          </v-list-item>
         </v-form>
       </template>
       <template v-slot:overlay-footer>
@@ -266,7 +271,7 @@
             @delete="handleDelete"
             ref="refPeopleTable"
             @editTargetUsers="handleEditTargetUsers"
-            @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+            @onEmptyBtnClicked="status = true"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
           >
@@ -279,7 +284,7 @@
                         <v-icon>mdi-plus</v-icon>
                       </v-btn>
                     </template>
-                    <span class="tooltip-span">{{ 'Add User' }}</span>
+                    <span class="tooltip-span">{{ 'Add Mail Configuration' }}</span>
                   </v-tooltip>
                 </template>
                 <v-list>
@@ -328,13 +333,15 @@ import {
   updateO365
 } from '../../api/mailConfiguration'
 import { mail, required } from '../../utils/validations'
+import TestConnection from './TestConnection'
 export default {
   name: 'MailConfiguration',
   components: {
     Datatable,
     DatatableLoading,
     AppModal,
-    AppDialog
+    AppDialog,
+    TestConnection
   },
   computed: {
     getTitle() {
@@ -455,9 +462,10 @@ export default {
         download: true
       },
       iEmpty: {
-        message: LABEL_STORE.NO_TARGET_USER_ADDED,
-        btn: 'ADD A USER',
-        icon: 'mdi-account-plus'
+        message: 'No mail configuration has been created, yet',
+        btn: 'O365',
+        icon: 'mdi-microsoft-office',
+        subMes: 'Create now!'
       },
       addButton: {
         show: true,
@@ -515,6 +523,7 @@ export default {
       getMailConfigurationList()
         .then((response) => {
           this.tableData = response.data.data
+          //this.tableData = []
         })
         .finally((response) => {
           this.loading = false
