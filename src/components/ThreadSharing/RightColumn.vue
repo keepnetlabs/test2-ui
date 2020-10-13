@@ -361,128 +361,143 @@
           </div>
         </div>
         <div v-if="$route.name !== 'Community'" class="right-side-title pt-1">Your Posts</div>
-        <div class="pb-4" v-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0">
-          <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
-            <div class="pt-2">
-              <div class="right-side-sub-title pb-1">
-                <a href="#">{{ post.title }}</a>
-              </div>
-              <div class="right-side-desc pb-1">
-                in
-                <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
-              </div>
-              <div class="right-side-like-comment-wrapper">
-                <div class="right-side-like">
-                  <v-btn disabled text x-small icon color="grey">
-                    <v-icon>mdi-thumb-up</v-icon>
-                  </v-btn>
-                  <span class="like-count">{{ post.likeCount }}</span>
-                </div>
-                <div class="right-side-message pl-2">
-                  <v-btn disabled text x-small icon color="grey">
-                    <v-icon>mdi-message-reply-text</v-icon>
-                  </v-btn>
-                  <span class="comment-count">{{ post.commentCount }}</span>
+        <PostCardLoading :loading="yourPostsLoading">
+          <template v-slot:skeleton-content>
+            <div
+              class="pb-4"
+              v-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0"
+            >
+              <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
+                <div class="pt-2">
+                  <div class="right-side-sub-title pb-1">
+                    <a href="#">{{ post.title }}</a>
+                  </div>
+                  <div class="right-side-desc pb-1">
+                    in
+                    <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
+                  </div>
+                  <div class="right-side-like-comment-wrapper">
+                    <div class="right-side-like">
+                      <v-btn disabled text x-small icon color="grey">
+                        <v-icon>mdi-thumb-up</v-icon>
+                      </v-btn>
+                      <span class="like-count">{{ post.likeCount }}</span>
+                    </div>
+                    <div class="right-side-message pl-2">
+                      <v-btn disabled text x-small icon color="grey">
+                        <v-icon>mdi-message-reply-text</v-icon>
+                      </v-btn>
+                      <span class="comment-count">{{ post.commentCount }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div class="pb-4 pt-1 empty-posts" v-else>
-          You haven’t post any incidents,yet
-        </div>
+            <div class="pb-4 pt-1 empty-posts" v-else>
+              You haven’t post any incidents,yet
+            </div>
+          </template>
+        </PostCardLoading>
         <div class="right-side-title pt-4">Top Posts from your communities</div>
-        <div v-if="topPosts && topPosts.length">
-          <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
-            <div class="right-side-post-container pt-2">
-              <div class="right-side-sub-title pb-1">
-                <a href="#">{{ post.postTitle }}</a>
-              </div>
-              <div class="right-side-desc pb-1">
-                in
-                <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
-              </div>
-              <div class="right-side-like-comment-wrapper">
-                <div class="right-side-like">
-                  <v-btn disabled text x-small icon color="grey">
-                    <v-icon>mdi-thumb-up</v-icon>
-                  </v-btn>
-                  <span class="like-count">{{ post.likeCount }}</span>
-                </div>
-                <div class="right-side-message pl-2">
-                  <v-btn disabled text x-small icon color="grey">
-                    <v-icon>mdi-message-reply-text</v-icon>
-                  </v-btn>
-                  <span class="comment-count">{{ post.commentCount }}</span>
+        <PostCardLoading :loading="topPostsLoading">
+          <template v-slot:skeleton-content>
+            <div v-if="topPosts && topPosts.length">
+              <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
+                <div class="right-side-post-container pt-2">
+                  <div class="right-side-sub-title pb-1">
+                    <a href="#">{{ post.postTitle }}</a>
+                  </div>
+                  <div class="right-side-desc pb-1">
+                    in
+                    <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
+                  </div>
+                  <div class="right-side-like-comment-wrapper">
+                    <div class="right-side-like">
+                      <v-btn disabled text x-small icon color="grey">
+                        <v-icon>mdi-thumb-up</v-icon>
+                      </v-btn>
+                      <span class="like-count">{{ post.likeCount }}</span>
+                    </div>
+                    <div class="right-side-message pl-2">
+                      <v-btn disabled text x-small icon color="grey">
+                        <v-icon>mdi-message-reply-text</v-icon>
+                      </v-btn>
+                      <span class="comment-count">{{ post.commentCount }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div v-else class="empty-posts pt-1">
-          No incident has been posted in your communities, yet
-        </div>
+            <div v-else class="empty-posts pt-1">
+              No incident has been posted in your communities, yet
+            </div>
+          </template>
+        </PostCardLoading>
         <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
-        <div v-if="suggestedCommunities && suggestedCommunities.length">
-          <v-card
-            v-for="(commun, ind) of suggestedCommunities"
-            :key="ind + commun.communityName"
-            class="suggested-card"
-          >
-            <div class="suggested-row">
-              <div class="suggested-com-name" cols="12">
-                <div class="suggested-title">{{ commun.communityName }}</div>
-                <div class="suggested-com-detail">
-                  <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                  <b>{{ commun.memberCount }}</b
-                  ><span class="suggested-row__seperator">•</span>
-                  <span class="suggested-company">{{ commun.industryName }} </span>
-                  <span class="suggested-row__seperator">•</span>
-                  <span class="suggested-company">{{ commun.privacyStatusName }} </span>
+        <CommunitiesCardLoading :loading="postsLoading">
+          <template v-slot:skeleton-content>
+            <div v-if="suggestedCommunities && suggestedCommunities.length">
+              <v-card
+                v-for="(commun, ind) of suggestedCommunities"
+                :key="ind + commun.communityName"
+                class="suggested-card"
+              >
+                <div class="suggested-row">
+                  <div class="suggested-com-name" cols="12">
+                    <div class="suggested-title">{{ commun.communityName }}</div>
+                    <div class="suggested-com-detail">
+                      <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
+                      <b>{{ commun.memberCount }}</b
+                      ><span class="suggested-row__seperator">•</span>
+                      <span class="suggested-company">{{ commun.industryName }} </span>
+                      <span class="suggested-row__seperator">•</span>
+                      <span class="suggested-company">{{ commun.privacyStatusName }} </span>
+                    </div>
+                  </div>
+                  <div class="suggested-right-action">
+                    <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
+                      <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
+                      <span class="pr-2">Member</span>
+                    </v-btn>
+                    <v-btn
+                      @click="joinCommunity(commun.resourceId, commun.communityName)"
+                      class="suggested-btn"
+                      block
+                      rounded
+                      v-else
+                      :disabled="commun.isJoined"
+                      style="background-color: #2196f3 !important;"
+                    >
+                      <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
+                      <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
+                        >mdi-account-clock
+                      </v-icon>
+                      <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
+                        JOIN
+                      </div>
+                      <div v-else-if="commun.isJoined" :key="commun.resourceId">
+                        Request Sent
+                      </div>
+                      <div v-else :key="commun.resourceId">Request to join</div>
+                    </v-btn>
+                  </div>
                 </div>
-              </div>
-              <div class="suggested-right-action">
-                <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
-                  <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
-                  <span class="pr-2">Member</span>
-                </v-btn>
-                <v-btn
-                  @click="joinCommunity(commun.resourceId, commun.communityName)"
-                  class="suggested-btn"
-                  block
-                  rounded
-                  v-else
-                  :disabled="commun.isJoined"
-                  style="background-color: #2196f3 !important;"
-                >
-                  <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
-                  <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
-                    >mdi-account-clock
-                  </v-icon>
-                  <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
-                    JOIN
-                  </div>
-                  <div v-else-if="commun.isJoined" :key="commun.resourceId">
-                    Request Sent
-                  </div>
-                  <div v-else :key="commun.resourceId">Request to join</div>
-                </v-btn>
-              </div>
+              </v-card>
             </div>
-          </v-card>
-        </div>
-        <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
-          There is no suggested community available, yet
-        </div>
-        <div class="empty-suggested" v-else>
-          <v-btn
-            class="create-first-btn create-com-btn mt-3 mb-6"
-            @click="createNewCommunity()"
-            block
-            rounded
-            >Create A New Community
-          </v-btn>
-        </div>
+            <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
+              There is no suggested community available, yet
+            </div>
+            <div class="empty-suggested" v-else>
+              <v-btn
+                class="create-first-btn create-com-btn mt-3 mb-6"
+                @click="createNewCommunity()"
+                block
+                rounded
+                >Create A New Community
+              </v-btn>
+            </div>
+          </template>
+        </CommunitiesCardLoading>
       </div>
     </v-card>
   </div>
@@ -503,10 +518,14 @@ import AppDialog from '../AppDialog'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { isOwner } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
-
+import CommunitiesCardLoading from '../SkeletonLoading/CommunitiesCardLoading'
+import PostCardLoading from '../SkeletonLoading/PostCardLoading'
 export default {
   data() {
     return {
+      yourPostsLoading: true,
+      topPostsLoading: true,
+      postsLoading: true,
       isWantToDelete: false,
       openNotificationModal: false,
       notifications: {
@@ -564,7 +583,9 @@ export default {
   },
   components: {
     AppDialog,
-    NewCommunity
+    NewCommunity,
+    CommunitiesCardLoading,
+    PostCardLoading
   },
   created() {
     this.getAllRightColumnData()
@@ -705,6 +726,7 @@ export default {
       }
     },
     getMyLastPosts() {
+      this.yourPostsLoading = true
       getMyLastPosts()
         .then((response) => {
           this.yourPosts = response.data.data.slice(0, 3)
@@ -719,8 +741,10 @@ export default {
             this.yourPosts = []
           }
         })
+        .finally(() => (this.yourPostsLoading = false))
     },
     getMyTopPosts() {
+      this.topPostsLoading = true
       getMyTopPosts()
         .then((response) => {
           this.topPosts = response.data.data.slice(0, 3)
@@ -735,8 +759,10 @@ export default {
             this.topPosts = []
           }
         })
+        .finally(() => (this.topPostsLoading = false))
     },
     getsuggestedCommunities() {
+      this.postsLoading = true
       getsuggestedCommunities()
         .then((response) => {
           this.suggestedCommunities = response.data.data
@@ -756,6 +782,7 @@ export default {
             this.suggestedCommunities = []
           }
         })
+        .finally(() => (this.postsLoading = false))
     },
     closeCommunityInfo() {
       // this.$emit('closeCommunity')

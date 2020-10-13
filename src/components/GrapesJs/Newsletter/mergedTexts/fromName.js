@@ -5,7 +5,7 @@ const fromName = {
   category: 'Merged Texts',
   attributes: {
     title: 'To',
-    class: 'fa fa-user-plus gjs-block gjs-one-bg gjs-four-color-h',
+    class: 'merged-text',
     icon: 'fa fa-text'
   },
   content: {

@@ -267,6 +267,7 @@ const investigations = {
           commit('SET_IRSUMMARY', result)
         })
         .catch(() => {
+          /*
           dispatch(
             'common/createSnackBar',
             {
@@ -276,6 +277,8 @@ const investigations = {
             },
             { root: true }
           )
+
+           */
         })
     },
 

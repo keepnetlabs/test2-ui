@@ -1,6 +1,86 @@
 <template>
   <v-app class="layout-container">
     <app-snackbar />
+    <app-dialog :status="openPasswordChange" icon="mdi-lock" title="Change Password" size="big">
+      <template v-slot:app-dialog-body>
+        <v-card-text class="password-modal">
+          <div v-if="newPasswordError" class="login-error-container">
+            <div v-if="newPasswordError" class="login-error-wrapper">
+              <div class="login-error-icon dark pr-2">
+                <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
+              </div>
+              <div class="login-error-message pr-1">
+                {{ newPasswordErrorText }}
+              </div>
+            </div>
+          </div>
+          <div class="new-password-wrapper">
+            <v-row align="center" justify="center">
+              <v-col sm="12" class="p-0">
+                <v-form ref="newPasswordByMain">
+                  <div>
+                    <label class="new-password-wrapper__label mb-2">Current Password</label>
+                    <v-text-field
+                      v-model="currentPassword"
+                      label="Current password"
+                      class="reset-pass-textfield mb-6"
+                      :rules="[rules.required]"
+                      @click="newPasswordError = false"
+                      outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="show1 ? '' : 'password'"
+                      @click:append="show1 = !show1"
+                      autocomplete="disabled"
+                    ></v-text-field>
+                  </div>
+                  <div>
+                    <label class="new-password-wrapper__label mb-2">New Password</label>
+                    <v-text-field
+                      v-model="newPassword"
+                      label="Enter new password"
+                      class="reset-pass-textfield mb-6"
+                      :rules="[rules.required, rules.minPassword, rules.equal]"
+                      @click="newPasswordError = false"
+                      outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="show2 ? '' : 'password'"
+                      @click:append="show2 = !show2"
+                      autocomplete="disabled"
+                    ></v-text-field>
+                  </div>
+                  <div>
+                    <PasswordChecker :password="newPassword" />
+                  </div>
+                  <div>
+                    <label class="new-password-wrapper__label mb-2">Confirm Password</label>
+                    <v-text-field
+                      v-model="reNewPassword"
+                      :rules="[rules.required, rules.minPassword, rules.equal]"
+                      label="Enter new password again"
+                      class="reset-pass-textfield"
+                      @click="newPasswordError = false"
+                      outlined
+                    ></v-text-field>
+                  </div>
+                </v-form>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card-text>
+      </template>
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openPasswordChange = false"
+            >CANCEL</v-btn
+          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword"
+            >CONFIRM</v-btn
+          >
+        </div>
+      </template>
+    </app-dialog>
     <v-dialog v-model="feedbackdialog" :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
@@ -373,7 +453,7 @@
 
           <div class="page-header__breadcrumb">
             <router-link class="breadcrumb-links" to="/">
-              {{ $store.state.dashboard.selectedCompany.manager || 'Company' }}
+              {{ companyName || 'Company' }}
             </router-link>
 
             <router-link
@@ -531,6 +611,10 @@ import AuthenticationService from '../services/authentication'
 import 'grapesjs/dist/css/grapes.min.css'
 import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
+import AppDialog from '../components/AppDialog'
+import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
+import { updatePassword } from '../api/auth'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 export default {
   name: 'Main',
@@ -543,16 +627,41 @@ export default {
     SwitchAccount,
     offline,
     TourWidget,
-    AppSnackbar
+    AppSnackbar,
+    AppDialog,
+    PasswordChecker
   },
   data() {
     return {
+      currentPassword: null,
+      show1: false,
+      show2: false,
+      newPasswordError: null,
+      newPasswordErrorText: null,
+      newPassword: null,
+      reNewPassword: null,
+      openPasswordChange: false,
       communityId: null,
       baseUrl: null,
       sessionCheck: false,
       communityName: null,
       companyGroupName: null,
       companyGroupResourceId: null,
+      rules: {
+        email: (value) => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
+        },
+        min: (v) => v.length >= 8 || 'Minimum 8 characters',
+        max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
+        required: (value) => !!value || 'Required.',
+        minPassword: (value) => {
+          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
+          return pattern.test(value) || "Password doesn't match with the password criteria"
+        },
+        equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
+      },
+
       tour: {
         isActive: false,
         one: { active: false },
@@ -770,7 +879,7 @@ export default {
       isLoadingFromStore: 'common/getIsLoading'
     }),
     companyName() {
-      return localStorage.getItem('companyName')
+      return localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
     },
     routerName() {
       return this.$route.name
@@ -920,6 +1029,24 @@ export default {
       getCurrentUser: 'auth/getCurrentUser'
     }),
 
+    changePassword() {
+      if (this.$refs.newPasswordByMain.validate()) {
+        let payload = {
+          CurrentPassword: this.currentPassword,
+          NewPassword: this.newPassword,
+          ConfirmNewPassword: this.reNewPassword
+        }
+        updatePassword(payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Password has been changed successfully!'
+            })
+          })
+          .catch((error) => {})
+      }
+    },
+
     getCommunityName() {
       this.communityId = localStorage.getItem('communityResourceIdForRedirect')
       this.communityName = localStorage.getItem('communityName')
@@ -948,6 +1075,8 @@ export default {
       if (item.text == 'Logout') {
         this.logoutUser()
         //this.$router.push('/login')
+      } else if (item.text === 'Change Password') {
+        this.openPasswordChange = true
       }
     },
     ...mapActions({
@@ -1833,6 +1962,255 @@ export default {
 
   .v-application--wrap {
     background-color: #fafafa !important;
+  }
+}
+.password-modal {
+  .new-password-wrapper {
+    &__label {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding: 0 15px;
+      margin-bottom: 8px;
+    }
+  }
+  .back-to-reset-password {
+    display: flex;
+    background-color: white;
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #2196f3;
+    text-transform: uppercase;
+    i {
+      color: #2196f3;
+    }
+    cursor: pointer;
+  }
+  .reset-pass-textfield {
+    padding: 0 15px !important;
+  }
+  .login-error-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+    width: 100%;
+  }
+
+  .login-error-wrapper {
+    width: 300px;
+    border-radius: 3px;
+    background-color: rgba(245, 108, 108, 0.2);
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: row;
+
+    .login-error-icon {
+      i {
+        font-size: 24px !important;
+        margin-bottom: -1px;
+      }
+    }
+
+    .login-error-message {
+      align-self: center;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+    }
+  }
+
+  .reset-password-wrapper {
+    .v-text-field.v-text-field--solo .v-input__control {
+      min-height: 20px !important;
+      padding: 0;
+    }
+    &__success {
+      min-height: 300px;
+    }
+  }
+
+  .forgot-password {
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .login-remember {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .v-input--checkbox {
+      label.v-label.theme--light {
+        font-size: 11px;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.87) !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
+        font-size: 20px !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
+        font-size: 20px !important;
+      }
+    }
+  }
+
+  .mdi-eye-off-outline::before {
+    color: rgba(0, 0, 0, 0.26);
+  }
+
+  .v-input {
+    height: 40px !important;
+  }
+
+  .v-input .v-label {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    height: 20px;
+    font-weight: 600;
+  }
+
+  .login-desc {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.54);
+    margin-bottom: 32px;
+  }
+
+  .login-title {
+    margin-top: 88px;
+    margin-bottom: 8px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 36px;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #2196f3;
+  }
+
+  .v-sheet {
+    border-radius: 20px;
+  }
+
+  .v-card-login-wrapper {
+    border-radius: 20px !important;
+    padding-top: 24px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 80px;
+  }
+
+  .background {
+    height: 100%;
+    width: 100%;
+    background-image: url('../assets/img/login-bg.svg') !important;
+    background-position: left top; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover;
+    flex-flow: column !important;
+    position: absolute;
+  }
+
+  .v-input--selection-controls__ripple {
+    margin-right: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    left: -5px !important;
+    top: calc(50% - 17px) !important;
+  }
+
+  .remember-me-check {
+    &.v-input--checkbox.v-input--selection-controls {
+      margin-top: 0;
+      padding-top: 0;
+      height: auto !important;
+    }
+    padding-left: 5px;
+
+    label {
+      color: rgba(0, 0, 0, 0.87) !important;
+      font-family: 'Open Sans', sans-serif !important;
+      font-weight: 400 !important;
+      font-size: 9px;
+      left: -8px !important;
+    }
+  }
+
+  .login-btn {
+    height: 36px !important;
+    min-width: 132px !important;
+  }
+
+  .captcha-wrapper {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 30px;
+    width: 100%;
+    margin-top: 16px;
+
+    > div {
+      max-width: 300px;
+    }
+  }
+
+  .login-user-pass-wrapper > .row > div {
+    max-width: 300px;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .login-label {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  @media only screen and (max-width: 769px) {
+    .login-card-wrapper {
+      padding: 10px !important;
+      padding-right: 16px !important;
+    }
   }
 }
 </style>

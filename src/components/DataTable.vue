@@ -400,6 +400,7 @@
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
             :show-header="showHeader"
+            :header-row-class-name="'k-table-header'"
             @cell-mouse-enter="cellEnter"
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
@@ -409,27 +410,28 @@
             @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
+            :indent="32"
             lazy
             ref="elTableRef"
             :row-key="rowKey"
             style="width: 100%;"
             v-if="!allHidden"
           >
-            <el-table-column align="center" type="selection" v-if="selectable" width="60" />
+            <el-table-column align="center" type="selection" v-if="selectable" width="48" />
             <el-table-column
-              :align="col.align"
-              :fixed="col.fixed"
-              :key="col.property + ind"
-              :label="col.label"
-              :maxWidth="col.maxWidth || ''"
-              reserve-selection
-              :minWidth="col.minWidth || ''"
-              :prop="col.property"
-              :sortable="col.hideSort ? false : 'custom'"
-              :width="col.width || ''"
-              :resizable="resizable"
               v-for="(col, ind) of columns"
               v-if="col.show"
+              :key="col.property + ind"
+              :align="col.align"
+              :fixed="col.fixed"
+              :label="col.label"
+              :maxWidth="col.maxWidth || ''"
+              :minWidth="col.minWidth || ''"
+              :prop="col.property"
+              :resizable="resizable"
+              :sortable="col.hideSort ? false : 'custom'"
+              :width="col.width || ''"
+              reserve-selection
             >
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
@@ -813,8 +815,9 @@ import { mapGetters } from 'vuex'
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
+import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
-
+import DatatableLoading from './SkeletonLoading/DatatableLoading'
 export default {
   components: {
     DataTableFilter,
@@ -1050,13 +1053,7 @@ export default {
   watch: {
     tableData(data) {
       if (data && this.groupable) {
-        this.totalLength = data.reduce((acc, item) => {
-          if (item.children) {
-            return acc + 1 + item.children.length
-          } else {
-            return acc + 1
-          }
-        }, 0)
+        this.totalLength = this.getTotalLength(data)
       }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
@@ -1113,6 +1110,9 @@ export default {
     }
   },
   created() {
+    //Init column standardisation
+    this.columnStandardisation(this.columns)
+
     if (this.table && this.table.length) {
       this.initialData = this.table
       this.tableData = this.table
@@ -1157,8 +1157,18 @@ export default {
       _this.setDatatableUI = true
     }, 1)
   },
-
   methods: {
+    /**
+     * Override column props with standards
+     *
+     * @param {array} columns Datatable column props.
+     */
+    columnStandardisation(columns) {
+      columnStandards.forEach((x) => {
+        let index = columns.findIndex((col) => col.property === x.property)
+        columns[index] = { ...columns[index], ...x }
+      })
+    },
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
@@ -1197,15 +1207,7 @@ export default {
         }
 
         for (let item of selection) {
-          if (item.children) {
-            for (let child of item.children) {
-              this.$refs.elTableRef.toggleRowSelection(child, true)
-              this.clusteredItems.push(child)
-              if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
-                selection.push(child)
-              }
-            }
-          }
+          this.selectChildren(item, selection)
         }
 
         this.multipleSelection = selection
@@ -1214,6 +1216,32 @@ export default {
         }
         this.$emit('handleSelectionChange', selection)
       }
+    },
+    selectChildren(item, selection) {
+      if (item.children) {
+        for (let child of item.children) {
+          if (child.children) {
+            this.selectChildren(child, selection)
+          }
+          this.$refs.elTableRef.toggleRowSelection(child, true)
+          this.clusteredItems.push(child)
+          if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
+            selection.push(child)
+          }
+        }
+      }
+    },
+    calculateLength(children) {
+      return children.reduce((acc, item) => {
+        if (item.children) {
+          return acc + 1 + this.calculateLength(item.children)
+        } else {
+          return acc + 1
+        }
+      }, 0)
+    },
+    getTotalLength(data) {
+      return this.calculateLength(data)
     },
     setCellClass(obj) {
       /*
@@ -1253,7 +1281,14 @@ export default {
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
-      const spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
+      let spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
+      const padding = getComputedStyle(cell).paddingLeft.slice(0, -2)
+      if (![...cell.classList].some((item) => item === 'el-table-column--selection')) {
+        if (padding) {
+          spanWidth += Number(padding)
+        }
+      }
+
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]
@@ -1271,7 +1306,7 @@ export default {
         this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + 60}px`,
-          left: `${parentRect.left + this.cellPadding}px`
+          left: `${parentRect.left + this.cellPadding + Number(padding)}px`
         }
       }
     },
@@ -1509,11 +1544,39 @@ export default {
       }
       this.$emit('handleSelectionChange', val)
     },
+    selectChildrenByRowCheckbox(rows = [], selection = []) {
+      console.log('rows', rows)
+      for (let row of rows) {
+        if (row.children) {
+          this.selectChildrenByRowCheckbox(row.children, selection)
+        }
+        this.$refs.elTableRef.toggleRowSelection(row, true)
+        if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
+          this.clusteredItems.push(row)
+          selection.push(row)
+        }
+      }
+    },
+    unSelectChildrenByRowCheckbox(rows = [], selection = []) {
+      for (let row of rows) {
+        if (row.children) {
+          this.unSelectChildrenByRowCheckbox(row.children, selection)
+        }
+        this.$refs.elTableRef.toggleRowSelection(row, false)
+        const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row))
+        if (ind > -1) {
+          selection.splice(ind, 1)
+        }
+      }
+    },
     handleSelect(selection, row) {
       if (this.groupable) {
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
             for (let child of row.children) {
+              if (child.children) {
+                this.selectChildrenByRowCheckbox(child.children, selection)
+              }
               this.$refs.elTableRef.toggleRowSelection(child, true)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
                 this.clusteredItems.push(child)
@@ -1522,6 +1585,9 @@ export default {
             }
           } else {
             for (let child of row.children) {
+              if (child.children) {
+                this.unSelectChildrenByRowCheckbox(child.children, selection)
+              }
               this.$refs.elTableRef.toggleRowSelection(child, false)
               const ind = selection.findIndex(
                 (item) => JSON.stringify(item) === JSON.stringify(child)

@@ -196,13 +196,7 @@
                         </div>
                       </div>
                       <div class="members-pie">
-                        <apexchart
-                          :key="series[0]"
-                          type="pie"
-                          height="150"
-                          :options="chartOptions"
-                          :series="series"
-                        />
+                        <pie :key="series[0]" :data="series" />
                       </div>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -334,7 +328,7 @@
   </v-card>
 </template>
 <script>
-import VueApexCharts from 'vue-apexcharts'
+import Pie from '@/components/Common/Charts/Pie'
 import {
   acceptCommunityMembershipRequest,
   appointNewOwner,
@@ -349,8 +343,8 @@ import AppDialog from '../AppDialog'
 
 export default {
   components: {
-    apexchart: VueApexCharts,
-    AppDialog
+    AppDialog,
+    Pie
   },
   data: () => ({
     appointUserName: null,

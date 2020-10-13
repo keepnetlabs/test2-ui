@@ -30,55 +30,67 @@
       @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
       v-if="isWantToShowCustomFieldsModal"
     />
-
-    <datatable
-      :addButton="tableOptions.addButton"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'peopleTable'"
-      :rowActions="tableOptions.rowActions"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      :setClassName="setCellClassName"
-      @addToGroup="handleAddToGroup"
-      @createGroupWithUser="handleCreateGroupWithUser"
-      @submenuItemClick="handleSubMenuItemClick"
-      @syncUser="handleSyncUser"
-      @delete="handleDelete"
-      ref="refPeopleTable"
-      @editTargetUsers="handleEditTargetUsers"
-      @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
-    >
-      <template v-slot:addUsers>
-        <v-menu :offset-y="true" bottom left>
-          <template v-slot:activator="{ on: menu }">
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
+    <target-user-import-from-a-file
+      :status="isWantToImportFile"
+      @closeAddUserModal="closeImportModal"
+      v-if="isWantToImportFile"
+    />
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          :addButton="tableOptions.addButton"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.iEmpty"
+          :filterable="true"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'peopleTable'"
+          :rowActions="tableOptions.rowActions"
+          :selectEvent="tableOptions.selectEvent"
+          :selectable="true"
+          :setClassName="setCellClassName"
+          @addToGroup="handleAddToGroup"
+          @createGroupWithUser="handleCreateGroupWithUser"
+          @submenuItemClick="handleSubMenuItemClick"
+          @syncUser="handleSyncUser"
+          @delete="handleDelete"
+          ref="refPeopleTable"
+          @editTargetUsers="handleEditTargetUsers"
+          @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+        >
+          <template v-slot:addUsers>
+            <v-menu :offset-y="true" bottom left>
+              <template v-slot:activator="{ on: menu }">
+                <v-tooltip bottom opacity="1">
+                  <template v-slot:activator="{ on: tooltip }">
+                    <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                  </template>
+                  <span class="tooltip-span">{{ 'Add User' }}</span>
+                </v-tooltip>
               </template>
-              <span class="tooltip-span">{{ 'Add User' }}</span>
-            </v-tooltip>
+              <v-list>
+                <v-list-item
+                  :key="item"
+                  @click="handleAddUsers(item)"
+                  v-for="item in addUsersItems"
+                >
+                  <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
-          <v-list>
-            <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
-              <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          <template v-slot:settings-popup-body>
+            <div class="edit-fields" @click="handleEditFieldsClick">
+              EDIT FIELDS
+            </div>
+          </template>
+        </datatable>
       </template>
-
-      <template v-slot:settings-popup-body>
-        <div class="edit-fields" @click="handleEditFieldsClick">
-          EDIT FIELDS
-        </div>
-      </template>
-    </datatable>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -100,7 +112,8 @@ import {
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 export default {
   name: 'People',
   components: {
@@ -109,9 +122,14 @@ export default {
     DeleteUserModal,
     Datatable,
     AddUsersManuallyModal,
-    AddUserModal
+    AddUserModal,
+    DatatableLoading,
+    TargetUserImportFromAFile
   },
   data: () => ({
+    isWantToImportFile: false,
+    tableData: [],
+    loading: true,
     isWantToShowDeleteUserModal: false,
     selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
@@ -266,6 +284,9 @@ export default {
     addUsersItems: ['Add users manually', 'Import from a file', 'LDAP Integration']
   }),
   methods: {
+    closeImportModal() {
+      this.isWantToImportFile = false
+    },
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
@@ -273,7 +294,7 @@ export default {
           this.isWantToShowAddUsersModal = true
           break
         case this.addUsersItems[1]:
-          //this.isWantToShowImportUsersFromFileModal = true
+          this.isWantToImportFile = true
           break
         default:
           break
@@ -383,16 +404,17 @@ export default {
         orderBy: 'CreateTime',
         ascending: false
       }
+      this.loading = true
       getTargetUsers(payload)
         .then((response) => {
-          const { data } = response.data
-          this.$refs.refPeopleTable.loadWithDataArray(
+          let data = response.data.data
+          this.tableData =
             data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
-          )
         })
         .catch((error) => {
-          this.$refs.refPeopleTable.loadWithDataArray([])
+          this.tableData = []
         })
+        .finally(() => (this.loading = false))
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       getTargetUserCustomFieldsByCompanyId()

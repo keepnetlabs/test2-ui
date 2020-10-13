@@ -19,8 +19,8 @@
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
-          <v-tab-item> <people /> </v-tab-item>
-          <v-tab-item> <user-roles /> </v-tab-item>
+          <v-tab-item> <people ref="refPeople" /> </v-tab-item>
+          <v-tab-item> <user-roles ref="refUserRoles" /> </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-layout>
@@ -45,6 +45,15 @@ export default {
   methods: {
     changeTabStatus(index) {
       this.tab = index
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refPeople, refUserRoles } = this.$refs
+    if (refPeople && refPeople.showCreateOrEditSystemUserModal) {
+      refPeople.toggleCreateOrEditSystemUser()
+      next(false)
+    } else {
+      next()
     }
   }
 }

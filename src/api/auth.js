@@ -1,5 +1,6 @@
 import request from '../utils/request'
 import authTestRequest from '../utils/authTestRequest'
+import testRequest from '../utils/testRequest'
 import AuthenticationService from '../services/authentication'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
@@ -23,7 +24,7 @@ export function getCurrentUser() {
 }
 
 export function resetPassword(payload) {
-  return request.post('account/reset', { UserName: payload })
+  return testRequest.post('system-users/send-reset-password-link', { Email: payload })
 }
 
 export function profile() {
@@ -35,4 +36,16 @@ export function twoStepLogin(payload) {
     Code: payload.code,
     Token: AuthenticationService.getToken()
   })
+}
+
+export function createPasswordByToken(payload) {
+  return testRequest.post('/system-users/create-password', payload, { loading: true })
+}
+
+export function resetPasswordByToken(payload) {
+  return testRequest.post('/system-users/reset-password', payload, { loading: true })
+}
+
+export function updatePassword(payload) {
+  return testRequest.put('/system-users/change-password', payload, { loading: true })
 }

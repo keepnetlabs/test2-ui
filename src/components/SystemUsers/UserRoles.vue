@@ -12,31 +12,36 @@
       @closeOverlay="toggleCantDeleteUserRoleModal"
     />
     <div class="user-roles__container">
-      <data-table
-        ref="refUserRolesList"
-        :refName="'userRolesList'"
-        :columns="tableOptions.columns"
-        :countRow="5"
-        :empty="tableOptions.empty"
-        :filterable="true"
-        :isServerSide="false"
-        :row-key="rowKey"
-        :showClusterItemsRowAction="true"
-        :options="true"
-        :cluster-items="[
-          { name: 'id', selected: true },
-          { name: 'name', selected: false }
-        ]"
-        :addButton="tableOptions.addButton"
-        :pageSizes="tableOptions.pageSizes"
-        :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
-        @deleteAction="handleDelete"
-        @handleAddNewUserRole="handleAddNewUserRole"
-        @columnFilterChanged="columnFilterChanged"
-        @columnFilterCleared="columnFilterCleared"
-      />
+      <DatatableLoading :loading="loading">
+        <template v-slot:skeleton-content>
+          <data-table
+            :table="tableData"
+            ref="refUserRolesList"
+            :refName="'userRolesList'"
+            :columns="tableOptions.columns"
+            :countRow="5"
+            :empty="tableOptions.empty"
+            :filterable="true"
+            :isServerSide="false"
+            :row-key="rowKey"
+            :showClusterItemsRowAction="true"
+            :options="true"
+            :cluster-items="[
+              { name: 'id', selected: true },
+              { name: 'name', selected: false }
+            ]"
+            :addButton="tableOptions.addButton"
+            :pageSizes="tableOptions.pageSizes"
+            :row-actions="tableOptions.rowActions"
+            :selectable="true"
+            :sizeable="true"
+            @deleteAction="handleDelete"
+            @handleAddNewUserRole="handleAddNewUserRole"
+            @columnFilterChanged="columnFilterChanged"
+            @columnFilterCleared="columnFilterCleared"
+          />
+        </template>
+      </DatatableLoading>
     </div>
   </div>
 </template>
@@ -47,15 +52,19 @@ import DataTable from '@/components/DataTable'
 import DeleteSystemUserRoleModal from '@/components/SystemUsers/DeleteSystemUserRoleModal'
 import CantDeleteUserRoleModal from '@/components/SystemUsers/CantDeleteUserRoleModal'
 import { getUserRoles } from '@/api/systemUsers'
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'UserRoles',
   components: {
     CantDeleteUserRoleModal,
     DataTable,
-    DeleteSystemUserRoleModal
+    DeleteSystemUserRoleModal,
+    DatatableLoading
   },
   data() {
     return {
+      loading: true,
+      tableData: [],
       tableOptions: {
         columns: [
           {
@@ -177,10 +186,16 @@ export default {
       this.showCantDeleteUserModal = !this.showCantDeleteUserModal
     },
     callForGetUserRoles() {
-      getUserRoles(this.requestBody).then((response) => {
-        const { data } = response.data
-        this.$refs.refUserRolesList.loadWithDataArray(data.results || [])
-      })
+      this.loading = true
+      getUserRoles(this.requestBody)
+        .then((response) => {
+          const { data } = response.data
+          this.tableData = data.results || []
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter) {
       let items = []

@@ -643,6 +643,21 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     overflow: hidden;
 }
 
+.url-badge{
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  color: white;
+  background-color: #757575;
+  height: 10px;
+  width: 10px;
+  text-align: center;
+  border-radius: 30px;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1.6 !important;
+}
+
 .red-malicious-alert::before {
   border: unset !important;
 }
@@ -951,14 +966,14 @@ export default {
     },
     writeToNavigator(value, index, type) {
       if (type === 'sha') {
-        this.isCopiedShaClipboard.push(index)
+        const pushedIndex = this.isCopiedShaClipboard.push(index) - 1
         setTimeout(() => {
-          this.isCopiedShaClipboard.splice(index, 1)
+          this.isCopiedShaClipboard.splice(pushedIndex, 1)
         }, 5000)
       } else if (type === 'md5') {
-        this.isCopiedMd5Clipboard.push(index)
+        const pushedIndex = this.isCopiedMd5Clipboard.push(index) - 1
         setTimeout(() => {
-          this.isCopiedMd5Clipboard.splice(index, 1)
+          this.isCopiedMd5Clipboard.splice(pushedIndex, 1)
         }, 5000)
       }
       navigator.clipboard.writeText(value)

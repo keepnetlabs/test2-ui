@@ -21,16 +21,13 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <s-m-t-p-settings />
+            <s-m-t-p-settings ref="refSmtpSettings" />
           </v-tab-item>
           <v-tab-item>
-            <notification-templates />
+            <notification-templates ref="refNotificationTemplates" />
           </v-tab-item>
           <v-tab-item>
-            <rest-api />
-          </v-tab-item>
-          <v-tab-item>
-            <custom-api />
+            <custom-api ref="refCustomApi" />
           </v-tab-item>
         </v-tabs-items>
       </v-card>
@@ -41,7 +38,6 @@
 <script>
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
-import DataAnonymization from '@/components/Company Settings/DataAnonymization'
 import RestApi from '@/components/Company Settings/RestApi'
 import CustomApi from '@/components/Company Settings/CustomApi'
 export default {
@@ -49,18 +45,35 @@ export default {
   components: {
     SMTPSettings,
     NotificationTemplates,
-    RestApi,
     CustomApi
   },
   data() {
     return {
       tab: 0,
-      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API', 'Custom API']
+      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
+      ENUM: {
+        COMPANYSETTINGS: 'Company Settings'
+      }
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs
+    if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
+      refSmtpSettings.toggleSmtpModalStatus()
+      next(false)
+    } else if (refNotificationTemplates && refNotificationTemplates.newNotificationTemplateStatus) {
+      refNotificationTemplates.toggleNewNotificationTemplate()
+      next(false)
+    } else if (refCustomApi && refCustomApi.showNewCustomApi) {
+      refCustomApi.toggleNewCustomApiStatus()
+      next(false)
+    } else {
+      next()
     }
   }
 }

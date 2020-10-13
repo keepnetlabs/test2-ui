@@ -38,15 +38,7 @@
     <div class="v-cart-content-wrapper">
       <div class="v-cart-content-pie-chart">
         <div v-if="chartData && chartData.length > 0">
-          <div id="chart">
-            <apexchart
-              type="area"
-              :width="getWidth"
-              height="700"
-              :options="chartOptions"
-              :series="series"
-            />
-          </div>
+          <div id="chart"></div>
         </div>
         <img v-else :src="require('../assets/img/overall-no-data.png')" class="overall-no-data" />
       </div>
@@ -54,13 +46,9 @@
   </div>
 </template>
 <script>
-import VueApexCharts from 'vue-apexcharts'
-
 export default {
   name: 'overall-stats',
-  components: {
-    apexchart: VueApexCharts
-  },
+  components: {},
   data: () => ({
     /* monthNames: ['January', 'February', 'March', 'April', 'May', 'June',
           'July', 'August', 'September', 'October', 'November', 'December',

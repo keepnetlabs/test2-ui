@@ -36,15 +36,7 @@
     </div>
     <div class="v-cart-content-wrapper">
       <div v-if="series.length > 0">
-        <div id="chart" class="v-cart-content-pie-chart">
-          <apexchart
-            :key="series[0]"
-            type="pie"
-            height="220"
-            :options="chartOptions"
-            :series="series"
-          />
-        </div>
+        <div id="chart" class="v-cart-content-pie-chart"></div>
       </div>
 
       <div v-else>
@@ -69,13 +61,9 @@
   </div>
 </template>
 <script>
-import VueApexCharts from 'vue-apexcharts'
-
 export default {
   name: 'phishing-campaigns-pie-chart',
-  components: {
-    apexchart: VueApexCharts
-  },
+  components: {},
   data: () => ({
     value: false,
     series: [0, 0, 0],

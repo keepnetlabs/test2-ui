@@ -13,34 +13,39 @@
       @changeModalStatus="changeAddModalStatus"
       @companyGroupCreated="companyGroupCreated"
     />
-    <datatable
-      ref="refGroupDataList"
-      :addButton="tableOptions.addButton"
-      :columns="tableOptions.columns"
-      :countRow="5"
-      :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :is-downloadable="false"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
-      :refName="'companyList'"
-      :rowActions="tableOptions.rowActions"
-      :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
-      @addButton="addButton"
-      @delete="handleTableItemDelete"
-      @editAction="editAction"
-      @onEmptyBtnClicked="addButton"
-    >
-      <template v-slot:datatable-custom-column="{ scope }">
-        <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
-          <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
-            scope.row.name
-          }}</span>
-          <span v-else>{{ scope.row.name }}</span>
-        </span>
+    <DatatableLoading :loading="loading">
+      <template v-slot:skeleton-content>
+        <datatable
+          :table="tableData"
+          ref="refGroupDataList"
+          :addButton="tableOptions.addButton"
+          :columns="tableOptions.columns"
+          :countRow="5"
+          :empty="tableOptions.iEmpty"
+          :filterable="true"
+          :is-downloadable="false"
+          :options="true"
+          :pageSizes="tableOptions.pageSizes"
+          :refName="'companyList'"
+          :rowActions="tableOptions.rowActions"
+          :selectEvent="tableOptions.selectEvent"
+          :selectable="true"
+          @addButton="addButton"
+          @delete="handleTableItemDelete"
+          @editAction="editAction"
+          @onEmptyBtnClicked="addButton"
+        >
+          <template v-slot:datatable-custom-column="{ scope }">
+            <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
+              <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
+                scope.row.name
+              }}</span>
+              <span v-else>{{ scope.row.name }}</span>
+            </span>
+          </template>
+        </datatable>
       </template>
-    </datatable>
+    </DatatableLoading>
   </div>
 </template>
 
@@ -50,16 +55,19 @@ import { deleteCompanyGroup, getCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-
+import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'CompanyGroupList',
   components: {
     CreateItemModal,
     Datatable,
-    DeleteModal
+    DeleteModal,
+    DatatableLoading
   },
   data() {
     return {
+      loading: true,
+      tableData: [],
       isShowDeleteModal: false,
       isShowAddModal: false,
       editAddModal: false,
@@ -154,18 +162,19 @@ export default {
   methods: {
     getTableData(payload) {
       const _payload = { ...this.payload, ...payload }
+      this.loading = true
       getCompanyGroups()
         .then((response) => {
-          this.$refs.refGroupDataList.loadWithDataArray(
+          this.tableData =
             response.data.data.hasOwnProperty('companyGroups') &&
-              response.data.data.companyGroups.length > 0
+            response.data.data.companyGroups.length > 0
               ? response.data.data.companyGroups
               : []
-          )
         })
         .catch((error) => {
-          this.$refs.refGroupDataList.loadWithDataArray([])
+          this.tableData = []
         })
+        .finally(() => (this.loading = false))
     },
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
