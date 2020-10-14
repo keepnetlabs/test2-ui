@@ -213,7 +213,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150,
           filterableType: 'text'
         },
         {
