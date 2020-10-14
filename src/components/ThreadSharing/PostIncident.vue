@@ -1915,28 +1915,28 @@ export default {
     items2: [
       {
         text: 'TLP: GREEN',
-        value: 'TLP: GREEN',
+        value: 'wKBhLuFZ46y9',
         color: '#2cde00',
         cssClass: 'tlp-select__chip--green',
         desc: 'Limited disclosure, restricted to the community.'
       },
       {
         text: 'TLP: AMBER',
-        value: 'TLP: AMBER',
+        value: 'RhHwRcLlZxek',
         color: '#ffc000',
         cssClass: 'tlp-select__chip--amber',
         desc: 'Limited disclosure, restricted to participants’ organizations.'
       },
       {
         text: 'TLP: RED',
-        value: 'TLP: RED',
+        value: 'YpUZxVhYJlKg',
         color: '#ff0033',
         cssClass: 'tlp-select__chip--red',
         desc: 'Not for disclosure, restricted to participants only.'
       },
       {
         text: 'TLP: WHITE',
-        value: 'TLP: WHITE',
+        value: 'wFlYRDMW946M',
         color: '#ffffff',
         cssClass: 'tlp-select__chip--white',
         desc: 'Disclosure is not limited.'
@@ -2500,6 +2500,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
+          securityLabelResourceIdArray: this.value.map((item) => item.value),
           CommunityPostEmail: {
             resourceId: this.uploadRespond.resourceId,
             from: this.uploadRespond.from,
@@ -2550,6 +2551,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
+          securityLabelResourceIdArray: this.value.map((item) => item.value),
           EmailPreview: {
             body: this.uploadRespond.body,
             from: this.uploadRespond.from,
@@ -2692,6 +2694,7 @@ export default {
   },
   mounted() {
     if (this.editItem) {
+      this.value = this.editItem.securityLabelResourceIdArray
       this.selectedEmail = this.editItem.communityPostResourceId
       //let val = { resourceId: '4pDtxLYSG0mb' }
       let val = { resourceId: this.editItem.communityPostResourceId }
