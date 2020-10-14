@@ -48,8 +48,6 @@
           :pageSizes="tableOptions.pageSizes"
           :refName="'companyList'"
           :rowActions="tableOptions.rowActions"
-          :selectEvent="tableOptions.selectEvent"
-          :selectable="true"
           @edit="handleTableItemEdit"
           @delete="handleTableItemDelete"
           @cellClick="handleCompanyNameClick"
