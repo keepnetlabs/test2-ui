@@ -28,6 +28,10 @@ export function getTargetGroups() {
   return testRequest.get(`/target-groups`)
 }
 
+export function searchTargetGroups(payload) {
+  return testRequest.post('/target-groups/search', payload)
+}
+
 export function getTargetGroupsByName(payload) {
   return testRequest.post('/target-groups/search-name', payload)
 }

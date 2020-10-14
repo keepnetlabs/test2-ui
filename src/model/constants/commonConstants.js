@@ -192,7 +192,7 @@ export function vuetifySkeletonTypes() {
 }
 
 export const columnStandards = [
-  { property: 'firstName', width: '120' },
+  { property: 'firstName', width: '130' },
   { property: 'lastName', width: '180' },
   { property: 'email', width: '240' },
   { property: 'department', width: '240' },

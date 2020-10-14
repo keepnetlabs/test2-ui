@@ -65,7 +65,8 @@ import {
   createTargetGroup,
   updateTargetGroup,
   deleteTargetUser,
-  deleteTargetGroup
+  deleteTargetGroup,
+  searchTargetGroups
 } from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
@@ -303,7 +304,7 @@ export default {
     },
     callForTargetGroups() {
       this.loading = true
-      getTargetGroups()
+      searchTargetGroups(this.tableCredientials)
         .then((response) => {
           let data = response.data.data
           this.tableData = data.length ? data : []
