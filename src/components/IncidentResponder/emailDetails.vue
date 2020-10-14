@@ -644,23 +644,25 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 
 .url-badge{
-  position: absolute;
-  top: -9px;
-  right: -9px;
-  color: white;
-  background-color: #757575;
-  height: 10px;
-  width: 10px;
-  text-align: center;
-  border-radius: 30px;
-  font-size: 8px;
-  font-weight: 900;
-  line-height: 1.6 !important;
+  font-family: "Open Sans", sans-serif;
+ position: absolute;
+    top: -4px;
+    right: -5px;
+    color: white;
+    background-color: #757575;
+    height: 10px;
+    width: 10px;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1.2 !important;
 }
 
 .red-malicious-alert::before {
   border: unset !important;
 }
+a{position:relative}
  `
 })
 

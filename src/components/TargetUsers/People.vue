@@ -34,6 +34,7 @@
       :status="isWantToImportFile"
       @closeAddUserModal="closeImportModal"
       v-if="isWantToImportFile"
+      :columns="tableOptions.columns"
     />
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>

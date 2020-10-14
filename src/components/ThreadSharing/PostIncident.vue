@@ -4,7 +4,7 @@
       :status="showWebPageGrapes"
       v-if="showWebPageGrapes"
       icon-name="mdi-check"
-      title="Grapes JS On Modal"
+      title="Edit Post Email"
       z-index="999999"
     >
       <template v-slot:overlay-body>
@@ -1818,19 +1818,21 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 
 .url-badge{
+  font-family: "Open Sans", sans-serif;
   position: absolute;
-  top: -9px;
-  right: -9px;
-  color: white;
-  background-color: #757575;
-  height: 10px;
-  width: 10px;
-  text-align: center;
-  border-radius: 30px;
-  font-size: 8px;
-  font-weight: 900;
-  line-height: 1.6 !important;
+    top: -4px;
+    right: -5px;
+    color: white;
+    background-color: #757575;
+    height: 10px;
+    width: 10px;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1.2 !important;
 }
+a{position:relative}
  `
 })
 
@@ -1913,28 +1915,28 @@ export default {
     items2: [
       {
         text: 'TLP: GREEN',
-        value: 'TLP: GREEN',
+        value: 'wKBhLuFZ46y9',
         color: '#2cde00',
         cssClass: 'tlp-select__chip--green',
         desc: 'Limited disclosure, restricted to the community.'
       },
       {
         text: 'TLP: AMBER',
-        value: 'TLP: AMBER',
+        value: 'RhHwRcLlZxek',
         color: '#ffc000',
         cssClass: 'tlp-select__chip--amber',
         desc: 'Limited disclosure, restricted to participants’ organizations.'
       },
       {
         text: 'TLP: RED',
-        value: 'TLP: RED',
+        value: 'YpUZxVhYJlKg',
         color: '#ff0033',
         cssClass: 'tlp-select__chip--red',
         desc: 'Not for disclosure, restricted to participants only.'
       },
       {
         text: 'TLP: WHITE',
-        value: 'TLP: WHITE',
+        value: 'wFlYRDMW946M',
         color: '#ffffff',
         cssClass: 'tlp-select__chip--white',
         desc: 'Disclosure is not limited.'
@@ -2137,7 +2139,6 @@ export default {
       this.showWebPageGrapes = false
     },
     editHtmlTemplate() {
-      debugger
       this.editHtmlData = this.uploadRespond.body
       this.showWebPageGrapes = true
     },
@@ -2238,8 +2239,9 @@ export default {
             el.style.backgroundColor = 'inherit'
             el.style.color = 'inherit'
           }
-          if (this.step === 4)
+          if (this.step === 4) {
             el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.index}</span>`
+          }
         }
       }
       let hiddenEls = document.getElementsByClassName(url.url)
@@ -2498,6 +2500,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
+          securityLabelResourceIdArray: this.value.map((item) => item.value),
           CommunityPostEmail: {
             resourceId: this.uploadRespond.resourceId,
             from: this.uploadRespond.from,
@@ -2548,6 +2551,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
+          securityLabelResourceIdArray: this.value.map((item) => item.value),
           EmailPreview: {
             body: this.uploadRespond.body,
             from: this.uploadRespond.from,
@@ -2690,6 +2694,7 @@ export default {
   },
   mounted() {
     if (this.editItem) {
+      this.value = this.editItem.securityLabelResourceIdArray
       this.selectedEmail = this.editItem.communityPostResourceId
       //let val = { resourceId: '4pDtxLYSG0mb' }
       let val = { resourceId: this.editItem.communityPostResourceId }

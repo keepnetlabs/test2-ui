@@ -485,7 +485,7 @@ export default {
         }
       ]
     },
-    addUsersItems: ['O365', 'GSuite'],
+    addUsersItems: ['GSuite', 'O365'],
     validations: {
       required,
       mail
