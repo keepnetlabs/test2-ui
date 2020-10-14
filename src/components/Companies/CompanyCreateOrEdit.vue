@@ -141,11 +141,13 @@
                       @inputFile="onFileChanged"
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                     />
-                    <img
-                      v-if="edit && this.formData.logoUrl"
-                      :src="this.formData.logoUrl"
-                      style="max-height: 60px;"
-                    />
+                    <div>
+                      <img
+                        v-if="edit && this.formData.logoURL"
+                        :src="this.formData.logoURL"
+                        style="max-height: 60px; object-fit: contain;"
+                      />
+                    </div>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
