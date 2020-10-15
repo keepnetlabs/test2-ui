@@ -19,6 +19,7 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHour"
+                  v-mask="'#######################'"
                   :rules="[(v) => validations.required(v, 'Required')]"
                 ></v-text-field>
               </v-list-item-content>
@@ -31,6 +32,7 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHourCost"
+                  v-mask="'#######################'"
                   :rules="[(v) => validations.required(v, 'Required')]"
                 ></v-text-field>
               </v-list-item-content>
