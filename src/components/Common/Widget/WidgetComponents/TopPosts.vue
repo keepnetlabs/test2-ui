@@ -1,7 +1,7 @@
 <template>
   <DatatableLoading :loading="isLoading">
     <template v-slot:skeleton-content>
-      <widget-container>
+      <widget-container v-resize="onResize">
         <widget-header
           title="Top Posts"
           :link="{ href: '/threat-sharing', text: 'All' }"
@@ -9,7 +9,12 @@
           @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
-          <widget-list :columns="columns" :data="tableData" :empty="empty">
+          <widget-list
+            class-name="top-posts-widget"
+            :columns="columns"
+            :data="tableData"
+            :empty="empty"
+          >
             <template v-slot:commentCount="{ row }">
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">
@@ -81,6 +86,7 @@ export default {
   created() {
     this.callForTopPosts()
   },
+
   methods: {
     callForTopPosts() {
       getMyTopPosts()
@@ -94,6 +100,22 @@ export default {
         .catch(() => {
           this.isLoading = false
         })
+    },
+    onResize(e) {
+      const listContainer = document.querySelector('.top-posts-widget')
+      const { width: listWidth } = listContainer && listContainer.getBoundingClientRect()
+      const th = document.querySelector('.k-widget-list__th-engagement')
+      if (th && Math.floor(listWidth) < 250) {
+        th.classList.add('top-posts-title')
+        document
+          .querySelectorAll('.right-side-like-comment-wrapper')
+          .forEach((item) => item.classList.add('right-side-like-comment-wrapper-low-res'))
+      } else {
+        th.classList.remove('top-posts-title')
+        document
+          .querySelectorAll('.right-side-like-comment-wrapper')
+          .forEach((item) => item.classList.remove('right-side-like-comment-wrapper-low-res'))
+      }
     }
   }
 }
@@ -124,5 +146,15 @@ export default {
 .comment-count {
   margin-left: 2px;
   margin-top: -2px;
+}
+.top-posts-title {
+  text-align: center;
+}
+.right-side-like-comment-wrapper-low-res {
+  display: flex;
+  flex-direction: column;
+  .right-side-message.pl-2 {
+    padding-left: 0 !important;
+  }
 }
 </style>
