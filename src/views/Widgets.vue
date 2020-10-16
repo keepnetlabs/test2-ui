@@ -274,6 +274,10 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
+      console.log('newBreakpoint', newBreakpoint)
+      this.activeBreakpoint = newBreakpoint
+      console.log('breakpointChanged', this.activeBreakpoint)
+      debugger
       const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
       let x = 0,
         xValue = 0,
@@ -649,7 +653,8 @@ export default {
           }, 0)
           setTimeout(() => {
             this.handleDeleteShadows()
-          }, 10)
+            this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+          }, 20)
         }
       })
       .catch(() => {
