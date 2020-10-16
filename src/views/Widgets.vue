@@ -274,10 +274,7 @@ export default {
   },
   methods: {
     breakpointChanged({ newBreakpoint }) {
-      console.log('newBreakpoint', newBreakpoint)
       this.activeBreakpoint = newBreakpoint
-      console.log('breakpointChanged', this.activeBreakpoint)
-      debugger
       const bdCol = newBreakpoint === 'xs' ? 6 : newBreakpoint === 'xxs' ? 2 : 12
       let x = 0,
         xValue = 0,
