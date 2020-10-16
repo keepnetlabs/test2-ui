@@ -1913,8 +1913,13 @@ export default {
         @media (max-width: 768px) {
           justify-content: space-around;
         }
+        @media (max-width: 992px) {
+          align-items: stretch;
+        }
+        align-items: center;
         &-left-col {
           display: flex;
+          align-items: center;
           @media (max-width: 992px) {
             flex-direction: column;
           }
@@ -1927,6 +1932,9 @@ export default {
         &-right-col {
           display: flex;
           flex-basis: 50%;
+          @media (max-width: 992px) {
+            margin-top: 6px;
+          }
           justify-content: space-evenly;
           @media (max-width: 992px) {
             flex-direction: column;
@@ -2008,6 +2016,7 @@ export default {
               &__stats {
                 margin-bottom: 0 !important;
                 font-size: 16px;
+
                 letter-spacing: normal;
                 color: rgba(0, 0, 0, 0.87);
                 max-width: 250px;

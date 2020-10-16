@@ -21,7 +21,7 @@
           </v-list-item>
         </slot>
         <slot name="overlay-body"> </slot>
-        <div class="k-overlay__footer">
+        <div class="k-overlay__footer" v-if="showFooter">
           <slot name="overlay-footer">
             <v-btn class="k-overlay__btn-cancel" rounded @click="closeOverlay">
               CANCEL
@@ -68,6 +68,10 @@ export default {
     },
     zIndex: {
       type: String
+    },
+    showFooter: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
