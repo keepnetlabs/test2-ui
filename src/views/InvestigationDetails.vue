@@ -739,7 +739,7 @@
                 </div>
               </template>
             </ThreeRowLoading>
-            <DatatableLoading v-if="loading" :loading="loading" class="mb-2">
+            <DatatableLoading v-if="loading" :loading="loading" class="mt-n2">
               <template v-slot:skeleton-content> </template>
             </DatatableLoading>
             <div v-if="activeMenu !== 'targetUsers'">
@@ -2186,7 +2186,7 @@ export default {
           flex-wrap: wrap;
 
           .k-table__wrapper {
-            padding-bottom: 0;
+            //padding-bottom: 0;
           }
 
           .card.v-card.v-sheet.theme--light {
