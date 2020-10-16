@@ -15,7 +15,10 @@
         <th
           :key="col.label"
           v-for="col in columns"
-          :class="['k-widget-list__header', `k-widget-list__th-${col.label.toLowerCase()}`]"
+          :class="[
+            'k-widget-list__header',
+            `k-widget-list__th-${col.label.split(' ').join('').toLowerCase()}`
+          ]"
           :style="col['thStyle'] && col['thStyle']"
         >
           {{ col.label }}
