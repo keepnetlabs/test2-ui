@@ -454,7 +454,7 @@ export default {
       defaultColumns: [
         // Should be defined to show the table
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
         edit: true,

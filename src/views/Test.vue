@@ -381,7 +381,7 @@ export default {
         width: 120
       }
     ],
-    pageSizes: [6, 13, 25, 50, 100],
+    pageSizes: [5, 10, 25],
     rowActions: [
       {
         name: 'Add to a group',

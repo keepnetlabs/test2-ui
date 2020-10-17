@@ -20,7 +20,7 @@
               :countRow="5"
               :showHeader="true"
               :selectable="false"
-              :pageSizes="[5, 10, 20, 50, 100]"
+              :pageSizes="[5, 10, 25]"
               :filterable="true"
               :options="true"
               :rowActions="table.rowActions"

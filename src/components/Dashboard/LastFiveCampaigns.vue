@@ -110,7 +110,7 @@ export default {
       title: 'Last 5 Campaigns Stats',
       subTitle: ''
     },
-    pageSizes: [6, 13, 25, 50, 100],
+    pageSizes: [5, 10, 25],
     rowActions: [
       {
         name: 'Go to the report',

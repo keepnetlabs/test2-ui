@@ -1146,7 +1146,7 @@ export default {
         type: 'slot'
       }
     ],
-    pageSizes: [5, 10, 25, 50, 100],
+    pageSizes: [5, 10, 25],
     rowActions: [
       {
         name: 'Delete',
