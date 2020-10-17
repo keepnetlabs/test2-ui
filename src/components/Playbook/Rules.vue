@@ -51,7 +51,7 @@
                 ref="refmatchingInvestigationPlaybookRules"
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :countRow="5"
-                :pageSizes="[5, 10, 20, 50, 100]"
+                :pageSizes="[5, 10, 25]"
                 :showHeader="true"
                 :defaultSort="'subject'"
                 :selectable="false"
@@ -274,7 +274,7 @@ export default {
             action: 'deleteAction'
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        pageSizes: [5, 10, 25],
         addButton: {
           show: true,
           action: 'addAction',

@@ -364,7 +364,7 @@
                                   ref="refMatchingInvestigation"
                                   :columns="matchingInvestigation.columns"
                                   :countRow="5"
-                                  :pageSizes="[5, 10, 20, 50, 100]"
+                                  :pageSizes="[5, 10, 25]"
                                   :showHeader="true"
                                   :defaultSort="'subject'"
                                   :selectable="false"
@@ -1113,7 +1113,7 @@ export default {
           width: '150'
         }
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       rowActions: [
         {
           name: 'Edit',

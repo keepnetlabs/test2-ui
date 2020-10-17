@@ -139,7 +139,7 @@ export default {
             action: 'deleteAction'
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        pageSizes: [5, 10, 25],
         empty: {
           message: 'No Clients are showing',
           subMes: 'Add Clients',

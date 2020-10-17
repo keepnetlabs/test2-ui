@@ -250,7 +250,7 @@ export default {
           filterableType: 'text'
         }
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
         edit: true,

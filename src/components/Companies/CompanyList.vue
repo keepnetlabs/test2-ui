@@ -191,7 +191,7 @@ export default {
           width: 180
         }
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
         edit: true,
