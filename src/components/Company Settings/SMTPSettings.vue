@@ -1,7 +1,18 @@
 <template>
   <div class="smtp-settings">
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
-    <new-smtp-settings :status="newSmtpModalStatus" @closeOverlay="toggleSmtpModalStatus" />
+    <new-smtp-settings
+      :status="newSmtpModalStatus"
+      @closeOverlay="toggleSmtpModalStatus"
+      @handleDelete="handleDeleteSmtpSettings"
+    />
+    <delete-smtp-settings
+      :status="deleteSmtpModalStatus"
+      :data="selectedDeleteSmtpSettings"
+      v-if="deleteSmtpModalStatus"
+      @closeOverlay="toggleDeleteSmtpModalStatus"
+      @handleDelete="handleDeleteSmtpSettings"
+    />
     <div class="smtp-settings__container">
       <DatatableLoading :loading="loading">
         <template v-slot:skeleton-content>
@@ -22,6 +33,7 @@
             :selectable="true"
             :sizeable="true"
             @onEmptyBtnClicked="toggleSmtpModalStatus"
+            @deleteAction="handleDeleteAction"
           />
         </template>
       </DatatableLoading>
@@ -30,15 +42,17 @@
 </template>
 
 <script>
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
-import { searchSmtpSettings } from '@/api/smtpSettings'
+import { deleteSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
+import DeleteSmtpSettings from '@/components/Company Settings/DeleteSmtpSettings'
 export default {
   name: 'SMTPSettings',
   components: {
+    DeleteSmtpSettings,
     CompanySettingsHeader,
     DataTable,
     NewSmtpSettings,
@@ -48,6 +62,7 @@ export default {
     return {
       tableData: [],
       loading: true,
+      selectedDeleteSmtpSettings: null,
       tableOptions: {
         columns: [
           {
@@ -121,6 +136,7 @@ export default {
         }
       },
       newSmtpModalStatus: false,
+      deleteSmtpModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
         pageSize: 500,
@@ -143,13 +159,40 @@ export default {
     toggleSmtpModalStatus() {
       this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
+    toggleDeleteSmtpModalStatus() {
+      this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
+    },
     callForSearchSmtpSettings() {
+      this.loading = true
       searchSmtpSettings(this.bodyOptions)
         .then((response) => {
           const { data: { data: { results = [] } = {} } = {} } = response
           this.tableData = results
         })
         .finally(() => (this.loading = false))
+    },
+    callForDeleteSmtpSettings(resourceId) {
+      deleteSmtpSettings(resourceId)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle-outline'
+          })
+          this.callForSearchSmtpSettings()
+        })
+        .finally(() => {
+          this.selectedDeleteSmtpSettings = null
+        })
+    },
+    handleDeleteSmtpSettings(row) {
+      const { resourceId } = row
+      this.toggleDeleteSmtpModalStatus()
+      this.callForDeleteSmtpSettings(resourceId)
+    },
+    handleDeleteAction(selectedRow) {
+      this.selectedDeleteSmtpSettings = selectedRow
+      this.toggleDeleteSmtpModalStatus()
     }
   },
   created() {
