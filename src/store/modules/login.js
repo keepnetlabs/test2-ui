@@ -89,7 +89,9 @@ const login = {
           } else {
             dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
             commit('EMPTY_LOGIN_ATTEMPT', 0)
-            //payload.router.push('/')
+            if (!store.getters['common/getSessionCheck']) {
+              payload.router.push('/')
+            }
           }
           store.dispatch('common/changeSessionExpiredStatus', false)
         })

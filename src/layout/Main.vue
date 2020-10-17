@@ -97,7 +97,7 @@
       </v-dialog>
     </v-row>
     <v-overlay :absolute="false" :opacity="0.46" :value="sessionCheck" :z-index="999">
-      <session-expired @closeSessionExpired="sessionCheck = false"></session-expired>
+      <session-expired></session-expired>
     </v-overlay>
     <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
       <div class="connection-lost-wrapper">
