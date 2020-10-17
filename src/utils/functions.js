@@ -688,3 +688,12 @@ export function passwordComplexity(pwd) {
     initPwdChk()
   }
 }
+
+export function scrollToComponent(el) {
+  debugger
+  if (window.safari || navigator.vendor.match(/apple/i)) {
+    el.scrollIntoView()
+  } else {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+  }
+}

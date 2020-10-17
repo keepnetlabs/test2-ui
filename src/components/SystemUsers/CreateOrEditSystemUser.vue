@@ -99,6 +99,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -175,6 +176,9 @@ export default {
           }
           this.callForCreateSystemUser(formData)
         }
+      } else {
+        const el = this.$refs.refForm.$el.querySelector('.error--text')
+        scrollToComponent(el)
       }
     },
     toggleWelcomeEmailModal() {

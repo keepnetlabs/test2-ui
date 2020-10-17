@@ -498,6 +498,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AuthenticationService from '@/services/authentication'
 import AuthenticationStatus from '@/model/constants/authenticationStatus'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -713,6 +714,23 @@ export default {
       }
       if (isFormValid) {
         this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+      } else {
+        if (this.activeStep === 1) {
+          return this.$nextTick(() => {
+            const el = this.$refs.refStep1Form.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        } else if (this.activeStep === 2) {
+          return this.$nextTick(() => {
+            const el = this.$refs.refStep2Form.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        } else if (this.activeStep === 3) {
+        }
+        return this.$nextTick(() => {
+          const el = this.$refs.refStep3Form.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
       return isFormValid
     },
