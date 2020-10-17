@@ -57,7 +57,8 @@ testService.interceptors.response.use(
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()
-      router.push('/login')
+      store.dispatch('common/changeSessionExpiredStatus', true)
+      //router.push('/login')
     } else if (error.response && error.response.status !== 404) {
       store.dispatch(
         'common/createSnackBar',
@@ -79,8 +80,16 @@ testService.interceptors.response.use(
       error.response.Code === '401_UNAUTHORIZED' ||
       error.response.status === 306
     ) {
-      AuthenticationService.removeToken()
-      router.push('/login')
+      if (
+        error.response.status === 401 ||
+        error.response.status === '401_UNAUTHORIZED' ||
+        error.response.Code === '401_UNAUTHORIZED'
+      ) {
+        AuthenticationService.removeToken()
+        store.dispatch('common/changeSessionExpiredStatus', true)
+      } else {
+        router.push('/login')
+      }
     }
     return Promise.reject(error)
   }

@@ -42,7 +42,8 @@ service.interceptors.response.use(
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()
-      router.push('/login')
+      store.dispatch('common/changeSessionExpiredStatus', true)
+      //router.push('/login')
     }
     return Promise.reject(error)
   }

@@ -97,7 +97,7 @@
       </v-dialog>
     </v-row>
     <v-overlay :absolute="false" :opacity="0.46" :value="sessionCheck" :z-index="999">
-      <session-expired @closeSessionExpired="sessionCheck = false"></session-expired>
+      <session-expired></session-expired>
     </v-overlay>
     <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
       <div class="connection-lost-wrapper">
@@ -116,6 +116,7 @@
       :mobile-break-point="767"
       permanent
       class="page-nav"
+      :class="{ 'bg-blur': sessionCheck }"
     >
       <v-app-bar-nav-icon
         class="page-nav__menu-toggle menu-icon-wrapper"
@@ -359,7 +360,14 @@
       </v-list>
     </v-navigation-drawer>
     <!-- Header Begin -->
-    <v-app-bar class="page-header elevation-0 transparent" extension-height="100" app absolute flat>
+    <v-app-bar
+      class="page-header elevation-0 transparent"
+      extension-height="100"
+      app
+      absolute
+      flat
+      :class="{ 'bg-blur': sessionCheck }"
+    >
       <account-dropdown />
       <v-spacer />
       <div class="page-header__search">
@@ -607,7 +615,10 @@
       </template>
     </v-app-bar>
     <!-- Header End -->
-    <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'">
+    <v-content
+      :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'"
+      :class="{ 'bg-blur': sessionCheck }"
+    >
       <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0">
         <router-view />
       </v-container>
@@ -662,7 +673,6 @@ export default {
       openPasswordChange: false,
       communityId: null,
       baseUrl: null,
-      sessionCheck: false,
       communityName: null,
       companyGroupName: null,
       companyGroupResourceId: null,
@@ -895,7 +905,8 @@ export default {
       menuList: 'dashboard/getMenuList',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       notificationList: 'dashboard/getNotificationList',
-      isLoadingFromStore: 'common/getIsLoading'
+      isLoadingFromStore: 'common/getIsLoading',
+      sessionCheck: 'common/getSessionCheck'
     }),
     companyName() {
       return localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
@@ -1031,7 +1042,7 @@ export default {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
           }
-          this.sessionCheck = AuthenticationService.isExpired()
+          //this.sessionCheck = AuthenticationService.isExpired()
         }, 20000)
       }
     })
@@ -1107,7 +1118,8 @@ export default {
       logoutUser: 'dashboard/logoutUser',
       getNotifications: 'dashboard/getNotifications',
       setSwitchDialog: 'dashboard/setSwitchDialog',
-      notificationSeen: 'dashboard/notificationSeen'
+      notificationSeen: 'dashboard/notificationSeen',
+      changeSessionExpiredStatus: 'common/changeSessionExpiredStatus'
     }),
     onIUndestandClick(data) {
       this.isDisconnected = data
