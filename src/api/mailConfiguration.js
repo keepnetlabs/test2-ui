@@ -20,30 +20,34 @@ export function updateO365(payload, url) {
   return testRequest.put(`mail-configurations/o365/${url}`, payload, { loading: true })
 }
 
-export function checkApiConnectivity() {
-  return testRequest.get(`mail-configurations/o365/KAXxwyzFCXga/check-api-connectivity`)
+export function checkApiConnectivity(payload) {
+  return testRequest.post(`mail-configurations/o365/check-api-connectivity`, payload)
 }
 
-export function checkPrivileges() {
-  return testRequest.get(`mail-configurations/o365/check-privileges-access`)
+export function checkPrivileges(payload) {
+  return testRequest.post(`mail-configurations/o365/check-privileges-access`, payload)
 }
 
-export function checkAllUsersAccess() {
-  return testRequest.get(`mail-configurations/o365/check-all-users-access`)
+export function checkAllUsersAccess(payload) {
+  return testRequest.post(`mail-configurations/o365/check-all-users-access`, payload)
 }
 
-export function checkEmailAccess() {
-  return testRequest.get(`mail-configurations/o365/check-email-access`)
+export function checkEmailAccess(payload) {
+  return testRequest.post(`mail-configurations/o365/check-email-access`, payload)
 }
 
-export function checkCreateNewCategory() {
-  return testRequest.get(`mail-configurations/o365/check-create-new-category`)
+export function checkCreateNewCategory(payload) {
+  return testRequest.post(`mail-configurations/o365/check-create-new-category`, payload)
 }
 
-export function checkUpdateCategory() {
-  return testRequest.get(`mail-configurations/o365/check-update-category`)
+export function checkUpdateCategory(payload) {
+  return testRequest.post(`mail-configurations/o365/check-update-category`, payload)
 }
 
-export function checkDeleteEmail() {
-  return testRequest.get(`mail-configurations/o365/check-delete-email`)
+export function checkDeleteEmail(payload) {
+  return testRequest.post(`mail-configurations/o365/check-delete-email`, payload)
+}
+
+export function checkInboxAccess(payload) {
+  return testRequest.post(`mail-configurations/o365/check-inbox-access`, payload)
 }

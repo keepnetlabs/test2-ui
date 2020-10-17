@@ -53,7 +53,7 @@
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
+          <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content>
               <label class="add-user-overlay__label" for="applicationSecret"
                 >Application Secret</label
@@ -108,7 +108,7 @@
           </v-list-item>
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content>
-              <TestConnection />
+              <TestConnection :values="formValues" :isValidate="isValidate" />
             </v-list-item-content>
           </v-list-item>
         </v-form>
@@ -303,6 +303,27 @@
                 EDIT FIELDS
               </div>
             </template>
+            <template v-slot:empty-table-inline>
+              <div class="mail-configuration__no-data">
+                <p class="mail-configuration__no-data__header">
+                  No mail configuration has been created, yet
+                </p>
+                <p class="mail-configuration__no-data__body">Create now!</p>
+                <div class="mail-configuration__no-data__buttons">
+                  <div
+                    class="mail-configuration__no-data__buttons--button"
+                    @click="statusGsuite = true"
+                  >
+                    <v-icon color="#2196f3">mdi-plus-circle</v-icon
+                    ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
+                  </div>
+                  <div class="mail-configuration__no-data__buttons--button" @click="status = true">
+                    <v-icon color="#2196f3">mdi-plus-circle</v-icon>
+                    <img alt="outlook" src="../../assets/img/office-365-logo.png" />
+                  </div>
+                </div>
+              </div>
+            </template>
           </datatable>
         </template>
       </DatatableLoading>
@@ -401,30 +422,10 @@ export default {
           showHeaderTooltip: true
         },
         {
-          property: 'applicationId',
+          property: 'platform',
           align: 'left',
           editable: false,
-          label: 'Application ID',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 150
-        },
-        {
-          property: 'applicationSecret',
-          align: 'left',
-          editable: false,
-          label: 'Application Secret',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 275
-        },
-        {
-          property: 'directoryId',
-          align: 'left',
-          editable: false,
-          label: 'Directory ID',
+          label: 'Platform',
           sortable: true,
           show: true,
           type: 'text',
@@ -441,14 +442,25 @@ export default {
           width: 150
         },
         {
-          property: 'status',
+          property: 'statusName',
           align: 'left',
           editable: false,
           label: 'Status',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'detected',
           width: 150
+        },
+        {
+          property: PROPERTY_STORE.CREATETIME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          sortable: true,
+          show: true,
+          fixed: false,
+          type: 'text',
+          width: 180
         }
       ],
       defaultColumns: [
@@ -492,6 +504,9 @@ export default {
     }
   }),
   methods: {
+    isValidate() {
+      return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
+    },
     closeDeleteDialog() {
       this.deleteDialog = false
       this.deleteDialogName = null
@@ -520,7 +535,23 @@ export default {
     },
     getTableData() {
       this.loading = true
-      getMailConfigurationList()
+      let payload = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      getMailConfigurationList(payload)
         .then((response) => {
           this.tableData = response.data.data
           //this.tableData = []
@@ -700,6 +731,57 @@ export default {
 <style lang="scss">
 .mail-configuration {
   padding: 11px 16px 16px 16px;
+  &__no-data {
+    &__header {
+      font-size: 24px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29 !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__body {
+      font-size: 14px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+      &--button {
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+        border: solid 1px #2196f3;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        padding: 6px 16px;
+        cursor: pointer;
+        &:last-child {
+          margin-left: 16px;
+        }
+        img {
+          margin-left: 8px;
+          height: 24px;
+        }
+      }
+    }
+  }
+  .add-user-overlay {
+    &__list-item {
+      margin-bottom: 24px;
+    }
+  }
   &__modal {
     padding: 0 6rem;
   }

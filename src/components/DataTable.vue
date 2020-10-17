@@ -714,13 +714,15 @@
         </div>
         <div class="empty-table" v-else>
           <div class="empty-inline">
-            <h2>{{ empty.message }}</h2>
-            <p>{{ empty.subMes }}</p>
-            <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
-              <!-- empty action -->
-              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
-              {{ empty.btn }}
-            </v-btn>
+            <slot name="empty-table-inline">
+              <h2>{{ empty.message }}</h2>
+              <p>{{ empty.subMes }}</p>
+              <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
+                <!-- empty action -->
+                <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+                {{ empty.btn }}
+              </v-btn>
+            </slot>
           </div>
         </div>
       </div>

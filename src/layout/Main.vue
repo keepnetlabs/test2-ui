@@ -330,7 +330,7 @@
             <v-list-item-content class="menu-item-content">
               <router-link to="/mailConfiguration" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Mail Configuration</span>
+                  <span class="menu-item-span">Mail Configurations</span>
                 </v-list-item-title>
               </router-link>
             </v-list-item-content>
