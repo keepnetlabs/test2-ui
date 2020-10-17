@@ -733,7 +733,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
-          :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
+          :page-sizes="pageSizes || [5, 10, 25]"
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
@@ -757,7 +757,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
-          :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
+          :page-sizes="pageSizes || [5, 10, 25]"
           :total="filteredDataLength"
           @current-change="handleFilteredCurrentChange"
           @size-change="handleFilteredSizeChange"
@@ -914,7 +914,8 @@ export default {
     },
     pageSizes: {
       type: Array,
-      required: false
+      required: false,
+      default: () => [5, 10, 25]
     },
     defaultSort: {
       type: String,

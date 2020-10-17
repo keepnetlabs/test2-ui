@@ -231,7 +231,7 @@ export default {
         // minWidth: 60
       }
     ],
-    pageSizes: [5, 10, 25, 50, 100],
+    pageSizes: [5, 10, 25],
     rowActions: [
       {
         name: 'Details',

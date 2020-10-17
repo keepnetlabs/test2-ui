@@ -65,7 +65,8 @@ import {
   createTargetGroup,
   updateTargetGroup,
   deleteTargetUser,
-  deleteTargetGroup
+  deleteTargetGroup,
+  searchTargetGroups
 } from '../../api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
@@ -141,10 +142,10 @@ export default {
             width: 300
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
             show: true,
             type: 'text',
@@ -152,7 +153,7 @@ export default {
             width: 300
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: true,
@@ -303,10 +304,10 @@ export default {
     },
     callForTargetGroups() {
       this.loading = true
-      getTargetGroups()
+      searchTargetGroups(this.tableCredientials)
         .then((response) => {
           let data = response.data.data
-          this.tableData = data.length ? data : []
+          this.tableData = data.results.length ? data.results : []
         })
         .catch((error) => {
           this.tableData = []

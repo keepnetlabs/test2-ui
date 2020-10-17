@@ -1,21 +1,22 @@
 <template>
   <div class="company-list">
-    <v-dialog
+    <app-modal
+      :status="isShowCreateOrEditModal"
       v-if="isShowCreateOrEditModal"
-      v-model="isShowCreateOrEditModal"
-      fullscreen
-      scrollable
-      persistent
-      no-click-animation
-      hide-overlay
+      :show-footer="false"
+      class-name="company-create-edit"
+      :show-header="false"
     >
-      <CompanyCreateOrEdit
-        @cancelForm="cancelCreateOrEditForm"
-        :selectedRow="selectedRow"
-        :selectedExtend="selectedExtend"
-        :edit="editModal"
-      />
-    </v-dialog>
+      <template v-slot:overlay-body>
+        <CompanyCreateOrEdit
+          @cancelForm="cancelCreateOrEditForm"
+          :selectedRow="selectedRow"
+          :selectedExtend="selectedExtend"
+          :edit="editModal"
+        />
+      </template>
+    </app-modal>
+
     <delete-modal
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
@@ -48,8 +49,6 @@
           :pageSizes="tableOptions.pageSizes"
           :refName="'companyList'"
           :rowActions="tableOptions.rowActions"
-          :selectEvent="tableOptions.selectEvent"
-          :selectable="true"
           @edit="handleTableItemEdit"
           @delete="handleTableItemDelete"
           @cellClick="handleCompanyNameClick"
@@ -97,9 +96,11 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+import AppModal from '@/components/AppModal'
 export default {
   name: 'CompanyList',
   components: {
+    AppModal,
     CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,
@@ -190,7 +191,7 @@ export default {
           width: 180
         }
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
         edit: true,
@@ -468,6 +469,11 @@ export default {
   }
   100% {
     transform: rotate(0deg);
+  }
+}
+.company-create-edit {
+  .k-overlay__container {
+    padding: 0 !important;
   }
 }
 </style>

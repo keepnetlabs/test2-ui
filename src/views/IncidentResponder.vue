@@ -19,6 +19,7 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHour"
+                  v-mask="'#######################'"
                   :rules="[(v) => validations.required(v, 'Required')]"
                 ></v-text-field>
               </v-list-item-content>
@@ -31,6 +32,7 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHourCost"
+                  v-mask="'#######################'"
                   :rules="[(v) => validations.required(v, 'Required')]"
                 ></v-text-field>
               </v-list-item-content>
@@ -362,7 +364,7 @@
                                   ref="refMatchingInvestigation"
                                   :columns="matchingInvestigation.columns"
                                   :countRow="5"
-                                  :pageSizes="[5, 10, 20, 50, 100]"
+                                  :pageSizes="[5, 10, 25]"
                                   :showHeader="true"
                                   :defaultSort="'subject'"
                                   :selectable="false"
@@ -607,14 +609,23 @@
         </v-card>
       </div>
     </div>
-    <v-dialog v-model="showPlaybookModal" fullscreen scrollable persistent no-click-animation>
-      <CreateOrEditRule
-        :playbookId="selectedPlaybookId"
-        @cancelForm="togglePlaybookModal"
-        @closeFormWithUpdate="closePlaybookWithUpdate"
-        v-if="showPlaybookModal"
-      />
-    </v-dialog>
+    <app-modal
+      :status="showPlaybookModal"
+      v-if="showPlaybookModal"
+      :icon-name="getIconName"
+      :title="getTitle"
+      :show-footer="false"
+      class-name="incident-responder__playbook"
+    >
+      <template v-slot:overlay-body>
+        <CreateOrEditRule
+          :playbookId="selectedPlaybookId"
+          @cancelForm="togglePlaybookModal"
+          @closeFormWithUpdate="closePlaybookWithUpdate"
+          v-if="showPlaybookModal"
+        />
+      </template>
+    </app-modal>
   </div>
 </template>
 <script>
@@ -630,6 +641,7 @@ import {
   searchNotifiedMail,
   getMatchingIncidents
 } from '../api/incidentResponder'
+import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
@@ -647,7 +659,8 @@ export default {
     CreateOrEditRule,
     DatatableLoading,
     CardLoading,
-    IRSummaryLoading
+    IRSummaryLoading,
+    AppModal
   },
 
   data: () => ({
@@ -1100,7 +1113,7 @@ export default {
           width: '150'
         }
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       rowActions: [
         {
           name: 'Edit',
@@ -1191,6 +1204,13 @@ export default {
       // get IR Reports data via vuex.
       irSummary: 'investigations/irSummaryGetter' // for using getters
     }),
+    getTitle() {
+      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
+    },
+    getIconName() {
+      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
+    },
+
     getRoiSummaryValue() {
       if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
         let revenue = Number(this.irSummary.roiSummary.revenue)
@@ -2276,5 +2296,16 @@ export default {
   letter-spacing: normal;
   color: #ffffff;
   opacity: 0.7;
+}
+.incident-responder__playbook {
+  .k-overlay__container {
+    padding: 0 !important;
+  }
+  .k-overlay__list-item.k-overlay__header {
+    padding: 32px 96px 0 96px;
+    margin-bottom: 24px;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+  }
 }
 </style>
