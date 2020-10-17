@@ -119,7 +119,6 @@ export default {
   },
   methods: {
     testConnection() {
-      debugger
       if (this.isValidate()) {
         this.isLoadingStarted = true
         this.setLoadingStates()
