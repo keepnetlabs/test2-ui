@@ -9,6 +9,7 @@
       :status="showDeleteGroupModal"
       @changeDeleteGroupModalStatus="changeDeleteGroupModalStatus"
       @handleDelete="handleDeleteGroup"
+      @handleMultipleDelete="handleDeleteGroupMultiple"
       :selected-row="selectedRow"
     />
     <DatatableLoading :loading="loading">
@@ -26,6 +27,7 @@
           :extended-view-options="tableOptions.extendedViewOptions"
           :extendedViewValue="extendedViewValue"
           :selectEvent="tableOptions.selectEvent"
+          @handleMultipleDelete="handleMultipleDelete"
           :selectable="true"
           ref="refGroupsTable"
           @syncWithLDAP="handleSyncWithLDAP"
@@ -158,7 +160,7 @@ export default {
           clipboard: true,
           edit: true,
           delete: true,
-          download: true
+          download: false
         },
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
@@ -271,6 +273,10 @@ export default {
           break
       }
     },
+    handleMultipleDelete(selection) {
+      this.selectedRow = selection
+      this.changeDeleteGroupModalStatus(true)
+    },
     callForCreateNewUserGroup(group) {
       createTargetGroup(group)
         .then((response) => {
@@ -337,6 +343,9 @@ export default {
       if (isEditPopupOpen) {
         this.extendedViewValue = [...selections]
       }
+    },
+    handleDeleteGroupMultiple(selection) {
+      selection.forEach((item) => this.handleDeleteGroup(item))
     },
     handleDeleteGroup(selectedRow) {
       deleteTargetGroup(selectedRow.resourceId)

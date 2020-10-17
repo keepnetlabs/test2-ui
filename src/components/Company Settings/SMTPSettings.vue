@@ -16,6 +16,7 @@
       v-if="deleteSmtpModalStatus"
       @closeOverlay="toggleDeleteSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
+      @handleMultipleDelete="handleDeleteMultipleSmtpSettings"
     />
     <div class="smtp-settings__container">
       <DatatableLoading :loading="loading">
@@ -32,6 +33,7 @@
             :options="true"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
+            :select-event="tableOptions.selectEvent"
             :row-actions="tableOptions.rowActions"
             :selectable="true"
             :sizeable="true"
@@ -39,6 +41,7 @@
             @onEmptyBtnClicked="toggleSmtpModalStatus"
             @deleteAction="handleDeleteAction"
             @editAction="handleEditAction"
+            @handleMultipleDelete="handleMultipleDelete"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
           />
@@ -122,6 +125,12 @@ export default {
           }
         ],
         pageSizes: [5, 10, 25],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: true,
+          download: false
+        },
         rowActions: [
           {
             name: 'Edit',
@@ -212,7 +221,6 @@ export default {
     },
     handleDeleteSmtpSettings(row) {
       const { resourceId } = row
-      this.toggleDeleteSmtpModalStatus()
       this.callForDeleteSmtpSettings(resourceId)
     },
     handleDeleteAction(selectedRow) {
@@ -255,6 +263,13 @@ export default {
       filterPayload = [...items]
       this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForSearchSmtpSettings()
+    },
+    handleMultipleDelete(selections) {
+      this.selectedDeleteSmtpSettings = selections
+      this.toggleDeleteSmtpModalStatus()
+    },
+    handleDeleteMultipleSmtpSettings(selections) {
+      selections.forEach((item) => this.handleDeleteSmtpSettings(item))
     }
   },
   created() {

@@ -1723,7 +1723,7 @@ export default {
           this.$emit('syncUser', scope)
           break
         default:
-          this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
+          this.$emit(action, row)
           return false
       }
     },
@@ -1821,6 +1821,7 @@ export default {
           this.$emit('deleteFunction', selections)
           break
         default:
+          this.$emit('handleMultipleDelete', this.multipleSelection)
           break
       }
       // You should handle the Delete row action in here
