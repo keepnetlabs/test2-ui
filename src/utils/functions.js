@@ -690,7 +690,6 @@ export function passwordComplexity(pwd) {
 }
 
 export function scrollToComponent(el) {
-  debugger
   if (window.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView()
   } else {
