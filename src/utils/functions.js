@@ -34,6 +34,10 @@ export function getBtnStatusColor(type) {
       return '#00bcd4'
     case 'running':
       return '#2196f3'
+    case 'Running':
+      return '#2196f3'
+    case 'Not Running':
+      return '#2196f3'
     case 'completed':
       return '#43a047'
     case 'finished':
@@ -139,6 +143,10 @@ export function getDataTableFieldLabel(field = '') {
       return 'Completed with error'
     case 'itemnotfound':
       return 'Item not found'
+    case 'Running':
+      return 'Running'
+    case 'Not Running':
+      return 'Not Running'
     case 'n/a':
       return 'N/A'
     default:

@@ -61,6 +61,8 @@ export default {
           return '#00bcd4'
         case 'running':
           return '#2196f3'
+        case 'not running':
+          return '#f56c6c'
         case 'completed':
           return '#00bcd4'
         case 'finished':
