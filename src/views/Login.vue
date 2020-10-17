@@ -175,7 +175,7 @@
                             autocomplete="disabled"
                             outlined
                           ></v-text-field>
-                          <div class="captcha-wrapper p-0">
+                          <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
                               :sitekey="recaptcha"
                               :loadRecaptchaScript="true"
