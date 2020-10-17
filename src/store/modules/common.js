@@ -11,7 +11,8 @@ const common = {
     errors: '',
     errorState: false,
     downloadModalStatus: false,
-    timezones: []
+    timezones: [],
+    sessionCheck: false
   },
   getters: {
     getMenuStatus: (state) => state.menuStatus,
@@ -22,9 +23,13 @@ const common = {
     getErrors: (state) => state.errors,
     getErrorStatus: (state) => state.errorState,
     getDownloadModalStatus: (state) => state.downloadModalStatus,
-    getTimezones: (state) => state.timezones
+    getTimezones: (state) => state.timezones,
+    getSessionCheck: (state) => state.sessionCheck
   },
   mutations: {
+    CHANGE_SESSION_CHECK(state, payload) {
+      state.sessionCheck = payload
+    },
     CHANGE_MENU_STATUS(state, payload) {
       state.menuStatus = payload
     },
@@ -59,6 +64,9 @@ const common = {
     }
   },
   actions: {
+    changeSessionExpiredStatus({ commit }, payload) {
+      commit('CHANGE_SESSION_CHECK', payload)
+    },
     changeMenuStatus({ commit }, payload) {
       commit('CHANGE_MENU_STATUS', payload)
     },

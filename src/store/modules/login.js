@@ -1,6 +1,7 @@
 import { loginAction, resetPassword, twoStepLogin } from '../../api/auth'
 import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import store from '../index'
 
 const login = {
   namespaced: true,
@@ -88,8 +89,9 @@ const login = {
           } else {
             dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
             commit('EMPTY_LOGIN_ATTEMPT', 0)
-            payload.router.push('/')
+            //payload.router.push('/')
           }
+          store.dispatch('common/changeSessionExpiredStatus', false)
         })
         .catch((error) => {
           dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
