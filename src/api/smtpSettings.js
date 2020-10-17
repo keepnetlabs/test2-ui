@@ -5,13 +5,21 @@ export function searchSmtpSettings(payload = {}) {
 }
 
 export function deleteSmtpSettings(id) {
-  return testRequest.delete(`${URL}/${id}`)
+  return testRequest.delete(`${URL}/${id}`, { loading: true })
 }
 
 export function createSMTPSettings(payload) {
-  return testRequest.post(`/companies/${localStorage.getItem('companyId')}/smtp-settings`, payload)
+  return testRequest.post(
+    `/companies/${localStorage.getItem('companyId')}/smtp-settings`,
+    payload,
+    { loading: true }
+  )
 }
 
 export function getSmtpSettings(resourceId) {
-  //return testRequest.get()
+  return testRequest.get(`/companies/smtp-settings/${resourceId}`)
+}
+
+export function updateSmtpSettings(payload) {
+  return testRequest.put(`${URL}/${payload.resourceId}`, payload, { loading: true })
 }

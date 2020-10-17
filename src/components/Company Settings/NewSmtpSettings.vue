@@ -163,7 +163,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import { maxLength, required, mail } from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeId } from '@/api/common'
-import { createSMTPSettings } from '@/api/smtpSettings'
+import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'NewSmtpSettings',
@@ -247,7 +247,11 @@ export default {
           bCC,
           customHeader
         }
-        this.callForCreateSmtpSettings(payload)
+        if (this.isEdit) {
+          this.callForUpdateSmtpSettings(payload)
+        } else {
+          this.callForCreateSmtpSettings(payload)
+        }
       } else {
         return this.$nextTick(() => {
           const el = refForm.$el.querySelector('.error--text')
@@ -255,19 +259,27 @@ export default {
         })
       }
     },
-    callForCreateSmtpSettings(payload) {
-      createSMTPSettings(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          this.$emit('closeOverlayWithUpdate')
+    callForCreateSmtpSettings(payload = {}) {
+      createSMTPSettings(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
         })
-        .catch((error) => {})
+        this.$emit('closeOverlayWithUpdate')
+      })
     },
-    handleChangeServiceProvider(item) {
+    callForUpdateSmtpSettings(payload = {}) {
+      updateSmtpSettings({ ...payload, resourceId: this.resourceId }).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+        this.$emit('closeOverlayWithUpdate')
+      })
+    },
+    handleChangeServiceProvider(item = '') {
       if (item !== ':') {
         const [serverAddress, serverPort] = item.split(':')
         this.formValues.serverAddress = serverAddress
@@ -286,11 +298,48 @@ export default {
       const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
       this.formValues.serverPort = renderedValue
       this.$refs.refTextField.lazyValue = renderedValue
+    },
+    callForGetSmtpSettings() {
+      getSmtpSettings(this.resourceId).then((response) => {
+        const {
+          data: {
+            data: {
+              cc,
+              bcc,
+              customHeader,
+              errorTo,
+              hasSMTPRelay,
+              name,
+              password,
+              replyTo,
+              serverAddress,
+              serverPort,
+              useAuthentication,
+              useSSL,
+              userName
+            } = {}
+          } = {}
+        } = response
+        this.formValues.cC = cc
+        this.formValues.bCC = bcc
+        this.formValues.customHeader = customHeader
+        this.formValues.errorTo = errorTo
+        this.formValues.hasSMTPRelay = hasSMTPRelay
+        this.formValues.name = name
+        this.formValues.password = password
+        this.formValues.replyTo = replyTo
+        this.formValues.serverAddress = serverAddress
+        this.formValues.serverPort = serverPort
+        this.formValues.useAuthentication = useAuthentication
+        this.formValues.useSSL = useSSL
+        this.formValues.userName = userName
+        this.formValues.serviceProvider = `${serverAddress}:${serverPort}`
+      })
     }
   },
   created() {
     if (this.isEdit && this.resourceId) {
-      debugger
+      this.callForGetSmtpSettings()
     }
     getLookupListByTypeId(12).then((response) => {
       const { data: { data = [] } = {} } = response

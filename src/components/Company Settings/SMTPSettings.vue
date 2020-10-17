@@ -2,6 +2,7 @@
   <div class="smtp-settings">
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
     <new-smtp-settings
+      v-if="newSmtpModalStatus"
       :status="newSmtpModalStatus"
       @closeOverlay="toggleSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
@@ -28,16 +29,18 @@
             :empty="tableOptions.empty"
             @addNewSmtpSetting="toggleSmtpModalStatus"
             :filterable="true"
-            :isServerSide="false"
             :options="true"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
             :row-actions="tableOptions.rowActions"
             :selectable="true"
             :sizeable="true"
+            :resizable="true"
             @onEmptyBtnClicked="toggleSmtpModalStatus"
             @deleteAction="handleDeleteAction"
             @editAction="handleEditAction"
+            @columnFilterChanged="columnFilterChanged"
+            @columnFilterCleared="columnFilterCleared"
           />
         </template>
       </DatatableLoading>
@@ -80,6 +83,7 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
+            filterableType: 'text',
             width: 150
           },
           {
@@ -91,6 +95,7 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
+            filterableType: 'text',
             width: 150
           },
           {
@@ -163,8 +168,11 @@ export default {
   },
   methods: {
     toggleSmtpModalStatus() {
-      this.resourceId = null
-      this.isEdit = false
+      if (this.newSmtpModalStatus) {
+        this.resourceId = null
+        this.isEdit = false
+      }
+
       this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
     toggleDeleteSmtpModalStatus() {
@@ -181,7 +189,6 @@ export default {
     },
     handleEditAction({ resourceId } = {}) {
       this.isEdit = true
-      debugger
       this.selectedEditSmtpSettings = resourceId
       this.toggleSmtpModalStatus()
     },
@@ -211,6 +218,43 @@ export default {
     handleDeleteAction(selectedRow) {
       this.selectedDeleteSmtpSettings = selectedRow
       this.toggleDeleteSmtpModalStatus()
+    },
+    columnFilterChanged(filter) {
+      let items = []
+      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForSearchSmtpSettings()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+      filterPayload = [...items]
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForSearchSmtpSettings()
     }
   },
   created() {
