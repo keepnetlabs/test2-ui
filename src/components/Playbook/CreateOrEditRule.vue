@@ -224,6 +224,7 @@ import ActionItem from './ActionItem'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { maxLength, required } from '../../utils/validations'
 import { createPlaybook, getPlaybook, updatePlaybook } from '../../api/playbook'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'CreateOrEditRule',
@@ -487,6 +488,11 @@ export default {
             this.$emit('closeFormWithUpdate')
           })
           .catch((error) => {})
+      } else {
+        return this.$nextTick(() => {
+          const el = ref.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     callForUpdatePlaybook() {
@@ -557,6 +563,11 @@ export default {
             this.$emit('closeFormWithUpdate')
           })
           .catch((error) => {})
+      } else {
+        return this.$nextTick(() => {
+          const el = ref.$refs.refForm.$el.querySelector('.error--text')
+          el.scrollIntoView(false)
+        })
       }
     },
     nextStep() {
