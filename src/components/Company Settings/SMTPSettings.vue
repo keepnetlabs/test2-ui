@@ -5,6 +5,9 @@
       :status="newSmtpModalStatus"
       @closeOverlay="toggleSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
+      @closeOverlayWithUpdate="closeOverlayWithUpdate"
+      :resourceId="selectedEditSmtpSettings"
+      :isEdit="isEdit"
     />
     <delete-smtp-settings
       :status="deleteSmtpModalStatus"
@@ -34,6 +37,7 @@
             :sizeable="true"
             @onEmptyBtnClicked="toggleSmtpModalStatus"
             @deleteAction="handleDeleteAction"
+            @editAction="handleEditAction"
           />
         </template>
       </DatatableLoading>
@@ -63,6 +67,8 @@ export default {
       tableData: [],
       loading: true,
       selectedDeleteSmtpSettings: null,
+      selectedEditSmtpSettings: null,
+      isEdit: false,
       tableOptions: {
         columns: [
           {
@@ -157,6 +163,8 @@ export default {
   },
   methods: {
     toggleSmtpModalStatus() {
+      this.resourceId = null
+      this.isEdit = false
       this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
     toggleDeleteSmtpModalStatus() {
@@ -170,6 +178,16 @@ export default {
           this.tableData = results
         })
         .finally(() => (this.loading = false))
+    },
+    handleEditAction({ resourceId } = {}) {
+      this.isEdit = true
+      debugger
+      this.selectedEditSmtpSettings = resourceId
+      this.toggleSmtpModalStatus()
+    },
+    closeOverlayWithUpdate() {
+      this.toggleSmtpModalStatus()
+      this.callForSearchSmtpSettings()
     },
     callForDeleteSmtpSettings(resourceId) {
       deleteSmtpSettings(resourceId)

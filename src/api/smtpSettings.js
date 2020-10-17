@@ -7,3 +7,11 @@ export function searchSmtpSettings(payload = {}) {
 export function deleteSmtpSettings(id) {
   return testRequest.delete(`${URL}/${id}`)
 }
+
+export function createSMTPSettings(payload) {
+  return testRequest.post(`/companies/${localStorage.getItem('companyId')}/smtp-settings`, payload)
+}
+
+export function getSmtpSettings(resourceId) {
+  //return testRequest.get()
+}
