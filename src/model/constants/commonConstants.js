@@ -17,6 +17,7 @@ export const LABEL_STORE = {
   EMAIL: 'E-Mail',
   HOSTNAME: 'Device Name',
   LASTSEEN: 'Last Seen',
+  NAME: 'Name',
   ADDINVERSION: 'Version',
   STATUS: 'Status',
   DEPARTMENT: 'Department',
@@ -74,7 +75,8 @@ export const LABEL_STORE = {
   TITLE: 'Title',
   ROLENAME: 'Title',
   USERCOUNT: 'Users',
-  JOBTITLE: 'Job Title'
+  JOBTITLE: 'Job Title',
+  SERVERADDRESS: 'SMTP Address'
 }
 
 export const PROPERTY_STORE = {
@@ -123,7 +125,7 @@ export const PROPERTY_STORE = {
   TYPE: 'type',
   URL: 'url',
   USERS: 'users',
-  SMTPADDRESS: 'smtpAddress',
+  SMTPADDRESS: 'serverAddress',
   AVAILABLEFOR: 'avaiableFor',
   PROVIDER: 'provider',
   ACCOUNTSID: 'accountSID',
