@@ -234,7 +234,7 @@ export default {
           } else {
             this.$store.dispatch('common/createSnackBar', {
               message: '1 user added to Users List ',
-              icon: 'mdi-check-circle-outline',
+              icon: 'mdi-check-circle',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
             })
             this.$emit('closeAddUserModalWithUpdate')

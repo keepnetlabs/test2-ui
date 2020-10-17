@@ -7,7 +7,7 @@
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
-      This Smtp Settings template will be deleted. All data will be lost.
+      {{ getSubtitle }} will be deleted. All data will be lost.
     </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -26,15 +26,23 @@ export default {
     AppDialog
   },
   props: {
-    data: {
-      type: Object
-    },
+    data: {},
     status: {
       type: Boolean
     }
   },
   computed: {
     getSubtitle() {
+      const constructorName = this.data.constructor.name
+      if (constructorName === 'Object') {
+        return this.data.name
+      } else if (constructorName === 'Array') {
+        if (this.data.length === 1) {
+          return this.data[0].name
+        } else {
+          return `${this.data.length} SMTP Settings`
+        }
+      }
       return this.data && this.data.name
     }
   },
@@ -43,7 +51,23 @@ export default {
       this.$emit('closeOverlay')
     },
     handleDelete() {
-      this.$emit('handleDelete', this.data)
+      const constructorName = this.data.constructor.name
+      const action =
+        constructorName === 'Object'
+          ? 'handleDelete'
+          : constructorName === 'Array'
+          ? this.data.length === 1
+            ? 'handleDelete'
+            : 'handleMultipleDelete'
+          : 'handleDelete'
+      const data =
+        constructorName === 'Object'
+          ? this.data
+          : constructorName === 'Array' && this.data.length === 1
+          ? this.data[0]
+          : this.data
+      this.$emit(action, data)
+      this.handleCloseDialog()
     }
   }
 }

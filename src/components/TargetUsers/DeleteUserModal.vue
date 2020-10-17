@@ -3,7 +3,7 @@
     :status="isShow"
     icon="mdi-delete"
     title="Delete User?"
-    subtitle="The user will  deleted permanently"
+    subtitle="The user will deleted permanently"
   >
     <template v-slot:app-dialog-body>
       {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain
@@ -34,8 +34,9 @@ export default {
     isShow: {
       type: Boolean
     },
-    selectedRow: {
-      type: Object
+    selectedRow: {},
+    isMultiple: {
+      type: Boolean
     }
   },
   components: {
@@ -43,8 +44,14 @@ export default {
   },
   computed: {
     getFirstAndLastName() {
-      const { firstName = '', lastName = '' } = this.selectedRow
-      return `${firstName} ${lastName}`
+      if (!this.isMultiple && this.selectedRow.constructor.name === 'Object') {
+        const { firstName = '', lastName = '' } = this.selectedRow
+        return `${firstName} ${lastName}`
+      } else if (this.selectedRow.constructor.name === 'Array' && this.selectedRow.length === 1) {
+        const { firstName = '', lastName = '' } = this.selectedRow[0]
+        return `${firstName} ${lastName}`
+      }
+      return `${this.selectedRow.length} users`
     }
   },
   methods: {
@@ -52,7 +59,13 @@ export default {
       this.$emit('changeModalStatus', false)
     },
     handleDelete() {
-      this.$emit('deleteAction', this.selectedRow)
+      const action = this.isMultiple ? 'deleteMultiple' : 'deleteAction'
+      const data = this.isMultiple
+        ? this.selectedRow
+        : this.selectedRow.constructor.name === 'Object'
+        ? this.selectedRow
+        : this.selectedRow[0]
+      this.$emit(action, data)
       this.$emit('changeModalStatus', false)
     }
   },

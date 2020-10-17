@@ -110,9 +110,9 @@ export default {
         pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
-          edit: true,
+          edit: false,
           delete: true,
-          download: true
+          download: false
         },
         iEmpty: {
           message: 'No company groups defined',
