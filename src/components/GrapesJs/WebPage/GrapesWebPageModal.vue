@@ -94,7 +94,7 @@ export default {
       blockManager.add('trainingUrl', trainingUrl)
       blockManager.add('phishingUrl', phishingUrl)
       blockManager.add('macroUrl', macroUrl)
-      pn.getButton('options', 'sw-visibility').set('active', 1)
+      pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }

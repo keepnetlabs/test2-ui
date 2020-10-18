@@ -673,7 +673,7 @@ export default {
     },
     handleSave() {
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
-        !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 1) : null
+        !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 9999) : null
         if (this.edit) {
           updateCompany(this.selectedExtend.resourceId, this.formData)
             .then((response) => {
