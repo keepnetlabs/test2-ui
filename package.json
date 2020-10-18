@@ -46,6 +46,7 @@
     "vue-recaptcha": "^1.2.0",
     "vue-router": "^3.3.4",
     "vue-smart-widget": "^0.5.5",
+    "vue-tel-input": "^4.4.1",
     "vue-tour": "^1.1.0",
     "vue-upload-component": "^2.8.20",
     "vuedraggable": "^2.23.2",
