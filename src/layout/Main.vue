@@ -371,19 +371,6 @@
     >
       <account-dropdown />
       <v-spacer />
-      <div class="page-header__search">
-        <v-text-field
-          class="elevation-0"
-          hide-details
-          rounded
-          solo
-          flat
-          dark
-          label="Search"
-          prepend-inner-icon="mdi-magnify"
-        />
-      </div>
-      <v-divider class="page-header__divider" vertical></v-divider>
 
       <v-menu
         offset-y

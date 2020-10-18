@@ -25,6 +25,7 @@
             :filterable="true"
             :isServerSide="false"
             :row-key="rowKey"
+            :is-downloadable="false"
             :showClusterItemsRowAction="true"
             :options="true"
             :cluster-items="[

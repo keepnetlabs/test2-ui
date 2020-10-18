@@ -483,7 +483,7 @@
                 :rowActions="emails.rowActions"
                 :addUsers="emails.addUsers"
                 :empty="emails.iEmpty"
-                :groupable="true"
+                :groupable="false"
                 :selectEvent="emails.selectEvent"
                 :extended-view-style="{ top: '-120px' }"
                 @downloadEvent="exportReportedListEmails"

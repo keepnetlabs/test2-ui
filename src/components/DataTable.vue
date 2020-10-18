@@ -4,7 +4,7 @@
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
-      v-if="options"
+      v-if="options && isDownloadable && isWantToDownload"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -61,7 +61,7 @@
         </v-list-item-content>
       </v-list-item>
       <div class="table-wrapper">
-        <div class="settings-popup" v-show="isSettingsOpened">
+        <div class="settings-popup" v-show="isSettingsOpened" :style="settingsPopupStyle">
           <div class="settings-header">
             <span class="settings-span">Table Settings</span>
             <v-icon @click="isSettingsOpened = false" class="close-icon">mdi-close</v-icon>
@@ -95,6 +95,7 @@
           :options="extendedViewOptions"
           :container-style="extendedViewStyle"
           @handleEdit="$emit('handleEdit', $event)"
+          :disable-transition="disableExtendedViewTransition"
           @closeEditPopup="closeEditPopup"
         >
           <template v-slot:body>
@@ -672,7 +673,11 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
-                      @click.native="rowAct(rowActions[0].action, scope.row)"
+                      @click.native="
+                        rowActions[0].action === 'edit'
+                          ? handleEdit(scope.row, scope.$index)
+                          : rowAct(rowActions[0].action, scope.row)
+                      "
                       class="btn-hover mr-1"
                       icon
                       v-on="on"
@@ -856,6 +861,10 @@ export default {
         return {}
       }
     },
+    disableExtendedViewTransition: {
+      type: Boolean,
+      default: false
+    },
     resizable: {
       type: Boolean,
       default: true
@@ -988,6 +997,9 @@ export default {
     isDownloadable: {
       type: Boolean,
       default: true
+    },
+    settingsPopupStyle: {
+      type: Object
     }
   },
   computed: {

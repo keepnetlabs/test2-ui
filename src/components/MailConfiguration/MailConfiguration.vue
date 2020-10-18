@@ -233,6 +233,7 @@
             ref="refPeopleTable"
             @editTargetUsers="handleEditTargetUsers"
             @onEmptyBtnClicked="status = true"
+            :is-downloadable="false"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
           >

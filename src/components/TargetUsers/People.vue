@@ -53,6 +53,7 @@
           :rowActions="tableOptions.rowActions"
           :selectEvent="tableOptions.selectEvent"
           :selectable="true"
+          :settingsPopupStyle="{ top: '-15px' }"
           :setClassName="setCellClassName"
           @addToGroup="handleAddToGroup"
           @createGroupWithUser="handleCreateGroupWithUser"
@@ -60,6 +61,7 @@
           @syncUser="handleSyncUser"
           @deleteAction="handleDelete"
           ref="refPeopleTable"
+          :isDownloadable="false"
           @editTargetUsers="handleEditTargetUsers"
           @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
           @columnFilterChanged="columnFilterChanged"
@@ -278,27 +280,6 @@ export default {
           isNotShow: true
         },
         {
-          name: 'Add to a group',
-          icon: 'mdi-account-multiple-plus',
-          action: 'addToGroup'
-        },
-        {
-          name: 'Create a group with user',
-          icon: 'mdi-account-multiple',
-          action: 'createGroupWithUser'
-        },
-        {
-          name: 'Download',
-          icon: 'mdi-download',
-          action: 'download',
-          subElements: ['PDF', 'CSV', 'XLS']
-        },
-        {
-          name: 'Sync User',
-          icon: 'mdi-sync',
-          action: 'syncUser'
-        },
-        {
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'deleteAction'
@@ -306,7 +287,7 @@ export default {
       ]
     },
 
-    addUsersItems: ['Add users manually', 'Import from a file', 'LDAP Integration']
+    addUsersItems: ['Add users manually', 'Import from a file']
   }),
   methods: {
     closeImportModal() {

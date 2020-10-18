@@ -13,21 +13,25 @@
       <v-card light>
         <v-list-item class="matching-modal__list-item">
           <v-list-item-content>
-            <data-table
-              :refName="'versionHistory'"
-              ref="refVersionHistory"
-              :columns="table.columns"
-              :countRow="5"
-              :showHeader="true"
-              :selectable="false"
-              :pageSizes="[5, 10, 25]"
-              :filterable="true"
-              :options="true"
-              :rowActions="table.rowActions"
-              :empty="table.iEmpty"
-              @handleDetails="handleDetails"
-              @handleDownload="handleDownload"
-            />
+            <DatatableLoading :loading="isLoading">
+              <template v-slot:skeleton-content>
+                <data-table
+                  :refName="'versionHistory'"
+                  :table="tableData"
+                  :columns="table.columns"
+                  :countRow="5"
+                  :showHeader="true"
+                  :selectable="false"
+                  :pageSizes="[5, 10, 25]"
+                  :filterable="true"
+                  :options="true"
+                  :rowActions="table.rowActions"
+                  :empty="table.iEmpty"
+                  @handleDetails="handleDetails"
+                  @handleDownload="handleDownload"
+                />
+              </template>
+            </DatatableLoading>
           </v-list-item-content>
         </v-list-item>
       </v-card>
@@ -50,9 +54,11 @@
 import AppDialog from '../../AppDialog'
 import DataTable from '../../DataTable'
 import { searchGeneratedApplicationHistory } from '@/api/phishingReporter'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 export default {
   name: 'VersionHistoryModal',
   components: {
+    DatatableLoading,
     AppDialog,
     DataTable
   },
@@ -70,6 +76,7 @@ export default {
   },
   data() {
     return {
+      tableData: [],
       table: {
         columns: [
           {
@@ -115,7 +122,8 @@ export default {
         iEmpty: {
           message: 'You do not have any versions, yet'
         }
-      }
+      },
+      isLoading: true
     }
   },
   created() {
@@ -129,13 +137,17 @@ export default {
         FilterGroups: []
       }
     }
-    searchGeneratedApplicationHistory(searchPayload).then((response) => {
-      const {
-        data: { data }
-      } = response
-      console.log('data.results', data.results)
-      this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
-    })
+    searchGeneratedApplicationHistory(searchPayload)
+      .then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.tableData = data.results
+        this.isLoading = false
+      })
+      .catch(() => {
+        this.isLoading = false
+      })
   }
 }
 </script>

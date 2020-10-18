@@ -6,9 +6,10 @@
     "
     :style="[
       containerStyle,
-      editMode && {
-        top: getTop()
-      },
+      !disableTransition &&
+        editMode && {
+          top: getTop()
+        },
       createMode && {
         height: '250px'
       }
@@ -538,6 +539,10 @@ export default {
       }
     },
     createMode: {
+      type: Boolean,
+      default: false
+    },
+    disableTransition: {
       type: Boolean,
       default: false
     },

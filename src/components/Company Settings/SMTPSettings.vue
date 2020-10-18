@@ -33,6 +33,7 @@
             :options="true"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
+            :is-downloadable="false"
             :select-event="tableOptions.selectEvent"
             :row-actions="tableOptions.rowActions"
             :selectable="true"
