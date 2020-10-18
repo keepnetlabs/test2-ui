@@ -371,7 +371,6 @@
     >
       <account-dropdown />
       <v-spacer />
-
       <v-menu
         offset-y
         min-width="300"
@@ -392,7 +391,11 @@
         </template>
         <v-list>
           <v-list-item-group>
-            <template v-for="(notification, index) in notificationList">
+            <div v-if="!notificationList.length" class="no-notification">No notifications</div>
+            <template
+              v-for="(notification, index) in notificationList"
+              v-if="notificationList.length"
+            >
               <v-list-item :key="index">
                 <v-list-item-content>
                   <v-list-item-title>{{ notification.content }}</v-list-item-title>
@@ -1143,6 +1146,17 @@ export default {
 </script>
 <style lang="scss">
 .layout-container {
+  .no-notification {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    padding: 16px 24px;
+  }
   &__background {
     height: 285px;
     width: 100%;
