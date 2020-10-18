@@ -17,7 +17,7 @@
             <v-tabs v-model="tab" background-color="transparent" color="basil">
               <v-tab id="incidents-tab" @click="getIncidents">Incidents</v-tab>
               <v-tab id="members-tab" @click="getMembers">Members</v-tab>
-              <div class="tablet-info-btn">
+              <div class="tablet-info-btn" style="display: none !important;">
                 <v-btn
                   id="info-btn"
                   class="create-com-btn"

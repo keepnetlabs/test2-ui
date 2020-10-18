@@ -56,7 +56,7 @@ testService.interceptors.response.use(
       error.response.Code === '401_UNAUTHORIZED' ||
       error.response.status === 306
     ) {
-      AuthenticationService.removeToken()
+      //AuthenticationService.removeToken()
       store.dispatch('common/changeSessionExpiredStatus', true)
       //router.push('/login')
     } else if (error.response && error.response.status !== 404) {
@@ -85,7 +85,7 @@ testService.interceptors.response.use(
         error.response.status === '401_UNAUTHORIZED' ||
         error.response.Code === '401_UNAUTHORIZED'
       ) {
-        AuthenticationService.removeToken()
+        //AuthenticationService.removeToken()
         store.dispatch('common/changeSessionExpiredStatus', true)
       } else {
         router.push('/login')

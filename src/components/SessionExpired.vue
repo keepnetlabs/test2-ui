@@ -105,6 +105,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import AuthenticationService from '../services/authentication'
+import store from '../store'
 
 export default {
   name: 'SessionExpired',
@@ -128,7 +130,8 @@ export default {
   computed: {
     ...mapGetters({
       getErrors: 'common/getErrors',
-      isErrorActive: 'common/getErrorStatus'
+      isErrorActive: 'common/getErrorStatus',
+      sessionCheck: 'common/getSessionCheck'
     })
   },
   created() {
@@ -143,6 +146,8 @@ export default {
       loginAction2: 'login/loginAction'
     }),
     handleForgetPasswordClick() {
+      AuthenticationService.removeToken()
+      this.$store.dispatch('common/changeSessionExpiredStatus', false)
       this.$router.push('/login')
     },
     onLoginClicked() {
@@ -157,6 +162,13 @@ export default {
             this.$emit('closeSessionExpired')
           })
       }
+    }
+  },
+  beforeDestroy() {
+    debugger
+    if (!sessionCheck) {
+      AuthenticationService.removeToken()
+      this.$router.push('/login')
     }
   }
 }

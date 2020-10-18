@@ -41,7 +41,7 @@ service.interceptors.response.use(
       error.response.Code === '401_UNAUTHORIZED' ||
       error.response.status === 306
     ) {
-      AuthenticationService.removeToken()
+      //AuthenticationService.removeToken()
       store.dispatch('common/changeSessionExpiredStatus', true)
       //router.push('/login')
     }

@@ -16,7 +16,7 @@
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
             <v-tab id="ts-tab-incident">Incidents</v-tab>
             <v-tab id="ts-tab-community">Communities</v-tab>
-            <div class="tablet-info-btn">
+            <div class="tablet-info-btn" style="display: none !important;">
               <v-btn id="ts-info-btn" class="create-com-btn" block rounded>
                 <v-icon class="pr-1">mdi-information</v-icon>
                 INFO
