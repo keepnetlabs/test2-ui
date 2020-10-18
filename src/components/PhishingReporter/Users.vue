@@ -341,7 +341,7 @@ export default {
 
 <style lang="scss">
 .users {
-  padding-top: 16px;
+  padding-top: 24px;
   &__button {
     font-size: 14px;
     font-weight: 600;

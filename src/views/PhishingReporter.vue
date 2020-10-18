@@ -107,28 +107,18 @@
       <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card class="phishing-reporter__card">
-            <v-tabs background-color="transparent" color="basil" v-model="tab" class="k-tabs">
-              <v-tab @click="changeTabStatus(0)" class="k-tab p-2">
-                Users
-              </v-tab>
-              <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Settings </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="tab" class="phishing-reporter__tabs-items">
-              <v-tab-item>
-                <users
-                  ref="refUsers"
-                  @callForPhishingReporterSummary="getPhishingReportSummary()"
-                />
-              </v-tab-item>
-              <v-tab-item>
+            <el-tabs v-model="tab">
+              <el-tab-pane label="Users" name="first"
+                ><users ref="refUsers" @callForPhishingReporterSummary="getPhishingReportSummary()"
+              /></el-tab-pane>
+              <el-tab-pane label="Settings" name="second">
                 <component
                   :is="tabComponent.name"
                   :ref="tabComponent.ref"
                   :formData="tabComponent.formData"
                   @getPhishingReport="getPhishingReport"
-                />
-              </v-tab-item>
-            </v-tabs-items>
+              /></el-tab-pane>
+            </el-tabs>
           </v-card>
         </v-col>
       </v-layout>
@@ -153,7 +143,7 @@ export default {
   data() {
     return {
       loading: true,
-      tab: 0,
+      tab: 'first',
       phishingReportSummary: null,
       tabComponent: {
         name: FirstTime,
