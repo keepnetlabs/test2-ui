@@ -32,6 +32,7 @@
             :select-event="tableOptions.selectEvent"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
+            :is-downloadable="false"
             :row-actions="tableOptions.rowActions"
             :selectable="true"
             :sizeable="true"
