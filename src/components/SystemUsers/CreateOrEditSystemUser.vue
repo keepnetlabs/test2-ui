@@ -15,10 +15,7 @@
         @closeOverlay="toggleWelcomeEmailModal"
         @sendEmail="handleSendEmail"
       />
-      <app-modal-body-header
-        :title="getBodyTitle"
-        sub-title="Fill information below"
-      />
+      <app-modal-body-header :title="getBodyTitle" sub-title="Fill information below" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="First Name" has-hint>
           <v-text-field
@@ -52,17 +49,17 @@
             persistent-hint
             :rules="[
               (v) => validations.required(v, 'Required'),
-              (v) => validations.mail(v, 'Invalid email address'),
+              (v) => validations.mail(v, 'Invalid email address')
             ]"
           ></v-text-field>
         </form-group>
-        <form-group title="Phone Number">
+        <form-group title="Phone Number" class-name="mb-6">
           <vue-tel-input
             v-model="formValues.phoneNumber"
             validCharactersOnly
             defaultCountry="GB"
             :inputOptions="{
-              showDialCode: true,
+              showDialCode: true
             }"
           />
         </form-group>
@@ -106,19 +103,19 @@
 </template>
 
 <script>
-import AppModal from "@/components/AppModal";
-import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
-import { mail, maxLength, required } from "@/utils/validations";
-import PhoneNumber from "@/components/SmallComponents/PhoneNumber";
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import SendWelcomeEmailToNewUserModal from "@/components/SystemUsers/SendWelcomeEmailToNewUserModal";
-import { createSystemUser, updateSystemUser } from "@/api/systemUsers";
-import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
-import { scrollToComponent } from "@/utils/functions";
-import { VueTelInput } from "vue-tel-input";
-import { getUserRoles } from "../../api/systemUsers";
+import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import { mail, maxLength, required } from '@/utils/validations'
+import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
+import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { scrollToComponent } from '@/utils/functions'
+import { VueTelInput } from 'vue-tel-input'
+import { getUserRoles } from '../../api/systemUsers'
 export default {
-  name: "CreateOrEditSystemUser",
+  name: 'CreateOrEditSystemUser',
   components: {
     AppModal,
     AppModalBodyHeader,
@@ -138,156 +135,149 @@ export default {
   data() {
     return {
       formValues: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
-        statusName: "",
-        role: "",
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        statusName: '',
+        role: '',
         isTwoStep: false,
         isLdap: false
       },
       showWelcomeEmailModal: false,
-      statusItems: ["Active"],
+      statusItems: ['Active'],
       roleItems: [],
       validations: {
         maxLength,
         required,
         mail
       }
-    };
+    }
   },
   computed: {
     getTitle() {
-      return this.selectedRow ? "Edit System User" : "New System User";
+      return this.selectedRow ? 'Edit System User' : 'New System User'
     },
     getBodyTitle() {
-      return this.selectedRow ? "Edit System User" : "Create New System User";
+      return this.selectedRow ? 'Edit System User' : 'Create New System User'
     }
   },
   methods: {
     closeOverlay() {
-      this.$emit("closeOverlay");
+      this.$emit('closeOverlay')
     },
     submit() {
       if (this.$refs.refForm.validate()) {
         if (this.selectedRow) {
-          const { phoneNumber } = this.formValues;
+          const { phoneNumber } = this.formValues
           const formData = {
             resourceId: this.selectedRow.resourceId,
             ...this.formValues,
-            phoneNumber: phoneNumber.split(" ").join("")
-          };
-          this.callForUpdateSystemUser(formData);
+            phoneNumber: phoneNumber.split(' ').join('')
+          }
+          this.callForUpdateSystemUser(formData)
         } else {
-          const { phoneNumber } = this.formValues;
+          const { phoneNumber } = this.formValues
           const formData = {
             ...this.formValues,
-            phoneNumber: phoneNumber.split(" ").join(""),
-            roleResourceIdList: ["VwwzEXkFHHCe"],
-            companyResourceId: localStorage.getItem("companyResourceId")
-          };
-          this.callForCreateSystemUser(formData);
+            phoneNumber: phoneNumber.split(' ').join(''),
+            roleResourceIdList: ['VwwzEXkFHHCe'],
+            companyResourceId: localStorage.getItem('companyResourceId')
+          }
+          this.callForCreateSystemUser(formData)
         }
       } else {
         setTimeout(() => {
-          const el = this.$refs.refForm.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        }, 100);
+          const el = this.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        }, 100)
       }
     },
     toggleWelcomeEmailModal() {
-      this.showWelcomeEmailModal = !this.showWelcomeEmailModal;
+      this.showWelcomeEmailModal = !this.showWelcomeEmailModal
     },
     handleSendEmail() {
-      this.toggleWelcomeEmailModal();
+      this.toggleWelcomeEmailModal()
     },
     callForCreateSystemUser(payload) {
-      createSystemUser(payload).then(response => {
-        this.$store.dispatch("common/createSnackBar", {
+      createSystemUser(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
           message: response.data.message,
-          icon: "mdi-check-circle",
+          icon: 'mdi-check-circle',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-        });
-        this.$emit("closeOverlayWithUpdate");
-      });
+        })
+        this.$emit('closeOverlayWithUpdate')
+      })
     },
     callForUpdateSystemUser(payload) {
-      updateSystemUser(payload).then(response => {
-        this.$store.dispatch("common/createSnackBar", {
+      updateSystemUser(payload).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
           message: response.data.message,
-          icon: "mdi-check-circle",
+          icon: 'mdi-check-circle',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-        });
-        this.$emit("closeOverlayWithUpdate");
-      });
+        })
+        this.$emit('closeOverlayWithUpdate')
+      })
     }
   },
   mounted() {
     this.$nextTick(() => {
-      this.$refs.refForm.resetValidation();
-    });
+      this.$refs.refForm.resetValidation()
+    })
   },
   created() {
     let payload = {
       pageNumber: 1,
       pageSize: 10,
-      orderBy: "RoleName",
+      orderBy: 'RoleName',
       ascending: true,
       filter: {
-        Condition: "AND",
+        Condition: 'AND',
         FilterGroups: [
           {
-            Condition: "OR",
+            Condition: 'OR',
             FilterItems: [
               {
-                FieldName: "RoleName",
-                Operator: "Contains",
-                Value: "ro"
+                FieldName: 'RoleName',
+                Operator: 'Contains',
+                Value: 'ro'
               },
               {
-                FieldName: "CompanyName",
-                Operator: "Contains",
-                Value: "ro"
+                FieldName: 'CompanyName',
+                Operator: 'Contains',
+                Value: 'ro'
               }
             ],
             FilterGroups: []
           },
           {
-            Condition: "AND",
+            Condition: 'AND',
             FilterItems: [
               {
-                FieldName: "TypeId",
-                Operator: "Include",
-                Value: "1,2"
+                FieldName: 'TypeId',
+                Operator: 'Include',
+                Value: '1,2'
               }
             ],
             FilterGroups: []
           }
         ]
       }
-    };
-    getUserRoles(payload).then(response => {
-      this.roleItems = response.data.data.results;
-    });
+    }
+    getUserRoles(payload).then((response) => {
+      this.roleItems = response.data.data.results
+    })
     if (this.selectedRow) {
-      const {
-        firstName,
-        lastName,
-        phoneNumber,
-        roles,
-        statusName,
-        email
-      } = this.selectedRow;
-      this.formValues.firstName = firstName;
-      this.formValues.lastName = lastName;
-      this.formValues.role = roles;
-      this.formValues.statusName = statusName;
-      this.formValues.email = email;
-      this.formValues.phoneNumber = phoneNumber.split(" ").join("");
+      const { firstName, lastName, phoneNumber, roles, statusName, email } = this.selectedRow
+      this.formValues.firstName = firstName
+      this.formValues.lastName = lastName
+      this.formValues.role = roles
+      this.formValues.statusName = statusName
+      this.formValues.email = email
+      this.formValues.phoneNumber = phoneNumber.split(' ').join('')
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
