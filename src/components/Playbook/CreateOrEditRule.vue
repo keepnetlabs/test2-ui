@@ -373,7 +373,7 @@ export default {
           operandsSenderIP: [
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exist', value: 'Exists' },
+            { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ],
           operators: [
@@ -381,7 +381,7 @@ export default {
             { text: 'does not contain', value: 'DoesNotContain' },
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exist', value: 'Exist' },
+            { text: 'exists', value: 'Exist' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ]
         }
