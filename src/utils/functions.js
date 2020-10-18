@@ -54,6 +54,8 @@ export function getBtnStatusColor(type) {
       return '#6d6d6d'
     case 'itemnotfound':
       return '#fafafa'
+    case 'failed':
+      return '#f56c6c'
     case 'n/a':
       return '#00bcd4'
     case 'stopped':
