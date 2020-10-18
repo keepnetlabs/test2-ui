@@ -194,6 +194,12 @@ export default {
       },
       isWantToDelete: false,
       selectedRow: null,
+      selectEvent: {
+        clipboard: true,
+        edit: false,
+        delete: false,
+        download: false
+      },
       requestBody: {
         pageNumber: 1,
         pageSize: 5000,
