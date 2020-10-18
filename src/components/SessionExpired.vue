@@ -29,11 +29,17 @@
           <div class="login-user-pass-wrapper">
             <div>
               <v-text-field
-                :rules="[rules.required, rules.min]"
+                id="email"
+                :type="'email'"
+                name="email"
+                ref="email"
                 v-model="userName"
-                outlined
+                :rules="[rules.required, rules.email, rules.max]"
+                class="username-field"
+                required
                 label="Username"
                 autocomplete="disabled"
+                outlined
               ></v-text-field>
             </div>
 
@@ -358,6 +364,13 @@ export default {
     &__success {
       min-height: 300px;
     }
+  }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 </style>
