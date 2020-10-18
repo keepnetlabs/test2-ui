@@ -1,5 +1,5 @@
 <template>
-  <div v-if="companyDD" class="account-select d-none d-md-block">
+  <div v-if="isRootOrResellar && companyDD" class="account-select d-none d-md-block">
     <v-select
       v-model="selectedCompany"
       :items="getDropdown"
@@ -34,6 +34,9 @@ export default {
       selectedCompanyFromStore: 'dashboard/getSelectedCompany',
       companyDD: 'dashboard/getCompanyDropdowns'
     }),
+    isRootOrResellar() {
+      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+    },
     selectedCompany: {
       get() {
         return this.selectedCompanyFromStore
