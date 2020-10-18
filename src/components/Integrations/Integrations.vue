@@ -18,6 +18,7 @@
       :status="showDeleteModal"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
+      @handleDeleteMultiple="handleDeleteMultiple"
       :selected-integration="selectedIntegration"
     />
     <DatatableLoading :loading="loading">
@@ -44,6 +45,7 @@
           @onEmptyBtnClicked="modalStatus = true"
           @addAction="changeModalStatus(true)"
           @downloadEvent="exportIntegrationList"
+          @handleMultipleDelete="handleActionDelete"
           @sortChangedEvent="sortChangedEvent($event)"
           @paginationChangedEvent="paginationChangedEvent($event)"
           @searchChangedEvent="searchChangedEvent($event)"
@@ -214,7 +216,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         pageSizes: [5, 10, 25],
@@ -253,6 +255,9 @@ export default {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()
     },
+    handleDeleteMultiple(selections) {
+      selections.forEach((item) => this.handleDelete(item))
+    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -281,7 +286,6 @@ export default {
             message: 'Error when deleting integration!'
           })
         })
-      this.showDeleteModal = false
     },
     handleEdit(row) {
       this.modalStatus = true

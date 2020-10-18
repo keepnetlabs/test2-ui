@@ -69,7 +69,7 @@ import {
   deleteTargetUser,
   deleteTargetGroup,
   searchTargetGroups
-} from '../../api/targetUsers'
+} from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import DeleteGroupModal from './DeleteGroupModal'
@@ -78,8 +78,8 @@ import {
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
-} from '../../model/constants/commonConstants'
-import { required } from '../../utils/validations'
+} from '@/model/constants/commonConstants'
+import { required } from '@/utils/validations'
 
 export default {
   name: 'Groups',
@@ -279,7 +279,7 @@ export default {
     },
     callForCreateNewUserGroup(group) {
       createTargetGroup(group)
-        .then((response) => {
+        .then(() => {
           this.changeNewUserGroupStatus(false)
           this.$store.dispatch('common/createSnackBar', {
             message: `New group named ${group.name} created`,
@@ -315,7 +315,7 @@ export default {
           let data = response.data.data
           this.tableData = data.results.length ? data.results : []
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
         })
         .finally(() => (this.loading = false))
@@ -325,7 +325,7 @@ export default {
     },
     callForUpdateTargetGroup(payload) {
       updateTargetGroup(payload)
-        .then((response) => {
+        .then(() => {
           this.callForTargetGroups()
         })
         .catch((error) => {
@@ -359,12 +359,12 @@ export default {
             this.callForTargetGroups()
           }
         })
-        .catch((error) => {})
+        .catch(() => {})
     },
     columnFilterChanged(filter) {
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
+      requestBody.map((x) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
@@ -372,7 +372,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -390,7 +390,7 @@ export default {
       let items = []
       let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }
