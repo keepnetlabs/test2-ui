@@ -268,7 +268,6 @@ export default {
         (x) =>
           x.companyResourceId !== selectedItem.companyResourceId && arr.push(x.companyResourceId)
       )
-      debugger
       const payload = {
         name: localStorage.getItem('companyGroupName'),
         companyResourceIdArray: arr

@@ -1545,7 +1545,7 @@ export default {
       this.$emit('handleSelectionChange', val)
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
-      console.log('rows', rows)
+      //console.log('rows', rows)
       for (let row of rows) {
         if (row.children) {
           this.selectChildrenByRowCheckbox(row.children, selection)
