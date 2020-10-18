@@ -18,7 +18,7 @@
       :status="showDeleteModal"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
-      @handleDeleteMultiple="handleDeleteMultiple"
+      @handleMultipleDelete="handleDeleteMultiple"
       :selected-integration="selectedIntegration"
     />
     <DatatableLoading :loading="loading">

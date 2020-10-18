@@ -37,14 +37,7 @@ export default {
     status: {
       type: Boolean
     },
-    selectedIntegration: {
-      type: Object,
-      default() {
-        return {
-          name: ''
-        }
-      }
-    }
+    selectedIntegration: {}
   },
   computed: {
     getIntegrationName() {
