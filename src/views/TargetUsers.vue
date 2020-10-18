@@ -2,29 +2,10 @@
   <div class="target-users" id="target-users">
     <v-layout wrap class="target-users__container">
       <v-card class="target-users__container-card">
-        <v-tabs
-          active-class="pr-tab-active"
-          background-color="transparent"
-          color="basil"
-          class="k-tabs"
-          v-model="tab"
-        >
-          <v-tab @click="changeTabStatus(0)" class="k-tab p-2" id="pr-tab-people">
-            People
-          </v-tab>
-          <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Groups</v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab" class="target-users__tabs-items">
-          <v-tab-item>
-            <people ref="refPeople" />
-          </v-tab-item>
-          <v-tab-item>
-            <groups />
-          </v-tab-item>
-          <v-tab-item>
-            <smart-groups />
-          </v-tab-item>
-        </v-tabs-items>
+        <el-tabs v-model="tab">
+          <el-tab-pane label="People" name="first"><people ref="refPeople" /></el-tab-pane>
+          <el-tab-pane label="Group" name="second"> <groups /></el-tab-pane>
+        </el-tabs>
       </v-card>
     </v-layout>
   </div>
@@ -35,13 +16,12 @@ import Groups from '../components/TargetUsers/Groups'
 import SmartGroups from '../components/TargetUsers/SmartGroups'
 export default {
   components: {
-    SmartGroups,
     People,
     Groups
   },
   data() {
     return {
-      tab: 0
+      tab: 'first'
     }
   },
   beforeRouteLeave(to, from, next) {

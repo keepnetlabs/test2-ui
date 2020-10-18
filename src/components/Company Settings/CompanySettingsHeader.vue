@@ -27,4 +27,8 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.company-settings__header {
+  margin-top: 24px;
+}
+</style>
