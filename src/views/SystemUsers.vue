@@ -4,9 +4,9 @@
       <v-card class="system-users__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane label="People" name="first"><people ref="refPeople" /></el-tab-pane>
-          <el-tab-pane label="User Roles" name="second">
+          <!--<el-tab-pane label="User Roles" name="second">
             <user-roles ref="refUserRoles" />
-          </el-tab-pane>
+          </el-tab-pane>-->
         </el-tabs>
       </v-card>
     </v-layout>
@@ -19,8 +19,7 @@ import UserRoles from '@/components/SystemUsers/UserRoles'
 export default {
   name: 'SystemUsers',
   components: {
-    People,
-    UserRoles
+    People
   },
   data() {
     return {
