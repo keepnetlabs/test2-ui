@@ -66,20 +66,9 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import {
-  getCompanyByID,
-  exportCompanies,
-  searchGroupCompanies,
-  updateCompanyGroup,
-  getCompanyGroupsById
-} from '@/api/company'
+import { getCompanyByID, searchGroupCompanies, updateCompanyGroup } from '@/api/company'
 import RemoveModal from './RemoveModal'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  LABEL_STORE,
-  PROPERTY_STORE
-} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
@@ -263,7 +252,7 @@ export default {
               ? response.data.data.results
               : []
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
         })
         .finally(() => (this.loading = false))
@@ -279,22 +268,21 @@ export default {
         (x) =>
           x.companyResourceId !== selectedItem.companyResourceId && arr.push(x.companyResourceId)
       )
+      debugger
       const payload = {
-        name: selectedItem.companyName,
+        name: localStorage.getItem('companyGroupName'),
         companyResourceIdArray: arr
       }
-      updateCompanyGroup(this.groupId, payload)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.getTableData()
-          }
-        })
-        .catch((error) => {})
+      updateCompanyGroup(this.groupId, payload).then((response) => {
+        if (response.data && response.data.message) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle-outline'
+          })
+          this.getTableData()
+        }
+      })
     },
     changeRemoveModalStatus(status) {
       this.isShowRemoveModal = status
@@ -302,7 +290,6 @@ export default {
     changeCreateOrEditModalStatus(status) {
       this.isShowCreateOrEditModal = status
     },
-
     editAction(row) {
       this.selectedRow = row
       this.editModal = true
