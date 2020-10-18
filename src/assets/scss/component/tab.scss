@@ -124,6 +124,8 @@
 }
 .el-tabs__content{
   padding: 0 2px;
+
+  overflow: visible;
 }
 .el-tabs__active-bar{
   background-color: #0486fe;

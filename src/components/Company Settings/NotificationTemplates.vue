@@ -19,6 +19,7 @@
         :filterable="true"
         :row-key="'name'"
         :groupable="true"
+        :is-downloadable="false"
         :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"

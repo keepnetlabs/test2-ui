@@ -11,11 +11,11 @@
   >
     <template v-slot:app-dialog-body>
       <v-card light>
-        <v-list-item class="matching-modal__list-item">
-          <v-list-item-content>
+        <DatatableLoading :loading="isLoading">
+          <template v-slot:skeleton-content>
             <data-table
               :refName="'versionHistory'"
-              ref="refVersionHistory"
+              :table="tableData"
               :columns="table.columns"
               :countRow="5"
               :showHeader="true"
@@ -28,8 +28,8 @@
               @handleDetails="handleDetails"
               @handleDownload="handleDownload"
             />
-          </v-list-item-content>
-        </v-list-item>
+          </template>
+        </DatatableLoading>
       </v-card>
     </template>
     <template v-slot:app-dialog-footer>
@@ -50,9 +50,11 @@
 import AppDialog from '../../AppDialog'
 import DataTable from '../../DataTable'
 import { searchGeneratedApplicationHistory } from '@/api/phishingReporter'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 export default {
   name: 'VersionHistoryModal',
   components: {
+    DatatableLoading,
     AppDialog,
     DataTable
   },
@@ -70,6 +72,7 @@ export default {
   },
   data() {
     return {
+      tableData: [],
       table: {
         columns: [
           {
@@ -115,7 +118,8 @@ export default {
         iEmpty: {
           message: 'You do not have any versions, yet'
         }
-      }
+      },
+      isLoading: true
     }
   },
   created() {
@@ -129,13 +133,17 @@ export default {
         FilterGroups: []
       }
     }
-    searchGeneratedApplicationHistory(searchPayload).then((response) => {
-      const {
-        data: { data }
-      } = response
-      console.log('data.results', data.results)
-      this.$refs.refVersionHistory.loadWithDataArray(data.results || [])
-    })
+    searchGeneratedApplicationHistory(searchPayload)
+      .then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.tableData = data.results
+        this.isLoading = false
+      })
+      .catch(() => {
+        this.isLoading = false
+      })
   }
 }
 </script>

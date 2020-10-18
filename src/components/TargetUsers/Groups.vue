@@ -26,9 +26,11 @@
           :refName="'groupsTable'"
           :rowActions="tableOptions.rowActions"
           :extended-view-options="tableOptions.extendedViewOptions"
+          :disableExtendedViewTransition="true"
           :extendedViewValue="extendedViewValue"
           :selectEvent="tableOptions.selectEvent"
           @handleMultipleDelete="handleMultipleDelete"
+          :is-downloadable="false"
           :selectable="true"
           ref="refGroupsTable"
           @syncWithLDAP="handleSyncWithLDAP"
@@ -175,17 +177,6 @@ export default {
             icon: 'mdi-pencil',
             action: 'edit',
             isNotShow: true
-          },
-          {
-            name: 'Sync With LDAP',
-            icon: 'mdi-account-multiple-plus',
-            action: 'syncWithLDAP'
-          },
-          {
-            name: 'Download',
-            icon: 'mdi-download',
-            action: 'download',
-            subElements: ['PDF', 'CSV', 'XLS']
           },
           {
             name: 'Delete',
