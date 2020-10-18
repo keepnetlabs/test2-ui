@@ -74,6 +74,8 @@
             v-model.trim="formValues.role"
             hint="*Required"
             persistent-hint
+            item-text="roleName"
+            item-value="resourceId"
             :rules="[(v) => validations.required(v, 'Required')]"
           ></v-select>
         </form-group>
@@ -103,6 +105,7 @@ import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcome
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
+import { getUserRoles } from '../../api/systemUsers'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -217,6 +220,47 @@ export default {
     })
   },
   created() {
+    let payload = {
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'RoleName',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'OR',
+            FilterItems: [
+              {
+                FieldName: 'RoleName',
+                Operator: 'Contains',
+                Value: 'ro'
+              },
+              {
+                FieldName: 'CompanyName',
+                Operator: 'Contains',
+                Value: 'ro'
+              }
+            ],
+            FilterGroups: []
+          },
+          {
+            Condition: 'AND',
+            FilterItems: [
+              {
+                FieldName: 'TypeId',
+                Operator: 'Include',
+                Value: '1,2'
+              }
+            ],
+            FilterGroups: []
+          }
+        ]
+      }
+    }
+    getUserRoles(payload).then((response) => {
+      this.roleItems = response.data.data.results
+    })
     if (this.selectedRow) {
       const { firstName, lastName, phoneNumber, roles, statusName, email } = this.selectedRow
       this.formValues.firstName = firstName
