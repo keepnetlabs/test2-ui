@@ -84,7 +84,7 @@ export default {
       url: {
         required: (v) => (v && v.length <= 256) || 'It must between 1 - 256 characters',
         format: (v) =>
-          /https?:\/\/(www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi.test(
+          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
             v
           ) || 'invalid url'
       }
@@ -119,7 +119,7 @@ export default {
     blockManager.add('phishingUrl', phishingUrl)
     blockManager.add('macroUrl', macroUrl)
     let pn = this.editor.Panels
-    pn.getButton('options', 'sw-visibility').set('active', 1)
+    pn.getButton('options', 'sw-visibility').set('active', 0)
     //pn.getButton('options', 'gjs-open-import-template').set('active', 1)
   },
   methods: {

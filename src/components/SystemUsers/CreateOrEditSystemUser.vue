@@ -72,6 +72,9 @@
             dense
             :items="roleItems"
             v-model.trim="formValues.role"
+            hint="*Required"
+            persistent-hint
+            :rules="[(v) => validations.required(v, 'Required')]"
           ></v-select>
         </form-group>
         <form-group v-if="selectedRow">
@@ -215,11 +218,12 @@ export default {
   },
   created() {
     if (this.selectedRow) {
-      const { firstName, lastName, phoneNumber, roles, statusName } = this.selectedRow
+      const { firstName, lastName, phoneNumber, roles, statusName, email } = this.selectedRow
       this.formValues.firstName = firstName
       this.formValues.lastName = lastName
       this.formValues.role = roles
       this.formValues.statusName = statusName
+      this.formValues.email = email
       this.formValues.phoneNumber = {
         code: phoneNumber.substring(0, 3),
         val: phoneNumber.substring(3, phoneNumber.length)

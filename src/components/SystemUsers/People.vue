@@ -93,6 +93,17 @@ export default {
             filterableCustomFieldName: 'LastName'
           },
           {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 275,
+            filterableType: 'text'
+          },
+          {
             property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,

@@ -98,7 +98,7 @@ export function likePost(id) {
 }
 
 export function getCommunityPost(id) {
-  return testRequest.get(`community-posts/${id}`)
+  return testRequest.get(`community-posts/${id}`, { loading: true })
 }
 
 export function getMyLastPosts() {

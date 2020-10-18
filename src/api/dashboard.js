@@ -75,7 +75,7 @@ export function notificationSeen(payload) {
 }
 
 export function sendFeedback(payload) {
-  return request.post('user/feedback', { Message: payload })
+  return request.post('user/feedback', payload)
 }
 
 export function getNotifications() {
