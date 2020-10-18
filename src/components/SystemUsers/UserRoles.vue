@@ -19,6 +19,7 @@
             ref="refUserRolesList"
             :refName="'userRolesList'"
             :columns="tableOptions.columns"
+            :select-event="tableOptions.selectEvent"
             :countRow="5"
             :empty="tableOptions.empty"
             :filterable="true"
@@ -129,6 +130,12 @@ export default {
           }
         ],
         pageSizes: [5, 10, 25],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         rowActions: [
           {
             name: 'Edit',

@@ -13,6 +13,7 @@
         :selected-row="selectedDeleteRow"
         v-if="showDeleteSystemUserModal"
         @handleDelete="callForDeleteUser"
+        @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
       <DatatableLoading :loading="loading">
@@ -27,6 +28,7 @@
             :filterable="true"
             :isServerSide="false"
             :options="true"
+            :select-event="tableOptions.selectEvent"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
             :row-actions="tableOptions.rowActions"
@@ -163,6 +165,12 @@ export default {
             width: 180
           }
         ],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         pageSizes: [5, 10, 25],
         rowActions: [
           {
@@ -259,6 +267,7 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
+    deleteMultipleItems(selections) {},
     columnFilterChanged(filter) {
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
