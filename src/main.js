@@ -21,7 +21,7 @@ Vue.component(
 )
 console.log('APP_CONFIG', APP_CONFIG)
 if (APP_CONFIG.VUE_APP_IS_CLOUD) {
-  console.log('buralar hep cloud')
+  console.log(APP_CONFIG.VUE_APP_IS_CLOUD)
   const VueAnalytics = require('vue-analytics').default
   Vue.use(VueAnalytics, {
     id: APP_CONFIG.VUE_APP_ANALYTICS_ID
