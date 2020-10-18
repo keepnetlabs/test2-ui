@@ -2,6 +2,7 @@ import { loginAction, resetPassword, twoStepLogin } from '../../api/auth'
 import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import store from '../index'
+import { getCompanyList } from '../../api/company'
 
 const login = {
   namespaced: true,
@@ -92,6 +93,12 @@ const login = {
             if (!store.getters['common/getSessionCheck']) {
               payload.router.push('/')
             }
+          }
+          if (payload.sessionExpired) {
+            getCompanyList().then((response) => {
+              const result = response.data.data && response.data.data
+              this.$store.commit('SET_DROPDOWN_COMPANIES', result)
+            })
           }
           store.dispatch('common/changeSessionExpiredStatus', false)
         })

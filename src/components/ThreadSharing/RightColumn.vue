@@ -488,11 +488,7 @@
               There is no suggested community available, yet
             </div>
             <div class="empty-suggested" v-else>
-              <v-btn
-                class="create-first-btn create-com-btn mt-3 mb-6"
-                @click="createNewCommunity()"
-                block
-                rounded
+              <v-btn class="create-community-button mt-3 mb-6" @click="createNewCommunity()" rounded
                 >Create A New Community
               </v-btn>
             </div>
@@ -1629,6 +1625,21 @@ export default {
     font-style: normal !important;
     line-height: 1.71 !important;
     letter-spacing: normal !important;
+  }
+
+  .create-community-button {
+    background-color: #2196f3 !important;
+    color: #fff;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    height: 36px !important;
+    text-transform: uppercase !important;
+    width: 211px !important;
   }
 
   .right-col-semibold-label {

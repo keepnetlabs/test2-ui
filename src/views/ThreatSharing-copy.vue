@@ -6,7 +6,7 @@
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
             <v-tab id="ts-tab-incident" @click="getIncidents">Incidents</v-tab>
             <v-tab id="ts-tab-community" @click="getCommunities">Communities</v-tab>
-            <div class="tablet-info-btn">
+            <div class="tablet-info-btn" style="display: none !important;">
               <v-btn
                 id="ts-info-btn"
                 class="create-com-btn"

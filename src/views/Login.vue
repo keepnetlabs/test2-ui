@@ -337,6 +337,7 @@ import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
+
 export default {
   name: 'Login',
   components: { VueRecaptcha, PasswordChecker },
@@ -379,6 +380,7 @@ export default {
     }
   },
   created() {
+    AuthenticationService.removeToken()
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
       this.email = localStorage.getItem('username')
