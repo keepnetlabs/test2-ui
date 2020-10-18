@@ -17,15 +17,12 @@
         <div class="new-integration__confirm-modal__footer">
           <button
             class="new-integration__confirm-modal__btn-continue mr-3"
-            color="#2196f3"
-            rounded
             @click="saveButtonClickOnConfirmModal"
           >
             YES, CONTINUE
           </button>
           <button
             class="new-integration__confirm-modal__btn-cancel"
-            rounded
             @click="cancelClickOnConfirmModal"
           >
             CANCEL
@@ -53,7 +50,7 @@
         <v-form ref="form" lazy-validation>
           <v-list-item class="px-0 mt-8">
             <v-list-item-content>
-              <label class="new-integration__label" for="integration-name">Integration Name</label>
+              <label class="new-integration__label">Integration Name</label>
               <v-text-field
                 id="integration-name"
                 v-model.trim="formValues.name"
@@ -69,7 +66,7 @@
           </v-list-item>
           <v-list-item class="px-0">
             <v-list-item-content>
-              <label class="new-integration__label" for="description">Description</label>
+              <label class="new-integration__label">Description</label>
               <v-text-field
                 id="description"
                 v-model.trim="formValues.description"
@@ -85,7 +82,7 @@
           </v-list-item>
           <v-list-item class="px-0">
             <v-list-item-content>
-              <label class="new-integration__label" for="integration-type">Integration Type</label>
+              <label class="new-integration__label">Integration Type</label>
               <v-select
                 v-model.trim="formValues.analysisEngineTypeResourceId"
                 :items="integrationTypes"
@@ -104,7 +101,7 @@
           </v-list-item>
           <v-list-item class="px-0">
             <v-list-item-content>
-              <label class="new-integration__label" for="api-url">API URL</label>
+              <label class="new-integration__label">API URL</label>
               <v-text-field
                 id="api-url"
                 v-model.trim="formValues.apiUrl"
@@ -260,7 +257,7 @@
 
           <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
             <v-list-item-content>
-              <label class="new-integration__label" for="integration-type">URLs</label>
+              <label class="new-integration__label">URLs</label>
               <div class="mt-1">
                 <v-checkbox
                   v-model="formValues.isSendUrl"
@@ -404,6 +401,7 @@ import {
 } from '../../api/integrations'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppModal from '../AppModal'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'NewIntegration',
@@ -536,8 +534,15 @@ export default {
       }
     },
     submit() {
-      if (this.$refs.form.validate()) {
+      const refForm = this.$refs.form
+      const isValidForm = refForm.validate()
+      if (isValidForm) {
         this.testConnection(true)
+      } else {
+        setTimeout(() => {
+          const el = refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        }, 100)
       }
     },
     closeOverlay() {

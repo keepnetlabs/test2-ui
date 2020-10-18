@@ -35,6 +35,7 @@
           :sizeable="true"
           :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
+          :select-event="tableOptions.selectEvent"
           :row-actions="tableOptions.rowActions"
           :addButton="tableOptions.addButton"
           @deleteAction="showDeleteModal = true"
@@ -210,6 +211,12 @@ export default {
             action: 'deleteAction'
           }
         ],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,

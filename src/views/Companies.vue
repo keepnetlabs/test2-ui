@@ -16,11 +16,11 @@
             <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Company Groups</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" class="target-users__tabs-items">
-            <v-tab-item>
-              <company-list v-if="tab === 0" />
+            <v-tab-item :transition="false" :reverse-transition="false">
+              <company-list />
             </v-tab-item>
-            <v-tab-item>
-              <company-group-list v-if="tab === 1" />
+            <v-tab-item :transition="false" :reverse-transition="false">
+              <company-group-list />
             </v-tab-item>
           </v-tabs-items>
         </template>

@@ -1151,7 +1151,7 @@ export default {
       selectEvent: {
         clipboard: true,
         edit: true,
-        download: true
+        download: false
       },
       chartOptions: {
         chart: {
