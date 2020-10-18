@@ -24,6 +24,7 @@
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>
         <data-table
+          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           id="integrationsList"
           ref="refIntegrationsList"
@@ -140,6 +141,7 @@ export default {
       showDeleteModal: false,
       selectedIntegration: {},
       tableOptions: {
+        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -375,6 +377,7 @@ export default {
       this.showDeleteModal = true
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
       requestBody.map((x, i, t) => {
@@ -412,6 +415,9 @@ export default {
       filterPayload = [...items]
       this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
       this.getDatatableList()
+
+      this.tableOptions.isColumnFilterActive =
+        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
   mounted() {

@@ -216,6 +216,7 @@
       <DatatableLoading :loading="loading">
         <template v-slot:skeleton-content>
           <datatable
+            :is-column-filter-active="tableOptions.isColumnFilterActive"
             :table="tableData"
             :addButton="tableOptions.addButton"
             :columns="tableOptions.columns"
@@ -363,6 +364,7 @@ export default {
       { title: 'Click Me4' }
     ],
     tableOptions: {
+      isColumnFilterActive: false,
       lastColumns: [],
       columns: [
         {
@@ -590,6 +592,7 @@ export default {
       }
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
@@ -627,6 +630,9 @@ export default {
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForListSystemUsers()
+
+      this.tableOptions.isColumnFilterActive =
+        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleSyncUser(scope) {
       this.selectedSyncIndex = scope.$index

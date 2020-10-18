@@ -744,6 +744,7 @@
             </DatatableLoading>
             <div v-if="activeMenu !== 'targetUsers'">
               <datatable
+                :is-column-filter-active="isColumnFilterActive"
                 id="investigationDetailsList"
                 :refName="'investigationDetailsListTable'"
                 ref="refInvestigationListData"
@@ -810,6 +811,7 @@
               class="investigationDetails__target-users-table-container"
             >
               <datatable
+                :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
                 :columns="columnsTargetUsers"
@@ -922,6 +924,8 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    isColumnFilterActive: false,
+    isColumnFilterActiveTargetUsers: false,
     loading: true,
     topMenuLoading: true,
     leftMenuLoading: true,
@@ -1679,6 +1683,7 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     columnFilterChanged(filter) {
+      this.isColumnFilterActive = true
       let items = []
       let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
 
@@ -1718,8 +1723,12 @@ export default {
       filterPayload = [...items]
       this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
       this.refreshDatatable()
+
+      this.isColumnFilterActive =
+        this.investigationListBodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     columnFilterChangedTargetUsers(filter) {
+      this.isColumnFilterActiveTargetUsers = true
       let items = []
       let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
         .FilterItems
@@ -1746,6 +1755,9 @@ export default {
 
       this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
       this.refreshDatatable()
+
+      this.isColumnFilterActiveTargetUsers =
+        this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     columnFilterClearedTargetUsers(fieldName) {
       let items = []
