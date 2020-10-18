@@ -40,6 +40,8 @@
                 label="Username"
                 autocomplete="disabled"
                 outlined
+                autofocus
+                @keyup.enter="onLoginClicked"
               ></v-text-field>
             </div>
 
@@ -54,6 +56,7 @@
                 outlined
                 @click:append="show1 = !show1"
                 autocomplete="disabled"
+                @keyup.enter="onLoginClicked"
               ></v-text-field>
             </div>
             <div>
@@ -107,6 +110,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
 import store from '../store'
+import { getCompanyList } from '../api/company'
 
 export default {
   name: 'SessionExpired',
@@ -156,7 +160,8 @@ export default {
           .dispatch('login/loginAction', {
             email: this.userName,
             password: this.password,
-            router: this.$router
+            router: this.$router,
+            sessionExpired: true
           })
           .then((resp) => {
             this.$emit('closeSessionExpired')
@@ -164,12 +169,8 @@ export default {
       }
     }
   },
-  beforeDestroy() {
-    debugger
-    if (!sessionCheck) {
-      AuthenticationService.removeToken()
-      this.$router.push('/login')
-    }
+  mounted() {
+    window.addEventListener('unload', this.refresh)
   }
 }
 </script>
