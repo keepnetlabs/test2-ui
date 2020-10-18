@@ -115,6 +115,7 @@
       transition="scale-transition"
       :mobile-break-point="767"
       permanent
+      touchless
       class="page-nav"
       :class="{ 'bg-blur': sessionCheck }"
     >
