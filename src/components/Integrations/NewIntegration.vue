@@ -37,85 +37,65 @@
       icon-name="mdi-plus"
     >
       <template v-slot:overlay-body>
-        <v-list-item class="pl-0 pr-0">
-          <v-list-item-content>
-            <v-list-item-title class="new-integration__title">
-              {{ integrationId ? 'Edit Integration' : 'Add New Integration' }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="new-integration__subtitle">
-              Add new integration to your Integrations
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
+        <app-modal-body-header
+          :title="integrationId ? 'Edit Integration' : 'Add New Integration'"
+          sub-title="Add new integration to your Incident Responder"
+        />
         <v-form ref="form" lazy-validation>
-          <v-list-item class="px-0 mt-8">
-            <v-list-item-content>
-              <label class="new-integration__label">Integration Name</label>
-              <v-text-field
-                id="integration-name"
-                v-model.trim="formValues.name"
-                :rules="[nameValidation.required, nameValidation.empty]"
-                class="new-integration__textfield mt-2"
-                dense
-                height="40"
-                outlined
-                placeholder="Enter Name"
-                required
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0">
-            <v-list-item-content>
-              <label class="new-integration__label">Description</label>
-              <v-text-field
-                id="description"
-                v-model.trim="formValues.description"
-                :rules="[descriptionValidation.required, descriptionValidation.empty]"
-                class="new-integration__textfield mt-2"
-                dense
-                height="40"
-                outlined
-                placeholder="Enter description"
-                required
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0">
-            <v-list-item-content>
-              <label class="new-integration__label">Integration Type</label>
-              <v-select
-                v-model.trim="formValues.analysisEngineTypeResourceId"
-                :items="integrationTypes"
-                :rules="[integrationTypeRules.required, integrationTypeRules.empty]"
-                class="new-integration__select mt-2"
-                dense
-                height="40"
-                item-text="name"
-                item-value="resourceId"
-                outlined
-                placeholder="Select integration type"
-                required
-                @input="handleIntegrationTypeChange"
-              ></v-select>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="px-0">
-            <v-list-item-content>
-              <label class="new-integration__label">API URL</label>
-              <v-text-field
-                id="api-url"
-                v-model.trim="formValues.apiUrl"
-                :rules="[apiUrlRules.required, apiUrlRules.format]"
-                class="new-integration__textfield mt-2"
-                dense
-                height="40"
-                outlined
-                placeholder="Enter API URL"
-                required
-                @input="handleApiKeyChange"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
+          <form-group title="Integration Name" has-hint>
+            <v-text-field
+              id="integration-name"
+              v-model.trim="formValues.name"
+              :rules="[nameValidation.required]"
+              dense
+              hint="*Required"
+              persistent-hint
+              outlined
+              placeholder="Enter Name"
+              required
+            ></v-text-field>
+          </form-group>
+          <form-group title="Description">
+            <v-text-field
+              id="description"
+              v-model.trim="formValues.description"
+              dense
+              outlined
+              placeholder="Enter description"
+              required
+            ></v-text-field>
+          </form-group>
+          <form-group title="Integration Type" has-hint>
+            <v-select
+              v-model.trim="formValues.analysisEngineTypeResourceId"
+              :items="integrationTypes"
+              :rules="[integrationTypeRules.required]"
+              hint="*Required"
+              persistent-hint
+              dense
+              item-text="name"
+              item-value="resourceId"
+              outlined
+              placeholder="Select integration type"
+              required
+              @input="handleIntegrationTypeChange"
+            ></v-select>
+          </form-group>
+          <form-group title="API URL" has-hint>
+            <v-text-field
+              id="api-url"
+              v-model.trim="formValues.apiUrl"
+              :rules="[apiUrlRules.required, apiUrlRules.format]"
+              hint="*Required"
+              persistent-hint
+              dense
+              height="40"
+              outlined
+              placeholder="Enter API URL"
+              required
+              @input="handleApiKeyChange"
+            ></v-text-field>
+          </form-group>
           <v-list-item class="px-0">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -138,6 +118,8 @@
                     dense
                     height="40"
                     outlined
+                    hint="*Required"
+                    persistent-hint
                     placeholder="Enter API Key"
                     required
                     @input="handleApiKeyChange"
@@ -150,25 +132,30 @@
                   </div>
                   <div v-if="!!item.status" class="new-integration__api-keys__connection-status">
                     <v-icon
-                      v-if="item.status == 'loading'"
+                      v-if="item.status === 'loading'"
                       class="ml-1 loading-spin"
                       color="#00bcd4"
                       left
                       medium
                       >mdi-rotate-left
                     </v-icon>
-                    <v-icon v-if="item.status == 'success'" class="ml-1" color="#43a047" left medium
+                    <v-icon
+                      v-if="item.status === 'success'"
+                      class="ml-1"
+                      color="#43a047"
+                      left
+                      medium
                       >mdi-check
                     </v-icon>
                     <v-icon
-                      v-if="item.status == 'failed' && loadingState.length"
+                      v-if="item.status === 'failed' && loadingState.length"
                       class="ml-1"
                       color="#f56c6c"
                       left
                       medium
                       >mdi-close
                     </v-icon>
-                    <div v-if="item.status == 'failed' && !loadingState.length">
+                    <div v-if="item.status === 'failed' && !loadingState.length">
                       <button
                         :class="{
                           'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
@@ -248,7 +235,6 @@
                   outlined
                   persistent-hint
                   placeholder="Enter Tag"
-                  required
                   small-chips
                 ></v-combobox>
               </div>
@@ -398,15 +384,18 @@ import {
   getIntegrationDetails,
   updateIntegration,
   testAnalysis
-} from '../../api/integrations'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+} from '@/api/integrations'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
-
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'NewIntegration',
   components: {
-    AppModal
+    FormGroup,
+    AppModal,
+    AppModalBodyHeader
   },
   props: {
     showModal: {
@@ -474,7 +463,7 @@ export default {
     getIntegrationTypes()
       .then((response) => {
         const {
-          data: { data, status }
+          data: { data }
         } = response
 
         this.integrationTypes = data
@@ -483,7 +472,7 @@ export default {
             (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
           ) || {}
       })
-      .catch((error) => {
+      .catch(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           message: 'Error when getting integrations type!'
@@ -524,7 +513,7 @@ export default {
               message: 'Integration created successfuly!'
             })
           })
-          .catch((error) => {
+          .catch(() => {
             this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -763,7 +752,7 @@ export default {
   }
 
   .v-list-item {
-    margin-bottom: 1px;
+    //margin-bottom: 1px;
   }
 
   .v-list-item__content > *:not(:last-child) {
@@ -783,6 +772,7 @@ export default {
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
+    background: white;
     color: #ff5252 !important;
 
     position: absolute;
@@ -949,8 +939,8 @@ export default {
     }
 
     &__combobox {
-      .v-input input {
-        max-height: 38px !important;
+      .v-chip {
+        margin: 4px !important;
       }
     }
 
@@ -965,7 +955,7 @@ export default {
       max-width: 554px !important;
       justify-content: space-between;
       align-items: center;
-      margin-top: -7px;
+      margin-top: 6px;
       margin-bottom: 12px;
 
       &-left-side {

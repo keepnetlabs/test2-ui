@@ -37,17 +37,20 @@ export default {
     status: {
       type: Boolean
     },
-    selectedIntegration: {
-      type: Object,
-      default() {
-        return {
-          name: ''
-        }
-      }
-    }
+    selectedIntegration: {}
   },
   computed: {
     getIntegrationName() {
+      const constructorName = this.selectedIntegration.constructor.name
+      if (constructorName === 'Object') {
+        return this.selectedIntegration.name
+      } else if (constructorName === 'Array') {
+        if (this.selectedIntegration.length === 1) {
+          return this.selectedIntegration[0].name
+        } else {
+          return `${this.selectedIntegration.length} integrations`
+        }
+      }
       return this.selectedIntegration.name || ''
     }
   },
@@ -56,7 +59,23 @@ export default {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      this.$emit('handleDelete', this.selectedIntegration)
+      const constructorName = this.selectedIntegration.constructor.name
+      const action =
+        constructorName === 'Object'
+          ? 'handleDelete'
+          : constructorName === 'Array'
+          ? this.selectedIntegration.length === 1
+            ? 'handleDelete'
+            : 'handleMultipleDelete'
+          : 'handleDelete'
+      const data =
+        constructorName === 'Object'
+          ? this.selectedIntegration
+          : constructorName === 'Array' && this.selectedIntegration.length === 1
+          ? this.selectedIntegration[0]
+          : this.selectedIntegration
+      this.$emit(action, data)
+      this.closeModal()
     }
   }
 }
