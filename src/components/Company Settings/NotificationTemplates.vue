@@ -112,7 +112,7 @@ export default {
           action: 'handleAddNotificationTemplates',
           tooltip: 'Add a Notification Template'
         },
-        pageSizes: [5, 10, 25, 50, 100],
+        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_NOTIFICATION_TEMPLATE_DEFINED,
           subMes: 'Create a new user directory integration',

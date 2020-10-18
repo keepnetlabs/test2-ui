@@ -35,6 +35,7 @@
   .v-tabs-slider-wrapper {
     bottom: -1px !important;
     color: #0486fe !important;
+  
   }
   .v-slide-group__content.v-tabs-bar__content:after {
     display: none;
@@ -105,4 +106,25 @@
     color: #2196f3!important;
     font-weight: 600 !important;
   }
+}
+
+.el-tabs__item {
+  font-size: 16px;
+  color:rgba(0, 0, 0, 0.87) !important;
+  padding: 0 16px;
+  line-height: 40px;
+  height: 44px;
+  &.is-active{
+    font-weight: 600;
+    color:#2196f3 !important;
+  }
+}
+.el-tabs__header{
+  margin: 0;
+}
+.el-tabs__content{
+  padding: 0 2px;
+}
+.el-tabs__active-bar{
+  background-color: #0486fe;
 }

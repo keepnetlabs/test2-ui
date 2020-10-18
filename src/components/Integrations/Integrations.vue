@@ -18,6 +18,7 @@
       :status="showDeleteModal"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
+      @handleMultipleDelete="handleDeleteMultiple"
       :selected-integration="selectedIntegration"
     />
     <DatatableLoading :loading="loading">
@@ -36,6 +37,7 @@
           :sizeable="true"
           :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
+          :select-event="tableOptions.selectEvent"
           :row-actions="tableOptions.rowActions"
           :addButton="tableOptions.addButton"
           @deleteAction="showDeleteModal = true"
@@ -44,6 +46,7 @@
           @onEmptyBtnClicked="modalStatus = true"
           @addAction="changeModalStatus(true)"
           @downloadEvent="exportIntegrationList"
+          @handleMultipleDelete="handleActionDelete"
           @sortChangedEvent="sortChangedEvent($event)"
           @paginationChangedEvent="paginationChangedEvent($event)"
           @searchChangedEvent="searchChangedEvent($event)"
@@ -212,7 +215,13 @@ export default {
             action: 'deleteAction'
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: true,
+          download: false
+        },
+        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,
           btn: 'ADD AN INTEGRATION',
@@ -248,6 +257,9 @@ export default {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()
     },
+    handleDeleteMultiple(selections) {
+      selections.forEach((item) => this.handleDelete(item))
+    },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
@@ -276,7 +288,6 @@ export default {
             message: 'Error when deleting integration!'
           })
         })
-      this.showDeleteModal = false
     },
     handleEdit(row) {
       this.modalStatus = true

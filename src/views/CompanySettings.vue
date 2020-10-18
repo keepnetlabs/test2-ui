@@ -2,34 +2,17 @@
   <div class="company-settings" id="company-settings">
     <v-layout wrap class="company-settings__container">
       <v-card class="company-settings__container-card">
-        <v-tabs
-          active-class="pr-tab-active"
-          background-color="transparent"
-          color="basil"
-          class="k-tabs"
-          v-model="tab"
-          show-arrows
-        >
-          <v-tab
-            :key="tab"
-            @click="changeTabStatus(index)"
-            class="k-tab"
-            v-for="(tab, index) in tabItems"
-          >
-            {{ tab }}
-          </v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab">
-          <v-tab-item>
-            <s-m-t-p-settings ref="refSmtpSettings" />
-          </v-tab-item>
-          <v-tab-item>
-            <notification-templates ref="refNotificationTemplates" />
-          </v-tab-item>
-          <v-tab-item>
-            <custom-api ref="refCustomApi" />
-          </v-tab-item>
-        </v-tabs-items>
+        <el-tabs v-model="tab">
+          <el-tab-pane label="SMTP Settings" name="first">
+            <s-m-t-p-settings ref="refSmtpSettings"
+          /></el-tab-pane>
+          <el-tab-pane label="Notification Templates" name="second">
+            <notification-templates ref="refNotificationTemplates"
+          /></el-tab-pane>
+          <el-tab-pane label="Rest API" name="third">
+            <custom-api ref="refCustomApi"
+          /></el-tab-pane>
+        </el-tabs>
       </v-card>
     </v-layout>
   </div>
@@ -49,7 +32,7 @@ export default {
   },
   data() {
     return {
-      tab: 0,
+      tab: 'first',
       tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'

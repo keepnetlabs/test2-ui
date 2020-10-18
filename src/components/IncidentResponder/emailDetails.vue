@@ -892,7 +892,7 @@ export default {
       title: 'Url Analysis',
       subTitle: ''
     },
-    pageSizes: [5, 10, 25, 50, 100],
+    pageSizes: [5, 10, 25],
     iEmpty: {
       message: 'No URL to display'
     },

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="feedback-popup">
     <v-card style="width: 600px;">
-      <v-list-item>
+      <v-list-item class="feedback-popup__header">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">
             mdi-message-alert
@@ -14,12 +14,26 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <div class="feedback-text-area pt-6">
-        <v-textarea outlined label="I would like to see" v-model="feedbackMessage"></v-textarea>
+      <div class="feedback-popup__text-area">
+        <v-form ref="feedbackForm">
+          <v-textarea
+            filled
+            auto-grow
+            label="I would like to see"
+            rows="4"
+            row-height="30"
+            shaped
+            v-model="feedbackMessage"
+            no-resize
+            required
+            class="feedback-popup__text-area-text"
+            :rules="[(v) => !!v || 'Required']"
+          ></v-textarea>
+        </v-form>
       </div>
-      <div class="feedback-button d-flex flex-row flex-wrap justify-end">
-        <v-btn text color="#2196f3" v-on:click="onCancelClicked">CANCEL</v-btn>
-        <v-btn text color="#2196f3" v-on:click="onFeedbackSend">SEND</v-btn>
+      <div class="feedback-button">
+        <v-btn class="feedback-button--cancel" text v-on:click="onCancelClicked">CANCEL</v-btn>
+        <v-btn class="feedback-button--success" text v-on:click="onFeedbackSend">SEND</v-btn>
       </div>
     </v-card>
   </div>
@@ -27,12 +41,14 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { sendFeedback } from '../api/dashboard'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'FeedbackPopup',
   data() {
     return {
-      feedbackMessage: ''
+      feedbackMessage: null
     }
   },
   methods: {
@@ -41,7 +57,30 @@ export default {
       changeFeedbackPopup: 'dashboard/changeFeedbackPopup'
     }),
     onFeedbackSend() {
-      this.sendFeedback(this.message)
+      let payload = { Message: this.feedbackMessage }
+      if (this.$refs.feedbackForm.validate()) {
+        sendFeedback(payload)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message:
+                (response && response.data && response.data.message) ||
+                'Feedback sent successfully',
+              color: 'green',
+              icon: 'mdi-check-circle-outline'
+            })
+            this.changeFeedbackPopup(false)
+          })
+          .catch((error) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message:
+                (error.response && error.response.data && error.response.data.message) ||
+                'Feedback could not send',
+              color: 'red',
+              icon: 'mdi-alert-circle'
+            })
+            this.changeFeedbackPopup(false)
+          })
+      }
     },
     onCancelClicked() {
       this.changeFeedbackPopup(false)
@@ -50,74 +89,94 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-::v-deep fieldset {
-  border-radius: 6px;
-  border-color: #2196f3 !important;
+<style lang="scss">
+.feedback-popup {
+  &__header {
+    padding: 24px !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  &__text-area {
+    margin-top: 24px;
+    padding: 0 24px !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .feedback-button {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    &--cancel {
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: center;
+      color: #f56c6c;
+    }
+    &--success {
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      color: #2196f3;
+    }
+  }
 }
-:v-deep fieldset:focus {
-  border-color: #2196f3 !important;
-}
-::v-deep textarea {
-  font-size: 13px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72) !important;
-  padding-left: 20px !important;
-  padding-top: 20px !important;
-}
-::v-deep .theme--dark.v-label {
-  background-color: transparent;
-  color: #2196f3 !important;
-}
-::v-deep v-input__slot {
-  color: #2196f3 !important;
-}
-.feedback-title {
-  font-family: 'Helvetica', sans-serif !important;
-  font-size: 16px !important;
-  line-height: 1.2 !important;
-  color: rgba(0, 0, 0, 0.87);
-}
-.v-list-item__subtitle {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.2 !important;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87) !important;
-  margin-left: 2px;
-}
-::v-deep .v-sheet {
-  border-radius: 20px;
-  background-color: white;
-  padding: 24px;
-}
-.v-card:not(.v-sheet--tile):not(.v-card--shaped) {
-  border-radius: 20px;
-}
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
+.feedback-popup__text-area-text {
+  .v-input__slot {
+    border-radius: 8px;
+    border: solid 1px #2196f3;
+    background: #ffffff !important;
+    &:before,
+    &:after {
+      border: none !important;
+    }
+    .v-label {
+      font-size: 13px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(56, 59, 65, 0.72);
+    }
+  }
+  textarea {
+    padding-top: 24px !important;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    font-stretch: normal !important;
+    font-style: normal !important;
+    line-height: normal !important;
+    letter-spacing: normal !important;
+    color: #383b41 !important;
+  }
+  &:hover {
+    .v-input__slot {
+      border-radius: 8px;
+      border: solid 1px #2196f3;
+      background: #ffffff;
+      &:before,
+      &:after {
+        border: none !important;
+      }
+    }
+  }
+  &:active {
+    .v-input__slot {
+      border-radius: 8px;
+      border: solid 1px #2196f3;
+      background: #ffffff;
+      &:before,
+      &:after {
+        border: none !important;
+      }
+    }
+  }
 }
 </style>

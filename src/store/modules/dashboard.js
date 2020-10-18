@@ -364,21 +364,6 @@ const dashboard = {
     },
     changeFeedbackPopup({ commit }, payload) {
       commit('CHANGE_FEEDBACK_POPUP', payload)
-    },
-    sendFeedback({ commit, dispatch }, payload) {
-      sendFeedback(payload)
-        .then(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Feedback Sended Successful', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'green', { root: true })
-          dispatch('changeFeedbackPopup', false)
-        })
-        .catch(() => {
-          dispatch('common/setSnackStatus', true, { root: true })
-          dispatch('common/setErrorMessage', 'Error Occured', { root: true })
-          commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-          dispatch('changeFeedbackPopup', false)
-        })
     }
   }
 }

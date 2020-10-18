@@ -714,13 +714,15 @@
         </div>
         <div class="empty-table" v-else>
           <div class="empty-inline">
-            <h2>{{ empty.message }}</h2>
-            <p>{{ empty.subMes }}</p>
-            <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
-              <!-- empty action -->
-              <v-icon class="mr-2">{{ empty.icon }}</v-icon>
-              {{ empty.btn }}
-            </v-btn>
+            <slot name="empty-table-inline">
+              <h2>{{ empty.message }}</h2>
+              <p>{{ empty.subMes }}</p>
+              <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
+                <!-- empty action -->
+                <v-icon class="mr-2">{{ empty.icon }}</v-icon>
+                {{ empty.btn }}
+              </v-btn>
+            </slot>
           </div>
         </div>
       </div>
@@ -731,7 +733,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
-          :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
+          :page-sizes="pageSizes || [5, 10, 25]"
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
@@ -755,7 +757,7 @@
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="countRow || rowCount"
-          :page-sizes="pageSizes || [5, 10, 20, 50, 100]"
+          :page-sizes="pageSizes || [5, 10, 25]"
           :total="filteredDataLength"
           @current-change="handleFilteredCurrentChange"
           @size-change="handleFilteredSizeChange"
@@ -912,7 +914,8 @@ export default {
     },
     pageSizes: {
       type: Array,
-      required: false
+      required: false,
+      default: () => [5, 10, 25]
     },
     defaultSort: {
       type: String,
@@ -1549,7 +1552,6 @@ export default {
       this.$emit('handleSelectionChange', val)
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
-      //console.log('rows', rows)
       for (let row of rows) {
         if (row.children) {
           this.selectChildrenByRowCheckbox(row.children, selection)
@@ -1725,7 +1727,7 @@ export default {
           this.$emit('syncUser', scope)
           break
         default:
-          this.$emit(action, this.multipleSelection.length > 0 ? this.multipleSelection : row)
+          this.$emit(action, row)
           return false
       }
     },
@@ -1823,6 +1825,7 @@ export default {
           this.$emit('deleteFunction', selections)
           break
         default:
+          this.$emit('handleMultipleDelete', this.multipleSelection)
           break
       }
       // You should handle the Delete row action in here

@@ -185,7 +185,7 @@ const router = new Router({
         },
         {
           path: '/mailConfiguration',
-          name: 'MailConfiguration',
+          name: 'Mail Configurations',
           component: MailConfiguration,
           meta: {
             isAuthenticated: true

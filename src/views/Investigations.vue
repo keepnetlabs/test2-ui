@@ -109,8 +109,8 @@ import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import AppDialog from '../components/AppDialog'
 import { mapActions, mapGetters } from 'vuex'
-import { exportInvestigationList } from '../api/incidentResponder'
-import { getStoreValue } from '../model/constants/commonConstants'
+import { exportInvestigationList } from '@/api/incidentResponder'
+import { getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import DatatableLoading from '../components/SkeletonLoading/DatatableLoading'
 export default {
@@ -232,7 +232,7 @@ export default {
         // minWidth: 60
       }
     ],
-    pageSizes: [5, 10, 25, 50, 100],
+    pageSizes: [5, 10, 25],
     rowActions: [
       {
         name: 'Details',
@@ -259,8 +259,8 @@ export default {
     selectEvent: {
       clipboard: true,
       edit: false,
-      delete: true,
-      download: true
+      delete: false,
+      download: false
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4'],

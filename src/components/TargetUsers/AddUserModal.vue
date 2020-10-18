@@ -7,130 +7,132 @@
     className="add-user-overlay"
   >
     <template v-slot:overlay-body>
-      <v-list-item class="add-user-overlay__list-item mt-8">
-        <v-list-item-content>
-          <v-list-item-title class="add-user-overlay__main-title">
-            {{ editData ? 'Edit  User Manually' : 'Add New User Manually' }}
-          </v-list-item-title>
-          <v-list-item-subtitle class="add-user-overlay__main-sub-title"
-            >Define user properties
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="add-user-overlay__list-item mt-6">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="firstName">First Name</label>
-          <v-text-field
-            placeholder="Enter first name"
-            outlined
-            dense
-            v-model.trim="formValues.firstName"
-            id="firstName"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="lastName">Last Name</label>
-          <v-text-field
-            placeholder="Enter last name"
-            outlined
-            dense
-            v-model.trim="formValues.lastName"
-            id="lastName"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="email">Email</label>
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
-            v-model.trim="formValues.email"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.mail(v, 'Invalid email address')
-            ]"
-            id="email"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="department">Department</label>
-          <v-text-field
-            placeholder="Enter department name"
-            outlined
-            dense
-            v-model.trim="formValues.department"
-            id="department"
-            height="40"
-          ></v-text-field>
-        </v-list-item-content>
-      </v-list-item>
+      <v-form ref="refForm">
+        <v-list-item class="add-user-overlay__list-item mt-8">
+          <v-list-item-content>
+            <v-list-item-title class="add-user-overlay__main-title">
+              {{ editData ? 'Edit  User Manually' : 'Add New User Manually' }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="add-user-overlay__main-sub-title"
+              >Define user properties
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item mt-6">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="firstName">First Name</label>
+            <v-text-field
+              placeholder="Enter first name"
+              outlined
+              dense
+              v-model.trim="formValues.firstName"
+              id="firstName"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="lastName">Last Name</label>
+            <v-text-field
+              placeholder="Enter last name"
+              outlined
+              dense
+              v-model.trim="formValues.lastName"
+              id="lastName"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="email">Email</label>
+            <v-text-field
+              placeholder="Enter email address"
+              outlined
+              dense
+              v-model.trim="formValues.email"
+              hint="*Required"
+              persistent-hint
+              :rules="[
+                (v) => validations.required(v, 'Required'),
+                (v) => validations.mail(v, 'Invalid email address')
+              ]"
+              id="email"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="department">Department</label>
+            <v-text-field
+              placeholder="Enter department name"
+              outlined
+              dense
+              v-model.trim="formValues.department"
+              id="department"
+              height="40"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
 
-      <v-list-item
-        class="add-user-overlay__list-item"
-        :key="index"
-        v-for="(item, index) in customFields"
-      >
-        <v-list-item-content>
-          <label class="add-user-overlay__label">{{ item.name }}</label>
-          <v-text-field
-            outlined
-            dense
-            v-model.trim="customFieldsModels[item.name]"
-            :placeholder="`Enter ${item.name}`"
-            height="40"
-            :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
-            v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
-          ></v-text-field>
-          <el-date-picker
-            v-model.trim="customFieldsModels[item.name]"
-            :placeholder="`Enter ${item.name}`"
-            type="date"
-            v-else-if="item.fieldDataType === 'Date'"
-          />
-          <v-checkbox
-            v-model.trim="customFieldsModels[item.name]"
-            :label="item.name"
-            v-if="item.fieldDataType === 'Boolean'"
-          />
-        </v-list-item-content>
-      </v-list-item>
+        <v-list-item
+          class="add-user-overlay__list-item"
+          :key="index"
+          v-for="(item, index) in customFields"
+        >
+          <v-list-item-content>
+            <label class="add-user-overlay__label">{{ item.name }}</label>
+            <v-text-field
+              outlined
+              dense
+              v-model.trim="customFieldsModels[item.name]"
+              :placeholder="`Enter ${item.name}`"
+              height="40"
+              :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
+              v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
+            ></v-text-field>
+            <el-date-picker
+              v-model.trim="customFieldsModels[item.name]"
+              :placeholder="`Enter ${item.name}`"
+              type="date"
+              v-else-if="item.fieldDataType === 'Date'"
+            />
+            <v-checkbox
+              v-model.trim="customFieldsModels[item.name]"
+              :label="item.name"
+              v-if="item.fieldDataType === 'Boolean'"
+            />
+          </v-list-item-content>
+        </v-list-item>
 
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="priority">Priority</label>
-          <v-select
-            :items="priorityItems"
-            outlined
-            dense
-            v-model.trim="formValues.priority"
-            id="department"
-            height="40"
-          ></v-select>
-        </v-list-item-content>
-      </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="priority">Priority</label>
+            <v-select
+              :items="priorityItems"
+              outlined
+              dense
+              v-model.trim="formValues.priority"
+              id="department"
+              height="40"
+            ></v-select>
+          </v-list-item-content>
+        </v-list-item>
 
-      <v-list-item class="add-user-overlay__list-item">
-        <v-list-item-content>
-          <label class="add-user-overlay__label" for="isActive">Active</label>
-          <v-switch
-            id="isActive"
-            v-model="formValues.isActive"
-            color="#2196f3"
-            :label="formValues.isActive ? 'Yes' : 'No'"
-          />
-        </v-list-item-content>
-      </v-list-item>
+        <v-list-item class="add-user-overlay__list-item">
+          <v-list-item-content>
+            <label class="add-user-overlay__label" for="isActive">Active</label>
+            <v-switch
+              id="isActive"
+              v-model="formValues.isActive"
+              color="#2196f3"
+              :label="formValues.isActive ? 'Yes' : 'No'"
+            />
+          </v-list-item-content>
+        </v-list-item>
+      </v-form>
     </template>
     <template v-slot:overlay-footer>
       <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
@@ -153,6 +155,7 @@ import { required, mail } from '../../utils/validations'
 import { createTargetUser, getTargetGroups, updateTargetUser } from '../../api/targetUsers'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppModal from '../AppModal'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'AddUserModal',
   components: { AppModal },
@@ -204,6 +207,12 @@ export default {
       this.$emit('closeAddUserModal')
     },
     submit() {
+      if (!this.$refs.refForm.validate()) {
+        return this.$nextTick(() => {
+          const el = this.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
+      }
       if (this.editData) {
         this.callForUpdateTargetUser()
       } else {
@@ -225,7 +234,7 @@ export default {
           } else {
             this.$store.dispatch('common/createSnackBar', {
               message: '1 user added to Users List ',
-              icon: 'mdi-check-circle-outline',
+              icon: 'mdi-check-circle',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
             })
             this.$emit('closeAddUserModalWithUpdate')

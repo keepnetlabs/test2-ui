@@ -3,7 +3,9 @@
     <delete-user-modal
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
+      :isMultiple="isMultipleDelete"
       @deleteAction="handleDeleteUser"
+      @deleteMultiple="handleDeleteUsers"
       v-if="isWantToShowDeleteUserModal"
       @changeModalStatus="changeDeleteModalStatus"
     />
@@ -57,12 +59,13 @@
           @createGroupWithUser="handleCreateGroupWithUser"
           @submenuItemClick="handleSubMenuItemClick"
           @syncUser="handleSyncUser"
-          @delete="handleDelete"
+          @deleteAction="handleDelete"
           ref="refPeopleTable"
           @editTargetUsers="handleEditTargetUsers"
           @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
+          @handleMultipleDelete="handleMultipleDelete"
         >
           <template v-slot:addUsers>
             <v-menu :offset-y="true" bottom left>
@@ -150,6 +153,7 @@ export default {
     isWantToImportFile: false,
     tableData: [],
     loading: true,
+    isMultipleDelete: false,
     isWantToShowDeleteUserModal: false,
     selectedSyncIndex: null,
     isWantToShowAddUsersManuallyModal: false,
@@ -252,12 +256,12 @@ export default {
           filterableType: 'text'
         }
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
-        edit: true,
+        edit: false,
         delete: true,
-        download: true
+        download: false
       },
       iEmpty: {
         message: LABEL_STORE.NO_TARGET_USER_ADDED,
@@ -299,7 +303,7 @@ export default {
         {
           name: 'Delete',
           icon: 'mdi-delete',
-          action: 'delete'
+          action: 'deleteAction'
         }
       ]
     },
@@ -393,8 +397,15 @@ export default {
         this.selectedSyncIndex = null
       }, 5000)
     },
-    handleDelete(row) {
+    handleMultipleDelete(selections = []) {
+      this.isMultipleDelete = true
       this.changeDeleteModalStatus(true)
+      this.selectedRow = selections
+    },
+    handleDelete(row) {
+      this.isMultipleDelete = false
+      this.changeDeleteModalStatus(true)
+      console.log('row', row)
       this.selectedRow = row
     },
     closeAddUserModal() {
@@ -406,19 +417,20 @@ export default {
     changeAddUsersManuallyModalStatus(status) {
       this.isWantToShowAddUsersManuallyModal = status
     },
+    handleDeleteUsers(selections) {
+      selections.forEach((item) => this.handleDeleteUser(item))
+    },
     handleDeleteUser(selectedUser) {
-      deleteTargetUser(selectedUser.resourceId)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.callForTargetUsers()
-          }
-        })
-        .catch((error) => {})
+      deleteTargetUser(selectedUser.resourceId).then((response) => {
+        if (response.data && response.data.message) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.callForTargetUsers()
+        }
+      })
     },
     callForTargetUsers() {
       this.loading = true

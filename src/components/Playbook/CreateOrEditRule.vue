@@ -1,18 +1,5 @@
 <template>
-  <div flat class="playbook-rule-form">
-    <v-card flat light class="header">
-      <v-list-item class="pl-0 pr-0">
-        <div class="v-btn v-cart-icon-wrapper">
-          <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>
-        </div>
-        <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class=""
-            >{{ playbookId ? 'Edit' : 'Create New' }} Rule</v-list-item-title
-          >
-        </v-list-item-content>
-      </v-list-item>
-    </v-card>
-
+  <div class="playbook-rule-form">
     <div class="flex-grow-1 no-gutters">
       <v-col>
         <v-stepper light v-model="activeStep" class="wizard">
@@ -237,6 +224,7 @@ import ActionItem from './ActionItem'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { maxLength, required } from '../../utils/validations'
 import { createPlaybook, getPlaybook, updatePlaybook } from '../../api/playbook'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'CreateOrEditRule',
@@ -500,6 +488,11 @@ export default {
             this.$emit('closeFormWithUpdate')
           })
           .catch((error) => {})
+      } else {
+        return this.$nextTick(() => {
+          const el = ref.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     callForUpdatePlaybook() {
@@ -570,6 +563,11 @@ export default {
             this.$emit('closeFormWithUpdate')
           })
           .catch((error) => {})
+      } else {
+        return this.$nextTick(() => {
+          const el = ref.$refs.refForm.$el.querySelector('.error--text')
+          el.scrollIntoView(false)
+        })
       }
     },
     nextStep() {

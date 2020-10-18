@@ -9,6 +9,7 @@
       :status="showDeleteGroupModal"
       @changeDeleteGroupModalStatus="changeDeleteGroupModalStatus"
       @handleDelete="handleDeleteGroup"
+      @handleMultipleDelete="handleDeleteGroupMultiple"
       :selected-row="selectedRow"
     />
     <DatatableLoading :loading="loading">
@@ -27,6 +28,7 @@
           :extended-view-options="tableOptions.extendedViewOptions"
           :extendedViewValue="extendedViewValue"
           :selectEvent="tableOptions.selectEvent"
+          @handleMultipleDelete="handleMultipleDelete"
           :selectable="true"
           ref="refGroupsTable"
           @syncWithLDAP="handleSyncWithLDAP"
@@ -68,7 +70,7 @@ import {
   deleteTargetUser,
   deleteTargetGroup,
   searchTargetGroups
-} from '../../api/targetUsers'
+} from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import DeleteGroupModal from './DeleteGroupModal'
@@ -77,8 +79,8 @@ import {
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
-} from '../../model/constants/commonConstants'
-import { required } from '../../utils/validations'
+} from '@/model/constants/commonConstants'
+import { required } from '@/utils/validations'
 
 export default {
   name: 'Groups',
@@ -155,12 +157,12 @@ export default {
             width: 300
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: true,
           delete: true,
-          download: true
+          download: false
         },
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
@@ -273,9 +275,13 @@ export default {
           break
       }
     },
+    handleMultipleDelete(selection) {
+      this.selectedRow = selection
+      this.changeDeleteGroupModalStatus(true)
+    },
     callForCreateNewUserGroup(group) {
       createTargetGroup(group)
-        .then((response) => {
+        .then(() => {
           this.changeNewUserGroupStatus(false)
           this.$store.dispatch('common/createSnackBar', {
             message: `New group named ${group.name} created`,
@@ -311,7 +317,7 @@ export default {
           let data = response.data.data
           this.tableData = data.results.length ? data.results : []
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
         })
         .finally(() => (this.loading = false))
@@ -321,7 +327,7 @@ export default {
     },
     callForUpdateTargetGroup(payload) {
       updateTargetGroup(payload)
-        .then((response) => {
+        .then(() => {
           this.callForTargetGroups()
         })
         .catch((error) => {
@@ -340,6 +346,9 @@ export default {
         this.extendedViewValue = [...selections]
       }
     },
+    handleDeleteGroupMultiple(selection) {
+      selection.forEach((item) => this.handleDeleteGroup(item))
+    },
     handleDeleteGroup(selectedRow) {
       deleteTargetGroup(selectedRow.resourceId)
         .then((response) => {
@@ -352,13 +361,13 @@ export default {
             this.callForTargetGroups()
           }
         })
-        .catch((error) => {})
+        .catch(() => {})
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
+      requestBody.map((x) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
@@ -366,7 +375,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -384,7 +393,7 @@ export default {
       let items = []
       let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }

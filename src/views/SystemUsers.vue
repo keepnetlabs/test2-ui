@@ -2,26 +2,12 @@
   <div class="system-users" id="system-users">
     <v-layout wrap class="system-users__container">
       <v-card class="system-users__container-card">
-        <v-tabs
-          active-class="pr-tab-active"
-          background-color="transparent"
-          color="basil"
-          class="k-tabs"
-          v-model="tab"
-        >
-          <v-tab
-            :key="tab"
-            @click="changeTabStatus(index)"
-            class="k-tab"
-            v-for="(tab, index) in tabItems"
-          >
-            {{ tab }}
-          </v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="tab">
-          <v-tab-item> <people ref="refPeople" /> </v-tab-item>
-          <v-tab-item> <user-roles ref="refUserRoles" /> </v-tab-item>
-        </v-tabs-items>
+        <el-tabs v-model="tab">
+          <el-tab-pane label="People" name="first"><people ref="refPeople" /></el-tab-pane>
+          <el-tab-pane label="User Roles" name="second">
+            <user-roles ref="refUserRoles" />
+          </el-tab-pane>
+        </el-tabs>
       </v-card>
     </v-layout>
   </div>
@@ -39,7 +25,7 @@ export default {
   data() {
     return {
       tabItems: ['People', 'User Roles'],
-      tab: 0
+      tab: 'first'
     }
   },
   methods: {
@@ -63,6 +49,9 @@ export default {
 .system-users {
   min-height: 80vh !important;
   padding-top: 10px;
+  .el-tabs__content {
+    margin-top: 24px;
+  }
   &__container {
     padding: 0px 16px 24px 16px !important;
     width: 100%;

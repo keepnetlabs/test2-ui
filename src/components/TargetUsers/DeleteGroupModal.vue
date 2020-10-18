@@ -26,16 +26,24 @@ export default {
     AppDialog
   },
   props: {
-    selectedRow: {
-      type: Object
-    },
+    selectedRow: {},
     status: {
       type: Boolean
     }
   },
   computed: {
     getGroupName() {
-      return this.selectedRow.name
+      const constructorName = this.selectedRow.constructor.name
+      if (constructorName === 'Object') {
+        return this.selectedRow.name
+      } else if (constructorName === 'Array') {
+        if (this.selectedRow.length === 1) {
+          return this.selectedRow[0].name
+        } else {
+          return `${this.selectedRow.length} groups`
+        }
+      }
+      return ''
     }
   },
   methods: {
@@ -43,7 +51,22 @@ export default {
       this.$emit('changeDeleteGroupModalStatus', status)
     },
     handleDelete() {
-      this.$emit('handleDelete', this.selectedRow)
+      const constructorName = this.selectedRow.constructor.name
+      const action =
+        constructorName === 'Object'
+          ? 'handleDelete'
+          : constructorName === 'Array'
+          ? this.selectedRow.length === 1
+            ? 'handleDelete'
+            : 'handleMultipleDelete'
+          : 'handleDelete'
+      const data =
+        constructorName === 'Object'
+          ? this.selectedRow
+          : constructorName === 'Array' && this.selectedRow.length === 1
+          ? this.selectedRow[0]
+          : this.selectedRow
+      this.$emit(action, data)
       this.$emit('changeDeleteGroupModalStatus', false)
     }
   }

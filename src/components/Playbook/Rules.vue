@@ -51,7 +51,7 @@
                 ref="refmatchingInvestigationPlaybookRules"
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :countRow="5"
-                :pageSizes="[5, 10, 20, 50, 100]"
+                :pageSizes="[5, 10, 25]"
                 :showHeader="true"
                 :defaultSort="'subject'"
                 :selectable="false"
@@ -115,14 +115,22 @@
         </datatable>
       </template>
     </DatatableLoading>
-    <v-dialog v-model="showRuleModal" fullscreen scrollable persistent no-click-animation>
-      <CreateOrEditRule
-        :playbookId="selectedPlaybookId"
-        @cancelForm="toggleRuleModal"
-        @closeFormWithUpdate="updateTable"
-        v-if="showRuleModal"
-      />
-    </v-dialog>
+    <app-modal
+      :status="showRuleModal"
+      v-if="showRuleModal"
+      :icon-name="getIconName"
+      :title="getTitle"
+      :show-footer="false"
+    >
+      <template v-slot:overlay-body>
+        <CreateOrEditRule
+          :playbookId="selectedPlaybookId"
+          @cancelForm="toggleRuleModal"
+          @closeFormWithUpdate="updateTable"
+          v-if="showRuleModal"
+        />
+      </template>
+    </app-modal>
   </div>
 </template>
 
@@ -135,14 +143,16 @@ import {
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
-} from '../../model/constants/commonConstants'
-import { getMatchingIncidents } from '../../api/incidentResponder'
+} from '@/model/constants/commonConstants'
+import { getMatchingIncidents } from '@/api/incidentResponder'
 import AppDialog from '../AppDialog'
-import { exportPlaybookRules, deletePlaybookRule } from '../../api/playbook'
+import { exportPlaybookRules, deletePlaybookRule } from '@/api/playbook'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+import AppModal from '@/components/AppModal'
 export default {
   name: 'Rules',
   components: {
+    AppModal,
     Datatable,
     CreateOrEditRule,
     AppDialog,
@@ -266,7 +276,7 @@ export default {
             action: 'deleteAction'
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        pageSizes: [5, 10, 25],
         addButton: {
           show: true,
           action: 'addAction',
@@ -542,6 +552,12 @@ export default {
     ...mapState({
       playbookList: (state) => state.playbook.playbookList
     }),
+    getTitle() {
+      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
+    },
+    getIconName() {
+      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
+    },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.name}`
     }
@@ -551,10 +567,17 @@ export default {
 
 <style lang="scss">
 .playbook-rules {
+  margin-top: 24px;
   .overlay {
     background: white;
     width: 100vw;
     height: 100vh;
+  }
+  .k-overlay__list-item.k-overlay__header {
+    padding: 32px 96px 0 96px;
+    margin-bottom: 24px;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
   }
 }
 </style>

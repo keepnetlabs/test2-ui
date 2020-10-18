@@ -82,7 +82,7 @@
             </div>
           </template>
           <template v-slot:default="props">
-            <v-skeleton-loader :loading="incidentLoading" type="table-tbody">
+            <v-skeleton-loader :loading="incidentLoading" type="article, actions">
               <v-expansion-panels :accordion="false" :multiple="false">
                 <v-expansion-panel
                   v-for="(item, ind) of props.items"
@@ -104,7 +104,7 @@
             </v-skeleton-loader>
           </template>
           <template slot="no-data">
-            <v-skeleton-loader :loading="incidentLoading" type="table-tbody">
+            <v-skeleton-loader :loading="incidentLoading" type="article, actions">
               <div class="empty-communities">
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">

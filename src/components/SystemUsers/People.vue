@@ -13,6 +13,7 @@
         :selected-row="selectedDeleteRow"
         v-if="showDeleteSystemUserModal"
         @handleDelete="callForDeleteUser"
+        @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
       <DatatableLoading :loading="loading">
@@ -28,6 +29,7 @@
             :filterable="true"
             :isServerSide="false"
             :options="true"
+            :select-event="tableOptions.selectEvent"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
             :row-actions="tableOptions.rowActions"
@@ -95,6 +97,17 @@ export default {
             filterableCustomFieldName: 'LastName'
           },
           {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 275,
+            filterableType: 'text'
+          },
+          {
             property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,
@@ -154,7 +167,13 @@ export default {
             width: 180
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
+        pageSizes: [5, 10, 25],
         rowActions: [
           {
             name: 'Edit',
@@ -250,6 +269,7 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
+    deleteMultipleItems(selections) {},
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       let items = []

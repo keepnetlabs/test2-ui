@@ -1,6 +1,11 @@
 <template>
   <div class="session-expired">
-    <v-form lazy-validation ref="refSessionExpiredForm" @submit="onLoginClicked">
+    <v-form
+      lazy-validation
+      ref="refSessionExpiredForm"
+      @submit="onLoginClicked"
+      autocomplete="disabled"
+    >
       <v-card light class="pb-5">
         <v-list-item>
           <v-list-item-content class="d-flex flex-wrap flex-row mt-10 pt-10">
@@ -10,14 +15,31 @@
             >
           </v-list-item-content>
         </v-list-item>
+        <div v-if="isErrorActive" class="login-error-container">
+          <div v-if="isErrorActive" class="login-error-wrapper">
+            <div class="login-error-icon dark pr-2">
+              <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+            </div>
+            <div class="login-error-message pr-1">
+              {{ getErrors }}
+            </div>
+          </div>
+        </div>
         <div class="session-expired__body">
-          <div class="login-user-pass-wrapper pt-10">
+          <div class="login-user-pass-wrapper">
             <div>
               <v-text-field
-                :rules="[rules.required, rules.min]"
+                id="email"
+                :type="'email'"
+                name="email"
+                ref="email"
                 v-model="userName"
-                outlined
+                :rules="[rules.required, rules.email, rules.max]"
+                class="username-field"
+                required
                 label="Username"
+                autocomplete="disabled"
+                outlined
               ></v-text-field>
             </div>
 
@@ -28,10 +50,10 @@
                 :type="show1 ? 'text' : 'password'"
                 name="input-10-2"
                 label="Password"
-                hint="At least 8 characters"
                 v-model="password"
                 outlined
                 @click:append="show1 = !show1"
+                autocomplete="disabled"
               ></v-text-field>
             </div>
             <div>
@@ -82,7 +104,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'SessionExpired',
@@ -101,6 +123,19 @@ export default {
         min: (v) => v.length >= 8 || 'Min 8 characters',
         emailMatch: () => "The email and password you entered don't match"
       }
+    }
+  },
+  computed: {
+    ...mapGetters({
+      getErrors: 'common/getErrors',
+      isErrorActive: 'common/getErrorStatus'
+    })
+  },
+  created() {
+    if (localStorage.getItem('isRemember')) {
+      this.rememberMe = localStorage.getItem('isRemember')
+      this.email = localStorage.getItem('username')
+      this.password = localStorage.getItem('password')
     }
   },
   methods: {
@@ -286,6 +321,56 @@ export default {
     padding-left: 24px;
     padding-right: 24px;
     padding-bottom: 80px;
+  }
+  .login-error-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+    width: 100%;
+  }
+
+  .login-error-wrapper {
+    width: 300px;
+    border-radius: 3px;
+    background-color: rgba(245, 108, 108, 0.2);
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: row;
+
+    .login-error-icon {
+      i {
+        font-size: 24px !important;
+        margin-bottom: -1px;
+      }
+    }
+
+    .login-error-message {
+      align-self: center;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+    }
+  }
+
+  .reset-password-wrapper {
+    .v-text-field.v-text-field--solo .v-input__control {
+      min-height: 20px !important;
+      padding: 0;
+    }
+    &__success {
+      min-height: 300px;
+    }
+  }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 </style>

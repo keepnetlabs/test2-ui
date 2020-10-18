@@ -9,106 +9,82 @@
     >
       <template v-slot:overlay-body>
         <v-form ref="mailConfiguration">
-          <v-list-item class="add-user-overlay__list-item mt-8">
-            <v-list-item-content>
-              <v-list-item-title class="add-user-overlay__main-title">
-                {{ editData ? 'Edit O365 Mail Configuration' : 'New O365 Mail Configuration' }}
-              </v-list-item-title>
-              <v-list-item-subtitle class="add-user-overlay__main-sub-title"
-                >Select filters and date options to start an investigation
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item mt-6">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="name">Name</label>
-              <v-text-field
-                placeholder="O365 Mail Configuration"
-                outlined
-                dense
-                v-model.trim="formValues.name"
-                :rules="[(v) => validations.required(v, 'Required')]"
-                hint="*Required"
-                persistent-hint
-                id="name"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
+          <app-modal-body-header
+            :title="editData ? 'Edit O365 Mail Configuration' : 'New O365 Mail Configuration'"
+            sub-title="Select filters and date options to start an investigation"
+          />
+          <form-group title="Name" has-hint>
+            <v-text-field
+              placeholder="O365 Mail Configuration"
+              outlined
+              dense
+              v-model.trim="formValues.name"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              hint="*Required"
+              persistent-hint
+              id="name"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Application (client) ID" has-hint>
+            <v-text-field
+              placeholder="Enter Application ID"
+              outlined
+              dense
+              v-model.trim="formValues.applicationId"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              hint="*Required"
+              persistent-hint
+              id="appClientId"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Application Secret" has-hint>
+            <v-text-field
+              placeholder="Enter Application Secret"
+              outlined
+              dense
+              v-model.trim="formValues.applicationSecret"
+              hint="*Required"
+              persistent-hint
+              :rules="[(v) => validations.required(v, 'Required')]"
+              id="applicationSecret"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Directory (tenant) ID" has-hint>
+            <v-text-field
+              placeholder="Enter Directory ID"
+              outlined
+              dense
+              v-model.trim="formValues.directoryId"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              hint="*Required"
+              persistent-hint
+              id="directoryId"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Test Email Address" has-hint>
+            <v-text-field
+              placeholder="user@company.com"
+              outlined
+              dense
+              hint="*Required"
+              persistent-hint
+              v-model.trim="formValues.email"
+              :rules="[
+                (v) => validations.required(v, 'Required'),
+                (v) => validations.mail(v, 'Invalid  email address')
+              ]"
+              id="emailAddress"
+              height="40"
+            ></v-text-field>
+          </form-group>
+
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content>
-              <label class="add-user-overlay__label" for="appClientId"
-                >Application (client) ID</label
-              >
-              <v-text-field
-                placeholder="Enter Application ID"
-                outlined
-                dense
-                v-model.trim="formValues.applicationId"
-                :rules="[(v) => validations.required(v, 'Required')]"
-                hint="*Required"
-                persistent-hint
-                id="appClientId"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="applicationSecret"
-                >Application Secret</label
-              >
-              <v-text-field
-                placeholder="Enter Application Secret"
-                outlined
-                dense
-                v-model.trim="formValues.applicationSecret"
-                hint="*Required"
-                persistent-hint
-                :rules="[(v) => validations.required(v, 'Required')]"
-                id="applicationSecret"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="directoryId">Directory (tenant) ID</label>
-              <v-text-field
-                placeholder="Enter Directory ID"
-                outlined
-                dense
-                v-model.trim="formValues.directoryId"
-                :rules="[(v) => validations.required(v, 'Required')]"
-                hint="*Required"
-                persistent-hint
-                id="directoryId"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="emailAddress">Test Email Address</label>
-              <v-text-field
-                placeholder="user@company.com"
-                outlined
-                dense
-                hint="*Required"
-                persistent-hint
-                v-model.trim="formValues.email"
-                :rules="[
-                  (v) => validations.required(v, 'Required'),
-                  (v) => validations.mail(v, 'Invalid  email address')
-                ]"
-                id="emailAddress"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item">
-            <v-list-item-content>
-              <TestConnection />
+              <TestConnection :values="formValues" :isValidate="isValidate" />
             </v-list-item-content>
           </v-list-item>
         </v-form>
@@ -145,67 +121,52 @@
     >
       <template v-slot:overlay-body>
         <v-form ref="gsuiteConfiguration">
-          <v-list-item class="add-user-overlay__list-item mt-8">
-            <v-list-item-content>
-              <v-list-item-title class="add-user-overlay__main-title">
-                New GSuite Mail Configuration
-              </v-list-item-title>
-              <v-list-item-subtitle class="add-user-overlay__main-sub-title"
-                >Select filters and date options to start an investigation
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item mt-6">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="name">Name</label>
-              <v-text-field
-                placeholder="O365 Mail Configuration"
-                outlined
-                dense
-                v-model.trim="gsuite.name"
-                :rules="[(v) => validations.required(v, 'Required')]"
-                hint="*Required"
-                persistent-hint
-                id="name"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item mt-6">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="json">Credential JSON</label>
-              <v-text-field
-                placeholder="Enter Credential JSON"
-                outlined
-                dense
-                v-model.trim="gsuite.json"
-                :rules="[(v) => validations.required(v, 'Required')]"
-                hint="*Required"
-                persistent-hint
-                id="json"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="add-user-overlay__list-item mt-6">
-            <v-list-item-content>
-              <label class="add-user-overlay__label" for="email">Email Address</label>
-              <v-text-field
-                placeholder="user@company.com"
-                outlined
-                dense
-                v-model.trim="gsuite.email"
-                :rules="[
-                  (v) => validations.required(v, 'Required'),
-                  (v) => validations.mail(v, 'Invalid  email address')
-                ]"
-                hint="*Required"
-                persistent-hint
-                id="email"
-                height="40"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
+          <app-modal-body-header
+            title="New GSuite Mail Configuration"
+            sub-title="Select filters and date options to start an investigation"
+          />
+          <form-group title="Name" has-hint>
+            <v-text-field
+              placeholder="O365 Mail Configuration"
+              outlined
+              dense
+              v-model.trim="gsuite.name"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              hint="*Required"
+              persistent-hint
+              id="name"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Credential JSON" has-hint>
+            <v-text-field
+              placeholder="Enter Credential JSON"
+              outlined
+              dense
+              v-model.trim="gsuite.json"
+              :rules="[(v) => validations.required(v, 'Required')]"
+              hint="*Required"
+              persistent-hint
+              id="json"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Email Address" has-hint>
+            <v-text-field
+              placeholder="user@company.com"
+              outlined
+              dense
+              v-model.trim="gsuite.email"
+              :rules="[
+                (v) => validations.required(v, 'Required'),
+                (v) => validations.mail(v, 'Invalid  email address')
+              ]"
+              hint="*Required"
+              persistent-hint
+              id="email"
+              height="40"
+            ></v-text-field>
+          </form-group>
         </v-form>
       </template>
       <template v-slot:overlay-footer>
@@ -304,6 +265,27 @@
                 EDIT FIELDS
               </div>
             </template>
+            <template v-slot:empty-table-inline>
+              <div class="mail-configuration__no-data">
+                <p class="mail-configuration__no-data__header">
+                  No mail configuration has been created, yet
+                </p>
+                <p class="mail-configuration__no-data__body">Create now!</p>
+                <div class="mail-configuration__no-data__buttons">
+                  <div
+                    class="mail-configuration__no-data__buttons--button"
+                    @click="statusGsuite = true"
+                  >
+                    <v-icon color="#2196f3">mdi-plus-circle</v-icon
+                    ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
+                  </div>
+                  <div class="mail-configuration__no-data__buttons--button" @click="status = true">
+                    <v-icon color="#2196f3">mdi-plus-circle</v-icon>
+                    <img alt="outlook" src="../../assets/img/office-365-logo.png" />
+                  </div>
+                </div>
+              </div>
+            </template>
           </datatable>
         </template>
       </DatatableLoading>
@@ -313,17 +295,8 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import {
-  deleteTargetUser,
-  getTargetUserCustomFieldsByCompanyId,
-  getTargetUsers
-} from '../../api/targetUsers'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  LABEL_STORE,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
@@ -332,9 +305,11 @@ import {
   deleteO365,
   getMailConfigurationList,
   updateO365
-} from '../../api/mailConfiguration'
-import { mail, required } from '../../utils/validations'
+} from '@/api/mailConfiguration'
+import { mail, required } from '@/utils/validations'
 import TestConnection from './TestConnection'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -342,7 +317,9 @@ export default {
     DatatableLoading,
     AppModal,
     AppDialog,
-    TestConnection
+    TestConnection,
+    AppModalBodyHeader,
+    FormGroup
   },
   computed: {
     getTitle() {
@@ -403,30 +380,10 @@ export default {
           showHeaderTooltip: true
         },
         {
-          property: 'applicationId',
+          property: 'platform',
           align: 'left',
           editable: false,
-          label: 'Application ID',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 150
-        },
-        {
-          property: 'applicationSecret',
-          align: 'left',
-          editable: false,
-          label: 'Application Secret',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 275
-        },
-        {
-          property: 'directoryId',
-          align: 'left',
-          editable: false,
-          label: 'Directory ID',
+          label: 'Platform',
           sortable: true,
           show: true,
           type: 'text',
@@ -443,20 +400,31 @@ export default {
           width: 150
         },
         {
-          property: 'status',
+          property: 'statusName',
           align: 'left',
           editable: false,
           label: 'Status',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'detected',
           width: 150
+        },
+        {
+          property: PROPERTY_STORE.CREATETIME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          sortable: true,
+          show: true,
+          fixed: false,
+          type: 'text',
+          width: 180
         }
       ],
       defaultColumns: [
         // Should be defined to show the table
       ],
-      pageSizes: [5, 10, 25, 50, 100],
+      pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
         edit: true,
@@ -494,6 +462,9 @@ export default {
     }
   }),
   methods: {
+    isValidate() {
+      return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
+    },
     closeDeleteDialog() {
       this.deleteDialog = false
       this.deleteDialogName = null
@@ -522,7 +493,23 @@ export default {
     },
     getTableData() {
       this.loading = true
-      getMailConfigurationList()
+      let payload = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      getMailConfigurationList(payload)
         .then((response) => {
           this.tableData = response.data.data
           //this.tableData = []
@@ -539,28 +526,27 @@ export default {
     submit() {
       if (this.$refs.mailConfiguration.validate()) {
         if (this.editData) {
-          updateO365(this.formValues, this.editData.resourceId)
-            .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'O365 Mail Configuration updated successfully'
-              })
-              this.status = false
-              this.getTableData()
+          updateO365(this.formValues, this.editData.resourceId).then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'O365 Mail Configuration updated successfully'
             })
-            .finally((response) => {})
+            this.status = false
+            this.getTableData()
+          })
         } else {
-          createO365(this.formValues)
-            .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'O365 Mail Configuration created successfully'
-              })
-              this.status = false
-              this.getTableData()
+          createO365(this.formValues).then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'O365 Mail Configuration created successfully'
             })
-            .finally((response) => {})
+            this.status = false
+            this.getTableData()
+          })
         }
+      } else {
+        const el = this.$refs.mailConfiguration.$el
+        scrollToComponent(el)
       }
     },
     closeImportModal() {
@@ -706,6 +692,57 @@ export default {
 <style lang="scss">
 .mail-configuration {
   padding: 11px 16px 16px 16px;
+  &__no-data {
+    &__header {
+      font-size: 24px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29 !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__body {
+      font-size: 14px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+      &--button {
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+        border: solid 1px #2196f3;
+        background-color: #ffffff;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        padding: 6px 16px;
+        cursor: pointer;
+        &:last-child {
+          margin-left: 16px;
+        }
+        img {
+          margin-left: 8px;
+          height: 24px;
+        }
+      }
+    }
+  }
+  .add-user-overlay {
+    &__list-item {
+      margin-bottom: 24px;
+    }
+  }
   &__modal {
     padding: 0 6rem;
   }

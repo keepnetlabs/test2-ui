@@ -29,16 +29,6 @@
                   </div>
                 </div>
                 <div class="flex-grow-1"></div>
-                <a
-                  style="text-decoration: none !important;"
-                  href="https://www.keepnetlabs.com/free-trial/"
-                  target="_blank"
-                >
-                  <v-btn color="blue" class="pl-4 white--text login-btn" rounded>
-                    TRY FOR FREE!
-                    <v-icon right dark>mdi-arrow-right</v-icon>
-                  </v-btn>
-                </a>
               </v-card-title>
               <div v-if="pageNumber == 1">
                 <v-card-text class="pa-0">
@@ -185,7 +175,7 @@
                             autocomplete="disabled"
                             outlined
                           ></v-text-field>
-                          <div class="captcha-wrapper p-0">
+                          <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
                               :sitekey="recaptcha"
                               :loadRecaptchaScript="true"

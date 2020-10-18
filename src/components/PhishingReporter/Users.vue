@@ -192,10 +192,16 @@ export default {
             action: 'deleteAction'
           }
         ],
-        pageSizes: [5, 10, 25, 50, 100]
+        pageSizes: [5, 10, 25]
       },
       isWantToDelete: false,
       selectedRow: null,
+      selectEvent: {
+        clipboard: true,
+        edit: false,
+        delete: false,
+        download: false
+      },
       requestBody: {
         pageNumber: 1,
         pageSize: 5000,
@@ -341,7 +347,7 @@ export default {
 
 <style lang="scss">
 .users {
-  padding-top: 16px;
+  padding-top: 24px;
   &__button {
     font-size: 14px;
     font-weight: 600;

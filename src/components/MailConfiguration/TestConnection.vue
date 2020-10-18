@@ -15,41 +15,55 @@
         TEST CONNECTION
       </div>
     </div>
-    <div class="test-connection__testing-content" v-if="isLoading">
+    <div class="test-connection__testing-content" v-if="isLoadingStarted">
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Authenticating</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkAuth" />
+          <TestConnectivityStatus :state="checkApiConnectivity" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
-        <div class="test-connection__testing-content__item--label">Getting user data</div>
+        <div class="test-connection__testing-content__item--label">Checking permissions</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkUser" />
+          <TestConnectivityStatus :state="checkPrivileges" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
-        <div class="test-connection__testing-content__item--label">Getting mail folders</div>
+        <div class="test-connection__testing-content__item--label">Fetching users</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkMailFolder" />
+          <TestConnectivityStatus :state="checkAllUsersAccess" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
-        <div class="test-connection__testing-content__item--label">Getting mail body</div>
+        <div class="test-connection__testing-content__item--label">Fetching email body</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkMailBody" />
+          <TestConnectivityStatus :state="checkEmailAccess" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
-        <div class="test-connection__testing-content__item--label">Getting mail header</div>
+        <div class="test-connection__testing-content__item--label">
+          Testing: Create a new category
+        </div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkMailHeader" />
+          <TestConnectivityStatus :state="checkCreateNewCategory" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
-        <div class="test-connection__testing-content__item--label">Getting mail with filter</div>
+        <div class="test-connection__testing-content__item--label">Testing: Update a category</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkFilter" />
+          <TestConnectivityStatus :state="checkUpdateCategory" />
+        </div>
+      </div>
+      <div class="test-connection__testing-content__item">
+        <div class="test-connection__testing-content__item--label">Testing: Delete an email</div>
+        <div class="test-connection__testing-content__item--value">
+          <TestConnectivityStatus :state="checkDeleteEmail" />
+        </div>
+      </div>
+      <div class="test-connection__testing-content__item">
+        <div class="test-connection__testing-content__item--label">Accessing user inbox</div>
+        <div class="test-connection__testing-content__item--value">
+          <TestConnectivityStatus :state="checkInboxAccess" />
         </div>
       </div>
     </div>
@@ -63,70 +77,124 @@ import {
   checkCreateNewCategory,
   checkDeleteEmail,
   checkEmailAccess,
+  checkInboxAccess,
   checkPrivileges,
   checkUpdateCategory
 } from '../../api/mailConfiguration'
 import TestConnectivityStatus from './TestConnectivityStatus'
 export default {
+  inheritAttrs: true,
   name: 'TestConnection',
   components: {
     TestConnectivityStatus
   },
+  props: ['values', 'isValidate'],
   data() {
     return {
-      checkAuth: null,
-      checkUser: null,
-      checkMailFolder: null,
-      checkMailBody: null,
-      checkMailHeader: null,
-      checkFilter: null,
-      loadingState: null
+      checkApiConnectivity: null,
+      checkPrivileges: null,
+      checkAllUsersAccess: null,
+      checkEmailAccess: null,
+      checkCreateNewCategory: null,
+      checkUpdateCategory: null,
+      loadingState: null,
+      checkDeleteEmail: null,
+      checkInboxAccess: null,
+      isLoadingStarted: false
     }
   },
   computed: {
     isLoading() {
       let isLoading =
-        this.checkAuth !== 'loading' &&
-        this.checkUser !== 'loading' &&
-        this.checkMailFolder !== 'loading' &&
-        this.checkMailBody !== 'loading' &&
-        this.checkMailHeader !== 'loading' &&
-        this.checkFilter !== 'loading'
+        this.checkApiConnectivity !== 'loading' &&
+        this.checkPrivileges !== 'loading' &&
+        this.checkAllUsersAccess !== 'loading' &&
+        this.checkEmailAccess !== 'loading' &&
+        this.checkCreateNewCategory !== 'loading' &&
+        this.checkUpdateCategory !== 'loading' &&
+        this.checkDeleteEmail !== 'loading' &&
+        this.checkInboxAccess !== 'loading'
       return !isLoading
     }
   },
   methods: {
     testConnection() {
-      this.setLoadingStates()
-      checkApiConnectivity()
-        .then((response) => {})
-        .catch((error) => {})
-      checkPrivileges()
-        .then((response) => {})
-        .catch((error) => {})
-      checkAllUsersAccess()
-        .then((response) => {})
-        .catch((error) => {})
-      checkEmailAccess()
-        .then((response) => {})
-        .catch((error) => {})
-      checkCreateNewCategory()
-        .then((response) => {})
-        .catch((error) => {})
-      checkUpdateCategory()
-        .then((response) => {})
-        .catch((error) => {})
-      checkDeleteEmail()
-        .then((response) => {})
-        .catch((error) => {})
+      if (this.isValidate()) {
+        this.isLoadingStarted = true
+        this.setLoadingStates()
+        let payload = {
+          applicationId: this.values.applicationId,
+          applicationSecret: this.values.applicationSecret,
+          directoryId: this.values.directoryId,
+          email: this.values.email
+        }
+        checkApiConnectivity(payload)
+          .then((response) => {
+            this.checkApiConnectivity = 'success'
+          })
+          .catch((error) => {
+            this.checkApiConnectivity = 'error'
+          })
+        checkPrivileges(payload)
+          .then((response) => {
+            this.checkPrivileges = 'success'
+          })
+          .catch((error) => {
+            this.checkPrivileges = 'error'
+          })
+        checkAllUsersAccess(payload)
+          .then((response) => {
+            this.checkAllUsersAccess = 'success'
+          })
+          .catch((error) => {
+            this.checkAllUsersAccess = 'error'
+          })
+        checkEmailAccess(payload)
+          .then((response) => {
+            this.checkEmailAccess = 'success'
+          })
+          .catch((error) => {
+            this.checkEmailAccess = 'error'
+          })
+        checkCreateNewCategory(payload)
+          .then((response) => {
+            this.checkCreateNewCategory = 'success'
+          })
+          .catch((error) => {
+            this.checkCreateNewCategory = 'error'
+          })
+        checkUpdateCategory(payload)
+          .then((response) => {
+            this.checkUpdateCategory = 'success'
+          })
+          .catch((error) => {
+            this.checkUpdateCategory = 'error'
+          })
+        checkDeleteEmail(payload)
+          .then((response) => {
+            this.checkDeleteEmail = 'success'
+          })
+          .catch((error) => {
+            this.checkDeleteEmail = 'error'
+          })
+        checkInboxAccess(payload)
+          .then((response) => {
+            this.checkInboxAccess = 'success'
+          })
+          .catch((error) => {
+            this.checkInboxAccess = 'error'
+          })
+      }
     },
     setLoadingStates() {
-      this.checkAuth = 'loading'
-      this.checkUser = 'loading'
-      this.checkMailFolder = 'loading'
-      this.checkMailBody = 'loading'
-      this.checkMailHeader = 'loading'
-      this.checkFilter = 'loading'
+      this.checkApiConnectivity = 'loading'
+      this.checkPrivileges = 'loading'
+      this.checkAllUsersAccess = 'loading'
+      this.checkEmailAccess = 'loading'
+      this.checkCreateNewCategory = 'loading'
+      this.checkUpdateCategory = 'loading'
+      this.checkDeleteEmail = 'loading'
+      this.checkInboxAccess = 'loading'
     }
   }
 }
@@ -150,6 +218,7 @@ export default {
     letter-spacing: normal;
     text-align: center;
     color: #2196f3;
+    margin-bottom: 24px;
   }
   &__testing-content {
     &__item {
