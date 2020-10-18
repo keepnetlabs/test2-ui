@@ -37,6 +37,7 @@
         <DatatableLoading :loading="loading">
           <template v-slot:skeleton-content>
             <datatable
+              :is-column-filter-active="isColumnFilterActive"
               id="investigationList"
               ref="investigationTable"
               :refName="'investigationTable'"
@@ -266,6 +267,7 @@ export default {
       labels: ['Scanned User Count', 'Not Scanned Users Count'],
       showTooltipLine: true
     },
+    isColumnFilterActive: false,
     bodyData: {
       // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
@@ -320,6 +322,7 @@ export default {
       })
     },
     columnFilterChanged(filter) {
+      this.isColumnFilterActive = true
       let items = []
       let filterPayload = []
       this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
@@ -356,6 +359,8 @@ export default {
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
       })
+
+      this.isColumnFilterActive = this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     searchChangedEvent({ filter }) {
       this.bodyData = { ...this.bodyData, filter }

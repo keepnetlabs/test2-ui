@@ -80,6 +80,7 @@
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>
         <datatable
+          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           ref="refRulesList"
           :refName="'rulesListTable'"
@@ -163,6 +164,7 @@ export default {
       deleteValues: null,
       selectedPlaybookId: null,
       tableOptions: {
+        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
@@ -468,6 +470,8 @@ export default {
       return `${nameValues} will be deleted!`
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
       requestBody.map((x, i, t) => {
@@ -505,6 +509,9 @@ export default {
       filterPayload = [...items]
       this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
       this.getTableData()
+
+      this.tableOptions.isColumnFilterActive =
+        this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     },
     getTableData() {
       this.loading = true

@@ -14,6 +14,7 @@
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>
         <datatable
+          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           :columns="tableOptions.columns"
           :countRow="5"
@@ -92,6 +93,7 @@ export default {
       loading: true,
       tableData: [],
       tableOptions: {
+        isColumnFilterActive: false,
         columns: [
           {
             property: 'resourceId',
@@ -353,6 +355,7 @@ export default {
         .catch((error) => {})
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
       requestBody.map((x, i, t) => {
@@ -390,6 +393,9 @@ export default {
       filterPayload = [...items]
       this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForTargetGroups()
+
+      this.tableOptions.isColumnFilterActive =
+        this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
   created() {

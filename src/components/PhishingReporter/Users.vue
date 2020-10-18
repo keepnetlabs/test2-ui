@@ -20,6 +20,7 @@
     <DatatableLoading :loading="isLoading">
       <template v-slot:skeleton-content>
         <data-table
+          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :addButton="tableOptions.addButton"
           :columns="tableOptions.columns"
           :countRow="5"
@@ -74,6 +75,7 @@ export default {
     return {
       isLoading: true,
       tableOptions: {
+        isColumnFilterActive: false,
         table: [],
         columns: [
           {
@@ -288,6 +290,7 @@ export default {
       this.isWantToDelete = false
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
@@ -325,6 +328,9 @@ export default {
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForPhishingReporterUser()
+
+      this.tableOptions.isColumnFilterActive =
+        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
   created() {

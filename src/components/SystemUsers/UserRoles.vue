@@ -15,6 +15,7 @@
       <DatatableLoading :loading="loading">
         <template v-slot:skeleton-content>
           <data-table
+            :is-column-filter-active="tableOptions.isColumnFilterActive"
             :table="tableData"
             ref="refUserRolesList"
             :refName="'userRolesList'"
@@ -66,6 +67,7 @@ export default {
       loading: true,
       tableData: [],
       tableOptions: {
+        isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.ROLENAME,
@@ -198,6 +200,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
@@ -235,6 +238,9 @@ export default {
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForGetUserRoles()
+
+      this.tableOptions.isColumnFilterActive =
+        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleDelete(row) {
       this.selectedDeleteRow = row

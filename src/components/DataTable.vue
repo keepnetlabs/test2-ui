@@ -390,7 +390,7 @@
           class="table-container"
           id="table-container"
           ref="tableContainer"
-          v-if="tableData && tableData.length"
+          v-if="(tableData && tableData.length) || isColumnFilterActive"
         >
           <el-table
             :border="border"
@@ -985,6 +985,10 @@ export default {
     isDownloadable: {
       type: Boolean,
       default: true
+    },
+    isColumnFilterActive: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
