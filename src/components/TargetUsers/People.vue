@@ -41,6 +41,7 @@
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>
         <datatable
+          :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           :addButton="tableOptions.addButton"
           :columns="tableOptions.columns"
@@ -171,6 +172,7 @@ export default {
       { title: 'Click Me4' }
     ],
     tableOptions: {
+      isColumnFilterActive: false,
       lastColumns: [
         {
           property: PROPERTY_STORE.PRIORITY,
@@ -460,6 +462,7 @@ export default {
         })
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
       requestBody.map((x, i, t) => {
@@ -497,6 +500,9 @@ export default {
       filterPayload = [...items]
       this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForTargetUsers()
+
+      this.tableOptions.isColumnFilterActive =
+        this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
   created() {

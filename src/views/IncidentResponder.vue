@@ -468,6 +468,7 @@
           <DatatableLoading :loading="reportedEmailsLoading">
             <template v-slot:skeleton-content>
               <datatable
+                :is-column-filter-active="emails.isColumnFilterActive"
                 :table="reportedEmailsData"
                 :refName="'reportedEmails'"
                 ref="refReportedEmails"
@@ -852,6 +853,7 @@ export default {
       chartOptions: {}
     },
     emails: {
+      isColumnFilterActive: false,
       table: [],
       extendedViewOptions: {
         titleKey: 'subject',
@@ -1659,6 +1661,7 @@ export default {
       })
     },
     columnFilterChanged(filter) {
+      this.emails.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
       requestBody.map((x, i, t) => {
@@ -1697,6 +1700,9 @@ export default {
       filterPayload = [...items]
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForSearchNotifiedMail()
+
+      this.emails.isColumnFilterActive =
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
 
