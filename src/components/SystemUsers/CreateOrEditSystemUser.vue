@@ -54,7 +54,14 @@
           ></v-text-field>
         </form-group>
         <form-group title="Phone Number">
-          <phone-number v-model="formValues.phoneNumber" />
+          <vue-tel-input
+            v-model="formValues.phoneNumber"
+            validCharactersOnly
+            defaultCountry="GB"
+            :inputOptions="{
+              showDialCode: true
+            }"
+          />
         </form-group>
         <form-group title="Status">
           <v-select
@@ -103,14 +110,15 @@ import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcome
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
+import { VueTelInput } from 'vue-tel-input'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
     AppModal,
     AppModalBodyHeader,
-    PhoneNumber,
     FormGroup,
-    SendWelcomeEmailToNewUserModal
+    SendWelcomeEmailToNewUserModal,
+    VueTelInput
   },
   props: {
     status: {
@@ -162,26 +170,24 @@ export default {
           const formData = {
             resourceId: this.selectedRow.resourceId,
             ...this.formValues,
-            phoneNumber: phoneNumber.val
-              ? `${phoneNumber.code}${phoneNumber.val}`
-              : this.selectedRow.phoneNumber
-              ? this.selectedRow.phoneNumber
-              : ''
+            phoneNumber: phoneNumber.split(' ').join('')
           }
           this.callForUpdateSystemUser(formData)
         } else {
           const { phoneNumber } = this.formValues
           const formData = {
             ...this.formValues,
-            phoneNumber: phoneNumber.val ? `${phoneNumber.code}${phoneNumber.val}` : '',
+            phoneNumber: phoneNumber.split(' ').join(''),
             roleResourceIdList: ['VwwzEXkFHHCe'],
             companyResourceId: localStorage.getItem('companyResourceId')
           }
           this.callForCreateSystemUser(formData)
         }
       } else {
-        const el = this.$refs.refForm.$el.querySelector('.error--text')
-        scrollToComponent(el)
+        setTimeout(() => {
+          const el = this.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        }, 100)
       }
     },
     toggleWelcomeEmailModal() {
@@ -224,10 +230,7 @@ export default {
       this.formValues.role = roles
       this.formValues.statusName = statusName
       this.formValues.email = email
-      this.formValues.phoneNumber = {
-        code: phoneNumber.substring(0, 3),
-        val: phoneNumber.substring(3, phoneNumber.length)
-      }
+      this.formValues.phoneNumber = phoneNumber.split(' ').join('')
     }
   }
 }
