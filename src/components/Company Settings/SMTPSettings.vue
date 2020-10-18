@@ -102,6 +102,18 @@ export default {
             width: 150
           },
           {
+            property: PROPERTY_STORE.USERNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATEDBY),
+            sortable: true,
+            show: true,
+            fixed: 'left',
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,

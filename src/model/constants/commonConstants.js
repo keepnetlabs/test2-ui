@@ -76,7 +76,8 @@ export const LABEL_STORE = {
   ROLENAME: 'Title',
   USERCOUNT: 'Users',
   JOBTITLE: 'Job Title',
-  SERVERADDRESS: 'SMTP Address'
+  SERVERADDRESS: 'SMTP Address',
+  USERNAME: 'User Name'
 }
 
 export const PROPERTY_STORE = {
@@ -86,6 +87,7 @@ export const PROPERTY_STORE = {
   APPLICATIONSECRET: 'applicationSecret',
   NAME: 'name',
   PRIORITY: 'priority',
+  USERNAME: 'userName',
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
   LASTNAME: 'lastName',
