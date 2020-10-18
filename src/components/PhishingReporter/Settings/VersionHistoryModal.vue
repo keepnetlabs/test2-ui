@@ -11,29 +11,25 @@
   >
     <template v-slot:app-dialog-body>
       <v-card light>
-        <v-list-item class="matching-modal__list-item">
-          <v-list-item-content>
-            <DatatableLoading :loading="isLoading">
-              <template v-slot:skeleton-content>
-                <data-table
-                  :refName="'versionHistory'"
-                  :table="tableData"
-                  :columns="table.columns"
-                  :countRow="5"
-                  :showHeader="true"
-                  :selectable="false"
-                  :pageSizes="[5, 10, 25]"
-                  :filterable="true"
-                  :options="true"
-                  :rowActions="table.rowActions"
-                  :empty="table.iEmpty"
-                  @handleDetails="handleDetails"
-                  @handleDownload="handleDownload"
-                />
-              </template>
-            </DatatableLoading>
-          </v-list-item-content>
-        </v-list-item>
+        <DatatableLoading :loading="isLoading">
+          <template v-slot:skeleton-content>
+            <data-table
+              :refName="'versionHistory'"
+              :table="tableData"
+              :columns="table.columns"
+              :countRow="5"
+              :showHeader="true"
+              :selectable="false"
+              :pageSizes="[5, 10, 25]"
+              :filterable="true"
+              :options="true"
+              :rowActions="table.rowActions"
+              :empty="table.iEmpty"
+              @handleDetails="handleDetails"
+              @handleDownload="handleDownload"
+            />
+          </template>
+        </DatatableLoading>
       </v-card>
     </template>
     <template v-slot:app-dialog-footer>
