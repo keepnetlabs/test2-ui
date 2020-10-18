@@ -560,6 +560,7 @@ export default {
 
 <style lang="scss">
 .playbook-rules {
+  margin-top: 24px;
   .overlay {
     background: white;
     width: 100vw;

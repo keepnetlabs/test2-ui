@@ -12,49 +12,12 @@
       v-if="downloadAddInModalStatus"
       @handleClose="downloadAddInModalStatus = false"
     />
-    <v-tabs
-      id="settings-tabs"
-      class="k-sub-tabs"
-      v-model="tab"
-      background-color="#f5f7fa"
-      centered
-      color="basil"
-      active-class="k-sub-tabs__tab--active"
-      v-if="!inModal || applicationType === 'Outlook'"
-    >
-      <v-tab
+    <el-tabs v-model="tab" v-if="!inModal || applicationType === 'Outlook'" :value="tab">
+      <el-tab-pane
+        label="Add-in Settings"
+        name="first"
         v-if="!inModal || applicationType === 'Outlook'"
-        id="pr-tab-users"
-        class="k-sub-tabs__tab p-2"
-        @click="changeTabStatus(0)"
       >
-        Add-in Settings
-      </v-tab>
-      <v-tab
-        v-if="!inModal || applicationType === 'Outlook'"
-        class="k-sub-tabs__tab p-2"
-        @click="changeTabStatus(1)"
-        >Email Settings
-      </v-tab>
-      <v-tab
-        v-if="!inModal || applicationType === 'Outlook'"
-        class="k-sub-tabs__tab p-2"
-        @click="changeTabStatus(2)"
-        >Other Settings
-      </v-tab>
-      <v-tab
-        v-if="!inModal || applicationType === 'DiagnosticTool'"
-        class="k-sub-tabs__tab p-2"
-        @click="changeTabStatus(3)"
-        >Diagnostic Tool
-      </v-tab>
-    </v-tabs>
-    <v-tabs-items
-      v-if="!inModal || applicationType === 'Outlook'"
-      v-model="tab"
-      class="k-sub-tabs__container"
-    >
-      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
         <addin-settings
           ref="refAddinSettings"
           :formData="formData"
@@ -63,9 +26,12 @@
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
-        />
-      </v-tab-item>
-      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
+      /></el-tab-pane>
+      <el-tab-pane
+        label="Email Settings"
+        name="second"
+        v-if="!inModal || applicationType === 'Outlook'"
+      >
         <email-settings
           ref="refEmailSettings"
           :formData="formData"
@@ -74,8 +40,12 @@
           :showHeaderLink="!inModal"
           :showForm="!inModal"
         />
-      </v-tab-item>
-      <v-tab-item v-if="!inModal || applicationType === 'Outlook'">
+      </el-tab-pane>
+      <el-tab-pane
+        label="Other Settings"
+        name="third"
+        v-if="!inModal || applicationType === 'Outlook'"
+      >
         <other-settings
           :formData="formData"
           ref="refOtherSettings"
@@ -84,8 +54,12 @@
           :show-header-link="!inModal"
           :showForm="!inModal"
         />
-      </v-tab-item>
-      <v-tab-item v-if="!inModal || applicationType === 'DiagnosticTool'">
+      </el-tab-pane>
+      <el-tab-pane
+        label="Diagnostic Tool"
+        name="fourth"
+        v-if="!inModal || applicationType === 'DiagnosticTool'"
+      >
         <diagnostic-tool
           ref="refDiagnosticTool"
           :formData="formData"
@@ -94,8 +68,8 @@
           :show-header-link="!inModal"
           :showForm="!inModal"
         />
-      </v-tab-item>
-    </v-tabs-items>
+      </el-tab-pane>
+    </el-tabs>
     <div v-else>
       <diagnostic-tool
         ref="refDiagnosticTool"
@@ -142,7 +116,7 @@ export default {
   },
   data() {
     return {
-      tab: 0,
+      tab: 'first',
       spinnerStatus: false,
       downloadAddInModalStatus: false
     }
@@ -232,6 +206,23 @@ export default {
       padding-top: 24px;
       margin-bottom: 0;
     }
+  }
+  .el-tabs__header {
+    background-color: rgb(245, 247, 250);
+    border-color: rgb(245, 247, 250);
+    margin-top: 8px;
+    margin-bottom: 24px;
+  }
+  .el-tabs__nav {
+    margin-left: 16px;
+  }
+  .el-tabs__item {
+    font-size: 14px !important;
+    height: 48px;
+    line-height: 48px;
+  }
+  .el-tabs__active-bar {
+    min-width: 100px !important;
   }
 }
 </style>

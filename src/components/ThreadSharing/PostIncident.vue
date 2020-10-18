@@ -1723,6 +1723,7 @@ import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
 import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
+import { scrollToComponent } from '../../utils/functions'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -2488,7 +2489,12 @@ export default {
     onFinish() {
       //CommunityResourceId: this.$route.params.id,
       if (!this.$refs.accept_terms_and_conditions_checkbox.validate()) {
-        return false
+        return this.$nextTick(() => {
+          const el = this.$refs.accept_terms_and_conditions_checkbox.$el.querySelector(
+            '.error--text'
+          )
+          scrollToComponent(el)
+        })
       }
       if (this.editItem) {
         const payload = {

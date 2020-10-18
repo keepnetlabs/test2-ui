@@ -3,22 +3,9 @@
     <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
       <v-col class="p-0" cols="12">
         <v-card class="pr-card">
-          <v-tabs
-            active-class="pr-tab-active"
-            background-color="transparent"
-            color="basil"
-            id="pr-tabs"
-            v-model="tab"
-          >
-            <v-tab @click="changeTabStatus(0)" class="pr-tab pr-tab-users p-2" id="pr-tab-users">
-              Rules
-            </v-tab>
-          </v-tabs>
-          <v-tabs-items v-model="tab">
-            <v-tab-item>
-              <Rules :playbook-id="playbookId" />
-            </v-tab-item>
-          </v-tabs-items>
+          <el-tabs v-model="tab">
+            <el-tab-pane label="Rules" name="first"><rules /></el-tab-pane>
+          </el-tabs>
         </v-card>
       </v-col>
     </v-layout>
@@ -40,7 +27,7 @@ export default {
   },
   data() {
     return {
-      tab: 0
+      tab: 'first'
     }
   },
   methods: {

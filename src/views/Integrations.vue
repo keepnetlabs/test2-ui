@@ -3,23 +3,9 @@
     <v-layout id="ts-layout" wrap style="min-height: 80vh;">
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
-          <v-tabs
-            id="pr-tabs"
-            v-model="tab"
-            background-color="transparent"
-            color="basil"
-            class="k-tabs"
-          >
-            <v-tab id="pr-tab-users" class="k-tab p-2" @click="changeTabStatus(0)">
-              Integrations
-            </v-tab>
-          </v-tabs>
-          <v-tabs-items v-model="tab">
-            <v-tab-item>
-              <integration />
-            </v-tab-item>
-            <v-tab-item> </v-tab-item>
-          </v-tabs-items>
+          <el-tabs v-model="tab">
+            <el-tab-pane label="Integrations" name="first"><integration /></el-tab-pane>
+          </el-tabs>
         </v-card>
       </v-col>
     </v-layout>
@@ -37,7 +23,7 @@ export default {
   },
   data() {
     return {
-      tab: 0
+      tab: 'first'
     }
   },
   methods: {
@@ -51,6 +37,10 @@ export default {
 <style lang="scss">
 .integrations {
   padding: 0 16px 16px 16px;
+
+  .el-tabs__content {
+    margin-top: 24px;
+  }
 
   &__tab-container {
     padding-left: 0 !important;

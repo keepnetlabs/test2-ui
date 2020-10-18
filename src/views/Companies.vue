@@ -3,26 +3,10 @@
     <v-layout wrap class="companies__container">
       <v-card class="companies__container-card">
         <template v-if="!$route.params.groupId">
-          <v-tabs
-            active-class="pr-tab-active"
-            background-color="transparent"
-            color="basil"
-            class="k-tabs"
-            v-model="tab"
-          >
-            <v-tab @click="changeTabStatus(0)" class="k-tab p-2" id="pr-tab-people">
-              Companies
-            </v-tab>
-            <v-tab @click="changeTabStatus(1)" class="k-tab p-2">Company Groups</v-tab>
-          </v-tabs>
-          <v-tabs-items v-model="tab" class="target-users__tabs-items">
-            <v-tab-item :transition="false" :reverse-transition="false">
-              <company-list />
-            </v-tab-item>
-            <v-tab-item :transition="false" :reverse-transition="false">
-              <company-group-list />
-            </v-tab-item>
-          </v-tabs-items>
+          <el-tabs v-model="tab">
+            <el-tab-pane label="Companies" name="first"> <company-list /></el-tab-pane>
+            <el-tab-pane label="Company Groups" name="second"> <company-group-list /></el-tab-pane>
+          </el-tabs>
         </template>
         <template v-else>
           <company-group-details :groupId="$route.params.groupId" />
@@ -42,7 +26,7 @@ export default {
   components: { CompanyGroupDetails, CompanyGroupList, CompanyList },
   data() {
     return {
-      tab: 0
+      tab: 'first'
     }
   },
   mounted() {},
