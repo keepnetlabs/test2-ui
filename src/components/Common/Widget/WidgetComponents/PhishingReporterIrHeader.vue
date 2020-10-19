@@ -138,7 +138,11 @@ export default {
   max-height: 170px;
   border-radius: 8px;
   padding: 16px;
+  padding-right: 24px;
   position: relative;
+  &.investigations {
+    padding: 16px 24px 16px 16px;
+  }
   .card-header {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -201,6 +205,7 @@ export default {
         letter-spacing: normal;
         color: #ffffff;
         opacity: 0.7;
+        white-space: nowrap;
       }
     }
   }
