@@ -399,7 +399,7 @@
                   v-model="value"
                   :items="items2"
                   multiple
-                  :return-object="true"
+                  :return-object="false"
                   outlined
                   placeholder="Select an option"
                   class="tlp-select"
@@ -656,7 +656,11 @@
                         @click="subSettings = !subSettings"
                       >
                         <template v-slot:activator="{ on }">
-                          <v-btn class="chevron-btn-menu" icon>
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isSubjectHidden }"
+                          >
                             <v-icon :class="{ 'chevron-down': subSettings }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
@@ -714,7 +718,11 @@
                         @click="fromSettings = !fromSettings"
                       >
                         <template v-slot:activator="{ on }">
-                          <v-btn class="chevron-btn-menu" icon>
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isFromHidden }"
+                          >
                             <v-icon :class="{ 'chevron-down': fromSettings }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
@@ -771,7 +779,11 @@
                         @click="toSettings = !toSettings"
                       >
                         <template v-slot:activator="{ on }">
-                          <v-btn class="chevron-btn-menu" icon>
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isToHidden }"
+                          >
                             <v-icon :class="{ 'chevron-down': toSettings }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
@@ -870,7 +882,11 @@
                         @click="attcChevron[ind] = !attcChevron[ind]"
                       >
                         <template v-slot:activator="{ on }">
-                          <v-btn class="chevron-btn-menu" icon>
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': url.isHidden }"
+                          >
                             <v-icon :class="{ 'chevron-down': attcChevron[ind] }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
@@ -964,13 +980,19 @@
                       </div>
                       <v-menu
                         v-model="urls[ind]"
+                        isHidden
                         right
                         offset-x
                         transition="scale-transition"
+                        :disabled="urls.isHidden"
                         @click="urls[ind] = !urls[ind]"
                       >
                         <template v-slot:activator="{ on }">
-                          <v-btn class="chevron-btn-menu" icon>
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': urls.isHidden }"
+                          >
                             <v-icon :class="{ 'chevron-down': urls[ind] }" v-on="on"
                               >mdi-chevron-down
                             </v-icon>
@@ -1736,12 +1758,13 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 .malicious-style,
 .malicious-link {
-   color: #bb2a45 !important;
-    border-color: #bb2a45 !important;
+     color: #f56c6d !important;
+    border-color: #f56c6d !important;
     background-color: #f3e1e5 !important;
-
+    text-decoration: none !important;
+    position: relative;
   text-decoration: none !important;
-  border-bottom: 1px solid;
+  border-bottom: 0 solid;
   position:relative;
   .share-setting-text {
     text-decoration: none !important;
@@ -1796,7 +1819,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  top: 0px;
   background: transparent;
   color: #f56c6c;
-  font-size: 22px !important;
+  font-size: inherit !important;
   padding: 0;
 }
 
@@ -1820,11 +1843,11 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 
 .url-badge{
   font-family: "Open Sans", sans-serif;
-  position: absolute;
-    top: -4px;
-    right: -5px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
     color: white;
-    background-color: #757575;
+    background-color: #757575c2;
     height: 10px;
     width: 10px;
     text-align: center;
@@ -1904,15 +1927,7 @@ export default {
     acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
-    value: [
-      {
-        text: 'TLP: GREEN',
-        value: 'TLP: GREEN',
-        color: '#2cde00',
-        cssClass: 'tlp-select__chip--green',
-        desc: 'Limited disclosure, restricted to the community.'
-      }
-    ],
+    value: [],
     items2: [
       {
         text: 'TLP: GREEN',
@@ -2506,7 +2521,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
-          securityLabelResourceIdArray: this.value.map((item) => item.value),
+          securityLabelResourceIdArray: this.value,
           CommunityPostEmail: {
             resourceId: this.uploadRespond.resourceId,
             from: this.uploadRespond.from,
@@ -2557,7 +2572,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
-          securityLabelResourceIdArray: this.value.map((item) => item.value),
+          securityLabelResourceIdArray: this.value,
           EmailPreview: {
             body: this.uploadRespond.body,
             from: this.uploadRespond.from,
@@ -2718,6 +2733,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.disabled-chevron {
+  opacity: 0.3;
+}
 .hidden-icon-link {
   background-color: #757575 !important;
   color: #ffffff !important;
@@ -2728,6 +2746,7 @@ export default {
     &--green {
       background-color: #43a047 !important;
       color: #fff !important;
+      border-radius: 12px !important;
       .v-icon {
         color: #fff !important;
       }
@@ -2735,6 +2754,7 @@ export default {
     &--amber {
       background-color: #e6a23c !important;
       color: #fff !important;
+      border-radius: 12px !important;
       .v-icon {
         color: #fff !important;
       }
@@ -2742,6 +2762,7 @@ export default {
     &--red {
       background-color: #f56c6c !important;
       color: #fff !important;
+      border-radius: 12px !important;
       .v-icon {
         color: #fff !important;
       }
@@ -2750,6 +2771,8 @@ export default {
       color: #000 !important;
       background-color: #fff !important;
       border: 1px solid #000;
+      border: 1px solid #757575 !important;
+      border-radius: 12px !important;
       .v-icon {
         color: #6d6d6d !important;
       }

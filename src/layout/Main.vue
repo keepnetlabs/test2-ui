@@ -238,6 +238,20 @@
           prepend-icon="mdi-briefcase"
           no-action
           class="menu-with-item menu-link-default"
+          :class="{
+            'primary--text active-menu-parent':
+              routerName === 'Company' ||
+              routerName === 'Target Users' ||
+              routerName === 'Companies' ||
+              routerName === 'Company Settings' ||
+              routerName === 'System Users',
+            'un-selected-list-item':
+              routerName !== 'Company' ||
+              routerName === 'Target Users' ||
+              routerName === 'Companies' ||
+              routerName === 'Company Settings' ||
+              routerName === 'System Users'
+          }"
         >
           <template v-slot:activator>
             <v-list-item-content class="menu-list-item">
@@ -285,7 +299,24 @@
           prepend-icon="mdi-flash"
           no-action
           class="menu-with-item menu-link-default"
-          :class="{ 'primary--text active-menu-parent': routerName === 'Incident Responder' }"
+          :class="{
+            'primary--text active-menu-parent':
+              routerName === 'Incident Responder' ||
+              routerName === 'Investigations' ||
+              routerName === 'Integrations' ||
+              routerName === 'Playbook' ||
+              routerName === 'Mail Configurations' ||
+              routerName === 'Analysis Details' ||
+              routerName === 'Investigation Details',
+            'un-selected-list-item':
+              routerName !== 'Incident Responder' ||
+              routerName === 'Investigations' ||
+              routerName === 'Integrations' ||
+              routerName === 'Playbook' ||
+              routerName === 'Analysis Details' ||
+              routerName === 'Mail Configurations' ||
+              routerName === 'Investigation Details'
+          }"
         >
           <template v-slot:activator>
             <v-list-item-content class="menu-list-item">
@@ -1323,6 +1354,7 @@ export default {
     .v-list-group .v-list-group__header .v-list-item__icon.v-list-group__header__append-icon {
       margin-left: 6px !important;
       min-width: 24px !important;
+      margin-right: 1px !important;
     }
 
     .v-list-item__title {
@@ -1951,7 +1983,7 @@ export default {
       font-style: normal;
       line-height: 1.54;
       letter-spacing: normal;
-      color: #1565c0;
+      color: #383b41 !important;
     }
   }
 
@@ -2246,5 +2278,25 @@ export default {
       padding-right: 16px !important;
     }
   }
+}
+.un-selected-list-item {
+  color: rgba(0, 0, 0, 0.54);
+  border-left: none !important;
+  .v-list-item {
+    border-left: 5px solid transparent !important;
+    .v-list-group__header__prepend-icon {
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+    .v-list-group__header__append-icon {
+      color: rgba(0, 0, 0, 0.54) !important;
+    }
+  }
+  .v-list-item__title {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+}
+.layout-container .active-link .menu-item-wrapper .menu-item-span {
+  color: #1565c0 !important;
+  font-weight: 600;
 }
 </style>

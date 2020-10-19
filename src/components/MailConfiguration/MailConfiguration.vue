@@ -512,7 +512,7 @@ export default {
       }
       getMailConfigurationList(payload)
         .then((response) => {
-          this.tableData = response.data.data
+          this.tableData = response.data.data.results
           //this.tableData = []
         })
         .finally((response) => {
