@@ -31,7 +31,7 @@
               </div>
             </v-tabs>
             <v-tabs-items v-model="tab">
-              <v-tab-item>
+              <v-tab-item :transition="false" :reverse-transition="false">
                 <incidents
                   ref="refIncidents"
                   :posts="[]"
@@ -39,7 +39,7 @@
                   :refreshIncidents="refreshIncidentsData"
                 />
               </v-tab-item>
-              <v-tab-item>
+              <v-tab-item :transition="false" :reverse-transition="false">
                 <members ref="refMembers" @selectedMemberPost="selectedMemberPostFunc" />
               </v-tab-item>
             </v-tabs-items>

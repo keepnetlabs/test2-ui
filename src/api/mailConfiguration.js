@@ -4,8 +4,8 @@ export function getIntegrationList(payload) {
   return testRequest.post(`${API_URL}/search`, payload)
 }
 
-export function getMailConfigurationList() {
-  return testRequest.get(`mail-configurations`)
+export function getMailConfigurationList(payload) {
+  return testRequest.post(`/mail-configurations/search`, payload)
 }
 
 export function deleteO365(url) {
