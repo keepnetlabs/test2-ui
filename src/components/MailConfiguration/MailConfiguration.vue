@@ -693,6 +693,8 @@ export default {
 <style lang="scss">
 .mail-configuration {
   padding: 11px 16px 16px 16px;
+  min-height: 80vh;
+
   &__no-data {
     &__header {
       font-size: 24px !important;
