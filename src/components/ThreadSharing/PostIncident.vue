@@ -391,8 +391,14 @@
               <div class="input-header pt-6">Security Label (TLP)</div>
               <div class="input-sub pb-1">
                 Use TLP labels to inform recipients about how to share sensitive information. To get
-                more information about
-                <a href="#" class="text-primary">Traffic Light Protocol, click here</a>
+                more information about Please visit
+                <a
+                  href="https://www.cisa.gov/tlp#:~:text=The%20Traffic%20Light%20Protocol%20(TLP,by%20the%20recipient(s)."
+                  class="text-primary"
+                  target="_blank"
+                  >Traffic Light Protocol</a
+                >
+                for more information
               </div>
               <v-form>
                 <v-select
@@ -1935,8 +1941,15 @@ export default {
     acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
-    value: [],
+    value: ['wFlYRDMW946M'],
     items2: [
+      {
+        text: 'TLP: WHITE',
+        value: 'wFlYRDMW946M',
+        color: '#ffffff',
+        cssClass: 'tlp-select__chip--white',
+        desc: 'Disclosure is not limited.'
+      },
       {
         text: 'TLP: GREEN',
         value: 'wKBhLuFZ46y9',
@@ -1957,13 +1970,6 @@ export default {
         color: '#ff0033',
         cssClass: 'tlp-select__chip--red',
         desc: 'Not for disclosure, restricted to participants only.'
-      },
-      {
-        text: 'TLP: WHITE',
-        value: 'wFlYRDMW946M',
-        color: '#ffffff',
-        cssClass: 'tlp-select__chip--white',
-        desc: 'Disclosure is not limited.'
       }
     ],
     fromSettings: false,
