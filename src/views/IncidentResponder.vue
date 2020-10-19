@@ -1545,7 +1545,7 @@ export default {
       this.$router.push({ path: '/playbook', query: { openPopup: true } })
     },
     onEmptyReportedEmailsBtnClicked() {
-      this.$router.push({ path: '/phishing-reporter', hash: '#settings' })
+      this.$router.push({ path: '/phishing-reporter' })
     },
     irPreviewOnClick(row) {
       this.$router.push({

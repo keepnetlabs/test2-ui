@@ -459,16 +459,21 @@
               </div>
             </div>
             <slot name="body" v-if="editMode"> </slot>
-            <div class="edit-popup__footer" v-if="hasEditPopupFooter()">
+            <div class="edit-popup__footer" v-if="true">
               <slot name="footer">
                 <div class="edit-footer-date">
                   <div
                     class="edit-date-created"
-                    v-if="copyOfEditedRows[0]['createDate'] !== undefined"
+                    v-if="
+                      copyOfEditedRows[0]['createDate'] !== undefined ||
+                      copyOfEditedRows[0]['createTime'] !== undefined
+                    "
                   >
                     <label>{{ options.footer[0].label }}</label>
                     <span>{{
                       multipleValues('createDate')
+                        ? 'Multiple Values'
+                        : multipleValues('createTime')
                         ? 'Multiple Values'
                         : copyOfEditedRows[0][options.footer[0].key]
                     }}</span>
@@ -720,7 +725,7 @@ export default {
     },
     hasEditPopupFooter() {
       return this.copyOfEditedRows.some((item) => {
-        return item['createDate'] || item['lastUpdateDate']
+        return item['createDate'] || item['lastUpdateDate'] || item['createTime']
       })
     },
     handleMultipleEdits(item, key, value) {
