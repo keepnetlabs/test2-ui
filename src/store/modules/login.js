@@ -97,11 +97,11 @@ const login = {
           if (payload.sessionExpired) {
             getCompanyList().then((response) => {
               const result = response.data.data && response.data.data
-              this.$store.commit('SET_DROPDOWN_COMPANIES', result)
+              commit('SET_DROPDOWN_COMPANIES', result)
             })
           }
           store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
-            this.$router.go(0)
+            location.reload()
           })
         })
         .catch((error) => {

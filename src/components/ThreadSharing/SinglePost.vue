@@ -950,7 +950,7 @@ import {
 import PreviewHeader from './PreviewHeader'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { getNotifiedEmail } from '../../api/notifiedEmail'
-import { copyToClipboard, isOwner, isPostedByMe } from '../../utils/functions'
+import { copyToClipboard, isOwner, isPostedByMe, reviewElementBind } from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
@@ -1372,66 +1372,7 @@ export default {
               let els = document
                 .getElementById(`sframe${comId}`)
                 .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
-              if (els && els.length) {
-                for (let i = 0, l = els.length; i < l; i++) {
-                  let el = els[i]
-                  el.setAttribute('target', '_blank')
-                  if (url.isHidden) {
-                    url.isFlagged = false
-                    el.innerHTML = url.urlHtml || url.name || url.url
-                    el.innerHTML = 'hidden by owner'
-                    el.style.backgroundColor = '#757575'
-                    el.style.color = '#ffffff'
-                    el.style.position = 'relative'
-                  } else if (!!url && !!url.name) {
-                    el.innerHTML = url.name
-                    el.setAttribute('href', url.url)
-                    el.style.backgroundColor = 'inherit'
-                    el.style.color = 'inherit'
-                  } else if (!!url && !!url.urlHtml) {
-                    el.innerHTML = url.urlHtml
-                    el.setAttribute('href', url.url)
-                    el.style.backgroundColor = 'inherit'
-                    el.style.color = 'inherit'
-                  }
-                  if (url.isFlagged) {
-                    const el = els[i]
-                    el.setAttribute('target', '_blank')
-                    el.setAttribute('data-title', 'This link has been reported as a phishing')
-                    el.style.backgroundColor = '#f3e1e5'
-                    el.style.color = '#bb2a45'
-                    el.innerHTML =
-                      el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
-
-                    //el.appendChild(iEl)
-                  } else if (!url.isFlagged && !url.isHidden) {
-                    el.innerHTML = url.urlHtml || url.name || url.url
-                    el.style.backgroundColor = 'inherit'
-                    el.style.color = 'inherit'
-                  }
-                  if (url.isHidden) {
-                    el.setAttribute('target', '_self')
-                  }
-                }
-              }
-              let hiddenEls = document.getElementsByClassName(url.url)
-              if (hiddenEls && hiddenEls.length) {
-                for (let i = 0, l = hiddenEls.length; i < l; i++) {
-                  let hiddenEl = hiddenEls[i]
-                  hiddenEl.setAttribute('target', '_blank')
-                  if (url.isHidden) {
-                    hiddenEl.innerHTML = 'hidden by owner'
-                    hiddenEl.setAttribute('href', '#')
-                  }
-                  if (url.isFlagged) {
-                    hiddenEl.classList.add('malicious-link')
-                    let iEl = document.createElement('span')
-                    iEl.className +=
-                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                    hiddenEl.appendChild(iEl)
-                  }
-                }
-              }
+              reviewElementBind(els, url)
             }
           }, 500)
         })
