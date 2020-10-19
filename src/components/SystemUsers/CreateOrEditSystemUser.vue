@@ -69,7 +69,9 @@
             outlined
             dense
             :items="statusItems"
-            v-model.trim="formValues.statusName"
+            item-text="name"
+            item-value="val"
+            v-model.trim="formValues.statusId"
           ></v-select>
         </form-group>
         <form-group title="Role">
@@ -78,7 +80,7 @@
             outlined
             dense
             :items="roleItems"
-            v-model.trim="formValues.role"
+            v-model.trim="formValues.roleResourceIdList"
             hint="*Required"
             persistent-hint
             item-text="roleName"
@@ -140,12 +142,15 @@ export default {
         email: '',
         phoneNumber: '',
         statusName: '',
-        role: '',
+        roleResourceIdList: [],
         isTwoStep: false,
         isLdap: false
       },
       showWelcomeEmailModal: false,
-      statusItems: ['Active'],
+      statusItems: [
+        { name: 'Active', val: 1 },
+        { name: 'Passive', val: 0 }
+      ],
       roleItems: [],
       validations: {
         maxLength,
@@ -175,15 +180,17 @@ export default {
             ...this.formValues,
             phoneNumber: phoneNumber.split(' ').join('')
           }
+          formData.roleResourceIdList = [this.roleResourceIdList]
           this.callForUpdateSystemUser(formData)
         } else {
           const { phoneNumber } = this.formValues
           const formData = {
             ...this.formValues,
-            phoneNumber: phoneNumber.split(' ').join(''),
-            roleResourceIdList: ['VwwzEXkFHHCe'],
-            companyResourceId: localStorage.getItem('companyResourceId')
+            //roleResourceIdList: this.role,
+            //companyResourceId: localStorage.getItem('companyResourceId')
+            phoneNumber: phoneNumber.split(' ').join('')
           }
+          formData.roleResourceIdList = [this.formValues.roleResourceIdList]
           this.callForCreateSystemUser(formData)
         }
       } else {
@@ -264,6 +271,7 @@ export default {
         ]
       }
     }
+    let _this = this
     getUserRoles(payload).then((response) => {
       this.roleItems = response.data.data.results.map((item) => {
         let data = {
@@ -272,16 +280,27 @@ export default {
         }
         return data
       })
+      if (this.selectedRow) {
+        const {
+          firstName,
+          lastName,
+          phoneNumber,
+          roles,
+          statusName,
+          email,
+          statusId
+        } = this.selectedRow
+        this.formValues.firstName = firstName
+        this.formValues.lastName = lastName
+        _this.formValues.roleResourceIdList = _this.roleItems.find(
+          (item) => item.roleName.trim() === roles
+        ).resourceId
+        this.formValues.statusName = statusName
+        this.formValues.email = email
+        this.formValues.statusId = statusId
+        this.formValues.phoneNumber = phoneNumber.split(' ').join('')
+      }
     })
-    if (this.selectedRow) {
-      const { firstName, lastName, phoneNumber, roles, statusName, email } = this.selectedRow
-      this.formValues.firstName = firstName
-      this.formValues.lastName = lastName
-      this.formValues.role = roles
-      this.formValues.statusName = statusName
-      this.formValues.email = email
-      this.formValues.phoneNumber = phoneNumber.split(' ').join('')
-    }
   }
 }
 </script>
