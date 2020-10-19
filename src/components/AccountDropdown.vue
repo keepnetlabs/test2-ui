@@ -1,5 +1,8 @@
 <template>
-  <div v-if="isRootOrResellar && companyDD" class="account-select d-none d-md-block">
+  <div
+    v-if="isRootOrResellar && companyDD && getDropdown[0].companyId !== 'default'"
+    class="account-select d-none d-md-block"
+  >
     <v-select
       v-model="selectedCompany"
       :items="getDropdown"

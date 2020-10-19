@@ -250,6 +250,7 @@
                   id="incidents-search-textfield"
                   hide-details
                   prepend-inner-icon="mdi-magnify"
+                  :disabled="selectedTab === 'tab-2'"
                 ></v-text-field>
               </div>
               <div>
@@ -265,6 +266,7 @@
                   :placeholder="'Industry'"
                   hide-details
                   multiple
+                  :disabled="selectedTab === 'tab-2'"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -296,6 +298,7 @@
                   item-text="name"
                   item-value="id"
                   @change="updateCommunities()"
+                  :disabled="selectedTab === 'tab-2'"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -490,7 +493,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="selectedTab === 'tab-2'">
+            <div>
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <div class="ts-header">
                   <div class="ts-title" @click="community(item)">
@@ -1066,6 +1069,9 @@ export default {
         this.getAllCommunitiesListData()
       } else {
         this.selectedTab = 'tab-2'
+        this.filter = ''
+        this.industryValue = []
+        this.privacyValue = []
         this.getInvitions()
         this.getInvitationCount()
         return

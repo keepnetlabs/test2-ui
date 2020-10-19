@@ -92,6 +92,8 @@ const login = {
             commit('EMPTY_LOGIN_ATTEMPT', 0)
             if (!store.getters['common/getSessionCheck']) {
               payload.router.push('/')
+            } else {
+              this.$router.go(0)
             }
           }
           if (payload.sessionExpired) {

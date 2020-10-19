@@ -645,11 +645,11 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 
 .url-badge{
   font-family: "Open Sans", sans-serif;
- position: absolute;
-    top: -4px;
-    right: -5px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
     color: white;
-    background-color: #757575;
+    background-color: #757575c2;
     height: 10px;
     width: 10px;
     text-align: center;

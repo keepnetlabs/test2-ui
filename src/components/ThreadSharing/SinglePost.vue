@@ -266,7 +266,7 @@
               class="pl-1 pr-1"
               >{{ post.postedUserFullName }}</a
             >
-            <a v-else href="#" class="pl-1 pr-1">Okan Yıldız</a> from
+            <a v-else href="#" class="pl-1 pr-1">User Name</a> from
             <a
               :id="post.postedUserCompanyName"
               v-if="post.postedUserCompanyName"
@@ -287,6 +287,20 @@
           <div class="ts-user-date font-weight-medium">
             <span :id="'date' + post.postedTime" v-if="post.postedTime">{{ post.postedTime }}</span>
             <span v-else>04.05.2019</span>
+          </div>
+          <div
+            v-if="post.securityLabelResourceIdArray && post.securityLabelResourceIdArray.length"
+            class="ts-user-tlc"
+          >
+            <div
+              class="ts-user-tlc__item"
+              v-for="(tlc, index) of post.securityLabelResourceIdArray"
+              :key="index"
+            >
+              <div class="ts-user-tlc__item-item" :class="getTlcClass(tlc)">
+                {{ getTlcName(tlc) }}
+              </div>
+            </div>
           </div>
         </div>
         <div class="ts-body">
@@ -633,7 +647,7 @@
                         />
                         <v-btn @click="updateComments(com)" class="send-btn">
                           <v-icon>mdi-send</v-icon>
-                          SEND
+                          Edit
                         </v-btn>
                       </div>
                       <div style="width: 20%; text-align: right;">
@@ -1005,11 +1019,11 @@ position:relative;
 
 .url-badge{
   font-family: "Open Sans", sans-serif;
-  position: absolute;
-    top: -4px;
-    right: -5px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
     color: white;
-    background-color: #757575;
+    background-color: #757575c2;
     height: 10px;
     width: 10px;
     text-align: center;
@@ -1141,6 +1155,42 @@ export default {
     }
   },
   methods: {
+    getTlcClass(item) {
+      switch (item) {
+        case 'wKBhLuFZ46y9':
+          return 'TLP-GREEN'
+          break
+        case 'RhHwRcLlZxek':
+          return 'TLP-AMBER'
+          break
+        case 'YpUZxVhYJlKg':
+          return 'TLP-RED'
+          break
+        case 'wFlYRDMW946M':
+          return 'TLP-WHITE'
+          break
+        default:
+          break
+      }
+    },
+    getTlcName(item) {
+      switch (item) {
+        case 'wKBhLuFZ46y9':
+          return 'TLP: GREEN'
+          break
+        case 'RhHwRcLlZxek':
+          return 'TLP: AMBER'
+          break
+        case 'YpUZxVhYJlKg':
+          return 'TLP: RED'
+          break
+        case 'wFlYRDMW946M':
+          return 'TLP: WHITE'
+          break
+        default:
+          break
+      }
+    },
     contentCopy(contentBody) {
       navigator.clipboard.writeText(contentBody)
       this.$store.dispatch('common/createSnackBar', {

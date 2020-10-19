@@ -289,6 +289,49 @@
     }
   }
 
+  .ts-user-tlc{
+    margin-top: 4px;
+    display: flex;
+    &__item{
+      &:not(:first-child){
+        margin-left: 4px;
+      };
+      .TLP-GREEN{
+        border-radius: 4px;
+        background-color: #43a047;
+      }
+      .TLP-AMBER{
+        border-radius: 4px;
+        background-color: #e6a23c;
+      }
+      .TLP-RED{
+        border-radius: 4px;
+        background-color: #f56c6c
+      }
+      .TLP-WHITE{
+        border-radius: 18px;
+        border: solid 1px #757575 !important;
+        color: #757575;
+      }
+      &-item{
+        font-size: 12px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+        text-align: center;
+        color: #ffffff;
+
+        width: 80px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
   .ts-action-counter {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;

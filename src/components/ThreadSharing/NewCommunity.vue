@@ -80,6 +80,7 @@
                 v-model.trim="selectedCategory"
                 :rules="[categoryRule]"
                 required
+                @blur="blurIndustry"
               ></v-combobox>
             </v-list-item-content>
           </v-list-item>
@@ -219,6 +220,11 @@ export default {
     }
   },
   methods: {
+    blurIndustry() {
+      if (!this.selectedCategory || !this.selectedCategory.name) {
+        this.selectedCategory = null
+      }
+    },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
     },
