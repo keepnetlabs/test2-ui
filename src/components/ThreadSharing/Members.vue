@@ -113,7 +113,7 @@
                   <v-expansion-panel class="threat-sharing-content">
                     <div class="ts-header">
                       <div class="ts-title">
-                        <img src="../../assets/img/logo-min.png" alt="KeepNet" class="d-flex" />
+                        <img src="../../assets/img/logo-min.png" alt="logo" class="d-flex" />
                         <div class="community-info-wrapper">
                           <h2>{{ member.companyName }}</h2>
                           <div class="community-sub-info">
@@ -253,7 +253,7 @@
                 >
                   <div class="member-requests ts-header">
                     <div class="ts-title">
-                      <img src="../../assets/img/logo-min.png" alt="Keepnet" />
+                      <img src="../../assets/img/logo-min.png" alt="logo" />
                       <div class="community-info-wrapper">
                         <h2>{{ req.companyName }}</h2>
                         <div class="community-sub-info">
