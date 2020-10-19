@@ -111,7 +111,7 @@ export default {
             fixed: 'left',
             sortable: true,
             show: true,
-            type: 'link',
+            type: 'text',
             href: '/target-groups',
             hrefKey: 'resourceId',
             width: 300,
