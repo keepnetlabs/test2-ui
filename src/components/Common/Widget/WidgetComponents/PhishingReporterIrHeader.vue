@@ -14,9 +14,7 @@
         <div class="card-header">
           <span class="head">Phishing Reporter</span>
           <router-link to="/phishing-reporter">
-            <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
-              >mdi-open-in-new</v-icon
-            >
+            <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
           <v-icon
             v-if="editMode"
@@ -159,7 +157,7 @@ export default {
       color: #fff;
       font-size: 20px;
       font-weight: 600;
-      line-height: 1.15;
+      line-height: 1.3;
       letter-spacing: normal;
       white-space: nowrap;
       overflow: hidden;

@@ -6,6 +6,7 @@
     icon-name="mdi-file-excel"
     title="Edit Fields - Target Users / People"
     ref="refAppModal"
+    z-index="999"
   >
     <template v-slot:overlay-body>
       <app-dialog
@@ -106,7 +107,7 @@ export default {
   },
   computed: {
     getAppDialogButtonText() {
-      return this.selectedItem && this.selectedItem.isActive ? 'Inactive' : 'Active'
+      return this.selectedItem && this.selectedItem.isActive ? 'Delete' : 'Active'
     }
   },
   data() {
