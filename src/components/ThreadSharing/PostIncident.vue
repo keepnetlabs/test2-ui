@@ -390,15 +390,15 @@
 
               <div class="input-header pt-6">Security Label (TLP)</div>
               <div class="input-sub pb-1">
-                Use TLP labels to inform recipients about how to share sensitive information. To get
-                more information about Please visit
+                Use TLP labels to inform recipients about how to share sensitive information. Please
+                visit
                 <a
                   href="https://www.cisa.gov/tlp#:~:text=The%20Traffic%20Light%20Protocol%20(TLP,by%20the%20recipient(s)."
                   class="text-primary"
                   target="_blank"
                   >Traffic Light Protocol</a
                 >
-                for more information
+                for more information.
               </div>
               <v-form>
                 <v-select
@@ -903,7 +903,7 @@
                     </div>
                     <div class="d-flex">
                       <div class="img-wrapper bccFlagged">
-                        <v-icon :color="uploadRespond.isCcFlagged ? '#f56c6c' : ''"
+                        <v-icon :color="uploadRespond.isBccFlagged ? '#f56c6c' : ''"
                           >mdi-account-arrow-left</v-icon
                         >
                       </div>
@@ -1694,25 +1694,13 @@
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div
-                              v-for="(att, ind) of uploadRespond.attachments"
-                              :key="ind + att.name"
-                              :id="'detail-malicious-' + att.name"
-                              v-if="att.isFlagged"
-                            >
-                              <p
-                                class="attach-found-malicious detail-black single-post__details__section-header--result"
-                              >
-                                This file<span
-                                  v-if="
-                                    uploadRespond.attachments &&
-                                    uploadRespond.attachments.length > 1
-                                  "
-                                  >s</span
+                              <div v-if="att.isFlagged">
+                                <p
+                                  class="attach-found-malicious detail-black single-post__details__section-header--result"
                                 >
-                                has been reported as malicious content
-                              </p>
+                                  This file has been reported as malicious content
+                                </p>
+                              </div>
                             </div>
                           </div>
                           <div class="detail-discovery pb-4">
