@@ -63,7 +63,7 @@ export default {
         container: '#gjsWebPageModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-newsletter', cssParser],
+        plugins: ['gjs-preset-newsletter'],
         components: this.editorHtml || '',
         style: setGrapesjsStyle()
       })

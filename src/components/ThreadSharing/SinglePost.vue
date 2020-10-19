@@ -869,7 +869,7 @@
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
                       <div class="detail-part-item__text">
-                        <span class="detail-part-item__hide-overflow">
+                        <span class="detail-part-item__hide-overflow pl-0">
                           {{ !att.isHidden ? att.name : 'hidden by owner' }}
                         </span>
                       </div>
