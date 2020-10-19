@@ -18,9 +18,12 @@
         :empty="tableOptions.empty"
         :filterable="true"
         :row-key="'name'"
+        :clusterItems="[{ name: 'Email' }]"
         :groupable="true"
         :is-downloadable="false"
+        @clusterChanged="clusterChanged"
         :options="true"
+        @handleListBulleted="handleListBulleted"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :refName="'notificationList'"
@@ -53,17 +56,6 @@ export default {
         tableData: [],
         columns: [
           {
-            property: PROPERTY_STORE.NAME,
-            align: 'left',
-            label: 'Company Name',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 150,
-            isEditable: true
-          },
-          {
             property: PROPERTY_STORE.EMAIL,
             align: 'left',
             label: 'Email',
@@ -75,9 +67,20 @@ export default {
             isEditable: true
           },
           {
-            property: PROPERTY_STORE.DESCRIPTION,
+            property: PROPERTY_STORE.NAME,
             align: 'left',
-            label: 'Description',
+            label: 'Company Name',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 150,
+            isEditable: true
+          },
+          {
+            property: 'createDate',
+            align: 'left',
+            label: 'Date Created',
             fixed: false,
             sortable: true,
             show: true,
@@ -98,7 +101,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.STATUS,
-            align: 'left',
+            align: 'center',
             label: 'Status',
             fixed: false,
             sortable: true,
@@ -133,67 +136,127 @@ export default {
           }
         ]
       },
-
       showDeleteNotificationTemplateModal: false,
-      newNotificationTemplateStatus: false
+      newNotificationTemplateStatus: false,
+      listData: [
+        {
+          id: 3,
+          name: '1',
+          email: 'gurkan@keepnetlabs.com',
+          status: 'Active',
+          createDate: '2020-10-30 15:10:44',
+          description: 'Description'
+        },
+        {
+          id: 33,
+          name: '1.1',
+          email: 'gurkan@keepnetlabs.com',
+          status: 'Inactive',
+          createDate: '2020-10-18 15:10:44',
+          description: 'Description'
+        },
+        {
+          id: 33,
+          name: '1.2',
+          email: 'gurkan@keepnetlabs.com',
+          status: 'Active',
+          createDate: '2020-10-08 19:10:22',
+          description: 'Description'
+        },
+        {
+          id: 34,
+          name: '2',
+          email: 'ozan@keepnetlabs.com',
+          description: 'Description Description',
+          status: 'Active',
+          createDate: '2020-10-03 10:58:12'
+        },
+        {
+          id: 40,
+          name: '2.1',
+          email: 'ozan@keepnetlabs.com',
+          description: 'Description Description',
+          createDate: '2020-10-01 10:58:59',
+          status: 'Active'
+        },
+        {
+          id: 55,
+          name: '3',
+          email: 'ali@keepnetlabs.com',
+          description: 'Description Description',
+          createDate: '2020-10-01 10:51:59',
+          status: 'Active'
+        }
+      ],
+      clusterData: [
+        {
+          id: 3,
+          name: '1',
+          email: 'gurkan@keepnetlabs.com',
+          status: 'Active',
+          createDate: '2020-10-30 15:10:44',
+          description: 'Description',
+          children: [
+            {
+              id: 33,
+              name: '1.1',
+              email: 'gurkan@keepnetlabs.com',
+              status: 'Inactive',
+              createDate: '2020-10-18 15:10:44',
+              description: 'Description'
+            },
+            {
+              id: 33,
+              name: '1.2',
+              email: 'gurkan@keepnetlabs.com',
+              status: 'Active',
+              createDate: '2020-10-08 19:10:22',
+              description: 'Description'
+            }
+          ]
+        },
+        {
+          id: 34,
+          name: '2',
+          email: 'ozan@keepnetlabs.com',
+          description: 'Description Description',
+          status: 'Active',
+          createDate: '2020-10-03 10:58:12',
+          children: [
+            {
+              id: 40,
+              name: '2.1',
+              email: 'ozan@keepnetlabs.com',
+              description: 'Description Description',
+              createDate: '2020-10-01 10:58:59',
+              status: 'Active'
+            }
+          ]
+        },
+        {
+          id: 55,
+          name: '3',
+          email: 'ali@keepnetlabs.com',
+          description: 'Description Description',
+          createDate: '2020-10-01 10:51:59',
+          status: 'Active'
+        }
+      ]
     }
   },
   methods: {
     toggleNewNotificationTemplate() {
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
+    },
+    handleListBulleted() {
+      this.$refs.refNotificationList.loadWithDataArray(this.listData)
+    },
+    clusterChanged() {
+      this.$refs.refNotificationList.loadWithDataArray(this.clusterData)
     }
   },
   created() {
-    this.tableOptions.tableData = [
-      {
-        id: 3,
-        name: '1',
-        email: 'gurkan.ugurlu@keepnetlabs.com',
-        status: 'Active',
-        description: 'Description Description',
-        children: [
-          {
-            id: 33,
-            name: '1.1',
-            email: 'gurkan.ugurlu@keepnetlabs.com',
-            status: 'Active',
-            description: 'Description Description',
-            children: [
-              {
-                id: 38,
-                name: '1.1.1',
-                email: 'gurkan.ugurlu@keepnetlabs.com',
-                status: 'Active',
-                description: 'Description Description'
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 34,
-        name: '2',
-        email: 'gurkan.ugurlu@keepnetlabs.com',
-        description: 'Description Description',
-        status: 'Active',
-        children: [
-          {
-            id: 40,
-            name: '2.1',
-            email: 'gurkan.ugurlu@keepnetlabs.com',
-            description: 'Description Description',
-            status: 'Active'
-          }
-        ]
-      },
-      {
-        id: 55,
-        name: '3',
-        email: 'gurkan.ugurlu@keepnetlabs.com',
-        description: 'Description Description',
-        status: 'Active'
-      }
-    ]
+    this.tableOptions.tableData = this.listData
   }
 }
 </script>
