@@ -265,7 +265,7 @@
                     @click="closePreview()"
                     >mdi-close-circle
                   </v-icon>
-                  <PreviewHeader :uploadRespond="uploadRespond" />
+                  <PreviewHeaderForSinglePost :uploadRespond="uploadRespond" />
                   <div id="last-preview-body-preview" class="preview-body">
                     <k-shadow-frame id="incident-preview-1" :content="uploadRespond.body" />
                   </div>
@@ -755,7 +755,10 @@
                       </v-menu>
                     </div>
                   </div>
-                  <div class="d-flex justify-space-between investigation-filters__area--filter">
+                  <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
+                    v-if="uploadRespond.to && uploadRespond.to.length"
+                  >
                     <div class="d-flex" v-if="uploadRespond.to && uploadRespond.to.length">
                       <v-checkbox
                         v-model="uploadRespond.isToHidden"
@@ -765,7 +768,7 @@
                       <label v-if="filterOpened">To</label>
                     </div>
                     <div class="d-flex">
-                      <div class="img-wrapper">
+                      <div class="img-wrapper toFlagged">
                         <v-icon :color="uploadRespond.isToFlagged ? '#f56c6c' : ''"
                           >mdi-account-arrow-left</v-icon
                         >
@@ -1265,10 +1268,10 @@
                     <v-tabs-items v-model="tab">
                       <v-tab-item>
                         <div class="mail-preview">
-                          <PreviewHeader :uploadRespond="uploadRespond" />
+                          <PreviewHeaderForSinglePost :uploadRespond="uploadRespond" />
                           <div class="preview-body">
                             <k-shadow-frame
-                              id="last-preview-body-shadow-root"
+                              id="last-preview-body-shadow-root-review"
                               :content="uploadRespond.body"
                             />
                           </div>
@@ -1320,7 +1323,11 @@
                             </div>
                           </div>
                         </div>
-                        <div id="last-step-preview-buttons" class="preview-buttons">
+                        <div
+                          id="last-step-preview-buttons"
+                          class="preview-buttons"
+                          style="display: none;"
+                        >
                           <v-btn id="last-step-useful-btn">
                             <v-icon>mdi-thumb-up</v-icon>
                             Useful 0
@@ -1562,7 +1569,6 @@
                             >
                               <p
                                 class="attach-found-malicious detail-black single-post__details__section-header--result"
-                                v-if="ind === 0"
                               >
                                 This file<span
                                   v-if="
@@ -1730,6 +1736,7 @@
 </template>
 <script>
 import PreviewHeader from './PreviewHeader'
+import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import VClamp from 'vue-clamp'
 import {
   getSelectedEmailPreview,
@@ -1745,7 +1752,7 @@ import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
 import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
-import { scrollToComponent } from '../../utils/functions'
+import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1866,7 +1873,8 @@ export default {
     VClamp,
     PreviewHeader,
     GrapesWebPageModal,
-    AppModal
+    AppModal,
+    PreviewHeaderForSinglePost
   },
   props: {
     editItem: {
@@ -2300,9 +2308,14 @@ export default {
             index: index + 1
           }
         })
-
-        for (let url of this.uploadRespond.urls) {
-          this.urlSwitchChange(url, null, id)
+        if (id === 'incident-preview-1' || id === 'last-preview-body-shadow-root-review') {
+          for (let url of this.uploadRespond.urls) {
+            incidenPostReviewElementBind(url, null, id)
+          }
+        } else {
+          for (let url of this.uploadRespond.urls) {
+            this.urlSwitchChange(url, null, id)
+          }
         }
       }, 500)
     },
@@ -2422,6 +2435,7 @@ export default {
               _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
               _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
               _this.uploadRespond.CommunityName = this.editItem.communityName
+              _this.uploadRespond.AffectArea = data.data.affectArea
             }
             if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = []
             if (!_this.uploadRespond.cc) _this.uploadRespond.cc = []
@@ -2491,7 +2505,7 @@ export default {
     },
     onBeforeLastStep() {
       this.step++
-      this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      this.setShadowRootMalicousLink('last-preview-body-shadow-root-review')
     },
     onPreviousButtonClick() {
       this.step = this.step - 1
@@ -2735,6 +2749,21 @@ export default {
 <style lang="scss">
 .disabled-chevron {
   opacity: 0.3;
+  .v-ripple_container {
+    display: none !important;
+    &:before,
+    &:after {
+      opacity: 0 !important;
+    }
+  }
+  &:before {
+    opacity: 0 !important;
+  }
+  .v-icon {
+    &:after {
+      opacity: 0 !important;
+    }
+  }
 }
 .hidden-icon-link {
   background-color: #757575 !important;
@@ -4806,7 +4835,14 @@ input[type=file]::-webkit-file-upload-button {
     margin-top: 0 !important;
 
     label {
-      height: 26px !important;
+      height: 25px !important;
+      font-size: 14px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87) !important;
     }
   }
 
