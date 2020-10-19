@@ -493,7 +493,7 @@
                 </div>
               </div>
             </div>
-            <div>
+            <div v-if="selectedTab === 'tab-2'">
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <div class="ts-header">
                   <div class="ts-title" @click="community(item)">
