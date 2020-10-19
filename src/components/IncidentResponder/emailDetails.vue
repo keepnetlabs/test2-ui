@@ -11,7 +11,7 @@
           <v-tab id="expansion-attachment">Attachments</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
-          <v-tab-item v-if="mailDetails">
+          <v-tab-item v-if="mailDetails" :transition="false" :reverse-transition="false">
             <download-modal
               :status="downloadModalStatus"
               v-if="downloadModalStatus"
@@ -121,7 +121,7 @@
               </div>
             </div>
           </v-tab-item>
-          <v-tab-item v-if="mailDetails">
+          <v-tab-item v-if="mailDetails" :transition="false" :reverse-transition="false">
             <div class="email-details__header">
               <v-card light class="email-details__header-card">
                 <v-card-title class="email-details__header-title">Relay Information</v-card-title>
@@ -179,7 +179,7 @@
               </v-card>
             </div>
           </v-tab-item>
-          <v-tab-item v-if="mailDetails">
+          <v-tab-item v-if="mailDetails" :transition="false" :reverse-transition="false">
             <div class="preview-header pt-0">
               <h2
                 style="padding: 0 2px; border-bottom: 1px solid transparent;"
@@ -413,7 +413,7 @@
               </div>
             </div>
           </v-tab-item>
-          <v-tab-item v-if="mailDetails">
+          <v-tab-item v-if="mailDetails" :transition="false" :reverse-transition="false">
             <div>
               <datatable
                 id="urlAnalysisTable"
@@ -434,7 +434,7 @@
               />
             </div>
           </v-tab-item>
-          <v-tab-item v-if="mailDetails">
+          <v-tab-item v-if="mailDetails" :transition="false" :reverse-transition="false">
             <v-expansion-panels :multiple="true" v-model="panel">
               <v-expansion-panel
                 class="attachment-analysis-item"

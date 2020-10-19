@@ -24,10 +24,10 @@
             </div>
           </v-tabs>
           <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
-            <v-tab-item>
+            <v-tab-item :transition="false" :reverse-transition="false">
               <incidents ref="tsIncidents" />
             </v-tab-item>
-            <v-tab-item>
+            <v-tab-item :transition="false" :reverse-transition="false">
               <communities ref="tsCommunities" :refresh="refreshMemberTable" />
             </v-tab-item>
           </v-tabs-items>

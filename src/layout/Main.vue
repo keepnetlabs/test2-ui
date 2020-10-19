@@ -305,13 +305,17 @@
               routerName === 'Investigations' ||
               routerName === 'Integrations' ||
               routerName === 'Playbook' ||
-              routerName === 'Mail Configurations',
+              routerName === 'Mail Configurations' ||
+              routerName === 'Analysis Details' ||
+              routerName === 'Investigation Details',
             'un-selected-list-item':
               routerName !== 'Incident Responder' ||
               routerName === 'Investigations' ||
               routerName === 'Integrations' ||
               routerName === 'Playbook' ||
-              routerName === 'Mail Configurations'
+              routerName === 'Analysis Details' ||
+              routerName === 'Mail Configurations' ||
+              routerName === 'Investigation Details'
           }"
         >
           <template v-slot:activator>

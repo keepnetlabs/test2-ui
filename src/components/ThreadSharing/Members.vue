@@ -82,7 +82,7 @@
       </v-tabs>
 
       <v-tabs-items v-model="tab">
-        <v-tab-item>
+        <v-tab-item :transition="false" :reverse-transition="false">
           <v-data-iterator
             :items="members"
             :items-per-page.sync="itemsPerPage"
@@ -219,7 +219,7 @@
             </template>
           </v-data-iterator>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item :transition="false" :reverse-transition="false">
           <v-data-iterator
             :items="requestMembers"
             :items-per-page.sync="itemsPerPage"
