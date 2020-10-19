@@ -690,7 +690,7 @@
                 {{ /* Subject  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.subject && !emailData.isSubjectHidden"
+                  v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -715,7 +715,7 @@
                 {{ /* From  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.from && !emailData.isFromHidden"
+                  v-if="emailData && emailData.from && emailData.isFromFlagged"
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -739,7 +739,7 @@
                 {{ /* To  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.to && !emailData.isToHidden"
+                  v-if="emailData && emailData.to && emailData.isToFlagged"
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -768,7 +768,7 @@
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
                       <div class="detail-part-item__text">
-                        Cc:
+                        CC:
                         <span class="detail-part-item__hide-overflow">
                           {{ emailData.cc.toString() }}
                         </span>
@@ -792,7 +792,7 @@
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
                       <div class="detail-part-item__text">
-                        Cc:
+                        BCC:
                         <span class="detail-part-item__hide-overflow">
                           {{ emailData.bcc.toString() }}
                         </span>
