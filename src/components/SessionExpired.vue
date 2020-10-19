@@ -7,8 +7,15 @@
       autocomplete="disabled"
     >
       <v-card light class="pb-5">
+        <v-card-title class="d-flex pa-0 align-center">
+          <div class="logo-wrapper">
+            <div class="v-responsive">
+              <img src="../assets/img/logo-kep.png" />
+            </div>
+          </div>
+        </v-card-title>
         <v-list-item>
-          <v-list-item-content class="d-flex flex-wrap flex-row mt-10 pt-10">
+          <v-list-item-content class="d-flex flex-wrap flex-row">
             <v-list-item-title class="session-expired__title">Session Expired</v-list-item-title>
             <v-list-item-subtitle class="v-card-title"
               >Your session has been timed out. Please log in.</v-list-item-subtitle
@@ -28,6 +35,7 @@
         <div class="session-expired__body">
           <div class="login-user-pass-wrapper">
             <div>
+              <label class="new-password-wrapper__label p-0 mb-2">Username</label>
               <v-text-field
                 id="email"
                 :type="'email'"
@@ -37,7 +45,7 @@
                 :rules="[rules.required, rules.email, rules.max]"
                 class="username-field"
                 required
-                label="Username"
+                placeholder="Username"
                 autocomplete="disabled"
                 outlined
                 autofocus
@@ -46,12 +54,13 @@
             </div>
 
             <div>
+              <label class="new-password-wrapper__label p-0 mb-2">Password</label>
               <v-text-field
                 :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                 :rules="[rules.required, rules.min]"
                 :type="show1 ? 'text' : 'password'"
                 name="input-10-2"
-                label="Password"
+                placeholder="Password"
                 v-model="password"
                 outlined
                 @click:append="show1 = !show1"
@@ -89,18 +98,6 @@
             <v-icon right dark>mdi-arrow-right</v-icon>
           </v-btn>
         </v-card-actions>
-        <div class="session-expired__footer">
-          <v-divider />
-          <div class="session-expired__footer-text">
-            <div>
-              Not registered yet?
-            </div>
-            <a href="https://www.keepnetlabs.com/free-trial/" target="_blank">
-              Click Here
-            </a>
-          </div>
-          <v-divider />
-        </div>
       </v-card>
     </v-form>
   </div>
@@ -177,6 +174,23 @@ export default {
 
 <style lang="scss">
 .session-expired {
+  .new-password-wrapper {
+    &__label {
+      font-size: 20px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      padding: 0 15px;
+      margin-bottom: 8px;
+    }
+  }
+  .logo-wrapper {
+    margin-top: 64px;
+    margin-bottom: 36px;
+  }
   &__title {
     font-size: 36px;
     font-weight: 600;
