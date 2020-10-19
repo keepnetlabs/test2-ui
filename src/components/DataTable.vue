@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'k-table__wrapper': setDatatableUI }">
+  <div class="k-table__wrapper">
     <download-modal
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
@@ -1172,9 +1172,11 @@ export default {
       this.actionFixed = false
     }
     const _this = this
+    /*
     setTimeout(function () {
       _this.setDatatableUI = true
     }, 1)
+     */
   },
   methods: {
     /**
