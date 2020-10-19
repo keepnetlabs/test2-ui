@@ -528,10 +528,10 @@ export default {
       if (isValidForm) {
         this.testConnection(true)
       } else {
-        setTimeout(() => {
+        return this.$nextTick(() => {
           const el = refForm.$el.querySelector('.error--text')
           scrollToComponent(el)
-        }, 100)
+        })
       }
     },
     closeOverlay() {

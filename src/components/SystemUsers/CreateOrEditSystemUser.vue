@@ -292,13 +292,13 @@ export default {
         } = this.selectedRow
         this.formValues.firstName = firstName
         this.formValues.lastName = lastName
-        _this.formValues.roleResourceIdList = _this.roleItems.find(
-          (item) => item.roleName.trim() === roles
-        ).resourceId
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
         this.formValues.phoneNumber = phoneNumber.split(' ').join('')
+        _this.formValues.roleResourceIdList = _this.roleItems.find((item) => {
+          return item.roleName.replace(/\s/g, '') === roles
+        }).resourceId
       }
     })
   }

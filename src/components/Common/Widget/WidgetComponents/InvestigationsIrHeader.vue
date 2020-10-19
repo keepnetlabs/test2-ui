@@ -22,9 +22,7 @@
             >mdi-close-circle</v-icon
           >
           <router-link :to="'/investigations'">
-            <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
-              >mdi-open-in-new</v-icon
-            >
+            <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
         </div>
         <div
