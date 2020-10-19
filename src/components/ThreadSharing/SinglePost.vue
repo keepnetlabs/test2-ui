@@ -592,7 +592,7 @@
                   outlined
                   v-model.trim="addCommentValue"
                   validate-on-blur
-                  :rules="[rules.regex, rules.required]"
+                  :rules="[rules.required]"
                 />
                 <v-btn
                   :id="'single-post-send-comment' + post.communityPostResourceId"
@@ -642,7 +642,7 @@
                           outlined
                           v-model.trim="com.commentValue"
                           validate-on-blur
-                          :rules="[rules.regex, rules.required]"
+                          :rules="[rules.required]"
                           hide-details
                         />
                         <v-btn @click="updateComments(com)" class="send-btn">
@@ -1295,6 +1295,9 @@ export default {
           })
           this.isWantToDeleteComment = false
           this.getComments(this.post.communityPostResourceId)
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1379,9 +1382,13 @@ export default {
       }
     },
     userLikePost(postId) {
+      let _this = this
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
       })
       /*.catch((error) => {
@@ -1395,6 +1402,9 @@ export default {
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
       })
       /*
@@ -1434,6 +1444,9 @@ export default {
               message: 'Comment added has been successfully'
             })
             this.getComments(this.post.communityPostResourceId)
+            setTimeout(() => {
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {

@@ -2,6 +2,15 @@
   <div id="community-page-wrapper" class="page-wrapper">
     <div id="" class="component-threat-sharing page-wrapper">
       <v-overlay
+        :value="isWantToAddNewCommunity"
+        :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
+        :opacity="1"
+        :z-index="999"
+        color="white"
+      >
+        <new-community @closeAdd="onAddClose" />
+      </v-overlay>
+      <v-overlay
         id="new-community-overlay"
         :value="showPostIncident"
         :class="{ newCommunityOverlay: showPostIncident }"
@@ -46,7 +55,11 @@
           </v-card>
         </v-col>
         <v-col class="right-column" cols="12" md="4">
-          <right-column @postIncident="showPostIncidentFunc" class="right-col-desktop" />
+          <right-column
+            @postIncident="showPostIncidentFunc"
+            @createCommunityAction="openCreateCommunityModal()"
+            class="right-col-desktop"
+          />
         </v-col>
       </v-layout>
     </div>
@@ -58,14 +71,15 @@ import Incidents from '../components/ThreadSharing/Incidents'
 import Members from '../components/ThreadSharing/Members'
 import PostIncident from '../components/ThreadSharing/PostIncident'
 import RightColumn from '../components/ThreadSharing/RightColumn'
-
+import NewCommunity from '../components/ThreadSharing/NewCommunity'
 export default {
   name: 'ThreatSharing',
   components: {
     PostIncident,
     Incidents,
     Members,
-    RightColumn
+    RightColumn,
+    NewCommunity
   },
   data: () => ({
     refreshIncidentsData: false,
