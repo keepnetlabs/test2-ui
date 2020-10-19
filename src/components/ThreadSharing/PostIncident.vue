@@ -825,6 +825,134 @@
                       </v-menu>
                     </div>
                   </div>
+                  <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
+                    v-if="uploadRespond.cc && uploadRespond.cc.length"
+                  >
+                    <div class="d-flex" v-if="uploadRespond.cc && uploadRespond.cc.length">
+                      <v-checkbox
+                        v-model="uploadRespond.isCcHidden"
+                        @change="ccValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">CC</label>
+                    </div>
+                    <div class="d-flex">
+                      <div class="img-wrapper ccFlagged">
+                        <v-icon :color="uploadRespond.isCcFlagged ? '#f56c6c' : ''"
+                          >mdi-account-arrow-left</v-icon
+                        >
+                      </div>
+                      <v-menu
+                        :disabled="uploadRespond.isCcHidden"
+                        v-model="ccSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                        @click="ccSettings = !ccSettings"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isCcHidden }"
+                          >
+                            <v-icon :class="{ 'chevron-down': ccSettings }" v-on="on"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isCcFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isCcFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isCcFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isCcFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged CC
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
+                  </div>
+                  <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
+                    v-if="uploadRespond.bcc && uploadRespond.bcc.length"
+                  >
+                    <div class="d-flex" v-if="uploadRespond.bcc && uploadRespond.bcc.length">
+                      <v-checkbox
+                        v-model="uploadRespond.isBccHidden"
+                        @change="ccValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">BCC</label>
+                    </div>
+                    <div class="d-flex">
+                      <div class="img-wrapper bccFlagged">
+                        <v-icon :color="uploadRespond.isCcFlagged ? '#f56c6c' : ''"
+                          >mdi-account-arrow-left</v-icon
+                        >
+                      </div>
+                      <v-menu
+                        :disabled="uploadRespond.isBccHidden"
+                        v-model="bccSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                        @click="bccSettings = !bccSettings"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isBccHidden }"
+                          >
+                            <v-icon :class="{ 'chevron-down': bccSettings }" v-on="on"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isBccFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isBccFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isBccFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isBccFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged BCC
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
+                  </div>
                 </div>
                 <div
                   class="investigation-filters__area--breaker"
@@ -1657,6 +1785,7 @@
                     :href="termsAndConditionsUrl"
                     @click="(event) => event.stopPropagation()"
                     class="mr-1"
+                    target="_blank"
                     >terms and conditions</a
                   >
                   <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
@@ -1937,7 +2066,7 @@ export default {
     }
   },
   data: () => ({
-    termsAndConditionsUrl: '#',
+    termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
     acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
@@ -3444,7 +3573,7 @@ export default {
         overflow-y: auto;
         position: relative;
         margin: 24px 0 12px 0;
-        min-height: 180px;
+        min-height: 200px;
         &--breaker {
           padding: 0 24px;
           width: 100%;

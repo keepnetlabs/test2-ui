@@ -21,6 +21,7 @@
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
           :page="page"
+          @update:page="onChangePagination"
         >
           <template v-slot:header>
             <div class="search-wrapper">
@@ -45,6 +46,8 @@
                   v-model="companyValue"
                   hide-details
                   clearable
+                  item-text="name"
+                  item-value="resourceId"
                   @change="getIncidentList()"
                 />
               </div>
@@ -130,6 +133,7 @@ import {
 } from '../../api/threadSharing'
 import PostIncident from '../ThreadSharing/PostIncident'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { getCompanyList } from '../../api/company'
 
 export default {
   components: {
@@ -191,6 +195,9 @@ export default {
     }
   },
   methods: {
+    onChangePagination(val) {
+      this.page = val
+    },
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)
@@ -230,7 +237,7 @@ export default {
         })
     },
     getIncidentList(memberId, companyId) {
-      let companyResourceId = this.companyValue ? localStorage.getItem('companyResourceId') : null
+      let companyResourceId = this.companyValue
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,
         pageNumber: 1,
@@ -328,9 +335,7 @@ export default {
               this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
-              setTimeout(() => {
-                this.incidentLoading = false
-              }, 2000)
+              this.incidentLoading = false
             })
             .catch((error) => {
               if (
@@ -347,7 +352,7 @@ export default {
     }
   },
   mounted() {
-    this.companyItem.push(localStorage.getItem('companyName'))
+    getCompanyList().then((response) => (this.companyItem = response.data.data))
     this.getThreats()
     if (this.$route.query && this.$route.query.postId) {
       this.isSharedPost = true

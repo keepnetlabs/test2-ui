@@ -1245,6 +1245,9 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Post has been shared successfully'
           })
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
           this.openShareModal = false
         })
       }, 200)
@@ -1273,6 +1276,9 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Comment has been updated successfully'
           })
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
           this.getComments(this.post.communityPostResourceId)
         })
         .catch((error) => {
