@@ -189,7 +189,7 @@ export default {
           footer: [
             {
               label: 'Date Created',
-              key: 'createDate'
+              key: 'createTime'
             },
             {
               label: 'Last update',
