@@ -95,13 +95,14 @@ const login = {
             }
           }
           if (payload.sessionExpired) {
-            this.$router.go(0)
             getCompanyList().then((response) => {
               const result = response.data.data && response.data.data
               this.$store.commit('SET_DROPDOWN_COMPANIES', result)
             })
           }
-          store.dispatch('common/changeSessionExpiredStatus', false)
+          store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+            this.$router.go(0)
+          })
         })
         .catch((error) => {
           dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
