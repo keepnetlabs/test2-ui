@@ -164,6 +164,7 @@
                     type="datetimerange"
                     range-separator="To"
                     format="yyyy-MM-dd HH:mm:ss"
+                    ref="refPicker"
                     start-placeholder="Start date"
                     end-placeholder="End date"
                     value-format="yyyy-MM-dd HH:mm:ss"
@@ -272,6 +273,7 @@ import {
 } from '../../api/targetUsers'
 import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   components: {
     AppModalBodyHeader,
@@ -326,6 +328,13 @@ export default {
       searchTargetUsersSpecificValue: '',
       specificUserItems: [],
       pickerOptions: {
+        onPick: (date) => {
+          const { minDate, maxDate } = date
+          const refPicker = this.$refs.refPicker
+          if (maxDate && minDate) {
+            this.date = refPicker.formatToValue([minDate, maxDate])
+          }
+        },
         shortcuts: [
           {
             text: 'Last week',
@@ -909,6 +918,11 @@ export default {
             this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
           })
+      } else {
+        return this.$nextTick(() => {
+          const el = this.$refs.form.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     checkInvestigationName() {

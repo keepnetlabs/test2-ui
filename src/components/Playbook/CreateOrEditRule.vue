@@ -566,7 +566,7 @@ export default {
       } else {
         return this.$nextTick(() => {
           const el = ref.$refs.refForm.$el.querySelector('.error--text')
-          el.scrollIntoView(false)
+          scrollToComponent(el)
         })
       }
     },
@@ -581,6 +581,13 @@ export default {
         if (isFormValid) {
           this.transformQuery()
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        }
+        const ref = this.$refs.refStep1Form
+        if (this.activeStep === 1 && !this.$refs.refStep1Form.validate()) {
+          return this.$nextTick(() => {
+            const el = ref.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
         }
       } else {
         this.$store.dispatch('common/createSnackBar', {
