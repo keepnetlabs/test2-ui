@@ -265,7 +265,13 @@ export default {
       }
     }
     getUserRoles(payload).then((response) => {
-      this.roleItems = response.data.data.results
+      this.roleItems = response.data.data.results.map((item) => {
+        let data = {
+          roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+          resourceId: item.resourceId
+        }
+        return data
+      })
     })
     if (this.selectedRow) {
       const { firstName, lastName, phoneNumber, roles, statusName, email } = this.selectedRow

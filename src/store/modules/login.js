@@ -95,6 +95,7 @@ const login = {
             }
           }
           if (payload.sessionExpired) {
+            this.$router.go(0)
             getCompanyList().then((response) => {
               const result = response.data.data && response.data.data
               this.$store.commit('SET_DROPDOWN_COMPANIES', result)
