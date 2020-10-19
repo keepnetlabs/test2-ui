@@ -125,6 +125,7 @@
                     :href="termsAndConditionsUrl"
                     @click="(event) => event.stopPropagation()"
                     class="mr-1"
+                    target="_blank"
                     >terms and conditions</a
                   >
                   <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
@@ -162,7 +163,7 @@ export default {
   },
   data() {
     return {
-      termsAndConditionsUrl: '#',
+      termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
       isWantToAccept: false,
       oldPrivacyValue: null,
       name: '',
