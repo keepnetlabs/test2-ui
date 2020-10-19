@@ -74,7 +74,7 @@
             v-if="ind !== 0 && !col.hideOnSettingsPopup"
           >
             {{ col.label }}
-            <v-switch v-model="col.show" color="#2196f3" />
+            <v-switch v-model="col.show" color="#2196f3" @change="$forceUpdate()" />
           </div>
           <slot name="settings-popup-body"></slot>
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
@@ -1193,6 +1193,7 @@ export default {
       this.changeDownloadModalStatus(true)
     },
     handleListBulletedClick() {
+      this.selectedCluster = ''
       this.$emit('handleListBulleted')
     },
     isEqualCluster(name) {
