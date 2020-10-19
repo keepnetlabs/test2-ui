@@ -589,9 +589,34 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://fonts.googleapis.com/css?family=Material+Icons');
  @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
+}
+.malicious-style,
+.malicious-link {
+     color: #f56c6d !important;
+    border-color: #f56c6d !important;
+    background-color: #f3e1e5 !important;
+    text-decoration: none !important;
+    position: relative;
+  text-decoration: none !important;
+  border-bottom: 0 solid;
+  position:relative;
+  .share-setting-text {
+    text-decoration: none !important;
+    text-decoration-color: transparent !important;
+    text-decoration-style: unset !important;
+    border: none !important;
+    border-bottom: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+  }
+}
 [data-title]:hover:after {
     opacity: 1;
-    uploadRespond
+
     visibility: visible;
 }
 [data-title]:after {
@@ -620,6 +645,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
    color: #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
+
   text-decoration: none !important;
   border-bottom: 1px solid;
   position:relative;
@@ -627,10 +653,10 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 
 .malicious-icon {
-  top: 0px;
+ top: 0px;
   background: transparent;
   color: #f56c6c;
-  font-size: 22px !important;
+  font-size: inherit !important;
   padding: 0;
 }
 
@@ -641,6 +667,15 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     text-decoration-color: transparent !important;
     font-size: inherit !important;
     overflow: hidden;
+}
+
+.red-malicious-alert::before {
+  border: unset !important;
+}
+
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
 }
 
 .url-badge{
@@ -657,10 +692,6 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     font-size: 8px;
     font-weight: 900;
     line-height: 1.2 !important;
-}
-
-.red-malicious-alert::before {
-  border: unset !important;
 }
 a{position:relative}
  `

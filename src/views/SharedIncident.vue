@@ -1878,7 +1878,7 @@ export default {
   top: 0px;
   background: transparent;
   color: #f56c6c;
-  font-size: 22px !important;
+  font-size: inherit !important;
   padding: 0;
 }
 ::v-deep .red-malicious-alert::before {

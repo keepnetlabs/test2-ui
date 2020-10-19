@@ -92,11 +92,10 @@ const login = {
             commit('EMPTY_LOGIN_ATTEMPT', 0)
             if (!store.getters['common/getSessionCheck']) {
               payload.router.push('/')
-            } else {
-              this.$router.go(0)
             }
           }
           if (payload.sessionExpired) {
+            this.$router.go(0)
             getCompanyList().then((response) => {
               const result = response.data.data && response.data.data
               this.$store.commit('SET_DROPDOWN_COMPANIES', result)

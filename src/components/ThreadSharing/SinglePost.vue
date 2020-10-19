@@ -959,13 +959,39 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  @import url('https://fonts.googleapis.com/css?family=Material+Icons');
  @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
  @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
+}
+.malicious-style,
+.malicious-link {
+     color: #f56c6d !important;
+    border-color: #f56c6d !important;
+    background-color: #f3e1e5 !important;
+    text-decoration: none !important;
+
+    position: relative;
+  text-decoration: none !important;
+  border-bottom: 0 solid;
+  position:relative;
+  .share-setting-text {
+    text-decoration: none !important;
+    text-decoration-color: transparent !important;
+    text-decoration-style: unset !important;
+    border: none !important;
+    border-bottom: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+  }
+}
 [data-title]:hover:after {
-    visibility: visible;
     opacity: 1;
 
+    visibility: visible;
 }
 [data-title]:after {
-    content: attr(data-title);
+     content: attr(data-title);
     position: absolute;
     padding: 8px 16px 8px 16px;
     bottom: -40px;
@@ -990,17 +1016,18 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
    color: #bb2a45 !important;
     border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
-    text-decoration: none !important;
-border-bottom: 1px solid;
-position:relative;
-    text-indent: 0;
+
+  text-decoration: none !important;
+  border-bottom: 1px solid;
+  position:relative;
+      text-indent: 0;
 }
 
 .malicious-icon {
  top: 0px;
   background: transparent;
   color: #f56c6c;
-  font-size: 22px !important;
+  font-size: inherit !important;
   padding: 0;
 }
 
@@ -1015,6 +1042,11 @@ position:relative;
 
 .red-malicious-alert::before {
   border: unset !important;
+}
+
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
 }
 
 .url-badge{
@@ -1345,21 +1377,37 @@ export default {
                   let el = els[i]
                   el.setAttribute('target', '_blank')
                   if (url.isHidden) {
+                    url.isFlagged = false
+                    el.innerHTML = url.urlHtml || url.name || url.url
                     el.innerHTML = 'hidden by owner'
-                    el.setAttribute('href', '#')
+                    el.style.backgroundColor = '#757575'
+                    el.style.color = '#ffffff'
+                    el.style.position = 'relative'
+                  } else if (!!url && !!url.name) {
+                    el.innerHTML = url.name
+                    el.setAttribute('href', url.url)
+                    el.style.backgroundColor = 'inherit'
+                    el.style.color = 'inherit'
+                  } else if (!!url && !!url.urlHtml) {
+                    el.innerHTML = url.urlHtml
+                    el.setAttribute('href', url.url)
+                    el.style.backgroundColor = 'inherit'
+                    el.style.color = 'inherit'
                   }
                   if (url.isFlagged) {
                     const el = els[i]
                     el.setAttribute('target', '_blank')
                     el.setAttribute('data-title', 'This link has been reported as a phishing')
-                    el.classList.add('malicious-style')
-                    const iEl = document.createElement('i')
-                    iEl.className +=
-                      'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                    el.appendChild(iEl)
-                  } else {
-                    const el = els[i]
-                    el.classList.remove('malicious-style')
+                    el.style.backgroundColor = '#f3e1e5'
+                    el.style.color = '#bb2a45'
+                    el.innerHTML =
+                      el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+
+                    //el.appendChild(iEl)
+                  } else if (!url.isFlagged && !url.isHidden) {
+                    el.innerHTML = url.urlHtml || url.name || url.url
+                    el.style.backgroundColor = 'inherit'
+                    el.style.color = 'inherit'
                   }
                   if (url.isHidden) {
                     el.setAttribute('target', '_self')

@@ -1758,12 +1758,13 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 }
 .malicious-style,
 .malicious-link {
-   color: #bb2a45 !important;
-    border-color: #bb2a45 !important;
+     color: #f56c6d !important;
+    border-color: #f56c6d !important;
     background-color: #f3e1e5 !important;
-
+    text-decoration: none !important;
+    position: relative;
   text-decoration: none !important;
-  border-bottom: 1px solid;
+  border-bottom: 0 solid;
   position:relative;
   .share-setting-text {
     text-decoration: none !important;
@@ -1818,7 +1819,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
  top: 0px;
   background: transparent;
   color: #f56c6c;
-  font-size: 22px !important;
+  font-size: inherit !important;
   padding: 0;
 }
 
