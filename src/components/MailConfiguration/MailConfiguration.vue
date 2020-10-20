@@ -237,7 +237,8 @@
             ref="refPeopleTable"
             @editTargetUsers="handleEditTargetUsers"
             @onEmptyBtnClicked="status = true"
-            :is-downloadable="false"
+            :is-downloadable="true"
+            @downloadEvent="exportMailConfigurationList"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
           >
@@ -307,6 +308,7 @@ import AppDialog from '../AppDialog'
 import {
   createO365,
   deleteO365,
+  exportMailConfiguration,
   getMailConfigurationList,
   updateO365
 } from '@/api/mailConfiguration'
@@ -482,6 +484,25 @@ export default {
         })
         this.closeDeleteDialog()
         this.getTableData()
+      })
+    },
+    exportMailConfigurationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: PROPERTY_STORE.CREATETIME,
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportMailConfiguration(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `mail-configuration.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
       })
     },
     cancelO365() {

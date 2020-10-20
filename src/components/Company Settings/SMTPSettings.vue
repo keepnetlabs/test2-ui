@@ -99,7 +99,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.SMTPADDRESS),
             sortable: true,
             show: true,
-            fixed: 'left',
+            fixed: false,
             type: 'text',
             filterableType: 'text',
             width: 150
@@ -111,7 +111,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.CREATEDBY),
             sortable: true,
             show: true,
-            fixed: 'left',
+            fixed: false,
             type: 'text',
             filterableType: 'text',
             width: 150

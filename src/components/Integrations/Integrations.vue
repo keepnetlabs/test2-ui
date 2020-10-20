@@ -346,7 +346,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `users.${exportType.toLocaleLowerCase()}`
+            link.download = `integrations.${exportType.toLocaleLowerCase()}`
             link.click()
           })
           .catch((error) => {})

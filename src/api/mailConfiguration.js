@@ -12,6 +12,12 @@ export function deleteO365(url) {
   return testRequest.delete(`mail-configurations/o365/${url}`, { loading: true })
 }
 
+export function exportMailConfiguration(payload) {
+  return testRequest.post(`/mail-configurations/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export function createO365(payload) {
   return testRequest.post('mail-configurations/o365', payload, { loading: true })
 }

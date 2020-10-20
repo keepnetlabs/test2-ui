@@ -24,7 +24,7 @@
         </div>
         <div class="card-body d-flex roi-summary__body-container">
           <div class="body-row">
-            <span class="body-row__number">
+            <span class="body-row__number" style="margin-right: 8px;">
               {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
             </span>
 
