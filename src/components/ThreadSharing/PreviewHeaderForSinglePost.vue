@@ -152,23 +152,26 @@
       </div>
       <div
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
-        v-if="!uploadRespond.isCcHidden && uploadRespond.bcc && !!uploadRespond.bcc.length"
-        :class="{
-          'malicious-style': uploadRespond.isBccFlagged,
-          'malicious-style-hidden': uploadRespond.isBccHidden
-        }"
+        v-if="!uploadRespond.isBccHidden && uploadRespond.bcc && !!uploadRespond.bcc.length"
       >
-        BCC: {{ uploadRespond.bcc && uploadRespond.bcc.toString()
-        }}<v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
-          <template v-slot:activator="{ on }">
-            <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-          </template>
-          <span>This email address may be targeted by emails include harmful content</span>
-        </v-tooltip>
+        <span
+          :class="{
+            'malicious-style': uploadRespond.isBccFlagged,
+            'malicious-style-hidden': uploadRespond.isBccHidden
+          }"
+        >
+          BCC: {{ uploadRespond.bcc && uploadRespond.bcc.toString()
+          }}<v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
+            <template v-slot:activator="{ on }">
+              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
+            </template>
+            <span>This email address may be targeted by emails include harmful content</span>
+          </v-tooltip>
+        </span>
       </div>
       <div
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
-        v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length"
+        v-else-if="uploadRespond.isBccHidden && !!uploadRespond.bcc.length && uploadRespond.bcc"
       >
         <span
           :class="{
