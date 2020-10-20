@@ -308,6 +308,7 @@ import AppDialog from '../AppDialog'
 import {
   createO365,
   deleteO365,
+  exportMailConfiguration,
   getMailConfigurationList,
   updateO365
 } from '@/api/mailConfiguration'
@@ -315,6 +316,7 @@ import { mail, required } from '@/utils/validations'
 import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { scrollToComponent } from '@/utils/functions'
+import { exportSmtpSettings } from '@/api/smtpSettings'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -485,7 +487,25 @@ export default {
         this.getTableData()
       })
     },
-    exportMailConfigurationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {},
+    exportMailConfigurationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: PROPERTY_STORE.CREATETIME,
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportMailConfiguration(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `mail-configuration.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
+    },
     cancelO365() {
       this.status = false
       this.editData = null

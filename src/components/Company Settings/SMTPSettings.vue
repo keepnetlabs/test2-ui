@@ -99,7 +99,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.SMTPADDRESS),
             sortable: true,
             show: true,
-            fixed: 'left',
+            fixed: false,
             type: 'text',
             filterableType: 'text',
             width: 150
@@ -111,7 +111,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.CREATEDBY),
             sortable: true,
             show: true,
-            fixed: 'left',
+            fixed: false,
             type: 'text',
             filterableType: 'text',
             width: 150
@@ -213,7 +213,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `users.${exportType.toLocaleLowerCase()}`
+          link.download = `smtp-settings.${exportType.toLocaleLowerCase()}`
           link.click()
         })
       })
