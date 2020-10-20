@@ -226,7 +226,11 @@
             <v-list-item-title>Dashboard</v-list-item-title>
           </v-list-item>
         </router-link>
-        <router-link to="/threat-sharing" class="menu-link-default">
+        <router-link
+          to="/threat-sharing"
+          class="menu-link-default"
+          :class="[routerName === 'Community' && 'active-link']"
+        >
           <v-list-item class="menu-list-item">
             <v-list-item-icon>
               <v-icon>mdi-flag</v-icon>
@@ -506,26 +510,6 @@
 
             <router-link
               class="breadcrumb-links"
-              to="/threat-sharing"
-              v-if="routerName === 'Incident Responder'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[3].text }}
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              Dashboard
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/integrations"
-              v-if="routerName === 'Integrations'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[3].text }}
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
               to="/phishing-reporter"
               style="display: flex; align-items: center;"
               v-if="routerName === 'Phishing Reporter'"
@@ -533,45 +517,21 @@
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
               Phishing Reporter
             </router-link>
-            <router-link
-              class="breadcrumb-links"
-              to="/playbook"
-              style="display: flex; align-items: center;"
-              v-if="routerName === 'Playbook'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[1].text }}
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              Playbook
-            </router-link>
 
             <router-link
-              class="breadcrumb-links"
-              to="/mailConfiguration"
-              style="display: flex; align-items: center;"
-              v-if="routerName === 'MailConfiguration'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[1].text }}
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/incident-responder"
-              v-if="routerName === 'Analysis Details'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[3].text }}
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/investigations"
-              v-if="routerName === 'Investigation Details'"
+              v-if="
+                routerName === 'Incident Responder' ||
+                routerName === 'Investigations' ||
+                routerName === 'Integrations' ||
+                routerName === 'Playbook' ||
+                routerName === 'Mail Configurations'
+              "
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
 
-              Investigations
+              Incident Responder
             </router-link>
 
             <router-link
@@ -593,6 +553,15 @@
               Company
             </router-link>
             <router-link
+              v-if="routerName === 'System Users'"
+              :to="$route.path"
+              class="bread-last-step breadcrumb-links"
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+
+              Company
+            </router-link>
+            <router-link
               v-if="routerName === 'Company Settings'"
               :to="$route.path"
               class="bread-last-step breadcrumb-links"
@@ -601,36 +570,14 @@
 
               Company
             </router-link>
-
-            <router-link
-              v-if="routerName === 'Investigations'"
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-
-              Incident Responder > {{ routerName }}
-            </router-link>
-            <v-icon
-              v-if="
-                routerName !== 'Incident Responder' &&
-                routerName !== 'Investigations' &&
-                routerName !== 'Playbook' &&
-                routerName !== 'Phishing Reporter'
-              "
-              style="color: #fff; font-size: 16px;"
+            <v-icon v-if="routerName !== 'Phishing Reporter'" style="color: #fff; font-size: 16px;"
               >mdi-chevron-right
             </v-icon>
             <router-link
-              v-if="
-                routerName !== 'Incident Responder' &&
-                routerName !== 'Investigations' &&
-                routerName !== 'Playbook' &&
-                routerName !== 'Phishing Reporter'
-              "
+              v-if="routerName !== 'Phishing Reporter'"
               :to="$route.path"
               class="bread-last-step breadcrumb-links"
-              >{{ routerName }}
+              >{{ routerName === 'Incident Responder' ? 'Dashboard' : routerName }}
             </router-link>
           </div>
         </div>
