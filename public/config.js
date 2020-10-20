@@ -1,9 +1,9 @@
 const APP_CONFIG = (() => {
   return {
     VUE_APP_IS_CLOUD: true, //
-    VUE_APP_HOTJAR_ID: '1724870',
+    VUE_APP_HOTJAR_ID: '2045435',
     VUE_APP_FULLSTORY_ID: 'TRDZX',
-    VUE_APP_ANALYTICS_ID: 'UA-131042304-2',
+    VUE_APP_ANALYTICS_ID: 'UA-131042304-4',
     VUE_APP_ROOT_API: 'https://dev-api.keepnetlabs.com/api',
     VUE_APP_WEB_API: 'https://dev-api.keepnetlabs.com/api',
     VUE_APP_WEB_API_TEST: 'https://dev-api.keepnetlabs.com/api',
