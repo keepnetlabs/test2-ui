@@ -296,6 +296,7 @@
                               @click="newPasswordError = false"
                               autocomplete="disabled"
                               outlined
+                              type="password"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -369,7 +370,10 @@ export default {
         required: (value) => !!value || 'Required.',
         minPassword: (value) => {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
-          return pattern.test(value) || "Password doesn't match with the password criteria"
+          return (
+            pattern.test(value) ||
+            'Password must be at least 8 characters with 1 capital letter, 1 lowercase letter, 1 special character and 1 number'
+          )
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
       },
@@ -497,6 +501,8 @@ export default {
           case 'createPassword':
             createPasswordByToken(payload)
               .then((response) => {
+                let url = new URL(location.href)
+                url.searchParams.delete('cp')
                 this.pageNumber = 1
               })
               .catch((error) => {
@@ -507,6 +513,8 @@ export default {
           case 'resetPassword':
             resetPasswordByToken(payload)
               .then((response) => {
+                let url = new URL(location.href)
+                url.searchParams.delete('rp')
                 this.pageNumber = 1
               })
               .catch((error) => {
@@ -555,9 +563,9 @@ export default {
                 localStorage.removeItem('isRemember')
               }
 
-              if (!!Object.keys(mainUrl.query).length) {
+              /*if (!!Object.keys(mainUrl.query).length) { @todo query forward iceman
                 _this.$router.push(mainUrl.fullPath)
-              }
+              }*/
             }, 500)
           })
       } else if (
