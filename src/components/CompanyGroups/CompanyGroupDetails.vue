@@ -174,9 +174,9 @@ export default {
       pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
-        edit: true,
-        delete: true,
-        download: true
+        edit: false,
+        delete: false,
+        download: false
       },
       iEmpty: {
         message: 'No company defined',
@@ -214,8 +214,8 @@ export default {
     },
     payload: {
       pageSize: 3000,
-      orderBy: 'CompanyName',
-      ascending: true,
+      orderBy: 'createTime',
+      ascending: false,
       filter: {
         Condition: 'AND',
         FilterGroups: [

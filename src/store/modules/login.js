@@ -74,6 +74,7 @@ const login = {
       commit('SET_PAGE_NUMBER', payload)
     },
     loginAction({ commit, dispatch }, payload) {
+      let isSessionExpired = payload.sessionExpired
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
       //@todo arda set expired
       loginAction(payload)
@@ -100,9 +101,11 @@ const login = {
               commit('SET_DROPDOWN_COMPANIES', result)
             })
           }
-          store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
-            location.reload()
-          })
+          if (isSessionExpired) {
+            store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+              location.reload()
+            })
+          }
         })
         .catch((error) => {
           dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
