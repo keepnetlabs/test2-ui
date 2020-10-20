@@ -2250,6 +2250,9 @@ export default {
       padding: 0;
     }
   }
+  .v-list-item__subtitle {
+    white-space: pre-wrap;
+  }
   .k-dialog__header {
     padding-top: 24px;
     padding-bottom: 24px;

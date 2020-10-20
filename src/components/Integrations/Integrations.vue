@@ -89,7 +89,7 @@
                         ? 'mdi-minus-circle-outline'
                         : 'mdi-check-circle-outline'
                     }}</v-icon>
-                    <span>{{ scope.row.status === 'Active' ? 'Inactive' : 'Activef' }}</span>
+                    <span>{{ scope.row.status === 'Active' ? 'Inactive' : 'Active' }}</span>
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item class="sub-menu-el">
