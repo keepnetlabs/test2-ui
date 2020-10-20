@@ -111,7 +111,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: false,
           download: false
         },
         iEmpty: {
@@ -141,7 +141,7 @@ export default {
       payload: {
         pageNumber: 1,
         pageSize: 3000,
-        orderBy: 'dateCreated',
+        orderBy: 'createTime',
         ascending: true,
         filter: {
           Condition: 'AND',

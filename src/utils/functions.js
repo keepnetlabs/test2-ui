@@ -18,6 +18,8 @@ export function getBtnStatusColor(type) {
       return '#e6a23c'
     case 'expired':
       return '#e6a23c'
+    case 'passive':
+      return '#f56c6c'
     case 'cancelled':
       return '#f56c6c'
     case 'phishing':

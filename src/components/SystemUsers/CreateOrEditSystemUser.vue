@@ -72,6 +72,7 @@
             item-text="name"
             item-value="val"
             v-model.trim="formValues.statusId"
+            @change="handleChangeStatus"
           ></v-select>
         </form-group>
         <form-group title="Role">
@@ -144,7 +145,8 @@ export default {
         statusName: '',
         roleResourceIdList: [],
         isTwoStep: false,
-        isLdap: false
+        isLdap: false,
+        statusId: 1
       },
       showWelcomeEmailModal: false,
       statusItems: [
@@ -171,6 +173,9 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
+    handleChangeStatus(val) {
+      this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
+    },
     submit() {
       if (this.$refs.refForm.validate()) {
         if (this.selectedRow) {
@@ -180,7 +185,7 @@ export default {
             ...this.formValues,
             phoneNumber: phoneNumber.split(' ').join('')
           }
-          formData.roleResourceIdList = [this.roleResourceIdList]
+          formData.roleResourceIdList = [this.formValues.roleResourceIdList]
           this.callForUpdateSystemUser(formData)
         } else {
           const { phoneNumber } = this.formValues
@@ -299,6 +304,8 @@ export default {
         _this.formValues.roleResourceIdList = _this.roleItems.find((item) => {
           return item.roleName.replace(/\s/g, '') === roles
         }).resourceId
+      } else {
+        this.formValues.roleResourceIdList = this.roleItems.length && this.roleItems[0].resourceId
       }
     })
   }

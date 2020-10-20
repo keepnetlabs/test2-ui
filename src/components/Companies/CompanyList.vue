@@ -38,6 +38,7 @@
     <DatatableLoading :loading="loading">
       <template v-slot:skeleton-content>
         <datatable
+          :selectable="true"
           :table="tableData"
           ref="refDataList"
           :addButton="tableOptions.addButton"
@@ -47,6 +48,7 @@
           :filterable="true"
           :options="true"
           :pageSizes="tableOptions.pageSizes"
+          :selectEvent="tableOptions.selectEvent"
           :refName="'companyList'"
           :rowActions="tableOptions.rowActions"
           @edit="handleTableItemEdit"
@@ -194,9 +196,9 @@ export default {
       pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
-        edit: true,
-        delete: true,
-        download: true
+        edit: false,
+        delete: false,
+        download: false
       },
       iEmpty: {
         message: 'No company defined',

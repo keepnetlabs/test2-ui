@@ -431,9 +431,9 @@ export default {
       pageSizes: [5, 10, 25],
       selectEvent: {
         clipboard: true,
-        edit: true,
-        delete: true,
-        download: true
+        edit: false,
+        delete: false,
+        download: false
       },
       iEmpty: {
         message: 'No mail configuration has been created, yet',
