@@ -305,7 +305,7 @@ export default {
           return item.roleName.replace(/\s/g, '') === roles
         }).resourceId
       } else {
-        this.formValues.roleResourceIdList = this.roleItems[0].resourceId
+        this.formValues.roleResourceIdList = this.roleItems.length && this.roleItems[0].resourceId
       }
     })
   }
