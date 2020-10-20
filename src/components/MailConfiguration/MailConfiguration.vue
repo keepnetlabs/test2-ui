@@ -478,7 +478,7 @@ export default {
       deleteO365(this.deleteDialogId).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'O365 Mail Configuration deleted successfully'
+          message: 'O365 mail configuration has been deleted'
         })
         this.closeDeleteDialog()
         this.getTableData()
@@ -533,7 +533,7 @@ export default {
           updateO365(this.formValues, this.editData.resourceId).then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'O365 Mail Configuration updated successfully'
+              message: 'O365 mail configuration has been updated'
             })
             this.status = false
             this.getTableData()
@@ -542,7 +542,7 @@ export default {
           createO365(this.formValues).then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'O365 Mail Configuration created successfully'
+              message: 'O365 mail configuration has been created'
             })
             this.status = false
             this.getTableData()

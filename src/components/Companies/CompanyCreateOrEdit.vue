@@ -679,27 +679,39 @@ export default {
             .then((response) => {
               if (response.data && response.data.message) {
                 this.$store.dispatch('common/createSnackBar', {
-                  message: response.data.message,
+                  message: 'Company has been updated',
                   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                   icon: 'mdi-check-circle-outline'
                 })
               }
               this.cancelForm()
             })
-            .catch((error) => {})
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                message: 'Company can not be updated',
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                icon: 'mdi-alert-circle'
+              })
+            })
         } else {
           createCompany(this.formData)
             .then((response) => {
               if (response.data && response.data.message) {
                 this.$store.dispatch('common/createSnackBar', {
-                  message: response.data.message,
+                  message: 'Company has been created',
                   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                   icon: 'mdi-check-circle-outline'
                 })
               }
               this.cancelForm()
             })
-            .catch((error) => {})
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                message: 'Company can not be created',
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                icon: 'mdi-alert-circle'
+              })
+            })
         }
       }
     },

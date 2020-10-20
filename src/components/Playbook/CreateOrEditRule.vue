@@ -481,7 +481,7 @@ export default {
         createPlaybook(payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
+              message: 'Playbook has been created',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
@@ -556,7 +556,7 @@ export default {
         updatePlaybook(payload)
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
+              message: 'Playbook has been updated',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
@@ -591,7 +591,7 @@ export default {
         }
       } else {
         this.$store.dispatch('common/createSnackBar', {
-          message: 'Condition set must not be empty !',
+          message: 'Condition set can not be empty',
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
           icon: 'mdi-alert-circle'
         })

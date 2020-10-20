@@ -155,13 +155,21 @@ export default {
             .then((response) => {
               if (response.data && response.data.message) {
                 this.$store.dispatch('common/createSnackBar', {
-                  message: response.data.message,
+                  message: 'Company group has been updated',
                   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                   icon: 'mdi-check-circle-outline'
                 })
               }
             })
-            .catch((error) => {})
+            .catch((error) => {
+              if (response.data && response.data.message) {
+                this.$store.dispatch('common/createSnackBar', {
+                  message: 'Company group can not be updated',
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  icon: 'mdi-check-circle-outline'
+                })
+              }
+            })
         })
         this.changeStatus(false)
       }

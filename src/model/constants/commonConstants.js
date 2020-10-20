@@ -202,7 +202,9 @@ export const columnStandards = [
   { property: 'department', width: '240' },
   { property: 'jobTitle', width: '120' },
   { property: 'companyName', width: '180' },
-  { property: 'subject', width: '240' }
+  { property: 'subject', width: '240' },
+  { property: 'url', width: '180' },
+  { property: 'language', width: '240' }
 ]
 
 export const GrapesS3Options = {

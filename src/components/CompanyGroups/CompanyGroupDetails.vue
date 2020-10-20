@@ -272,16 +272,23 @@ export default {
         name: localStorage.getItem('companyGroupName'),
         companyResourceIdArray: arr
       }
-      updateCompanyGroup(this.groupId, payload).then((response) => {
-        if (response.data && response.data.message) {
+      updateCompanyGroup(this.groupId, payload)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Company group has been updated',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.getTableData()
+          }
+        })
+        .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle-outline'
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'Company group can not be updated'
           })
-          this.getTableData()
-        }
-      })
+        })
     },
     changeRemoveModalStatus(status) {
       this.isShowRemoveModal = status

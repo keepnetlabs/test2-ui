@@ -1358,7 +1358,7 @@ export default {
       }).then((response) => {
         this.callForGetRoiSettings()
         this.$store.dispatch('common/createSnackBar', {
-          message: response.data.message,
+          message: 'ROI settings has been updated',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-check-circle'
         })

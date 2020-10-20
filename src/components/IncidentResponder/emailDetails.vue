@@ -1051,7 +1051,7 @@ export default {
         .catch((error) => {
           if (error.response && error.response.data && error.response.data.message) {
             this.$store.dispatch('common/createSnackBar', {
-              message: error.response.data.message,
+              message: 'File can not downloaded',
               icon: 'mdi-alert-circle',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
             })
@@ -1138,7 +1138,7 @@ export default {
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when gettin details!'
+            message: 'Details can not be reached'
           })
         })
     },
@@ -1165,7 +1165,7 @@ export default {
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting analysis engine types!'
+            message: 'Analysis engine types can not be reached'
           })
         })
     },

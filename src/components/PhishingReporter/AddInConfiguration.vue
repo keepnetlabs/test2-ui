@@ -318,7 +318,7 @@ export default {
           if (response && response.data && response.data.status === 'FAILED') {
           } else {
             this.$store.dispatch('common/createSnackBar', {
-              message: 'Phishing Reporter Saved Successfully!',
+              message: 'Phishing reporter has been saved',
               icon: 'mdi-check-circle',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
             })
@@ -327,7 +327,7 @@ export default {
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
-            message: error.message,
+            message: 'Phishing reporter can not be saved',
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
           })
         })

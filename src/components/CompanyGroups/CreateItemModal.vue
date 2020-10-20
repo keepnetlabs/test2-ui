@@ -191,7 +191,7 @@ export default {
           createCompanyGroups(payload).then((response) => {
             if (response.data && response.data.code === 'RESOURCE_CREATED') {
               this.$store.dispatch('common/createSnackBar', {
-                message: response.data.message,
+                message: 'Company group has been created',
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 icon: 'mdi-check-circle-outline'
               })
@@ -203,7 +203,7 @@ export default {
           updateCompanyGroup(this.selectedRow.resourceId, payload).then((response) => {
             if (response.data && response.data.code === 'RESOURCE_UPDATED') {
               this.$store.dispatch('common/createSnackBar', {
-                message: response.data.message,
+                message: 'Company group has been updated',
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 icon: 'mdi-check-circle-outline'
               })

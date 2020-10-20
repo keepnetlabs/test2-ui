@@ -169,14 +169,14 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Client has been deleted successfully!'
+            message: 'Client has been deleted'
           })
           this.getDatatableList()
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when deleting client!'
+            message: 'Client can not be deleted'
           })
         })
       this.isWantToDelete = false

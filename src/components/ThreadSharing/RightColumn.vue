@@ -625,7 +625,7 @@ export default {
       deleteCommunity(this.communityDetails.resourceId).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Community has been deleted successfully'
+          message: 'Community has been deleted'
         })
         this.isWantToDelete = false
         this.$router.push(`/threat-sharing`)
@@ -637,7 +637,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'You have been removed from the community successfully'
+            message: 'You have been removed from the community'
           })
           this.isWantToToLeaveFromCommunity = false
           this.$router.push(`/threat-sharing`)
@@ -677,7 +677,7 @@ export default {
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Members are invited to community successfully'
+              message: 'Members are invited to community'
             })
             this.emailarray = []
             this.openInviteModal = false
@@ -716,7 +716,7 @@ export default {
             }
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Community has been not found.'
+              message: 'Community can not be found'
             })
           })
       }

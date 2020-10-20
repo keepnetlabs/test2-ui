@@ -114,7 +114,7 @@ export default {
             type: 'text',
             href: '/target-groups',
             hrefKey: 'resourceId',
-            width: 300,
+            width: 240,
             isEditable: true,
             filterableType: 'text',
             editOptions: {
@@ -275,7 +275,7 @@ export default {
         .then(() => {
           this.changeNewUserGroupStatus(false)
           this.$store.dispatch('common/createSnackBar', {
-            message: `New group named ${group.name} created`,
+            message: `New group named ${group.name} has been created`,
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-information',
             action: {
@@ -323,7 +323,7 @@ export default {
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
-            message: error.message,
+            message: 'Target groups can not be updated',
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
           })
         })
@@ -345,7 +345,7 @@ export default {
         .then((response) => {
           if (response.data && response.data.message) {
             this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
+              message: 'Target group has been deleted',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle-outline'
             })
