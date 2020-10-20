@@ -316,7 +316,6 @@ import { mail, required } from '@/utils/validations'
 import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { scrollToComponent } from '@/utils/functions'
-import { exportSmtpSettings } from '@/api/smtpSettings'
 export default {
   name: 'MailConfiguration',
   components: {
