@@ -475,7 +475,7 @@ export default {
       .catch(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting integrations type!'
+          message: 'Error when getting integrations type'
         })
       })
     this.getFileTypes()
@@ -492,14 +492,14 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               errorState: false,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Integration updated successfuly!'
+              message: 'Integration has been updated'
             })
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when updating integration!'
+              message: 'Integration can not be updated'
             })
           })
       } else {
@@ -510,14 +510,14 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               errorState: false,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Integration created successfuly!'
+              message: 'Integration have been created'
             })
           })
           .catch(() => {
             this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when creating new integration!'
+              message: 'Integration can not be created'
             })
           })
       }

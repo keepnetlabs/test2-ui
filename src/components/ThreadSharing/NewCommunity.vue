@@ -246,7 +246,7 @@ export default {
             .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Community updated successfully'
+                message: 'Community have been updated'
               })
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
@@ -257,7 +257,7 @@ export default {
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when update community'
+                message: 'Community can not be updated'
               })
             })
         } else {
@@ -265,7 +265,7 @@ export default {
             .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Community created successfully'
+                message: 'New community has been created'
               })
               //refThis.$emit('closeAdd')
               this.isWantToAccept = false
@@ -276,7 +276,7 @@ export default {
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when create community'
+                message: 'New community can not be created'
               })
             })
         }

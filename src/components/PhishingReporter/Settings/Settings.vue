@@ -167,7 +167,7 @@ export default {
       createPhishingReporter(formData)
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
-            message: 'Phishing Reporter Saved Successfully!',
+            message: 'Phishing Reporter has been saved',
             icon: 'mdi-check-circle',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
           })
@@ -179,7 +179,7 @@ export default {
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
-            message: error.message,
+            message: 'Phishing Reporter can not be saved',
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
           })
           this.$emit('getPhishingReport')

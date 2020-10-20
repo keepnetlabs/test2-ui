@@ -2209,7 +2209,7 @@ export default {
       navigator.clipboard.writeText(contentBody)
       this.$store.dispatch('common/createSnackBar', {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        message: 'Copied Successfully!'
+        message: 'Content has been copied'
       })
     },
     findCategory(id) {
@@ -2401,7 +2401,7 @@ export default {
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting details of uploaded file'
+            message: 'File can not be uploaded'
           })
         })
     },

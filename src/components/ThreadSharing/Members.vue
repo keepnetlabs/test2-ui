@@ -463,7 +463,7 @@ export default {
       appointNewOwner(this.$route.params.id, payload).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'New community owner request has been sent successfully'
+          message: 'New community owner request has been sent'
         })
         this.getMembers()
         this.showAppointANewOwnerModal = false
@@ -490,7 +490,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Membership refuse request has been accepted successfully'
+            message: 'Membership refuse request has been accepted'
           })
           this.getMembers()
           this.getRequestMembers()
@@ -507,7 +507,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Membership accept request has been accepted successfully'
+            message: 'Membership accept request has been accepted'
           })
           this.getMembers()
           this.getRequestMembers()
@@ -515,7 +515,7 @@ export default {
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when accept membership request'
+            message: 'Error when accept membership'
           })
         })
     },

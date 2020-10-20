@@ -185,14 +185,20 @@ export default {
         .then((response) => {
           if (response.data && response.data.message) {
             this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
+              message: 'Company group has been deleted',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle-outline'
             })
             this.getTableData()
           }
         })
-        .catch((error) => {})
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Company group can not be deleted',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status

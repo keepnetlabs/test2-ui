@@ -707,7 +707,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: '' // @nejat, @atakan
+            message: 'Request has been cancelled' // @nejat, @atakan
           })
           this.isCancelRequestModal = false
           this.getAllCommunitiesListData()
@@ -733,7 +733,7 @@ export default {
       deleteCommunity(this.deleteCommunityId).then((response) => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Community has been deleted successfully'
+          message: 'Community has been deleted'
         })
         this.isWantToDelete = false
         this.getAllCommunitiesListData()
@@ -774,7 +774,7 @@ export default {
       refuseInvitation(item.resourceId).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Invitation request has been cancelled successfully'
+          message: 'Invitation request has been cancelled'
         })
         this.getInvitions()
         this.getInvitationCount()
@@ -791,7 +791,7 @@ export default {
       acceptInvitation(item.resourceId).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Invitation request has been accepted successfully'
+          message: 'Invitation request has been accepted'
         })
         this.getInvitions()
         this.getInvitationCount()
@@ -814,7 +814,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'You have been removed from the community successfully'
+            message: 'You have been removed from the community'
           })
           this.isWantToToLeaveFromCommunity = false
           this.getAllCommunitiesListData()
@@ -1048,7 +1048,7 @@ export default {
       joinCommunity(communityId).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Join request has been sent successfully'
+          message: 'Join request has been sent'
         })
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()

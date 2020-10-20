@@ -260,24 +260,38 @@ export default {
       }
     },
     callForCreateSmtpSettings(payload = {}) {
-      createSMTPSettings(payload).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: response.data.message,
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      createSMTPSettings(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'New SMTP settings has been created',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$emit('closeOverlayWithUpdate')
         })
-        this.$emit('closeOverlayWithUpdate')
-      })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'New SMTP settings can not be created'
+          })
+        })
     },
     callForUpdateSmtpSettings(payload = {}) {
-      updateSmtpSettings({ ...payload, resourceId: this.resourceId }).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: response.data.message,
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      updateSmtpSettings({ ...payload, resourceId: this.resourceId })
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'SMTP settings have been updated',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$emit('closeOverlayWithUpdate')
         })
-        this.$emit('closeOverlayWithUpdate')
-      })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message: 'New SMTP settings can not be updated'
+          })
+        })
     },
     handleChangeServiceProvider(item = '') {
       if (item !== ':') {

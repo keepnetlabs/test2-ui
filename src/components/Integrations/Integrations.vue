@@ -278,14 +278,14 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration has been deleted successfully!'
+            message: 'Integration has been deleted'
           })
           this.getDatatableList()
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when deleting integration!'
+            message: 'Integration can not be deleted'
           })
         })
     },
@@ -298,14 +298,14 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration has been disabled successfully!'
+            message: 'Integration has been disabled'
           })
           this.getDatatableList()
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when disable integration!'
+            message: 'Integration can not be disabled'
           })
         })
     },
@@ -314,14 +314,14 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration has been enabled successfully!'
+            message: 'Integration has been enabled'
           })
           this.getDatatableList()
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when enable integration!'
+            message: 'Integration can not be enabled'
           })
         })
     },

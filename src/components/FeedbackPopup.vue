@@ -63,8 +63,7 @@ export default {
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               message:
-                (response && response.data && response.data.message) ||
-                'Feedback sent successfully',
+                (response && response.data && response.data.message) || 'Feedback has been sent',
               color: 'green',
               icon: 'mdi-check-circle-outline'
             })
@@ -74,7 +73,7 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               message:
                 (error.response && error.response.data && error.response.data.message) ||
-                'Feedback could not send',
+                'Feedback can not send',
               color: 'red',
               icon: 'mdi-alert-circle'
             })
