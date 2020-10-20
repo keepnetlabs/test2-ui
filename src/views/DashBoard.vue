@@ -123,7 +123,7 @@ export default {
         this.getDropdownCompanies()
         this.getOverallStats(12)
       } else {
-        this.$router.push('/login')
+        //this.$router.push('/login')
       }
     })
   },
