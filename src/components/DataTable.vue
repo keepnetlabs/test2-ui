@@ -1,5 +1,5 @@
 <template>
-  <div class="k-table__wrapper">
+  <div class="k-table__wrapper" :id="id">
     <download-modal
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
@@ -1004,6 +1004,9 @@ export default {
     isColumnFilterActive: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String
     }
   },
   computed: {
