@@ -1392,6 +1392,7 @@ export default {
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
+          this.post.likeCount = response.data.data.likeCount
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
           }, 500)
@@ -1408,6 +1409,8 @@ export default {
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
+          this.post.likeCount = response.data.data.likeCount
+
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
           }, 500)
