@@ -2694,6 +2694,9 @@ export default {
               message: 'Community has been updated'
             })
             this.onCancelClicked()
+            setTimeout(() => {
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
             this.$emit('refreshData')
           })
           .catch((error) => {
@@ -2745,6 +2748,9 @@ export default {
             })
             this.$emit('closeIncidentModal')
             this.$emit('refreshData')
+            setTimeout(() => {
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {

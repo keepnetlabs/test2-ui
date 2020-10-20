@@ -683,6 +683,7 @@ export default {
     justify-content: center;
     padding-bottom: 15px;
     width: 100%;
+    overflow: auto;
   }
 
   .login-error-wrapper {
