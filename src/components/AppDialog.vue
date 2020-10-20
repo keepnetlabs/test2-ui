@@ -156,7 +156,7 @@ export default {
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
       z-index: 99999;
       opacity: 1;
-      position: sticky;
+      position: sticky !important;
       top: 0;
       background-color: white;
     }
