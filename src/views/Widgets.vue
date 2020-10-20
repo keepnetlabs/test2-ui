@@ -6,6 +6,7 @@
         :edit-mode="editMode"
         :available-widgets="availableWidgets"
         @addWidget="addWidget"
+        @handleOpenMenu="handleOpenMenu"
       />
     </div>
 
@@ -310,6 +311,9 @@ export default {
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
+    },
+    handleOpenMenu() {
+      this.editMode = true
     },
     addWidget(widget) {
       this.removeAvailableWidget(widget)

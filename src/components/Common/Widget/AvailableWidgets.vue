@@ -3,7 +3,7 @@
     <div class="available-widget__header">
       <div class="available-widget__header-left">
         <v-icon color="#2196f3">mdi-widgets</v-icon>
-        <span class="ml-2">Available Widgets</span>
+        <span class="ml-2" style="cursor: pointer;" @click="handleOpenMenu">Available Widgets</span>
       </div>
       <div class="available-widget__header-right">
         <v-icon @click="handleEdit" class="available-widget__icon" small>{{
@@ -56,6 +56,9 @@ export default {
     },
     handleEdit() {
       this.$emit('handleEdit')
+    },
+    handleOpenMenu() {
+      this.$emit('handleOpenMenu')
     }
   }
 }
