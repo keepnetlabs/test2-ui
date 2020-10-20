@@ -22,16 +22,20 @@
             >mdi-close-circle</v-icon
           >
         </div>
-        <div class="card-body">
-          <div class="body-row" style="margin-top: 14px;">
+        <div class="card-body d-flex roi-summary__body-container">
+          <div class="body-row">
+            <span class="body-row__number">
+              {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+            </span>
+
+            <span class="body-row__text">Time Saved</span>
+          </div>
+          <div class="body-row">
             <span class="body-row__number">
               {{ getRoiSummaryValue }}
             </span>
-          </div>
-          <div class="body-row">
-            <span class="roi-number">
-              {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h</span
-            >
+
+            <span class="body-row__text">Money Saved</span>
           </div>
         </div>
         <div class="card-status">Saved</div>
@@ -142,5 +146,19 @@ export default {
 <style lang="scss">
 .dashboard-cards.roi-summary {
   background-image: linear-gradient(to bottom, #b27fc2, #66257a 96%);
+}
+.roi-summary__body-container {
+  margin-top: 13px;
+  @media (max-width: 1900px) {
+    width: 80%;
+  }
+  @media (min-width: 1901px) {
+    width: auto;
+    .body-row:last-child {
+      margin-left: 60px;
+    }
+    justify-content: stretch;
+  }
+  justify-content: space-between;
 }
 </style>

@@ -702,6 +702,7 @@ export default {
   //overflow-y: auto;
   overflow: hidden;
   .incident-responder-parent .columns-row .dashboard-cards .card-body .body-row__text {
+    white-space: nowrap;
     line-height: 1;
   }
   .incident-responder-parent .columns-row .dashboard-cards .card-footer {

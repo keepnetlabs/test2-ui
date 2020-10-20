@@ -25,11 +25,7 @@
             <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
         </div>
-        <div
-          class="columns-row__body"
-          style="margin-top: 13px;"
-          v-if="isInvestigationsEmpty(irSummary)"
-        >
+        <div class="columns-row__body" style="margin-top: 13px;" v-if="true">
           <div class="card-body d-flex">
             <div class="body-row">
               <span class="body-row__number">
@@ -59,7 +55,7 @@
           <div class="card-status mt-7">Incidents resolved</div>
         </div>
         <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text" style="margin-top: 39px;">
+          <div class="card-footer no-data-text" style="margin-top: 36px;">
             No investigation started
           </div>
           <v-btn
