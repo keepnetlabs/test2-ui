@@ -33,7 +33,8 @@
             :options="true"
             :addButton="tableOptions.addButton"
             :pageSizes="tableOptions.pageSizes"
-            :is-downloadable="false"
+            :is-downloadable="true"
+            @downloadEvent="exportSmtpSettingsList"
             :select-event="tableOptions.selectEvent"
             :row-actions="tableOptions.rowActions"
             :selectable="true"
@@ -58,8 +59,9 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
-import { deleteSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
+import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
 import DeleteSmtpSettings from '@/components/Company Settings/DeleteSmtpSettings'
+import { exportPhishingReporterUserList } from '@/api/phishingReporter'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -92,7 +94,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.SMTPADDRESS,
-            align: 'left',
+            align: false,
             editable: false,
             label: getStoreValue(PROPERTY_STORE.SMTPADDRESS),
             sortable: true,
@@ -104,7 +106,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.USERNAME,
-            align: 'left',
+            align: false,
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDBY),
             sortable: true,
@@ -116,7 +118,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
+            align: false,
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
@@ -196,6 +198,25 @@ export default {
       }
 
       this.newSmtpModalStatus = !this.newSmtpModalStatus
+    },
+    exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: PROPERTY_STORE.CREATETIME,
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType
+        }
+        exportSmtpSettings(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `smtp-settings.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
     },
     toggleDeleteSmtpModalStatus() {
       this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus

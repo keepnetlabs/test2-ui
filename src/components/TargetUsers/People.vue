@@ -46,6 +46,7 @@
           :addButton="tableOptions.addButton"
           :columns="tableOptions.columns"
           :countRow="5"
+          id="target-users-people-data-table"
           :empty="tableOptions.iEmpty"
           :filterable="true"
           :options="true"

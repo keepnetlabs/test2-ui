@@ -23,3 +23,7 @@ export function getSmtpSettings(resourceId) {
 export function updateSmtpSettings(payload) {
   return testRequest.put(`${URL}/${payload.resourceId}`, payload, { loading: true })
 }
+
+export function exportSmtpSettings(payload) {
+  return testRequest.post(`${URL}/search/export`, payload, { responseType: 'blob' })
+}

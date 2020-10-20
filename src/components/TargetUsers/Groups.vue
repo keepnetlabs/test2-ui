@@ -21,6 +21,7 @@
           :countRow="5"
           :empty="tableOptions.iEmpty"
           :filterable="true"
+          id="target-users-group-data-table"
           :options="true"
           :pageSizes="tableOptions.pageSizes"
           :refName="'groupsTable'"
