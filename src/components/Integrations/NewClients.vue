@@ -43,10 +43,10 @@
         <v-list-item class="px-0">
           <v-list-item-content style="">
             <label class="new-client__label" for="generate-api-key"
-              >Generate API Key for Keepnet Customer ID</label
+              >Generate API Key for Customer ID</label
             >
             <v-list-item-subtitle class="new-client__api-key__subtitle">
-              Enter Keepnet Customer ID of the client to generate an API Key
+              Enter Customer ID of the client to generate an API Key
             </v-list-item-subtitle>
             <v-text-field
               placeholder="Enter Customer ID  "

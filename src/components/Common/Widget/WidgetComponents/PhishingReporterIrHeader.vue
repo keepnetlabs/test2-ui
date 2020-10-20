@@ -14,9 +14,7 @@
         <div class="card-header">
           <span class="head">Phishing Reporter</span>
           <router-link to="/phishing-reporter">
-            <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
-              >mdi-open-in-new</v-icon
-            >
+            <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
           <v-icon
             v-if="editMode"
@@ -140,7 +138,11 @@ export default {
   max-height: 170px;
   border-radius: 8px;
   padding: 16px;
+  padding-right: 24px;
   position: relative;
+  &.investigations {
+    padding: 16px 24px 16px 16px;
+  }
   .card-header {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -159,7 +161,7 @@ export default {
       color: #fff;
       font-size: 20px;
       font-weight: 600;
-      line-height: 1.15;
+      line-height: 1.3;
       letter-spacing: normal;
       white-space: nowrap;
       overflow: hidden;
@@ -203,6 +205,7 @@ export default {
         letter-spacing: normal;
         color: #ffffff;
         opacity: 0.7;
+        white-space: nowrap;
       }
     }
   }

@@ -6,7 +6,12 @@
     <div class="footer-item__secondary footer-links">
       <a class="footer-item__secondary--1" href="#">Privacy Policy</a>
       <div>&bull;</div>
-      <a class="footer-item__secondary--2" href="#">Terms and Conditions</a>
+      <a
+        class="footer-item__secondary--2"
+        href="https://www.keepnetlabs.com/terms-conditions/"
+        target="_blank"
+        >Terms and Conditions</a
+      >
       <div class="footer-item__secondary--3">&bull;</div>
     </div>
     <div class="footer-item__third footer-links">

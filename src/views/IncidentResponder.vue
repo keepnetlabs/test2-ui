@@ -274,18 +274,20 @@
                   >mdi-cog</v-icon
                 >
               </div>
-              <div class="card-body">
-                <div class="body-row" style="margin-top: 14px;">
+              <div class="card-body d-flex roi-summary__body-container">
+                <div class="body-row">
+                  <span class="body-row__number">
+                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+                  </span>
+
+                  <span class="body-row__text">Time Saved</span>
+                </div>
+                <div class="body-row">
                   <span class="body-row__number">
                     {{ getRoiSummaryValue }}
                   </span>
-                </div>
-                <div class="body-row">
-                  <span class="roi-number">
-                    {{
-                      (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0
-                    }}h</span
-                  >
+
+                  <span class="body-row__text">Money Saved</span>
                 </div>
               </div>
               <div class="card-status">Saved</div>
@@ -484,7 +486,7 @@
                 :rowActions="emails.rowActions"
                 :addUsers="emails.addUsers"
                 :empty="emails.iEmpty"
-                :groupable="false"
+                :groupable="true"
                 :selectEvent="emails.selectEvent"
                 :extended-view-style="{ top: '-120px' }"
                 @downloadEvent="exportReportedListEmails"
@@ -1545,7 +1547,7 @@ export default {
       this.$router.push({ path: '/playbook', query: { openPopup: true } })
     },
     onEmptyReportedEmailsBtnClicked() {
-      this.$router.push({ path: '/phishing-reporter', hash: '#settings' })
+      this.$router.push({ path: '/phishing-reporter' })
     },
     irPreviewOnClick(row) {
       this.$router.push({
@@ -2247,6 +2249,9 @@ export default {
     .v-list-item__content {
       padding: 0;
     }
+  }
+  .v-list-item__subtitle {
+    white-space: pre-wrap;
   }
   .k-dialog__header {
     padding-top: 24px;

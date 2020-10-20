@@ -23,13 +23,13 @@
           ></v-text-field>
         </form-group>
         <form-group
-          title="Generate API Key for Keepnet Customer ID"
-          sub-title="Enter Keepnet Customer ID of the client to generate an API Key"
+          title="Generate API Key for Customer ID"
+          sub-title="Enter Customer ID of the client to generate an API Key"
           class-name="auth-key"
         >
           <div class="auth-key__container">
             <v-text-field
-              placeholder="Enter Keepnet Customer ID"
+              placeholder="Enter Customer ID"
               outlined
               dense
               class="auth-key__textfield"

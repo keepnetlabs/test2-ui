@@ -13,7 +13,8 @@
         </v-list-item-content>
       </v-list-item>
       <div>
-        <v-container fluid>
+        <PostCardLoading :loading="companyLoading" v-if="companyLoading"> </PostCardLoading>
+        <v-container fluid v-if="!companyLoading">
           <v-data-iterator
             :items="orderedAccounts"
             :search="search"
@@ -82,9 +83,10 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-import { getCompanyByID } from '../api/company'
+import { getCompanyByID, getCompanyList } from '../api/company'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import { setGlobalUserData } from '../utils/functions'
+import PostCardLoading from './SkeletonLoading/PostCardLoading'
 
 export default {
   name: 'SwitchAccount',
@@ -95,17 +97,33 @@ export default {
       itemsPerPage: 4,
       search: '',
       companies: [],
-      orderedAccounts: []
+      orderedAccounts: [],
+      companyLoading: false
     }
   },
+  components: {
+    PostCardLoading
+  },
   created() {
-    this.orderedAccounts = this.getDropdown
+    this.$store.watch((state) => {
+      if (state.dashboard.isSwitchDialogOpen) {
+        this.getCompanyData()
+      }
+    })
   },
   methods: {
     ...mapActions({
       selectCompany: 'dashboard/selectCompany',
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
+    getCompanyData() {
+      this.companyLoading = true
+      getCompanyList()
+        .then((response) => (this.orderedAccounts = response.data.data))
+        .finally(() => {
+          this.companyLoading = false
+        })
+    },
     getSelectedCompanyDetails(account) {
       localStorage.setItem('isSelectCompany', true)
       localStorage.setItem('companyId', account.resourceId)

@@ -3,18 +3,12 @@
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
         <v-card flat light style="max-width: 554px;">
-          <v-list-item class="my-8">
-            <v-list-item-content>
-              <v-list-item-title class="new-investigation-wrapper__header"
-                >Start New Investigation</v-list-item-title
-              >
-              <v-list-item-title class="new-investigation-wrapper__sub-header"
-                >Select filters and date options to start an investigation</v-list-item-title
-              >
-            </v-list-item-content>
-          </v-list-item>
+          <app-modal-body-header
+            title="Start New Investigation"
+            sub-title="Select filters and date options to start an investigation"
+          />
           <v-form ref="form" v-model="valid" lazy-validation>
-            <v-list-item class="edit-name-area pt-1 0 pa-0 investigation-name">
+            <v-list-item class="edit-name-area 0 pa-0 investigation-name">
               <v-list-item-content class>
                 <label class="pb-2 edit-labels">Investigation Name</label>
                 <v-text-field
@@ -170,6 +164,7 @@
                     type="datetimerange"
                     range-separator="To"
                     format="yyyy-MM-dd HH:mm:ss"
+                    ref="refPicker"
                     start-placeholder="Start date"
                     end-placeholder="End date"
                     value-format="yyyy-MM-dd HH:mm:ss"
@@ -277,8 +272,11 @@ import {
   getTargetUsersByEmail
 } from '../../api/targetUsers'
 import { getInvestigationScanTypes } from '@/api/investigations'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   components: {
+    AppModalBodyHeader,
     AppModal
   },
   watch: {
@@ -330,6 +328,13 @@ export default {
       searchTargetUsersSpecificValue: '',
       specificUserItems: [],
       pickerOptions: {
+        onPick: (date) => {
+          const { minDate, maxDate } = date
+          const refPicker = this.$refs.refPicker
+          if (maxDate && minDate) {
+            this.date = refPicker.formatToValue([minDate, maxDate])
+          }
+        },
         shortcuts: [
           {
             text: 'Last week',
@@ -379,15 +384,15 @@ export default {
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: '',
+      investgationName: 'Manuel Investigation',
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
       date: [],
       startDate: '',
       endDate: '',
-      selectedDuration: '',
-      selectedAction: '',
+      selectedDuration: 3,
+      selectedAction: 'deleteEmail',
       name: '',
       description: '',
       privacy: false,
@@ -913,6 +918,11 @@ export default {
             this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
           })
+      } else {
+        return this.$nextTick(() => {
+          const el = this.$refs.form.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     checkInvestigationName() {

@@ -390,15 +390,15 @@
 
               <div class="input-header pt-6">Security Label (TLP)</div>
               <div class="input-sub pb-1">
-                Use TLP labels to inform recipients about how to share sensitive information. To get
-                more information about Please visit
+                Use TLP labels to inform recipients about how to share sensitive information. Please
+                visit
                 <a
                   href="https://www.cisa.gov/tlp#:~:text=The%20Traffic%20Light%20Protocol%20(TLP,by%20the%20recipient(s)."
                   class="text-primary"
                   target="_blank"
                   >Traffic Light Protocol</a
                 >
-                for more information
+                for more information.
               </div>
               <v-form>
                 <v-select
@@ -819,6 +819,134 @@
                                 <v-icon v-if="uploadRespond.isToFlagged">mdi-check</v-icon>
                               </div>
                               Flagged To
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
+                  </div>
+                  <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
+                    v-if="uploadRespond.cc && uploadRespond.cc.length"
+                  >
+                    <div class="d-flex" v-if="uploadRespond.cc && uploadRespond.cc.length">
+                      <v-checkbox
+                        v-model="uploadRespond.isCcHidden"
+                        @change="ccValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">CC</label>
+                    </div>
+                    <div class="d-flex">
+                      <div class="img-wrapper ccFlagged">
+                        <v-icon :color="uploadRespond.isCcFlagged ? '#f56c6c' : ''"
+                          >mdi-account-arrow-left</v-icon
+                        >
+                      </div>
+                      <v-menu
+                        :disabled="uploadRespond.isCcHidden"
+                        v-model="ccSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                        @click="ccSettings = !ccSettings"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isCcHidden }"
+                          >
+                            <v-icon :class="{ 'chevron-down': ccSettings }" v-on="on"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isCcFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isCcFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isCcFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isCcFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged CC
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
+                  </div>
+                  <div
+                    class="d-flex justify-space-between investigation-filters__area--filter"
+                    v-if="uploadRespond.bcc && uploadRespond.bcc.length"
+                  >
+                    <div class="d-flex" v-if="uploadRespond.bcc && uploadRespond.bcc.length">
+                      <v-checkbox
+                        v-model="uploadRespond.isBccHidden"
+                        @change="ccValChange"
+                        hide-details
+                      ></v-checkbox>
+                      <label v-if="filterOpened">BCC</label>
+                    </div>
+                    <div class="d-flex">
+                      <div class="img-wrapper bccFlagged">
+                        <v-icon :color="uploadRespond.isBccFlagged ? '#f56c6c' : ''"
+                          >mdi-account-arrow-left</v-icon
+                        >
+                      </div>
+                      <v-menu
+                        :disabled="uploadRespond.isBccHidden"
+                        v-model="bccSettings"
+                        right
+                        offset-x
+                        transition="scale-transition"
+                        @click="bccSettings = !bccSettings"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            class="chevron-btn-menu"
+                            icon
+                            :class="{ 'disabled-chevron': uploadRespond.isBccHidden }"
+                          >
+                            <v-icon :class="{ 'chevron-down': bccSettings }" v-on="on"
+                              >mdi-chevron-down
+                            </v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isBccFlagged = false"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="!uploadRespond.isBccFlagged">mdi-check</v-icon>
+                              </div>
+                              None
+                            </v-list-item-title>
+                          </v-list-item>
+                          <v-list-item
+                            class="pl-1 mal-list-wrapper"
+                            @click="uploadRespond.isBccFlagged = true"
+                          >
+                            <v-list-item-title class="mal-list-row">
+                              <div class="mal-icon-wrapper">
+                                <v-icon v-if="uploadRespond.isBccFlagged">mdi-check</v-icon>
+                              </div>
+                              Flagged BCC
                             </v-list-item-title>
                           </v-list-item>
                         </v-list>
@@ -1441,7 +1569,11 @@
                             </div>
                             <div>
                               <p
-                                v-if="uploadRespond.cc && uploadRespond.isCcFlagged"
+                                v-if="
+                                  uploadRespond.cc &&
+                                  uploadRespond.cc.length &&
+                                  uploadRespond.isCcFlagged
+                                "
                                 class="detail-black detail-red single-post__details__section-header--sub"
                               >
                                 CC:
@@ -1453,7 +1585,10 @@
                               </p>
                               <p
                                 v-if="
-                                  uploadRespond && uploadRespond.cc && uploadRespond.isCcFlagged
+                                  uploadRespond &&
+                                  uploadRespond.cc &&
+                                  uploadRespond.cc.length &&
+                                  uploadRespond.isCcFlagged
                                 "
                                 id="harmful-cc"
                                 class="detail-black single-post__details__section-header--result"
@@ -1463,7 +1598,11 @@
                             </div>
                             <div>
                               <p
-                                v-if="uploadRespond.bcc && uploadRespond.isBccFlagged"
+                                v-if="
+                                  uploadRespond.bcc &&
+                                  uploadRespond.bcc.length &&
+                                  uploadRespond.isBccFlagged
+                                "
                                 class="detail-black detail-red single-post__details__section-header--sub"
                               >
                                 CC:
@@ -1475,7 +1614,10 @@
                               </p>
                               <p
                                 v-if="
-                                  uploadRespond && uploadRespond.bcc && uploadRespond.isBccFlagged
+                                  uploadRespond &&
+                                  uploadRespond.bcc &&
+                                  uploadRespond.bcc.length &&
+                                  uploadRespond.isBccFlagged
                                 "
                                 id="harmful-bcc"
                                 class="detail-black single-post__details__section-header--result"
@@ -1506,7 +1648,7 @@
                               class="detail-black detail-red single-post__details__section-header--sub"
                             >
                               Link: {{ el.name }} ({{ el.url }})
-                              <span
+                              <!--<span
                                 class="single-post__details__section-header--result--copy-link"
                                 @click="contentCopy(el.url)"
                               >
@@ -1514,26 +1656,13 @@
                                   class="single-post__details__section-header--result--copy-link__icon"
                                   >mdi-content-copy</v-icon
                                 >Copy Url
-                              </span>
-                              <br />
-                            </p>
-                            <div
-                              v-for="(att, ind) of uploadRespond.urls"
-                              :key="ind + att.name"
-                              :id="'detail-malicious-' + att.name"
-                              v-if="att.isFlagged"
-                            >
-                              <p
-                                class="attach-found-malicious single-post__details__section-header--result"
-                                v-if="ind === 0"
+                              </span>-->
+                              <span
+                                class="attach-found-malicious single-post__details__section-header--result d-block"
                               >
-                                This link<span
-                                  v-if="uploadRespond.urls && uploadRespond.urls.length > 1"
-                                  >s</span
-                                >
-                                has been reported as a phising link
-                              </p>
-                            </div>
+                                This link has been reported as phishing
+                              </span>
+                            </p>
                           </div>
                           <div
                             class="details-attchments-wrapper preview-footer"
@@ -1545,7 +1674,7 @@
                               v-if="att.isFlagged"
                               class="preview-attch-wrapper details-attachments"
                             >
-                              <p v-if="ind === 0" class="single-post__details__section-header">
+                              <p class="single-post__details__section-header">
                                 Attachments
                               </p>
                               <div>
@@ -1566,25 +1695,13 @@
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div
-                              v-for="(att, ind) of uploadRespond.attachments"
-                              :key="ind + att.name"
-                              :id="'detail-malicious-' + att.name"
-                              v-if="att.isFlagged"
-                            >
-                              <p
-                                class="attach-found-malicious detail-black single-post__details__section-header--result"
-                              >
-                                This file<span
-                                  v-if="
-                                    uploadRespond.attachments &&
-                                    uploadRespond.attachments.length > 1
-                                  "
-                                  >s</span
+                              <div v-if="att.isFlagged">
+                                <p
+                                  class="attach-found-malicious detail-black single-post__details__section-header--result"
                                 >
-                                has been reported as malicious content
-                              </p>
+                                  This file has been reported as malicious content
+                                </p>
+                              </div>
                             </div>
                           </div>
                           <div class="detail-discovery pb-4">
@@ -1657,6 +1774,7 @@
                     :href="termsAndConditionsUrl"
                     @click="(event) => event.stopPropagation()"
                     class="mr-1"
+                    target="_blank"
                     >terms and conditions</a
                   >
                   <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
@@ -1937,7 +2055,7 @@ export default {
     }
   },
   data: () => ({
-    termsAndConditionsUrl: '#',
+    termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
     acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
@@ -2371,9 +2489,11 @@ export default {
       this.checkAllHeaderCheck()
     },
     ccValChange(val) {
+      if (val) this.uploadRespond.isCcFlagged = false
       this.checkAllHeaderCheck()
     },
     bccValChange(val) {
+      if (val) this.uploadRespond.isBccFlagged = false
       this.checkAllHeaderCheck()
     },
     getListThreatCategories() {
@@ -3444,7 +3564,7 @@ export default {
         overflow-y: auto;
         position: relative;
         margin: 24px 0 12px 0;
-        min-height: 180px;
+        min-height: 200px;
         &--breaker {
           padding: 0 24px;
           width: 100%;

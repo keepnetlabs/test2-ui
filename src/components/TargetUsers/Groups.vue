@@ -111,7 +111,7 @@ export default {
             fixed: 'left',
             sortable: true,
             show: true,
-            type: 'link',
+            type: 'text',
             href: '/target-groups',
             hrefKey: 'resourceId',
             width: 240,
@@ -189,7 +189,7 @@ export default {
           footer: [
             {
               label: 'Date Created',
-              key: 'createDate'
+              key: 'createTime'
             },
             {
               label: 'Last update',

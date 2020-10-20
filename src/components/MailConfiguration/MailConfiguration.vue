@@ -2,6 +2,7 @@
   <div class="mail-configuration">
     <app-modal
       :status="status"
+      v-if="status"
       @closeOverlay="status = false"
       :icon-name="'mdi-book-search'"
       :title="getTitle"
@@ -118,6 +119,7 @@
       :icon-name="'mdi-book-search'"
       :title="'Create GSuite Mail Configuration'"
       className="mail-configuration__modal"
+      v-if="statusGsuite"
     >
       <template v-slot:overlay-body>
         <v-form ref="gsuiteConfiguration">
@@ -189,6 +191,7 @@
     </app-modal>
     <app-dialog
       :status="deleteDialog"
+      v-if="deleteDialog"
       icon="mdi-delete"
       title="Delete Mail Configuration?"
       subtitle="The O365 mail configuration will  deleted permanently"
@@ -693,6 +696,8 @@ export default {
 <style lang="scss">
 .mail-configuration {
   padding: 11px 16px 16px 16px;
+  min-height: 80vh;
+
   &__no-data {
     &__header {
       font-size: 24px !important;

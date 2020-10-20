@@ -373,7 +373,7 @@ export default {
           operandsSenderIP: [
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exist', value: 'Exists' },
+            { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ],
           operators: [
@@ -381,7 +381,7 @@ export default {
             { text: 'does not contain', value: 'DoesNotContain' },
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exist', value: 'Exist' },
+            { text: 'exists', value: 'Exist' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ]
         }
@@ -566,7 +566,7 @@ export default {
       } else {
         return this.$nextTick(() => {
           const el = ref.$refs.refForm.$el.querySelector('.error--text')
-          el.scrollIntoView(false)
+          scrollToComponent(el)
         })
       }
     },
@@ -581,6 +581,13 @@ export default {
         if (isFormValid) {
           this.transformQuery()
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        }
+        const ref = this.$refs.refStep1Form
+        if (this.activeStep === 1 && !this.$refs.refStep1Form.validate()) {
+          return this.$nextTick(() => {
+            const el = ref.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
         }
       } else {
         this.$store.dispatch('common/createSnackBar', {
