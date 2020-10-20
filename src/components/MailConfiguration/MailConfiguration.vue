@@ -237,7 +237,8 @@
             ref="refPeopleTable"
             @editTargetUsers="handleEditTargetUsers"
             @onEmptyBtnClicked="status = true"
-            :is-downloadable="false"
+            :is-downloadable="true"
+            @downloadEvent="exportMailConfigurationList"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
           >
@@ -484,6 +485,7 @@ export default {
         this.getTableData()
       })
     },
+    exportMailConfigurationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {},
     cancelO365() {
       this.status = false
       this.editData = null
