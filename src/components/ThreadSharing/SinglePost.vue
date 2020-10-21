@@ -1192,7 +1192,6 @@ export default {
   watch: {},
   mounted() {
     this.userIdFromStorage = localStorage.getItem('userId')
-
     if (this.$route.query.postId) {
       this.getPostDetails(this.$route.query.postId, 0, true)
     }
@@ -1310,7 +1309,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been updated successfully'
+            message: 'Comment has been updated successfully.'
           })
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
