@@ -57,12 +57,13 @@
           <vue-tel-input
             v-model="formValues.phoneNumber"
             validCharactersOnly
-            @input="onPhoneNumberChange"
             defaultCountry="GB"
             :inputOptions="{
               showDialCode: true
             }"
+            mode="international"
             :class="['k-tel-input', !isPhoneNumberValid && isSubmitted && 'phone-number-invalid']"
+            ref="refTelInput"
           />
           <div
             class="v-text-field__details checkbox-error"
@@ -72,11 +73,18 @@
               <div class="v-messages theme--light error--text" role="alert">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message" style="padding-left: 10px;">
-                    Invalid Phone Number
+                    {{ getErrorText }}
                   </div>
                 </div>
               </div>
             </transition>
+          </div>
+          <div class="v-messages theme--light" v-else>
+            <div class="v-messages__wrapper">
+              <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
+                *Required
+              </div>
+            </div>
           </div>
         </form-group>
         <form-group title="Status">
@@ -183,6 +191,12 @@ export default {
     getTitle() {
       return this.selectedRow ? 'Edit System User' : 'New System User'
     },
+    getErrorText() {
+      if (this.formValues.phoneNumber) {
+        return 'Invalid Phone Number'
+      }
+      return 'Required'
+    },
     getBodyTitle() {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
     }
@@ -194,11 +208,9 @@ export default {
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
-    onPhoneNumberChange(phoneText, phoneObject) {
-      this.isPhoneNumberValid = phoneObject.isValid
-    },
     submit() {
       this.isSubmitted = true
+      debugger
       if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
@@ -252,6 +264,13 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
         })
         this.$emit('closeOverlayWithUpdate')
+      })
+    }
+  },
+  watch: {
+    'formValues.phoneNumber'() {
+      this.$nextTick(() => {
+        this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
       })
     }
   },
