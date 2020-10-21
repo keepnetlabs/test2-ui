@@ -26,7 +26,7 @@
         <data-table
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
-          id="integrationsList"
+          id="integrations-data-table"
           ref="refIntegrationsList"
           :refName="'integrationsList'"
           :columns="tableOptions.columns"

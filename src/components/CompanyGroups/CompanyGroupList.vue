@@ -24,6 +24,7 @@
           :empty="tableOptions.iEmpty"
           :filterable="true"
           :is-downloadable="false"
+          id="company-groups-data-table"
           :options="true"
           :pageSizes="tableOptions.pageSizes"
           :refName="'companyList'"

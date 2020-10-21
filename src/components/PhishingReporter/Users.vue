@@ -37,7 +37,7 @@
           :table="tableOptions.table"
           @handleEdit="handleEdit"
           @downloadEvent="exportPhishingReporterUserList"
-          id="usersList"
+          id="phishing-reporter-data-table"
           ref="refUsersList"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"

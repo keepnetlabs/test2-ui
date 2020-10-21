@@ -25,6 +25,7 @@
             :refName="'systemUsersList'"
             :columns="tableOptions.columns"
             :countRow="5"
+            id="system-users-people-data-table"
             :empty="tableOptions.empty"
             :filterable="true"
             :isServerSide="false"

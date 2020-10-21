@@ -99,6 +99,7 @@
           @addAction="toggleRuleModal"
           @onEmptyBtnClicked="toggleRuleModal"
           @downloadEvent="exportPlaybookRules"
+          id="playbook-data-table"
           @deleteAction="deleteRule($event)"
           @editAction="handleEdit"
           @columnFilterChanged="columnFilterChanged"

@@ -15,6 +15,7 @@
         :filterable="true"
         :isServerSide="false"
         :options="true"
+        id="custom-api-data-table"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
