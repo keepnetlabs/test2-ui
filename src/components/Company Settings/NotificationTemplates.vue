@@ -16,6 +16,7 @@
         :countRow="5"
         :table="tableOptions.tableData"
         :empty="tableOptions.empty"
+        id="company-settings-notification-templates-data-table"
         :filterable="true"
         :row-key="'name'"
         :clusterItems="[{ name: 'Email' }]"

@@ -44,6 +44,7 @@
           :columns="tableOptions.columns"
           :countRow="5"
           :empty="tableOptions.iEmpty"
+          id="company-groups-details-data-table"
           :filterable="true"
           :options="true"
           :pageSizes="tableOptions.pageSizes"

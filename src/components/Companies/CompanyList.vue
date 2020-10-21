@@ -40,6 +40,7 @@
         <datatable
           :selectable="true"
           :table="tableData"
+          id="companies-data-table"
           ref="refDataList"
           :addButton="tableOptions.addButton"
           :columns="tableOptions.columns"

@@ -27,6 +27,7 @@
             :refName="'smtpSettingsList'"
             :columns="tableOptions.columns"
             :countRow="5"
+            id="company-settings-smtp-settings-data-table"
             :empty="tableOptions.empty"
             @addNewSmtpSetting="toggleSmtpModalStatus"
             :filterable="true"

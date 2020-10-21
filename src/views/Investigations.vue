@@ -38,7 +38,7 @@
           <template v-slot:skeleton-content>
             <datatable
               :is-column-filter-active="isColumnFilterActive"
-              id="investigationList"
+              id="investigations-data-table"
               ref="investigationTable"
               :refName="'investigationTable'"
               :columns="columns"
