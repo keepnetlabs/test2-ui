@@ -1,5 +1,5 @@
 <template>
-  <div class="component-single-post">
+  <div class="component-single-post" :key="$route.query.postId || '1'">
     <div style="z-index: 999999;">
       <new-investigation
         @closeAdd="closeNewInvestigationModal($event)"
@@ -1189,7 +1189,12 @@ export default {
     shareSettings: {},
     addCommentValue: ''
   }),
-  watch: {},
+
+  watch: {
+    '$route.query.postId'(val) {
+      this.getPostDetails(this.$route.query.postId, 0, true)
+    }
+  },
   mounted() {
     this.userIdFromStorage = localStorage.getItem('userId')
     if (this.$route.query.postId) {
@@ -1405,7 +1410,7 @@ export default {
               url: item.url.replace('&amp;', '&')
             }
           })
-          setTimeout(function () {
+          setTimeout(() => {
             let recrusiveFunctionForDom = () =>
               document.getElementById(`sframe${comId}`) &&
               document.getElementById(`sframe${comId}`).shadowRoot
@@ -1417,6 +1422,7 @@ export default {
                 .getElementById(`sframe${comId}`)
                 .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
               reviewElementBind(els, url)
+              this.$forceUpdate()
             }
           }, 500)
         })

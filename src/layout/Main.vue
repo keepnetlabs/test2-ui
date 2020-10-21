@@ -595,7 +595,7 @@
       :class="{ 'bg-blur': sessionCheck }"
     >
       <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0">
-        <router-view />
+        <router-view :key="$router.fullPath" />
       </v-container>
       <app-footer />
     </v-content>

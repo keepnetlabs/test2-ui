@@ -405,7 +405,7 @@
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
                 <div class="right-side-post-container pt-2">
                   <div class="right-side-sub-title pb-1">
-                    <a href="#">{{ post.postTitle }}</a>
+                    <a @click="goToPostDetails(post)">{{ post.postTitle }}</a>
                   </div>
                   <div class="right-side-desc pb-1">
                     in
@@ -659,6 +659,13 @@ export default {
     },
     onAddClose() {
       this.isWantToAddNewCommunity = false
+    },
+    goToPostDetails(post) {
+      if (post.communityResourceId) {
+        this.$router.go(
+          `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
+        )
+      }
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
