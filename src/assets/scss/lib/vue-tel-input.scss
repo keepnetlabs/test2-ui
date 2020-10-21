@@ -1,21 +1,21 @@
-.vue-tel-input{
+.k-tel-input.vue-tel-input{
   height: 40px;
-  border:solid 1px rgba(0, 0, 0, 0.16) !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
+  border:solid 1px rgba(0, 0, 0, 0.16) ;
+  border-radius: 8px ;
+  box-shadow: none !important; ;
   &:focus-within{
-    border-color:#1976d2 !important;
+    border-color:#1976d2 ;
   }
   .vti__input {
     font-size: 13px;
     line-height: 1.71;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.72) !important;
+    color: rgba(0, 0, 0, 0.72) ;
   }
   .vti__selection{
     margin-top: -1px;
   }
   .vti__flag{
-    transform: scale(1.05) !important;
+    transform: scale(1.05) ;
   }
 }
