@@ -2691,13 +2691,13 @@ export default {
           .then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Community has been updated'
+              message: 'Post has been updated'
             })
             this.onCancelClicked()
+            this.$emit('refreshData')
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
-            this.$emit('refreshData')
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
