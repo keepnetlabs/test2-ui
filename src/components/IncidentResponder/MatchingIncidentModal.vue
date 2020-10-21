@@ -22,6 +22,7 @@
               :showHeader="true"
               :defaultSort="'subject'"
               :selectable="false"
+              id="matching-incident-data-table"
               :filterable="true"
               :options="true"
               :rowActions="[]"
