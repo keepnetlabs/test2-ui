@@ -896,7 +896,7 @@
                     <div class="d-flex" v-if="uploadRespond.bcc && uploadRespond.bcc.length">
                       <v-checkbox
                         v-model="uploadRespond.isBccHidden"
-                        @change="ccValChange"
+                        @change="bccValChange"
                         hide-details
                       ></v-checkbox>
                       <label v-if="filterOpened">BCC</label>
@@ -3110,6 +3110,9 @@ export default {
   }
 
   .v-autocomplete.affect-combobox {
+    .v-chip--select {
+      margin: 4px;
+    }
     .v-messages__message {
       color: #f56c6c !important;
     }
