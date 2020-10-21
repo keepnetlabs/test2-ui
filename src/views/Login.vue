@@ -384,13 +384,12 @@ export default {
     }
   },
   created() {
-    AuthenticationService.removeToken()
+    //AuthenticationService.removeToken()
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
       this.email = localStorage.getItem('username')
       this.password = localStorage.getItem('password')
     }
-
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
         this.$route.query &&
@@ -406,20 +405,18 @@ export default {
         )
       } else if (this.$route.query && !!this.$route.query.CommunityId) {
         this.$router.push(`/community/${this.$route.query.CommunityId}`)
+      } else if (this.$route.query) {
+        if (this.$route.query.cp) {
+          this.pageNumber = 5
+          this.token = this.getToken('cp', window.location.href)
+          this.resetType = 'createPassword'
+        } else if (this.$route.query.rp) {
+          this.pageNumber = 5
+          this.token = this.getToken('rp', window.location.href)
+          this.resetType = 'resetPassword'
+        }
       } else {
         this.$router.push('/')
-      }
-    }
-
-    if (this.$route.query) {
-      if (this.$route.query.cp) {
-        this.pageNumber = 5
-        this.token = this.getToken('cp', window.location.href)
-        this.resetType = 'createPassword'
-      } else if (this.$route.query.rp) {
-        this.pageNumber = 5
-        this.token = this.getToken('rp', window.location.href)
-        this.resetType = 'resetPassword'
       }
     }
   },

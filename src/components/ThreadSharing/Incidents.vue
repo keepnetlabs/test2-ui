@@ -228,6 +228,7 @@ export default {
           item.isToggle = true
           item.communityPostResourceId = this.$route.query.postId
           this.incidentList.push(item)
+          this.incidentLoading = false
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -288,7 +289,7 @@ export default {
         }
       }
       this.incidentLoading = true
-      //const _this = this
+      const _this = this
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
           .then((response) => {
@@ -313,10 +314,10 @@ export default {
           getCOmmunityIncidentList(this.$route.params.id, payload)
             .then((response) => {
               this.incidentList = response.data.data.results
-              this.incidentList = this.incidentList.map((item) => {
+              _this.incidentList = _this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
-              this.incidentLoading = false
+              _this.incidentLoading = false
             })
             .catch((error) => {
               if (

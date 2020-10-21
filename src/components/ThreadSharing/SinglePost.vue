@@ -1192,7 +1192,6 @@ export default {
   watch: {},
   mounted() {
     this.userIdFromStorage = localStorage.getItem('userId')
-
     if (this.$route.query.postId) {
       this.getPostDetails(this.$route.query.postId, 0, true)
     }
