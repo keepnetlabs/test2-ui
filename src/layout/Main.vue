@@ -248,13 +248,15 @@
               routerName === 'Target Users' ||
               routerName === 'Companies' ||
               routerName === 'Company Settings' ||
+              routerName === 'Company Group Details' ||
               routerName === 'System Users',
             'un-selected-list-item':
               routerName !== 'Company' ||
               routerName === 'Target Users' ||
               routerName === 'Companies' ||
               routerName === 'Company Settings' ||
-              routerName === 'System Users'
+              routerName === 'System Users' ||
+              routerName === 'Company Group Details'
           }"
         >
           <template v-slot:activator>
@@ -273,7 +275,11 @@
           </v-list-item>
           <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
             <v-list-item-content class="menu-item-content">
-              <router-link to="/companies" class="menu-link-default">
+              <router-link
+                to="/companies"
+                class="menu-link-default"
+                :class="[routerName === 'Company Group Details' && 'active-link']"
+              >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Companies</span>
                 </v-list-item-title>
