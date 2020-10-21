@@ -61,7 +61,31 @@
             :inputOptions="{
               showDialCode: true
             }"
+            mode="international"
+            :class="['k-tel-input', !isPhoneNumberValid && isSubmitted && 'phone-number-invalid']"
+            ref="refTelInput"
           />
+          <div
+            class="v-text-field__details checkbox-error"
+            v-if="!isPhoneNumberValid && isSubmitted"
+          >
+            <transition appear name="bounce">
+              <div class="v-messages theme--light error--text" role="alert">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message" style="padding-left: 10px;">
+                    {{ getErrorText }}
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
+          <div class="v-messages theme--light" v-else>
+            <div class="v-messages__wrapper">
+              <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
+                *Required
+              </div>
+            </div>
+          </div>
         </form-group>
         <form-group title="Status">
           <v-select
@@ -116,7 +140,7 @@ import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
 import { VueTelInput } from 'vue-tel-input'
-import { getUserRoles } from '../../api/systemUsers'
+import { getUserRoles } from '@/api/systemUsers'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -148,6 +172,8 @@ export default {
         isLdap: false,
         statusId: 1
       },
+      isPhoneNumberValid: true,
+      isSubmitted: false,
       showWelcomeEmailModal: false,
       statusItems: [
         { name: 'Active', val: 1 },
@@ -165,6 +191,12 @@ export default {
     getTitle() {
       return this.selectedRow ? 'Edit System User' : 'New System User'
     },
+    getErrorText() {
+      if (this.formValues.phoneNumber) {
+        return 'Invalid Phone Number'
+      }
+      return 'Required'
+    },
     getBodyTitle() {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
     }
@@ -177,7 +209,9 @@ export default {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
     submit() {
-      if (this.$refs.refForm.validate()) {
+      this.isSubmitted = true
+      debugger
+      if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
           const formData = {
@@ -199,6 +233,7 @@ export default {
           this.callForCreateSystemUser(formData)
         }
       } else {
+        this.$forceUpdate()
         setTimeout(() => {
           const el = this.$refs.refForm.$el.querySelector('.error--text')
           scrollToComponent(el)
@@ -229,6 +264,13 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
         })
         this.$emit('closeOverlayWithUpdate')
+      })
+    }
+  },
+  watch: {
+    'formValues.phoneNumber'() {
+      this.$nextTick(() => {
+        this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
       })
     }
   },
@@ -314,5 +356,8 @@ export default {
 
 <style lang="scss">
 .create-edit-system-user {
+}
+.phone-number-invalid {
+  border-color: #ff5252 !important;
 }
 </style>
