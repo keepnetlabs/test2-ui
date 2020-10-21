@@ -88,20 +88,23 @@
       <div
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
         v-if="uploadRespond && uploadRespond.bcc && !!uploadRespond.bcc.length"
-        :class="{
-          'malicious-style': uploadRespond.isBccFlagged && !uploadRespond.isBccHidden,
-          'malicious-style-hidden': uploadRespond.isBccHidden,
-          'hidden-icon-link': uploadRespond.isBccHidden
-        }"
       >
-        BCC: {{ uploadRespond.bcc && uploadRespond.bcc.toString()
-        }}<span v-if="uploadRespond.isBccHidden" class="hidden-icon mdi mdi-eye-off"></span
-        ><v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
-          <template v-slot:activator="{ on }">
-            <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
-          </template>
-          <span>This email address may be targeted by emails include harmful content</span>
-        </v-tooltip>
+        <span
+          :class="{
+            'malicious-style': uploadRespond.isBccFlagged && !uploadRespond.isBccHidden,
+            'malicious-style-hidden': uploadRespond.isBccHidden,
+            'hidden-icon-link': uploadRespond.isBccHidden
+          }"
+        >
+          BCC: {{ uploadRespond.bcc && uploadRespond.bcc.toString()
+          }}<span v-if="uploadRespond.isBccHidden" class="hidden-icon mdi mdi-eye-off"></span
+          ><v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
+            <template v-slot:activator="{ on }">
+              <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
+            </template>
+            <span>This email address may be targeted by emails include harmful content</span>
+          </v-tooltip>
+        </span>
       </div>
       <div>
         Date: {{ uploadRespond.sentTime }}
