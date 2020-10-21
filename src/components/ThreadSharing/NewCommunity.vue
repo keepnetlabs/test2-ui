@@ -148,6 +148,7 @@
 import { createCommunity, listBusinessCategories, updateCommunity } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
+import { scrollToComponent } from '../../utils/functions'
 
 export default {
   components: {
@@ -252,8 +253,8 @@ export default {
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
-              localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
-              this.$router.push(`/community/${response.data.data.resourceId}`)
+              localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
+              this.$router.push(`/community/${this.resourceId}`)
             })
             .catch((error) => {
               this.$store.dispatch('common/createSnackBar', {
@@ -281,6 +282,9 @@ export default {
               })
             })
         }
+      } else {
+        const el = this.$refs.form.$el
+        scrollToComponent(el)
       }
     },
     getBusinessCategories() {
