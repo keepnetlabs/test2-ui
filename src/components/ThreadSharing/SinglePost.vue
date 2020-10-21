@@ -297,9 +297,14 @@
               v-for="(tlc, index) of post.securityLabelResourceIdArray"
               :key="index"
             >
-              <div class="ts-user-tlc__item-item" :class="getTlcClass(tlc)">
-                {{ getTlcName(tlc) }}
-              </div>
+              <v-tooltip bottom opacity="1">
+                <template v-slot:activator="{ on }">
+                  <div v-on="on" class="ts-user-tlc__item-item" :class="getTlcClass(tlc)">
+                    {{ getTlcName(tlc) }}
+                  </div>
+                </template>
+                <span class="tooltip-span">{{ getTlcTooltip(tlc) }}</span>
+              </v-tooltip>
             </div>
           </div>
         </div>
@@ -438,14 +443,9 @@
                 @mouseover="hoverTool = true"
                 @mouseleave="hoverTool = false"
               >
-                <span v-if="post.hasAttachment"
+                <span
                   >+{{
-                    post.categoryResourceIdArray && post.categoryResourceIdArray.length - 1
-                  }}</span
-                >
-                <span v-else
-                  >+{{
-                    post.categoryResourceIdArray.length && post.categoryResourceIdArray.length - 2
+                    getAttachmentLength(post.hasAttachment, post.categoryResourceIdArray)
                   }}</span
                 >
               </v-btn>
@@ -457,7 +457,18 @@
                 "
                 class="tooltip-wrapper"
               >
-                <div v-if="post.hasAttachment">
+                <div
+                  v-if="
+                    post.hasAttachment &&
+                    post.categoryResourceIdArray &&
+                    post.categoryResourceIdArray.length === 4
+                  "
+                >
+                  <span>{{ findCategory(post.categoryResourceIdArray[1]) }}</span>
+                  <span>{{ findCategory(post.categoryResourceIdArray[2]) }}</span>
+                  <span>{{ findCategory(post.categoryResourceIdArray[3]) }}</span>
+                </div>
+                <div v-else-if="post.hasAttachment">
                   <span>{{ findCategory(post.categoryResourceIdArray[1]) }}</span>
                   <span>{{ findCategory(post.categoryResourceIdArray[2]) }}</span>
                 </div>
@@ -1187,6 +1198,13 @@ export default {
     }
   },
   methods: {
+    getAttachmentLength(hasAttachment, categories) {
+      if (hasAttachment) {
+        return categories.length - 1
+      } else {
+        return categories.length - 2
+      }
+    },
     getTlcClass(item) {
       switch (item) {
         case 'wKBhLuFZ46y9':
@@ -1200,6 +1218,24 @@ export default {
           break
         case 'wFlYRDMW946M':
           return 'TLP-WHITE'
+          break
+        default:
+          break
+      }
+    },
+    getTlcTooltip(item) {
+      switch (item) {
+        case 'wKBhLuFZ46y9':
+          return 'Limited disclosure, restricted to the community.'
+          break
+        case 'RhHwRcLlZxek':
+          return 'Limited disclosure, restricted to participants’ organizations.'
+          break
+        case 'YpUZxVhYJlKg':
+          return 'Not for disclosure, restricted to participants only.'
+          break
+        case 'wFlYRDMW946M':
+          return 'Disclosure is not limited.'
           break
         default:
           break
