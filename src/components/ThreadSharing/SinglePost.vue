@@ -1310,7 +1310,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been updated successfully'
+            message: 'Comment has been updated successfully.'
           })
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
