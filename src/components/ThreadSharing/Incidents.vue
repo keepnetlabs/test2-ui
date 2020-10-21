@@ -101,6 +101,7 @@
                     :postIndex="ind"
                     :totalPostCount="props.items.length"
                     @openEditPopupItem="openEditPopupItemFunc"
+                    :key="$route.query.postId || '1'"
                   />
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -191,6 +192,11 @@ export default {
         this.debounce(() => {
           this.getIncidentList()
         }, 500)
+      }
+    },
+    watch: {
+      '$route.query.postId'(val) {
+        this.$forceUpdate()
       }
     }
   },

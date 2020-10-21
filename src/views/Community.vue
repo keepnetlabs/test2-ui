@@ -159,7 +159,6 @@ export default {
     maxCharForEmail: false
   }),
   computed: {},
-  watch: {},
   created() {},
   mounted() {},
   beforeDestroy() {

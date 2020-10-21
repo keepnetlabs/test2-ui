@@ -75,7 +75,8 @@ const router = new Router({
             isAuthenticated: true
           },
           props: true,
-          params: true
+          params: true,
+          force: true
         },
         {
           path: '/target-users',
