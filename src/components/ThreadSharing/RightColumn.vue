@@ -662,9 +662,18 @@ export default {
     },
     goToPostDetails(post) {
       if (post.communityResourceId) {
-        this.$router.go(
-          `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
-        )
+        if (this.$route.name === 'Community') {
+          this.$router.push(
+            `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
+          )
+          this.$router.go(
+            `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
+          )
+        } else {
+          this.$router.push(
+            `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
+          )
+        }
       }
     },
     goToCommunityDetails(post) {
