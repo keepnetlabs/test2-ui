@@ -229,6 +229,7 @@
             :options="true"
             :pageSizes="tableOptions.pageSizes"
             :refName="'peopleTable'"
+            id="mail-configurations-data-table"
             :rowActions="tableOptions.rowActions"
             :selectEvent="tableOptions.selectEvent"
             :setClassName="setCellClassName"

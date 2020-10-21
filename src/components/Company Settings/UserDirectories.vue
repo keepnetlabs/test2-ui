@@ -11,7 +11,7 @@
     />
     <div class="user-directories__container">
       <data-table
-        id="user-directories"
+        id="user-directories-data-table"
         ref="refUserDirectoriesList"
         :refName="'userDirectoriesList'"
         :columns="tableOptions.columns"
