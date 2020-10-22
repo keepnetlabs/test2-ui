@@ -221,14 +221,8 @@ export default {
         Condition: 'AND',
         FilterGroups: [
           {
-            Condition: 'OR',
-            FilterItems: [
-              {
-                FieldName: 'CompanyName',
-                Operator: 'Contains',
-                Value: ''
-              }
-            ],
+            Condition: 'AND',
+            FilterItems: [],
             FilterGroups: []
           }
         ]
