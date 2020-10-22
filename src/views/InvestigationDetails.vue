@@ -1570,7 +1570,6 @@ export default {
                   id: this.$route.params.id
                 })
                 .finally(() => {
-                  debugger
                   this.calculateProgressData()
                   this.showEmails = false
                   this.showTargetUsersDetails = false
