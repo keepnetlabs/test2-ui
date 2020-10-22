@@ -394,7 +394,7 @@
               </div>
             </div>
             <div class="pb-4 pt-1 empty-posts" v-else>
-              You haven’t post any incidents,yet
+              You haven’t posted any incidents, yet
             </div>
           </template>
         </PostCardLoading>

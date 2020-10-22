@@ -65,7 +65,7 @@
                             class="username-field"
                             required
                             label="Username"
-                            browser-autocomplete="username"
+                            autocomplete="username"
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
@@ -89,7 +89,7 @@
                             ref="password"
                             id="password"
                             v-model="password"
-                            browser-autocomplete="username-password"
+                            autocomplete="username-password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
@@ -113,7 +113,13 @@
                           >
                           </v-checkbox>
 
-                          <div v-on:click="pageNumber = 2" class="forgot-password">
+                          <div
+                            v-on:click="
+                              pageNumber = 2
+                              clearError()
+                            "
+                            class="forgot-password"
+                          >
                             Forgot Password
                           </div>
                         </div>
@@ -171,10 +177,9 @@
                             label="Email Address"
                             class="reset-pass-textfield"
                             @click="resetPasswordError = false"
-                            autocomplete="disabled"
                             outlined
                             :class="{ 'input-error': isErrorActive }"
-                            browser-autocomplete="username-password-reset"
+                            autocomplete="username-password-reset"
                           ></v-text-field>
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
@@ -206,7 +211,13 @@
                     <p class="mb-2">We have sent an email to your email address.</p>
                     <p class="mb-0">Click the link the email to reset your password</p>
                     <div v-if="pageNumber === 3">
-                      <div class="back-to-reset-password" @click="() => (pageNumber = 2)">
+                      <div
+                        class="back-to-reset-password"
+                        @click="
+                          pageNumber = 2
+                          clearError()
+                        "
+                      >
                         I didn’t recieve the email
                         <v-icon right dark class="pr-2">mdi-arrow-right</v-icon>
                       </div>
@@ -241,7 +252,10 @@
                     color="blue"
                     class="pr-4 mr-2 white--text"
                     rounded
-                    @click="() => (pageNumber = 1)"
+                    @click="
+                      pageNumber = 1
+                      clearError()
+                    "
                   >
                     <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                     BACK
@@ -280,7 +294,6 @@
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                               :type="show2 ? '' : 'password'"
                               @click:append="show2 = !show2"
-                              autocomplete="disabled"
                               v-model="newPassword"
                               placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
@@ -289,7 +302,7 @@
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                               :class="{ 'input-error': isErrorActive }"
-                              browser-autocomplete="username-password-new"
+                              autocomplete="username-password-new"
                             ></v-text-field>
                           </div>
                           <div>
@@ -303,11 +316,10 @@
                               placeholder="Enter new password again"
                               class="reset-pass-textfield"
                               @click="newPasswordError = false"
-                              autocomplete="disabled"
                               outlined
                               type="password"
                               :class="{ 'input-error': isErrorActive }"
-                              browser-autocomplete="username-password-password"
+                              autocomplete="username-password-password"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -323,7 +335,13 @@
                 </v-card-actions>
               </div>
               <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
-                <div class="back-to-login" @click="() => (pageNumber = 1)">
+                <div
+                  class="back-to-login"
+                  @click="
+                    pageNumber = 1
+                    clearError()
+                  "
+                >
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   BACK
                 </div>
@@ -494,6 +512,9 @@ export default {
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    clearError() {
+      this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+    },
     getToken(name, url) {
       if (!url) url = location.href
       name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]')

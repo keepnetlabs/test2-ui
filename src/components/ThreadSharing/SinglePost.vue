@@ -205,7 +205,7 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    style="cursor: not-allowed;"
+                    style="cursor: not-allowed; opacity: 0.3;"
                     v-if="post.communityPrivacyStatusId !== 1"
                     :id="'share-btn' + post.communityPostResourceId"
                   >
