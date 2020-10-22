@@ -22,13 +22,15 @@ export default {
 .datatable-tooltip {
   background-color: #6d6d6d;
   position: fixed;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.87) !important;
+  font-size: 12px;
+  line-height: 1.33;
+  min-height: 24px;
   letter-spacing: normal;
   word-break: break-all;
-  padding: 4px 16px;
+  padding: 4px 8px;
   z-index: 12;
   border-radius: 4px;
-  font-size: 12px;
 
   @media (min-width: 1260px) {
     max-width: 600px !important;
