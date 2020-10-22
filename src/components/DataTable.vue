@@ -120,24 +120,20 @@
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
-              class="clust-btn btn-hover mr-2"
-              color="#2196f3"
+              class="clust-btn btn-hover mr-1"
+              color="#757575"
               icon
               outlined
-              style="border-radius: 6px !important; order: 1; width: 40px;"
+              style="border-radius: 6px !important; order: 1; width: 42px;"
               v-if="groupable"
               @click="handleListBulletedClick"
             >
-              <v-icon style="font-size: 20px;">mdi-format-list-bulleted</v-icon>
+              <img src="../assets/img/bulletin-list.svg" alt="icon" />
             </v-btn>
-            <v-btn
-              class="clust-btn cluster-btn btn-hover mr-4"
-              color="white"
-              icon
-              style="border-radius: 6px !important; order: 2;"
-              v-if="groupable"
-            >
-              <v-icon style="font-size: 20px;">mdi-format-list-text</v-icon>
+            <div v-if="groupable" class="cluster__left">
+              <img src="../assets/img/ic-grouped-list.svg" alt="icon" />
+            </div>
+            <div v-if="groupable" class="cluster__right">
               <v-menu
                 bottom
                 offset-y
@@ -147,8 +143,10 @@
                 content-class="cluster-view"
               >
                 <template v-slot:activator="{ on }">
-                  <div @click="clusterChevron = !clusterChevron" class="header-list-item" v-on="on">
-                    <v-icon :class="{ 'chevron-down': clusterChevron }">mdi-chevron-down</v-icon>
+                  <div @click="clusterChevron = !clusterChevron" v-on="on">
+                    <v-icon color="white" style="margin-top: -2px; margin-left: 1px;"
+                      >mdi-menu-down</v-icon
+                    >
                   </div>
                 </template>
                 <v-list>
@@ -177,7 +175,7 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-btn>
+            </div>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-menu
