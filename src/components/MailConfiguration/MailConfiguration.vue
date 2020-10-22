@@ -85,7 +85,7 @@
 
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content>
-              <TestConnection :values="formValues" :isValidate="isValidate" />
+              <TestConnection :values="formValues" :isValidate="isValidate" :isEdit="editData" />
             </v-list-item-content>
           </v-list-item>
         </v-form>
@@ -553,7 +553,6 @@ export default {
       if (this.$refs.mailConfiguration.validate()) {
         if (this.editData) {
           let editData = this.formValues
-          editData.resourceId = this.editData.resourceId
           updateO365(editData, this.editData.resourceId).then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
