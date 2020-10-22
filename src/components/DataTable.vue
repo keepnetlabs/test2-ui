@@ -137,7 +137,11 @@
                 alt="icon"
               />
             </v-btn>
-            <div v-if="groupable" class="cluster__left">
+            <div
+              v-if="groupable"
+              class="cluster__left"
+              :style="!selectedCluster && { borderColor: '#757575' }"
+            >
               <img
                 :src="
                   !selectedCluster
