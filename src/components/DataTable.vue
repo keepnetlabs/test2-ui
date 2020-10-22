@@ -121,19 +121,37 @@
           <div class="table-settings" v-if="options">
             <v-btn
               class="clust-btn btn-hover mr-1"
-              color="#757575"
+              :color="!selectedCluster ? '#2196f3' : '#757575'"
               icon
               outlined
               style="border-radius: 6px !important; order: 1; width: 42px;"
               v-if="groupable"
               @click="handleListBulletedClick"
             >
-              <img src="../assets/img/bulletin-list.svg" alt="icon" />
+              <img
+                :src="
+                  !selectedCluster
+                    ? require(`../assets/img/selected-bulletin-list.svg`)
+                    : require(`../assets/img/bulletin-list.svg`)
+                "
+                alt="icon"
+              />
             </v-btn>
             <div v-if="groupable" class="cluster__left">
-              <img src="../assets/img/ic-grouped-list.svg" alt="icon" />
+              <img
+                :src="
+                  !selectedCluster
+                    ? require('../assets/img/unselected-bulletin.svg')
+                    : require('../assets/img/ic-grouped-list.svg')
+                "
+                alt="icon"
+              />
             </div>
-            <div v-if="groupable" class="cluster__right">
+            <div
+              v-if="groupable"
+              class="cluster__right"
+              :style="[!selectedCluster && { backgroundColor: '#757575', borderColor: '#757575' }]"
+            >
               <v-menu
                 bottom
                 offset-y
