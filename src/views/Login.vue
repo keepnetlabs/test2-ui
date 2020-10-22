@@ -634,7 +634,6 @@ export default {
             this.resetPasswordErrorText =
               error.response && error.response.data && error.response.data.message
           })
-          .finally((response) => {})
       }
     }
   }
