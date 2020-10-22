@@ -517,7 +517,8 @@ export default {
               .catch((error) => {
                 this.newPasswordError = true
                 this.newPasswordErrorText =
-                  error.response && error.response.data && error.response.data.message
+                  (error.response && error.response.data && error.response.data.message) ||
+                  (error.response && error.response.data && error.response.data.Message)
               })
             break
           case 'resetPassword':
@@ -530,7 +531,8 @@ export default {
               .catch((error) => {
                 this.newPasswordError = true
                 this.newPasswordErrorText =
-                  error.response && error.response.data && error.response.data.message
+                  (error.response && error.response.data && error.response.data.message) ||
+                  (error.response && error.response.data && error.response.data.Message)
               })
             break
           default:
@@ -632,7 +634,8 @@ export default {
           .catch((error) => {
             this.resetPasswordError = true
             this.resetPasswordErrorText =
-              error.response && error.response.data && error.response.data.message
+              (error.response && error.response.data && error.response.data.message) ||
+              (error.response && error.response.data && error.response.data.Message)
           })
       }
     }
