@@ -61,6 +61,7 @@
             :inputOptions="{
               showDialCode: true
             }"
+            :maxLen="15"
             mode="international"
             :class="['k-tel-input', !isPhoneNumberValid && isSubmitted && 'phone-number-invalid']"
             ref="refTelInput"
@@ -133,7 +134,6 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { mail, maxLength, required } from '@/utils/validations'
-import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
