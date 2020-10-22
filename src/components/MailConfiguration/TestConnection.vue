@@ -88,7 +88,7 @@ export default {
   components: {
     TestConnectivityStatus
   },
-  props: ['values', 'isValidate'],
+  props: ['values', 'isValidate', 'isEdit'],
   data() {
     return {
       checkApiConnectivity: null,
@@ -127,6 +127,9 @@ export default {
           applicationSecret: this.values.applicationSecret,
           directoryId: this.values.directoryId,
           email: this.values.email
+        }
+        if (this.isEdit) {
+          payload.resourceId = this.isEdit.resourceId
         }
         checkApiConnectivity(payload)
           .then((response) => {
