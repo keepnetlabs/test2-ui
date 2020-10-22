@@ -78,9 +78,7 @@
               <div class="card-header">
                 <span class="head">Phishing Reporter</span>
                 <router-link to="/phishing-reporter">
-                  <v-icon :color="isPhishingEmpty(irSummary) ? '#757575' : 'white'"
-                    >mdi-open-in-new</v-icon
-                  >
+                  <v-icon :color="'white'">mdi-open-in-new</v-icon>
                 </router-link>
               </div>
               <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
@@ -197,9 +195,7 @@
               <div class="card-header">
                 <span class="head">Investigations</span>
                 <router-link :to="'/investigations'">
-                  <v-icon :color="isInvestigationsEmpty(irSummary) ? 'white' : '#757575'"
-                    >mdi-open-in-new</v-icon
-                  >
+                  <v-icon :color="'white'">mdi-open-in-new</v-icon>
                 </router-link>
               </div>
               <div
@@ -280,14 +276,14 @@
                     {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
                   </span>
 
-                  <span class="body-row__text">Time Saved</span>
+                  <span class="body-row__text" style="margin-left: 4px;">Time</span>
                 </div>
                 <div class="body-row">
                   <span class="body-row__number">
                     {{ getRoiSummaryValue }}
                   </span>
 
-                  <span class="body-row__text">Money Saved</span>
+                  <span class="body-row__text" style="margin-left: 2px;">Money</span>
                 </div>
               </div>
               <div class="card-status">Saved</div>
@@ -1821,7 +1817,7 @@ export default {
           color: #fff;
           font-size: 20px;
           font-weight: 600;
-          line-height: 1.15;
+          //line-height: 1.15;
           letter-spacing: normal;
         }
 
