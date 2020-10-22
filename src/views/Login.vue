@@ -65,7 +65,7 @@
                             class="username-field"
                             required
                             label="Username"
-                            autocomplete="off"
+                            browser-autocomplete="username"
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
@@ -89,7 +89,7 @@
                             ref="password"
                             id="password"
                             v-model="password"
-                            autocomplete="disabled"
+                            browser-autocomplete="username-password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
@@ -174,6 +174,7 @@
                             autocomplete="disabled"
                             outlined
                             :class="{ 'input-error': isErrorActive }"
+                            browser-autocomplete="username-password-reset"
                           ></v-text-field>
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
@@ -288,6 +289,7 @@
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                               :class="{ 'input-error': isErrorActive }"
+                              browser-autocomplete="username-password-new"
                             ></v-text-field>
                           </div>
                           <div>
@@ -305,6 +307,7 @@
                               outlined
                               type="password"
                               :class="{ 'input-error': isErrorActive }"
+                              browser-autocomplete="username-password-password"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -517,7 +520,8 @@ export default {
               .catch((error) => {
                 this.newPasswordError = true
                 this.newPasswordErrorText =
-                  error.response && error.response.data && error.response.data.message
+                  (error.response && error.response.data && error.response.data.message) ||
+                  (error.response && error.response.data && error.response.data.Message)
               })
             break
           case 'resetPassword':
@@ -530,7 +534,8 @@ export default {
               .catch((error) => {
                 this.newPasswordError = true
                 this.newPasswordErrorText =
-                  error.response && error.response.data && error.response.data.message
+                  (error.response && error.response.data && error.response.data.message) ||
+                  (error.response && error.response.data && error.response.data.Message)
               })
             break
           default:
@@ -632,7 +637,8 @@ export default {
           .catch((error) => {
             this.resetPasswordError = true
             this.resetPasswordErrorText =
-              error.response && error.response.data && error.response.data.message
+              (error.response && error.response.data && error.response.data.message) ||
+              (error.response && error.response.data && error.response.data.Message)
           })
       }
     }

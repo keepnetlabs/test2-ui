@@ -163,12 +163,14 @@ export default {
           .catch((error) => {
             this.checkCreateNewCategory = 'error'
           })
-        checkUpdateCategory(payload)
-          .then((response) => {
-            this.checkUpdateCategory = 'success'
-          })
-          .catch((error) => {
-            this.checkUpdateCategory = 'error'
+          .finally((response) => {
+            checkUpdateCategory(payload)
+              .then((response) => {
+                this.checkUpdateCategory = 'success'
+              })
+              .catch((error) => {
+                this.checkUpdateCategory = 'error'
+              })
           })
         checkDeleteEmail(payload)
           .then((response) => {
