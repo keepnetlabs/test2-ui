@@ -354,7 +354,6 @@ export default {
           allRoles.find((item) => {
             return item.roleName.replace(/\s/g, '') === roles
           }).resourceId
-        debugger
         if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
           availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
           if (roles === 'Reseller') {

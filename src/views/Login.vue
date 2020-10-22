@@ -21,16 +21,13 @@
       >
         <v-row align="center" justify="center" style="height: 100%;">
           <v-col class="login-card-wrapper" lg="12" xs="12">
-            <v-card max-width="769" class="mx-auto my-auto v-card-login-wrapper">
-              <v-card-title class="d-flex pa-0">
-                <div class="logo-wrapper">
-                  <div class="v-responsive">
-                    <img src="../assets/img/logo-kep.png" />
-                  </div>
-                </div>
-                <div class="flex-grow-1"></div>
+            <v-card max-width="720" class="mx-auto my-auto v-card-login-wrapper">
+              <v-card-title
+                class="d-flex pa-0 align-center justify-center login-card-wrapper__logo"
+              >
+                <img src="../assets/img/logo-kep.png" />
               </v-card-title>
-              <div v-if="pageNumber == 1">
+              <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
                   <div class="login-title">
                     Welcome To Keepnet Labs
@@ -71,6 +68,7 @@
                             autocomplete="off"
                             outlined
                             @keyup.enter="toNext"
+                            :class="{ 'input-error': isErrorActive }"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -89,7 +87,6 @@
                             :type="show1 ? '' : 'password'"
                             name="password"
                             ref="password"
-                            hint="At least 8 characters"
                             id="password"
                             v-model="password"
                             autocomplete="disabled"
@@ -98,6 +95,7 @@
                             v-on:keyup.enter="onLoginClicked()"
                             label="Password"
                             outlined
+                            :class="{ 'input-error': isErrorActive }"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -132,7 +130,7 @@
                     @expired="onCaptchaExpired"
                   ></vue-recaptcha>
                 </div>
-                <v-card-actions class="justify-center pt-4">
+                <v-card-actions class="justify-center login-button">
                   <v-btn
                     color="blue"
                     class="pl-4 white--text login-btn"
@@ -150,7 +148,8 @@
                     Reset Your Password
                   </div>
                   <div class="login-desc">
-                    Enter your email address to recieve the reset password link
+                    <p class="mb-2">Enter your email address to</p>
+                    <p class="mb-0">recieve the reset password link</p>
                   </div>
                   <div v-if="resetPasswordError" class="login-error-container">
                     <div v-if="resetPasswordError" class="login-error-wrapper">
@@ -174,6 +173,7 @@
                             @click="resetPasswordError = false"
                             autocomplete="disabled"
                             outlined
+                            :class="{ 'input-error': isErrorActive }"
                           ></v-text-field>
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
@@ -199,11 +199,17 @@
               <div v-if="pageNumber == 3" class="reset-password-wrapper__success">
                 <v-card-text>
                   <div class="login-title">
-                    Reset Your Password
+                    Check Your Email
                   </div>
                   <div class="login-desc">
-                    We have sent an email to your email address. Click the link the email to reset
-                    your password
+                    <p class="mb-2">We have sent an email to your email address.</p>
+                    <p class="mb-0">Click the link the email to reset your password</p>
+                    <div v-if="pageNumber === 3">
+                      <div class="back-to-reset-password" @click="() => (pageNumber = 2)">
+                        I didn’t recieve the email
+                        <v-icon right dark class="pr-2">mdi-arrow-right</v-icon>
+                      </div>
+                    </div>
                   </div>
                 </v-card-text>
               </div>
@@ -275,12 +281,13 @@
                               @click:append="show2 = !show2"
                               autocomplete="disabled"
                               v-model="newPassword"
-                              label="Enter new password"
+                              placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
                               :rules="[rules.required, rules.minPassword, rules.equal]"
                               @click="newPasswordError = false"
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                              :class="{ 'input-error': isErrorActive }"
                             ></v-text-field>
                           </div>
                           <div>
@@ -291,12 +298,13 @@
                             <v-text-field
                               v-model="reNewPassword"
                               :rules="[rules.required, rules.minPassword, rules.equal]"
-                              label="Enter new password again"
+                              placeholder="Enter new password again"
                               class="reset-pass-textfield"
                               @click="newPasswordError = false"
                               autocomplete="disabled"
                               outlined
                               type="password"
+                              :class="{ 'input-error': isErrorActive }"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -314,13 +322,7 @@
               <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
                 <div class="back-to-login" @click="() => (pageNumber = 1)">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
-                  BACK TO LOGIN
-                </div>
-              </div>
-              <div v-if="pageNumber === 3">
-                <div class="back-to-reset-password" @click="() => (pageNumber = 2)">
-                  I didn’t recieve the email
-                  <v-icon right dark class="pr-2">mdi-arrow-right</v-icon>
+                  BACK
                 </div>
               </div>
             </v-card>
@@ -418,6 +420,16 @@ export default {
       } else {
         this.$router.push('/')
       }
+    } else if (this.$route.query) {
+      if (this.$route.query.cp) {
+        this.pageNumber = 5
+        this.token = this.getToken('cp', window.location.href)
+        this.resetType = 'createPassword'
+      } else if (this.$route.query.rp) {
+        this.pageNumber = 5
+        this.token = this.getToken('rp', window.location.href)
+        this.resetType = 'resetPassword'
+      }
     }
   },
   mounted() {
@@ -504,7 +516,8 @@ export default {
               })
               .catch((error) => {
                 this.newPasswordError = true
-                this.newPasswordErrorText = error.response.data.Message
+                this.newPasswordErrorText =
+                  error.response && error.response.data && error.response.data.message
               })
             break
           case 'resetPassword':
@@ -516,7 +529,8 @@ export default {
               })
               .catch((error) => {
                 this.newPasswordError = true
-                this.newPasswordErrorText = error.response.data.Message
+                this.newPasswordErrorText =
+                  error.response && error.response.data && error.response.data.message
               })
             break
           default:
@@ -617,9 +631,9 @@ export default {
           })
           .catch((error) => {
             this.resetPasswordError = true
-            this.resetPasswordErrorText = error.response.data.message
+            this.resetPasswordErrorText =
+              error.response && error.response.data && error.response.data.message
           })
-          .finally((response) => {})
       }
     }
   }
@@ -628,9 +642,10 @@ export default {
 
 <style lang="scss">
 .back-to-login {
+  left: 16px;
   background-color: white;
   position: absolute;
-  bottom: 24px;
+  top: 24px;
   font-size: 14px;
   font-weight: 600;
   font-stretch: normal;
@@ -647,6 +662,17 @@ export default {
 }
 
 .login-page {
+  .login-button {
+    margin-top: 30px;
+  }
+  .input-error {
+    .v-input__slot {
+      background-color: #f5eff0 !important;
+      fieldset {
+        border-color: #d0021b !important;
+      }
+    }
+  }
   .new-password-wrapper {
     &__label {
       font-size: 20px;
@@ -656,37 +682,37 @@ export default {
       line-height: 1.2;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87);
-      padding: 0 15px;
+      padding: 0 8px;
       margin-bottom: 8px;
+      display: block;
     }
   }
   .back-to-reset-password {
-    display: flex;
-    background-color: white;
-    position: absolute;
-    bottom: 24px;
-    right: 24px;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
     line-height: 1.71;
     letter-spacing: normal;
-    color: #2196f3;
-    text-transform: uppercase;
+    color: #757575;
+    margin-top: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     i {
-      color: #2196f3;
+      color: #757575;
     }
     cursor: pointer;
   }
   .reset-pass-textfield {
-    padding: 0 15px !important;
+    padding: 0 8px !important;
   }
   .login-error-container {
     align-items: center;
     display: flex;
     justify-content: center;
-    padding-bottom: 15px;
+    margin-bottom: 24px;
     width: 100%;
     overflow: auto;
   }
@@ -698,6 +724,7 @@ export default {
     padding: 22px 16px;
     display: flex;
     flex-direction: row;
+    align-items: center;
 
     .login-error-icon {
       i {
@@ -707,13 +734,13 @@ export default {
     }
 
     .login-error-message {
-      align-self: center;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
+      color: #000000;
     }
   }
 
@@ -723,7 +750,7 @@ export default {
       padding: 0;
     }
     &__success {
-      min-height: 300px;
+      min-height: 231px;
     }
   }
 
@@ -787,11 +814,10 @@ export default {
     letter-spacing: normal;
     text-align: center;
     color: rgba(0, 0, 0, 0.54);
-    margin-bottom: 32px;
+    margin-bottom: 24px;
   }
 
   .login-title {
-    margin-top: 88px;
     margin-bottom: 8px;
     font-family: 'Open Sans', sans-serif !important;
     font-size: 36px;
@@ -856,18 +882,33 @@ export default {
     height: 36px !important;
     min-width: 132px !important;
   }
+  .v-btn__content {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: right;
+    i {
+      font-size: 18px;
+    }
+  }
 
   .captcha-wrapper {
     align-items: center;
     display: flex;
     justify-content: center;
-    padding-bottom: 30px;
     width: 100%;
     margin-top: 16px;
 
     > div {
       max-width: 300px;
     }
+  }
+
+  .login-user-pass-wrapper {
+    padding: 8px 0;
   }
 
   .login-user-pass-wrapper > .row > div {
@@ -887,6 +928,13 @@ export default {
     font-size: 20px;
     font-weight: 600;
     line-height: 1.2;
+  }
+
+  .login-card-wrapper {
+    &__logo {
+      margin-top: 64px;
+      margin-bottom: 36px;
+    }
   }
 
   @media only screen and (max-width: 769px) {

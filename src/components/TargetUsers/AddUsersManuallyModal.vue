@@ -9,6 +9,7 @@
       light
       class="add-users-manually__overlay"
       :dark="false"
+      v-if="isShow"
       style="overflow-y: auto;"
     >
       <v-container class="add-users-manually" id="add-users-manually">
