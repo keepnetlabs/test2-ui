@@ -957,7 +957,6 @@ export default {
     },
     getColorOfType(list) {
       let result = this.getResultOfAttachmentList(list)
-
       switch (result) {
         case 'Clean':
           return '#00bcd4'
@@ -966,7 +965,7 @@ export default {
         case 'Phishing':
           return '#f56c6c'
         default:
-          return 'black'
+          return '#00bcd4'
       }
       return result
     },
@@ -981,7 +980,7 @@ export default {
       }, 800)
     },
     getResultOfAttachmentList(list) {
-      let result = ''
+      let result = 'N/A'
       for (let item of list) {
         if (item.result === 'Malicious') {
           result = 'Malicious'
@@ -1062,7 +1061,6 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-
           const urlTableColumns = new Set()
           const tableData = this.mailDetails.urls.map((item, index) => {
             const returnObj = {}
@@ -1096,13 +1094,13 @@ export default {
               label: item,
               sortable: true,
               show: true,
+              minWidth: 60 + item.length * 7,
               type: 'text',
               emptyText: 'None'
             })
           })
           this.columns = [...this.columns, ...colObj]
           this.tableData = tableData
-          console.log('this.mailDetails', this.mailDetails)
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
@@ -2525,5 +2523,8 @@ export default {
       visibility: visible;
     }
   }
+}
+#urlAnalysisTable.k-table__wrapper {
+  padding-bottom: 0;
 }
 </style>
