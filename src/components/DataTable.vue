@@ -139,7 +139,7 @@
                 offset-y
                 transition="scale-transition"
                 v-model="clusterChevron"
-                min-width="130"
+                min-width="180"
                 content-class="cluster-view"
               >
                 <template v-slot:activator="{ on }">
@@ -149,7 +149,7 @@
                     >
                   </div>
                 </template>
-                <v-list>
+                <v-list class="pt-0">
                   <v-list-item>
                     <v-list-item-title>
                       <label class="cluster-label">Cluster By</label>
@@ -159,6 +159,7 @@
                     :key="item.name + key"
                     @click="clusterSelected(item.name, key)"
                     v-for="(item, key) of clusterItems"
+                    :class="[isEqualCluster(item.name) && 'cluster-view--selected']"
                   >
                     <v-list-item-title>
                       <span
