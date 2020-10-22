@@ -21,11 +21,6 @@
       :editData="selectedRow"
       v-if="isWantToShowAddUsersModal"
     />
-    <import-users-from-file-modal
-      :status="isWantToShowImportUsersFromFileModal"
-      @closeImportUsersFromFileModal="isWantToShowImportUsersFromFileModal = false"
-      v-if="isWantToShowImportUsersFromFileModal"
-    />
     <custom-fields-modal
       :status="isWantToShowCustomFieldsModal"
       @closeCustomFieldsModal="isWantToShowCustomFieldsModal = false"
@@ -35,6 +30,7 @@
     <target-user-import-from-a-file
       :status="isWantToImportFile"
       @closeAddUserModal="closeImportModal"
+      @closeOverlay="isWantToImportFile = false"
       v-if="isWantToImportFile"
       :columns="tableOptions.columns"
     />
@@ -109,18 +105,17 @@ import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
-import ImportUsersFromFileModal from './ImportUsersFromFileModal'
 import {
   deleteTargetUser,
   getTargetUserCustomFieldsByCompanyId,
   getTargetUsers
-} from '../../api/targetUsers'
+} from '@/api/targetUsers'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+} from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
@@ -128,7 +123,6 @@ export default {
   name: 'People',
   components: {
     CustomFieldsModal,
-    ImportUsersFromFileModal,
     DeleteUserModal,
     Datatable,
     AddUsersManuallyModal,
