@@ -19,7 +19,7 @@
         id="company-settings-notification-templates-data-table"
         :filterable="true"
         :row-key="'name'"
-        :clusterItems="[{ name: 'Email' }]"
+        :clusterItems="[{ name: 'Email Address' }]"
         :groupable="true"
         :is-downloadable="false"
         @clusterChanged="clusterChanged"
