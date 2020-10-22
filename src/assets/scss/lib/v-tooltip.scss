@@ -1,0 +1,14 @@
+.v-tooltip {
+
+  &__content{
+    border-radius: 4px;
+    background-color: #6d6d6d;
+    font-size: 12px;
+    line-height: 1.33;
+    min-height: 24px;
+    opacity: 1 !important;
+    padding:4px 8px;
+    color: rgba(255, 255, 255, 0.87);
+    transition:none !important;
+  }
+}
