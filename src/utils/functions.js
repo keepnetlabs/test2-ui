@@ -229,6 +229,7 @@ export function setGlobalUserData(userData, isCompanySelect) {
       }
     }
   }
+  debugger
   localStorage.setItem('companyId', currentUserData.userCompany.id)
   localStorage.setItem('companyRequestId', currentUserData.userCompany.id)
   localStorage.setItem('companyResourceId', currentUserData.userCompany.id)

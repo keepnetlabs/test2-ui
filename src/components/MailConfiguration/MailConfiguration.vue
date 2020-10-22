@@ -552,7 +552,9 @@ export default {
     submit() {
       if (this.$refs.mailConfiguration.validate()) {
         if (this.editData) {
-          updateO365(this.formValues, this.editData.resourceId).then((response) => {
+          let editData = this.formValues
+          editData.resourceId = this.editData.resourceId
+          updateO365(editData, this.editData.resourceId).then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'O365 mail configuration has been updated'
