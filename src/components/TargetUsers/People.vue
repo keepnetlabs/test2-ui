@@ -34,69 +34,65 @@
       v-if="isWantToImportFile"
       :columns="tableOptions.columns"
     />
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <datatable
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
-          :table="tableData"
-          :addButton="tableOptions.addButton"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          id="target-users-people-data-table"
-          :empty="tableOptions.iEmpty"
-          :filterable="true"
-          :options="true"
-          :pageSizes="tableOptions.pageSizes"
-          :refName="'peopleTable'"
-          :rowActions="tableOptions.rowActions"
-          :selectEvent="tableOptions.selectEvent"
-          :selectable="true"
-          :settingsPopupStyle="{ top: '-15px' }"
-          :setClassName="setCellClassName"
-          @addToGroup="handleAddToGroup"
-          @createGroupWithUser="handleCreateGroupWithUser"
-          @submenuItemClick="handleSubMenuItemClick"
-          @syncUser="handleSyncUser"
-          @deleteAction="handleDelete"
-          ref="refPeopleTable"
-          :isDownloadable="false"
-          @editTargetUsers="handleEditTargetUsers"
-          @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-          @handleMultipleDelete="handleMultipleDelete"
-        >
-          <template v-slot:addUsers>
-            <v-menu :offset-y="true" bottom left>
-              <template v-slot:activator="{ on: menu }">
-                <v-tooltip bottom opacity="1">
-                  <template v-slot:activator="{ on: tooltip }">
-                    <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
-                      <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                  </template>
-                  <span class="tooltip-span">{{ 'Add User' }}</span>
-                </v-tooltip>
-              </template>
-              <v-list>
-                <v-list-item
-                  :key="item"
-                  @click="handleAddUsers(item)"
-                  v-for="item in addUsersItems"
-                >
-                  <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </template>
-          <template v-slot:settings-popup-body>
-            <div class="edit-fields" @click="handleEditFieldsClick">
-              EDIT FIELDS
-            </div>
-          </template>
-        </datatable>
-      </template>
+    <DatatableLoading :loading="loading" v-show="loading">
+      <template v-slot:skeleton-content> </template>
     </DatatableLoading>
+    <datatable
+      v-show="!loading"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :table="tableData"
+      :addButton="tableOptions.addButton"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      id="target-users-people-data-table"
+      :empty="tableOptions.iEmpty"
+      :filterable="true"
+      :options="true"
+      :pageSizes="tableOptions.pageSizes"
+      :refName="'peopleTable'"
+      :rowActions="tableOptions.rowActions"
+      :selectEvent="tableOptions.selectEvent"
+      :selectable="true"
+      :settingsPopupStyle="{ top: '-15px' }"
+      :setClassName="setCellClassName"
+      @addToGroup="handleAddToGroup"
+      @createGroupWithUser="handleCreateGroupWithUser"
+      @submenuItemClick="handleSubMenuItemClick"
+      @syncUser="handleSyncUser"
+      @deleteAction="handleDelete"
+      ref="refPeopleTable"
+      :isDownloadable="false"
+      @editTargetUsers="handleEditTargetUsers"
+      @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @handleMultipleDelete="handleMultipleDelete"
+    >
+      <template v-slot:addUsers>
+        <v-menu :offset-y="true" bottom left>
+          <template v-slot:activator="{ on: menu }">
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on: tooltip }">
+                <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">{{ 'Add User' }}</span>
+            </v-tooltip>
+          </template>
+          <v-list>
+            <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
+              <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+      <template v-slot:settings-popup-body>
+        <div class="edit-fields" @click="handleEditFieldsClick">
+          EDIT FIELDS
+        </div>
+      </template>
+    </datatable>
   </div>
 </template>
 
