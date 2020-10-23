@@ -1094,6 +1094,12 @@ export default {
     }
   },
   watch: {
+    table(table) {
+      this.columnStandardisation(this.columns)
+      this.initialData = table
+      this.tableData = table
+      this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
+    },
     tableData(data) {
       if (data && this.groupable) {
         this.totalLength = this.getTotalLength(data)
