@@ -395,7 +395,7 @@ export default {
       this.editModal = false
       this.selectedExtend = {}
       this.selectedRow = {}
-      this.getTableData({ orderBy: 'createdTime', ascending: false })
+      this.getTableData({ orderBy: 'createTime', ascending: false })
     },
     closeExtend() {
       this.isShowExtended = false

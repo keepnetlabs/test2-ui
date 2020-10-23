@@ -244,7 +244,7 @@
             @columnFilterCleared="columnFilterCleared"
           >
             <template v-slot:addUsers>
-              <v-menu :offset-y="true" bottom left>
+              <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
                 <template v-slot:activator="{ on: menu }">
                   <v-tooltip bottom opacity="1">
                     <template v-slot:activator="{ on: tooltip }">
