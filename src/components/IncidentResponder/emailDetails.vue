@@ -442,7 +442,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
      content: attr(data-title);
     position: absolute;
-    padding: 8px 16px 8px 16px;
+    padding: 4px 8px;
     bottom: -40px;
     left: 0;
     white-space: nowrap;
@@ -450,6 +450,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     z-index: 99999;
     visibility: hidden;
     border-radius: 4px;
+    line-height: 1.33;
+    min-height: 24px;
     background: #6d6d6d !important;
     color: rgba(255, 255, 255, 0.87) !important;
     font-family: "Open Sans", sans-serif !important;
@@ -668,7 +670,7 @@ export default {
           property: 'utcTime',
           align: 'left',
           editable: false,
-          label: 'Time (UTC)',
+          label: 'Time',
           sortable: true,
           show: true,
           type: 'text',

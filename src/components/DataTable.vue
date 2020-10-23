@@ -1098,6 +1098,9 @@ export default {
       this.columnStandardisation(this.columns)
       this.initialData = table
       this.tableData = table
+      if (!this.showClusterItemsRowAction) {
+        this.hideChildRowActions()
+      }
       this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     },
     tableData(data) {
