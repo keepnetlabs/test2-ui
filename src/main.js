@@ -11,6 +11,24 @@ import './assets/scss/main.scss'
 import { SmartWidget } from 'vue-smart-widget'
 import { SmartWidgetGrid } from 'vue-smart-widget'
 import VueMask, { VueMaskDirective } from 'v-mask'
+import * as Sentry from '@sentry/browser'
+import { Vue as VueIntegration } from '@sentry/integrations'
+import { Integrations } from '@sentry/tracing'
+
+Sentry.init({
+  dsn: 'https://d33f2fcc4295420588d442dfde43d2c5@o466336.ingest.sentry.io/5480520',
+  integrations: [
+    new VueIntegration({
+      Vue,
+      tracing: true
+    }),
+    new Integrations.BrowserTracing()
+  ],
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0
+})
 
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
