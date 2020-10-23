@@ -95,7 +95,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.SMTPADDRESS,
-            align: false,
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.SMTPADDRESS),
             sortable: true,
@@ -107,7 +107,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.USERNAME,
-            align: false,
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDBY),
             sortable: true,
@@ -119,7 +119,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: false,
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,

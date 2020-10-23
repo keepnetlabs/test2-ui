@@ -68,6 +68,9 @@ export default {
     isWantToAddNewCommunity: false,
     refreshMemberTable: false
   }),
+  beforeRouteUpdate(to, from, next) {
+    next(true)
+  },
   mounted() {
     if (this.$route.query.detailsId) {
       this.tab = 1

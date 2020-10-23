@@ -896,7 +896,7 @@
                     <div class="d-flex" v-if="uploadRespond.bcc && uploadRespond.bcc.length">
                       <v-checkbox
                         v-model="uploadRespond.isBccHidden"
-                        @change="ccValChange"
+                        @change="bccValChange"
                         hide-details
                       ></v-checkbox>
                       <label v-if="filterOpened">BCC</label>
@@ -1916,14 +1916,16 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
      content: attr(data-title);
     position: absolute;
-    padding: 8px 16px 8px 16px;
+    padding: 4px 8px;
     bottom: -40px;
     left: 0;
     white-space: nowrap;
     opacity: 0;
     z-index: 99999;
     visibility: hidden;
-    border-radius: 4px;
+   border-radius: 4px;
+    line-height: 1.33;
+    min-height: 24px;
     background: #6d6d6d !important;
     color: rgba(255, 255, 255, 0.87) !important;
     font-family: "Open Sans", sans-serif !important;
@@ -3110,6 +3112,9 @@ export default {
   }
 
   .v-autocomplete.affect-combobox {
+    .v-chip--select {
+      margin: 4px;
+    }
     .v-messages__message {
       color: #f56c6c !important;
     }

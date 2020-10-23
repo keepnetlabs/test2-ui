@@ -1,7 +1,7 @@
 <template>
   <app-modal
     :status="status"
-    @closeOverlay="status = false"
+    @closeOverlay="closeOverlay"
     :icon-name="'mdi-microsoft-excel'"
     :title="'Import Users From a File'"
     className="target-user-import-file"
@@ -89,7 +89,7 @@
           outlined
           rounded
           color="error"
-          @click="status = false"
+          @click="closeOverlay"
           >CANCEL</v-btn
         >
       </div>
@@ -230,6 +230,9 @@ export default {
   methods: {
     getMapTableData(data) {
       this.$refs.refMapTable.exportMapTableData()
+    },
+    closeOverlay() {
+      this.$emit('closeOverlay')
     },
     onFileChanged(file) {
       this.formData.file = file

@@ -120,38 +120,58 @@
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
-              class="clust-btn btn-hover mr-2"
-              color="#2196f3"
+              class="clust-btn btn-hover mr-1"
+              :color="!selectedCluster ? '#2196f3' : '#757575'"
               icon
               outlined
-              style="border-radius: 6px !important; order: 1; width: 40px;"
+              style="border-radius: 6px !important; order: 1; width: 42px;"
               v-if="groupable"
               @click="handleListBulletedClick"
             >
-              <v-icon style="font-size: 20px;">mdi-format-list-bulleted</v-icon>
+              <img
+                :src="
+                  !selectedCluster
+                    ? require(`../assets/img/selected-bulletin-list.svg`)
+                    : require(`../assets/img/bulletin-list.svg`)
+                "
+                alt="icon"
+              />
             </v-btn>
-            <v-btn
-              class="clust-btn cluster-btn btn-hover mr-4"
-              color="white"
-              icon
-              style="border-radius: 6px !important; order: 2;"
+            <div
               v-if="groupable"
+              class="cluster__left"
+              :style="!selectedCluster && { borderColor: '#757575' }"
             >
-              <v-icon style="font-size: 20px;">mdi-format-list-text</v-icon>
+              <img
+                :src="
+                  !selectedCluster
+                    ? require('../assets/img/unselected-bulletin.svg')
+                    : require('../assets/img/ic-grouped-list.svg')
+                "
+                alt="icon"
+              />
+            </div>
+            <div
+              v-if="groupable"
+              class="cluster__right"
+              :style="[!selectedCluster && { backgroundColor: '#757575', borderColor: '#757575' }]"
+            >
               <v-menu
                 bottom
                 offset-y
                 transition="scale-transition"
                 v-model="clusterChevron"
-                min-width="130"
+                min-width="180"
                 content-class="cluster-view"
               >
                 <template v-slot:activator="{ on }">
-                  <div @click="clusterChevron = !clusterChevron" class="header-list-item" v-on="on">
-                    <v-icon :class="{ 'chevron-down': clusterChevron }">mdi-chevron-down</v-icon>
+                  <div @click="clusterChevron = !clusterChevron" v-on="on">
+                    <v-icon color="white" style="margin-top: -2px; margin-left: 1px;"
+                      >mdi-menu-down</v-icon
+                    >
                   </div>
                 </template>
-                <v-list>
+                <v-list class="pt-0">
                   <v-list-item>
                     <v-list-item-title>
                       <label class="cluster-label">Cluster By</label>
@@ -161,6 +181,7 @@
                     :key="item.name + key"
                     @click="clusterSelected(item.name, key)"
                     v-for="(item, key) of clusterItems"
+                    :class="[isEqualCluster(item.name) && 'cluster-view--selected']"
                   >
                     <v-list-item-title>
                       <span
@@ -177,7 +198,7 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-btn>
+            </div>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-menu
@@ -1073,6 +1094,15 @@ export default {
     }
   },
   watch: {
+    table(table) {
+      this.columnStandardisation(this.columns)
+      this.initialData = table
+      this.tableData = table
+      if (!this.showClusterItemsRowAction) {
+        this.hideChildRowActions()
+      }
+      this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
+    },
     tableData(data) {
       if (data && this.groupable) {
         this.totalLength = this.getTotalLength(data)

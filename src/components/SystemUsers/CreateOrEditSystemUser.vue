@@ -61,6 +61,7 @@
             :inputOptions="{
               showDialCode: true
             }"
+            :maxLen="15"
             mode="international"
             :class="['k-tel-input', !isPhoneNumberValid && isSubmitted && 'phone-number-invalid']"
             ref="refTelInput"
@@ -133,7 +134,6 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { mail, maxLength, required } from '@/utils/validations'
-import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
@@ -210,7 +210,6 @@ export default {
     },
     submit() {
       this.isSubmitted = true
-      debugger
       if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
@@ -319,14 +318,21 @@ export default {
       }
     }
     let _this = this
+    let allRoles = []
+    let availableRoles = []
     getUserRoles(payload).then((response) => {
-      this.roleItems = response.data.data.results.map((item) => {
-        let data = {
-          roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
-          resourceId: item.resourceId
-        }
-        return data
-      })
+      allRoles = response.data.data.results
+      availableRoles = []
+      if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
+        availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
+      } else if (this.$store.state.auth.userRoleName === 'Reseller') {
+        availableRoles = allRoles.filter(
+          (item) => item.roleName === 'Reseller' || item.roleName === 'CompanyAdmin'
+        )
+      } else if (this.$store.state.auth.userRoleName === 'Root') {
+        availableRoles = allRoles
+      }
+
       if (this.selectedRow) {
         const {
           firstName,
@@ -343,11 +349,43 @@ export default {
         this.formValues.email = email
         this.formValues.statusId = statusId
         this.formValues.phoneNumber = phoneNumber.split(' ').join('')
-        _this.formValues.roleResourceIdList = _this.roleItems.find((item) => {
-          return item.roleName.replace(/\s/g, '') === roles
-        }).resourceId
+        _this.formValues.roleResourceIdList =
+          allRoles &&
+          allRoles.find((item) => {
+            return item.roleName.replace(/\s/g, '') === roles
+          }).resourceId
+        if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
+          availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
+          if (roles === 'Reseller') {
+            availableRoles = allRoles.filter((item) => item.roleName === 'Reseller')
+          } else if (roles === 'Root') {
+            availableRoles = allRoles.filter((item) => item.roleName === 'Root')
+          }
+        } else if (this.$store.state.auth.userRoleName === 'Reseller') {
+          availableRoles = allRoles.filter(
+            (item) => item.roleName === 'Reseller' || item.roleName === 'CompanyAdmin'
+          )
+          if (roles === 'Root') {
+            availableRoles = allRoles.filter((item) => item.roleName === 'Root')
+          }
+        }
+        this.roleItems = availableRoles.map((item) => {
+          let data = {
+            roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+            resourceId: item.resourceId
+          }
+          return data
+        })
       } else {
-        this.formValues.roleResourceIdList = this.roleItems.length && this.roleItems[0].resourceId
+        this.roleItems = availableRoles.map((item) => {
+          let data = {
+            roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+            resourceId: item.resourceId
+          }
+          return data
+        })
+        this.formValues.roleResourceIdList =
+          availableRoles && availableRoles.length && availableRoles[0].resourceId
       }
     })
   }

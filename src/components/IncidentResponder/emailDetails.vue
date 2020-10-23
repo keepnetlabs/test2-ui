@@ -180,191 +180,10 @@
             </div>
           </v-tab-item>
           <v-tab-item v-if="mailDetails" :transition="false" :reverse-transition="false">
-            <div class="preview-header pt-0">
-              <h2
-                style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                v-if="!mailDetails.isSubjectHidden && !!mailDetails.subject"
-              >
-                <span :class="{ 'malicious-style': mailDetails.isSubjectFlagged }">
-                  Subject: {{ mailDetails.subject }}
-                  <v-tooltip v-if="mailDetails.isSubjectFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>The subject has been reported as a threat source</span>
-                  </v-tooltip></span
-                >
-              </h2>
-              <h2
-                style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                v-else-if="mailDetails.isSubjectHidden && !!mailDetails.subject"
-              >
-                <span :class="{ 'malicious-style': mailDetails.isSubjectFlagged }">
-                  Subject: Hidden by owner<v-tooltip
-                    v-if="mailDetails.isSubjectFlagged"
-                    bottom
-                    opacity="1"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span>The subject has been reported as a threat source</span>
-                  </v-tooltip>
-                </span>
-              </h2>
-              <div class="header-info pb-5">
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-if="!mailDetails.isFromHidden && !!mailDetails.from"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isFromFlagged }">
-                    From: {{ mailDetails.from }} {{ mailDetails.isFromFlagged }}
-                    <v-tooltip v-if="mailDetails.isFromFlagged" bottom opacity="1">
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span>Emails from this sender may include harmful content</span>
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isFromHidden && !!mailDetails.from"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isFromFlagged }">
-                    From: Hidden by owner
-                    <v-tooltip v-if="mailDetails.isFromFlagged" bottom opacity="1">
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span>Emails from this sender may include harmful content</span>
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-if="!mailDetails.isToHidden && mailDetails.to && !!mailDetails.to.length"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isToFlagged }">
-                    To: {{ mailDetails.to && mailDetails.to.toString()
-                    }}<v-tooltip v-if="mailDetails.isToFlagged" bottom opacity="1">
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span
-                        >This email address may be targeted by emails include harmful content</span
-                      >
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isToHidden && mailDetails.to && !!mailDetails.to.length"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isToFlagged }">
-                    To: Hidden by owner<v-tooltip v-if="mailDetails.isToFlagged" bottom opacity="1">
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span
-                        >This email address may be targeted by emails include harmful content</span
-                      >
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-if="!mailDetails.isCcHidden && mailDetails.cc && !!mailDetails.cc.length"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isCcFlagged }">
-                    CC: {{ mailDetails.cc && mailDetails.cc.toString()
-                    }}<v-tooltip v-if="mailDetails.isCcFlagged" bottom opacity="1">
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span
-                        >This email address may be targeted by emails include harmful content</span
-                      >
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isCcHidden && !!mailDetails.cc.length && mailDetails.cc"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isCcFlagged }">
-                    CC: Hidden by owner<v-tooltip v-if="mailDetails.isCcFlagged" bottom opacity="1">
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span
-                        >This email address may be targeted by emails include harmful content</span
-                      >
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-if="!mailDetails.isCcHidden && mailDetails.bcc && !!mailDetails.bcc.length"
-                  :class="{ 'malicious-style': mailDetails.isBccFlagged }"
-                >
-                  BCC: {{ mailDetails.bcc && mailDetails.bcc.toString()
-                  }}<v-tooltip v-if="mailDetails.isBccFlagged" bottom opacity="1">
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                        >mdi-alert</v-icon
-                      >
-                    </template>
-                    <span
-                      >This email address may be targeted by emails include harmful content</span
-                    >
-                  </v-tooltip>
-                </div>
-                <div
-                  style="padding: 0 2px; border-bottom: 1px solid transparent;"
-                  v-else-if="mailDetails.isBccHidden && !!mailDetails.bcc.length"
-                >
-                  <span :class="{ 'malicious-style': mailDetails.isBccFlagged }">
-                    BCC: Hidden by owner<v-tooltip
-                      v-if="mailDetails.isBccFlagged"
-                      bottom
-                      opacity="1"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon"
-                          >mdi-alert</v-icon
-                        >
-                      </template>
-                      <span
-                        >This email address may be targeted by emails include harmful content</span
-                      >
-                    </v-tooltip>
-                  </span>
-                </div>
-                <div>
-                  Date: {{ mailDetails.lastUpdateDate }}
-                  <br />
-                </div>
-              </div>
-            </div>
-
+            <PreviewHeaderForSinglePost :uploadRespond="mailDetails" />
+            <div class="border-for-header"></div>
             <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
+            <div class="border-for-header mt-8 mb-3"></div>
             <div
               id="preview-footer-container"
               class="preview-footer"
@@ -599,6 +418,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     border-color: #f56c6d !important;
     background-color: #f3e1e5 !important;
     text-decoration: none !important;
+
     position: relative;
   text-decoration: none !important;
   border-bottom: 0 solid;
@@ -622,7 +442,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
      content: attr(data-title);
     position: absolute;
-    padding: 8px 16px 8px 16px;
+    padding: 4px 8px;
     bottom: -40px;
     left: 0;
     white-space: nowrap;
@@ -630,6 +450,8 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     z-index: 99999;
     visibility: hidden;
     border-radius: 4px;
+    line-height: 1.33;
+    min-height: 24px;
     background: #6d6d6d !important;
     color: rgba(255, 255, 255, 0.87) !important;
     font-family: "Open Sans", sans-serif !important;
@@ -709,15 +531,18 @@ import {
   getStoreValue,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
+import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
 
 export default {
   components: {
+    PreviewHeaderForSinglePost,
     Datatable,
     DownloadModal,
     Badge
   },
   props: {},
   data: () => ({
+    isPreviewRender: false,
     panel: [],
     isCopiedShaClipboard: [],
     isCopiedMd5Clipboard: [],
@@ -845,7 +670,7 @@ export default {
           property: 'utcTime',
           align: 'left',
           editable: false,
-          label: 'Time (UTC)',
+          label: 'Time',
           sortable: true,
           show: true,
           type: 'text',
@@ -957,7 +782,6 @@ export default {
     },
     getColorOfType(list) {
       let result = this.getResultOfAttachmentList(list)
-
       switch (result) {
         case 'Clean':
           return '#00bcd4'
@@ -966,7 +790,7 @@ export default {
         case 'Phishing':
           return '#f56c6c'
         default:
-          return 'black'
+          return '#00bcd4'
       }
       return result
     },
@@ -981,7 +805,7 @@ export default {
       }, 800)
     },
     getResultOfAttachmentList(list) {
-      let result = ''
+      let result = 'N/A'
       for (let item of list) {
         if (item.result === 'Malicious') {
           result = 'Malicious'
@@ -1062,7 +886,6 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-
           const urlTableColumns = new Set()
           const tableData = this.mailDetails.urls.map((item, index) => {
             const returnObj = {}
@@ -1096,44 +919,17 @@ export default {
               label: item,
               sortable: true,
               show: true,
+              minWidth: 60 + item.length * 7,
               type: 'text',
               emptyText: 'None'
             })
           })
           this.columns = [...this.columns, ...colObj]
           this.tableData = tableData
-          console.log('this.mailDetails', this.mailDetails)
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
-          setTimeout(function () {
-            for (let a of urls) {
-              const els = document
-                .getElementById('sframe')
-                .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
-              for (let i = 0, l = els.length; i < l; i++) {
-                const el = els[i]
-                el.setAttribute('target', '_blank')
-                el.setAttribute('data-title', 'This link has been reported as a phishing')
-                /*if (!a.IsShow) {
-                  if (!el.hasChildNodes()) {
-                    el.innerHTML = 'hidden by owner'
-                  } else {
-                    el.lastChild.innerHTML = 'hidden by owner'
-                  }
-                  el.setAttribute('href', '#')
-                }*/
-                //if (a) {
-                el.classList.add('malicious-style')
-                const iEl = document.createElement('i')
-                iEl.className +=
-                  'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
-                el.appendChild(iEl)
-                // }
-              }
-            }
-          }, 400)
         }, 100)
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -1178,6 +974,28 @@ export default {
       return this.isCopiedShaClipboard.findIndex((item) => item === index) > -1
         ? 'COPIED!'
         : 'COPY TO CLIPBOARD'
+    },
+    setEmailPreview() {
+      let _this = this
+      if (!this.isPreviewRender) {
+        this.isPreviewRender = true
+        setTimeout(function () {
+          for (let a of _this.mailDetails.urls) {
+            const els = document
+              .getElementById('sframe')
+              .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
+            for (let i = 0, l = els.length; i < l; i++) {
+              const el = els[i]
+              el.setAttribute('target', '_blank')
+              el.setAttribute('data-title', 'This link has been reported as a phishing')
+              el.style.backgroundColor = '#f3e1e5'
+              el.style.color = '#bb2a45'
+              el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+              // }
+            }
+          }
+        }, 400)
+      }
     }
   },
   created() {
@@ -1188,6 +1006,9 @@ export default {
   watch: {
     panel(val) {
       console.log('panel', val)
+    },
+    tab(val) {
+      val === 2 && this.setEmailPreview()
     }
   }
 }
@@ -1195,6 +1016,10 @@ export default {
 
 <style lang="scss">
 .single-wrapper {
+  .border-for-header {
+    border-bottom: 1px solid #b3d4fc;
+    max-width: 632px;
+  }
   .incident-wrapper .preview-body,
   .incident-wrapper .preview-header .header-info {
     font-family: Open Sans, sans-serif !important;
@@ -2525,5 +2350,8 @@ export default {
       visibility: visible;
     }
   }
+}
+#urlAnalysisTable.k-table__wrapper {
+  padding-bottom: 0;
 }
 </style>

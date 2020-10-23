@@ -28,14 +28,14 @@
               {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
             </span>
 
-            <span class="body-row__text">Time Saved</span>
+            <span class="body-row__text" style="margin-left: 4px;">Time</span>
           </div>
           <div class="body-row">
             <span class="body-row__number">
               {{ getRoiSummaryValue }}
             </span>
 
-            <span class="body-row__text">Money Saved</span>
+            <span class="body-row__text" style="margin-left: 2px;">Money</span>
           </div>
         </div>
         <div class="card-status">Saved</div>
@@ -150,15 +150,14 @@ export default {
 .roi-summary__body-container {
   margin-top: 13px;
   @media (max-width: 1900px) {
-    width: 80%;
-  }
-  @media (min-width: 1901px) {
-    width: auto;
     .body-row:last-child {
       margin-left: 60px;
     }
-    justify-content: stretch;
   }
-  justify-content: space-between;
+  @media (min-width: 1901px) {
+    .body-row:last-child {
+      margin-left: 70px;
+    }
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="component-single-post">
+  <div class="component-single-post" :key="$route.query.postId || '1'">
     <div style="z-index: 999999;">
       <new-investigation
         @closeAdd="closeNewInvestigationModal($event)"
@@ -205,7 +205,7 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    style="cursor: not-allowed;"
+                    style="cursor: not-allowed; opacity: 0.3;"
                     v-if="post.communityPrivacyStatusId !== 1"
                     :id="'share-btn' + post.communityPostResourceId"
                   >
@@ -1004,14 +1004,16 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
 [data-title]:after {
      content: attr(data-title);
     position: absolute;
-    padding: 8px 16px 8px 16px;
+    padding: 4px 8px;
     bottom: -40px;
     left: 0;
     white-space: nowrap;
     opacity: 0;
     z-index: 99999;
     visibility: hidden;
-    border-radius: 4px;
+  border-radius: 4px;
+    line-height: 1.33;
+    min-height: 24px;
     background: #6d6d6d !important;
     color: rgba(255, 255, 255, 0.87) !important;
     font-family: "Open Sans", sans-serif !important;
@@ -1189,7 +1191,12 @@ export default {
     shareSettings: {},
     addCommentValue: ''
   }),
-  watch: {},
+
+  watch: {
+    '$route.query.postId'(val) {
+      this.getPostDetails(this.$route.query.postId, 0, true)
+    }
+  },
   mounted() {
     this.userIdFromStorage = localStorage.getItem('userId')
     if (this.$route.query.postId) {
@@ -1405,7 +1412,7 @@ export default {
               url: item.url.replace('&amp;', '&')
             }
           })
-          setTimeout(function () {
+          setTimeout(() => {
             let recrusiveFunctionForDom = () =>
               document.getElementById(`sframe${comId}`) &&
               document.getElementById(`sframe${comId}`).shadowRoot
@@ -1417,6 +1424,7 @@ export default {
                 .getElementById(`sframe${comId}`)
                 .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
               reviewElementBind(els, url)
+              this.$forceUpdate()
             }
           }, 500)
         })

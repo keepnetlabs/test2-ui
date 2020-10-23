@@ -85,7 +85,7 @@
 
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content>
-              <TestConnection :values="formValues" :isValidate="isValidate" />
+              <TestConnection :values="formValues" :isValidate="isValidate" :isEdit="editData" />
             </v-list-item-content>
           </v-list-item>
         </v-form>
@@ -552,7 +552,8 @@ export default {
     submit() {
       if (this.$refs.mailConfiguration.validate()) {
         if (this.editData) {
-          updateO365(this.formValues, this.editData.resourceId).then((response) => {
+          let editData = this.formValues
+          updateO365(editData, this.editData.resourceId).then((response) => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'O365 mail configuration has been updated'

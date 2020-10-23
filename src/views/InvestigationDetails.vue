@@ -38,14 +38,14 @@
                   class="k-dialog__button"
                   text
                   color="#00bcd4"
-                  @click="isWantToDeleteConfirm(false)"
+                  @click="isWantToDeleteConfirm(false, null, false)"
                   >Move to trash
                 </v-btn>
                 <v-btn
                   class="k-dialog__button"
                   text
                   color="#2196f3"
-                  @click="isWantToDeleteConfirm(true)"
+                  @click="isWantToDeleteConfirm(true, null, false)"
                   >Delete Permanently
                 </v-btn>
               </div>
@@ -742,7 +742,7 @@
             <DatatableLoading v-if="loading" :loading="loading" class="mt-n2">
               <template v-slot:skeleton-content> </template>
             </DatatableLoading>
-            <div v-if="activeMenu !== 'targetUsers'">
+            <div v-if="activeMenu !== 'targetUsers' && !loading">
               <datatable
                 :is-column-filter-active="isColumnFilterActive"
                 id="investigationDetailsList"
@@ -807,7 +807,7 @@
               </datatable>
             </div>
             <div
-              v-if="activeMenu === 'targetUsers' && showTargetUsersDetails"
+              v-if="activeMenu === 'targetUsers' && showTargetUsersDetails && !loading"
               class="investigationDetails__target-users-table-container"
             >
               <datatable
@@ -1557,6 +1557,10 @@ export default {
       }
     },
     refreshDatatable() {
+      this.leftMenuLoading = true
+      this.topMenuLoading = true
+      this.loading = true
+
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
@@ -1575,6 +1579,9 @@ export default {
                   this.showTargetUsersDetails = this.activeMenu === 'targetUsers'
                   this.showEmails = this.activeMenu !== 'targetUsers'
                   this.$forceUpdate()
+                  this.leftMenuLoading = false
+                  this.topMenuLoading = false
+                  this.loading = false
                 })
             })
         })
@@ -1642,8 +1649,8 @@ export default {
       this.isWantToDelete = true
       this.deleteValue = value
     },
-    isWantToDeleteConfirm(val, message) {
-      if (!this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
+    isWantToDeleteConfirm(val, message, hasForm = true) {
+      if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
         return
       }
       let isArray = Array.isArray(this.deleteValue)
@@ -2042,7 +2049,11 @@ export default {
         display: flex;
         flex-flow: row;
         padding: 24px;
-        padding-bottom: 0;
+        .k-table__wrapper {
+          padding-bottom: 0;
+          .pagination {
+          }
+        }
 
         &--left-menu {
           display: flex;
@@ -2211,10 +2222,13 @@ export default {
           }
 
           .card.v-card.v-sheet.theme--light {
+            /*
             padding: 0 !important;
             border-radius: 0 !important;
             -webkit-box-shadow: none !important;
             box-shadow: none !important;
+
+            */
           }
 
           &__summary {
