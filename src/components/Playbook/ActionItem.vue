@@ -622,11 +622,17 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 500,
-        orderBy: 'CreateDate',
+        orderBy: 'CreateTime',
         ascending: true,
         filter: {
           Condition: 'AND',
-          FilterGroups: [{}]
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
         }
       }
 
