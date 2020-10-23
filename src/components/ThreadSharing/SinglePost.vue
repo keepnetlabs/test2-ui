@@ -961,7 +961,13 @@ import {
 import PreviewHeader from './PreviewHeader'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { getNotifiedEmail } from '../../api/notifiedEmail'
-import { copyToClipboard, isOwner, isPostedByMe, reviewElementBind } from '../../utils/functions'
+import {
+  copyToClipboard,
+  incidenPostReviewElementBind,
+  isOwner,
+  isPostedByMe,
+  reviewElementBind
+} from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
@@ -1423,7 +1429,7 @@ export default {
               let els = document
                 .getElementById(`sframe${comId}`)
                 .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
-              reviewElementBind(els, url)
+              incidenPostReviewElementBind(url, null, `sframe${comId}`, true)
               this.$forceUpdate()
             }
           }, 500)
