@@ -400,6 +400,7 @@ export default {
         item.style.boxShadow = 'none'
         item.style.backgroundColor = 'transparent'
         item.style.border = 'none'
+        item.setAttribute('title', '')
       })
     },
     handleAddShadows() {
@@ -407,6 +408,7 @@ export default {
         item.style.boxShadow = ''
         item.style.backgroundColor = ''
         item.style.border = ''
+        item.setAttribute('title', '')
       })
     },
     getDefaultLayoutObject() {
@@ -660,6 +662,10 @@ export default {
       })
       .catch(() => {
         this.layout = this.getDefaultLayoutObject()
+        setTimeout(() => {
+          this.handleDeleteShadows()
+          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+        }, 20)
       })
   },
   mounted() {},
@@ -734,5 +740,8 @@ export default {
   color: #2196f3;
   display: flex !important;
   align-items: center;
+}
+[title] {
+  content: none;
 }
 </style>
