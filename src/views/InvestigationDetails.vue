@@ -38,14 +38,14 @@
                   class="k-dialog__button"
                   text
                   color="#00bcd4"
-                  @click="isWantToDeleteConfirm(false)"
+                  @click="isWantToDeleteConfirm(false, null, false)"
                   >Move to trash
                 </v-btn>
                 <v-btn
                   class="k-dialog__button"
                   text
                   color="#2196f3"
-                  @click="isWantToDeleteConfirm(true)"
+                  @click="isWantToDeleteConfirm(true, null, false)"
                   >Delete Permanently
                 </v-btn>
               </div>
@@ -1557,6 +1557,7 @@ export default {
       }
     },
     refreshDatatable() {
+      this.loading = true
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
@@ -1574,6 +1575,7 @@ export default {
                   this.showTargetUsersDetails = false
                   this.showTargetUsersDetails = this.activeMenu === 'targetUsers'
                   this.showEmails = this.activeMenu !== 'targetUsers'
+                  this.loading = false
                   this.$forceUpdate()
                 })
             })
@@ -1642,8 +1644,8 @@ export default {
       this.isWantToDelete = true
       this.deleteValue = value
     },
-    isWantToDeleteConfirm(val, message) {
-      if (!this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
+    isWantToDeleteConfirm(val, message, hasForm = true) {
+      if (hasForm && !this.$refs.refFormDeleteAndNotify.validate() && val && !message) {
         return
       }
       let isArray = Array.isArray(this.deleteValue)
