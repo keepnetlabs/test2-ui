@@ -707,6 +707,7 @@ export default {
       if (this.selectedIntegrationType.name === 'VirusTotal') {
         this.formValues.isSendUrl = true
         this.formValues.isSendFileHash = true
+        this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
       }
     }
   },
