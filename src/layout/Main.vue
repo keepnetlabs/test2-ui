@@ -335,7 +335,11 @@
           </template>
           <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
             <v-list-item-content class="menu-item-content">
-              <router-link to="/incident-responder" class="menu-link-default">
+              <router-link
+                to="/incident-responder"
+                class="menu-link-default"
+                :class="[routerName === 'Analysis Details' && 'active-link']"
+              >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Incident Responder</span>
                 </v-list-item-title>
@@ -344,7 +348,11 @@
           </v-list-item>
           <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
             <v-list-item-content class="menu-item-content">
-              <router-link to="/investigations" class="menu-link-default">
+              <router-link
+                to="/investigations"
+                class="menu-link-default"
+                :class="[routerName === 'Investigation Details' && 'active-link']"
+              >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Investigations</span>
                 </v-list-item-title>
@@ -517,11 +525,33 @@
             <router-link
               class="breadcrumb-links"
               to="/phishing-reporter"
-              style="display: flex; align-items: center;"
+              style="display: flex; align-items: center; opacity: 1 !important;"
               v-if="routerName === 'Phishing Reporter'"
             >
+              <v-icon style="color: #fff; font-size: 16px; opacity: 1 !important;"
+                >mdi-chevron-right</v-icon
+              >
+              <span style="opacity: 0.7 !important;">Phishing Reporter</span>
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/companies"
+              style="display: flex; align-items: center;"
+              v-if="routerName === 'Company Group Details'"
+            >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              Phishing Reporter
+              Company
+            </router-link>
+
+            <router-link
+              class="breadcrumb-links"
+              to="/investigations"
+              style="display: flex; align-items: center;"
+              v-if="routerName === 'Investigation Details'"
+            >
+              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
+              Investigations
             </router-link>
 
             <router-link
@@ -576,7 +606,9 @@
 
               Company
             </router-link>
-            <v-icon v-if="routerName !== 'Phishing Reporter'" style="color: #fff; font-size: 16px;"
+            <v-icon
+              v-if="routerName !== 'Phishing Reporter'"
+              style="color: #fff; font-size: 16px; line-height: 0.25;"
               >mdi-chevron-right
             </v-icon>
             <router-link
