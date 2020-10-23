@@ -975,8 +975,6 @@ export default {
     setEmailPreview() {
       let _this = this
       setTimeout(function () {
-        debugger
-
         for (let a of _this.mailDetails.urls) {
           const els = document
             .getElementById('sframe')
