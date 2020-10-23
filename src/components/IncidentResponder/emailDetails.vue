@@ -542,6 +542,7 @@ export default {
   },
   props: {},
   data: () => ({
+    isPreviewRender: false,
     panel: [],
     isCopiedShaClipboard: [],
     isCopiedMd5Clipboard: [],
@@ -976,22 +977,25 @@ export default {
     },
     setEmailPreview() {
       let _this = this
-      setTimeout(function () {
-        for (let a of _this.mailDetails.urls) {
-          const els = document
-            .getElementById('sframe')
-            .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
-          for (let i = 0, l = els.length; i < l; i++) {
-            const el = els[i]
-            el.setAttribute('target', '_blank')
-            el.setAttribute('data-title', 'This link has been reported as a phishing')
-            el.style.backgroundColor = '#f3e1e5'
-            el.style.color = '#bb2a45'
-            el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
-            // }
+      if (!this.isPreviewRender) {
+        this.isPreviewRender = true
+        setTimeout(function () {
+          for (let a of _this.mailDetails.urls) {
+            const els = document
+              .getElementById('sframe')
+              .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
+            for (let i = 0, l = els.length; i < l; i++) {
+              const el = els[i]
+              el.setAttribute('target', '_blank')
+              el.setAttribute('data-title', 'This link has been reported as a phishing')
+              el.style.backgroundColor = '#f3e1e5'
+              el.style.color = '#bb2a45'
+              el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+              // }
+            }
           }
-        }
-      }, 400)
+        }, 400)
+      }
     }
   },
   created() {
