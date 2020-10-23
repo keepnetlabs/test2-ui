@@ -704,6 +704,10 @@ export default {
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
+      if (this.selectedIntegrationType.name === 'VirusTotal') {
+        this.formValues.isSendUrl = true
+        this.formValues.isSendFileHash = true
+      }
     }
   },
   destroyed() {},
