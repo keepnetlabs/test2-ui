@@ -763,7 +763,7 @@ export function reviewElementBind(els, url) {
   }
 }
 
-export function incidenPostReviewElementBind(url, id, rootId) {
+export function incidenPostReviewElementBind(url, id, rootId, isReview) {
   let els = document
     .getElementById(rootId || 'last-preview-body-shadow-root')
     .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
@@ -772,6 +772,7 @@ export function incidenPostReviewElementBind(url, id, rootId) {
       let el = els[i]
       el.setAttribute('target', '_blank')
       if (url.isHidden) {
+        debugger
         url.isFlagged = false
         el.innerHTML = url.urlHtml || url.name || url.url
         el.innerHTML = 'hidden by owner'
@@ -779,18 +780,20 @@ export function incidenPostReviewElementBind(url, id, rootId) {
         el.style.color = '#ffffff'
         el.style.position = 'relative'
       } else if (!!url && !!url.name) {
+        debugger
         el.innerHTML = url.name
         el.setAttribute('href', url.url)
         el.style.backgroundColor = 'inherit'
         el.style.color = 'inherit'
       } else if (!!url && !!url.urlHtml) {
+        debugger
         el.innerHTML = url.urlHtml
         el.setAttribute('href', url.url)
         el.style.backgroundColor = 'inherit'
         el.style.color = 'inherit'
       }
       if (url.isFlagged) {
-        const el = els[i]
+        debugger
         el.setAttribute('target', '_blank')
         el.setAttribute('data-title', 'This link has been reported as a phishing')
         el.style.backgroundColor = '#f3e1e5'
@@ -799,11 +802,12 @@ export function incidenPostReviewElementBind(url, id, rootId) {
 
         //el.appendChild(iEl)
       } else if (!url.isFlagged && !url.isHidden) {
-        el.innerHTML = url.urlHtml || url.name || url.url
+        !isReview && (el.innerHTML = url.urlHtml || url.name || url.url)
         el.style.backgroundColor = 'inherit'
         el.style.color = 'inherit'
       }
       if (url.isHidden) {
+        debugger
         el.setAttribute('target', '_self')
       }
     }
