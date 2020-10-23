@@ -237,7 +237,7 @@ export default {
       bodyData: {
         pageNumber: 1,
         pageSize: 5000,
-        orderBy: 'createDate',
+        orderBy: 'createTime',
         ascending: false,
         filter: {
           Condition: 'AND',
