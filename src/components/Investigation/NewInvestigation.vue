@@ -61,9 +61,11 @@
                   ></v-combobox>
                   <v-combobox
                     :items="userGroupsItems"
-                    :placeholder="targetUserType == 'AllUsers' ? 'All Users' : 'Select user groups'"
+                    :placeholder="
+                      targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
+                    "
                     outlined
-                    class="edit-select new-investigation__combo target-users-select-multi"
+                    class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     v-model.trim="targetUsersValue"
                     :search-input.sync="searchTargetUsersGroupsValue"
                     :rules="[targetUsers.required]"
@@ -80,7 +82,7 @@
                   ></v-combobox>
                   <v-combobox
                     :items="specificUserItems"
-                    v-if="targetUserType == 'SpecificUsers'"
+                    v-if="targetUserType === 'SpecificUsers'"
                     placeholder="Enter user email Addresses"
                     item-text="email"
                     item-value="email"
@@ -96,7 +98,7 @@
                     :rules="[targetUsers.required]"
                     :no-data-text="'no data'"
                     outlined
-                    class="edit-select new-investigation__combo target-users-select-multi"
+                    class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     v-model.trim="targetUsersValue"
                   ></v-combobox>
                 </div>
@@ -3022,6 +3024,11 @@ export default {
 .date-picker-container {
   .el-date-editor {
     border: 1px solid #ff5252 !important;
+  }
+}
+.select-specific-users {
+  .v-chip {
+    margin: 4px !important;
   }
 }
 </style>
