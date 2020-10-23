@@ -61,7 +61,7 @@
             :inputOptions="{
               showDialCode: true
             }"
-            :maxLen="15"
+            :maxLen="17"
             mode="international"
             :class="['k-tel-input', !isPhoneNumberValid && isSubmitted && 'phone-number-invalid']"
             ref="refTelInput"
@@ -115,12 +115,7 @@
           ></v-select>
         </form-group>
         <form-group v-if="selectedRow">
-          <v-btn
-            color="#2196f3"
-            rounded
-            class="white--text btn-util"
-            @click="toggleWelcomeEmailModal"
-          >
+          <v-btn color="#2196f3" rounded class="white--text btn-util">
             <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
             Send Information Email
           </v-btn></form-group
