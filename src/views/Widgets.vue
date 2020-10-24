@@ -402,12 +402,18 @@ export default {
         item.style.border = 'none'
         item.setAttribute('title', '')
       })
+      document.querySelectorAll('.vue-grid-item').forEach((item) => {
+        item.setAttribute('title', '')
+      })
     },
     handleAddShadows() {
       document.querySelectorAll('.smartwidget').forEach((item) => {
         item.style.boxShadow = ''
         item.style.backgroundColor = ''
         item.style.border = ''
+        item.setAttribute('title', '')
+      })
+      document.querySelectorAll('.vue-grid-item').forEach((item) => {
         item.setAttribute('title', '')
       })
     },
