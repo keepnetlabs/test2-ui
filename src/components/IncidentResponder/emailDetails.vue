@@ -3,9 +3,11 @@
     <div class="single-post">
       <span class="single-post-header">Email Details - File Format Exploit</span>
       <div class="single-post__container">
-        <el-tabs v-model="tab">
+        <el-tabs v-model="tab" class="email-details__tabs">
           <el-tab-pane label="Details" name="first">
-            <template v-if="mailDetails">
+            <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
+            </DatatableLoading>
+            <template v-else>
               <download-modal
                 :status="downloadModalStatus"
                 v-if="downloadModalStatus"
@@ -177,7 +179,9 @@
             </template>
           </el-tab-pane>
           <el-tab-pane label="Email Preview" name="third">
-            <template v-if="mailDetails">
+            <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
+            </DatatableLoading>
+            <template v-else>
               <PreviewHeaderForSinglePost :uploadRespond="mailDetails" />
               <div class="border-for-header"></div>
               <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
@@ -535,9 +539,11 @@ import {
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 
 export default {
   components: {
+    DatatableLoading,
     PreviewHeaderForSinglePost,
     Datatable,
     DownloadModal,
@@ -546,6 +552,7 @@ export default {
   props: {},
   data: () => ({
     isPreviewRender: false,
+    isLoading: true,
     panel: [],
     isCopiedShaClipboard: [],
     isCopiedMd5Clipboard: [],
@@ -933,13 +940,14 @@ export default {
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
-        }, 100)
+        })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Details can not be reached'
           })
         })
+        .finally(() => (this.isLoading = false))
     },
     getEngineDetails() {
       getAnalysisEngineTypes()
@@ -2356,5 +2364,13 @@ export default {
 }
 #urlAnalysisTable.k-table__wrapper {
   padding-bottom: 0;
+}
+.email-details__tabs {
+  .el-tabs__content {
+    margin-top: 24px;
+    .preview-header {
+      margin-top: 0;
+    }
+  }
 }
 </style>
