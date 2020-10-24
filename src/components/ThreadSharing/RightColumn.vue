@@ -370,7 +370,7 @@
               <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
                 <div class="pt-2">
                   <div class="right-side-sub-title pb-1">
-                    <a href="#">{{ post.title }}</a>
+                    <a @click="goToPostDetails(post)">{{ post.title }}</a>
                   </div>
                   <div class="right-side-desc pb-1">
                     in
@@ -393,7 +393,10 @@
                 </div>
               </div>
             </div>
-            <div class="pb-4 pt-1 empty-posts" v-else>
+            <div
+              class="pb-4 pt-1 empty-posts"
+              v-else-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0"
+            >
               You haven’t posted any incidents, yet
             </div>
           </template>

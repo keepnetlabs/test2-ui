@@ -125,6 +125,7 @@
             height="40"
             item-text="name"
             item-value="val"
+            :menu-props="{ offsetY: true }"
             @input="setAvailableItems($event, actionsValues[index], index)"
           />
         </v-col>
@@ -133,6 +134,7 @@
             v-model="playbookAction.markType"
             :items="act.markAsOpts"
             outlined
+            :menu-props="{ offsetY: true }"
             hide-details
           />
         </v-col>
@@ -182,6 +184,7 @@
             v-model="targetUserType[index]"
             :items="getNotifyTypes()"
             outlined
+            :menu-props="{ offsetY: true }"
             @input="tarUsers[index] = []"
             :rules="[(v) => validations.required(v, 'Required')]"
           />
@@ -259,6 +262,7 @@
             item-value="value"
             item-text="label"
             outlined
+            :menu-props="{ offsetY: true }"
             hide-details
           />
         </v-col>

@@ -78,6 +78,7 @@
               outlined
               placeholder="Select integration type"
               required
+              :menu-props="{ offsetY: true }"
               @input="handleIntegrationTypeChange"
             ></v-select>
           </form-group>
@@ -358,7 +359,11 @@
         </v-form>
       </template>
       <template v-slot:overlay-footer>
-        <v-btn class="new-integration__footer-btn-cancel" rounded @click="closeOverlay">
+        <v-btn
+          class="new-integration__footer-btn-cancel"
+          rounded
+          @click="$emit('closeOverlay', false, false)"
+        >
           CANCEL
         </v-btn>
         <div class="new-integration__footer__right-col">

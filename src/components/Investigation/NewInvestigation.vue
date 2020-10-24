@@ -120,6 +120,7 @@
                       outlined
                       class="edit-select standard-height"
                       required
+                      :menu-props="{ offsetY: true }"
                       :rules="[filterSelectRules.required]"
                     ></v-select>
                   </div>
@@ -230,6 +231,7 @@
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
+                  :menu-props="{ offsetY: true }"
                   placeholder="3 Days"
                 ></v-select>
               </v-list-item-content>
@@ -248,6 +250,7 @@
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"
+                  :menu-props="{ offsetY: true }"
                   placeholder="Delete Email"
                 ></v-select>
               </v-list-item-content>
@@ -1056,39 +1059,47 @@ export default {
       this.filterList = []
       this.selectedMail.attachments &&
         this.selectedMail.attachments.map((item) => {
-          if (!item.isHidden) this.filterList.push({ option: 'md5', text: item.md5 })
-          if (!item.isHidden) this.filterList.push({ option: 'sha512', text: item.sha512 })
+          if (!item.isHidden && item.isFlagged)
+            this.filterList.push({ option: 'md5', text: item.md5 })
+          if (!item.isHidden && item.isFlagged)
+            this.filterList.push({ option: 'sha512', text: item.sha512 })
         })
       this.selectedMail.bcc &&
         !this.selectedMail.isBccHidden &&
+        this.selectedMail.isBccFlagged &&
         this.selectedMail.bcc.map((item) => {
           this.filterList.push({ option: 'bcc', text: item })
         })
       this.selectedMail.cc &&
         !this.selectedMail.isCcHidden &&
+        this.selectedMail.isCcFlagged &&
         this.selectedMail.cc.map((item) => {
           this.filterList.push({ option: 'cc', text: item })
         })
       this.selectedMail.from &&
         !this.selectedMail.isFromHidden &&
+        this.selectedMail.isFromFlagged &&
         this.filterList.push({
           option: 'from',
           text: this.selectedMail.from
         })
       this.selectedMail.subject &&
         !this.selectedMail.isSubjectHidden &&
+        this.selectedMail.isSubjectFlagged &&
         this.filterList.push({
           option: 'subject',
           text: this.selectedMail.subject
         })
       this.selectedMail.to &&
         !this.selectedMail.isToHidden &&
+        this.selectedMail.isToFlagged &&
         this.selectedMail.to.map((item) => {
           this.filterList.push({ option: 'to', text: item })
         })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
-          if (!item.isHidden) this.filterList.push({ option: 'url', text: item.url })
+          if (!item.isHidden && item.isFlagged)
+            this.filterList.push({ option: 'url', text: item.url })
         })
       this.investgationName = 'Manual Investigation'
     }

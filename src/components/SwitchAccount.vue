@@ -83,9 +83,7 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
-import { getCompanyByID, getCompanyList } from '../api/company'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
-import { setGlobalUserData } from '../utils/functions'
+import { getCompanyList } from '../api/company'
 import PostCardLoading from './SkeletonLoading/PostCardLoading'
 
 export default {

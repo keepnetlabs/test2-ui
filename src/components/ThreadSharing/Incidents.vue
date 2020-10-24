@@ -47,6 +47,7 @@
                   hide-details
                   clearable
                   item-text="name"
+                  :menu-props="{ offsetY: true }"
                   item-value="resourceId"
                   @change="getIncidentList()"
                 />
@@ -60,6 +61,7 @@
                   v-model="threats"
                   multiple
                   hide-details
+                  :menu-props="{ offsetY: true }"
                   item-text="name"
                   item-value="resourceId"
                   @change="getIncidentList()"

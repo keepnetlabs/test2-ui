@@ -28,6 +28,7 @@
             :items="categoryItems"
             class="new-integration__select"
             dense
+            :menu-props="{ offsetY: true }"
             outlined
             placeholder="Select Option"
           ></v-select>
@@ -38,6 +39,7 @@
             :items="smtpItems"
             class="new-integration__select"
             dense
+            :menu-props="{ offsetY: true }"
             outlined
             placeholder="Select Option"
           ></v-select>

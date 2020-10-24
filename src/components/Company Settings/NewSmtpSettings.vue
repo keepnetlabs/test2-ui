@@ -35,6 +35,7 @@
             hint="*Required"
             item-text="name"
             item-value="code"
+            :menu-props="{ offsetY: true }"
             persistent-hint
             @change="handleChangeServiceProvider"
             :rules="[(v) => validations.required(v, 'Required')]"
