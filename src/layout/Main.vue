@@ -273,7 +273,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="this.$store.state.auth.userRoleName !== 'CompanyAdmin'"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link
                 to="/companies"
