@@ -116,6 +116,7 @@
               dense
               v-model.trim="formValues.priority"
               id="department"
+              :menu-props="{ offsetY: true }"
               height="40"
             ></v-select>
           </v-list-item-content>

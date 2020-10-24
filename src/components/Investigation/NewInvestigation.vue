@@ -120,6 +120,7 @@
                       outlined
                       class="edit-select standard-height"
                       required
+                      :menu-props="{ offsetY: true }"
                       :rules="[filterSelectRules.required]"
                     ></v-select>
                   </div>
@@ -230,6 +231,7 @@
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
+                  :menu-props="{ offsetY: true }"
                   placeholder="3 Days"
                 ></v-select>
               </v-list-item-content>
@@ -248,6 +250,7 @@
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"
+                  :menu-props="{ offsetY: true }"
                   placeholder="Delete Email"
                 ></v-select>
               </v-list-item-content>

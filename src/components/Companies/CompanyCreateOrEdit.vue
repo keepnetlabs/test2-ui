@@ -87,6 +87,7 @@
                       placeholder="Select industry"
                       :rules="[(v) => !!v || 'Required']"
                       hint="*Required"
+                      :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></v-select>
                   </v-list-item-content>
@@ -103,6 +104,7 @@
                       placeholder="Select country"
                       :rules="[(v) => !!v || 'Required']"
                       hint="*Required"
+                      :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></v-select>
                   </v-list-item-content>
@@ -196,6 +198,7 @@
                       :rules="[(v) => !!v || 'Required']"
                       :disabled="stepLock"
                       hint="*Required"
+                      :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></v-select>
                   </v-list-item-content>
@@ -214,6 +217,7 @@
                       @change="expiryPeriodChange"
                       :disabled="stepLock"
                       hint="*Required"
+                      :menu-props="{ offsetY: true }"
                       persistent-hint
                     >
                       <template v-slot:selection="{ item }">
@@ -362,6 +366,7 @@
                       :rules="[(v) => !!v || 'Required']"
                       hint="*Required"
                       persistent-hint
+                      :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
                     ></v-select>
                   </v-list-item-content>
@@ -378,6 +383,7 @@
                       :rules="[(v) => !!v || 'Required']"
                       hint="*Required"
                       persistent-hint
+                      :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
                     ></v-select>
                   </v-list-item-content>
@@ -394,6 +400,7 @@
                       :rules="[(v) => !!v || 'Required']"
                       hint="*Required"
                       persistent-hint
+                      :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
                     ></v-select>
                   </v-list-item-content>

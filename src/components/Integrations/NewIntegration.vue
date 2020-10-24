@@ -78,6 +78,7 @@
               outlined
               placeholder="Select integration type"
               required
+              :menu-props="{ offsetY: true }"
               @input="handleIntegrationTypeChange"
             ></v-select>
           </form-group>

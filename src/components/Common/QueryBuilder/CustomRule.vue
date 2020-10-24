@@ -10,6 +10,7 @@
           :items="rule.operands"
           outlined
           hide-details
+          :menu-props="{ offsetY: true }"
           @input="handleOperandChange"
         />
       </v-col>
@@ -28,6 +29,7 @@
           outlined
           hide-details
           item-value="value"
+          :menu-props="{ offsetY: true }"
           item-text="text"
         />
       </v-col>
@@ -38,23 +40,47 @@
           :items="rule.operandsSenderIP"
           outlined
           hide-details
+          :menu-props="{ offsetY: true }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
         <!-- List of "From" operands-->
-        <v-select v-model.trim="query.format" :items="rule.operandsFrom" outlined hide-details />
+        <v-select
+          v-model.trim="query.format"
+          :items="rule.operandsFrom"
+          outlined
+          hide-details
+          :menu-props="{ offsetY: true }"
+        />
       </v-col>
       <v-col md="2" v-if="query.operand === 'To'">
         <!-- List of "From" operands-->
-        <v-select v-model.trim="query.format" :items="rule.operandsTo" outlined hide-details />
+        <v-select
+          v-model.trim="query.format"
+          :items="rule.operandsTo"
+          outlined
+          hide-details
+          :menu-props="{ offsetY: true }"
+        />
       </v-col>
       <v-col md="2" v-if="query.operand === 'CC'">
         <!-- List of "From" operands-->
-        <v-select v-model.trim="query.format" :items="rule.operandsCC" outlined hide-details />
+        <v-select
+          v-model.trim="query.format"
+          :items="rule.operandsCC"
+          outlined
+          hide-details
+          :menu-props="{ offsetY: true }"
+        />
       </v-col>
       <v-col md="2" v-if="query.operand === 'Analysis result'">
         <!-- List of "Analysis result" operands-->
-        <v-select v-model="query.value" :items="rule.operandsAnalysisResult" outlined />
+        <v-select
+          v-model="query.value"
+          :items="rule.operandsAnalysisResult"
+          outlined
+          :menu-props="{ offsetY: true }"
+        />
       </v-col>
       <v-col
         v-if="
