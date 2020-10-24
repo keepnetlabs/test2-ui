@@ -377,7 +377,6 @@ export default {
     handleDelete(row) {
       this.isMultipleDelete = false
       this.changeDeleteModalStatus(true)
-      console.log('row', row)
       this.selectedRow = row
     },
     closeAddUserModal() {

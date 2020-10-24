@@ -35,7 +35,7 @@ export default {
   mounted() {},
   methods: {
     submit() {
-      this.$refs.form1.validate() && console.log(this.formData)
+      this.$refs.form1.validate()
     }
   }
 }

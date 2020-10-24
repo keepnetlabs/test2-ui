@@ -1005,7 +1005,6 @@ export default {
   },
   watch: {
     panel(val) {
-      console.log('panel', val)
     },
     tab(val) {
       val === 2 && this.setEmailPreview()

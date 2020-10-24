@@ -299,7 +299,6 @@ export default {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
     save() {
-      console.log(this.$refs.refMapTable.exportMapTableData())
     }
   },
   created() {
