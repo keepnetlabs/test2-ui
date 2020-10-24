@@ -21,6 +21,7 @@
           dense
           height="40"
           outlined
+          :menu-props="{ offsetY: true }"
           required
           v-model="filteredSelectValue"
         ></v-select>
@@ -40,6 +41,7 @@
           height="40"
           outlined
           required
+          :menu-props="{ offsetY: true }"
           v-model="filteredSelectValueNum"
         ></v-select>
         <v-text-field
@@ -59,6 +61,7 @@
           outlined
           required
           v-model="filteredSelectValueDate"
+          :menu-props="{ offsetY: true }"
           @change="changeDateSelect"
           placeholder="Select an option"
         ></v-select>

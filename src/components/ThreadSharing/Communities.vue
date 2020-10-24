@@ -298,6 +298,7 @@
                   item-text="name"
                   item-value="id"
                   @change="updateCommunities()"
+                  :menu-props="{ offsetY: true }"
                   :disabled="selectedTab === 'tab-2'"
                 >
                   <template v-slot:selection="{ item, index }">

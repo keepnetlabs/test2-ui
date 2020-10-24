@@ -397,6 +397,7 @@
                 :items="durations"
                 placeholder="3 days"
                 outlined
+                :menu-props="{ offsetY: true }"
                 class="input-select"
                 v-model="selectedDuration"
                 :rules="[(v) => !!v || 'Duration is required']"
@@ -409,6 +410,7 @@
                 :items="actions"
                 placeholder="Delete email"
                 outlined
+                :menu-props="{ offsetY: true }"
                 class="input-select"
                 v-model="selectedAction"
                 :rules="[(v) => !!v || 'Action is required']"

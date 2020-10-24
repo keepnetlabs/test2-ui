@@ -96,6 +96,7 @@
             :items="statusItems"
             item-text="name"
             item-value="val"
+            :menu-props="{ offsetY: true }"
             v-model.trim="formValues.statusId"
             @change="handleChangeStatus"
           ></v-select>
@@ -110,6 +111,7 @@
             hint="*Required"
             persistent-hint
             item-text="roleName"
+            :menu-props="{ offsetY: true }"
             item-value="resourceId"
             :rules="[(v) => validations.required(v, 'Required')]"
           ></v-select>
