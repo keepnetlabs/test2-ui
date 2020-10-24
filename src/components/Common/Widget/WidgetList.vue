@@ -34,6 +34,7 @@
             @mouseenter="handleMouseEnterTd($event, row[columns[index].property], rowIndex)"
             @mouseup="handleMouseEnterTd($event, row[columns[index].property], rowIndex)"
             @mouseleave="handleMouseLeaveTd($event, row[columns[index].property], rowIndex)"
+            class="safari-hide-tooltip"
           >
             <slot
               :name="columns[index].property"
