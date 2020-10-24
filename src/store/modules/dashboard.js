@@ -344,7 +344,7 @@ const dashboard = {
     getCompanyInformation({ commit }) {
       commit('SET_DUMMY_COMPANY_INFO', getCompanyInformationDummy())
     },
-    getDropdownCompanies({ commit }) {
+    getDropdownCompanies({ commit }, payload) {
       let _this = this
       /*function getUnique(arr, comp) {
         const unique = arr
@@ -357,10 +357,12 @@ const dashboard = {
         return unique
       }*/
 
-      getCompanyList().then((response) => {
-        const result = response.data.data && response.data.data
-        commit('SET_DROPDOWN_COMPANIES', result)
-      })
+      if (payload !== 'CompanyAdmin') {
+        getCompanyList().then((response) => {
+          const result = response.data.data && response.data.data
+          commit('SET_DROPDOWN_COMPANIES', result)
+        })
+      }
     },
     changeFeedbackPopup({ commit }, payload) {
       commit('CHANGE_FEEDBACK_POPUP', payload)
