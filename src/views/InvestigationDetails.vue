@@ -764,11 +764,11 @@
                   :groupable="true"
                   @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                   @sendInvestigationdetailsWarningMessage="
-                  sendInvestigationdetailsWarningMessage($event)
-                "
+                    sendInvestigationdetailsWarningMessage($event)
+                  "
                   @deleteAndNotifyInvestigationDetailsFunction="
-                  deleteAndNotifyInvestigationDetailsFunction($event)
-                "
+                    deleteAndNotifyInvestigationDetailsFunction($event)
+                  "
                   @downloadEvent="exportInvestigationEmails"
                   v-if="showEmails"
                   @columnFilterChanged="columnFilterChanged"
@@ -776,32 +776,34 @@
                 >
                   <template v-slot:datatable-custom-column="{ scope }">
                     <template
-                      v-if="scope.row.emailLastAction && scope.row.emailLastAction.status !== 'Idle'"
+                      v-if="
+                        scope.row.emailLastAction && scope.row.emailLastAction.status !== 'Idle'
+                      "
                     >
-                    <span class="d-flex align-center">
-                      <span style="text-overflow: ellipsis; overflow: hidden;">{{
+                      <span class="d-flex align-center">
+                        <span style="text-overflow: ellipsis; overflow: hidden;">{{
                           getInboxStatus(scope.row.emailLastAction.status)
                         }}</span>
-                      <span class="ml-2">
-                        <v-tooltip
-                          bottom
-                          content-class="investigation-details__tooltip"
-                          v-if="getTooltipText(scope.row.emailLastAction)"
-                        >
-                          <template v-slot:activator="{ on }">
-                            <v-icon
-                              v-on="on"
-                              :color="getIconColor(scope.row.emailLastAction.status)"
-                            >{{ getIconName(scope.row.emailLastAction.status) }}</v-icon
-                            >
-                          </template>
-                          <span>{{ getTooltipText(scope.row.emailLastAction) }} </span>
-                        </v-tooltip>
-                        <v-icon v-else :color="getIconColor(scope.row.emailLastAction.status)">{{
+                        <span class="ml-2">
+                          <v-tooltip
+                            bottom
+                            content-class="investigation-details__tooltip"
+                            v-if="getTooltipText(scope.row.emailLastAction)"
+                          >
+                            <template v-slot:activator="{ on }">
+                              <v-icon
+                                v-on="on"
+                                :color="getIconColor(scope.row.emailLastAction.status)"
+                                >{{ getIconName(scope.row.emailLastAction.status) }}</v-icon
+                              >
+                            </template>
+                            <span>{{ getTooltipText(scope.row.emailLastAction) }} </span>
+                          </v-tooltip>
+                          <v-icon v-else :color="getIconColor(scope.row.emailLastAction.status)">{{
                             getIconName(scope.row.emailLastAction.status)
                           }}</v-icon>
+                        </span>
                       </span>
-                    </span>
                     </template>
                     <span v-else> </span>
                   </template>
@@ -817,9 +819,9 @@
                   :refName="'investigationDetailsTargetUsersListTable'"
                   :columns="columnsTargetUsers"
                   :table="
-                  investigationDetailsTargetUsersListData &&
-                  investigationDetailsTargetUsersListData.results
-                "
+                    investigationDetailsTargetUsersListData &&
+                    investigationDetailsTargetUsersListData.results
+                  "
                   :countRow="5"
                   :pageSizes="pageSizes"
                   :defaultSort="'date'"
@@ -833,8 +835,8 @@
                   :groupable="true"
                   @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                   @sendInvestigationdetailsWarningMessage="
-                  sendInvestigationdetailsWarningMessage($event)
-                "
+                    sendInvestigationdetailsWarningMessage($event)
+                  "
                   @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
                   v-if="showTargetUsersDetails"
                   @downloadEvent="exportTargetUsers"
@@ -844,30 +846,32 @@
                   <template v-slot:datatable-custom-column="{ scope }">
                     <div class="datatable-progress">
                       <template v-if="scope.row && parseInt(scope.row.analyzedMailCount) >= 0">
-                      <span
-                        :class="[
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) !==
-                            1 && 'ml-1'
-                        ]"
-                        class="datatable-progress__per"
-                      >{{
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) ===
-                          1
-                            ? 'Completed'
-                            : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCoun)
-                            ? Math.floor(
-                            scope.row.analyzedMailCount / scope.row.filteredMailCount
-                            ) *
-                            100 +
-                            '%'
-                            : 0 + '%'
-                        }}</span
-                      >
+                        <span
+                          :class="[
+                            Math.floor(
+                              scope.row.analyzedMailCount / scope.row.filteredMailCount
+                            ) !== 1 && 'ml-1'
+                          ]"
+                          class="datatable-progress__per"
+                          >{{
+                            Math.floor(
+                              scope.row.analyzedMailCount / scope.row.filteredMailCount
+                            ) === 1
+                              ? 'Completed'
+                              : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCoun)
+                              ? Math.floor(
+                                  scope.row.analyzedMailCount / scope.row.filteredMailCount
+                                ) *
+                                  100 +
+                                '%'
+                              : 0 + '%'
+                          }}</span
+                        >
                         <v-progress-linear
                           :value="
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) *
-                          100
-                        "
+                            Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) *
+                            100
+                          "
                           background-color="#b3d4fc"
                           color="#2196f3"
                           height="4"
@@ -875,25 +879,24 @@
                           rounded
                         />
                         <span class="datatable-progress__stats">
-                        {{ scope.row.analyzedMailCount + ' / ' + scope.row.filteredMailCount }}
-                        mails
-                      </span>
+                          {{ scope.row.analyzedMailCount + ' / ' + scope.row.filteredMailCount }}
+                          mails
+                        </span>
                       </template>
                       <span v-else>
-                      <v-progress-linear
-                        :value="0"
-                        background-color="#e0e0e0"
-                        color="#2196f3"
-                        height="4"
-                        reactive
-                        rounded
+                        <v-progress-linear
+                          :value="0"
+                          background-color="#e0e0e0"
+                          color="#2196f3"
+                          height="4"
+                          reactive
+                          rounded
                       /></span>
                     </div>
                   </template>
                 </datatable>
               </div>
             </template>
-
           </div>
         </div>
       </div>
