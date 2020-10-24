@@ -1552,7 +1552,7 @@ export default {
     irPreviewOnClick(row) {
       this.$router.push({
         name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 2 }
+        params: { id: row.resourceId, tab: 'third' }
       })
     },
     handleIsNotify(value) {
