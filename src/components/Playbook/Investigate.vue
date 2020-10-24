@@ -130,6 +130,7 @@
           hide-details
           multiple
           small-chips
+          :menu-props="{ offsetY: true }"
           deletable-chips
         />
       </v-col>
@@ -150,6 +151,7 @@
           v-model="investigationRange"
           :items="act.investigateRanges"
           outlined
+          :menu-props="{ offsetY: true }"
           hide-details
         />
       </v-col>
@@ -218,6 +220,7 @@
           v-model="investigationDuration"
           :items="act.investigateDurations"
           outlined
+          :menu-props="{ offsetY: true }"
           hide-details
         />
       </v-col>
@@ -240,6 +243,7 @@
               v-model="investigateData.actionType"
               :items="act.investigateActions"
               outlined
+              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
@@ -248,6 +252,7 @@
               v-model="investigateData.actionNotifyTargetUserType"
               :items="act.investigateActionNotifications"
               outlined
+              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
@@ -261,6 +266,7 @@
               item-text="label"
               item-value="value"
               outlined
+              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
