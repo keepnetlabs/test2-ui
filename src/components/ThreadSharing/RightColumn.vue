@@ -393,7 +393,10 @@
                 </div>
               </div>
             </div>
-            <div class="pb-4 pt-1 empty-posts" v-else>
+            <div
+              class="pb-4 pt-1 empty-posts"
+              v-else-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0"
+            >
               You haven’t posted any incidents, yet
             </div>
           </template>

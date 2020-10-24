@@ -106,8 +106,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
-import store from '../store'
-import { getCompanyList } from '../api/company'
 
 export default {
   name: 'SessionExpired',
