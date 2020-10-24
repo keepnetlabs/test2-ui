@@ -31,8 +31,7 @@ export default {
       type: Boolean
     }
   },
-  updated() {
-  }
+  updated() {}
 }
 </script>
 
