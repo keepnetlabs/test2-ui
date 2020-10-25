@@ -358,9 +358,16 @@
                           <v-card light>
                             <v-list-item class="matching-modal__list-item">
                               <v-list-item-content>
+                                <DatatableLoading
+                                  v-show="isMatchingInvestigationLoading"
+                                  :loading="isMatchingInvestigationLoading"
+                                >
+                                </DatatableLoading>
                                 <datatable
+                                  v-show="!isMatchingInvestigationLoading"
                                   :refName="'matchingInvestigation'"
                                   ref="refMatchingInvestigation"
+                                  :table="matchingInvestigationData"
                                   :columns="matchingInvestigation.columns"
                                   id="incident-responder-matching-investigations-data-table"
                                   :countRow="5"
@@ -384,7 +391,7 @@
                               class="pa-0 k-dialog__button"
                               text
                               color="#2196f3"
-                              @click="showMatchingModal = false"
+                              @click="closeMatchingModal"
                               >CLOSE
                             </v-btn>
                           </div>
@@ -682,6 +689,8 @@ export default {
     isShowRoi: false,
     openInvestigationOverlay: false,
     investigationListData: [],
+    matchingInvestigationData: [],
+    isMatchingInvestigationLoading: true,
     showMatchingModal: false,
     selectedRowsOfReportedEmailsLength: 0,
     selectedReportedMails: null,
@@ -1288,6 +1297,10 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    closeMatchingModal() {
+      this.showMatchingModal = false
+      this.matchingInvestigationData = []
+    },
     initMethods() {
       this.callForGetRunningInvestigations()
       this.callForGetTopRules()
@@ -1521,6 +1534,7 @@ export default {
     matchingPopupClick(match) {
       this.selectedMatch = match
       this.showMatchingModal = true
+      this.isMatchingInvestigationLoading = true
       const payload = {
         pageNumber: 1,
         pageSize: 500,
@@ -1530,7 +1544,7 @@ export default {
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
           const tableData = response.data.data
-          this.$refs.refMatchingInvestigation.loadWithDataArray(tableData.results || [])
+          this.matchingInvestigationData = tableData.results
         })
         .catch((error) => {
           /*this.$store.dispatch('common/createSnackBar', {
@@ -1539,6 +1553,7 @@ export default {
                   message: 'Error when getting the notified emails!'
                 })*/
         })
+        .finally(() => (this.isMatchingInvestigationLoading = false))
     },
     onEmptyBtnClicked() {
       this.$router.push({ path: '/investigations', query: { openPopup: true } })
