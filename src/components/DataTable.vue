@@ -846,6 +846,7 @@ import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 export default {
   components: {
     DataTableFilter,
@@ -1833,7 +1834,13 @@ export default {
         return acc
       }, '')
 
-      navigator.clipboard.writeText(text)
+      navigator.clipboard.writeText(text).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'COPIED TO CLIPBOARD',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle-outline'
+        })
+      })
     },
     handleEdit(selections, index) {
       if (index > -1) {
