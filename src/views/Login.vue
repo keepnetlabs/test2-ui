@@ -570,6 +570,7 @@ export default {
               .then((response) => {
                 let url = new URL(location.href)
                 url.searchParams.delete('cp')
+                this.blurConfirm = false
                 this.pageNumber = 1
               })
               .catch((error) => {
@@ -584,6 +585,7 @@ export default {
               .then((response) => {
                 let url = new URL(location.href)
                 url.searchParams.delete('rp')
+                this.blurConfirm = false
                 this.pageNumber = 1
               })
               .catch((error) => {
