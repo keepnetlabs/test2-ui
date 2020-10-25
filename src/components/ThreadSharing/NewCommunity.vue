@@ -67,11 +67,11 @@
               ></v-textarea>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="edit-industry-area pb-0 pa-0">
+          <v-list-item class="edit-industry-area-autocomplete pb-0 pa-0">
             <v-list-item-content class="pt-0 pb-0">
               <label class="edit-labels">Industry</label>
               <label class="edit-sub-labels">Select an industry category</label>
-              <v-combobox
+              <v-autocomplete
                 :items="categories"
                 item-text="name"
                 placeholder="Select the industry category"
@@ -80,8 +80,7 @@
                 v-model.trim="selectedCategory"
                 :rules="[categoryRule]"
                 required
-                @blur="blurIndustry"
-              ></v-combobox>
+              ></v-autocomplete>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-industry-area pa-0 target-users-select">

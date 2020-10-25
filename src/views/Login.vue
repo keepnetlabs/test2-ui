@@ -69,6 +69,7 @@
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
+                            validate-on-blur
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -96,6 +97,7 @@
                             label="Password"
                             outlined
                             :class="{ 'input-error': isErrorActive }"
+                            validate-on-blur
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -180,6 +182,7 @@
                             outlined
                             :class="{ 'input-error': isErrorActive }"
                             autocomplete="username-password-reset"
+                            validate-on-blur
                           ></v-text-field>
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
@@ -242,6 +245,7 @@
                           v-model="verificationCode"
                           label="Verification Code"
                           v-on:keyup.enter="onTwoStepLogin"
+                          validate-on-blur
                         ></v-text-field>
                       </v-col>
                     </v-row>
@@ -284,10 +288,20 @@
                       </div>
                     </div>
                   </div>
+                  <div v-if="isPassworAreEqual()" class="login-error-container">
+                    <div v-if="isPassworAreEqual()" class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div class="login-error-message pr-1">
+                        ‘New password’ and ‘Confirm password’ do no match
+                      </div>
+                    </div>
+                  </div>
                   <div class="new-password-wrapper">
                     <v-row align="center" justify="center">
                       <v-col sm="12">
-                        <v-form ref="newPassword">
+                        <v-form ref="newPassword" :lazy-validation="false">
                           <div>
                             <label class="new-password-wrapper__label">New Password</label>
                             <v-text-field
@@ -297,12 +311,17 @@
                               v-model="newPassword"
                               placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
-                              :rules="[rules.required, rules.minPassword, rules.equal]"
+                              :rules="[
+                                rules.required,
+                                rules.minPassword,
+                                rules.equalToConfirmPassword(reNewPassword)
+                              ]"
                               @click="newPasswordError = false"
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                               :class="{ 'input-error': isErrorActive }"
                               autocomplete="username-password-new"
+                              validate-on-blur
                             ></v-text-field>
                           </div>
                           <div>
@@ -312,7 +331,7 @@
                             <label class="new-password-wrapper__label">Confirm Password</label>
                             <v-text-field
                               v-model="reNewPassword"
-                              :rules="[rules.required, rules.minPassword, rules.equal]"
+                              :rules="[rules.required, rules.equalToNewPassword(newPassword)]"
                               placeholder="Enter new password again"
                               class="reset-pass-textfield"
                               @click="newPasswordError = false"
@@ -320,6 +339,8 @@
                               type="password"
                               :class="{ 'input-error': isErrorActive }"
                               autocomplete="username-password-password"
+                              validate-on-blur
+                              @blur="blurConfirm = true"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -367,6 +388,7 @@ export default {
   components: { VueRecaptcha, PasswordChecker },
   data() {
     return {
+      blurConfirm: false,
       resetType: null,
       newPassword: null,
       reNewPassword: null,
@@ -398,7 +420,12 @@ export default {
             'Password must be at least 8 characters with 1 capital letter, 1 lowercase letter, 1 special character and 1 number'
           )
         },
-        equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
+        equalToNewPassword: (v, t) => {
+          return v === this.reNewPassword || "'New password' and 'Confirm password' do not match"
+        },
+        equalToConfirmPassword: (v, t) => {
+          return v === this.newPassword || "'New password' and 'Confirm password' do not match"
+        }
       },
       recaptcha: '6LfA498UAAAAACJkiU-j27rjI3KBL0nl95yVcdj9',
       validEmail: false,
@@ -512,6 +539,13 @@ export default {
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    isPassworAreEqual() {
+      if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
+        return this.reNewPassword !== this.newPassword
+      } else {
+        return false
+      }
+    },
     clearError() {
       this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
     },
@@ -536,6 +570,7 @@ export default {
               .then((response) => {
                 let url = new URL(location.href)
                 url.searchParams.delete('cp')
+                this.blurConfirm = false
                 this.pageNumber = 1
               })
               .catch((error) => {
@@ -550,6 +585,7 @@ export default {
               .then((response) => {
                 let url = new URL(location.href)
                 url.searchParams.delete('rp')
+                this.blurConfirm = false
                 this.pageNumber = 1
               })
               .catch((error) => {
