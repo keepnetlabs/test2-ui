@@ -123,12 +123,12 @@ export default {
         })
     },
     getSelectedCompanyDetails(account) {
+      this.$router.go(0)
       localStorage.setItem('isSelectCompany', true)
       localStorage.setItem('companyId', account.resourceId)
       localStorage.setItem('companyRequestId', account.resourceId)
       localStorage.setItem('selectedCompanyRequestId', account.resourceId)
       localStorage.setItem('selectedCompanyName', account.name)
-      this.$router.go(0)
     },
     onClickSelectedAccount(account) {
       this.getSelectedCompanyDetails(account)
