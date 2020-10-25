@@ -69,6 +69,7 @@
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
+                            validate-on-blur
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -96,6 +97,7 @@
                             label="Password"
                             outlined
                             :class="{ 'input-error': isErrorActive }"
+                            validate-on-blur
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -180,6 +182,7 @@
                             outlined
                             :class="{ 'input-error': isErrorActive }"
                             autocomplete="username-password-reset"
+                            validate-on-blur
                           ></v-text-field>
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
@@ -242,6 +245,7 @@
                           v-model="verificationCode"
                           label="Verification Code"
                           v-on:keyup.enter="onTwoStepLogin"
+                          validate-on-blur
                         ></v-text-field>
                       </v-col>
                     </v-row>
