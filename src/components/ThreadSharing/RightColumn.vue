@@ -360,49 +360,49 @@
             </div>
           </div>
         </div>
-        <div v-if="$route.name !== 'Community'" class="right-side-title pt-1">Your Posts</div>
-        <PostCardLoading :loading="yourPostsLoading">
-          <template v-slot:skeleton-content>
-            <div
-              class="pb-4"
-              v-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0"
-            >
-              <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
-                <div class="pt-2">
-                  <div class="right-side-sub-title pb-1">
-                    <a @click="goToPostDetails(post)">{{ post.title }}</a>
+        <div class="right-side-title pt-1">Your Posts</div>
+        <PostCardLoading
+          :loading="yourPostsLoading"
+          id="your-post-skeleton"
+          v-show="yourPostsLoading"
+        >
+          <template v-slot:skeleton-content> </template>
+        </PostCardLoading>
+        <div v-show="!yourPostsLoading">
+          <div class="pb-4" v-if="yourPosts && yourPosts.length > 0">
+            <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
+              <div class="pt-2">
+                <div class="right-side-sub-title pb-1">
+                  <a @click="goToPostDetails(post)">{{ post.title }}</a>
+                </div>
+                <div class="right-side-desc pb-1">
+                  in
+                  <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
+                </div>
+                <div class="right-side-like-comment-wrapper">
+                  <div class="right-side-like">
+                    <v-btn disabled text x-small icon color="grey">
+                      <v-icon>mdi-thumb-up</v-icon>
+                    </v-btn>
+                    <span class="like-count">{{ post.likeCount }}</span>
                   </div>
-                  <div class="right-side-desc pb-1">
-                    in
-                    <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
-                  </div>
-                  <div class="right-side-like-comment-wrapper">
-                    <div class="right-side-like">
-                      <v-btn disabled text x-small icon color="grey">
-                        <v-icon>mdi-thumb-up</v-icon>
-                      </v-btn>
-                      <span class="like-count">{{ post.likeCount }}</span>
-                    </div>
-                    <div class="right-side-message pl-2">
-                      <v-btn disabled text x-small icon color="grey">
-                        <v-icon>mdi-message-reply-text</v-icon>
-                      </v-btn>
-                      <span class="comment-count">{{ post.commentCount }}</span>
-                    </div>
+                  <div class="right-side-message pl-2">
+                    <v-btn disabled text x-small icon color="grey">
+                      <v-icon>mdi-message-reply-text</v-icon>
+                    </v-btn>
+                    <span class="comment-count">{{ post.commentCount }}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              class="pb-4 pt-1 empty-posts"
-              v-else-if="$route.name !== 'Community' && yourPosts && yourPosts.length > 0"
-            >
-              You haven’t posted any incidents, yet
-            </div>
-          </template>
-        </PostCardLoading>
+          </div>
+          <div class="pb-4 pt-1 empty-posts" v-else-if="yourPosts && !yourPosts.length">
+            You haven’t posted any incidents, yet
+          </div>
+        </div>
+
         <div class="right-side-title pt-4">Top Posts from your communities</div>
-        <PostCardLoading :loading="topPostsLoading">
+        <PostCardLoading :loading="topPostsLoading" id="top-post-skeleton">
           <template v-slot:skeleton-content>
             <div v-if="topPosts && topPosts.length">
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
@@ -437,7 +437,7 @@
           </template>
         </PostCardLoading>
         <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
-        <CommunitiesCardLoading :loading="postsLoading">
+        <CommunitiesCardLoading :loading="postsLoading" id="communities-post-skeleton">
           <template v-slot:skeleton-content>
             <div v-if="suggestedCommunities && suggestedCommunities.length">
               <v-card
@@ -745,6 +745,7 @@ export default {
       getMyLastPosts()
         .then((response) => {
           this.yourPosts = response.data.data.slice(0, 3)
+          this.yourPostsLoading = false
           this.$forceUpdate()
         })
         .catch((error) => {
@@ -754,6 +755,7 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.yourPosts = []
+            this.yourPostsLoading = false
           }
         })
         .finally(() => (this.yourPostsLoading = false))
@@ -763,6 +765,7 @@ export default {
       getMyTopPosts()
         .then((response) => {
           this.topPosts = response.data.data.slice(0, 3)
+          this.topPostsLoading = false
           this.$forceUpdate()
         })
         .catch((error) => {
@@ -772,6 +775,7 @@ export default {
             error.response.data.code === 'RESOURCE_NOT_FOUND'
           ) {
             this.topPosts = []
+            this.topPostsLoading = false
           }
         })
         .finally(() => (this.topPostsLoading = false))

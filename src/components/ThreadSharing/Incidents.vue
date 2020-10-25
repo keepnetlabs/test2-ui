@@ -114,8 +114,17 @@
               <div class="empty-communities">
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
-                    No incident has been posted in your communities, yet
+                    No incident has been shared, yet
                   </span>
+                  <div
+                    class="create-post-incident"
+                    @click="showPostIncident = true"
+                    block
+                    rounded
+                    id="post-inc-btn"
+                  >
+                    Post The First Incident
+                  </div>
                 </div>
               </div>
             </v-skeleton-loader>
@@ -376,6 +385,27 @@ export default {
 <style lang="scss">
 #component-incidents {
   z-index: 8;
+  .create-post-incident {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    text-transform: uppercase;
+    width: 207px;
+    border-radius: 18px;
+    height: 36px;
+    -webkit-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+    background-color: #2196f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
   .search-wrapper {
     align-items: center;
     display: flex;

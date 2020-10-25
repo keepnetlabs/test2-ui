@@ -792,7 +792,7 @@ export default {
       acceptInvitation(item.resourceId).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Invitation request has been accepted'
+          message: `You joined ${item.name} `
         })
         this.getInvitions()
         this.getInvitationCount()
