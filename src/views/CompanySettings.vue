@@ -4,13 +4,13 @@
       <v-card class="company-settings__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane label="SMTP Settings" name="first">
-            <s-m-t-p-settings ref="refSmtpSettings"
+            <s-m-t-p-settings v-if="tab === 'first'" ref="refSmtpSettings"
           /></el-tab-pane>
           <el-tab-pane label="Notification Templates" name="second">
-            <notification-templates ref="refNotificationTemplates"
+            <notification-templates v-if="tab === 'second'" ref="refNotificationTemplates"
           /></el-tab-pane>
           <el-tab-pane label="Rest API" name="third">
-            <custom-api ref="refCustomApi"
+            <custom-api v-if="tab === 'third'" ref="refCustomApi"
           /></el-tab-pane>
         </el-tabs>
       </v-card>

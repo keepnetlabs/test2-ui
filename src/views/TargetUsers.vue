@@ -3,8 +3,10 @@
     <v-layout wrap class="target-users__container">
       <v-card class="target-users__container-card">
         <el-tabs v-model="tab">
-          <el-tab-pane label="People" name="first"><people ref="refPeople" /></el-tab-pane>
-          <el-tab-pane label="Group" name="second"> <groups /></el-tab-pane>
+          <el-tab-pane label="People" name="first"
+            ><people ref="refPeople" v-if="tab === 'first'"
+          /></el-tab-pane>
+          <el-tab-pane label="Group" name="second"> <groups v-if="tab === 'second'" /></el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>

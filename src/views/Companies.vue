@@ -4,8 +4,12 @@
       <v-card class="companies__container-card">
         <template v-if="!$route.params.groupId">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Companies" name="first"> <company-list /></el-tab-pane>
-            <el-tab-pane label="Company Groups" name="second"> <company-group-list /></el-tab-pane>
+            <el-tab-pane label="Companies" name="first">
+              <company-list v-if="tab === 'first'"
+            /></el-tab-pane>
+            <el-tab-pane label="Company Groups" name="second">
+              <company-group-list v-if="tab === 'second'"
+            /></el-tab-pane>
           </el-tabs>
         </template>
         <template v-else>
