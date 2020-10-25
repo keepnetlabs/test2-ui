@@ -55,7 +55,7 @@
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">{{ 'Add Groups' }}</span>
+              <span class="tooltip-span">{{ 'Add Group' }}</span>
             </v-tooltip>
           </template>
         </datatable>

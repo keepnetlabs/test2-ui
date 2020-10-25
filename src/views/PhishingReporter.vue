@@ -109,7 +109,10 @@
           <v-card class="phishing-reporter__card">
             <el-tabs v-model="tab">
               <el-tab-pane label="Users" name="first"
-                ><users ref="refUsers" @callForPhishingReporterSummary="getPhishingReportSummary()"
+                ><users
+                  ref="refUsers"
+                  @callForPhishingReporterSummary="getPhishingReportSummary()"
+                  v-if="tab === 'first'"
               /></el-tab-pane>
               <el-tab-pane label="Settings" name="second">
                 <component
