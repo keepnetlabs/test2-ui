@@ -632,11 +632,11 @@ export default {
       }
     },
     onCaptchaVerified() {
-      this.$store.dispatch('login/loginAction', {
+      /*this.$store.dispatch('login/loginAction', {
         email: this.email,
         password: this.password,
         router: this.$router
-      })
+      })*/
     },
     onCaptchaExpired() {
       this.captchaVerified = false
@@ -645,7 +645,7 @@ export default {
     captchaVerifiedForReset() {
       this.resetPasswordError = false
       this.captchaVerified = true
-      this.onResetClick()
+      //this.onResetClick()
     },
     onResetClick() {
       if (this.$refs.resetEmail.validate() && this.captchaVerified) {
