@@ -298,9 +298,7 @@ export default {
     prevStep() {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
-    save() {
-      console.log(this.$refs.refMapTable.exportMapTableData())
-    }
+    save() {}
   },
   created() {
     this.mappingData.customFields = this.columns.map((item) => {

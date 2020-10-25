@@ -363,7 +363,6 @@ export default {
           /*
           this.bodyData.pageNumber = data.pageNumber
           this.bodyData.pageSize = data.pageSize
-          console.log('this.bodyData', this.bodyData)
           this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
            */
         })

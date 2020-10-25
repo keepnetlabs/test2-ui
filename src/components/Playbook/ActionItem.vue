@@ -883,7 +883,6 @@ export default {
     }
   },
   created() {
-    console.log('this.playbookId', this.playbookId)
     if (!this.playbookId) {
       this.addAction()
     }

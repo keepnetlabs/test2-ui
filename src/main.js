@@ -15,21 +15,6 @@ import * as Sentry from '@sentry/browser'
 import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 
-Sentry.init({
-  dsn: 'https://d33f2fcc4295420588d442dfde43d2c5@o466336.ingest.sentry.io/5480520',
-  integrations: [
-    new VueIntegration({
-      Vue,
-      tracing: true
-    }),
-    new Integrations.BrowserTracing()
-  ],
-
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: 1.0
-})
-
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 
@@ -40,6 +25,22 @@ Vue.component(
 console.log('APP_CONFIG', APP_CONFIG)
 if (APP_CONFIG.VUE_APP_IS_CLOUD) {
   console.log(APP_CONFIG.VUE_APP_IS_CLOUD)
+
+  Sentry.init({
+    dsn: 'https://d33f2fcc4295420588d442dfde43d2c5@o466336.ingest.sentry.io/5480520',
+    integrations: [
+      new VueIntegration({
+        Vue,
+        tracing: true
+      }),
+      new Integrations.BrowserTracing()
+    ],
+
+    // We recommend adjusting this value in production, or using tracesSampler
+    // for finer control
+    tracesSampleRate: 1.0
+  })
+
   const VueAnalytics = require('vue-analytics').default
   Vue.use(VueAnalytics, {
     id: APP_CONFIG.VUE_APP_ANALYTICS_ID
@@ -54,8 +55,11 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
 
   FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
   Vue.prototype.$FullStory = FullStory
+
+  APP_CONFIG.VUE_APP_NEW_RELIC()
 }
 Vue.use(VueTour)
+
 Vue.use(require('vue-moment'))
 
 Vue.use(VueMask)

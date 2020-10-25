@@ -1006,7 +1006,6 @@ export default {
           acc.push(item.scanType)
           return acc
         }, [])
-        console.log('scanTypes', this.scanTypes)
         const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {

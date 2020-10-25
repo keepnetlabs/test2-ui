@@ -31,9 +31,7 @@ export default {
       type: Boolean
     }
   },
-  updated() {
-    console.log(this.editMode)
-  }
+  updated() {}
 }
 </script>
 

@@ -97,7 +97,6 @@ export default {
               data: { results = [] }
             }
           } = response
-          console.log('results', results)
           this.tableData = results
           this.isLoading = false
         })
