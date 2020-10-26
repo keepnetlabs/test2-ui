@@ -4841,7 +4841,7 @@ export default {
     .ts-user-date {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 12px;
-      font-weight: normal;
+      font-weight: normal !important;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.58;
