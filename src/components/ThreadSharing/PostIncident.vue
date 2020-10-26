@@ -404,7 +404,6 @@
                 <v-select
                   v-model="value"
                   :items="items2"
-                  multiple
                   :return-object="false"
                   outlined
                   placeholder="Select an option"
@@ -2663,7 +2662,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
-          securityLabelResourceIdArray: this.value,
+          securityLabelResourceIdArray: [this.value],
           CommunityPostEmail: {
             resourceId: this.uploadRespond.resourceId,
             from: this.uploadRespond.from,
@@ -2717,7 +2716,7 @@ export default {
           AffectArea: this.uploadRespond.AffectArea,
           Scope: this.uploadRespond.Scope,
           IsAnonymous: this.isAnonym,
-          securityLabelResourceIdArray: this.value,
+          securityLabelResourceIdArray: [this.value],
           EmailPreview: {
             body: this.uploadRespond.body,
             from: this.uploadRespond.from,
@@ -2863,7 +2862,7 @@ export default {
   },
   mounted() {
     if (this.editItem) {
-      this.value = this.editItem.securityLabelResourceIdArray
+      this.value = this.editItem.securityLabelResourceIdArray[0]
       this.selectedEmail = this.editItem.communityPostResourceId
       //let val = { resourceId: '4pDtxLYSG0mb' }
       let val = { resourceId: this.editItem.communityPostResourceId }
@@ -4841,7 +4840,7 @@ export default {
     .ts-user-date {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 12px;
-      font-weight: normal;
+      font-weight: normal !important;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.58;

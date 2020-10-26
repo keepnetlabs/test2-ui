@@ -316,7 +316,7 @@
         <div class="selection-row" v-if="multipleSelection.length">
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
-            @click.native="toggleAll()"
+            @click.native="toggleAll(multipleSelection)"
             class="selection-all-check"
             color="white"
             v-model="selectionCheckbox"
@@ -1740,8 +1740,12 @@ export default {
     handleSubMenuItemClick(item) {
       this.$emit('submenuItemClick', item)
     },
-    toggleAll() {
-      this.$refs.elTableRef.toggleAllSelection()
+    toggleAll(selections) {
+      if (this.tableData.length === selections.length) {
+        this.$refs.elTableRef.toggleAllSelection()
+      } else {
+        this.$refs.elTableRef.clearSelection()
+      }
     },
     rowAct(action, row, scope, tableData) {
       switch (action) {
