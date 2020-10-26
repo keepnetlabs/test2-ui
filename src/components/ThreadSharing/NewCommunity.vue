@@ -73,6 +73,7 @@
               <label class="edit-sub-labels">Select an industry category</label>
               <v-autocomplete
                 :items="categories"
+                return-object
                 item-text="name"
                 placeholder="Select the industry category"
                 outlined

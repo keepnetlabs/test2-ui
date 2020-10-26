@@ -325,18 +325,6 @@ export function passwordComplexity(pwd) {
       'div_nMidChar',
       'div_nRequirements'
     ]
-    for (var i in arrZeros) {
-    }
-    for (var i in arrPassPars) {
-    }
-    for (var i in arrPassDivs) {
-    }
-    for (var i in arrFailPars) {
-    }
-    for (var i in arrFailDivs) {
-    }
-    if (restart) {
-    }
   }
   // Simultaneous variable declaration and value assignment aren't supported in IE apparently
   // so I'm forced to assign the same value individually per var to support a crappy browser *sigh*
