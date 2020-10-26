@@ -72,6 +72,7 @@
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
         />
         <el-date-picker
+          :key="column.property"
           v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
           type="datetimerange"
@@ -92,10 +93,10 @@
         </div>
         <v-checkbox
           v-for="item in searchInItems"
-          :key="item"
           v-model="filterChecked"
-          :value="item"
-          :label="item.charAt(0).toUpperCase() + item.slice(1)"
+          :key="item.value"
+          :value="item.value"
+          :label="item.text"
         >
         </v-checkbox>
       </template>
@@ -138,8 +139,8 @@ export default {
       menu: null,
       isFilterActive: false,
       filteredSelectValue: 'Contains',
-      filteredSelectValueNum: 'Equal',
-      filteredSelectValueDate: 'Before',
+      filteredSelectValueNum: '=',
+      filteredSelectValueDate: '<=',
       filteredDateValue: null,
       filterValue: '',
       filterChecked: [],
@@ -192,19 +193,27 @@ export default {
             }
           }
         ]
-      }
+      },
+      convertedFilterableItems: []
     }
   },
   mounted() {
-    this.filteredDateValue = this.$moment(Date.now() - 3600 * 1000 * 24 * 30).format(
-      'YYYY-MM-DD HH:mm:ss'
-    )
+    this.changeDateSelect()
+  },
+  created() {
+    const items = []
+
+    if (this.filterableType === 'select') {
+      this.filterableItems.forEach((x) => {
+        this.convertedFilterableItems.push(
+          typeof x == 'string' ? { text: x, value: x } : { text: x.text, value: x.value }
+        )
+      })
+    }
   },
   methods: {
-    changeDateSelect(val) {
-      this.filteredDateValue = this.$moment(Date.now() - 3600 * 1000 * 24 * 30).format(
-        'YYYY-MM-DD HH:mm:ss'
-      )
+    changeDateSelect() {
+      this.filteredDateValue = this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
     },
     clearFilter() {
       this.menu = false
@@ -267,8 +276,11 @@ export default {
   computed: {
     searchInItems: function () {
       return this.filterValue.length > 0
-        ? this.filterableItems.filter((item) => item.startsWith(this.filterValue))
-        : this.filterableItems
+        ? this.convertedFilterableItems.filter((item) => {
+            return item.text.toLowerCase().startsWith(this.filterValue.toLowerCase())
+            debugger
+          })
+        : this.convertedFilterableItems
     },
     fieldName: function () {
       return this.filterableCustomFieldName || this.column.property

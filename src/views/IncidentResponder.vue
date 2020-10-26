@@ -1035,7 +1035,11 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: ['NonMalicious', 'Malicious', 'Phishing'],
+          filterableItems: [
+            { text: 'Non Malicious', value: 'NonMalicious' },
+            'Malicious',
+            'Phishing'
+          ],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -1069,7 +1073,13 @@ export default {
           showColorfulText: true,
           fullWidth: true,
           filterableType: 'select',
-          filterableItems: ['BeingAnalyzed', 'Open', 'Closed', 'InProgress', 'FalsePositive'],
+          filterableItems: [
+            { text: 'Being Analyzed', value: 'BeingAnalyzed' },
+            'Open',
+            'Closed',
+            { text: 'In Progress', value: 'InProgress' },
+            { text: 'False Positive', value: 'FalsePositive' }
+          ],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
