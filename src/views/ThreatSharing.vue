@@ -614,7 +614,7 @@ export default {
         align-items: center;
         background-color: #2196f3 !important;
         color: #fff !important;
-        text-transform: capitalize;
+        text-transform: uppercase;
         display: flex;
         justify-content: center;
 

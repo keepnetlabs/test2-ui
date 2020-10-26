@@ -437,66 +437,69 @@
           </template>
         </PostCardLoading>
         <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
-        <CommunitiesCardLoading :loading="postsLoading" id="communities-post-skeleton">
-          <template v-slot:skeleton-content>
-            <div v-if="suggestedCommunities && suggestedCommunities.length">
-              <v-card
-                v-for="(commun, ind) of suggestedCommunities"
-                :key="ind + commun.communityName"
-                class="suggested-card"
-              >
-                <div class="suggested-row">
-                  <div class="suggested-com-name" cols="12">
-                    <div class="suggested-title">{{ commun.communityName }}</div>
-                    <div class="suggested-com-detail">
-                      <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                      <b>{{ commun.memberCount }}</b
-                      ><span class="suggested-row__seperator">•</span>
-                      <span class="suggested-company">{{ commun.industryName }} </span>
-                      <span class="suggested-row__seperator">•</span>
-                      <span class="suggested-company">{{ commun.privacyStatusName }} </span>
-                    </div>
-                  </div>
-                  <div class="suggested-right-action">
-                    <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
-                      <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
-                      <span class="pr-2">Member</span>
-                    </v-btn>
-                    <v-btn
-                      @click="joinCommunity(commun.resourceId, commun.communityName)"
-                      class="suggested-btn"
-                      block
-                      rounded
-                      v-else
-                      :disabled="commun.isJoined"
-                      style="background-color: #2196f3 !important;"
-                    >
-                      <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
-                      <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
-                        >mdi-account-clock
-                      </v-icon>
-                      <div v-if="!commun.privacyStatusName != 'Private'" :key="commun.resourceId">
-                        JOIN
-                      </div>
-                      <div v-else-if="commun.isJoined" :key="commun.resourceId">
-                        Request Sent
-                      </div>
-                      <div v-else :key="commun.resourceId">Request to join</div>
-                    </v-btn>
+        <CommunitiesCardLoading
+          v-if="postsLoading"
+          :loading="postsLoading"
+          id="communities-post-skeleton"
+        />
+        <div v-show="!postsLoading">
+          <div v-if="suggestedCommunities && suggestedCommunities.length">
+            <v-card
+              v-for="(commun, ind) of suggestedCommunities"
+              :key="ind + commun.communityName"
+              class="suggested-card"
+            >
+              <div class="suggested-row">
+                <div class="suggested-com-name" cols="12">
+                  <div class="suggested-title">{{ commun.communityName }}</div>
+                  <div class="suggested-com-detail">
+                    <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
+                    <b>{{ commun.memberCount }}</b
+                    ><span class="suggested-row__seperator">•</span>
+                    <span class="suggested-company">{{ commun.industryName }} </span>
+                    <span class="suggested-row__seperator">•</span>
+                    <span class="suggested-company">{{ commun.privacyStatusName }} </span>
                   </div>
                 </div>
-              </v-card>
-            </div>
-            <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
-              There is no suggested community available, yet
-            </div>
-            <div class="empty-suggested" v-else>
-              <v-btn class="create-community-button mt-3 mb-6" @click="createNewCommunity()" rounded
-                >Create A New Community
-              </v-btn>
-            </div>
-          </template>
-        </CommunitiesCardLoading>
+                <div class="suggested-right-action">
+                  <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
+                    <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
+                    <span class="pr-2">Member</span>
+                  </v-btn>
+                  <v-btn
+                    @click="joinCommunity(commun.resourceId, commun.communityName)"
+                    class="suggested-btn"
+                    block
+                    rounded
+                    v-else
+                    :disabled="commun.isJoined"
+                    style="background-color: #2196f3 !important;"
+                  >
+                    <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
+                    <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
+                      >mdi-account-clock
+                    </v-icon>
+                    <div v-if="commun.privacyStatusName != 'Private'" :key="commun.resourceId">
+                      JOIN
+                    </div>
+                    <div v-else-if="commun.isJoined" :key="commun.resourceId">
+                      Request Sent
+                    </div>
+                    <div v-else :key="commun.resourceId">Request to join</div>
+                  </v-btn>
+                </div>
+              </div>
+            </v-card>
+          </div>
+          <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
+            There is no suggested community available, yet
+          </div>
+          <div class="empty-suggested" v-else>
+            <v-btn class="create-community-button mt-3 mb-6" @click="createNewCommunity()" rounded
+              >Create A New Community
+            </v-btn>
+          </div>
+        </div>
       </div>
     </v-card>
   </div>
@@ -1456,8 +1459,8 @@ export default {
         align-items: center;
         background-color: #2196f3 !important;
         color: #fff !important;
-        text-transform: capitalize;
         width: min-content;
+        text-transform: uppercase;
 
         @media only screen and (max-width: 500px) {
           padding: 0 3px !important;

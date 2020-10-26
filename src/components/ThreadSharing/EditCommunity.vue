@@ -94,15 +94,17 @@
           <v-list-item-content class="pt-0 pb-0">
             <label class="edit-labels">Industry</label>
             <label class="edit-sub-labels">Select an industry category</label>
-            <v-select
+            <v-autocomplete
               :items="categories"
-              :placeholder="categories[0]"
+              return-object
+              item-text="name"
+              placeholder="Select the industry category"
               outlined
               class="edit-select"
-              v-model="selectedCategory"
+              v-model.trim="selectedCategory"
               :rules="[categoryRule]"
               required
-            />
+            ></v-autocomplete>
           </v-list-item-content>
         </v-list-item>
       </v-form>
