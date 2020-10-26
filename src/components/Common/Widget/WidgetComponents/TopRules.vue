@@ -16,6 +16,12 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
+            <template v-slot:ruleName="{ value, row }">
+              <span class="k-widget-list__item cursor-pointer" @click="handleRuleNameClick(row)"
+                >{{ value }}
+              </span>
+            </template>
+
             <template v-slot:matchCount="{ value, row }">
               <span class="k-widget-list__no-match" v-if="value === 0">
                 No Match
@@ -37,7 +43,6 @@
 
 <script>
 import { getTopRules } from '@/api/incidentResponder'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
@@ -64,6 +69,7 @@ export default {
     return {
       isLoading: true,
       tableData: [],
+      showPlaybookModal: false,
       showMatchingModal: false,
       selectedMatch: null,
       columns: [
@@ -113,6 +119,14 @@ export default {
           */
           this.isLoading = false
         })
+    },
+    handleRuleNameClick({ resourceId = '' }) {
+      this.$router.push({
+        name: 'Playbook',
+        params: {
+          playbookId: resourceId
+        }
+      })
     },
     handleSelectMatch(row) {
       this.selectedMatch = row

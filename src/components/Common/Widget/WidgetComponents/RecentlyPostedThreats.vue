@@ -11,7 +11,11 @@
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
             <template v-slot:title="{ value, row }">
-              <span class="k-widget-list__item" v-if="value">
+              <span
+                class="k-widget-list__item cursor-pointer"
+                @click="handleTitleSelection(row)"
+                v-if="value"
+              >
                 {{ value }}
               </span>
               <span v-else class="k-widget-list__no-match">{{ '' }}</span>
@@ -22,6 +26,16 @@
                     : `${row['harmfulItemCount']} harmful item`
                 }}
               </div>
+            </template>
+            <template v-slot:communityName="{ value, row }">
+              <span class="k-widget-list__item cursor-pointer">
+                <span
+                  class="k-widget-list__item cursor-pointer"
+                  @click="handleCommunitySelection(row)"
+                >
+                  {{ value }}
+                </span>
+              </span>
             </template>
           </widget-list>
         </widget-body>
@@ -103,6 +117,21 @@ export default {
         .catch(() => {
           this.isLoading = false
         })
+    },
+    handleTitleSelection(row) {
+      localStorage.setItem('communityName', row.communityName)
+      localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
+      this.$router.push({
+        path: `/community/${row.communityResourceId}`,
+        query: { postId: row.communityPostResourceId }
+      })
+    },
+    handleCommunitySelection(row) {
+      localStorage.setItem('communityName', row.communityName)
+      localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
+      this.$router.push({
+        path: `/community/${row.communityResourceId}`
+      })
     }
   }
 }

@@ -546,6 +546,12 @@ export default {
       this.showRuleModal = true
     }
   },
+  created() {
+    if (this.$route.params && this.$route.params.playbookId) {
+      this.selectedPlaybookId = this.$route.params.playbookId
+      this.showRuleModal = true
+    }
+  },
   computed: {
     ...mapGetters({
       playbookList: 'playbook/playbookListGetter'
