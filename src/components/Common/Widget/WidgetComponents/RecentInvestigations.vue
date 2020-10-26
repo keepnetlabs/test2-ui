@@ -13,7 +13,7 @@
             <template v-slot:name="{ value, row }">
               <router-link
                 class="k-widget-list__item"
-                :to="`/investigation-details/${row['resourceId']}}`"
+                :to="`/investigation-details/${row['resourceId']}`"
                 >{{ value }}</router-link
               >
               <div class="k-widget-list__sub-item">
