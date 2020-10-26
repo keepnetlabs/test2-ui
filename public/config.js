@@ -1,6 +1,6 @@
 const APP_CONFIG = (() => {
   return {
-    VUE_APP_IS_CLOUD: true, //
+    VUE_APP_IS_CLOUD: false, //
     VUE_APP_HOTJAR_ID: '2045435',
     VUE_APP_FULLSTORY_ID: 'TRDZX',
     VUE_APP_ANALYTICS_ID: 'UA-131042304-4',

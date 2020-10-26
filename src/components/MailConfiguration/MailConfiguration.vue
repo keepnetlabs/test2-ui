@@ -216,85 +216,78 @@
       </template>
     </app-dialog>
     <div class="mail-configuration__content">
-      <DatatableLoading :loading="loading">
-        <template v-slot:skeleton-content>
-          <datatable
-            :is-column-filter-active="tableOptions.isColumnFilterActive"
-            :table="tableData"
-            :addButton="tableOptions.addButton"
-            :columns="tableOptions.columns"
-            :countRow="5"
-            :empty="tableOptions.iEmpty"
-            :filterable="true"
-            :options="true"
-            :pageSizes="tableOptions.pageSizes"
-            :refName="'peopleTable'"
-            id="mail-configurations-data-table"
-            :rowActions="tableOptions.rowActions"
-            :selectEvent="tableOptions.selectEvent"
-            :setClassName="setCellClassName"
-            @syncUser="handleSyncUser"
-            @delete="handleDelete"
-            ref="refPeopleTable"
-            @editTargetUsers="handleEditTargetUsers"
-            @onEmptyBtnClicked="status = true"
-            :is-downloadable="true"
-            @downloadEvent="exportMailConfigurationList"
-            @columnFilterChanged="columnFilterChanged"
-            @columnFilterCleared="columnFilterCleared"
-          >
-            <template v-slot:addUsers>
-              <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
-                <template v-slot:activator="{ on: menu }">
-                  <v-tooltip bottom opacity="1">
-                    <template v-slot:activator="{ on: tooltip }">
-                      <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
-                        <v-icon>mdi-plus</v-icon>
-                      </v-btn>
-                    </template>
-                    <span class="tooltip-span">{{ 'Add Mail Configuration' }}</span>
-                  </v-tooltip>
+      <datatable
+        :loading="loading"
+        :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :table="tableData"
+        :addButton="tableOptions.addButton"
+        :columns="tableOptions.columns"
+        :countRow="5"
+        :empty="tableOptions.iEmpty"
+        :filterable="true"
+        :options="true"
+        :pageSizes="tableOptions.pageSizes"
+        :refName="'peopleTable'"
+        id="mail-configurations-data-table"
+        :rowActions="tableOptions.rowActions"
+        :selectEvent="tableOptions.selectEvent"
+        :setClassName="setCellClassName"
+        @syncUser="handleSyncUser"
+        @delete="handleDelete"
+        ref="refPeopleTable"
+        @editTargetUsers="handleEditTargetUsers"
+        @onEmptyBtnClicked="status = true"
+        :is-downloadable="true"
+        @downloadEvent="exportMailConfigurationList"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
+      >
+        <template v-slot:addUsers>
+          <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
+            <template v-slot:activator="{ on: menu }">
+              <v-tooltip bottom opacity="1">
+                <template v-slot:activator="{ on: tooltip }">
+                  <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
                 </template>
-                <v-list>
-                  <v-list-item
-                    :key="item"
-                    @click="handleAddUsers(item)"
-                    v-for="item in addUsersItems"
-                  >
-                    <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
+                <span class="tooltip-span">{{ 'Add Mail Configuration' }}</span>
+              </v-tooltip>
             </template>
-            <template v-slot:settings-popup-body>
-              <div class="edit-fields" @click="handleEditFieldsClick">
-                EDIT FIELDS
-              </div>
-            </template>
-            <template v-slot:empty-table-inline>
-              <div class="mail-configuration__no-data">
-                <p class="mail-configuration__no-data__header">
-                  No mail configuration has been created, yet
-                </p>
-                <p class="mail-configuration__no-data__body">Create now!</p>
-                <div class="mail-configuration__no-data__buttons">
-                  <div
-                    class="mail-configuration__no-data__buttons--button"
-                    @click="statusGsuite = true"
-                  >
-                    <v-icon color="#2196f3">mdi-plus-circle</v-icon
-                    ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
-                  </div>
-                  <div class="mail-configuration__no-data__buttons--button" @click="status = true">
-                    <v-icon color="#2196f3">mdi-plus-circle</v-icon>
-                    <img alt="outlook" src="../../assets/img/office-365-logo.png" />
-                  </div>
-                </div>
-              </div>
-            </template>
-          </datatable>
+            <v-list>
+              <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
+                <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
-      </DatatableLoading>
+        <template v-slot:settings-popup-body>
+          <div class="edit-fields" @click="handleEditFieldsClick">
+            EDIT FIELDS
+          </div>
+        </template>
+        <template v-slot:empty-table-inline>
+          <div class="mail-configuration__no-data">
+            <p class="mail-configuration__no-data__header">
+              No mail configuration has been created, yet
+            </p>
+            <p class="mail-configuration__no-data__body">Create now!</p>
+            <div class="mail-configuration__no-data__buttons">
+              <div
+                class="mail-configuration__no-data__buttons--button"
+                @click="statusGsuite = true"
+              >
+                <v-icon color="#2196f3">mdi-plus-circle</v-icon
+                ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
+              </div>
+              <div class="mail-configuration__no-data__buttons--button" @click="status = true">
+                <v-icon color="#2196f3">mdi-plus-circle</v-icon>
+                <img alt="outlook" src="../../assets/img/office-365-logo.png" />
+              </div>
+            </div>
+          </div>
+        </template>
+      </datatable>
     </div>
   </div>
 </template>
@@ -303,7 +296,6 @@
 import Datatable from '../../components/DataTable'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import {
@@ -321,7 +313,6 @@ export default {
   name: 'MailConfiguration',
   components: {
     Datatable,
-    DatatableLoading,
     AppModal,
     AppDialog,
     TestConnection,

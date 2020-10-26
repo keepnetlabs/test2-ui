@@ -12,55 +12,53 @@
       @handleMultipleDelete="handleDeleteGroupMultiple"
       :selected-row="selectedRow"
     />
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <datatable
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
-          :table="tableData"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          :empty="tableOptions.iEmpty"
-          :filterable="true"
-          id="target-users-group-data-table"
-          :options="true"
-          :pageSizes="tableOptions.pageSizes"
-          :refName="'groupsTable'"
-          :rowActions="tableOptions.rowActions"
-          :extended-view-options="tableOptions.extendedViewOptions"
-          :disableExtendedViewTransition="true"
-          :extendedViewValue="extendedViewValue"
-          :selectEvent="tableOptions.selectEvent"
-          @handleMultipleDelete="handleMultipleDelete"
-          :is-downloadable="false"
-          :selectable="true"
-          ref="refGroupsTable"
-          @syncWithLDAP="handleSyncWithLDAP"
-          @handleEdit="handleEdit"
-          @onEditClick="onEditClick"
-          @delete="handleDelete"
-          @onEmptyBtnClicked="showNewUserGroupModal = true"
-          titleKey="name"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-        >
-          <template v-slot:addUsers>
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on: tooltip }">
-                <v-btn
-                  class="btn-add mr-1"
-                  icon
-                  v-on="{ ...tooltip }"
-                  @click.native="showNewUserGroupModal = true"
-                >
-                  <v-icon>mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">{{ 'Add Group' }}</span>
-            </v-tooltip>
+
+    <datatable
+      :loading="loading"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :empty="tableOptions.iEmpty"
+      :filterable="true"
+      id="target-users-group-data-table"
+      :options="true"
+      :pageSizes="tableOptions.pageSizes"
+      :refName="'groupsTable'"
+      :rowActions="tableOptions.rowActions"
+      :extended-view-options="tableOptions.extendedViewOptions"
+      :disableExtendedViewTransition="true"
+      :extendedViewValue="extendedViewValue"
+      :selectEvent="tableOptions.selectEvent"
+      @handleMultipleDelete="handleMultipleDelete"
+      :is-downloadable="false"
+      :selectable="true"
+      ref="refGroupsTable"
+      @syncWithLDAP="handleSyncWithLDAP"
+      @handleEdit="handleEdit"
+      @onEditClick="onEditClick"
+      @delete="handleDelete"
+      @onEmptyBtnClicked="showNewUserGroupModal = true"
+      titleKey="name"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+    >
+      <template v-slot:addUsers>
+        <v-tooltip bottom opacity="1">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              class="btn-add mr-1"
+              icon
+              v-on="{ ...tooltip }"
+              @click.native="showNewUserGroupModal = true"
+            >
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
           </template>
-        </datatable>
+          <span class="tooltip-span">{{ 'Add Group' }}</span>
+        </v-tooltip>
       </template>
-    </DatatableLoading>
+    </datatable>
   </div>
 </template>
 
@@ -75,7 +73,6 @@ import {
   searchTargetGroups
 } from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import DeleteGroupModal from './DeleteGroupModal'
 import {
   COMMON_CONSTANTS,
@@ -90,8 +87,7 @@ export default {
   components: {
     DeleteGroupModal,
     CreateNewUserGroupModal,
-    datatable: DataTable,
-    DatatableLoading
+    datatable: DataTable
   },
   data() {
     return {

@@ -315,102 +315,99 @@
               </div>
             </div>
             <div class="table">
-              <IRSummaryLoading :loading="topRulesLoading">
-                <template v-slot:skeleton-content>
-                  <datatable
-                    :refName="'topRules'"
-                    ref="refTopRules"
-                    :columns="topRules.columns"
-                    :table="topRules.table"
-                    id="incident-responder-top-rules-data-table"
-                    :countRow="5"
-                    :pageSizes="[]"
-                    :defaultSort="'status'"
-                    :selectable="false"
-                    :filterable="false"
-                    :rowActions="[]"
-                    :addUsers="topRules.addMenu"
-                    :empty="topRules.iEmpty"
-                    :selectEvent="topRules.selectEvent"
-                    :border="false"
-                    :showHeader="false"
-                    @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
-                    class="no-sub-border-datatable"
+              <datatable
+                :loading="topRulesLoading"
+                :refName="'topRules'"
+                ref="refTopRules"
+                :columns="topRules.columns"
+                :table="topRules.table"
+                id="incident-responder-top-rules-data-table"
+                :countRow="5"
+                :pageSizes="[]"
+                :defaultSort="'status'"
+                :selectable="false"
+                :filterable="false"
+                :rowActions="[]"
+                :addUsers="topRules.addMenu"
+                :empty="topRules.iEmpty"
+                :selectEvent="topRules.selectEvent"
+                :border="false"
+                :showHeader="false"
+                @onEmptyBtnClicked="onTopRulesEmptyBtnClicked"
+                class="no-sub-border-datatable"
+              >
+                <template v-slot:datatable-column-popup="{ scope, col }">
+                  <span v-if="scope.row[col.property] === 0">
+                    No Matches
+                  </span>
+                  <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
+                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+                  </span>
+                  <app-dialog
+                    :status="scope.row.resourceId === selectedMatch.resourceId"
+                    icon="mdi-email"
+                    title="Matching Incidents"
+                    v-if="showMatchingModal"
+                    :subtitle="getSelectedMatchingIncidentsSubtitle"
+                    @changeStatus="showMatchingModal = false"
+                    size="maximum"
+                    class-name="matching-modal"
                   >
-                    <template v-slot:datatable-column-popup="{ scope, col }">
-                      <span v-if="scope.row[col.property] === 0">
-                        No Matches
-                      </span>
-                      <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                        {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
-                      </span>
-                      <app-dialog
-                        :status="scope.row.resourceId === selectedMatch.resourceId"
-                        icon="mdi-email"
-                        title="Matching Incidents"
-                        v-if="showMatchingModal"
-                        :subtitle="getSelectedMatchingIncidentsSubtitle"
-                        @changeStatus="showMatchingModal = false"
-                        size="maximum"
-                        class-name="matching-modal"
-                      >
-                        <template v-slot:app-dialog-body>
-                          <v-card light>
-                            <v-list-item class="matching-modal__list-item">
-                              <v-list-item-content>
-                                <DatatableLoading
-                                  v-show="isMatchingInvestigationLoading"
-                                  :loading="isMatchingInvestigationLoading"
-                                >
-                                </DatatableLoading>
-                                <datatable
-                                  v-show="!isMatchingInvestigationLoading"
-                                  :refName="'matchingInvestigation'"
-                                  ref="refMatchingInvestigation"
-                                  :table="matchingInvestigationData"
-                                  :columns="matchingInvestigation.columns"
-                                  id="incident-responder-matching-investigations-data-table"
-                                  :countRow="5"
-                                  :pageSizes="[5, 10, 25]"
-                                  :showHeader="true"
-                                  :defaultSort="'subject'"
-                                  :selectable="false"
-                                  :filterable="true"
-                                  :options="true"
-                                  :rowActions="[]"
-                                  :cell-padding="15"
-                                  :empty="matchingInvestigation.iEmpty"
-                                />
-                              </v-list-item-content>
-                            </v-list-item>
-                          </v-card>
-                        </template>
-                        <template v-slot:app-dialog-footer>
-                          <div class="d-flex" style="justify-content: flex-end;">
-                            <v-btn
-                              class="pa-0 k-dialog__button"
-                              text
-                              color="#2196f3"
-                              @click="closeMatchingModal"
-                              >CLOSE
-                            </v-btn>
-                          </div>
-                        </template>
-                      </app-dialog>
+                    <template v-slot:app-dialog-body>
+                      <v-card light>
+                        <v-list-item class="matching-modal__list-item">
+                          <v-list-item-content>
+                            <DatatableLoading
+                              v-show="isMatchingInvestigationLoading"
+                              :loading="isMatchingInvestigationLoading"
+                            >
+                            </DatatableLoading>
+                            <datatable
+                              v-show="!isMatchingInvestigationLoading"
+                              :refName="'matchingInvestigation'"
+                              ref="refMatchingInvestigation"
+                              :table="matchingInvestigationData"
+                              :columns="matchingInvestigation.columns"
+                              id="incident-responder-matching-investigations-data-table"
+                              :countRow="5"
+                              :pageSizes="[5, 10, 25]"
+                              :showHeader="true"
+                              :defaultSort="'subject'"
+                              :selectable="false"
+                              :filterable="true"
+                              :options="true"
+                              :rowActions="[]"
+                              :cell-padding="15"
+                              :empty="matchingInvestigation.iEmpty"
+                            />
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-card>
                     </template>
-                    <template v-slot:datatable-custom-column="{ scope }">
-                      <span
-                        @click="handeRuleNameClick(scope.row.resourceId)"
-                        class="datatable-link"
-                        v-if="scope.row.ruleName"
-                      >
-                        {{ scope.row.ruleName }}
-                      </span>
-                      <span v-else> </span>
+                    <template v-slot:app-dialog-footer>
+                      <div class="d-flex" style="justify-content: flex-end;">
+                        <v-btn
+                          class="pa-0 k-dialog__button"
+                          text
+                          color="#2196f3"
+                          @click="closeMatchingModal"
+                          >CLOSE
+                        </v-btn>
+                      </div>
                     </template>
-                  </datatable>
+                  </app-dialog>
                 </template>
-              </IRSummaryLoading>
+                <template v-slot:datatable-custom-column="{ scope }">
+                  <span
+                    @click="handeRuleNameClick(scope.row.resourceId)"
+                    class="datatable-link"
+                    v-if="scope.row.ruleName"
+                  >
+                    {{ scope.row.ruleName }}
+                  </span>
+                  <span v-else> </span>
+                </template>
+              </datatable>
             </div>
           </v-card>
         </div>
@@ -435,30 +432,27 @@
               </div>
             </div>
             <div class="table investigations">
-              <IRSummaryLoading :loading="investigationsLoading">
-                <template v-slot:skeleton-content>
-                  <datatable
-                    :table="investigationsData"
-                    :refName="'recentInv'"
-                    ref="refRecentInv"
-                    id="incident-responder-investigations-data-table"
-                    :columns="recentInv.columns"
-                    :countRow="5"
-                    :pageSizes="[]"
-                    :defaultSort="'priority'"
-                    :selectable="false"
-                    :filterable="false"
-                    :rowActions="[]"
-                    :addUsers="recentInv.addMenu"
-                    :empty="recentInv.iEmpty"
-                    :selectEvent="recentInv.selectEvent"
-                    :border="false"
-                    :showHeader="false"
-                    @onEmptyBtnClicked="onEmptyBtnClicked"
-                    class="no-sub-border-datatable"
-                  />
-                </template>
-              </IRSummaryLoading>
+              <datatable
+                :loading="investigationsLoading"
+                :table="investigationsData"
+                :refName="'recentInv'"
+                ref="refRecentInv"
+                id="incident-responder-investigations-data-table"
+                :columns="recentInv.columns"
+                :countRow="5"
+                :pageSizes="[]"
+                :defaultSort="'priority'"
+                :selectable="false"
+                :filterable="false"
+                :rowActions="[]"
+                :addUsers="recentInv.addMenu"
+                :empty="recentInv.iEmpty"
+                :selectEvent="recentInv.selectEvent"
+                :border="false"
+                :showHeader="false"
+                @onEmptyBtnClicked="onEmptyBtnClicked"
+                class="no-sub-border-datatable"
+              />
             </div>
           </v-card>
         </div>
@@ -473,149 +467,146 @@
               </p>
             </div>
           </div>
-          <DatatableLoading :loading="reportedEmailsLoading">
-            <template v-slot:skeleton-content>
-              <datatable
-                :is-column-filter-active="emails.isColumnFilterActive"
-                :table="reportedEmailsData"
-                :refName="'reportedEmails'"
-                ref="refReportedEmails"
-                id="incident-responder-reported-emails-data-table"
-                :columns="emails.columns"
-                :countRow="5"
-                :extended-view-options="emails.extendedViewOptions"
-                :extendedViewValue="extendedViewValue"
-                :pageSizes="emails.pageSizes"
-                :defaultSort="'createDate'"
-                :selectable="true"
-                :filterable="true"
-                :options="true"
-                :rowActions="emails.rowActions"
-                :addUsers="emails.addUsers"
-                :empty="emails.iEmpty"
-                :groupable="true"
-                :selectEvent="emails.selectEvent"
-                :extended-view-style="{ top: '-120px' }"
-                @downloadEvent="exportReportedListEmails"
-                @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
-                @irPreview="irPreviewOnClick"
-                @handleInvestigate="handleReportedEmailInvestigate"
-                @handleDetails="irDetailsOnClick"
-                @onEditClick="onEditClick"
-                @handleEdit="handleEdit"
-                @columnFilterChanged="columnFilterChanged"
-                @columnFilterCleared="columnFilterCleared"
-              >
-                <template v-slot:datatable-custom-column="{ scope, col }">
-                  <template v-if="scope.column.property === 'source'">
-                    <span
-                      v-if="
-                        scope.row &&
-                        scope.row.matchingPlaybooks &&
-                        scope.row.matchingPlaybooks.length === 0
-                      "
-                    >
-                      {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
-                    </span>
-                    <span
-                      v-else
-                      v-for="item in scope.row.matchingPlaybooks"
-                      :key="item.resourceId"
-                      class="incident-responder-parent__link"
-                      @click="togglePlaybookModalWithSelected(item.resourceId)"
-                      >{{ item.name }}</span
-                    >
-                  </template>
-                  <template v-if="scope.column.property === 'status'">
-                    <template v-if="scope.row.status === 'BeingAnalyzed'">
-                      <span class="analysis-link">
-                        <div>
-                          In Analysis...
-                        </div>
-                        <div>
-                          <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
-                        </div>
-                      </span>
-                    </template>
-                    <template v-else>
-                      <data-table-colorful-text
-                        :col="col"
-                        :scope="scope"
-                        :text="getDataTableFieldLabel(scope.row.status)"
-                      />
-                    </template>
-                  </template>
-                </template>
-                <template v-slot:extended-view-slot>
-                  <div class="row-edit-div">
+          <datatable
+            :loading="reportedEmailsLoading"
+            :is-column-filter-active="emails.isColumnFilterActive"
+            :table="reportedEmailsData"
+            :refName="'reportedEmails'"
+            ref="refReportedEmails"
+            id="incident-responder-reported-emails-data-table"
+            :columns="emails.columns"
+            :countRow="5"
+            :extended-view-options="emails.extendedViewOptions"
+            :extendedViewValue="extendedViewValue"
+            :pageSizes="emails.pageSizes"
+            :defaultSort="'createDate'"
+            :selectable="true"
+            :filterable="true"
+            :options="true"
+            :rowActions="emails.rowActions"
+            :addUsers="emails.addUsers"
+            :empty="emails.iEmpty"
+            :groupable="true"
+            :selectEvent="emails.selectEvent"
+            :extended-view-style="{ top: '-120px' }"
+            @downloadEvent="exportReportedListEmails"
+            @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
+            @irPreview="irPreviewOnClick"
+            @handleInvestigate="handleReportedEmailInvestigate"
+            @handleDetails="irDetailsOnClick"
+            @onEditClick="onEditClick"
+            @handleEdit="handleEdit"
+            @columnFilterChanged="columnFilterChanged"
+            @columnFilterCleared="columnFilterCleared"
+          >
+            <template v-slot:datatable-custom-column="{ scope, col }">
+              <template v-if="scope.column.property === 'source'">
+                <span
+                  v-if="
+                    scope.row &&
+                    scope.row.matchingPlaybooks &&
+                    scope.row.matchingPlaybooks.length === 0
+                  "
+                >
+                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                </span>
+                <span
+                  v-else
+                  v-for="item in scope.row.matchingPlaybooks"
+                  :key="item.resourceId"
+                  class="incident-responder-parent__link"
+                  @click="togglePlaybookModalWithSelected(item.resourceId)"
+                  >{{ item.name }}</span
+                >
+              </template>
+              <template v-if="scope.column.property === 'status'">
+                <template v-if="scope.row.status === 'BeingAnalyzed'">
+                  <span class="analysis-link">
                     <div>
-                      <label>Notes</label>
-                      <v-textarea
-                        outlined
-                        dense
-                        v-model="extendedView.note"
-                        rows="2"
-                        row-height="20"
-                        :placeholder="
-                          selectedReportedMails.length > 1 && hasMultipleNoteValue
-                            ? 'Multiple Values'
-                            : 'Enter notes'
-                        "
-                        :readonly="hasMultipleNoteValue"
-                      >
-                        <template
-                          v-slot:append
-                          v-if="selectedReportedMails.length > 1 && hasMultipleNoteValue"
-                        >
-                          <v-btn
-                            @click="hasMultipleNoteValue = false"
-                            text
-                            class="edit-popup__edit-component"
-                          >
-                            EDIT
-                          </v-btn>
-                        </template>
-                      </v-textarea>
+                      In Analysis...
                     </div>
-                  </div>
-                  <div class="row-edit-div">
-                    <v-checkbox
-                      color="#2196f3"
-                      label="Notify reporting user about this update"
-                      v-model="extendedView.isNotify"
-                      @change="handleIsNotify"
-                      :disabled="selectedRowsOfReportedEmailsLength > 1"
-                    ></v-checkbox>
-                  </div>
-                  <div class="row-edit-div">
-                    <v-checkbox
-                      color="#2196f3"
-                      label="Add Custom Message"
-                      v-model="extendedView.isMessage"
-                      :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
-                    ></v-checkbox>
-                  </div>
-                  <div
-                    class="row-edit-div"
-                    v-if="
-                      extendedView.isMessage &&
-                      extendedView.isNotify &&
-                      selectedRowsOfReportedEmailsLength <= 1
-                    "
-                  >
-                    <v-textarea
-                      outlined
-                      dense
-                      v-model="extendedView.customMessage"
-                      rows="3"
-                      placeholder="Write custom messages for recipients"
-                      row-height="30"
-                    ></v-textarea>
-                  </div>
+                    <div>
+                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                    </div>
+                  </span>
                 </template>
-              </datatable>
+                <template v-else>
+                  <data-table-colorful-text
+                    :col="col"
+                    :scope="scope"
+                    :text="getDataTableFieldLabel(scope.row.status)"
+                  />
+                </template>
+              </template>
             </template>
-          </DatatableLoading>
+            <template v-slot:extended-view-slot>
+              <div class="row-edit-div">
+                <div>
+                  <label>Notes</label>
+                  <v-textarea
+                    outlined
+                    dense
+                    v-model="extendedView.note"
+                    rows="2"
+                    row-height="20"
+                    :placeholder="
+                      selectedReportedMails.length > 1 && hasMultipleNoteValue
+                        ? 'Multiple Values'
+                        : 'Enter notes'
+                    "
+                    :readonly="hasMultipleNoteValue"
+                  >
+                    <template
+                      v-slot:append
+                      v-if="selectedReportedMails.length > 1 && hasMultipleNoteValue"
+                    >
+                      <v-btn
+                        @click="hasMultipleNoteValue = false"
+                        text
+                        class="edit-popup__edit-component"
+                      >
+                        EDIT
+                      </v-btn>
+                    </template>
+                  </v-textarea>
+                </div>
+              </div>
+              <div class="row-edit-div">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Notify reporting user about this update"
+                  v-model="extendedView.isNotify"
+                  @change="handleIsNotify"
+                  :disabled="selectedRowsOfReportedEmailsLength > 1"
+                ></v-checkbox>
+              </div>
+              <div class="row-edit-div">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Add Custom Message"
+                  v-model="extendedView.isMessage"
+                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                ></v-checkbox>
+              </div>
+              <div
+                class="row-edit-div"
+                v-if="
+                  extendedView.isMessage &&
+                  extendedView.isNotify &&
+                  selectedRowsOfReportedEmailsLength <= 1
+                "
+              >
+                <v-textarea
+                  outlined
+                  dense
+                  v-model="extendedView.customMessage"
+                  rows="3"
+                  placeholder="Write custom messages for recipients"
+                  row-height="30"
+                ></v-textarea>
+              </div>
+            </template>
+          </datatable>
         </v-card>
       </div>
     </div>
@@ -657,7 +648,6 @@ import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/consta
 import AppDialog from '../components/AppDialog'
 import { maxLength, required } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
-import DatatableLoading from '../components/SkeletonLoading/DatatableLoading'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import IRSummaryLoading from '../components/SkeletonLoading/IRSummaryLoading'
 export default {
@@ -667,9 +657,7 @@ export default {
     AppDialog,
     DataTableColorfulText,
     CreateOrEditRule,
-    DatatableLoading,
     CardLoading,
-    IRSummaryLoading,
     AppModal
   },
 

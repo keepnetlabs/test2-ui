@@ -77,45 +77,42 @@
         </div>
       </template>
     </app-dialog>
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <datatable
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
-          :table="tableData"
-          ref="refRulesList"
-          :refName="'rulesListTable'"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          :selectable="true"
-          :filterable="true"
-          :options="true"
-          :sizeable="true"
-          :row-actions="tableOptions.rowActions"
-          :pageSizes="tableOptions.pageSizes"
-          :empty="tableOptions.empty"
-          :addButton="tableOptions.addButton"
-          :selectEvent="tableOptions.selectEvent"
-          @deleteFunction="deleteRule($event)"
-          @addAction="toggleRuleModal"
-          @onEmptyBtnClicked="toggleRuleModal"
-          @downloadEvent="exportPlaybookRules"
-          id="playbook-data-table"
-          @deleteAction="deleteRule($event)"
-          @editAction="handleEdit"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-        >
-          <template v-slot:datatable-column-popup="{ scope, col }">
-            <span v-if="scope.row[col.property] === 0">
-              No Match
-            </span>
-            <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-              {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
-            </span>
-          </template>
-        </datatable>
+    <datatable
+      :loading="loading"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :table="tableData"
+      ref="refRulesList"
+      :refName="'rulesListTable'"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :selectable="true"
+      :filterable="true"
+      :options="true"
+      :sizeable="true"
+      :row-actions="tableOptions.rowActions"
+      :pageSizes="tableOptions.pageSizes"
+      :empty="tableOptions.empty"
+      :addButton="tableOptions.addButton"
+      :selectEvent="tableOptions.selectEvent"
+      @deleteFunction="deleteRule($event)"
+      @addAction="toggleRuleModal"
+      @onEmptyBtnClicked="toggleRuleModal"
+      @downloadEvent="exportPlaybookRules"
+      id="playbook-data-table"
+      @deleteAction="deleteRule($event)"
+      @editAction="handleEdit"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+    >
+      <template v-slot:datatable-column-popup="{ scope, col }">
+        <span v-if="scope.row[col.property] === 0">
+          No Match
+        </span>
+        <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
+          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+        </span>
       </template>
-    </DatatableLoading>
+    </datatable>
     <app-modal
       :status="showRuleModal"
       v-if="showRuleModal"
@@ -148,7 +145,6 @@ import {
 import { getMatchingIncidents } from '@/api/incidentResponder'
 import AppDialog from '../AppDialog'
 import { exportPlaybookRules, deletePlaybookRule } from '@/api/playbook'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import AppModal from '@/components/AppModal'
 export default {
   name: 'Rules',
@@ -156,8 +152,7 @@ export default {
     AppModal,
     Datatable,
     CreateOrEditRule,
-    AppDialog,
-    DatatableLoading
+    AppDialog
   },
   props: {
     playbookId: {

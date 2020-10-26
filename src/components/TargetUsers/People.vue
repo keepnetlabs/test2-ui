@@ -34,11 +34,8 @@
       v-if="isWantToImportFile"
       :columns="tableOptions.columns"
     />
-    <DatatableLoading :loading="loading" v-show="loading">
-      <template v-slot:skeleton-content> </template>
-    </DatatableLoading>
     <datatable
-      v-show="!loading"
+      :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :addButton="tableOptions.addButton"
@@ -123,7 +120,6 @@ export default {
     Datatable,
     AddUsersManuallyModal,
     AddUserModal,
-    DatatableLoading,
     TargetUserImportFromAFile
   },
   data: () => ({

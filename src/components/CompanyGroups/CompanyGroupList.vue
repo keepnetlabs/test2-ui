@@ -13,40 +13,38 @@
       @changeModalStatus="changeAddModalStatus"
       @companyGroupCreated="companyGroupCreated"
     />
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <datatable
-          :table="tableData"
-          ref="refGroupDataList"
-          :addButton="tableOptions.addButton"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          :empty="tableOptions.iEmpty"
-          :filterable="true"
-          :is-downloadable="false"
-          id="company-groups-data-table"
-          :options="true"
-          :pageSizes="tableOptions.pageSizes"
-          :refName="'companyList'"
-          :rowActions="tableOptions.rowActions"
-          :selectEvent="tableOptions.selectEvent"
-          :selectable="true"
-          @addButton="addButton"
-          @delete="handleTableItemDelete"
-          @editAction="editAction"
-          @onEmptyBtnClicked="addButton"
-        >
-          <template v-slot:datatable-custom-column="{ scope }">
-            <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
-              <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
-                scope.row.name
-              }}</span>
-              <span v-else>{{ scope.row.name }}</span>
-            </span>
-          </template>
-        </datatable>
+
+    <datatable
+      :loading="loading"
+      :table="tableData"
+      ref="refGroupDataList"
+      :addButton="tableOptions.addButton"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :empty="tableOptions.iEmpty"
+      :filterable="true"
+      :is-downloadable="false"
+      id="company-groups-data-table"
+      :options="true"
+      :pageSizes="tableOptions.pageSizes"
+      :refName="'companyList'"
+      :rowActions="tableOptions.rowActions"
+      :selectEvent="tableOptions.selectEvent"
+      :selectable="true"
+      @addButton="addButton"
+      @delete="handleTableItemDelete"
+      @editAction="editAction"
+      @onEmptyBtnClicked="addButton"
+    >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
+          <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
+            scope.row.name
+          }}</span>
+          <span v-else>{{ scope.row.name }}</span>
+        </span>
       </template>
-    </DatatableLoading>
+    </datatable>
   </div>
 </template>
 
@@ -62,8 +60,7 @@ export default {
   components: {
     CreateItemModal,
     Datatable,
-    DeleteModal,
-    DatatableLoading
+    DeleteModal
   },
   data() {
     return {

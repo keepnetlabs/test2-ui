@@ -35,52 +35,50 @@
       :forCompany="true"
       @changeModalStatus="(status) => (showCreateNewGroupWithCompany = status)"
     />
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <datatable
-          :selectable="true"
-          :table="tableData"
-          id="companies-data-table"
-          ref="refDataList"
-          :addButton="tableOptions.addButton"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          :empty="tableOptions.iEmpty"
-          :filterable="true"
-          :options="true"
-          :pageSizes="tableOptions.pageSizes"
-          :selectEvent="tableOptions.selectEvent"
-          :refName="'companyList'"
-          :rowActions="tableOptions.rowActions"
-          @edit="handleTableItemEdit"
-          @delete="handleTableItemDelete"
-          @cellClick="handleCompanyNameClick"
-          @downloadEvent="handleTableDownload"
-          @addButton="addButton"
-          @onEmptyBtnClicked="addButton"
-          @editAction="editAction"
-          @AddGroupToModal="handleAddGroupToModal"
-          @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
-        >
-          <template v-slot:datatable-custom-column="{ scope }">
-            <span class="datatable-link" v-if="scope.row.companyName">
-              {{ scope.row.companyName }}
-            </span>
-          </template>
-          <template v-slot:extended-custom-view-slot>
-            <company-list-extend
-              v-show="isShowExtended"
-              :selectedRow="selectedRow"
-              :top="extendTop"
-              :tableHeight="tableHeight"
-              :selectedExtend="selectedExtend"
-              @editAction="editAction"
-              @close="closeExtend"
-            />
-          </template>
-        </datatable>
+
+    <datatable
+      :loading="loading"
+      :selectable="true"
+      :table="tableData"
+      id="companies-data-table"
+      ref="refDataList"
+      :addButton="tableOptions.addButton"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :empty="tableOptions.iEmpty"
+      :filterable="true"
+      :options="true"
+      :pageSizes="tableOptions.pageSizes"
+      :selectEvent="tableOptions.selectEvent"
+      :refName="'companyList'"
+      :rowActions="tableOptions.rowActions"
+      @edit="handleTableItemEdit"
+      @delete="handleTableItemDelete"
+      @cellClick="handleCompanyNameClick"
+      @downloadEvent="handleTableDownload"
+      @addButton="addButton"
+      @onEmptyBtnClicked="addButton"
+      @editAction="editAction"
+      @AddGroupToModal="handleAddGroupToModal"
+      @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+    >
+      <template v-slot:datatable-custom-column="{ scope }">
+        <span class="datatable-link" v-if="scope.row.companyName">
+          {{ scope.row.companyName }}
+        </span>
       </template>
-    </DatatableLoading>
+      <template v-slot:extended-custom-view-slot>
+        <company-list-extend
+          v-show="isShowExtended"
+          :selectedRow="selectedRow"
+          :top="extendTop"
+          :tableHeight="tableHeight"
+          :selectedExtend="selectedExtend"
+          @editAction="editAction"
+          @close="closeExtend"
+        />
+      </template>
+    </datatable>
   </div>
 </template>
 
@@ -109,8 +107,7 @@ export default {
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
-    DeleteModal,
-    DatatableLoading
+    DeleteModal
   },
   data: () => ({
     loading: true,
