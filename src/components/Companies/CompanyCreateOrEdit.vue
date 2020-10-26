@@ -674,6 +674,7 @@ export default {
     getCompanyGroups() {
       getCompanyGroups()
         .then((response) => {
+          debugger
           this.companyGroupList = response.data.data.companyGroups
         })
         .catch((error) => {})
