@@ -15,6 +15,17 @@
             :data="tableData"
             :empty="empty"
           >
+            <template v-slot:postTitle="{ value, row }">
+              <span
+                class="k-widget-list__item cursor-pointer"
+                @click="handlePostTitleSelection(row)"
+              >
+                {{ value }}
+              </span>
+              <div class="k-widget-list__sub-item" v-if="row['communityName']">
+                {{ row['communityName'] }}
+              </div>
+            </template>
             <template v-slot:commentCount="{ row }">
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">
@@ -118,6 +129,14 @@ export default {
             .forEach((item) => item.classList.remove('right-side-like-comment-wrapper-low-res'))
         }
       }
+    },
+    handlePostTitleSelection(row) {
+      localStorage.setItem('communityName', row.communityName)
+      localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
+      this.$router.push({
+        path: `/community/${row.communityResourceId}`,
+        query: { postId: row.communityPostResourceId }
+      })
     }
   }
 }
