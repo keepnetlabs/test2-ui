@@ -481,6 +481,9 @@ export default {
     }
   },
   mounted() {
+    localStorage.removeItem('isSelectCompany')
+    localStorage.removeItem('selectedCompanyName')
+    localStorage.removeItem('selectedCompanyRequestId')
     if (this.$route.query) {
       // TO-DO
       // You should do redirect after login in here for users which come from email links
