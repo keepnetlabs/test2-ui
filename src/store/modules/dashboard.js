@@ -134,13 +134,12 @@ const dashboard = {
     },
     SET_SELECTED_COMPANY(state, payload) {
       const defaultAccountDropdown = []
-      if (localStorage.getItem('isSelectCompany')) {
-        payload.name = localStorage.getItem('selectedCompanyName')
-        payload.id = localStorage.getItem('selectedCompanyRequestId')
-        localStorage.removeItem('isSelectCompany')
-        localStorage.removeItem('selectedCompanyName')
-        localStorage.removeItem('selectedCompanyRequestId')
-      }
+      localStorage.setItem('isSelectCompany', 'true')
+      payload.name = localStorage.getItem('selectedCompanyName')
+      payload.id = localStorage.getItem('selectedCompanyRequestId')
+      /*localStorage.removeItem('isSelectCompany')
+      localStorage.removeItem('selectedCompanyName')
+      localStorage.removeItem('selectedCompanyRequestId')*/
       state.selectedCompany = payload
       defaultAccountDropdown.push(payload)
       defaultAccountDropdown.push({
