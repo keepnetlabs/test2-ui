@@ -1290,13 +1290,12 @@ export default {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
-          pageSize: pageSize,
+          pageSize: reportAllPages ? this.investigationDetailsList.length + 25 : pageSize,
           orderBy: 'ReceivedTime',
-          ascending: true,
+          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType
         }
-
         exportInvestigationEmailList(payload, this.$route.params.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
