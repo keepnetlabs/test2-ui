@@ -11,25 +11,22 @@
   >
     <template v-slot:app-dialog-body>
       <v-card light>
-        <DatatableLoading :loading="isLoading">
-          <template v-slot:skeleton-content>
-            <data-table
-              :refName="'versionHistory'"
-              :table="tableData"
-              :columns="table.columns"
-              :countRow="5"
-              :showHeader="true"
-              :selectable="false"
-              :pageSizes="[5, 10, 25]"
-              :filterable="true"
-              :options="true"
-              :rowActions="table.rowActions"
-              :empty="table.iEmpty"
-              @handleDetails="handleDetails"
-              @handleDownload="handleDownload"
-            />
-          </template>
-        </DatatableLoading>
+        <data-table
+          :loading="isLoading"
+          :refName="'versionHistory'"
+          :table="tableData"
+          :columns="table.columns"
+          :countRow="5"
+          :showHeader="true"
+          :selectable="false"
+          :pageSizes="[5, 10, 25]"
+          :filterable="true"
+          :options="true"
+          :rowActions="table.rowActions"
+          :empty="table.iEmpty"
+          @handleDetails="handleDetails"
+          @handleDownload="handleDownload"
+        />
       </v-card>
     </template>
     <template v-slot:app-dialog-footer>
@@ -50,11 +47,9 @@
 import AppDialog from '../../AppDialog'
 import DataTable from '../../DataTable'
 import { searchGeneratedApplicationHistory } from '@/api/phishingReporter'
-import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 export default {
   name: 'VersionHistoryModal',
   components: {
-    DatatableLoading,
     AppDialog,
     DataTable
   },

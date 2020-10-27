@@ -21,89 +21,81 @@
       @handleMultipleDelete="handleDeleteMultiple"
       :selected-integration="selectedIntegration"
     />
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <data-table
-          :is-column-filter-active="tableOptions.isColumnFilterActive"
-          :table="tableData"
-          id="integrations-data-table"
-          ref="refIntegrationsList"
-          :refName="'integrationsList'"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          :selectable="true"
-          :filterable="true"
-          :options="true"
-          :sizeable="true"
-          :pageSizes="tableOptions.pageSizes"
-          :empty="tableOptions.empty"
-          :select-event="tableOptions.selectEvent"
-          :row-actions="tableOptions.rowActions"
-          :addButton="tableOptions.addButton"
-          @deleteAction="showDeleteModal = true"
-          @handleEdit="handleEdit"
-          @disable="handleDisable"
-          @onEmptyBtnClicked="modalStatus = true"
-          @addAction="changeModalStatus(true)"
-          @downloadEvent="exportIntegrationList"
-          @handleMultipleDelete="handleActionDelete"
-          @sortChangedEvent="sortChangedEvent($event)"
-          @paginationChangedEvent="paginationChangedEvent($event)"
-          @searchChangedEvent="searchChangedEvent($event)"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
-          :isServerSide="false"
-          @columnFilterChanged="columnFilterChanged"
-          @columnFilterCleared="columnFilterCleared"
-        >
-          <template v-slot:datatable-row-actions="{ scope }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
-                  <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-                </v-btn>
-              </template>
-              <span>{{ tableOptions.rowActions[0].name }}</span>
-            </v-tooltip>
-            <v-menu bottom left offset-y transition="scale-transition">
-              <template v-slot:activator="{ on }">
-                <v-btn class="btn-hover" icon v-on="on">
-                  <v-icon @click.native="selectedMenuIndex = scope.$index"
-                    >mdi-dots-vertical</v-icon
-                  >
-                </v-btn>
-              </template>
-              <v-list
-                class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions"
-              >
-                <v-list-item class="sub-menu-el">
-                  <v-list-item-title
-                    @click="
-                      scope.row.status === 'Active'
-                        ? handleDisable(scope.row)
-                        : handleEnable(scope.row)
-                    "
-                  >
-                    <v-icon class="pr-3">{{
-                      scope.row.status === 'Active'
-                        ? 'mdi-minus-circle-outline'
-                        : 'mdi-check-circle-outline'
-                    }}</v-icon>
-                    <span>{{ scope.row.status === 'Active' ? 'Inactive' : 'Active' }}</span>
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item class="sub-menu-el">
-                  <v-list-item-title @click="handleActionDelete(scope.row)">
-                    <v-icon class="pr-3">mdi-delete</v-icon>
-                    <span>Delete</span>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+
+    <data-table
+      :loading="loading"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :table="tableData"
+      id="integrations-data-table"
+      ref="refIntegrationsList"
+      :refName="'integrationsList'"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :selectable="true"
+      :filterable="true"
+      :options="true"
+      :sizeable="true"
+      :pageSizes="tableOptions.pageSizes"
+      :empty="tableOptions.empty"
+      :select-event="tableOptions.selectEvent"
+      :row-actions="tableOptions.rowActions"
+      :addButton="tableOptions.addButton"
+      @deleteAction="showDeleteModal = true"
+      @handleEdit="handleEdit"
+      @disable="handleDisable"
+      @onEmptyBtnClicked="modalStatus = true"
+      @addAction="changeModalStatus(true)"
+      @downloadEvent="exportIntegrationList"
+      @handleMultipleDelete="handleActionDelete"
+      @sortChangedEvent="sortChangedEvent($event)"
+      @paginationChangedEvent="paginationChangedEvent($event)"
+      @searchChangedEvent="searchChangedEvent($event)"
+      :dataLength="tableData && tableData.totalNumberOfRecords"
+      :requestParams="bodyData"
+      :isServerSide="false"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+    >
+      <template v-slot:datatable-row-actions="{ scope }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
+              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+            </v-btn>
           </template>
-        </data-table>
+          <span>{{ tableOptions.rowActions[0].name }}</span>
+        </v-tooltip>
+        <v-menu bottom left offset-y transition="scale-transition">
+          <template v-slot:activator="{ on }">
+            <v-btn class="btn-hover" icon v-on="on">
+              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions">
+            <v-list-item class="sub-menu-el">
+              <v-list-item-title
+                @click="
+                  scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
+                "
+              >
+                <v-icon class="pr-3">{{
+                  scope.row.status === 'Active'
+                    ? 'mdi-minus-circle-outline'
+                    : 'mdi-check-circle-outline'
+                }}</v-icon>
+                <span>{{ scope.row.status === 'Active' ? 'Inactive' : 'Active' }}</span>
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item class="sub-menu-el">
+              <v-list-item-title @click="handleActionDelete(scope.row)">
+                <v-icon class="pr-3">mdi-delete</v-icon>
+                <span>Delete</span>
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
-    </DatatableLoading>
+    </data-table>
   </div>
 </template>
 
@@ -117,21 +109,20 @@ import {
   enableIntegration,
   exportReportedEmails,
   getIntegrationList
-} from '../../api/integrations'
+} from '@/api/integrations'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE
-} from '../../model/constants/commonConstants'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+} from '@/model/constants/commonConstants'
+
 export default {
   name: 'Integrations',
   components: {
     DataTable,
     NewIntegration,
-    DeleteIntegrationModal,
-    DatatableLoading
+    DeleteIntegrationModal
   },
   data() {
     return {

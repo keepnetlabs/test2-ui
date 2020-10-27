@@ -34,64 +34,59 @@
         </template>
       </app-dialog>
       <v-card class="investigations__container-card" light>
-        <DatatableLoading :loading="loading">
-          <template v-slot:skeleton-content>
-            <datatable
-              :is-column-filter-active="isColumnFilterActive"
-              id="investigations-data-table"
-              ref="investigationTable"
-              :refName="'investigationTable'"
-              :columns="columns"
-              :table="tableData.data"
-              :countRow="5"
-              :pageSizes="pageSizes"
-              :defaultSort="'date'"
-              :selectable="true"
-              :filterable="true"
-              :options="true"
-              :rowActions="rowActions"
-              :addUsers="addUsers"
-              :empty="iEmpty"
-              :selectEvent="selectEvent"
-              :chartOptions="chartOptions"
-              :sizeable="true"
-              @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
-              @stopInvestigationFunc="stopInvestigationFunc($event)"
-              @investigationDetails="investigationDetails($event)"
-              @downloadEvent="exportInvestigationList"
-              @sortChangedEvent="sortChangedEvent($event)"
-              @paginationChangedEvent="paginationChangedEvent($event)"
-              @searchChangedEvent="searchChangedEvent($event)"
-              :dataLength="tableData && tableData.totalNumberOfRecords"
-              :requestParams="bodyData"
-              :isServerSide="false"
-              @onEmptyBtnClicked="isWantToAddNewCommunity = true"
-              @columnFilterChanged="columnFilterChanged"
-              @columnFilterCleared="columnFilterCleared"
+        <datatable
+          :loading="loading"
+          :is-column-filter-active="isColumnFilterActive"
+          id="investigations-data-table"
+          ref="investigationTable"
+          :refName="'investigationTable'"
+          :columns="columns"
+          :table="tableData.data"
+          :countRow="5"
+          :pageSizes="pageSizes"
+          :defaultSort="'date'"
+          :selectable="true"
+          :filterable="true"
+          :options="true"
+          :rowActions="rowActions"
+          :addUsers="addUsers"
+          :empty="iEmpty"
+          :selectEvent="selectEvent"
+          :chartOptions="chartOptions"
+          :sizeable="true"
+          @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
+          @stopInvestigationFunc="stopInvestigationFunc($event)"
+          @investigationDetails="investigationDetails($event)"
+          @downloadEvent="exportInvestigationList"
+          @sortChangedEvent="sortChangedEvent($event)"
+          @paginationChangedEvent="paginationChangedEvent($event)"
+          @searchChangedEvent="searchChangedEvent($event)"
+          :dataLength="tableData && tableData.totalNumberOfRecords"
+          :requestParams="bodyData"
+          :isServerSide="false"
+          @onEmptyBtnClicked="isWantToAddNewCommunity = true"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
+        >
+          <template v-slot:datatable-custom-column="{ scope }">
+            <span
+              v-if="
+                scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
+              "
             >
-              <template v-slot:datatable-custom-column="{ scope }">
-                <span
-                  v-if="
-                    scope.row &&
-                    scope.row.matchingPlaybooks &&
-                    scope.row.matchingPlaybooks.length === 0
-                  "
-                >
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
-                </span>
-                <span
-                  :key="item.resourceId"
-                  v-else
-                  :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
-                  v-for="item in scope.row.matchingPlaybooks"
-                  class="popup-link"
-                  @click="togglePlaybookModalWithSelected(item.resourceId)"
-                  >{{ item.name }}</span
-                >
-              </template>
-            </datatable>
+              {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+            </span>
+            <span
+              :key="item.resourceId"
+              v-else
+              :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
+              v-for="item in scope.row.matchingPlaybooks"
+              class="popup-link"
+              @click="togglePlaybookModalWithSelected(item.resourceId)"
+              >{{ item.name }}</span
+            >
           </template>
-        </DatatableLoading>
+        </datatable>
       </v-card>
     </div>
     <v-dialog v-model="showPlaybookModal" fullscreen scrollable persistent no-click-animation>
@@ -112,14 +107,12 @@ import { mapActions, mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
 import { getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
-import DatatableLoading from '../components/SkeletonLoading/DatatableLoading'
 export default {
   components: {
     Datatable,
     newInvestigation,
     AppDialog,
-    CreateOrEditRule,
-    DatatableLoading
+    CreateOrEditRule
   },
   props: {
     selectedEmail: {

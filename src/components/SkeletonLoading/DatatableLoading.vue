@@ -1,6 +1,7 @@
 <template>
   <v-skeleton-loader
     :loading="loading"
+    v-show="loading"
     v-bind="attrs"
     type="table-heading,table-tbody"
     class="data-table-loading"
@@ -25,5 +26,6 @@ export default {
 <style>
 .data-table-loading {
   height: 100%;
+  margin-bottom: 20px;
 }
 </style>

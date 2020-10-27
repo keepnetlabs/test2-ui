@@ -16,36 +16,34 @@
         @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
-      <DatatableLoading :loading="loading">
-        <template v-slot:skeleton-content>
-          <data-table
-            :is-column-filter-active="tableOptions.isColumnFilterActive"
-            :table="tableData"
-            ref="refSystemUsersList"
-            :refName="'systemUsersList'"
-            :columns="tableOptions.columns"
-            :countRow="5"
-            id="system-users-people-data-table"
-            :empty="tableOptions.empty"
-            :filterable="true"
-            :isServerSide="false"
-            :options="true"
-            :select-event="tableOptions.selectEvent"
-            :addButton="tableOptions.addButton"
-            :pageSizes="tableOptions.pageSizes"
-            :is-downloadable="false"
-            :row-actions="tableOptions.rowActions"
-            :selectable="true"
-            :sizeable="true"
-            @editAction="handleEdit"
-            @deleteAction="handleDelete"
-            @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
-            @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
-            @columnFilterChanged="columnFilterChanged"
-            @columnFilterCleared="columnFilterCleared"
-          />
-        </template>
-      </DatatableLoading>
+
+      <data-table
+        :loading="loading"
+        :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :table="tableData"
+        ref="refSystemUsersList"
+        :refName="'systemUsersList'"
+        :columns="tableOptions.columns"
+        :countRow="5"
+        id="system-users-people-data-table"
+        :empty="tableOptions.empty"
+        :filterable="true"
+        :isServerSide="false"
+        :options="true"
+        :select-event="tableOptions.selectEvent"
+        :addButton="tableOptions.addButton"
+        :pageSizes="tableOptions.pageSizes"
+        :is-downloadable="false"
+        :row-actions="tableOptions.rowActions"
+        :selectable="true"
+        :sizeable="true"
+        @editAction="handleEdit"
+        @deleteAction="handleDelete"
+        @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
+        @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
+      />
     </div>
   </div>
 </template>
@@ -62,8 +60,7 @@ export default {
   components: {
     DataTable,
     CreateOrEditSystemUser,
-    DeleteSystemUserModal,
-    DatatableLoading
+    DeleteSystemUserModal
   },
   data() {
     return {

@@ -1,5 +1,6 @@
 <template>
   <div class="k-table__wrapper" :id="id">
+    <DatatableLoading :loading="loading" />
     <download-modal
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
@@ -50,7 +51,7 @@
       </v-card>
     </v-overlay>
 
-    <v-card class="card">
+    <v-card v-show="!loading" class="card">
       <v-list-item class="pl-2 pr-0 pb-8" v-if="title && title.icon">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon class="ml-2" color="blue" left medium>{{ title.icon }}</v-icon>
@@ -866,7 +867,8 @@ export default {
     DownloadModal,
     ExtendedView,
     DataTableSmallBadge,
-    DatatableTextWithBadge
+    DatatableTextWithBadge,
+    DatatableLoading
   },
   props: {
     columns: {
@@ -1029,6 +1031,10 @@ export default {
     },
     id: {
       type: String
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

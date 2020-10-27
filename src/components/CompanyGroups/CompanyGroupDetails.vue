@@ -35,33 +35,31 @@
       @changeModalStatus="handleCreateItemModal"
       :is-edit="editCreateGroup"
     />
-    <DatatableLoading :loading="loading">
-      <template v-slot:skeleton-content>
-        <datatable
-          :table="tableData"
-          ref="refDataList"
-          :addButton="tableOptions.addButton"
-          :columns="tableOptions.columns"
-          :countRow="5"
-          :empty="tableOptions.iEmpty"
-          id="company-groups-details-data-table"
-          :filterable="true"
-          :options="true"
-          :pageSizes="tableOptions.pageSizes"
-          :refName="'companyList'"
-          :rowActions="tableOptions.rowActions"
-          :selectEvent="tableOptions.selectEvent"
-          :selectable="true"
-          :is-downloadable="false"
-          @addButton="addButton"
-          @edit="handleTableItemEdit"
-          @remove="handleTableItemRemove"
-          @editAction="editAction"
-          @AddGroupToModal="handleAddGroupToModal"
-          @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
-        />
-      </template>
-    </DatatableLoading>
+
+    <datatable
+      :loading="loading"
+      :table="tableData"
+      ref="refDataList"
+      :addButton="tableOptions.addButton"
+      :columns="tableOptions.columns"
+      :countRow="5"
+      :empty="tableOptions.iEmpty"
+      id="company-groups-details-data-table"
+      :filterable="true"
+      :options="true"
+      :pageSizes="tableOptions.pageSizes"
+      :refName="'companyList'"
+      :rowActions="tableOptions.rowActions"
+      :selectEvent="tableOptions.selectEvent"
+      :selectable="true"
+      :is-downloadable="false"
+      @addButton="addButton"
+      @edit="handleTableItemEdit"
+      @remove="handleTableItemRemove"
+      @editAction="editAction"
+      @AddGroupToModal="handleAddGroupToModal"
+      @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+    />
   </div>
 </template>
 
@@ -81,8 +79,7 @@ export default {
     AddGroupToModal,
     CompanyCreateOrEdit,
     Datatable,
-    RemoveModal,
-    DatatableLoading
+    RemoveModal
   },
   props: {
     groupId: {

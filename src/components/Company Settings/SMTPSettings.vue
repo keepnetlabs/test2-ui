@@ -19,37 +19,34 @@
       @handleMultipleDelete="handleDeleteMultipleSmtpSettings"
     />
     <div class="smtp-settings__container">
-      <DatatableLoading :loading="loading">
-        <template v-slot:skeleton-content>
-          <data-table
-            ref="refSmtpSettingsList"
-            :table="tableData"
-            :refName="'smtpSettingsList'"
-            :columns="tableOptions.columns"
-            :countRow="5"
-            id="company-settings-smtp-settings-data-table"
-            :empty="tableOptions.empty"
-            @addNewSmtpSetting="toggleSmtpModalStatus"
-            :filterable="true"
-            :options="true"
-            :addButton="tableOptions.addButton"
-            :pageSizes="tableOptions.pageSizes"
-            :is-downloadable="true"
-            @downloadEvent="exportSmtpSettingsList"
-            :select-event="tableOptions.selectEvent"
-            :row-actions="tableOptions.rowActions"
-            :selectable="true"
-            :sizeable="true"
-            :resizable="true"
-            @onEmptyBtnClicked="toggleSmtpModalStatus"
-            @deleteAction="handleDeleteAction"
-            @editAction="handleEditAction"
-            @handleMultipleDelete="handleMultipleDelete"
-            @columnFilterChanged="columnFilterChanged"
-            @columnFilterCleared="columnFilterCleared"
-          />
-        </template>
-      </DatatableLoading>
+      <data-table
+        :loading="loading"
+        ref="refSmtpSettingsList"
+        :table="tableData"
+        :refName="'smtpSettingsList'"
+        :columns="tableOptions.columns"
+        :countRow="5"
+        id="company-settings-smtp-settings-data-table"
+        :empty="tableOptions.empty"
+        @addNewSmtpSetting="toggleSmtpModalStatus"
+        :filterable="true"
+        :options="true"
+        :addButton="tableOptions.addButton"
+        :pageSizes="tableOptions.pageSizes"
+        :is-downloadable="true"
+        @downloadEvent="exportSmtpSettingsList"
+        :select-event="tableOptions.selectEvent"
+        :row-actions="tableOptions.rowActions"
+        :selectable="true"
+        :sizeable="true"
+        :resizable="true"
+        @onEmptyBtnClicked="toggleSmtpModalStatus"
+        @deleteAction="handleDeleteAction"
+        @editAction="handleEditAction"
+        @handleMultipleDelete="handleMultipleDelete"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
+      />
     </div>
   </div>
 </template>
@@ -59,18 +56,15 @@ import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constan
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
-import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
 import DeleteSmtpSettings from '@/components/Company Settings/DeleteSmtpSettings'
-import { exportPhishingReporterUserList } from '@/api/phishingReporter'
 export default {
   name: 'SMTPSettings',
   components: {
     DeleteSmtpSettings,
     CompanySettingsHeader,
     DataTable,
-    NewSmtpSettings,
-    DatatableLoading
+    NewSmtpSettings
   },
   data() {
     return {
