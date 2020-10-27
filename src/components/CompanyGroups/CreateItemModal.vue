@@ -40,7 +40,7 @@
             >
               You can select multiple companies
             </v-list-item-title>
-            <v-combobox
+            <v-autocomplete
               v-model="selectedCompanies"
               :items="companies"
               :no-data-text="'no data'"
@@ -55,7 +55,7 @@
               outlined
               persistent-hint
               placeholder="Select companies"
-            ></v-combobox>
+            ></v-autocomplete>
           </v-list-item-content>
         </v-list-item>
       </v-form>
@@ -120,7 +120,7 @@ export default {
         maxLength
       },
       payload: {
-        pageSize: 10,
+        pageSize: 1000,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
@@ -143,7 +143,14 @@ export default {
     }
   },
   computed: {},
-  mounted() {},
+  mounted() {
+    searchCompanies(this.payload).then((response) => {
+      this.companies =
+        response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+          ? response.data.data.results
+          : []
+    })
+  },
   beforeUpdate() {
     this.editHandler()
   },
@@ -168,7 +175,6 @@ export default {
         }
       }
     },
-
     changeStatus(value) {
       this.$emit('changeModalStatus', value)
       if (value === false) {
