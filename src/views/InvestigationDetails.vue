@@ -740,7 +740,7 @@
               </template>
             </ThreeRowLoading>
 
-            <div v-if="activeMenu !== 'targetUsers'">
+            <div v-show="activeMenu !== 'targetUsers'">
               <datatable
                 :loading="loading"
                 :is-column-filter-active="isColumnFilterActive"
@@ -768,7 +768,7 @@
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
                 @downloadEvent="exportInvestigationEmails"
-                v-if="showEmails"
+                v-show="showEmails"
                 @columnFilterChanged="columnFilterChanged"
                 @columnFilterCleared="columnFilterCleared"
               >
@@ -806,7 +806,7 @@
               </datatable>
             </div>
             <div
-              v-if="activeMenu === 'targetUsers' && showTargetUsersDetails"
+              v-show="activeMenu === 'targetUsers' && showTargetUsersDetails"
               class="investigationDetails__target-users-table-container"
             >
               <datatable
@@ -1492,7 +1492,7 @@ export default {
           .finally(() => {
             this.loading = false
             this.showEmails = true
-            vm.$forceUpdate()
+            //vm.$forceUpdate()
           })
       } else {
         this.$store
