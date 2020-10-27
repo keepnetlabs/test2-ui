@@ -278,7 +278,6 @@ export default {
       return this.filterValue.length > 0
         ? this.convertedFilterableItems.filter((item) => {
             return item.text.toLowerCase().startsWith(this.filterValue.toLowerCase())
-            debugger
           })
         : this.convertedFilterableItems
     },

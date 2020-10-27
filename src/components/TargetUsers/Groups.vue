@@ -201,6 +201,9 @@ export default {
               type: 'text',
               editOptions: {
                 component: 'textfield',
+                getDisabledValue(row) {
+                  return row.length > 1
+                },
                 props: {
                   rules: [(v) => required(v, 'Required')]
                 }

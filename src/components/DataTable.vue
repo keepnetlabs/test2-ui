@@ -1139,7 +1139,7 @@ export default {
       }
     },
     multipleSelection(selecteds) {
-      this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
+      //this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
       if (this.groupable) {
         if (selecteds.length === this.totalLength) {
           this.selectionCheckbox = true
