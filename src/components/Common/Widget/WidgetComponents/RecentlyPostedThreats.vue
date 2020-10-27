@@ -1,5 +1,5 @@
 <template>
-  <DatatableLoading :loading="isLoading">
+  <WidgetLoading :loading="isLoading">
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
@@ -41,21 +41,20 @@
         </widget-body>
       </widget-container>
     </template>
-  </DatatableLoading>
+  </WidgetLoading>
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
-import { getRunningInvestigations } from '@/api/incidentResponder'
-import { getIncidentList, getMyTopPosts } from '@/api/threadSharing'
+import { getIncidentList } from '@/api/threadSharing'
 export default {
   name: 'RecentlyPostedThreats',
   components: {
-    DatatableLoading,
+    WidgetLoading,
     WidgetContainer,
     WidgetList,
     WidgetBody,
