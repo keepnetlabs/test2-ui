@@ -1,5 +1,5 @@
 <template>
-  <DatatableLoading :loading="isLoading">
+  <WidgetLoading :loading="isLoading">
     <template v-slot:skeleton-content>
       <widget-container>
         <matching-incident-modal
@@ -38,7 +38,7 @@
         </widget-body>
       </widget-container>
     </template>
-  </DatatableLoading>
+  </WidgetLoading>
 </template>
 
 <script>
@@ -46,14 +46,14 @@ import { getTopRules } from '@/api/incidentResponder'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
-import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 export default {
   name: 'TopRules',
   components: {
     WidgetBody,
-    DatatableLoading,
+    WidgetLoading,
     WidgetHeader,
     WidgetList,
     WidgetContainer,

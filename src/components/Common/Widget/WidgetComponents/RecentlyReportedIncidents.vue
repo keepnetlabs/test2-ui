@@ -1,5 +1,5 @@
 <template>
-  <DatatableLoading :loading="isLoading">
+  <WidgetLoading :loading="isLoading">
     <template v-slot:skeleton-content>
       <v-btn style="display: none;" />
       <widget-container>
@@ -33,11 +33,11 @@
         </widget-body>
       </widget-container>
     </template>
-  </DatatableLoading>
+  </WidgetLoading>
 </template>
 
 <script>
-import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
@@ -49,7 +49,7 @@ export default {
   name: 'RecentlyReportedIncidents',
   components: {
     Badge,
-    DatatableLoading,
+    WidgetLoading,
     WidgetContainer,
     WidgetList,
     WidgetBody,
