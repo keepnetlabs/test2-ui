@@ -741,21 +741,27 @@ export default {
         }
       ],
       dropdownData: [
+        /*
         {
           text: 'Edit Profile',
           icon: 'mdi-account',
           url: ''
         },
+
+         */
         {
           text: 'Change Password',
           icon: 'mdi-lock',
           url: ''
         },
-        {
-          text: 'Login History',
-          icon: 'mdi-history',
-          url: ''
-        },
+        /*
+{
+  text: 'Login History',
+  icon: 'mdi-history',
+  url: ''
+},
+
+ */
         {
           text: 'Logout',
           icon: 'mdi-login-variant',
@@ -1005,7 +1011,7 @@ export default {
       return 'left : 262px !important;'
     },
     getDrawerPadding() {
-      // eslint-disable-line
+// eslint-disable-line
       switch (this.$vuetify.breakpoint.name) {
         case 'xs':
           return 'left : 278px;'
