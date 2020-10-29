@@ -45,6 +45,16 @@
                       </div>
                     </div>
                   </div>
+                  <div v-if="isPasswordStep5Complete" class="login-success-container">
+                    <div v-if="isPasswordStep5Complete" class="login-success-wrapper">
+                      <div class="login-success-icon dark pr-2">
+                        <v-icon large color="#ffffff"> mdi-check-circle-outline</v-icon>
+                      </div>
+                      <div class="login-success-message pr-1">
+                        Your password has been set successfully
+                      </div>
+                    </div>
+                  </div>
                   <div class="login-user-pass-wrapper">
                     <v-row align="center" justify="center">
                       <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
@@ -115,13 +125,7 @@
                           >
                           </v-checkbox>
 
-                          <div
-                            v-on:click="
-                              pageNumber = 2
-                              clearError()
-                            "
-                            class="forgot-password"
-                          >
+                          <div @click="onForgetPasswordButtonClick()" class="forgot-password">
                             Forgot Password
                           </div>
                         </div>
@@ -270,7 +274,7 @@
                   </v-btn>
                 </v-card-actions>
               </div>
-              <div v-if="pageNumber == 5">
+              <div v-if="pageNumber === 5">
                 <v-card-text>
                   <div class="login-title">
                     Reset Your Password
@@ -356,13 +360,7 @@
                 </v-card-actions>
               </div>
               <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
-                <div
-                  class="back-to-login"
-                  @click="
-                    pageNumber = 1
-                    clearError()
-                  "
-                >
+                <div class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   BACK
                 </div>
@@ -388,6 +386,7 @@ export default {
   components: { VueRecaptcha, PasswordChecker },
   data() {
     return {
+      isPasswordStep5Complete: false,
       blurConfirm: false,
       resetType: null,
       newPassword: null,
@@ -542,6 +541,16 @@ export default {
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    onBackButtonClick() {
+      this.isPasswordStep5Complete = false
+      this.pageNumber = 1
+      this.clearError()
+    },
+    onForgetPasswordButtonClick() {
+      this.isPasswordStep5Complete = false
+      this.pageNumber = 2
+      this.clearError()
+    },
     isPassworAreEqual() {
       if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
         return this.reNewPassword !== this.newPassword
@@ -574,6 +583,7 @@ export default {
                 let url = new URL(location.href)
                 url.searchParams.delete('cp')
                 this.blurConfirm = false
+                this.isPasswordStep5Complete = true
                 this.pageNumber = 1
               })
               .catch((error) => {
@@ -589,6 +599,7 @@ export default {
                 let url = new URL(location.href)
                 url.searchParams.delete('rp')
                 this.blurConfirm = false
+                this.isPasswordStep5Complete = true
                 this.pageNumber = 1
               })
               .catch((error) => {
@@ -615,6 +626,7 @@ export default {
     onLoginClicked() {
       const mainUrl = this.$router.currentRoute
       const _this = this
+      this.isPasswordStep5Complete = false
       if (
         this.$refs.email.validate() &&
         this.$refs.password.validate() &&
@@ -807,6 +819,42 @@ export default {
       line-height: normal;
       letter-spacing: normal;
       color: #000000;
+    }
+  }
+
+  .login-success-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    width: 100%;
+    overflow: auto;
+  }
+
+  .login-success-wrapper {
+    width: 300px;
+    border-radius: 3px;
+    background-color: #43a047;
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .login-success-icon {
+      i {
+        font-size: 24px !important;
+        margin-bottom: -1px;
+      }
+    }
+
+    .login-success-message {
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: #ffffff;
     }
   }
 
