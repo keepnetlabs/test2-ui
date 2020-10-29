@@ -20,6 +20,7 @@
             :search="search"
             :items-per-page="9999"
             hide-default-footer
+            :custom-filter="sort"
             class="container-iterator"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
@@ -90,7 +91,7 @@ export default {
   name: 'SwitchAccount',
   data() {
     return {
-      keys: ['manager'],
+      keys: ['name'],
       itemsPerPageOptions: [4, 8, 12],
       itemsPerPage: 4,
       search: '',
@@ -114,6 +115,9 @@ export default {
       selectCompany: 'dashboard/selectCompany',
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
+    sort(items, value) {
+      return value ? items.filter((item) => item.name.toLowerCase().indexOf(value) >= 0) : items
+    },
     getCompanyData() {
       this.companyLoading = true
       getCompanyList()
