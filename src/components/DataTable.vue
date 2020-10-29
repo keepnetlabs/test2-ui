@@ -1103,8 +1103,8 @@ export default {
   watch: {
     table(table) {
       this.columnStandardisation(this.columns)
-      this.initialData = table
-      this.tableData = table
+      this.initialData = [...table]
+      this.tableData = [...table]
       if (!this.showClusterItemsRowAction) {
         this.hideChildRowActions()
       }
@@ -1173,8 +1173,8 @@ export default {
     this.columnStandardisation(this.columns)
 
     if (this.table && this.table.length) {
-      this.initialData = this.table
-      this.tableData = this.table
+      this.initialData = [...this.table]
+      this.tableData = [...this.table]
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
