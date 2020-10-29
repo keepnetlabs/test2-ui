@@ -1,5 +1,6 @@
 <template>
   <div class="small-badge">
+    <v-btn style="display: none;"></v-btn>
     <div
       v-if="scope.row && scope.row[col.property]"
       class="small-badge__container"
@@ -102,10 +103,15 @@ export default {
       if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
         this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
         if (this.unRenderedBadgeCount > 0) {
-          const totalWidth = this.scope.column.width - 35
-          this.maximumRenderedBadgeCount = Math.floor(totalWidth / 65)
+          const totalWidth = this.scope.column.width
+          this.maximumRenderedBadgeCount = Math.floor(
+            totalWidth / (stringBadges.substring(0, stringBadges.length - 1).length * 10)
+          )
         } else {
-          this.maximumRenderedBadgeCount = Math.floor(this.scope.column.width / 65)
+          this.maximumRenderedBadgeCount = Math.floor(
+            this.scope.column.width /
+              (stringBadges.substring(0, stringBadges.length - 1).length * 10)
+          )
         }
         if (this.maximumRenderedBadgeCount > this.badges.length) {
           this.maximumRenderedBadgeCount = this.badges.length
