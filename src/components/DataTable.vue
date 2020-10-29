@@ -290,7 +290,7 @@
               </v-list-item>
             </v-menu>
 
-            <v-tooltip bottom opacity="1">
+            <v-tooltip bottom opacity="1" v-if="false">
               <template v-slot:activator="{ on }">
                 <v-btn class="btn-hover mr-1" icon v-on="on" style="order: 5;">
                   <v-icon @click="printMethod()">mdi-printer</v-icon>
@@ -305,7 +305,7 @@
                   class="btn-hover mr-1"
                   icon
                   v-on="on"
-                  style="order: 6;"
+                  style="order: 5;"
                 >
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
