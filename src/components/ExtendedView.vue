@@ -37,7 +37,15 @@
             v-if="editMode"
             >CANCEL
           </v-btn>
-          <v-btn @click="saveEditedOnes()" color="#2196f3" dense text v-if="editMode">SAVE </v-btn>
+          <v-btn
+            @click="saveEditedOnes()"
+            color="#2196f3"
+            dense
+            text
+            v-if="editMode"
+            :disabled="isSaveButtonDisabled"
+            >SAVE
+          </v-btn>
         </div>
       </div>
       <div class="edit-popup__body" v-if="options && options.col && options.col.length">
@@ -318,8 +326,20 @@
                     col.property !== 'createDate' &&
                     col.editOptions.component === 'textfield'
                   "
+                  :disabled="
+                    col.editOptions.getDisabledValue
+                      ? col.editOptions.getDisabledValue(copyOfEditedRows)
+                      : false
+                  "
                 >
-                  <template v-slot:append>
+                  <template
+                    v-slot:append
+                    v-if="
+                      !multipleEditDisables[col.property] || col.editOptions.getDisabledValue
+                        ? !col.editOptions.getDisabledValue(copyOfEditedRows)
+                        : true
+                    "
+                  >
                     <v-btn
                       text
                       @click.native="handleEditClick(col.property)"
@@ -359,7 +379,7 @@
                       :readonly="!multipleEditDisables[col.property]"
                       :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
                     >
-                      <template v-slot:append>
+                      <template v-slot:append v-if="!multipleEditDisables[col.property]">
                         <v-btn
                           text
                           @click.native="handleEditClick(col.property)"
@@ -590,6 +610,11 @@ export default {
       editedPopupProperties: [],
       multipleEditDisables: [],
       defaultValues: []
+    }
+  },
+  computed: {
+    isSaveButtonDisabled() {
+      return JSON.stringify(this.copyOfEditedRows) === JSON.stringify(this.defaultValues)
     }
   },
   methods: {
