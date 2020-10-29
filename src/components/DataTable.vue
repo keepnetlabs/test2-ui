@@ -769,7 +769,7 @@
           <template>
             <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
             <span class="el-pagination__text el-pagination__text--2">
-              {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount }}-{{
+              {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount + 1 }}-{{
                 this.currentPage * this.rowCount > initialData.length
                   ? initialData.length
                   : this.currentPage * this.rowCount
@@ -798,7 +798,7 @@
                   ? '0'
                   : this.currentPage === 1
                   ? 1
-                  : (this.currentPage - 1) * this.rowCount
+                  : (this.currentPage - 1) * this.rowCount + 1
               }}-{{
                 filteredDataLength === 0
                   ? '0'
