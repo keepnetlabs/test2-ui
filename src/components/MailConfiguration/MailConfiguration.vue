@@ -399,7 +399,7 @@ export default {
         },
         {
           property: 'statusName',
-          align: 'left',
+          align: 'center',
           editable: false,
           label: 'Status',
           sortable: true,
