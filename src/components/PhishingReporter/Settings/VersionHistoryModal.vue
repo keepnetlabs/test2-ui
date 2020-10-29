@@ -21,6 +21,7 @@
           :selectable="false"
           :pageSizes="[5, 10, 25]"
           :filterable="true"
+          :is-downloadable="false"
           :options="true"
           :rowActions="table.rowActions"
           :empty="table.iEmpty"

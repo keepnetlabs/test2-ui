@@ -1,6 +1,7 @@
 <template functional>
   <v-btn
     rounded
+    style="pointer-events: none;"
     :color="props.color"
     :style="props.col && props.col.props && props.col.props.style"
     v-on="props.listeners"

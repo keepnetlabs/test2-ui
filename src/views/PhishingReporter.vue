@@ -160,7 +160,7 @@ export default {
         'Last 7 days',
         'Last 30 days',
         'This month',
-        'Last month'
+        'Previous month'
       ]
     }
   },

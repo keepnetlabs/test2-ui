@@ -9,7 +9,7 @@
           Diagnostic Tool
         </v-list-item-title>
         <v-list-item-subtitle class="diagnostic-tool__sub-title mb-6">
-          Helper tool for checking status of add-in and diagnose problems
+          Helper tool to check status of the add-in and diagnose problems
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-content v-if="showHeaderLink">

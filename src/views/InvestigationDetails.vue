@@ -1081,7 +1081,8 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        filterableType: 'text'
+        filterableType: 'text',
+        width: 240
       },
       {
         property: 'userStatus',
@@ -1093,6 +1094,7 @@ export default {
         show: true,
         type: 'detected',
         filterableType: 'select',
+        width: 170,
         filterableItems: ['Online', 'Offline']
       },
 
@@ -1104,6 +1106,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
+        width: 140,
         type: 'text'
       },
       {
@@ -1113,6 +1116,7 @@ export default {
         label: getStoreValue(PROPERTY_STORE.LASTSEEN),
         fixed: false,
         sortable: true,
+        width: 180,
         show: true,
         type: 'text'
       },
@@ -1124,6 +1128,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
+        width: 170,
         type: 'status'
       },
       {
@@ -1134,6 +1139,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
+        width: 180,
         type: 'service',
         filterableType: 'select',
         filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
@@ -1145,6 +1151,7 @@ export default {
         fixed: false,
         sortable: false,
         show: true,
+        minWidth: 180,
         type: 'slot'
       }
     ],
