@@ -389,7 +389,7 @@ export default {
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: 'Manuel Investigation',
+      investgationName: 'Manual Investigation',
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
