@@ -65,6 +65,7 @@
                       :type="showNewPassword ? '' : 'password'"
                       @click:append="showNewPassword = !showNewPassword"
                       outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                     ></v-text-field>
                   </div>
                 </v-form>
@@ -700,7 +701,10 @@ export default {
         required: (value) => !!value || 'Required.',
         minPassword: (value) => {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
-          return pattern.test(value) || "Password doesn't match with the password criteria"
+          return (
+            pattern.test(value) ||
+            'At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number'
+          )
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
       },

@@ -108,6 +108,7 @@
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
                             autocomplete="disabled"
+                            hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -336,7 +337,11 @@
                             <label class="new-password-wrapper__label">Confirm Password</label>
                             <v-text-field
                               v-model="reNewPassword"
-                              :rules="[rules.required, rules.equalToNewPassword(newPassword)]"
+                              :rules="[
+                                rules.required,
+                                rules.minPassword,
+                                rules.equalToNewPassword(newPassword)
+                              ]"
                               placeholder="Enter new password again"
                               class="reset-pass-textfield"
                               @click="newPasswordError = false"
@@ -349,6 +354,7 @@
                               :type="showReNewPassword ? '' : 'password'"
                               @click:append="showReNewPassword = !showReNewPassword"
                               autocomplete="disabled"
+                              hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                             ></v-text-field>
                           </div>
                         </v-form>
