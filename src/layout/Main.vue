@@ -50,7 +50,7 @@
                       autocomplete="disabled"
                     ></v-text-field>
                   </div>
-                  <div>
+                  <div class="pl-2 pr-2">
                     <PasswordChecker :password="newPassword" />
                   </div>
                   <div>
@@ -61,6 +61,9 @@
                       label="Enter new password again"
                       class="reset-pass-textfield"
                       @click="newPasswordError = false"
+                      :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="showNewPassword ? '' : 'password'"
+                      @click:append="showNewPassword = !showNewPassword"
                       outlined
                     ></v-text-field>
                   </div>
@@ -673,6 +676,7 @@ export default {
   },
   data() {
     return {
+      showNewPassword: false,
       currentPassword: null,
       show1: false,
       show2: false,

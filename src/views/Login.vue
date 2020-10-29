@@ -75,11 +75,11 @@
                             class="username-field"
                             required
                             label="Username"
-                            autocomplete="username"
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
+                            autocomplete="disabled"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -100,7 +100,6 @@
                             ref="password"
                             id="password"
                             v-model="password"
-                            autocomplete="username-password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
@@ -108,6 +107,7 @@
                             outlined
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
+                            autocomplete="disabled"
                           ></v-text-field>
                         </v-form>
                       </v-col>
@@ -185,8 +185,8 @@
                             @click="resetPasswordError = false"
                             outlined
                             :class="{ 'input-error': isErrorActive }"
-                            autocomplete="username-password-reset"
                             validate-on-blur
+                            autocomplete="disabled"
                           ></v-text-field>
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
@@ -249,6 +249,7 @@
                           v-model="verificationCode"
                           label="Verification Code"
                           v-on:keyup.enter="onTwoStepLogin"
+                          autocomplete="disabled"
                           validate-on-blur
                         ></v-text-field>
                       </v-col>
@@ -324,8 +325,8 @@
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                               :class="{ 'input-error': isErrorActive }"
-                              autocomplete="username-password-new"
                               validate-on-blur
+                              autocomplete="disabled"
                             ></v-text-field>
                           </div>
                           <div>
@@ -340,11 +341,14 @@
                               class="reset-pass-textfield"
                               @click="newPasswordError = false"
                               outlined
-                              type="password"
                               :class="{ 'input-error': isErrorActive }"
-                              autocomplete="username-password-password"
                               validate-on-blur
-                              @blur="blurConfirm = true"
+                              :append-icon="
+                                showReNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
+                              "
+                              :type="showReNewPassword ? '' : 'password'"
+                              @click:append="showReNewPassword = !showReNewPassword"
+                              autocomplete="disabled"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -386,6 +390,7 @@ export default {
   components: { VueRecaptcha, PasswordChecker },
   data() {
     return {
+      showReNewPassword: false,
       isPasswordStep5Complete: false,
       blurConfirm: false,
       resetType: null,

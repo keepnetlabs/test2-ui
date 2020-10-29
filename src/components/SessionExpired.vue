@@ -48,7 +48,7 @@
                 placeholder="Username"
                 autocomplete="disabled"
                 outlined
-                autofocus
+                :autofocus="true"
                 @keyup.enter="onLoginClicked"
               ></v-text-field>
             </div>
