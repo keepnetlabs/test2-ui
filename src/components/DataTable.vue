@@ -1747,7 +1747,7 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      if (this.tableData.length === selections.length) {
+      if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
         this.$refs.elTableRef.clearSelection()
