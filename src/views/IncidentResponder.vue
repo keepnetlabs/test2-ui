@@ -2284,7 +2284,7 @@ export default {
 }
 .popup-link {
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.29;
   letter-spacing: normal;
