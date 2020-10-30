@@ -203,7 +203,7 @@ export const columnStandards = [
   { property: 'jobTitle', width: '120' },
   { property: 'companyName', width: '180' },
   { property: 'subject', width: '240' },
-  { property: 'url', width: '180' },
+  { property: 'url', width: '250' },
   { property: 'language', width: '240' }
 ]
 
