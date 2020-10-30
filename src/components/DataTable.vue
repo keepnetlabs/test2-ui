@@ -769,7 +769,7 @@
           <template>
             <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
             <span class="el-pagination__text el-pagination__text--2">
-              {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount }}-{{
+              {{ this.currentPage === 1 ? 1 : (this.currentPage - 1) * this.rowCount + 1 }}-{{
                 this.currentPage * this.rowCount > initialData.length
                   ? initialData.length
                   : this.currentPage * this.rowCount
@@ -798,7 +798,7 @@
                   ? '0'
                   : this.currentPage === 1
                   ? 1
-                  : (this.currentPage - 1) * this.rowCount
+                  : (this.currentPage - 1) * this.rowCount + 1
               }}-{{
                 filteredDataLength === 0
                   ? '0'
@@ -1103,8 +1103,8 @@ export default {
   watch: {
     table(table) {
       this.columnStandardisation(this.columns)
-      this.initialData = table
-      this.tableData = table
+      this.initialData = [...table]
+      this.tableData = [...table]
       if (!this.showClusterItemsRowAction) {
         this.hideChildRowActions()
       }
@@ -1173,8 +1173,8 @@ export default {
     this.columnStandardisation(this.columns)
 
     if (this.table && this.table.length) {
-      this.initialData = this.table
-      this.tableData = this.table
+      this.initialData = [...this.table]
+      this.tableData = [...this.table]
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
@@ -1747,7 +1747,7 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      if (this.tableData.length === selections.length) {
+      if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
         this.$refs.elTableRef.clearSelection()
