@@ -38,7 +38,7 @@
       title="Matching Incidents"
       v-if="showMatchingModal"
       :subtitle="getSelectedMatchingIncidentsSubtitle"
-      @changeStatus="showMatchingModal = false"
+      @changeStatus="toggleMatchingModal"
       size="maximum"
       class-name="matching-modal"
     >
@@ -48,7 +48,7 @@
             <v-list-item-content>
               <datatable
                 :refName="'matchingInvestigationPlaybookRules'"
-                ref="refmatchingInvestigationPlaybookRules"
+                :table="matchingPlaybookData"
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :countRow="5"
                 :pageSizes="[5, 10, 25]"
@@ -67,11 +67,7 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="showMatchingModal = false"
+          <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="toggleMatchingModal"
             >CLOSE
           </v-btn>
         </div>
@@ -163,6 +159,7 @@ export default {
     return {
       tableData: [],
       loading: true,
+      matchingPlaybookData: [],
       showRuleModal: false,
       selectedMatch: null,
       showMatchingModal: false,
@@ -366,6 +363,9 @@ export default {
     getStatus(row) {
       return JSON.stringify(row.resourceId) === JSON.stringify(this.selectedMatch.resourceId)
     },
+    toggleMatchingModal() {
+      this.showMatchingModal = !this.showMatchingModal
+    },
     toggleRuleModal() {
       this.selectedPlaybookId = null
       return (this.showRuleModal = !this.showRuleModal)
@@ -385,7 +385,7 @@ export default {
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
-      this.showMatchingModal = true
+      this.toggleMatchingModal()
       const payload = {
         pageNumber: 1,
         pageSize: 500,
@@ -394,8 +394,8 @@ export default {
       }
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
-          const tableData = response.data.data
-          this.tableData = tableData.results || []
+          const matchingPlaybookData = response.data.data
+          this.matchingPlaybookData = matchingPlaybookData.results || []
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
