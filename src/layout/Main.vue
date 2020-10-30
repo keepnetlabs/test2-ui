@@ -50,7 +50,7 @@
                       autocomplete="disabled"
                     ></v-text-field>
                   </div>
-                  <div>
+                  <div class="pl-2 pr-2">
                     <PasswordChecker :password="newPassword" />
                   </div>
                   <div>
@@ -61,7 +61,11 @@
                       label="Enter new password again"
                       class="reset-pass-textfield"
                       @click="newPasswordError = false"
+                      :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="showNewPassword ? '' : 'password'"
+                      @click:append="showNewPassword = !showNewPassword"
                       outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                     ></v-text-field>
                   </div>
                 </v-form>
@@ -673,6 +677,7 @@ export default {
   },
   data() {
     return {
+      showNewPassword: false,
       currentPassword: null,
       show1: false,
       show2: false,
@@ -696,7 +701,10 @@ export default {
         required: (value) => !!value || 'Required.',
         minPassword: (value) => {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
-          return pattern.test(value) || "Password doesn't match with the password criteria"
+          return (
+            pattern.test(value) ||
+            'At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number'
+          )
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
       },

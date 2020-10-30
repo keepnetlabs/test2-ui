@@ -37,6 +37,7 @@
               hint="*Required"
               persistent-hint
               id="appClientId"
+              autocomplete="disabled"
               height="40"
             ></v-text-field>
           </form-group>
@@ -50,6 +51,7 @@
               persistent-hint
               :rules="[(v) => validations.required(v, 'Required')]"
               id="applicationSecret"
+              autocomplete="disabled"
               height="40"
             ></v-text-field>
           </form-group>
@@ -63,6 +65,7 @@
               hint="*Required"
               persistent-hint
               id="directoryId"
+              autocomplete="disabled"
               height="40"
             ></v-text-field>
           </form-group>

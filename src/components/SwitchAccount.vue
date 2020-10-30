@@ -20,9 +20,14 @@
             :search="search"
             :items-per-page="9999"
             hide-default-footer
+            :custom-filter="sort"
             class="container-iterator"
-            :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
+            <template v-slot:no-results>
+              <div class="container-iterator__no-results">
+                {{ "Sorry, we couldn't find any results matching your criteria" }}
+              </div>
+            </template>
             <template v-slot:header>
               <v-text-field
                 label="Search"
@@ -90,7 +95,7 @@ export default {
   name: 'SwitchAccount',
   data() {
     return {
-      keys: ['manager'],
+      keys: ['name'],
       itemsPerPageOptions: [4, 8, 12],
       itemsPerPage: 4,
       search: '',
@@ -114,6 +119,9 @@ export default {
       selectCompany: 'dashboard/selectCompany',
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
+    sort(items, value) {
+      return value ? items.filter((item) => item.name.toLowerCase().indexOf(value) >= 0) : items
+    },
     getCompanyData() {
       this.companyLoading = true
       getCompanyList()
@@ -261,6 +269,13 @@ export default {
   max-height: 500px;
   overflow: hidden;
   padding: 5px;
+  min-height: 200px;
+  &__no-results {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 60px;
+  }
 }
 
 .switch-ac-row {
