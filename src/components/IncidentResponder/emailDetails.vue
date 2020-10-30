@@ -749,6 +749,7 @@ export default {
         fixed: false,
         sortable: false,
         show: true,
+        maxWidth: 180,
         type: 'detected',
         hasTooltip: true
       }

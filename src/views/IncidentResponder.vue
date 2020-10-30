@@ -910,7 +910,7 @@ export default {
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
+                items: ['Phishing', 'Malicious', { text: 'Clean', value: 'NonMalicious' }]
               }
             },
             show: true
@@ -1560,7 +1560,7 @@ export default {
       this.$router.push({ path: '/playbook', query: { openPopup: true } })
     },
     onEmptyReportedEmailsBtnClicked() {
-      this.$router.push({ path: '/phishing-reporter' })
+      this.$router.push({ name: 'Phishing Reporter', params: { tab: 'second' } })
     },
     irPreviewOnClick(row) {
       this.$router.push({
@@ -2284,7 +2284,7 @@ export default {
 }
 .popup-link {
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.29;
   letter-spacing: normal;

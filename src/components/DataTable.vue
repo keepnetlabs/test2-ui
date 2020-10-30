@@ -1104,11 +1104,13 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-      this.tableData = [...table]
+      this.tableData = [...table].slice(
+        (this.currentPage - 1) * this.rowCount,
+        this.currentPage * this.rowCount
+      )
       if (!this.showClusterItemsRowAction) {
         this.hideChildRowActions()
       }
-      this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     },
     tableData(data) {
       if (data && this.groupable) {
@@ -1674,6 +1676,7 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
+      debugger
       if (this.isServerSide) {
         this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {

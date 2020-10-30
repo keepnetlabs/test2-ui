@@ -115,7 +115,9 @@
                   v-if="tab === 'first'"
               /></el-tab-pane>
               <el-tab-pane label="Settings" name="second">
+                <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
                 <component
+                  v-else
                   :is="tabComponent.name"
                   :ref="tabComponent.ref"
                   :formData="tabComponent.formData"
@@ -135,9 +137,11 @@ import Users from '../components/PhishingReporter/Users'
 import FirstTime from '../components/PhishingReporter/Settings/FirstTime'
 import { getPhishingReporter, getPhishingReportSummary } from '@/api/phishingReporter'
 import PhishingReporterTopBar from '../components/SkeletonLoading/PhishingReporterTopBar'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 export default {
   name: 'PhishingReporter',
   components: {
+    DatatableLoading,
     Settings,
     Users,
     FirstTime,
@@ -153,6 +157,7 @@ export default {
         ref: 'refFirstTime',
         formData: null
       },
+      isLoading: true,
       selectedDate: 'Last 4 minutes',
       listItems: [
         'Last 4 minutes',
@@ -321,11 +326,15 @@ export default {
             formData: null
           }
         })
+        .finally(() => (this.isLoading = false))
     }
   },
   created() {
     this.getPhishingReportSummary()
     this.getPhishingReport()
+    if (this.$route.params && this.$route.params.tab) {
+      this.tab = this.$route.params.tab
+    }
   },
   mounted() {
     this.getHash()
