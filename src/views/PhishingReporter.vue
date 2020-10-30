@@ -326,6 +326,9 @@ export default {
   created() {
     this.getPhishingReportSummary()
     this.getPhishingReport()
+    if (this.$route.params && this.$route.params.tab) {
+      this.tab = this.$route.params.tab
+    }
   },
   mounted() {
     this.getHash()
