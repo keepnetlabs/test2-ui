@@ -48,7 +48,7 @@
                 placeholder="Username"
                 autocomplete="disabled"
                 outlined
-                autofocus
+                :autofocus="true"
                 @keyup.enter="onLoginClicked"
               ></v-text-field>
             </div>
@@ -66,6 +66,7 @@
                 @click:append="show1 = !show1"
                 autocomplete="disabled"
                 @keyup.enter="onLoginClicked"
+                hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
               ></v-text-field>
             </div>
             <div>
