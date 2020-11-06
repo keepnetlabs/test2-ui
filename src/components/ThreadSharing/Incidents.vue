@@ -114,7 +114,7 @@
               <div class="empty-communities">
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
-                    No incident has been shared, yet
+                    No incident has been shared
                   </span>
                   <div
                     class="create-post-incident"

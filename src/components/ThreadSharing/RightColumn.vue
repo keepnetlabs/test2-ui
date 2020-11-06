@@ -230,7 +230,7 @@
         block
         rounded
         id="create-community-btn"
-        >CREATE COMMUNITY
+        >CREATE A NEW COMMUNITY
       </v-btn>
       <v-btn
         v-if="$route.name == 'Community'"
@@ -491,13 +491,8 @@
               </div>
             </v-card>
           </div>
-          <div class="pb-2" v-else-if="suggestedCommunities && !suggestedCommunities.length">
+          <div class="pb-2" v-else>
             There is no suggested community available, yet
-          </div>
-          <div class="empty-suggested" v-else>
-            <v-btn class="create-community-button mt-3 mb-6" @click="createNewCommunity()" rounded
-              >Create A New Community
-            </v-btn>
           </div>
         </div>
       </div>
@@ -828,20 +823,20 @@ export default {
       this.$emit('postIncident')
       this.closeCommunityInfo()
     },
-    joinCommunity(community) {
-      joinCommunity(community.resourceId).then((response) => {
+    joinCommunity({ resourceId, communityName, privacyStatusName }) {
+      joinCommunity(resourceId).then((response) => {
         this.getsuggestedCommunities()
-        localStorage.setItem('communityName', community.communityName)
-        localStorage.setItem('communityResourceIdForRedirect', community.resourceId)
+        localStorage.setItem('communityName', communityName)
+        localStorage.setItem('communityResourceIdForRedirect', resourceId)
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: response.data.message
         })
-        if (community.privacyStatusName !== 'Private') {
+        if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
-            this.$router.go(`/community/${community.resourceId}`)
+            this.$router.go(`/community/${resourceId}`)
           } else {
-            this.$router.push(`/community/${community.resourceId}`)
+            this.$router.push(`/community/${resourceId}`)
           }
           this.$emit('joinRequestSuccess')
         }
