@@ -539,7 +539,10 @@
             </div>
           </template>
           <template v-if="filter && filter.length > 3" slot="no-data">
-            <div class="empty-communities" v-if="selectedTab === 'tab-1'">
+            <div
+              class="empty-communities"
+              v-if="selectedTab === 'tab-1' || selectedTab === 'tab-0'"
+            >
               <div class="empty-communities-inline">
                 <span class="no-community">
                   Sorry, we couldn't find any results matching your criteria
@@ -674,9 +677,13 @@ export default {
     },
     filter: function (newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.debounce(() => {
+        if (!newVal) {
           this.updateCommunities()
-        }, 500)
+        } else {
+          this.debounce(() => {
+            this.updateCommunities()
+          }, 500)
+        }
       }
     }
   },

@@ -114,9 +114,10 @@
               <div class="empty-communities">
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
-                    No incident has been shared
+                    {{ search ? 'Search criteria has no results' : 'No incident has been shared' }}
                   </span>
                   <div
+                    v-if="!search"
                     class="create-post-incident"
                     @click="showPostIncident = true"
                     block
@@ -200,9 +201,13 @@ export default {
     },
     search: function (newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.debounce(() => {
+        if (!newVal) {
           this.getIncidentList()
-        }, 500)
+        } else {
+          this.debounce(() => {
+            this.getIncidentList()
+          }, 500)
+        }
       }
     },
     watch: {
