@@ -542,7 +542,7 @@
             </router-link>
 
             <router-link
-              class="breadcrumb-links"
+              class="breadcrumb-links cursor-default"
               to="/companies"
               style="display: flex; align-items: center;"
               v-if="routerName === 'Company Group Details'"
@@ -570,7 +570,7 @@
                 routerName === 'Mail Configurations'
               "
               :to="$route.path"
-              class="bread-last-step breadcrumb-links"
+              class="bread-last-step breadcrumb-links cursor-default"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
 
@@ -580,7 +580,7 @@
             <router-link
               v-if="routerName === 'Target Users'"
               :to="$route.path"
-              class="bread-last-step breadcrumb-links"
+              class="bread-last-step breadcrumb-links cursor-default"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
 
@@ -589,7 +589,7 @@
             <router-link
               v-if="routerName === 'Companies'"
               :to="$route.path"
-              class="bread-last-step breadcrumb-links"
+              class="bread-last-step breadcrumb-links cursor-default"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
 
@@ -598,7 +598,7 @@
             <router-link
               v-if="routerName === 'System Users'"
               :to="$route.path"
-              class="bread-last-step breadcrumb-links"
+              class="bread-last-step breadcrumb-links cursor-default"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
 
@@ -607,7 +607,7 @@
             <router-link
               v-if="routerName === 'Company Settings'"
               :to="$route.path"
-              class="bread-last-step breadcrumb-links"
+              class="bread-last-step breadcrumb-links cursor-default"
             >
               <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
 
@@ -621,7 +621,8 @@
             <router-link
               v-if="routerName !== 'Phishing Reporter'"
               :to="$route.path"
-              class="bread-last-step breadcrumb-links"
+              class="bread-last-step breadcrumb-links cursor-default"
+              :class="{ 'cursor-default': routerName === 'Dashboard' }"
               >{{ routerName === 'Incident Responder' ? 'Dashboard' : routerName }}
             </router-link>
           </div>
@@ -1275,6 +1276,7 @@ export default {
         text-decoration: inherit;
         &:last-of-type {
           opacity: 0.7;
+          cursor: default;
         }
       }
     }
