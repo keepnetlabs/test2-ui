@@ -151,12 +151,12 @@ export default {
         regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Comunity Name cannot start with space'
+        empty: (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space'
       },
       descriptionRules: {
         required: (v) =>
           (!!v && v.length >= 5 && v.length <= 300) ||
-          'Description required and must between 5-300 characters.',
+          'Description is required and must be between 5-300 characters.',
         regex: (v) =>
           /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
