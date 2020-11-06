@@ -8,7 +8,7 @@
       <div
         class="dashboard-cards roi-summary"
         :class="{
-          'no-data__opacity-purple': !isRoiSummaryEmpty(irSummary)
+          'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
         }"
       >
         <div class="card-header">
@@ -124,7 +124,8 @@ export default {
 
   methods: {
     isRoiSummaryEmpty(summary) {
-      return !!summary
+      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
+      return revenue === '0' && time === '0'
     }
   },
   created() {

@@ -261,7 +261,7 @@
             <div
               class="dashboard-cards roi-summary"
               :class="{
-                'no-data__opacity-purple': isPhishingEmpty(irSummary)
+                'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
               }"
             >
               <div class="card-header">
@@ -1378,7 +1378,8 @@ export default {
       this.isShowRoi = false
     },
     isRoiSummaryEmpty(summary) {
-      return !!summary
+      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
+      return revenue === '0' && time === '0'
     },
     isInvestigationsEmpty(summary) {
       if (summary && summary.investigationTypeCount) {
