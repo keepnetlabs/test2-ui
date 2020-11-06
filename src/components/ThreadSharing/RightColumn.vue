@@ -467,7 +467,7 @@
                     <span class="pr-2">Member</span>
                   </v-btn>
                   <v-btn
-                    @click="joinCommunity(commun.resourceId, commun.communityName)"
+                    @click="joinCommunity(commun)"
                     class="suggested-btn"
                     block
                     rounded
@@ -828,17 +828,23 @@ export default {
       this.$emit('postIncident')
       this.closeCommunityInfo()
     },
-    joinCommunity(communityId, name) {
-      joinCommunity(communityId).then((response) => {
+    joinCommunity(community) {
+      joinCommunity(community.resourceId).then((response) => {
         this.getsuggestedCommunities()
-        localStorage.setItem('communityName', name)
-        localStorage.setItem('communityResourceIdForRedirect', communityId)
-        if (this.$route.name == 'Community') {
-          this.$router.go(`/community/${communityId}`)
-        } else {
-          this.$router.push(`/community/${communityId}`)
+        localStorage.setItem('communityName', community.communityName)
+        localStorage.setItem('communityResourceIdForRedirect', community.resourceId)
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: response.data.message
+        })
+        if (community.privacyStatusName !== 'Private') {
+          if (this.$route.name == 'Community') {
+            this.$router.go(`/community/${community.resourceId}`)
+          } else {
+            this.$router.push(`/community/${community.resourceId}`)
+          }
+          this.$emit('joinRequestSuccess')
         }
-        this.$emit('joinRequestSuccess')
       })
     },
     isOwnerOfTheCommunity() {
