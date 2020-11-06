@@ -53,6 +53,7 @@
                 :countRow="5"
                 :pageSizes="[5, 10, 25]"
                 :showHeader="true"
+                :loading="isMatchingTableLoading"
                 :defaultSort="'subject'"
                 :selectable="false"
                 :filterable="true"
@@ -165,6 +166,7 @@ export default {
       showMatchingModal: false,
       isWantToDelete: false,
       deleteValues: null,
+      isMatchingTableLoading: true,
       selectedPlaybookId: null,
       tableOptions: {
         isColumnFilterActive: false,
@@ -385,6 +387,7 @@ export default {
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
+      this.isMatchingTableLoading = true
       this.toggleMatchingModal()
       const payload = {
         pageNumber: 1,
@@ -404,6 +407,7 @@ export default {
             message: 'Error when getting the matching rules!'
           })
         })
+        .finally(() => (this.isMatchingTableLoading = false))
     },
     exportPlaybookRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {

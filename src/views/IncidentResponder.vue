@@ -357,16 +357,11 @@
                       <v-card light>
                         <v-list-item class="matching-modal__list-item">
                           <v-list-item-content>
-                            <DatatableLoading
-                              v-show="isMatchingInvestigationLoading"
-                              :loading="isMatchingInvestigationLoading"
-                            >
-                            </DatatableLoading>
                             <datatable
-                              v-show="!isMatchingInvestigationLoading"
                               :refName="'matchingInvestigation'"
                               ref="refMatchingInvestigation"
                               :table="matchingInvestigationData"
+                              :loading="isMatchingInvestigationLoading"
                               :columns="matchingInvestigation.columns"
                               id="incident-responder-matching-investigations-data-table"
                               :countRow="5"
