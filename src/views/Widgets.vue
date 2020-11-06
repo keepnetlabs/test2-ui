@@ -739,6 +739,7 @@ export default {
 }
 .vue-grid-layout {
   margin-left: -12px;
+  margin-right: -12px;
 }
 .widget-header__title {
   padding-left: 12px !important;
