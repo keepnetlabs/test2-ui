@@ -547,9 +547,8 @@
               </div>
             </div>
           </template>
-
           <template v-if="!filter || filter.length < 1" slot="no-data">
-            <v-skeleton-loader :loading="communityLoading" type="table-tbody">
+            <v-skeleton-loader :loading="communityLoading" type="article, actions">
               <div class="empty-communities" v-if="selectedTab === 'tab-1'">
                 <div class="empty-communities-inline">
                   <span class="no-community">
@@ -581,6 +580,12 @@
                 </div>
               </div>
             </v-skeleton-loader>
+          </template>
+          <template v-if="filter && communityLoading" slot="no-data">
+            <v-skeleton-loader
+              :loading="communityLoading"
+              type="article, actions"
+            ></v-skeleton-loader>
           </template>
         </v-data-iterator>
       </v-card-text>
