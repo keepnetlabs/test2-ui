@@ -120,7 +120,9 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog'
     }),
     sort(items, value) {
-      return value ? items.filter((item) => item.name.toLowerCase().indexOf(value) >= 0) : items
+      return value
+        ? items.filter((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) >= 0)
+        : items
     },
     getCompanyData() {
       this.companyLoading = true
