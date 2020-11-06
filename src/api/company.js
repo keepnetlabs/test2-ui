@@ -40,7 +40,7 @@ export function createCompany(payload) {
     }
   }
 
-  return testRequest.post(`/companies`, formData)
+  return testRequest.post(`/companies`, formData, { loading: true })
 }
 export function updateCompany(id, payload) {
   const formData = new FormData()
