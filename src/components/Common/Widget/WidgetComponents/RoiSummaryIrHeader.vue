@@ -8,7 +8,7 @@
       <div
         class="dashboard-cards roi-summary"
         :class="{
-          'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
+          'no-data__opacity-purple': !isRoiSummaryEmpty(irSummary)
         }"
       >
         <div class="card-header">
