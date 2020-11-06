@@ -259,22 +259,22 @@
         <div class="ts-user-comp">
           <div :id="'post-details' + post.communityPostResourceId" class="ts-user-comp-detail">
             by
-            <a
+            <b
               :id="post.postedUserFullName"
               v-if="post.postedUserFullName"
               href="#"
               class="pl-1 pr-1"
-              >{{ post.postedUserFullName }}</a
+              >{{ post.postedUserFullName }}</b
             >
-            <a v-else href="#" class="pl-1 pr-1">User Name</a> from
-            <a
+            <b v-else href="#" class="pl-1 pr-1">User Name</b> from
+            <b
               :id="post.postedUserCompanyName"
               v-if="post.postedUserCompanyName"
               href="#"
               class="pl-1 pr-1"
-              >{{ post.postedUserCompanyName }}</a
+              >{{ post.postedUserCompanyName }}</b
             >
-            <a v-else class="pl-1 pr-1">Company Name</a> on
+            <b v-else class="pl-1 pr-1">Company Name</b> on
             <a
               :id="post.communityName"
               v-if="post.communityName"
