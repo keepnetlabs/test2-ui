@@ -43,7 +43,7 @@
             <v-autocomplete
               v-model="selectedCompanies"
               :items="companies"
-              :no-data-text="'no data'"
+              no-data-text="No companies displayed"
               :return-object="true"
               :search-input.sync="search"
               auto-select-first
@@ -85,7 +85,7 @@ import {
   createCompanyGroups,
   searchGroupCompanies,
   updateCompanyGroup
-} from '../../api/company'
+} from '@/api/company'
 import { maxLength, required } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
@@ -120,7 +120,7 @@ export default {
         maxLength
       },
       payload: {
-        pageSize: 1000,
+        pageSize: 100,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
@@ -158,7 +158,7 @@ export default {
     editHandler() {
       if ((this.isShow && this.isEdit) || (this.isShow && this.forCompany)) {
         const _p = this.payload
-        _p.pageSize = 500
+        //_p.pageSize = 500
         this.groupName = this.forCompany ? null : this.selectedRow.name
         if (this.forCompany) {
           this.selectedCompanies = [this.selectedRow]
@@ -171,7 +171,7 @@ export default {
                   ? response.data.data.results
                   : []
             })
-            .catch((error) => {})
+            .catch(() => {})
         }
       }
     },
@@ -236,13 +236,15 @@ export default {
           this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
           searchCompanies(this.payload)
             .then((response) => {
-              this.companies =
-                response.data.data.hasOwnProperty('results') &&
+              this.companies = [
+                ...this.companies,
+                ...(response.data.data.hasOwnProperty('results') &&
                 response.data.data.results.length > 0
                   ? response.data.data.results
-                  : []
+                  : [])
+              ]
             })
-            .catch((error) => {})
+            .catch(() => {})
         }, 500)
       }
     }
