@@ -146,7 +146,7 @@
   }
 .multiple-values-input{
 
-  input[placeholder] {
+  input[placeholder] ,textarea[placeholder]{
     font-style: italic;
   }
   .v-input__append-inner{

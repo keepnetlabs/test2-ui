@@ -22,7 +22,7 @@
         </span>
         <span class="settings-span" v-else>{{ value.length }} Items Selected</span>
         <div class="edit-popup__edit-actions">
-          <v-btn @click="editMode = true" icon v-if="!editMode">
+          <v-btn @click="toggleEditStatus" icon v-if="!editMode">
             <v-icon class="close-icon">mdi-pencil</v-icon>
           </v-btn>
           <v-btn @click="closeEditPopup()" icon v-if="!editMode">
@@ -285,7 +285,6 @@
                   rows="2"
                   v-bind="col.editOptions.props"
                   row-height="20"
-                  no-resize
                 ></v-textarea>
                 <v-select
                   class="edit-select"
@@ -349,6 +348,39 @@
                     </v-btn>
                   </template>
                 </v-text-field>
+                <v-textarea
+                  outlined
+                  dense
+                  :autofocus="!multipleEditDisables[col.property]"
+                  :value="multipleEditModels[col.property]"
+                  @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
+                  :class="[!multipleEditDisables[col.property] && 'multiple-values-input']"
+                  placeholder="Multiple Values"
+                  :readonly="!multipleEditDisables[col.property]"
+                  v-if="
+                    multipleValues(col.property) &&
+                    editMode &&
+                    col.isEditable &&
+                    col.type !== 'chart' &&
+                    col.type !== 'progress' &&
+                    col.type !== 'date' &&
+                    col.property !== 'createDate' &&
+                    col.editOptions.component === 'textarea'
+                  "
+                  rows="2"
+                  v-bind="col.editOptions.props"
+                  row-height="20"
+                >
+                  <template v-slot:append v-if="!multipleEditDisables[col.property]">
+                    <v-btn
+                      text
+                      @click.native="handleEditClick(col.property)"
+                      class="edit-popup__edit-component"
+                    >
+                      EDIT
+                    </v-btn>
+                  </template>
+                </v-textarea>
                 <v-menu
                   ref="menu1"
                   :close-on-content-click="false"
@@ -563,6 +595,9 @@ export default {
         return {}
       }
     },
+    extendedViewDisableChanger: {
+      type: Function
+    },
     createMode: {
       type: Boolean,
       default: false
@@ -614,10 +649,19 @@ export default {
   },
   computed: {
     isSaveButtonDisabled() {
-      return JSON.stringify(this.copyOfEditedRows) === JSON.stringify(this.defaultValues)
+      const isDisableChecker = this.extendedViewDisableChanger
+        ? this.extendedViewDisableChanger()
+        : true
+      return (
+        JSON.stringify(this.copyOfEditedRows) === JSON.stringify(this.defaultValues) &&
+        isDisableChecker
+      )
     }
   },
   methods: {
+    toggleEditStatus() {
+      this.editMode = !this.editMode
+    },
     multipleValues(key, val) {
       // This method controls whether selected items has same value or not
       if (this.value && this.value.length > 1) {

@@ -498,6 +498,7 @@
             @handleEdit="handleEdit"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
+            :extendedViewDisableChanger="extendedViewDisableChanger"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
@@ -540,37 +541,6 @@
               </template>
             </template>
             <template v-slot:extended-view-slot>
-              <div class="row-edit-div">
-                <div>
-                  <label>Notes</label>
-                  <v-textarea
-                    outlined
-                    dense
-                    v-model="extendedView.note"
-                    rows="2"
-                    row-height="20"
-                    :placeholder="
-                      selectedReportedMails.length > 1 && hasMultipleNoteValue
-                        ? 'Multiple Values'
-                        : 'Enter notes'
-                    "
-                    :readonly="hasMultipleNoteValue"
-                  >
-                    <template
-                      v-slot:append
-                      v-if="selectedReportedMails.length > 1 && hasMultipleNoteValue"
-                    >
-                      <v-btn
-                        @click="hasMultipleNoteValue = false"
-                        text
-                        class="edit-popup__edit-component"
-                      >
-                        EDIT
-                      </v-btn>
-                    </template>
-                  </v-textarea>
-                </div>
-              </div>
               <div class="row-edit-div">
                 <v-checkbox
                   color="#2196f3"
@@ -952,6 +922,23 @@ export default {
               }
             },
             show: true
+          },
+          {
+            property: 'note',
+            label: 'Notes',
+            isEditable: true,
+            type: 'text',
+            editOptions: {
+              component: 'textarea',
+              getDisabledValue() {
+                return false
+              },
+              props: {
+                placeholder: 'Enter Notes'
+              }
+            },
+            show: true,
+            showOnlyPreview: true
           }
         ]
       },
@@ -1187,7 +1174,11 @@ export default {
     },
     isWantToAddNewInvestigation: false,
     extendedView: {
-      note: '',
+      isNotify: true,
+      isMessage: false,
+      customMessage: ''
+    },
+    defaultExtendedViewValues: {
       isNotify: true,
       isMessage: false,
       customMessage: ''
@@ -1295,6 +1286,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    extendedViewDisableChanger() {
+      return JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView)
+    },
     closeMatchingModal() {
       this.showMatchingModal = false
       this.matchingInvestigationData = []
@@ -1406,10 +1400,12 @@ export default {
         if (selections.length === 1) {
           getNotifiedEmail(selections[0].resourceId).then((response) => {
             const selectedItem = response.data.data
-            this.extendedView.note = selectedItem.note
             this.extendedView.isNotify = selectedItem.isNotifyUser
             this.extendedView.customMessage = selectedItem.customMessage
             this.extendedView.isMessage = selectedItem.customMessage ? true : false
+            this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
+            this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
+            this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
             this.extendedViewValue = [
               {
                 ...selectedItem,
@@ -1444,21 +1440,18 @@ export default {
                     this.hasMultipleNoteValue = true
                   }
                 })
-                if (!this.hasMultipleNoteValue) {
-                  this.extendedView.note = rows[0].note
-                } else {
-                  this.extendedView.note = ''
-                }
                 this.extendedViewValue = rows
               }
             })
             index++
           })
         } else {
-          this.extendedView.note = ''
           this.extendedView.customMessage = ''
           this.extendedView.isMessage = false
           this.extendedView.isNotify = true
+          this.defaultExtendedViewValues.customMessage = ''
+          this.defaultExtendedViewValues.isMessage = false
+          this.defaultExtendedViewValues.isNotify = true
           this.hasMultipleNoteValue = false
         }
       }
@@ -1575,13 +1568,13 @@ export default {
       }
     },
     handleEdit(selectedRow) {
-      selectedRow.map((item, index) => {
+      selectedRow.map((item) => {
         const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
         const payload = {
           result: item.result,
           status: item.status,
           tag: tag || '',
-          note: this.extendedView.note || '',
+          note: item.note || '',
           isNotifyUser: this.extendedView.isNotify,
           customMessage: this.extendedView.isMessage
             ? this.extendedView.customMessage
