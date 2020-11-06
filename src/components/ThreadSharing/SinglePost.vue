@@ -79,31 +79,34 @@
       size="big"
     >
       <template v-slot:app-dialog-body>
-        <span
-          style="
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-          "
-          >Recipients</span
-        >
-        <v-combobox
-          :items="[]"
-          placeholder="Enter emails (max. 10)"
-          multiple
-          dense
-          deletable-chips
-          autocomplete="disabled"
-          small-chips
-          outlined
-          :no-data-text="'Enter emails (max. 10)'"
-          v-model.trim="shareEmail"
-          :rules="[shareEmailRules.limit, shareEmailRules.email]"
-          class="pop-up-card__invite-member"
-        ></v-combobox>
+        <v-form ref="shareModal">
+          <span
+            style="
+              font-weight: normal;
+              font-stretch: normal;
+              font-style: normal;
+              line-height: normal;
+              letter-spacing: normal;
+              color: rgba(0, 0, 0, 0.87);
+            "
+            >Recipients</span
+          >
+          <v-combobox
+            :items="[]"
+            placeholder="Enter emails (max. 10)"
+            multiple
+            dense
+            deletable-chips
+            autocomplete="disabled"
+            small-chips
+            outlined
+            :no-data-text="'Enter emails (max. 10)'"
+            v-model.trim="shareEmail"
+            :rules="[shareEmailRules.limit, shareEmailRules.email, shareEmailRules.required]"
+            class="pop-up-card__invite-member"
+            hint="Press enter to separate email adresses"
+          ></v-combobox>
+        </v-form>
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -1115,12 +1118,12 @@ export default {
       required: false
     }
   },
-  computed: {},
   data: () => ({
     openShareModal: false,
     shareEmail: [],
     shareEmailRules: {
       limit: (v) => (v && v.length <= 10) || 'You have reached to max limit',
+      required: (v) => (v && v.length >= 1) || 'Required',
       email: (v) => {
         if (v.length > 0) {
           let booReturn = true
@@ -1284,21 +1287,22 @@ export default {
     },
     shareIncident() {
       let id = this.sharedIncitedId
-      setTimeout(() => {
-        const payload = {
-          emailarray: this.shareEmail
-        }
-        shareAPost(id, payload).then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Post has been shared successfully'
+      if (this.$refs.shareModal.validate())
+        setTimeout(() => {
+          const payload = {
+            emailarray: this.shareEmail
+          }
+          shareAPost(id, payload).then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Post has been shared successfully'
+            })
+            setTimeout(() => {
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
+            this.openShareModal = false
           })
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-          this.openShareModal = false
-        })
-      }, 200)
+        }, 200)
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
