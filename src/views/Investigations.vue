@@ -89,30 +89,41 @@
         </datatable>
       </v-card>
     </div>
-    <v-dialog v-model="showPlaybookModal" fullscreen scrollable persistent no-click-animation>
-      <CreateOrEditRule
-        :playbookId="selectedPlaybookId"
-        @cancelForm="togglePlaybookModal"
-        @closeFormWithUpdate="closePlaybookWithUpdate"
-        v-if="showPlaybookModal"
-      />
-    </v-dialog>
+    <app-modal
+      :status="showPlaybookModal"
+      v-if="showPlaybookModal"
+      :icon-name="getIconName"
+      :title="getTitle"
+      :show-footer="false"
+      class-name="incident-responder__playbook"
+    >
+      <template v-slot:overlay-body>
+        <CreateOrEditRule
+          :playbookId="selectedPlaybookId"
+          @cancelForm="togglePlaybookModal"
+          @closeFormWithUpdate="closePlaybookWithUpdate"
+          v-if="showPlaybookModal"
+        />
+      </template>
+    </app-modal>
   </div>
 </template>
 <script>
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import AppDialog from '../components/AppDialog'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
 import { getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
+import AppModal from '@/components/AppModal'
 export default {
   components: {
     Datatable,
     newInvestigation,
     AppDialog,
-    CreateOrEditRule
+    CreateOrEditRule,
+    AppModal
   },
   props: {
     selectedEmail: {
@@ -425,7 +436,13 @@ export default {
     ...mapGetters({
       // get table data via vuex.
       tableData: 'investigations/investigationListGetter' // for using getters
-    })
+    }),
+    getTitle() {
+      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
+    },
+    getIconName() {
+      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
+    }
   },
   mounted() {
     // triggered to relevant action at investigations.js

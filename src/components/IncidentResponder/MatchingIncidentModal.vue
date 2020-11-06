@@ -18,6 +18,7 @@
               :table="tableData"
               :columns="columns"
               :countRow="5"
+              :loading="isMatchingModalLoading"
               :pageSizes="[5, 10, 25]"
               :showHeader="true"
               :defaultSort="'subject'"
@@ -100,7 +101,8 @@ export default {
         }
       ],
       empty: { message: "There isn't any matching Incidents, yet", btn: '', icon: 'mdi-plus' },
-      tableData: []
+      tableData: [],
+      isMatchingModalLoading: true
     }
   },
   computed: {
@@ -119,9 +121,12 @@ export default {
         orderBy: 'CreateDate',
         ascending: true
       }
-      getMatchingIncidents(payload, this.selectedMatch.resourceId).then((response) => {
-        this.$refs.refMatchingInvestigation.loadWithDataArray(response.data.data.results || [])
-      })
+      this.isMatchingModalLoading = true
+      getMatchingIncidents(payload, this.selectedMatch.resourceId)
+        .then((response) => {
+          this.$refs.refMatchingInvestigation.loadWithDataArray(response.data.data.results || [])
+        })
+        .finally(() => (this.isMatchingModalLoading = false))
     }
   },
   created() {

@@ -98,6 +98,7 @@
           @handleEdit="$emit('handleEdit', $event)"
           :disable-transition="disableExtendedViewTransition"
           @closeEditPopup="closeEditPopup"
+          :extendedViewDisableChanger="extendedViewDisableChanger"
         >
           <template v-slot:body>
             <slot name="extended-view-slot" :scope="multipleSelection"></slot>
@@ -874,6 +875,9 @@ export default {
     columns: {
       type: Array,
       required: true
+    },
+    extendedViewDisableChanger: {
+      type: Function
     },
     showClusterItemsRowAction: {
       type: Boolean,
