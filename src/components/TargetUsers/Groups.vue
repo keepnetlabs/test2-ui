@@ -142,7 +142,7 @@ export default {
                 ]
               }
             },
-            width: 300
+            width: 150
           },
           {
             property: PROPERTY_STORE.CREATETIME,

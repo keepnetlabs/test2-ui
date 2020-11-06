@@ -124,7 +124,8 @@ export default {
 
   methods: {
     isRoiSummaryEmpty(summary) {
-      return !!summary
+      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
+      return revenue === '0' && time === '0'
     }
   },
   created() {
