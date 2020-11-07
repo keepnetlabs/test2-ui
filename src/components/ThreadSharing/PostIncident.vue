@@ -613,7 +613,7 @@
                 <div class="investigation-filters__area">
                   <div class="d-flex justify-space-between investigation-filters__area--filter">
                     <div class="d-flex">
-                      <span class="investigation-filters__area--filter__title">Share</span>
+                      <span class="investigation-filters__area--filter__title">Hide</span>
                     </div>
                     <div class="d-flex">
                       <span class="investigation-filters__area--filter__title mr-4">Mark as</span>
