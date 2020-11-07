@@ -206,7 +206,10 @@
                     @change="checkCheckboxValidation()"
                     :key="index"
                   ></v-checkbox>
-                  <div class="v-text-field__details checkbox-error" v-if="checkboxError">
+                  <div
+                    class="v-text-field__details checkbox-error checkbox-error__position"
+                    v-if="checkboxError"
+                  >
                     <div class="v-messages theme--light error--text" role="alert">
                       <div class="v-messages__wrapper">
                         <div class="v-messages__message">Source Select required</div>
@@ -3013,6 +3016,9 @@ export default {
       overflow: initial !important;
       display: inline-flex !important;
     }
+  }
+  &__position {
+    left: 15px !important;
   }
 }
 .bounce-enter-active {
