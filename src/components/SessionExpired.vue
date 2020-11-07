@@ -48,8 +48,8 @@
                 placeholder="Username"
                 autocomplete="disabled"
                 outlined
-                :autofocus="true"
                 @keyup.enter="onLoginClicked"
+                autofocus
               ></v-text-field>
             </div>
 
@@ -140,6 +140,9 @@ export default {
       this.email = localStorage.getItem('username')
       this.password = localStorage.getItem('password')
     }
+    setTimeout(() => {
+      this.$refs.email.focus()
+    }, 100)
   },
   methods: {
     ...mapActions({

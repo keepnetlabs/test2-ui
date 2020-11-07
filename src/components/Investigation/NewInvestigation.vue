@@ -206,7 +206,10 @@
                     @change="checkCheckboxValidation()"
                     :key="index"
                   ></v-checkbox>
-                  <div class="v-text-field__details checkbox-error" v-if="checkboxError">
+                  <div
+                    class="v-text-field__details checkbox-error checkbox-error__position"
+                    v-if="checkboxError"
+                  >
                     <div class="v-messages theme--light error--text" role="alert">
                       <div class="v-messages__wrapper">
                         <div class="v-messages__message">Source Select required</div>
@@ -496,8 +499,10 @@ export default {
           } // format ekle
         },
         size: {
-          required: (v) => false,
-          format: (v) => false
+          required: (v) => v && v.length <= 255,
+          format: (v) => {
+            return (v && !v.startsWith(' ')) || 'Cannot start with space'
+          }
         },
         name: {
           required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
@@ -605,11 +610,19 @@ export default {
         let isCheckboxEmpty = this.scanTypes.length === 0
         if (isCheckboxEmpty) {
           this.checkboxError = true
+          this.$nextTick(() => {
+            const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
           return false
         } else {
           this.checkboxError = false
         }
         if (!this.isDateValid) {
+          this.$nextTick(() => {
+            const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
           return false
         }
         let headersData = [
@@ -2520,10 +2533,6 @@ export default {
       font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
     }
-
-    span:nth-child(2) {
-      padding-top: 4px;
-    }
   }
 
   // Threat sharing Content
@@ -3017,6 +3026,9 @@ export default {
       overflow: initial !important;
       display: inline-flex !important;
     }
+  }
+  &__position {
+    left: 15px !important;
   }
 }
 .bounce-enter-active {

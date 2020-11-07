@@ -183,7 +183,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 300,
+            width: 185,
             filterableType: 'date',
             filterableCustomFieldName: 'createDate'
             //minWidth: 80

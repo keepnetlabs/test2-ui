@@ -104,118 +104,124 @@
             </template>
             <template v-slot:default="props">
               <div v-if="props.items && props.items.length">
-                <v-expansion-panels
-                  v-for="(member, ind) of props.items"
-                  :key="ind"
-                  multiple
-                  class="mb-4 mt-4"
-                >
-                  <v-expansion-panel class="threat-sharing-content">
-                    <div class="ts-header">
-                      <div class="ts-title">
-                        <img src="../../assets/img/logo-min.png" alt="logo" class="d-flex" />
-                        <div class="community-info-wrapper">
-                          <h2>{{ member.companyName }}</h2>
-                          <div class="community-sub-info">
-                            <div class="pa-0">
-                              <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                              <span class="company-mini-info">{{ member.userCount }} users</span>
-                            </div>
-                            <div class="pl-4 pa-0">
-                              <v-icon class="company-mini-icon">mdi-domain</v-icon>
-                              <span class="company-mini-info">{{
-                                member.industryName || 'Unknown'
-                              }}</span>
-                            </div>
-                            <div class="pl-4 pa-0">
-                              <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
-                              <span class="company-mini-info"
-                                >{{ member.postCount }} threat posts</span
-                              >
+                <v-skeleton-loader :loading="membersLoading" type="article, actions">
+                  <v-expansion-panels
+                    v-for="(member, ind) of props.items"
+                    :key="ind"
+                    multiple
+                    class="mb-4 mt-4"
+                  >
+                    <v-expansion-panel class="threat-sharing-content">
+                      <div class="ts-header">
+                        <div class="ts-title">
+                          <img src="../../assets/img/logo-min.png" alt="logo" class="d-flex" />
+                          <div class="community-info-wrapper">
+                            <h2>{{ member.companyName }}</h2>
+                            <div class="community-sub-info">
+                              <div class="pa-0">
+                                <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
+                                <span class="company-mini-info">{{ member.userCount }} users</span>
+                              </div>
+                              <div class="pl-4 pa-0">
+                                <v-icon class="company-mini-icon">mdi-domain</v-icon>
+                                <span class="company-mini-info">{{
+                                  member.industryName || 'Unknown'
+                                }}</span>
+                              </div>
+                              <div class="pl-4 pa-0">
+                                <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
+                                <span class="company-mini-info"
+                                  >{{ member.postCount }} threat posts</span
+                                >
+                              </div>
                             </div>
                           </div>
                         </div>
+                        <div class="flex-grow-1"></div>
+                        <v-menu offset-y transition="scale-transition">
+                          <template v-slot:activator="{ on }">
+                            <v-btn icon color="blue" v-on="on" style="order: 2;">
+                              <v-icon>mdi-dots-vertical</v-icon>
+                            </v-btn>
+                          </template>
+                          <div class="notification-wrapper">
+                            <v-list dense flat class="notification-wrapper__v-list">
+                              <v-list-item-group color="primary">
+                                <v-list-item @click="seePostedIncidentsClick(member)">
+                                  <v-list-item-icon>
+                                    <v-icon>mdi-magnify</v-icon>
+                                  </v-list-item-icon>
+                                  <v-list-item-content>
+                                    <v-list-item-title>See posted incidents</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                                <v-list-item
+                                  @click="appointANewOwner(member)"
+                                  v-if="!isOwnCompany(member) && isCommunityOwner()"
+                                >
+                                  <v-list-item-icon>
+                                    <v-icon>mdi-account-multiple-plus</v-icon>
+                                  </v-list-item-icon>
+                                  <v-list-item-content>
+                                    <v-list-item-title>Assign as owner</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                                <v-list-item
+                                  @click="removeFromCommunity(member)"
+                                  v-if="!isOwnCompany(member) && isCommunityOwner()"
+                                >
+                                  <v-list-item-icon>
+                                    <v-icon>mdi-delete</v-icon>
+                                  </v-list-item-icon>
+                                  <v-list-item-content>
+                                    <v-list-item-title>Remove from community</v-list-item-title>
+                                  </v-list-item-content>
+                                </v-list-item>
+                              </v-list-item-group>
+                            </v-list>
+                          </div>
+                        </v-menu>
                       </div>
-                      <div class="flex-grow-1"></div>
-                      <v-menu offset-y transition="scale-transition">
-                        <template v-slot:activator="{ on }">
-                          <v-btn icon color="blue" v-on="on" style="order: 2;">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <div class="notification-wrapper">
-                          <v-list dense flat class="notification-wrapper__v-list">
-                            <v-list-item-group color="primary">
-                              <v-list-item @click="seePostedIncidentsClick(member)">
-                                <v-list-item-icon>
-                                  <v-icon>mdi-magnify</v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                  <v-list-item-title>See posted incidents</v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                              <v-list-item
-                                @click="appointANewOwner(member)"
-                                v-if="!isOwnCompany(member) && isCommunityOwner()"
-                              >
-                                <v-list-item-icon>
-                                  <v-icon>mdi-account-multiple-plus</v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                  <v-list-item-title>Assign as owner</v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                              <v-list-item
-                                @click="removeFromCommunity(member)"
-                                v-if="!isOwnCompany(member) && isCommunityOwner()"
-                              >
-                                <v-list-item-icon>
-                                  <v-icon>mdi-delete</v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                  <v-list-item-title>Remove from community</v-list-item-title>
-                                </v-list-item-content>
-                              </v-list-item>
-                            </v-list-item-group>
-                          </v-list>
+                      <v-expansion-panel-content class="expand-body member-company-body">
+                        <div class="members-posts">
+                          <div class="members-posts-header">
+                            Top posts in community
+                          </div>
+                          <div class="members-post-list">
+                            <a href="#">Harmful xls file</a>
+                            <a href="#">Whatsapp phishing attempt</a>
+                            <a href="#">Win a prize</a>
+                          </div>
+                          <div class="members-post-see-all pt-1">
+                            <a href="#">SEE ALL POSTS</a>
+                          </div>
                         </div>
-                      </v-menu>
-                    </div>
-                    <v-expansion-panel-content class="expand-body member-company-body">
-                      <div class="members-posts">
-                        <div class="members-posts-header">
-                          Top posts in community
+                        <div class="members-pie">
+                          <pie :key="series[0]" :data="series" />
                         </div>
-                        <div class="members-post-list">
-                          <a href="#">Harmful xls file</a>
-                          <a href="#">Whatsapp phishing attempt</a>
-                          <a href="#">Win a prize</a>
-                        </div>
-                        <div class="members-post-see-all pt-1">
-                          <a href="#">SEE ALL POSTS</a>
-                        </div>
-                      </div>
-                      <div class="members-pie">
-                        <pie :key="series[0]" :data="series" />
-                      </div>
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-skeleton-loader>
               </div>
               <div v-else>
+                <v-skeleton-loader :loading="membersLoading" type="article, actions">
+                  <div class="empty-members">
+                    <p class="empty-members-span">
+                      No member in your communities, yet
+                    </p>
+                  </div>
+                </v-skeleton-loader>
+              </div>
+            </template>
+            <template slot="no-data">
+              <v-skeleton-loader :loading="membersLoading" type="article, actions">
                 <div class="empty-members">
                   <p class="empty-members-span">
                     No member in your communities, yet
                   </p>
                 </div>
-              </div>
-            </template>
-            <template slot="no-data">
-              <div class="empty-members">
-                <p class="empty-members-span">
-                  No member in your communities, yet
-                </p>
-              </div>
+              </v-skeleton-loader>
             </template>
           </v-data-iterator>
         </v-tab-item>
@@ -240,86 +246,92 @@
               </div>
             </template>
             <template v-slot:default="props">
-              <v-expansion-panels
-                v-if="props.items && props.items.length > 0"
-                class="mb-4 mt-4"
-                multiple
-                readonly
-              >
-                <v-expansion-panel
-                  v-for="(req, ind) in props.items"
-                  :key="ind"
-                  class="threat-sharing-content community-rqts"
+              <v-skeleton-loader :loading="membersLoading" type="article, actions">
+                <v-expansion-panels
+                  v-if="props.items && props.items.length > 0"
+                  class="mb-4 mt-4"
+                  multiple
+                  readonly
                 >
-                  <div class="member-requests ts-header">
-                    <div class="ts-title">
-                      <img src="../../assets/img/logo-min.png" alt="logo" />
-                      <div class="community-info-wrapper">
-                        <h2>{{ req.companyName }}</h2>
-                        <div class="community-sub-info">
-                          <div class="pa-0">
-                            <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                            <span class="company-mini-info">{{ req.userCount }} users</span>
-                          </div>
-                          <div class="pl-4 pa-0">
-                            <v-icon class="company-mini-icon">mdi-domain</v-icon>
-                            <span class="company-mini-info"
-                              >{{ req.industryName || 'No Category defined' }}
-                            </span>
-                          </div>
-                          <div class="pl-4 pa-0">
-                            <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
-                            <span class="company-mini-info">{{ req.postCount }} threat posts</span>
+                  <v-expansion-panel
+                    v-for="(req, ind) in props.items"
+                    :key="ind"
+                    class="threat-sharing-content community-rqts"
+                  >
+                    <div class="member-requests ts-header">
+                      <div class="ts-title">
+                        <img src="../../assets/img/logo-min.png" alt="logo" />
+                        <div class="community-info-wrapper">
+                          <h2>{{ req.companyName }}</h2>
+                          <div class="community-sub-info">
+                            <div class="pa-0">
+                              <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
+                              <span class="company-mini-info">{{ req.userCount }} users</span>
+                            </div>
+                            <div class="pl-4 pa-0">
+                              <v-icon class="company-mini-icon">mdi-domain</v-icon>
+                              <span class="company-mini-info"
+                                >{{ req.industryName || 'No Category defined' }}
+                              </span>
+                            </div>
+                            <div class="pl-4 pa-0">
+                              <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
+                              <span class="company-mini-info"
+                                >{{ req.postCount }} threat posts</span
+                              >
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="request-btns flex-grow-1">
-                      <v-btn
-                        class="refuse-btn"
-                        block
-                        rounded
-                        medium
-                        @click="refuseRequest(req.communityRequestResourceId)"
+                      <div class="request-btns flex-grow-1">
+                        <v-btn
+                          class="refuse-btn"
+                          block
+                          rounded
+                          medium
+                          @click="refuseRequest(req.communityRequestResourceId)"
+                        >
+                          Refuse
+                        </v-btn>
+                        <v-btn
+                          class="accept-btn"
+                          block
+                          rounded
+                          medium
+                          @click="acceptRequest(req.communityRequestResourceId)"
+                        >
+                          Accept
+                        </v-btn>
+                      </div>
+                      <v-expansion-panel-header
+                        style="display: none;"
+                        @click="toggle = !toggle"
+                        disable-icon-rotate
                       >
-                        Refuse
-                      </v-btn>
-                      <v-btn
-                        class="accept-btn"
-                        block
-                        rounded
-                        medium
-                        @click="acceptRequest(req.communityRequestResourceId)"
-                      >
-                        Accept
-                      </v-btn>
+                        <template v-slot:actions>
+                          &nbsp;
+                        </template>
+                      </v-expansion-panel-header>
                     </div>
-                    <v-expansion-panel-header
-                      style="display: none;"
-                      @click="toggle = !toggle"
-                      disable-icon-rotate
-                    >
-                      <template v-slot:actions>
-                        &nbsp;
-                      </template>
-                    </v-expansion-panel-header>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+                <div v-else>
+                  <div class="empty-members">
+                    <p class="empty-members-span">
+                      No Requests to join your community
+                    </p>
                   </div>
-                </v-expansion-panel>
-              </v-expansion-panels>
-              <div v-else>
+                </div>
+              </v-skeleton-loader>
+            </template>
+            <template slot="no-data">
+              <v-skeleton-loader :loading="membersLoading" type="article, actions">
                 <div class="empty-members">
                   <p class="empty-members-span">
                     No Requests to join your community
                   </p>
                 </div>
-              </div>
-            </template>
-            <template slot="no-data">
-              <div class="empty-members">
-                <p class="empty-members-span">
-                  No Requests to join your community
-                </p>
-              </div>
+              </v-skeleton-loader>
             </template>
           </v-data-iterator>
         </v-tab-item>
@@ -347,6 +359,7 @@ export default {
     Pie
   },
   data: () => ({
+    membersLoading: true,
     appointUserName: null,
     appointNewOwnerId: null,
     showAppointANewOwnerModal: false,
@@ -478,6 +491,7 @@ export default {
       }, delay)
     },
     getCommunityDetails() {
+      this.membersLoading = true
       getCommunityDetails(this.$route.params.id).then((response) => {
         this.communityDetails = response.data.data
         this.getMembers()
@@ -566,6 +580,7 @@ export default {
           ]
         }
       }
+      this.membersLoading = true
       getCommunityMembers(this.$route.params.id, payload)
         .then((response) => {
           const { data } = response
@@ -580,6 +595,9 @@ export default {
           ) {
             this.members = []
           }
+        })
+        .finally(() => {
+          this.membersLoading = false
         })
     },
     getRequestMembers() {
@@ -609,6 +627,7 @@ export default {
             ]
           }
         }
+        this.membersLoading = true
         getCommunityMembersRequest(this.$route.params.id, payload)
           .then((response) => {
             const { data } = response
@@ -623,6 +642,9 @@ export default {
             ) {
               this.requestMembers = []
             }
+          })
+          .finally(() => {
+            this.membersLoading = false
           })
       }
     }

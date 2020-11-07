@@ -2141,10 +2141,6 @@ export default {
       line-height: 1.33 !important;
       font-weight: 400;
     }
-
-    span:nth-child(2) {
-      padding-top: 4px;
-    }
   }
 
   .add-comment-row {
