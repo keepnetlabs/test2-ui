@@ -175,7 +175,7 @@ export default {
             filterableItems: ['Active', 'InActive']
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDATE),
