@@ -1393,7 +1393,7 @@ export default {
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
         if (selections.length === 1) {
-          getNotifiedEmail(selections[0].resourceId).then((response) => {
+          getNotifiedEmail(selections[0].resourceId, true).then((response) => {
             const selectedItem = response.data.data
             this.extendedView.isNotify = selectedItem.isNotifyUser
             this.extendedView.customMessage = selectedItem.customMessage
@@ -1419,7 +1419,7 @@ export default {
           this.extendedView.isMessage = false
           this.extendedView.customMessage = ''
           selections.map((a, ind) => {
-            getNotifiedEmail(selections[index].resourceId).then((response) => {
+            getNotifiedEmail(selections[index].resourceId, true).then((response) => {
               const selectedItem = response.data.data
               rows.push({
                 ...selectedItem,
