@@ -95,7 +95,7 @@
         >
         <div class="email-template-preview">
           <div v-if="htmlData" v-html="htmlData" ref="refPreview" />
-          <table v-else style="width: 100%;" ref="refPreview">
+          <table style="width: 600px; margin: 0 auto;" v-else ref="refPreview">
             <tbody>
               <tr
                 style="
