@@ -101,7 +101,7 @@
                         irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
                     0
                   }}
-                  users are
+                  user(s) are
                 </div>
                 <div class="card-status">Currently Online</div>
               </div>
@@ -163,7 +163,7 @@
                       irSummary.notifiedEmailResultCount.reportedMailCount) ||
                     0
                   }}
-                  reported emails
+                  reported email(s)
                 </div>
                 <div class="card-status">Found harmful</div>
               </div>

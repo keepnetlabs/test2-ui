@@ -45,7 +45,7 @@
                   irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
               0
             }}
-            users are
+            user(s) are
           </div>
           <div class="card-status">Currently Online</div>
         </div>
