@@ -343,9 +343,8 @@
                       outlined
                       rounded
                       medium
-                      class="join-button"
+                      color="blue"
                     >
-                      <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-clock</v-icon>
                       REQUEST SENT
                     </v-btn>
                     <v-btn
