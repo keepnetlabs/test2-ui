@@ -691,11 +691,11 @@
               <div id="last-detail-parts" class="detail-parts">
                 <p
                   v-if="
-                    (emailData && emailData.subject && !emailData.isSubjectHidden) ||
-                    (!!emailData.from && !emailData.isFromHidden) ||
-                    (emailData.to && !!emailData.to.length && !emailData.isToHidden) ||
-                    (emailData.cc && !!emailData.cc.length && !emailData.isCcHidden) ||
-                    (emailData.bcc && !!emailData.bcc.length && !emailData.isBccHidden)
+                    (emailData.subject && emailData.isSubjectFlagged) ||
+                    (!!emailData.from && emailData.isFromFlagged) ||
+                    (emailData.to && !!emailData.to.length && emailData.isToFlagged) ||
+                    (emailData.cc && !!emailData.cc.length && emailData.isCcFlagged) ||
+                    (emailData.bcc && !!emailData.bcc.length && emailData.isBccFlagged)
                   "
                   class="detail-black disc-header single-post__details__section-header"
                 >
@@ -777,7 +777,7 @@
                 {{ /* Cc  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.cc && !emailData.isCcHidden"
+                  v-if="emailData && emailData.cc && !emailData.isCcHidden && emailData.isCcFlagged"
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -801,7 +801,9 @@
                 {{ /* Bcc  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.bcc && !emailData.isBccHidden"
+                  v-if="
+                    emailData && emailData.bcc && !emailData.isBccHidden && emailData.isBccFlagged
+                  "
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -868,7 +870,11 @@
               </div>
               <div
                 class="preview-attch-wrapper detail-parts"
-                v-if="emailData.attachments && emailData.attachments.length"
+                v-if="
+                  emailData.attachments &&
+                  emailData.attachments.length &&
+                  emailData.attachments.some((a) => !a.isHidden && a.isFlagged)
+                "
               >
                 <p class="detail-black single-post__details__section-header">
                   Attachments
