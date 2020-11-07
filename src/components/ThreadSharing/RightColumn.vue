@@ -329,7 +329,10 @@
                 <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0 d-flex">
                   {{ communityDetails.memberCount }}
                   <a
-                    v-if="!!communityDetails && communityDetails.myMembershipStatusId == 1"
+                    v-if="
+                      (!!communityDetails && communityDetails.privacyStatusName == 1) ||
+                      (!!communityDetails && communityDetails.privacyStatusName === 'Public')
+                    "
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"
