@@ -2,89 +2,104 @@
   <div class="phishing-reporter__header" id="phishing-reporter">
     <div class="phishing-reporter__header-container">
       <div class="phishing-reporter__stats">
-        <div class="phishing-reporter__header-left-column">
-          <div class="phishing-reporter__stats-cards">
-            <div class="phishing-reporter__stats-card">
-              <div class="phishing-reporter__stats-card-left">
-                <div
-                  class="phishing-reporter__stats-card-left-icon"
-                  style="background-color: #2196f3;"
-                >
-                  <v-icon color="white" left medium>mdi-puzzle</v-icon>
+        <div
+          class="phishing-reporter__header-left-column"
+          :style="[isHeaderLoading && { flexBasis: '50%' }]"
+        >
+          <template v-if="isHeaderLoading">
+            <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
+            <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
+          </template>
+          <template v-else>
+            <div class="phishing-reporter__stats-cards">
+              <div class="phishing-reporter__stats-card">
+                <div class="phishing-reporter__stats-card-left">
+                  <div
+                    class="phishing-reporter__stats-card-left-icon"
+                    style="background-color: #2196f3;"
+                  >
+                    <v-icon color="white" left medium>mdi-puzzle</v-icon>
+                  </div>
+                </div>
+                <div class="phishing-reporter__stats-card-right">
+                  <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
+                    {{ getAddOnStatus }}
+                  </h3>
+                  <p class="phishing-reporter__stats-card-right-stats">
+                    Users have the add-in
+                  </p>
                 </div>
               </div>
-              <div class="phishing-reporter__stats-card-right">
-                <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                  {{ getAddOnStatus }}
-                </h3>
-                <p class="phishing-reporter__stats-card-right-stats">
-                  Users have the add-in
-                </p>
-              </div>
             </div>
-          </div>
-          <div class="phishing-reporter__stats-cards">
-            <div class="phishing-reporter__stats-card">
-              <div class="phishing-reporter__stats-card-left">
-                <div
-                  class="phishing-reporter__stats-card-left-icon"
-                  style="background-color: #00bcd4;"
-                >
-                  <v-icon color="white" left medium>mdi-account</v-icon>
+            <div class="phishing-reporter__stats-cards">
+              <div class="phishing-reporter__stats-card">
+                <div class="phishing-reporter__stats-card-left">
+                  <div
+                    class="phishing-reporter__stats-card-left-icon"
+                    style="background-color: #00bcd4;"
+                  >
+                    <v-icon color="white" left medium>mdi-account</v-icon>
+                  </div>
+                </div>
+                <div class="phishing-reporter__stats-card-right">
+                  <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
+                    {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
+                  </h3>
+                  <p class="phishing-reporter__stats-card-right-stats">
+                    Users Online
+                  </p>
                 </div>
               </div>
-              <div class="phishing-reporter__stats-card-right">
-                <h3 class="phishing-reporter__stats-card-right-title" style="color: #00bcd4;">
-                  {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
-                </h3>
-                <p class="phishing-reporter__stats-card-right-stats">
-                  Users Online
-                </p>
-              </div>
             </div>
-          </div>
+          </template>
         </div>
         <div class="phishing-reporter__header-right-column">
-          <div class="phishing-reporter__stats-cards">
-            <div class="phishing-reporter__stats-card">
-              <div class="phishing-reporter__stats-card-left">
-                <div
-                  class="phishing-reporter__stats-card-left-icon"
-                  style="background-color: #f56c6c;"
-                >
-                  <v-icon color="white" left medium>mdi-account-outline</v-icon>
+          <template v-if="isHeaderLoading">
+            <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
+            <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
+          </template>
+          <template v-else>
+            <div class="phishing-reporter__stats-cards">
+              <div class="phishing-reporter__stats-card">
+                <div class="phishing-reporter__stats-card-left">
+                  <div
+                    class="phishing-reporter__stats-card-left-icon"
+                    style="background-color: #f56c6c;"
+                  >
+                    <v-icon color="white" left medium>mdi-account-outline</v-icon>
+                  </div>
+                </div>
+                <div class="phishing-reporter__stats-card-right">
+                  <h3 class="phishing-reporter__stats-card-right-title" style="color: #f56c6c;">
+                    {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
+                  </h3>
+                  <p class="phishing-reporter__stats-card-right-stats">
+                    Users Offline
+                  </p>
                 </div>
               </div>
-              <div class="phishing-reporter__stats-card-right">
-                <h3 class="phishing-reporter__stats-card-right-title" style="color: #f56c6c;">
-                  {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
-                </h3>
-                <p class="phishing-reporter__stats-card-right-stats">
-                  Users Offline
-                </p>
-              </div>
             </div>
-          </div>
-          <div class="phishing-reporter__stats-cards">
-            <div class="phishing-reporter__stats-card">
-              <div class="phishing-reporter__stats-card-left">
-                <div
-                  class="phishing-reporter__stats-card-left-icon"
-                  style="background-color: #2196f3;"
-                >
-                  <img src="../assets/img/account-tree.png" alt="" />
+            <div class="phishing-reporter__stats-cards">
+              <div class="phishing-reporter__stats-card">
+                <div class="phishing-reporter__stats-card-left">
+                  <div
+                    class="phishing-reporter__stats-card-left-icon"
+                    style="background-color: #2196f3;"
+                  >
+                    <img src="../assets/img/account-tree.png" alt="" />
+                  </div>
+                </div>
+                <div class="phishing-reporter__stats-card-right">
+                  <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
+                    v{{ (phishingReportSummary && phishingReportSummary['addInVersion']) || 0 }}
+                  </h3>
+                  <p class="phishing-reporter__stats-card-right-stats">
+                    Latest Release
+                  </p>
                 </div>
               </div>
-              <div class="phishing-reporter__stats-card-right">
-                <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                  v{{ (phishingReportSummary && phishingReportSummary['addInVersion']) || 0 }}
-                </h3>
-                <p class="phishing-reporter__stats-card-right-stats">
-                  Latest Release
-                </p>
-              </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
       <div class="phishing-reporter__header-container-panel">
@@ -138,6 +153,7 @@ import FirstTime from '../components/PhishingReporter/Settings/FirstTime'
 import { getPhishingReporter, getPhishingReportSummary } from '@/api/phishingReporter'
 import PhishingReporterTopBar from '../components/SkeletonLoading/PhishingReporterTopBar'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import InvestigationDetailsTopBarLoading from '@/components/SkeletonLoading/InvestigationDetailsTopBarLoading'
 export default {
   name: 'PhishingReporter',
   components: {
@@ -145,12 +161,14 @@ export default {
     Settings,
     Users,
     FirstTime,
-    PhishingReporterTopBar
+    PhishingReporterTopBar,
+    InvestigationDetailsTopBarLoading
   },
   data() {
     return {
       loading: true,
       tab: 'first',
+      isHeaderLoading: true,
       phishingReportSummary: null,
       tabComponent: {
         name: FirstTime,
@@ -187,6 +205,7 @@ export default {
     },
     getPhishingReportSummary() {
       this.loading = true
+      this.isHeaderLoading = true
       const dateObj = this.getDates()
       getPhishingReportSummary({
         startDate: dateObj.startDate,
@@ -202,7 +221,10 @@ export default {
         .catch(() => {
           this.phishingReportSummary = {}
         })
-        .finally(() => (this.loading = false))
+        .finally(() => {
+          this.loading = false
+          this.isHeaderLoading = false
+        })
     },
     getDateValue(value) {
       value = typeof value == 'string' ? value : value.toString()

@@ -381,7 +381,7 @@ export default {
             { text: 'does not contain', value: 'DoesNotContain' },
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' },
-            { text: 'exists', value: 'Exist' },
+            { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ]
         }

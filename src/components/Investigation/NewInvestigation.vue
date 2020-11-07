@@ -121,6 +121,7 @@
                       class="edit-select standard-height"
                       required
                       :menu-props="{ offsetY: true }"
+                      @change="handleChangeFilterListItem"
                       :rules="[filterSelectRules.required]"
                     ></v-select>
                   </div>
@@ -558,6 +559,11 @@ export default {
       } else {
         this.checkboxError = false
       }
+    },
+    handleChangeFilterListItem() {
+      this.$nextTick(() => {
+        this.$refs.form.validate()
+      })
     },
     callForGetTargetUsersItems(payload, isDefault = false) {
       getTargetUsersByEmail(payload).then((response) => {

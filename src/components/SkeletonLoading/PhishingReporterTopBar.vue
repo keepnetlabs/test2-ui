@@ -1,5 +1,5 @@
 <template>
-  <v-skeleton-loader :loading="loading" v-bind="attrs" type="list-item-avatar-three-line"
+  <v-skeleton-loader :loading="loading" v-bind="attrs" type="list-item-avatar-two-line"
     ><slot name="skeleton-content"></slot></v-skeleton-loader
 ></template>
 
