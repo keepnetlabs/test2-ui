@@ -499,8 +499,10 @@ export default {
           } // format ekle
         },
         size: {
-          required: (v) => false,
-          format: (v) => false
+          required: (v) => v && v.length <= 255,
+          format: (v) => {
+            return (v && !v.startsWith(' ')) || 'Cannot start with space'
+          }
         },
         name: {
           required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
@@ -604,7 +606,6 @@ export default {
       if (this.date.length < 1) {
         this.isDateValid = false
       }
-      debugger
       if (this.$refs.form.validate()) {
         let isCheckboxEmpty = this.scanTypes.length === 0
         if (isCheckboxEmpty) {
