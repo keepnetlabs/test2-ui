@@ -515,7 +515,7 @@ export default {
       this.loading = true
       let payload = {
         pageNumber: 1,
-        pageSize: 10,
+        pageSize: 100,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
