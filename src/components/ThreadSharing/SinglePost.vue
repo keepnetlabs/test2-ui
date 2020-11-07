@@ -79,31 +79,34 @@
       size="big"
     >
       <template v-slot:app-dialog-body>
-        <span
-          style="
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            line-height: normal;
-            letter-spacing: normal;
-            color: rgba(0, 0, 0, 0.87);
-          "
-          >Recipients</span
-        >
-        <v-combobox
-          :items="[]"
-          placeholder="Enter emails (max. 10)"
-          multiple
-          dense
-          deletable-chips
-          autocomplete="disabled"
-          small-chips
-          outlined
-          :no-data-text="'Enter emails (max. 10)'"
-          v-model.trim="shareEmail"
-          :rules="[shareEmailRules.limit, shareEmailRules.email]"
-          class="pop-up-card__invite-member"
-        ></v-combobox>
+        <v-form ref="shareModal">
+          <span
+            style="
+              font-weight: normal;
+              font-stretch: normal;
+              font-style: normal;
+              line-height: normal;
+              letter-spacing: normal;
+              color: rgba(0, 0, 0, 0.87);
+            "
+            >Recipients</span
+          >
+          <v-combobox
+            :items="[]"
+            placeholder="Enter emails (max. 10)"
+            multiple
+            dense
+            deletable-chips
+            autocomplete="disabled"
+            small-chips
+            outlined
+            :no-data-text="'Enter emails (max. 10)'"
+            v-model.trim="shareEmail"
+            :rules="[shareEmailRules.limit, shareEmailRules.email, shareEmailRules.required]"
+            class="pop-up-card__invite-member"
+            hint="Press enter to separate email adresses"
+          ></v-combobox>
+        </v-form>
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -259,22 +262,22 @@
         <div class="ts-user-comp">
           <div :id="'post-details' + post.communityPostResourceId" class="ts-user-comp-detail">
             by
-            <a
+            <b
               :id="post.postedUserFullName"
               v-if="post.postedUserFullName"
               href="#"
               class="pl-1 pr-1"
-              >{{ post.postedUserFullName }}</a
+              >{{ post.postedUserFullName }}</b
             >
-            <a v-else href="#" class="pl-1 pr-1">User Name</a> from
-            <a
+            <b v-else href="#" class="pl-1 pr-1">User Name</b> from
+            <b
               :id="post.postedUserCompanyName"
               v-if="post.postedUserCompanyName"
               href="#"
               class="pl-1 pr-1"
-              >{{ post.postedUserCompanyName }}</a
+              >{{ post.postedUserCompanyName }}</b
             >
-            <a v-else class="pl-1 pr-1">Company Name</a> on
+            <b v-else class="pl-1 pr-1">Company Name</b> on
             <a
               :id="post.communityName"
               v-if="post.communityName"
@@ -688,11 +691,11 @@
               <div id="last-detail-parts" class="detail-parts">
                 <p
                   v-if="
-                    (emailData && emailData.subject && !emailData.isSubjectHidden) ||
-                    (!!emailData.from && !emailData.isFromHidden) ||
-                    (emailData.to && !!emailData.to.length && !emailData.isToHidden) ||
-                    (emailData.cc && !!emailData.cc.length && !emailData.isCcHidden) ||
-                    (emailData.bcc && !!emailData.bcc.length && !emailData.isBccHidden)
+                    (emailData.subject && emailData.isSubjectFlagged) ||
+                    (!!emailData.from && emailData.isFromFlagged) ||
+                    (emailData.to && !!emailData.to.length && emailData.isToFlagged) ||
+                    (emailData.cc && !!emailData.cc.length && emailData.isCcFlagged) ||
+                    (emailData.bcc && !!emailData.bcc.length && emailData.isBccFlagged)
                   "
                   class="detail-black disc-header single-post__details__section-header"
                 >
@@ -774,7 +777,7 @@
                 {{ /* Cc  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.cc && !emailData.isCcHidden"
+                  v-if="emailData && emailData.cc && !emailData.isCcHidden && emailData.isCcFlagged"
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -798,7 +801,9 @@
                 {{ /* Bcc  */  }}
                 <div
                   class="detail-part-item"
-                  v-if="emailData && emailData.bcc && !emailData.isBccHidden"
+                  v-if="
+                    emailData && emailData.bcc && !emailData.isBccHidden && emailData.isBccFlagged
+                  "
                 >
                   <div class="detail-part-item__col--wrapper">
                     <div class="detail-part-item__col--major">
@@ -865,7 +870,11 @@
               </div>
               <div
                 class="preview-attch-wrapper detail-parts"
-                v-if="emailData.attachments && emailData.attachments.length"
+                v-if="
+                  emailData.attachments &&
+                  emailData.attachments.length &&
+                  emailData.attachments.some((a) => !a.isHidden && a.isFlagged)
+                "
               >
                 <p class="detail-black single-post__details__section-header">
                   Attachments
@@ -1115,12 +1124,12 @@ export default {
       required: false
     }
   },
-  computed: {},
   data: () => ({
     openShareModal: false,
     shareEmail: [],
     shareEmailRules: {
       limit: (v) => (v && v.length <= 10) || 'You have reached to max limit',
+      required: (v) => (v && v.length >= 1) || 'Required',
       email: (v) => {
         if (v.length > 0) {
           let booReturn = true
@@ -1284,21 +1293,22 @@ export default {
     },
     shareIncident() {
       let id = this.sharedIncitedId
-      setTimeout(() => {
-        const payload = {
-          emailarray: this.shareEmail
-        }
-        shareAPost(id, payload).then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Post has been shared successfully'
+      if (this.$refs.shareModal.validate())
+        setTimeout(() => {
+          const payload = {
+            emailarray: this.shareEmail
+          }
+          shareAPost(id, payload).then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              message: 'Post has been shared successfully'
+            })
+            setTimeout(() => {
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
+            this.openShareModal = false
           })
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-          this.openShareModal = false
-        })
-      }, 200)
+        }, 200)
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {

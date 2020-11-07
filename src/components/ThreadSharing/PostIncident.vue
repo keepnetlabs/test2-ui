@@ -465,10 +465,8 @@
                   class="comment-input"
                   rows="5"
                   row-height="15"
-                  validate-on-blur
                   :rules="[
                     explanationRules.default,
-                    explanationRules.regex,
                     explanationRules.required,
                     explanationRules.empty
                   ]"
@@ -613,7 +611,7 @@
                 <div class="investigation-filters__area">
                   <div class="d-flex justify-space-between investigation-filters__area--filter">
                     <div class="d-flex">
-                      <span class="investigation-filters__area--filter__title">Share</span>
+                      <span class="investigation-filters__area--filter__title">Hide</span>
                     </div>
                     <div class="d-flex">
                       <span class="investigation-filters__area--filter__title mr-4">Mark as</span>
@@ -625,7 +623,7 @@
                         v-model="allHeader"
                         @change="headerValChange"
                         hide-details
-                        :indeterminate="!allHeader"
+                        :indeterminate="checkHeaderSelected && !this.allHeader"
                       ></v-checkbox>
                       <label v-if="filterOpened">All Header</label>
                     </div>
@@ -2023,6 +2021,19 @@ export default {
     }
   },
   computed: {
+    checkHeaderSelected() {
+      if (
+        this.uploadRespond.isSubjectHidden ||
+        this.uploadRespond.isFromHidden ||
+        this.uploadRespond.isToHidden ||
+        this.uploadRespond.isCcHidden ||
+        this.uploadRespond.isBccHidden
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     maliciousCount() {
       let count = 0
       if (this.uploadRespond.isFromFlagged) {
@@ -2195,9 +2206,6 @@ export default {
       required: (v) =>
         (!!v && v.length >= 5 && v.length <= 300) ||
         'Explanation should be between 5 - 300 characters long',
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
     scopeRules: {
@@ -2804,7 +2812,6 @@ export default {
         this.uploadRespond.DiscoveryAndDetection &&
         this.uploadRespond.DiscoveryAndDetection.length >= 5 &&
         this.uploadRespond.DiscoveryAndDetection.length <= 300 &&
-        this.regexChar(this.uploadRespond.DiscoveryAndDetection) &&
         this.uploadRespond.Scope &&
         this.uploadRespond.Scope.length >= 5 &&
         this.uploadRespond.Scope.length <= 200 &&
@@ -4574,10 +4581,6 @@ export default {
       line-height: 1.33 !important;
       font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
-    }
-
-    span:nth-child(2) {
-      padding-top: 4px;
     }
   }
 

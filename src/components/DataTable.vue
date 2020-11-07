@@ -1680,7 +1680,6 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      debugger
       if (this.isServerSide) {
         this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {
