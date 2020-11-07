@@ -553,6 +553,7 @@ export default {
               message: 'O365 mail configuration has been updated'
             })
             this.status = false
+            this.editData = null
             this.getTableData()
           })
         } else {
@@ -562,6 +563,7 @@ export default {
               message: 'O365 mail configuration has been created'
             })
             this.status = false
+            this.editData = null
             this.getTableData()
           })
         }
@@ -579,6 +581,14 @@ export default {
           this.statusGsuite = true
           break
         case this.addUsersItems[1]:
+          this.formValues = {
+            name: null,
+            applicationId: null,
+            applicationSecret: null,
+            directoryId: null,
+            email: null
+          }
+          this.editData = null
           this.status = true
           break
         default:
