@@ -23,7 +23,7 @@
       </template>
     </app-dialog>
     <div class="new-community-inner">
-      <v-card flat light class="pa-6" style="width: 600px;">
+      <v-card flat light class="pa-0" style="width: 600px;">
         <v-list-item class="pl-0 pr-0 new-community-inner__title-section">
           <div class="v-btn v-cart-icon-wrapper">
             <v-icon medium left color="blue" class="ml-2">mdi-send</v-icon>
@@ -387,7 +387,7 @@ export default {
   .new-community-inner {
     width: 100%;
     height: 100%;
-    padding: 0 8vw;
+    padding: 31px 96px;
     position: relative;
     display: flex;
     overflow: visible;
@@ -576,7 +576,7 @@ export default {
     left: 0;
     position: fixed;
     justify-content: space-between;
-    padding: 0 10vw;
+    padding: 0 104px;
     height: 68px;
     width: 100%;
     z-index: 9999;
