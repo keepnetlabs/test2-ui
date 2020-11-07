@@ -197,20 +197,23 @@
         size="big"
       >
         <template v-slot:app-dialog-body>
-          <v-combobox
-            :items="[]"
-            placeholder="Enter email addresses of the companies to be invited (max. 5)"
-            multiple
-            dense
-            deletable-chips
-            autocomplete="disabled"
-            small-chips
-            outlined
-            :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
-            v-model="emailarray"
-            :rules="[inviteMembers.limit, inviteMembers.email]"
-            class="pop-up-card__invite-member"
-          ></v-combobox>
+          <v-form ref="inviteModal">
+            <v-combobox
+              :items="[]"
+              placeholder="Enter email addresses of the companies to be invited (max. 5)"
+              multiple
+              dense
+              deletable-chips
+              autocomplete="off"
+              small-chips
+              outlined
+              :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
+              v-model="emailarray"
+              :rules="[inviteMembers.limit, inviteMembers.email, inviteMembers.required]"
+              class="pop-up-card__invite-member"
+              hint="Press enter to separate email adresses"
+            ></v-combobox>
+          </v-form>
         </template>
         <template v-slot:app-dialog-footer>
           <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -308,42 +311,42 @@
           <div class="right-side-post-container pt-2 pb-9">
             <span class="about-community-statement">{{ communityDetails.description }}</span>
             <v-row>
-              <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+              <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                 <span class="right-col-semibold-label">Owner</span>
               </v-col>
-              <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
+              <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0">
                 {{ communityDetails.ownerCompanyName }}
               </v-col>
             </v-row>
             <div class="about-community-table">
               <v-row>
-                <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+                <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                   <span class="right-col-semibold-label">Members</span>
                 </v-col>
-                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
+                <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0 d-flex">
                   {{ communityDetails.memberCount }}
                   <a
                     v-if="!!communityDetails && communityDetails.myMembershipStatusId == 1"
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"
-                    >+Invite</a
+                    >+ Invite new members</a
                   >
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+                <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                   <span class="right-col-semibold-label">Industry</span>
                 </v-col>
-                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">
+                <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0">
                   {{ communityDetails.industryName }}
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" sm="6" class="about-community-table-td pb-0">
+                <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                   <span class="right-col-semibold-label">Total Incidents</span>
                 </v-col>
-                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0"
+                <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0"
                   >{{ communityDetails.incidentCount }}
                 </v-col>
               </v-row>
@@ -547,6 +550,7 @@ export default {
       yourPosts: [],
       inviteMembers: {
         limit: (v) => (v && v.length <= 5) || 'You have reached to max limit',
+        required: (v) => (v && v.length >= 1) || 'Required',
         email: (v) => {
           if (v.length > 0) {
             let booReturn = true
@@ -686,33 +690,35 @@ export default {
       }
     },
     inviteMember() {
-      setTimeout(() => {
-        const payload = {
-          emailarray: this.emailarray
-        }
-        inviteToCommunity(this.$route.params.id, payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Members are invited to community'
-            })
-            this.emailarray = []
-            this.openInviteModal = false
-          })
-          .catch((error) => {
-            if (
-              error.response &&
-              error.response &&
-              !!error.response.data.validationMessages &&
-              !!error.response.data.validationMessages.length
-            ) {
+      if (this.$refs.inviteModal.validate()) {
+        setTimeout(() => {
+          const payload = {
+            emailarray: this.emailarray
+          }
+          inviteToCommunity(this.$route.params.id, payload)
+            .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: error.response.data.validationMessages[0]
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                message: 'Members are invited to community'
               })
-            }
-          })
-      }, 200)
+              this.emailarray = []
+              this.openInviteModal = false
+            })
+            .catch((error) => {
+              if (
+                error.response &&
+                error.response &&
+                !!error.response.data.validationMessages &&
+                !!error.response.data.validationMessages.length
+              ) {
+                this.$store.dispatch('common/createSnackBar', {
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  message: error.response.data.validationMessages[0]
+                })
+              }
+            })
+        }, 200)
+      }
     },
     getCommunityDetails() {
       const _this = this
