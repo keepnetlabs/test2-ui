@@ -159,7 +159,7 @@
               <img
                 v-if="!mini && drawer"
                 style="max-width: 180px; max-height: 180px;"
-                src="../assets/img/logo-kep.png"
+                src="../assets/img/logo-full-color.png"
               />
               <img v-else src="../assets/img/account-circle.png" class="menu-mini-img" />
             </router-link>
