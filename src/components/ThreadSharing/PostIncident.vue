@@ -465,10 +465,8 @@
                   class="comment-input"
                   rows="5"
                   row-height="15"
-                  validate-on-blur
                   :rules="[
                     explanationRules.default,
-                    explanationRules.regex,
                     explanationRules.required,
                     explanationRules.empty
                   ]"
@@ -2208,9 +2206,6 @@ export default {
       required: (v) =>
         (!!v && v.length >= 5 && v.length <= 300) ||
         'Explanation should be between 5 - 300 characters long',
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
     scopeRules: {
@@ -2817,7 +2812,6 @@ export default {
         this.uploadRespond.DiscoveryAndDetection &&
         this.uploadRespond.DiscoveryAndDetection.length >= 5 &&
         this.uploadRespond.DiscoveryAndDetection.length <= 300 &&
-        this.regexChar(this.uploadRespond.DiscoveryAndDetection) &&
         this.uploadRespond.Scope &&
         this.uploadRespond.Scope.length >= 5 &&
         this.uploadRespond.Scope.length <= 200 &&

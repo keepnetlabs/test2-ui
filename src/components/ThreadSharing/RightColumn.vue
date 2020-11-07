@@ -330,7 +330,7 @@
                   {{ communityDetails.memberCount }}
                   <a
                     v-if="
-                      (!!communityDetails && communityDetails.privacyStatusName == 1) ||
+                      (!!communityDetails && communityDetails.myMembershipStatusId == 1) ||
                       (!!communityDetails && communityDetails.privacyStatusName === 'Public')
                     "
                     href="#"
