@@ -210,10 +210,11 @@
               small-chips
               outlined
               :no-data-text="'Enter email addresses of the companies to be invited (max. 5)'"
-              v-model="emailarray"
+              v-model.trim="emailarray"
               :rules="[inviteMembers.limit, inviteMembers.email, inviteMembers.required]"
               class="pop-up-card__invite-member"
               hint="Press enter to separate email adresses"
+              @change="comboboxChange"
             ></v-combobox>
           </v-form>
         </template>
@@ -627,6 +628,14 @@ export default {
       this.getMyLastPosts()
       this.getMyTopPosts()
       this.getsuggestedCommunities()
+    },
+    isInviteMemberDisabled() {
+      return this.$refs.inviteModal && !this.$refs.inviteModal.validate()
+    },
+    comboboxChange(val) {
+      let newVal = val.map((item) => item.trim())
+      this.emailarray = newVal
+      return newVal
     },
     deleteCommunityConfirm() {
       deleteCommunity(this.communityDetails.resourceId).then((response) => {
