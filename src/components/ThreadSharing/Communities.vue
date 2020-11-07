@@ -104,7 +104,7 @@
       title="Community Notification Settings"
     >
       <template v-slot:app-dialog-body>
-        <v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
+        <!--<v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
           <div class="communities-wrapper__community-notification-row">
             <div class="community-notification__text">
               Notifications
@@ -135,7 +135,7 @@
               />
             </div>
           </div>
-        </v-list-item>
+        </v-list-item>-->
         <v-list-item class="pa-0">
           <div class="communities-wrapper__community-notification-row">
             <div class="community-notification__text">
@@ -152,6 +152,7 @@
             </div>
           </div>
         </v-list-item>
+        <!--
         <v-list-item class="pa-0">
           <div class="communities-wrapper__community-notification-row">
             <div class="community-notification__text">
@@ -167,7 +168,7 @@
               />
             </div>
           </div>
-        </v-list-item>
+        </v-list-item>-->
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -704,7 +705,9 @@ export default {
     isOwnerOrMember(community) {
       return community.membershipStatusId == 2 || community.membershipStatusId == 1
     },
-    saveNotificationSetting() {},
+    saveNotificationSetting() {
+      this.openNotificationModal = false
+    },
     cancelRequest(item) {
       cancelRequest(item.membershipResourceId).then(() => {
         this.getAllCommunitiesListData()

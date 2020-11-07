@@ -604,15 +604,24 @@ export default {
       if (this.date.length < 1) {
         this.isDateValid = false
       }
+      debugger
       if (this.$refs.form.validate()) {
         let isCheckboxEmpty = this.scanTypes.length === 0
         if (isCheckboxEmpty) {
           this.checkboxError = true
+          this.$nextTick(() => {
+            const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
           return false
         } else {
           this.checkboxError = false
         }
         if (!this.isDateValid) {
+          this.$nextTick(() => {
+            const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
           return false
         }
         let headersData = [
