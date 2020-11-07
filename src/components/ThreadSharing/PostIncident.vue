@@ -625,7 +625,7 @@
                         v-model="allHeader"
                         @change="headerValChange"
                         hide-details
-                        :indeterminate="!allHeader"
+                        :indeterminate="checkHeaderSelected && !this.allHeader"
                       ></v-checkbox>
                       <label v-if="filterOpened">All Header</label>
                     </div>
@@ -2023,6 +2023,19 @@ export default {
     }
   },
   computed: {
+    checkHeaderSelected() {
+      if (
+        this.uploadRespond.isSubjectHidden ||
+        this.uploadRespond.isFromHidden ||
+        this.uploadRespond.isToHidden ||
+        this.uploadRespond.isCcHidden ||
+        this.uploadRespond.isBccHidden
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     maliciousCount() {
       let count = 0
       if (this.uploadRespond.isFromFlagged) {
