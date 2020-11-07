@@ -4575,10 +4575,6 @@ export default {
       font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
     }
-
-    span:nth-child(2) {
-      padding-top: 4px;
-    }
   }
 
   // Threat sharing Content
