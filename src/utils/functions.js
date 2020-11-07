@@ -138,7 +138,7 @@ export function getDataTableFieldLabel(field = '') {
     case 'falsepositive':
       return 'False Positive'
     case 'nonmalicious':
-      return 'Non Malicious'
+      return 'Clean'
     case 'veryhigh':
       return 'Very High'
     case 'verylow':
