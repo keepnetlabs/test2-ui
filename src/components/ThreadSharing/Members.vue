@@ -544,7 +544,7 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: '' // @atakan @nejat mesaj
+            message: response.data.message // @atakan @nejat mesaj
           })
           this.getMembers()
           this.showRemoveFromCommunityModal = false

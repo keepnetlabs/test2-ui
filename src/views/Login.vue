@@ -754,6 +754,11 @@ export default {
   .login-button {
     margin-top: 30px;
   }
+  .username-field {
+    .v-messages {
+      font-size: 8px !important;
+    }
+  }
   .input-error {
     .v-input__slot {
       background-color: #f5eff0 !important;
