@@ -548,6 +548,9 @@ export default {
           })
           this.getMembers()
           this.showRemoveFromCommunityModal = false
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
