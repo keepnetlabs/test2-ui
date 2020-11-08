@@ -420,22 +420,6 @@ export default {
     getDefaultLayoutObject() {
       const widgets = [
         {
-          x: 0,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
-          maxH: 3,
-          i: '0.9489486239728215',
-          key: 'PhishingReporterIrHeader',
-          title: 'Phishing Reporter Ir Header',
-          moved: false
-        },
-        {
           x: 3,
           y: 0,
           w: 3,
@@ -446,122 +430,69 @@ export default {
           defaultH: 3,
           minH: 3,
           maxH: 3,
-          i: '0.8328270853333473',
-          key: 'InvestigationsIrHeader',
-          title: 'Investigations Ir Header',
-          moved: false
-        },
-        {
-          x: 6,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
-          maxH: 3,
-          i: '0.16451336987429976',
-          key: 'ROISummaryIrHeader',
-          title: 'ROI Summary Ir Header',
-          moved: false
-        },
-        {
-          x: 9,
-          y: 0,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 3,
-          defaultH: 3,
-          minH: 3,
-          maxH: 3,
-          i: '0.8301868043104172',
+          i: '0.4439548718965418',
           key: 'IncidentAnalysisIrHeader',
-          title: 'Incident Analysis Ir Header',
-          moved: false
-        },
-        {
-          x: 0,
-          y: 3,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          h: 6,
-          midW: 12,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: '0.21225235037341061',
-          key: 'ReportedEmailTrends',
-          title: 'Reported Email Trends',
-          moved: false
-        },
-        {
-          x: 6,
-          y: 9,
-          w: 3,
-          minW: 3,
-          defaultW: 3,
-          midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: '0.8058270967437318',
-          key: 'Reporters',
-          title: 'Reporters',
-          moved: false
+          title: 'Incident Analysis Ir Header'
         },
         {
           x: 9,
-          y: 9,
+          y: 0,
           w: 3,
           minW: 3,
           defaultW: 3,
           midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: '0.643903946151402',
-          key: 'TopRules',
-          title: 'Top Rules',
-          moved: false
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.8129690089605317',
+          key: 'ROISummaryIrHeader',
+          title: 'ROI Summary Ir Header'
         },
         {
           x: 0,
-          y: 9,
+          y: 0,
           w: 3,
           minW: 3,
           defaultW: 3,
           midW: 6,
-          h: 6,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: '0.9830881287326376',
-          key: 'TopPosts',
-          title: 'Top Posts',
-          moved: false
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.36222415873736824',
+          key: 'PhishingReporterIrHeader',
+          title: 'Phishing Reporter Ir Header'
         },
         {
-          x: 3,
-          y: 9,
+          x: 6,
+          y: 0,
           w: 3,
           minW: 3,
           defaultW: 3,
           midW: 6,
+          h: 3,
+          defaultH: 3,
+          minH: 3,
+          maxH: 3,
+          i: '0.955736738495951',
+          key: 'InvestigationsIrHeader',
+          title: 'Investigations Ir Header'
+        },
+        {
+          x: 0,
+          y: 3,
+          w: 6,
+          minW: 6,
+          defaultW: 6,
           h: 6,
+          midW: 12,
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.2491442618891324',
-          title: 'Recently Reported Incidents',
-          key: 'RecentlyReportedIncidents',
-          moved: false
+          i: '0.9531283031364617',
+          key: 'IncidentClusters',
+          title: 'Incident Clusters'
         },
         {
           x: 6,
@@ -574,10 +505,39 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.6010779283659464',
-          key: 'IncidentClusters',
-          title: 'Incident Clusters',
-          moved: false
+          i: '0.5602556581402198',
+          key: 'ReportedEmailTrends',
+          title: 'Reported Email Trends'
+        },
+        {
+          x: 0,
+          y: 9,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.30768881243195656',
+          title: 'Recent Investigations',
+          key: 'RecentInvestigations'
+        },
+        {
+          x: 6,
+          y: 9,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.1349604029153395',
+          key: 'TopPosts',
+          title: 'Top Posts'
         },
         {
           x: 0,
@@ -590,10 +550,9 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.8320114648536163',
-          title: 'Recent Investigations',
-          key: 'RecentInvestigations',
-          moved: false
+          i: '0.6104982760663944',
+          title: 'Recently Reported Incidents',
+          key: 'RecentlyReportedIncidents'
         },
         {
           x: 6,
@@ -606,10 +565,39 @@ export default {
           defaultH: 6,
           minH: 6,
           maxH: 6,
-          i: '0.6093859272491078',
+          i: '0.15876452855409506',
           title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats',
-          moved: false
+          key: 'RecentlyPostedThreats'
+        },
+        {
+          x: 0,
+          y: 21,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.3901775633662319',
+          key: 'Reporters',
+          title: 'Reporters'
+        },
+        {
+          x: 6,
+          y: 21,
+          w: 6,
+          minW: 3,
+          defaultW: 3,
+          midW: 6,
+          h: 6,
+          defaultH: 6,
+          minH: 6,
+          maxH: 6,
+          i: '0.8761474288298772',
+          key: 'TopRules',
+          title: 'Top Rules'
         }
       ]
       for (let widget of widgets) {
@@ -717,6 +705,7 @@ export default {
 .widget-body__content {
   //overflow-y: auto;
   overflow: hidden;
+  border-radius: 12px;
   .incident-responder-parent .columns-row .dashboard-cards .card-body .body-row__text {
     white-space: nowrap;
     line-height: 1;
