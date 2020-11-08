@@ -486,6 +486,7 @@
           <v-list-item
             v-for="(item, index) in rightDropdownData"
             :key="index"
+            :disabled="item.disabled"
             @click="changeDropdownItem2(item)"
           >
             <v-list-item-icon>
@@ -726,27 +727,32 @@ export default {
         {
           text: 'Tour',
           icon: 'mdi-reminder',
-          url: ''
+          url: '',
+          disabled: true
         },
         {
           text: 'Documentation',
           icon: 'mdi-file-document',
-          url: ''
+          url: '',
+          disabled: true
         },
         {
           text: 'Get Help',
           icon: 'mdi-help-circle',
-          url: ''
+          url: '',
+          disabled: true
         },
         {
           text: 'Video Tutorial',
           icon: 'mdi-play-speed',
-          url: ''
+          url: '',
+          disabled: true
         },
         {
           text: 'Feedback',
           icon: 'mdi-message-alert',
-          url: ''
+          url: '',
+          disabled: false
         }
       ],
       dropdownData: [
