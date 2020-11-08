@@ -569,6 +569,7 @@
    isEditable --> boolean
    editOptions --> object {component:"textfield,select,textarea,datepicker", props:{} dynamic props}
    }
+   changeFooterPosition --> Boolean (Reported Emails örneği için)
    isEditableRuntime --> Boolean
    chartOptions --> Object
    titleKey --> Header title key
@@ -594,6 +595,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    changeFooterPosition: {
+      type: Boolean,
+      default: false
     },
     extendedViewDisableChanger: {
       type: Function
@@ -632,7 +637,27 @@ export default {
       this.copyOfEditedRows = JSON.parse(JSON.stringify(rows))
       this.defaultValues = JSON.parse(JSON.stringify(rows))
     },
-    options(val) {}
+    options(val) {},
+    editMode(val) {
+      if (this.changeFooterPosition) {
+        const footer = document.querySelector('.k-footer')
+        if (val) {
+          this.$nextTick(() => {
+            debugger
+            const extendedViewHeight = this.$el.getBoundingClientRect().height
+            const tableHeight = this.$parent.$parent.$el.getBoundingClientRect().height
+            const fromTopPx = Number(this.containerStyle.top.slice(0, -2))
+            if (extendedViewHeight + fromTopPx > tableHeight) {
+              footer.style.bottom = `${-(extendedViewHeight + fromTopPx - tableHeight)}px`
+            } else {
+              footer.style.bottom = ''
+            }
+          })
+        } else {
+          footer.style.bottom = ''
+        }
+      }
+    }
   },
   data() {
     //value --> gelen değer
