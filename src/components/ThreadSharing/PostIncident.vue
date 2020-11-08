@@ -2071,7 +2071,7 @@ export default {
     acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
-    value: ['wFlYRDMW946M'],
+    value: 'wFlYRDMW946M',
     items2: [
       {
         text: 'TLP: WHITE',
