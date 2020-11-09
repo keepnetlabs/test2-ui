@@ -1,7 +1,7 @@
 import testRequest from '../utils/testRequest'
 const API_URL = 'notified-emails'
-export function getNotifiedEmail(id) {
-  return testRequest.get(`${API_URL}/${id}`)
+export function getNotifiedEmail(id, loading = false) {
+  return testRequest.get(`${API_URL}/${id}`, { loading })
 }
 export function downloadAttachment(attachmentId) {
   return testRequest.get(`/notified-emails/attachments/${attachmentId}`, {

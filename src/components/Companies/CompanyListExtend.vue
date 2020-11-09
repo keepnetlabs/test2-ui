@@ -42,8 +42,14 @@
         <div class="company-list-extend__body-key">Company Groups</div>
         <div class="company-list-extend__body-value">
           <template v-if="!!selectedExtend && !!selectedExtend.companyGroups && groupCount > 0">
-            <span v-for="group of selectedExtend.companyGroups.slice(0, limiter)" :key="group.name">
-              {{ group.name }}, &nbsp;
+            <span
+              v-for="(group, index) of selectedExtend.companyGroups.slice(0, limiter)"
+              :key="group.name"
+            >
+              {{ group.name
+              }}<span v-if="index + 1 < selectedExtend.companyGroups.slice(0, limiter).length"
+                >,
+              </span>
             </span>
             <a
               v-if="groupCount > 3 && groupCount > limiter"
@@ -52,7 +58,8 @@
                   this.limiter = this.groupCount
                 }
               "
-              >+{{ groupCount - limiter }} See more &#62;</a
+            >
+              +{{ groupCount - limiter }} See more &#62;</a
             >
             <a
               v-if="groupCount > 3 && groupCount === limiter"
@@ -90,7 +97,7 @@
           {{ selectedExtend.smtpConfigurationTypeName }}
         </div>
       </div>
-      <div class="company-list-extend__body-item">
+      <!-- <div class="company-list-extend__body-item">
         <div class="company-list-extend__body-key d-flex align-center">Phishing</div>
         <div class="company-list-extend__body-value" style="width: 44px; margin-top: -4px;">
           <pie :data="series" :chart-options="chartOptions" />
@@ -101,7 +108,7 @@
         <div class="company-list-extend__body-value" style="width: 44px; margin-top: -4px;">
           <pie :data="series" :chart-options="chartOptions" />
         </div>
-      </div>
+      </div> -->
       <div class="company-list-extend__body-item">
         <div class="company-list-extend__body-key d-flex align-center">Status</div>
         <div class="company-list-extend__body-value">
@@ -136,7 +143,7 @@ import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'CompanyListExtend',
   components: {
-    Pie
+    //Pie
   },
   props: {
     selectedRow: {
@@ -202,7 +209,7 @@ export default {
   overflow: hidden;
   z-index: 5;
   width: 360px;
-  min-height: 500px;
+  min-height: 300px;
   border-radius: 12px;
   box-shadow: 0 1px 1px -1px rgba(204, 204, 204, 0.12), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
     0 1px 3px 0 rgba(142, 142, 142, 0.2);

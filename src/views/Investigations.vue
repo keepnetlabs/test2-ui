@@ -374,7 +374,10 @@ export default {
       })
     },
     refreshDatatable() {
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData)
+      this.loading = true
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.loading = false
+      })
     },
     onAddClose(resp) {
       // set mobile vision
@@ -428,6 +431,8 @@ export default {
         .catch(() => {})
         .then(() => {
           store.dispatch('investigations/SET_INVESTIGATIONLISTEMPY', [])
+        })
+        .finally(() => {
           this.refreshDatatable()
         })
     }

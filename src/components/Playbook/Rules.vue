@@ -400,7 +400,7 @@ export default {
           const matchingPlaybookData = response.data.data
           this.matchingPlaybookData = matchingPlaybookData.results || []
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             errorState: true,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -417,7 +417,8 @@ export default {
           orderBy: 'CreateDate',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.tableCredientials.filter
         }
         exportPlaybookRules(payload)
           .then((response) => {
@@ -427,16 +428,16 @@ export default {
             link.download = `Playbook Rules.${exportType.toLocaleLowerCase()}`
             link.click()
           })
-          .catch((error) => {})
+          .catch(() => {})
       })
     },
-    deleteRule(value, multi) {
+    deleteRule(value) {
       let isArray = Array.isArray(value)
       this.totalSelectedItemsCount = isArray ? value.length : 1
       this.isWantToDelete = true
       this.deleteValues = value
     },
-    isWantToDeleteRuleConfirm(val, message) {
+    isWantToDeleteRuleConfirm() {
       let values = []
       let _this = this
       if (this.totalSelectedItemsCount > 1) {
@@ -448,7 +449,7 @@ export default {
       }
       values.map((item) => {
         deletePlaybookRule(item)
-          .then((response) => {
+          .then(() => {
             _this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -463,7 +464,7 @@ export default {
               })
               .finally(() => (this.loading = false))
           })
-          .catch((error) => {
+          .catch(() => {
             _this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -484,7 +485,7 @@ export default {
 
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
+      requestBody.map((x) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
@@ -492,7 +493,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -510,7 +511,7 @@ export default {
       let items = []
       let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }
@@ -582,7 +583,6 @@ export default {
   .k-overlay__list-item.k-overlay__header {
     padding: 32px 96px 0 96px;
     margin-bottom: 24px;
-    -ms-flex-negative: 0;
     flex-shrink: 0;
   }
 }

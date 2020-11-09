@@ -1393,11 +1393,11 @@ export default {
         case 'notScannedUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `${val} Users`
+              return `${val} User(s)`
             case 'Cancelled':
-              return `${val} Users`
+              return `${val} User(s)`
             case 'Expired':
-              return `${val} Users`
+              return `${val} User(s)`
             case 'Finished':
               return 'All users scanned'
             default:
@@ -1421,13 +1421,13 @@ export default {
         case 'scannedUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `${val} Scanned Users`
+              return `${val} Scanned User(s)`
             case 'Cancelled':
-              return `${val} Scanned Users`
+              return `${val} Scanned User(s)`
             case 'Expired':
-              return `${val} Scanned Users`
+              return `${val} Scanned User(s)`
             case 'Finished':
-              return `${val} Scanned Users`
+              return `${val} Scanned User(s)`
             default:
               break
           }
@@ -1435,13 +1435,13 @@ export default {
         case 'totalUserCountScannedUser':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `of total ${val} users`
+              return `of total ${val} user(s)`
             case 'Cancelled':
-              return `of total ${val} users`
+              return `of total ${val} user(s)`
             case 'Expired':
-              return `of total ${val} users`
+              return `of total ${val} user(s)`
             case 'Finished':
-              return `of total ${val} users`
+              return `of total ${val} user(s)`
             default:
               break
           }
@@ -1449,13 +1449,13 @@ export default {
         case 'scannedEmailCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `${val} Emails Scanned`
+              return `${val} Email(s) Scanned`
             case 'Cancelled':
-              return `${val} Emails Scanned`
+              return `${val} Email(s) Scanned`
             case 'Expired':
-              return `${val} Emails Scanned`
+              return `${val} Email(s) Scanned`
             case 'Finished':
-              return `${val} Emails Scanned`
+              return `${val} Email(s) Scanned`
             default:
               break
           }

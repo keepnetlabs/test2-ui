@@ -430,11 +430,7 @@ export default {
           { text: '3 days', value: 3 },
           { text: '7 days', value: 7 }
         ],
-        investigateActions: [
-          'Notify',
-          { text: 'Delete email', value: 'DeleteEmail' },
-          'Quarantine'
-        ],
+        investigateActions: ['Notify', { text: 'Delete email', value: 'DeleteEmail' }],
         investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone']
       },
       actions: [],

@@ -1,14 +1,11 @@
 .el-picker-panel__body-wrapper, .el-picker-panel{
-  font-family: "Open Sans", sans-serif !important;
+  font-family: "Open Sans", sans-serif;
 }
 .el-picker-panel{
   z-index:9999999 !important;
 }
 .el-range-editor.el-input__inner{
-  display: -ms-inline-flexbox;
   display: inline-flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
   padding: 3px 10px;
   width: 100%;
@@ -46,5 +43,10 @@
 .el-picker-panel__link-btn.el-button--default{
   background-color:#409EFF !important; ;
   color: white !important;
+}
 
+.el-date-editor {
+  .el-input__inner {
+    border-radius: 8px;
+  }
 }

@@ -101,7 +101,7 @@
                         irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
                     0
                   }}
-                  users are
+                  user(s) are
                 </div>
                 <div class="card-status">Currently Online</div>
               </div>
@@ -163,7 +163,7 @@
                       irSummary.notifiedEmailResultCount.reportedMailCount) ||
                     0
                   }}
-                  reported emails
+                  reported email(s)
                 </div>
                 <div class="card-status">Found harmful</div>
               </div>
@@ -471,6 +471,7 @@
             id="incident-responder-reported-emails-data-table"
             :columns="emails.columns"
             :countRow="5"
+            :changeFooterPosition="true"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
             :pageSizes="emails.pageSizes"
@@ -483,7 +484,7 @@
             :empty="emails.iEmpty"
             :groupable="true"
             :selectEvent="emails.selectEvent"
-            :extended-view-style="{ top: '-120px' }"
+            :disableExtendedViewTransition="true"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
@@ -1393,7 +1394,7 @@ export default {
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
         if (selections.length === 1) {
-          getNotifiedEmail(selections[0].resourceId).then((response) => {
+          getNotifiedEmail(selections[0].resourceId, true).then((response) => {
             const selectedItem = response.data.data
             this.extendedView.isNotify = selectedItem.isNotifyUser
             this.extendedView.customMessage = selectedItem.customMessage
@@ -1419,7 +1420,7 @@ export default {
           this.extendedView.isMessage = false
           this.extendedView.customMessage = ''
           selections.map((a, ind) => {
-            getNotifiedEmail(selections[index].resourceId).then((response) => {
+            getNotifiedEmail(selections[index].resourceId, true).then((response) => {
               const selectedItem = response.data.data
               rows.push({
                 ...selectedItem,
