@@ -155,6 +155,11 @@ export default {
       margin-left: 60px;
     }
   }
+  @media (max-width: 1899px) and (min-width: 1500px) {
+    .body-row:last-child {
+      margin-left: 30px;
+    }
+  }
   @media (min-width: 1901px) {
     .body-row:last-child {
       margin-left: 70px;

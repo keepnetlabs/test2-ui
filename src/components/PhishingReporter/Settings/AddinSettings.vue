@@ -606,7 +606,8 @@ export default {
         this.formValues.file = response.data
       })
     } else {
-      this.formValues.brandName = localStorage.getItem('companyName')
+      this.formValues.brandName =
+        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
       this.formValues.msgBoxTitle = 'Phishing Reporter'
       this.formValues.msgBoxBtnCancelText = 'Cancel'
