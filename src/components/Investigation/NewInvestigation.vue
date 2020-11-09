@@ -535,8 +535,7 @@ export default {
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       targetUsers: {
-        required: (v) =>
-          (!!v && v.length > 0) || 'Target users required for creating a investigation'
+        required: (v) => (!!v && v.length > 0) || 'Required'
       },
       checkboxRule: {
         required: (v) => this.sources.find((item) => item.value)
