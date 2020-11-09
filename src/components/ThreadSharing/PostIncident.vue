@@ -2071,7 +2071,7 @@ export default {
     acceptCheckbox: false,
     editHtmlData: null,
     showWebPageGrapes: false,
-    value: ['wFlYRDMW946M'],
+    value: 'wFlYRDMW946M',
     items2: [
       {
         text: 'TLP: WHITE',
@@ -2276,7 +2276,7 @@ export default {
   }),
   watch: {
     searchIncident(val) {
-      val && val !== this.select && this.querySelections(val)
+      val !== this.select && this.querySelections(val)
     }
   },
   created() {
@@ -2304,12 +2304,13 @@ export default {
       this.value = [...this.value]
     },
     querySelections(val) {
+      let _this = this
       setTimeout(() => {
         if (!val) {
           this.listData = this.backupListData
         } else {
           if (this.listData && this.backupListData) {
-            this.listData = this.listData.reduce((acc, item) => {
+            _this.listData = this.backupListData.reduce((acc, item) => {
               Object.values(item).find((i) => {
                 if (
                   typeof i === 'string' &&
@@ -2321,8 +2322,8 @@ export default {
             }, [])
           }
           setTimeout(() => {
-            this.$forceUpdate()
-          }, 200)
+            _this.$forceUpdate()
+          }, 50)
         }
       }, 500)
     },

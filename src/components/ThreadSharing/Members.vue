@@ -216,9 +216,13 @@
             </template>
             <template slot="no-data">
               <v-skeleton-loader :loading="membersLoading" type="article, actions">
-                <div class="empty-members">
+                <div class="empty-members mt-8">
                   <p class="empty-members-span">
-                    No member in your communities, yet
+                    {{
+                      search.length
+                        ? 'Search criteria has no results'
+                        : 'No member in your communities, yet'
+                    }}
                   </p>
                 </div>
               </v-skeleton-loader>
@@ -544,10 +548,13 @@ export default {
         .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: '' // @atakan @nejat mesaj
+            message: response.data.message // @atakan @nejat mesaj
           })
           this.getMembers()
           this.showRemoveFromCommunityModal = false
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -655,13 +662,21 @@ export default {
     },
     search: function (newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.debounce(() => {
+        if (newVal) {
+          this.debounce(() => {
+            if (this.tab === 0) {
+              this.getMembers()
+            } else {
+              this.getRequestMembers()
+            }
+          }, 500)
+        } else {
           if (this.tab === 0) {
             this.getMembers()
           } else {
             this.getRequestMembers()
           }
-        }, 500)
+        }
       }
     }
   }
