@@ -283,8 +283,7 @@ export default {
       this.showGrapesModal = !this.showGrapesModal
     },
     saveGrapeJs() {
-      let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
-      this.htmlData = editedHtml
+      this.htmlData = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
       this.toggleShowGrapesModal()
     }
   },

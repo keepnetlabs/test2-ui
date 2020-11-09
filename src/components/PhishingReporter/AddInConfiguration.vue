@@ -325,7 +325,7 @@ export default {
             this.showModal = true
           }
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             message: 'Phishing reporter can not be saved',
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
