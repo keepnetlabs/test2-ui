@@ -98,6 +98,7 @@
           @handleEdit="$emit('handleEdit', $event)"
           :disable-transition="disableExtendedViewTransition"
           @closeEditPopup="closeEditPopup"
+          :changeFooterPosition="changeFooterPosition"
           :extendedViewDisableChanger="extendedViewDisableChanger"
         >
           <template v-slot:body>
@@ -875,6 +876,10 @@ export default {
     columns: {
       type: Array,
       required: true
+    },
+    changeFooterPosition: {
+      type: Boolean,
+      default: false
     },
     extendedViewDisableChanger: {
       type: Function

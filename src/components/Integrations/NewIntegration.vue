@@ -453,9 +453,9 @@ export default {
       apiUrlRules: {
         required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
         format: (v) =>
-          /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
+          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
             v
-          ) || 'invalid url'
+          ) || 'Invalid Url'
       },
       apiKeyRules: {
         required: (v) => (v && v.length <= 150) || 'Api key must between 1-150 characters',
