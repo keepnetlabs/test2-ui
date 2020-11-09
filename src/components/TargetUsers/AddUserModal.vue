@@ -28,6 +28,9 @@
               v-model.trim="formValues.firstName"
               id="firstName"
               height="40"
+              :rules="[
+                (v) => validations.maxLength(v, 150, 'First name cannot exceed 150 characters')
+              ]"
             ></v-text-field>
           </v-list-item-content>
         </v-list-item>
@@ -41,6 +44,9 @@
               v-model.trim="formValues.lastName"
               id="lastName"
               height="40"
+              :rules="[
+                (v) => validations.maxLength(v, 150, 'Last name cannot exceed 150 characters')
+              ]"
             ></v-text-field>
           </v-list-item-content>
         </v-list-item>
@@ -73,6 +79,9 @@
               v-model.trim="formValues.department"
               id="department"
               height="40"
+              :rules="[
+                (v) => validations.maxLength(v, 150, 'Department name cannot exceed 150 characters')
+              ]"
             ></v-text-field>
           </v-list-item-content>
         </v-list-item>
@@ -152,9 +161,9 @@
 </template>
 
 <script>
-import { required, mail } from '../../utils/validations'
-import { createTargetUser, getTargetGroups, updateTargetUser } from '../../api/targetUsers'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { required, mail, maxLength } from '@/utils/validations'
+import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 export default {
@@ -199,7 +208,8 @@ export default {
       ],
       validations: {
         required,
-        mail
+        mail,
+        maxLength
       }
     }
   },
@@ -241,7 +251,7 @@ export default {
             this.$emit('closeAddUserModalWithUpdate')
           }
         })
-        .catch((error) => {})
+        .catch(() => {})
     },
     callForUpdateTargetUser() {
       const payload = {
@@ -259,7 +269,7 @@ export default {
           }
           this.$emit('closeAddUserModalWithUpdate')
         })
-        .catch((error) => {})
+        .catch(() => {})
     },
     callForTargetGroups() {
       getTargetGroups().then((response) => {

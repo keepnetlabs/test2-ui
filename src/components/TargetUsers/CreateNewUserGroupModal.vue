@@ -23,9 +23,12 @@
           <v-text-field
             dense
             outlined
-            placeholder="Enter name"
+            placeholder="Enter user group name"
             v-model="groupName"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.maxLength(v, 150, 'User group name cannot exceed 150 characters')
+            ]"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -68,7 +71,7 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { required } from '../../utils/validations'
+import { required, maxLength } from '@/utils/validations'
 
 export default {
   name: 'CreateNewUserGroupModal',
@@ -77,7 +80,8 @@ export default {
       groupName: '',
       priority: 'Medium',
       validations: {
-        required
+        required,
+        maxLength
       }
     }
   },

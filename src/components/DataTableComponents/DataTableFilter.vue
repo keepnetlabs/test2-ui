@@ -104,7 +104,17 @@
         <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
           Clear
         </v-btn>
-        <v-btn text class="filter__footer-button" color="#2196f3" @click="handleFilter">
+        <v-btn
+          :disabled="
+            this.filterValue === '' &&
+            this.filterChecked.length === 0 &&
+            this.filteredDateValue === null
+          "
+          text
+          class="filter__footer-button"
+          color="#2196f3"
+          @click="handleFilter"
+        >
           Filter
         </v-btn>
       </div>
@@ -198,7 +208,7 @@ export default {
     }
   },
   mounted() {
-    this.changeDateSelect()
+    //this.changeDateSelect()
   },
   created() {
     const items = []
@@ -213,7 +223,13 @@ export default {
   },
   methods: {
     changeDateSelect() {
-      this.filteredDateValue = this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+      this.filteredDateValue =
+        this.filteredSelectValueDate !== 'between'
+          ? this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+          : [
+              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
+              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+            ]
     },
     clearFilter() {
       this.menu = false

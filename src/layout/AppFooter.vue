@@ -4,7 +4,12 @@
       Copyright Keepnet Labs &copy; {{ new Date().getFullYear() }}
     </div>
     <div class="footer-item__secondary footer-links">
-      <a class="footer-item__secondary--1" href="#">Privacy Policy</a>
+      <a
+        class="footer-item__secondary--1"
+        href="https://www.keepnetlabs.com/privacy-policy/"
+        target="_blank"
+        >Privacy Policy</a
+      >
       <div>&bull;</div>
       <a
         class="footer-item__secondary--2"
@@ -15,9 +20,19 @@
       <div class="footer-item__secondary--3">&bull;</div>
     </div>
     <div class="footer-item__third footer-links">
-      <a class="footer-item__third--1" href="#">Cookie Policy</a>
+      <a
+        class="footer-item__third--1"
+        href="https://www.keepnetlabs.com/how-we-use-cookies/"
+        target="_blank"
+        >Cookie Policy</a
+      >
       <div>&bull;</div>
-      <a class="footer-item__third--2" href="#">EULA</a>
+      <a
+        class="footer-item__third--2"
+        target="_blank"
+        href="https://www.keepnetlabs.com/end-user-license-agreement-eula/"
+        >EULA</a
+      >
     </div>
     <div class="footer-item__fourth">Designed by Keepnet Labs</div>
   </v-footer>
