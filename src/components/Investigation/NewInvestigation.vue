@@ -213,7 +213,7 @@
                   >
                     <div class="v-messages theme--light error--text" role="alert">
                       <div class="v-messages__wrapper">
-                        <div class="v-messages__message">Source Select required</div>
+                        <div class="v-messages__message">Required</div>
                       </div>
                     </div>
                   </div>
