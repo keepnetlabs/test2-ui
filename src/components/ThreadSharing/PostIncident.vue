@@ -425,7 +425,7 @@
                           backgroundColor: item.color,
                           width: '16px',
                           height: '16px',
-                          border: '1px solid #000'
+                          border: '1px solid #000000'
                         }"
                       ></div>
                     </v-list-item-avatar>
