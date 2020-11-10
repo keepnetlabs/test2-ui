@@ -472,7 +472,7 @@ export default {
       this.deleteDialogId = null
     },
     handleDeleteDialog() {
-      deleteO365(this.deleteDialogId).then((response) => {
+      deleteO365(this.deleteDialogId).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'O365 mail configuration has been deleted'
@@ -534,7 +534,7 @@ export default {
           this.tableData = response.data.data.results
           //this.tableData = []
         })
-        .finally((response) => {
+        .finally(() => {
           this.loading = false
         })
     },
@@ -547,7 +547,7 @@ export default {
       if (this.$refs.mailConfiguration.validate()) {
         if (this.editData) {
           let editData = this.formValues
-          updateO365(editData, this.editData.resourceId).then((response) => {
+          updateO365(editData, this.editData.resourceId).then(() => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'O365 mail configuration has been updated'
@@ -557,7 +557,7 @@ export default {
             this.getTableData()
           })
         } else {
-          createO365(this.formValues).then((response) => {
+          createO365(this.formValues).then(() => {
             this.$store.dispatch('common/createSnackBar', {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'O365 mail configuration has been created'

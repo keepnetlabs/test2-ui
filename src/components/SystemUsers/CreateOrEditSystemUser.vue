@@ -264,9 +264,10 @@ export default {
     }
   },
   watch: {
-    'formValues.phoneNumber'() {
+    'formValues.phoneNumber'(val) {
       this.$nextTick(() => {
         this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+        this.$refs.refTelInput.$forceUpdate()
       })
     }
   },
