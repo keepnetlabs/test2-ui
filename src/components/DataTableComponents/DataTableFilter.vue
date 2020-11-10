@@ -211,8 +211,6 @@ export default {
     //this.changeDateSelect()
   },
   created() {
-    const items = []
-
     if (this.filterableType === 'select') {
       this.filterableItems.forEach((x) => {
         this.convertedFilterableItems.push(
@@ -317,7 +315,7 @@ export default {
   }
   &__body-container {
     background-color: white;
-    padding: 20px 20px 0px 20px;
+    padding: 20px 20px 0 20px;
   }
   &__footer {
     display: flex;

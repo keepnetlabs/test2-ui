@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { getTextColor } from '../../utils/functions'
+import { getTextColor } from '@/utils/functions'
 
 export default {
   name: 'DataTableColorfulText',

@@ -58,7 +58,7 @@ export default {
     badge: Badge
   },
   watch: {
-    scope(val) {
+    scope() {
       this.getBadges()
     }
   },

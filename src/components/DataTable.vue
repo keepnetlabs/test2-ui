@@ -1058,6 +1058,7 @@ export default {
     return {
       setDatatableUI: false,
       filteredData: [],
+      renderedColumns: [],
       filteredDataLength: 0,
       showfilteredData: false,
       sortProps: null,
@@ -1174,6 +1175,7 @@ export default {
     columns: {
       deep: true,
       handler(val) {
+        this.setRenderedColumns()
         if (!val.some((col) => col.show)) this.allHidden = true
         else this.allHidden = false
       }
@@ -1182,7 +1184,7 @@ export default {
   created() {
     //Init column standardisation
     this.columnStandardisation(this.columns)
-
+    this.setRenderedColumns()
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
@@ -1240,6 +1242,9 @@ export default {
         let index = columns.findIndex((col) => col.property === x.property)
         columns[index] = { ...columns[index], ...x }
       })
+    },
+    setRenderedColumns() {
+      this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property)
     },
     handleDownloadButtonClick(item) {
       this.downloadModalTitle = item
@@ -1545,7 +1550,11 @@ export default {
             }
           }
           const filteredData = this.initialData.reduce((acc, item) => {
-            const data = Object.values(item).find((i) => {
+            const row = this.renderedColumns.reduce((acc, key) => {
+              acc[key] = item[key]
+              return acc
+            }, {})
+            const data = Object.values(row).find((i) => {
               if (
                 typeof i === 'string' &&
                 i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())

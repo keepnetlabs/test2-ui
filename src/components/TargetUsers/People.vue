@@ -110,7 +110,6 @@ import {
   PROPERTY_STORE
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 export default {
   name: 'People',
@@ -407,7 +406,7 @@ export default {
           this.tableData =
             data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
         })
         .finally(() => (this.loading = false))
@@ -437,13 +436,13 @@ export default {
             ...this.tableOptions.lastColumns
           ]
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableOptions.columns = [
             ...this.tableOptions.defaultColumns,
             ...this.tableOptions.lastColumns
           ]
         })
-        .finally((fin) => {
+        .finally(() => {
           this.callForTargetUsers()
         })
     },
@@ -451,7 +450,7 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
+      requestBody.map((x) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
@@ -459,7 +458,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -477,7 +476,7 @@ export default {
       let items = []
       let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }

@@ -643,7 +643,6 @@ export default {
         const footer = document.querySelector('.k-footer')
         if (val) {
           this.$nextTick(() => {
-            debugger
             const extendedViewHeight = this.$el.getBoundingClientRect().height
             const tableHeight = this.$parent.$parent.$el.getBoundingClientRect().height
             const fromTopPx = Number(this.containerStyle.top.slice(0, -2))

@@ -1649,7 +1649,7 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: reportAllPages ? 500 : pageSize,
-          orderBy: 'CreateDate',
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType

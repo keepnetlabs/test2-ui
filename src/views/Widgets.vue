@@ -629,7 +629,7 @@ export default {
         .then((response) => {
           return response.data.data || []
         })
-        .catch((error) => {
+        .catch(() => {
           return []
         })
     }
