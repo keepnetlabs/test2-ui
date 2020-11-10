@@ -58,6 +58,7 @@
           <right-column
             @postIncident="showPostIncidentFunc"
             @createCommunityAction="openCreateCommunityModal()"
+            @refreshData="refreshDataFunc"
             class="right-col-desktop"
           />
         </v-col>
@@ -172,6 +173,7 @@ export default {
       }, 50)
     },
     refreshDataFunc() {
+      this.$refs.refIncidents.getIncidentList()
       this.refreshIncidentsData = true
     },
     closeIncidentModal() {
@@ -515,7 +517,7 @@ export default {
   line-height: 1.71;
   letter-spacing: normal;
   height: 36px !important;
-  text-transform: unset !important;
+  text-transform: uppercase !important;
 }
 
 .ts-community-industry {

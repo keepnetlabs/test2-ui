@@ -387,6 +387,28 @@
                       JOIN
                     </v-btn>
                     <v-btn
+                      v-else-if="
+                        item.membershipStatusId && (item.membershipStatusId == 5 && item.privacyStatusName == 'Private')
+                      "
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                    >
+                      Request Declined
+                    </v-btn>
+                    <v-btn
+                      v-else-if="
+                        item.membershipStatusId && (item.membershipStatusId == 5 && item.privacyStatusName == 'Public')
+                      "
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                    >
+                      Request Declined
+                    </v-btn>
+                    <v-btn
                       v-else-if="item.membershipStatusId == 4"
                       outlined
                       rounded
@@ -538,7 +560,7 @@
               </div>
             </div>
           </template>
-          <template v-if="filter && filter.length > 3" slot="no-data">
+          <template v-if="filter && filter.length > 3 && !communityLoading" slot="no-data">
             <div
               class="empty-communities"
               v-if="selectedTab === 'tab-1' || selectedTab === 'tab-0'"
@@ -1303,7 +1325,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: unset !important;
+    text-transform: uppercase !important;
   }
 
   .v-cart-icon-wrapper {

@@ -484,6 +484,9 @@ export default {
         })
         this.getMembers()
         this.showAppointANewOwnerModal = false
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
       })
     },
     debounce(fn, delay) {
@@ -529,6 +532,9 @@ export default {
           })
           this.getMembers()
           this.getRequestMembers()
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {

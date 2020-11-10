@@ -108,7 +108,6 @@
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
                             autocomplete="disabled"
-                            hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                           ></v-text-field>
                         </v-form>
                       </v-col>
