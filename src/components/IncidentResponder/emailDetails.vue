@@ -567,21 +567,27 @@ export default {
           align: 'left',
           label: getStoreValue(PROPERTY_STORE.ANALYSISENGINE),
           show: true,
-          type: 'text'
+          fixed: 'left',
+          type: 'text',
+          width: 200
         },
         {
           property: PROPERTY_STORE.RESULT,
           align: 'center',
           label: getStoreValue(PROPERTY_STORE.RESULT),
           show: true,
-          type: 'badge'
+          fixed: false,
+          type: 'badge',
+          width: 170
         },
         {
           property: PROPERTY_STORE.ISSENDFILEHASH,
           align: 'left',
           label: getStoreValue(PROPERTY_STORE.ISSENDFILEHASH),
           show: true,
-          type: 'text'
+          fixed: false,
+          type: 'text',
+          width: 130
         },
         {
           property: PROPERTY_STORE.ISSENDFILE,
@@ -589,13 +595,16 @@ export default {
           label: getStoreValue(PROPERTY_STORE.ISSENDFILE),
           show: true,
           type: 'text',
-          emptyText: 'false'
+          fixed: false,
+          emptyText: 'false',
+          width: 130
         },
         {
           property: PROPERTY_STORE.DETAILS,
           align: 'left',
           label: getStoreValue(PROPERTY_STORE.DETAILS),
           show: true,
+          fixed: false,
           type: 'slot',
           hideSort: true
         }
@@ -639,7 +648,7 @@ export default {
           property: 'hop',
           align: 'left',
           editable: false,
-          fixed: false,
+          fixed: 'left',
           label: 'Hop',
           sortable: true,
           show: true,
@@ -749,7 +758,7 @@ export default {
         fixed: false,
         sortable: false,
         show: true,
-        maxWidth: 180,
+        maxWidth: 170,
         type: 'detected',
         hasTooltip: true
       }
@@ -922,6 +931,7 @@ export default {
             return returnObj
           })
           let colObj = []
+          console.log('urlTableColumns', urlTableColumns)
           urlTableColumns.forEach((item) => {
             colObj.push({
               property: item,
@@ -935,6 +945,9 @@ export default {
               emptyText: 'None'
             })
           })
+          if (colObj.length) {
+            this.columns[1]['width'] = 170
+          }
           this.columns = [...this.columns, ...colObj]
           this.tableData = tableData
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
