@@ -62,3 +62,7 @@ export function updateCompanyGroup(id, payload) {
 export function getCompanyList() {
   return testRequest.get('/companies/my')
 }
+
+export function getCompanyListForThreatSharing() {
+  return testRequest.get('/companies/community-companies')
+}

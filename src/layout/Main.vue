@@ -1,7 +1,14 @@
 <template>
   <v-app class="layout-container">
     <app-snackbar />
-    <app-dialog :status="openPasswordChange" icon="mdi-lock" title="Change Password" size="big">
+    <app-dialog
+      :status="openPasswordChange"
+      v-if="openPasswordChange"
+      icon="mdi-lock"
+      title="Change Password"
+      size="big"
+      @changeStatus="openPasswordChange = !openPasswordChange"
+    >
       <template v-slot:app-dialog-body>
         <v-card-text class="password-modal">
           <div v-if="newPasswordError" class="login-error-container">
@@ -47,7 +54,7 @@
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show2 ? '' : 'password'"
                       @click:append="show2 = !show2"
-                      autocomplete="disabled"
+                      autocomplete="false"
                     ></v-text-field>
                   </div>
                   <div class="pl-2 pr-2">
@@ -66,6 +73,7 @@
                       @click:append="showNewPassword = !showNewPassword"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      autocomplete="off"
                     ></v-text-field>
                   </div>
                 </v-form>
@@ -1138,6 +1146,9 @@ export default {
         this.logoutUser()
         //this.$router.push('/login')
       } else if (item.text === 'Change Password') {
+        this.currentPassword = null
+        this.newPassword = null
+        this.reNewPassword = null
         this.openPasswordChange = true
       }
     },

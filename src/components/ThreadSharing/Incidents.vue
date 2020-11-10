@@ -7,11 +7,13 @@
       :opacity="1"
       :z-index="9"
       color="white"
+      v-if="showPostIncident"
     >
       <post-incident
         :editItem="editItem"
         @closeIncidentModal="closeIncidentModal"
         @refreshData="refreshDataFunc"
+        v-if="showPostIncident"
       />
     </v-overlay>
     <v-card id="component-incidents" flat color="basil">
@@ -117,7 +119,7 @@
                     {{ search ? 'Search criteria has no results' : 'No incident has been shared' }}
                   </span>
                   <div
-                    v-if="!search"
+                    v-if="!search && routerName === 'Community'"
                     class="create-post-incident"
                     @click="showPostIncident = true"
                     block
@@ -146,12 +148,17 @@ import {
 } from '../../api/threadSharing'
 import PostIncident from '../ThreadSharing/PostIncident'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getCompanyList } from '../../api/company'
+import { getCompanyList, getCompanyListForThreatSharing } from '../../api/company'
 
 export default {
   components: {
     PostIncident,
     SinglePost
+  },
+  computed: {
+    routerName() {
+      return this.$route.name
+    }
   },
   props: {
     posts: {
@@ -375,7 +382,7 @@ export default {
     }
   },
   mounted() {
-    getCompanyList().then((response) => (this.companyItem = response.data.data))
+    getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
     this.getThreats()
     if (this.$route.query && this.$route.query.postId) {
       this.isSharedPost = true
@@ -656,7 +663,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: capitalize !important;
+    text-transform: uppercase !important;
     padding-bottom: 10px;
     width: 193px !important;
     max-width: 193px !important;

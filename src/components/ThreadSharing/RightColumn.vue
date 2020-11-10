@@ -856,10 +856,13 @@ export default {
         })
         if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
+            this.$emit('joinRequestSuccess')
             this.$router.go(`/community/${resourceId}`)
           } else {
+            this.$emit('joinRequestSuccess')
             this.$router.push(`/community/${resourceId}`)
           }
+        } else {
           this.$emit('joinRequestSuccess')
         }
       })
@@ -972,7 +975,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: unset !important;
+    text-transform: uppercase !important;
   }
 
   .suggested-card > .suggested-row {
@@ -1209,7 +1212,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: unset !important;
+    text-transform: uppercase !important;
   }
 
   .ts-community-industry {

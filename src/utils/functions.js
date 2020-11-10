@@ -766,6 +766,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
         el.style.backgroundColor = '#757575'
         el.style.color = '#ffffff'
         el.style.position = 'relative'
+        el.style.pointerEvents = 'none'
       } else if (!!url && !!url.name) {
         el.innerHTML = url.name
         el.setAttribute('href', url.url)
