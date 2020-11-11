@@ -10,19 +10,18 @@
       {{ getSubtitle }} will be deleted. All data will be lost.
     </template>
     <template v-slot:app-dialog-footer>
-      <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-        <v-btn class="users__button" text color="#f56c6c" @click="handleCloseDialog">CANCEL</v-btn>
-        <v-btn class="users__button" text color="#2196f3" @click="handleDelete">DELETE</v-btn>
-      </div>
+      <app-dialog-footer @handleClose="handleCloseDialog" @handleConfirm="handleDelete" />
     </template>
   </app-dialog>
 </template>
 
 <script>
 import AppDialog from '@/components/AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'DeleteSmtpSettings',
   components: {
+    AppDialogFooter,
     AppDialog
   },
   props: {

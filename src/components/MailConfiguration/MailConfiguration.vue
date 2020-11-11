@@ -203,19 +203,7 @@
         {{ deleteDialogName }} will be deleted and removed from all integrations.
       </template>
       <template v-slot:app-dialog-footer>
-        <div class="delete-user__footer">
-          <v-btn @click="closeDeleteDialog" color="#f56c6c" class="delete-user__footer-button" text
-            >CANCEL</v-btn
-          >
-          <v-btn
-            @click="handleDeleteDialog"
-            color="#2196f3"
-            class="delete-user__footer-button"
-            style="padding: 0;"
-            text
-            >DELETE</v-btn
-          >
-        </div>
+        <app-dialog-footer @handleClose="closeDeleteDialog" @handleConfirm="handleDeleteDialog" />
       </template>
     </app-dialog>
     <div class="mail-configuration__content">
@@ -312,9 +300,11 @@ import { mail, required } from '@/utils/validations'
 import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { scrollToComponent } from '@/utils/functions'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'MailConfiguration',
   components: {
+    AppDialogFooter,
     Datatable,
     AppModal,
     AppDialog,

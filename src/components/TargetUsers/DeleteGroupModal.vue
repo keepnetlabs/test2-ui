@@ -8,21 +8,21 @@
   >
     <template v-slot:app-dialog-body> {{ getGroupName }} will be permanently deleted. </template>
     <template v-slot:app-dialog-footer>
-      <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-        <v-btn class="users__button" text color="#f56c6c" @click="changeDeleteGroupStatus(false)"
-          >CANCEL</v-btn
-        >
-        <v-btn class="users__button" text color="#2196f3" @click="handleDelete">DELETE</v-btn>
-      </div>
+      <app-dialog-footer
+        @handleClose="changeDeleteGroupStatus(false)"
+        @handleConfirm="handleDelete"
+      />
     </template>
   </app-dialog>
 </template>
 
 <script>
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'DeleteGroupModal',
   components: {
+    AppDialogFooter,
     AppDialog
   },
   props: {
