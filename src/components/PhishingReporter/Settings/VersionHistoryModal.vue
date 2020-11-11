@@ -121,7 +121,7 @@ export default {
   created() {
     const searchPayload = {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 10000000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
