@@ -453,7 +453,7 @@ export default {
       apiUrlRules: {
         required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
         format: (v) =>
-          /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
+          /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
             v
           ) || 'Invalid Url'
       },
