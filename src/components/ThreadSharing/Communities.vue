@@ -587,7 +587,7 @@
               <div class="empty-communities" v-if="selectedTab === 'tab-0'">
                 <div class="empty-communities-inline">
                   <span class="no-community">
-                    You haven’t joined any communities, yet
+                    You haven’t joined any communities
                   </span>
                   <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
                     Browse Communities

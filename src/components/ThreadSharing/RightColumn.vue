@@ -406,7 +406,7 @@
             </div>
           </div>
           <div class="pb-4 pt-1 empty-posts" v-else-if="yourPosts && !yourPosts.length">
-            You haven’t posted any incidents, yet
+            You haven’t posted any incidents
           </div>
         </div>
 
@@ -441,7 +441,7 @@
               </div>
             </div>
             <div v-else class="empty-posts pt-1">
-              No incident has been posted in your communities, yet
+              No incident has been posted in your communities
             </div>
           </template>
         </PostCardLoading>
@@ -501,7 +501,7 @@
             </v-card>
           </div>
           <div class="pb-2" v-else>
-            There is no suggested community available, yet
+            There is no suggested community available
           </div>
         </div>
       </div>
