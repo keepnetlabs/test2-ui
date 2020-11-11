@@ -9,12 +9,7 @@
     >
       <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"
-            >CANCEL</v-btn
-          >
-          <v-btn class="users__button" text color="#2196f3" @click="deleteUser">DELETE</v-btn>
-        </div>
+        <app-dialog-footer @handleClose="isWantToDelete = false" @handleConfirm="deleteUser" />
       </template>
     </app-dialog>
 
@@ -55,9 +50,11 @@ import {
 } from '@/api/phishingReporter'
 
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'Users',
   components: {
+    AppDialogFooter,
     DataTable,
     AppDialog
   },

@@ -4,25 +4,14 @@
       {{ selectedRow.name && selectedRow.name }} will be permanently deleted.
     </template>
     <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer">
-        <v-btn @click="closeModal" color="#f56c6c" class="delete-user__footer-button" text
-          >CANCEL</v-btn
-        >
-        <v-btn
-          @click="confirmDelete"
-          color="#2196f3"
-          class="delete-user__footer-button"
-          style="padding: 0;"
-          text
-          >DELETE</v-btn
-        >
-      </div>
+      <app-dialog-footer @handleClose="closeModal" @handleConfirm="confirmDelete" />
     </template>
   </app-dialog>
 </template>
 
 <script>
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'DeleteModal',
   props: {
@@ -34,6 +23,7 @@ export default {
     }
   },
   components: {
+    AppDialogFooter,
     AppDialog
   },
   computed: {},

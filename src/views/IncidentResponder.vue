@@ -6,6 +6,7 @@
         :status="isShowRoi"
         icon="mdi-cog"
         :title="'ROI Summary Settings'"
+        @changeStatus="isShowRoi = false"
         subtitle="To calculate saving in time and money for automating the email analysis"
         class-name="roi-modal"
       >
@@ -266,9 +267,7 @@
             >
               <div class="card-header">
                 <span class="head">ROI Summary</span>
-                <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
-                  >mdi-cog</v-icon
-                >
+                <v-icon color="#fff" @click="isShowRoi = true">mdi-cog</v-icon>
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
