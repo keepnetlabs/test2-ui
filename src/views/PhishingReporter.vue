@@ -132,7 +132,7 @@
               <el-tab-pane label="Settings" name="second">
                 <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
                 <component
-                  v-else
+                  v-show="!isLoading"
                   :is="tabComponent.name"
                   :ref="tabComponent.ref"
                   :formData="tabComponent.formData"
