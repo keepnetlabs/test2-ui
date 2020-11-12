@@ -1005,11 +1005,7 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: [
-            { text: 'Non Malicious', value: 'NonMalicious' },
-            'Malicious',
-            'Phishing'
-          ],
+          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
