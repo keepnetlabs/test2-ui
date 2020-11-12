@@ -393,7 +393,9 @@ export default {
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: 'Manual Investigation',
+      investgationName: `Manual Investigation - ${new Date().getDate()}.${
+        new Date().getMonth() + 1
+      }.${new Date().getFullYear()} ${new Date().getUTCMonth()}:${new Date().getMinutes()}`,
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
@@ -1120,7 +1122,9 @@ export default {
           if (!item.isHidden && item.isFlagged)
             this.filterList.push({ option: 'url', text: item.url })
         })
-      this.investgationName = 'Manual Investigation'
+      this.investgationName = `Manual Investigation - ${new Date().getDate()}.${
+        new Date().getMonth() + 1
+      }.${new Date().getFullYear()} ${new Date().getUTCMonth()}:${new Date().getMinutes()}`
     }
     document.querySelector('.page-nav').style.zIndex = 8
   },
