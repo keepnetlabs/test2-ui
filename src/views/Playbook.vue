@@ -76,7 +76,7 @@ export default {
 }
 
 ::v-deep .v-tabs-slider-wrapper {
-  bottom: -1px !important;
+  bottom: 0 !important;
   color: #0486fe !important;
 }
 
