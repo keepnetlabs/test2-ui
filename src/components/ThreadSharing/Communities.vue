@@ -904,7 +904,7 @@ export default {
       this.communityLoading = true
       const payload = {
         pageNumber: 1,
-        pageSize: 100,
+        pageSize: 50000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -975,7 +975,7 @@ export default {
       this.communityLoading = true
       const payload = {
         pageNumber: 1,
-        pageSize: 100,
+        pageSize: 50000,
         orderBy: 'createTime',
         ascending: false,
         filter: {

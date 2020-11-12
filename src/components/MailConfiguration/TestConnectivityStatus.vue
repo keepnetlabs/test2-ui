@@ -23,6 +23,7 @@ export default {
 .test-connectivity-status {
   &__icon {
     font-size: 20px !important;
+    height: 20px;
   }
 }
 </style>

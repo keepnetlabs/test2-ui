@@ -573,7 +573,7 @@ export default {
     getMembers() {
       const payload = {
         pageNumber: 1,
-        pageSize: 5,
+        pageSize: 50000,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
@@ -620,7 +620,7 @@ export default {
       ) {
         const payload = {
           pageNumber: 1,
-          pageSize: 5,
+          pageSize: 50000,
           orderBy: 'CompanyName',
           ascending: true,
           filter: {

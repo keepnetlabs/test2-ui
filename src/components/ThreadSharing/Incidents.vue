@@ -278,7 +278,7 @@ export default {
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 50000,
         orderBy: 'PostedTime',
         ascending: false,
         filter: {
