@@ -20,12 +20,12 @@
               {{ icon }}
             </v-icon>
           </div>
-          <v-list-item-content>
+          <div>
             <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
             <v-list-item-subtitle class="k-dialog__sub-title" v-if="subtitle">{{
               subtitle
             }}</v-list-item-subtitle>
-          </v-list-item-content>
+          </div>
         </v-list-item>
         <div
           class="k-dialog__body"
@@ -150,7 +150,7 @@ export default {
   &__header {
     margin-bottom: 0;
     border-bottom: 1px solid #ebeef5;
-    padding: 12px 24px 12px 24px !important;
+    padding: 24px !important;
     &-max-height {
       box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
