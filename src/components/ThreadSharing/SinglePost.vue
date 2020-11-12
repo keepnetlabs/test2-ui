@@ -597,16 +597,16 @@
                   <div class="user-wrapper w-100" v-if="!com.isEdit">
                     <div class="d-flex align-center w-100">
                       <div style="width: 80%;">
-                        <span class="username">{{ com.commenterFullName }}</span>
+                        <b class="username">{{ com.commenterFullName }}</b>
                         from
-                        <span class="company-name">{{ com.commenterCompanyName }}</span>
+                        <b class="company-name">{{ com.commenterCompanyName }}</b>
                         <p class="the-comment">{{ com.comment }}</p>
                       </div>
                       <div
                         style="width: 20%; text-align: right;"
                         v-if="canDeleteOrEditComment(com, post)"
                       >
-                        <button @click="editRelativeComment(com)">
+                        <button @click="editRelativeComment(com)" class="pr-4">
                           <v-icon class="close-icon">mdi-pencil</v-icon>
                         </button>
                         <button @click="deleteComment(com)" icon>
