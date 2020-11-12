@@ -546,16 +546,16 @@
                 <v-icon :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
                   >mdi-thumb-up</v-icon
                 >
-                Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
+                Useful ( {{ (postDetails && postDetails.likeCount) || post.likeCount }} )
               </v-btn>
               <v-btn
                 v-else-if="postDetails && postDetails.isLikedByUser"
                 @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
-                color="#2196f3"
+                :class="{ 'active-act': postDetails.isLikedByUser }"
                 :id="'unlike-btn' + post.communityPostResourceId"
               >
                 <v-icon class="active-act">mdi-thumb-up</v-icon>
-                Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
+                Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
               </v-btn>
               <v-btn
                 :id="'comments-btn' + post.communityPostResourceId"
@@ -597,16 +597,16 @@
                   <div class="user-wrapper w-100" v-if="!com.isEdit">
                     <div class="d-flex align-center w-100">
                       <div style="width: 80%;">
-                        <span class="username">{{ com.commenterFullName }}</span>
+                        <b class="username">{{ com.commenterFullName }}</b>
                         from
-                        <span class="company-name">{{ com.commenterCompanyName }}</span>
+                        <b class="company-name">{{ com.commenterCompanyName }}</b>
                         <p class="the-comment">{{ com.comment }}</p>
                       </div>
                       <div
                         style="width: 20%; text-align: right;"
                         v-if="canDeleteOrEditComment(com, post)"
                       >
-                        <button @click="editRelativeComment(com)">
+                        <button @click="editRelativeComment(com)" class="pr-4">
                           <v-icon class="close-icon">mdi-pencil</v-icon>
                         </button>
                         <button @click="deleteComment(com)" icon>
