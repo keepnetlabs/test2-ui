@@ -706,8 +706,8 @@ export default {
       }
     },
     inviteMember() {
-      if (this.$refs.inviteModal.validate()) {
-        setTimeout(() => {
+      setTimeout(() => {
+        if (this.$refs.inviteModal.validate()) {
           const payload = {
             emailarray: this.emailarray
           }
@@ -727,14 +727,10 @@ export default {
                 !!error.response.data.validationMessages &&
                 !!error.response.data.validationMessages.length
               ) {
-                this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: error.response.data.validationMessages[0]
-                })
               }
             })
-        }, 200)
-      }
+        }
+      }, 200)
     },
     getCommunityDetails() {
       const _this = this

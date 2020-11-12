@@ -54,7 +54,7 @@ const auth = {
           CompanyId: currentUserData.userCompany.id,
           CompanyName: currentUserData.userCompany.name
         }*/
-        //systemUser(systemUserData).then() @todo arda check all systemuserdata endpoint
+        //systemUser(systemUserData).then() @todo iceman check all systemuserdata endpoint
         localStorage.setItem('selectedCompanyName', currentUserData.name)
         localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
         dispatch('dashboard/selectCompany', currentUserData, { root: true })

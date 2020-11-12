@@ -43,7 +43,7 @@
                 outlined
                 class="edit-name-textfield"
                 v-model.trim="name"
-                :rules="[nameRules.empty, nameRules.required]"
+                :rules="[nameRules.required, nameRules.empty]"
                 required
               >
               </v-text-field>

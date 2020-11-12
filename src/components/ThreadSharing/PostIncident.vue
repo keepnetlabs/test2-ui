@@ -958,7 +958,9 @@
                       <v-checkbox
                         v-model="allLinks"
                         @change="allUrlsValChange"
-                        :indeterminate="!allLinks"
+                        :indeterminate="
+                          uploadRespond.urls.find((item) => item.isHidden) && !allLinks
+                        "
                         hide-details
                       ></v-checkbox>
                       <label v-if="filterOpened">All Links</label>
@@ -1063,7 +1065,9 @@
                       <v-checkbox
                         v-model="allAttachments"
                         @change="allAttachmentsValChange"
-                        :indeterminate="!allAttachments"
+                        :indeterminate="
+                          uploadRespond.attachments.find((item) => item.isHidden) && !allAttachments
+                        "
                         hide-details
                       ></v-checkbox>
                       <label v-if="filterOpened">All Attachments</label>
@@ -2448,6 +2452,7 @@ export default {
     allUrlsValChange(val) {
       this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
         item.isHidden = val
+        item.isFlagged = false
         this.urlSwitchChange(item)
         return { ...item, isHidden: val }
       })
@@ -2457,7 +2462,7 @@ export default {
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {
-        return { ...item, isHidden: val }
+        return { ...item, isHidden: val, isFlagged: false }
       })
     },
     checkAttachmentsChangeForAllLinksSwitch() {
@@ -2469,6 +2474,11 @@ export default {
       this.uploadRespond.isToHidden = val
       this.uploadRespond.isCcHidden = val
       this.uploadRespond.isBccHidden = val
+      this.uploadRespond.isSubjectFlagged = false
+      this.uploadRespond.isFromFlagged = false
+      this.uploadRespond.isToFlagged = false
+      this.uploadRespond.isCcFlagged = false
+      this.uploadRespond.isBccFlagged = false
     },
     checkAllHeaderCheck() {
       this.allHeader =

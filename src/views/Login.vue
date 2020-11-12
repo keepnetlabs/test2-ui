@@ -1,6 +1,6 @@
 <template>
   <v-app class="login-page">
-    <v-snackbar v-model="snackbar" :color="getColor" top right :timeout="3000">
+    <v-snackbar v-model.trim="snackbar" :color="getColor" top right :timeout="3000">
       {{ getErrors }}
       <v-btn dark text @click="snackbar = false">
         <v-icon>mdi-close</v-icon>
@@ -60,7 +60,7 @@
                       <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
                         <v-form
                           @submit="(event) => event.preventDefault()"
-                          v-model="validEmail"
+                          v-model.trim="validEmail"
                           autocomplete="off"
                           ref="email"
                         >
@@ -70,7 +70,7 @@
                             :type="'email'"
                             name="email"
                             ref="email"
-                            v-model="email"
+                            v-model.trim="email"
                             :rules="[rules.required, rules.email, rules.max]"
                             class="username-field"
                             required
@@ -88,7 +88,7 @@
                       <v-col class="pt-0 pl-0 pr-0" md="6" sm="12">
                         <v-form
                           @submit="(event) => event.preventDefault()"
-                          v-model="validPassword"
+                          v-model.trim="validPassword"
                           ref="password"
                         >
                           <label class="new-password-wrapper__label p-0 mb-2">Password</label>
@@ -99,7 +99,7 @@
                             name="password"
                             ref="password"
                             id="password"
-                            v-model="password"
+                            v-model.trim="password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
                             v-on:keyup.enter="onLoginClicked()"
@@ -116,7 +116,7 @@
                       <v-col class="pl-0 pt-1 pr-5 pb-0" md="6" xs="12">
                         <div class="login-remember d-flex">
                           <v-checkbox
-                            v-model="rememberMe"
+                            v-model.trim="rememberMe"
                             :label="`Remember`"
                             class="remember-me-check"
                             hide-details
@@ -176,9 +176,9 @@
                   <div class="reset-password-wrapper">
                     <v-row align="center" justify="center">
                       <v-col md="6" sm="12">
-                        <v-form v-model="validReset" ref="resetEmail">
+                        <v-form v-model.trim="validReset" ref="resetEmail">
                           <v-text-field
-                            v-model="resePasswordModel"
+                            v-model.trim="resePasswordModel"
                             :rules="[rules.required, rules.email, rules.max]"
                             label="Email Address"
                             class="reset-pass-textfield"
@@ -246,7 +246,7 @@
                         <v-text-field
                           solo
                           outlined
-                          v-model="verificationCode"
+                          v-model.trim="verificationCode"
                           label="Verification Code"
                           v-on:keyup.enter="onTwoStepLogin"
                           autocomplete="disabled"
@@ -313,7 +313,7 @@
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                               :type="show2 ? '' : 'password'"
                               @click:append="show2 = !show2"
-                              v-model="newPassword"
+                              v-model.trim="newPassword"
                               placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
                               :rules="[
@@ -335,7 +335,7 @@
                           <div>
                             <label class="new-password-wrapper__label">Confirm Password</label>
                             <v-text-field
-                              v-model="reNewPassword"
+                              v-model.trim="reNewPassword"
                               :rules="[
                                 rules.required,
                                 rules.minPassword,
@@ -517,6 +517,9 @@ export default {
       getColor: 'common/getColor',
       isErrorActive: 'common/getErrorStatus'
     }),
+    ...mapActions({
+      getCurrentUser: 'auth/getCurrentUser'
+    }),
     snackbar: {
       get() {
         return this.getSnackStatus
@@ -655,6 +658,7 @@ export default {
                 localStorage.setItem('username', this.email)
                 localStorage.setItem('password', this.password)
                 localStorage.setItem('isRemember', this.rememberMe)
+                this.getCurrentUser()
               } else {
                 localStorage.removeItem('username')
                 localStorage.removeItem('password')

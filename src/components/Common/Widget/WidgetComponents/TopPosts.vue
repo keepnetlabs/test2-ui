@@ -89,7 +89,7 @@ export default {
       ],
       tableData: [],
       empty: {
-        message: "There isn't any top posts, yet"
+        message: "There isn't any top posts"
       }
     }
   },

@@ -560,7 +560,13 @@
               </div>
             </div>
           </template>
-          <template v-if="filter && filter.length > 3 && !communityLoading" slot="no-data">
+          <template
+            v-if="
+              (!communityLoading && filter && filter.length > 3) ||
+              (industryValue && !communityLoading)
+            "
+            slot="no-data"
+          >
             <div
               class="empty-communities"
               v-if="selectedTab === 'tab-1' || selectedTab === 'tab-0'"
@@ -571,13 +577,26 @@
                 </span>
               </div>
             </div>
+            <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
+              <div class="empty-communities-inline">
+                <span class="no-community">
+                  You don't have any invitations from communities
+                </span>
+                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                  Browse Communities
+                </v-btn>
+              </div>
+            </div>
           </template>
-          <template v-if="!filter || filter.length < 1" slot="no-data">
+          <template
+            v-if="!communityLoading && !industryValue && (!filter || filter.length < 1)"
+            slot="no-data"
+          >
             <v-skeleton-loader :loading="communityLoading" type="article, actions">
               <div class="empty-communities" v-if="selectedTab === 'tab-1'">
                 <div class="empty-communities-inline">
                   <span class="no-community">
-                    No community has been created, yet
+                    No community has been created
                   </span>
                   <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
                     Create Community
@@ -594,7 +613,7 @@
                   </v-btn>
                 </div>
               </div>
-              <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
+              <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2-2">
                 <div class="empty-communities-inline">
                   <span class="no-community">
                     You don't have any invitations from communities
@@ -606,7 +625,7 @@
               </div>
             </v-skeleton-loader>
           </template>
-          <template v-if="filter && communityLoading" slot="no-data">
+          <template v-if="(filter || industryValue) && communityLoading" slot="no-data">
             <v-skeleton-loader
               :loading="communityLoading"
               type="article, actions"
@@ -1176,15 +1195,13 @@ export default {
       background: white !important;
     }
     > div {
-      &:first-child {
-        width: 220px;
-      }
-      padding-right: 8px;
       width: 220px;
+      &:nth-child(2) {
+        width: 315px !important;
+      }
     }
     &__search-filter {
       font-size: 16px !important;
-      padding-right: 8px;
       .v-input__slot {
         min-height: 40px !important;
       }

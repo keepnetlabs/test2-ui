@@ -273,7 +273,6 @@ export default {
     },
     isColumnFilterActive: false,
     bodyData: {
-      // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
       pageSize: 500,
       orderBy: 'createDate',

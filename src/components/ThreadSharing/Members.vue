@@ -454,7 +454,7 @@ export default {
       )
     },
     userCompany() {
-      //return this.$store.state.auth.user.currentCompany.id @todo arda delete
+      //return this.$store.state.auth.user.currentCompany.id @todo iceman delete
       return localStorage.getItem('companyName')
     }
   },

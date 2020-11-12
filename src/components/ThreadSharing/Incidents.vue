@@ -116,10 +116,14 @@
               <div class="empty-communities">
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
-                    {{ search ? 'Search criteria has no results' : 'No incident has been shared' }}
+                    {{
+                      search || companyValue
+                        ? 'Search criteria has no results'
+                        : 'No incident has been shared'
+                    }}
                   </span>
                   <div
-                    v-if="!search && routerName === 'Community'"
+                    v-if="!search && !companyValue && routerName === 'Community'"
                     class="create-post-incident"
                     @click="showPostIncident = true"
                     block
@@ -264,6 +268,9 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Incidents can not be reached'
           })
+        })
+        .finally(() => {
+          this.incidentLoading = false
         })
     },
     getIncidentList(memberId, companyId) {
@@ -431,15 +438,13 @@ export default {
       background: white !important;
     }
     > div {
-      &:first-child {
-        width: 220px;
+      width: 220px !important;
+      &:nth-child(2) {
+        width: 315px !important;
       }
-      padding-right: 8px;
-      width: 220px;
     }
     &__search-filter {
       font-size: 16px !important;
-      padding-right: 8px;
       .v-input__slot {
         min-height: 40px !important;
       }
