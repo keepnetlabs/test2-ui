@@ -1,11 +1,11 @@
 <template>
   <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-    <v-btn text color="#f56c6c" class="k-dialog__button mr-4" @click="closeButtonClick"
-      >CANCEL</v-btn
-    >
-    <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmButtonClick">{{
-      actionButtonText
-    }}</v-btn>
+    <v-btn text color="#f56c6c" class="k-dialog__button mr-4" @click="closeButtonClick">
+      CANCEL
+    </v-btn>
+    <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmButtonClick">
+      {{ actionButtonText }}
+    </v-btn>
   </div>
 </template>
 
