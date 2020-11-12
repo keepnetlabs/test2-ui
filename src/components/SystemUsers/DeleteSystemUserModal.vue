@@ -9,28 +9,18 @@
       {{ getSystemUserName }} will be deleted and removed from system users.
     </template>
     <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer">
-        <v-btn @click="closeModal" color="#f56c6c" class="delete-user__footer-button" text
-          >CANCEL</v-btn
-        >
-        <v-btn
-          @click="handleDelete"
-          color="#2196f3"
-          class="delete-user__footer-button"
-          style="padding: 0;"
-          text
-          >DELETE</v-btn
-        >
-      </div>
+      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" />
     </template>
   </app-dialog>
 </template>
 
 <script>
 import AppDialog from '@/components/AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'DeleteSystemUserModal',
   components: {
+    AppDialogFooter,
     AppDialog
   },
   props: {

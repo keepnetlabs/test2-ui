@@ -3,35 +3,26 @@
     :status="status"
     icon="mdi-delete"
     title="Delete Integration?"
+    @changeStatus="closeModal"
     subtitle="The integration will  deleted permanently"
   >
     <template v-slot:app-dialog-body>
       {{ getIntegrationName }} will be deleted and removed from all integrations.
     </template>
     <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer">
-        <v-btn @click="closeModal" color="#f56c6c" class="delete-user__footer-button" text
-          >CANCEL</v-btn
-        >
-        <v-btn
-          @click="handleDelete"
-          color="#2196f3"
-          class="delete-user__footer-button"
-          style="padding: 0;"
-          text
-          >DELETE</v-btn
-        >
-      </div>
+      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" />
     </template>
   </app-dialog>
 </template>
 
 <script>
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'DeleteIntegration',
   components: {
-    AppDialog
+    AppDialog,
+    AppDialogFooter
   },
   props: {
     status: {

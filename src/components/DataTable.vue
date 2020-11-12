@@ -1118,6 +1118,16 @@ export default {
         (this.currentPage - 1) * this.rowCount,
         this.currentPage * this.rowCount
       )
+      console.log('asasa')
+
+      if (table.length && !this.tableData.length && this.currentPage !== 1) {
+        this.currentPage -= 1
+        this.tableData = [...table].slice(
+          (this.currentPage - 1) * this.rowCount,
+          this.currentPage * this.rowCount
+        )
+      }
+
       if (!this.showClusterItemsRowAction) {
         this.hideChildRowActions()
       }

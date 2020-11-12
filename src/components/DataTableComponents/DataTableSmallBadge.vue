@@ -5,7 +5,7 @@
       v-if="scope.row && scope.row[col.property]"
       class="small-badge__container"
       :style="[
-        maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0 ? { textAlign: 'center' } : ''
+        maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0 ? { textAlign: '' } : ''
       ]"
       ref="refSmallBadgeContainer"
     >
@@ -26,7 +26,7 @@
           </slot>
         </span>
       </v-tooltip>
-      <v-tooltip bottom v-if="unRenderedBadgeCount > 0">
+      <v-tooltip bottom v-if="unRenderedBadgeCount > 0" :key="getKey(Math.random())">
         <template v-slot:activator="{ on }">
           <badge
             :color="'#2196f3'"
@@ -102,17 +102,10 @@ export default {
       const stringBadges = this.scope.row[this.col.property]
       if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
         this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
-        if (this.unRenderedBadgeCount > 0) {
-          const totalWidth = this.scope.column.width
-          this.maximumRenderedBadgeCount = Math.floor(
-            totalWidth / (stringBadges.substring(0, stringBadges.length - 1).length * 10)
-          )
-        } else {
-          this.maximumRenderedBadgeCount = Math.floor(
-            this.scope.column.width /
-              (stringBadges.substring(0, stringBadges.length - 1).length * 10)
-          )
-        }
+        const width = this.scope.column.width + (this.badges.length === 1 ? -16 : 16)
+        this.maximumRenderedBadgeCount = Math.floor(
+          width / (stringBadges.substring(0, stringBadges.length - 1).length * 8)
+        )
         if (this.maximumRenderedBadgeCount > this.badges.length) {
           this.maximumRenderedBadgeCount = this.badges.length
         }

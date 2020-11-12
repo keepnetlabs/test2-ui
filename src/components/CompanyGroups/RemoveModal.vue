@@ -4,25 +4,14 @@
       {{ selectedRow.companyName && selectedRow.companyName }} will be removed from company group.
     </template>
     <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer">
-        <v-btn @click="closeModal" color="#f56c6c" class="delete-user__footer-button" text
-          >CANCEL</v-btn
-        >
-        <v-btn
-          @click="confirmRemove"
-          color="#2196f3"
-          class="delete-user__footer-button"
-          style="padding: 0;"
-          text
-          >REMOVE</v-btn
-        >
-      </div>
+      <app-dialog-footer @handleClose="closeModal" @handleConfirm="confirmRemove" />
     </template>
   </app-dialog>
 </template>
 
 <script>
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'RemoveModal',
   props: {
@@ -34,6 +23,7 @@ export default {
     }
   },
   components: {
+    AppDialogFooter,
     AppDialog
   },
   computed: {},

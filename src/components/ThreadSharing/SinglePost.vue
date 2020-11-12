@@ -19,26 +19,11 @@
       :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToDelete = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="deleteIncidentConfirm()"
-              >Delete
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteIncidentConfirm()"
+          actionButtonText="DELETE"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -49,26 +34,10 @@
       body="This comment will be deleted from the post"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#f56c6c"
-              @click="isWantToDeleteComment = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="deleteCommentConfirm()"
-              >Delete
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToDeleteComment = false"
+          @handleConfirm="deleteCommentConfirm()"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -978,6 +947,7 @@ import {
   reviewElementBind
 } from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
@@ -1097,6 +1067,7 @@ a{position:relative}
 })
 export default {
   components: {
+    AppDialogFooter,
     PreviewHeaderForSinglePost,
     VClamp,
     NewInvestigation,

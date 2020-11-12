@@ -122,7 +122,7 @@
       <v-layout id="ts-layout" style="min-height: 80vh;" wrap>
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card class="phishing-reporter__card">
-            <el-tabs v-model="tab">
+            <el-tabs v-model="tab" @tab-click="handleTabClick">
               <el-tab-pane label="Users" name="first"
                 ><users
                   ref="refUsers"
@@ -130,9 +130,9 @@
                   v-if="tab === 'first'"
               /></el-tab-pane>
               <el-tab-pane label="Settings" name="second">
-                <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
+                <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
                 <component
-                  v-else
+                  v-show="!isLoading"
                   :is="tabComponent.name"
                   :ref="tabComponent.ref"
                   :formData="tabComponent.formData"
@@ -193,6 +193,11 @@ export default {
     }
   },
   methods: {
+    handleTabClick({ label = '' }) {
+      if (label === 'Settings') {
+        this.getPhishingReport()
+      }
+    },
     changeTabStatus(status) {
       /*
       this.$router.replace({ ...this.$route, hash: status === 0 ? '#users' : '#settings' })
@@ -330,6 +335,7 @@ export default {
       }
     },
     getPhishingReport() {
+      this.isLoading = true
       getPhishingReporter()
         .then((response) => {
           const { data } = response
@@ -347,6 +353,7 @@ export default {
             ref: 'refFirstTime',
             formData: null
           }
+          this.tab = 'second'
         })
         .finally(() => (this.isLoading = false))
     }

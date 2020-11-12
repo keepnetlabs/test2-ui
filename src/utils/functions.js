@@ -153,6 +153,8 @@ export function getDataTableFieldLabel(field = '') {
       return 'Not Running'
     case 'n/a':
       return 'N/A'
+    case 'unknown':
+      return 'N/A'
     default:
       return defField
   }

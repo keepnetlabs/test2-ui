@@ -52,7 +52,7 @@
               <span class="body-row__text">manual</span>
             </div>
           </div>
-          <div class="card-status mt-7">Incidents resolved</div>
+          <div class="card-status mt-7">Incident(s) resolved</div>
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text" style="margin-top: 36px;">

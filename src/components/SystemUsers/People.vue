@@ -54,7 +54,6 @@ import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 import { getSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 export default {
   name: 'People',
   components: {

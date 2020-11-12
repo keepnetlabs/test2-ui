@@ -23,26 +23,11 @@
       :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToDelete = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="deleteCommunityConfirm()"
-              >Delete
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteCommunityConfirm()"
+          actionButtonText="DELETE"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -54,26 +39,11 @@
       :body="`You are leaving ${leaveCommunityName}. You won’t be able to post incidents to this community`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToToLeaveFromCommunity = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="leaveFromCommunityConfirm"
-              >LEAVE
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToToLeaveFromCommunity = false"
+          @handleConfirm="leaveFromCommunityConfirm"
+          actionButtonText="LEAVE"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -171,18 +141,10 @@
         </v-list-item>-->
       </template>
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#f56c6c"
-            class="k-dialog__button"
-            @click="openNotificationModal = false"
-            >CANCEL</v-btn
-          >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="saveNotificationSetting"
-            >Save</v-btn
-          >
-        </div>
+        <app-dialog-footer
+          @handleClose="openNotificationModal = false"
+          @handleConfirm="saveNotificationSetting"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -656,9 +618,11 @@ import { isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
 import { isOwner } from '../../utils/functions'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
   components: {
+    AppDialogFooter,
     VClamp,
     NewCommunity,
     AppDialog

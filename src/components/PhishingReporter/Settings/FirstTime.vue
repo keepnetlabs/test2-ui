@@ -8,7 +8,7 @@
       @closeOverlay="showAddInConfiguration = false"
     />
 
-    <v-container tag="div" id="first-time" fluid>
+    <v-container tag="div" id="first-time" fluid style="padding-bottom: 78px !important;">
       <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <div class="first-time__header">Phishing Reporter Add-in</div>
@@ -51,21 +51,6 @@
           </div>
         </v-list-item-content>
       </v-list-item>
-      <div class="first-time__footer">
-        <v-btn
-          @click="submit"
-          disabled
-          rounded
-          class="white--text btn-util btn-save-changes"
-          color="#2196f3"
-        >
-          SAVE CHANGES
-        </v-btn>
-        <v-btn rounded class="white--text btn-util ml-4 pl-5" disabled>
-          <v-icon left color="#fff">mdi-download</v-icon>
-          Save and Download Add-in
-        </v-btn>
-      </div>
     </v-container>
   </div>
 </template>
@@ -103,9 +88,9 @@ export default {
     font-size: 34px;
     font-weight: normal;
     line-height: 1.15;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
     text-align: center;
+    letter-spacing: normal;
+    color: #383b41;
     margin-top: 88px;
 
     @media (max-width: 768px) {
@@ -119,11 +104,9 @@ export default {
     text-align: center;
     font-size: 16px;
     font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
+    color: #383b41;
   }
 
   &__icon-container {
@@ -141,7 +124,7 @@ export default {
 
   &__button-container {
     text-align: center;
-    margin-top: 40px;
+    margin-top: 30px;
   }
 
   &__guide-container {

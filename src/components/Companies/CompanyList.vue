@@ -234,8 +234,8 @@ export default {
     },
     payload: {
       pageSize: 3000,
-      orderBy: 'LicenseTypeName',
-      ascending: true,
+      orderBy: 'CreateTime',
+      ascending: false,
       filter: {
         Condition: 'AND',
         FilterGroups: []
