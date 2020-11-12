@@ -80,13 +80,6 @@
               </div>
             </transition>
           </div>
-          <div class="v-messages theme--light" v-else>
-            <div class="v-messages__wrapper">
-              <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
-                *Required
-              </div>
-            </div>
-          </div>
         </form-group>
         <form-group title="Status">
           <v-select
@@ -264,9 +257,10 @@ export default {
     }
   },
   watch: {
-    'formValues.phoneNumber'() {
+    'formValues.phoneNumber'(val) {
       this.$nextTick(() => {
         this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+        this.$refs.refTelInput.$forceUpdate()
       })
     }
   },

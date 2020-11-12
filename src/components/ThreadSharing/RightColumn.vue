@@ -47,26 +47,11 @@
       }. You won’t be able to post incidents to this community`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToToLeaveFromCommunity = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="leaveFromCommunityConfirm"
-              >LEAVE
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToToLeaveFromCommunity = false"
+          @handleConfirm="leaveFromCommunityConfirm"
+          actionButtonText="LEAVE"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -143,18 +128,10 @@
         -->
       </template>
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#f56c6c"
-            class="k-dialog__button"
-            @click="openNotificationModal = false"
-            >CANCEL</v-btn
-          >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="saveNotificationSetting"
-            >Save</v-btn
-          >
-        </div>
+        <app-dialog-footer
+          @handleClose="openNotificationModal = false"
+          @handleConfirm="saveNotificationSetting"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -168,26 +145,11 @@
       } will be deleted. All posts and data will be lost`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToDelete = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="deleteCommunityConfirm"
-              >Delete
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteCommunityConfirm"
+          actionButtonText="DELETE"
+        />
       </template>
     </app-dialog>
     <v-card class="pop-up-card right-column pt-4 pl-6 pr-6" light min-height="300">
@@ -406,7 +368,7 @@
             </div>
           </div>
           <div class="pb-4 pt-1 empty-posts" v-else-if="yourPosts && !yourPosts.length">
-            You haven’t posted any incidents, yet
+            You haven’t posted any incidents
           </div>
         </div>
 
@@ -441,7 +403,7 @@
               </div>
             </div>
             <div v-else class="empty-posts pt-1">
-              No incident has been posted in your communities, yet
+              No incident has been posted in your communities
             </div>
           </template>
         </PostCardLoading>
@@ -501,7 +463,7 @@
             </v-card>
           </div>
           <div class="pb-2" v-else>
-            There is no suggested community available, yet
+            There is no suggested community available
           </div>
         </div>
       </div>
@@ -526,6 +488,7 @@ import { isOwner } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import CommunitiesCardLoading from '../SkeletonLoading/CommunitiesCardLoading'
 import PostCardLoading from '../SkeletonLoading/PostCardLoading'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   data() {
     return {
@@ -589,6 +552,7 @@ export default {
     }
   },
   components: {
+    AppDialogFooter,
     AppDialog,
     NewCommunity,
     CommunitiesCardLoading,
@@ -706,8 +670,8 @@ export default {
       }
     },
     inviteMember() {
-      if (this.$refs.inviteModal.validate()) {
-        setTimeout(() => {
+      setTimeout(() => {
+        if (this.$refs.inviteModal.validate()) {
           const payload = {
             emailarray: this.emailarray
           }
@@ -727,14 +691,10 @@ export default {
                 !!error.response.data.validationMessages &&
                 !!error.response.data.validationMessages.length
               ) {
-                this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: error.response.data.validationMessages[0]
-                })
               }
             })
-        }, 200)
-      }
+        }
+      }, 200)
     },
     getCommunityDetails() {
       const _this = this
@@ -856,10 +816,13 @@ export default {
         })
         if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
+            this.$emit('joinRequestSuccess')
             this.$router.go(`/community/${resourceId}`)
           } else {
+            this.$emit('joinRequestSuccess')
             this.$router.push(`/community/${resourceId}`)
           }
+        } else {
           this.$emit('joinRequestSuccess')
         }
       })
@@ -972,7 +935,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: unset !important;
+    text-transform: uppercase !important;
   }
 
   .suggested-card > .suggested-row {
@@ -1209,7 +1172,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: unset !important;
+    text-transform: uppercase !important;
   }
 
   .ts-community-industry {

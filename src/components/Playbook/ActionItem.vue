@@ -71,6 +71,7 @@
                 <div class="analyze__main__select-row-inline">
                   <span
                     class="analyze__main__select-row-inline__button"
+                    style="cursor: pointer;"
                     :class="
                       engine.isCheckHash ? 'analyze__main__select-row-inline__button-selected' : ''
                     "
@@ -80,14 +81,14 @@
                   </span>
                   <span
                     class="analyze__main__select-row-inline__button"
-                    :class="
-                      engine.isCheckFile ? 'analyze__main__select-row-inline__button-selected' : ''
-                    "
+                    style="cursor: default;"
+                    :class="engine.isCheckFile ? '' : ''"
                     @click="fileChange(engine.isCheckFile, index)"
                   >
                     File
                   </span>
                   <span
+                    style="cursor: pointer;"
                     class="analyze__main__select-row-inline__button"
                     :class="
                       engine.isCheckUrl ? 'analyze__main__select-row-inline__button-selected' : ''
@@ -567,6 +568,7 @@ export default {
       }
     },
     fileChange(val, index) {
+      /*
       if (this.searchEnginesData) {
         let item = this.analysisEngines.find(
           (item) => item.resourceId == this.searchEnginesData[index].resourceId
@@ -577,6 +579,7 @@ export default {
         this.analysisEngines[index].isCheckFile = !val
         this.checkAllDataChecked(index)
       }
+      */
     },
     urlChange(val, index) {
       if (this.searchEnginesData) {

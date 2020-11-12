@@ -60,7 +60,7 @@ export default {
             property: PROPERTY_STORE.EMAIL,
             align: 'left',
             label: 'Email',
-            fixed: false,
+            fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',

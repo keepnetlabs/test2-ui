@@ -167,7 +167,7 @@
                     v-for="badge in copyOfEditedRows[0][col.property]"
                     class-name="mr-1 mb-1"
                     :key="badge"
-                    :text="badge"
+                    :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                   />
                 </div>
 
@@ -643,7 +643,6 @@ export default {
         const footer = document.querySelector('.k-footer')
         if (val) {
           this.$nextTick(() => {
-            debugger
             const extendedViewHeight = this.$el.getBoundingClientRect().height
             const tableHeight = this.$parent.$parent.$el.getBoundingClientRect().height
             const fromTopPx = Number(this.containerStyle.top.slice(0, -2))

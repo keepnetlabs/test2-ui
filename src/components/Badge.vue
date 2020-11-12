@@ -1,7 +1,8 @@
 <template functional>
   <v-btn
     rounded
-    style="pointer-events: none;"
+    :ripple="false"
+    style="cursor: default;"
     :color="props.color"
     :style="props.col && props.col.props && props.col.props.style"
     v-on="props.listeners"
@@ -69,6 +70,16 @@ export default {
 
 <style lang="scss">
 .k-badge {
+  &:focus {
+    &:before {
+      opacity: 0.12 !important;
+    }
+  }
+  &:hover {
+    &:before {
+      opacity: 0 !important;
+    }
+  }
   .v-btn__content {
     font-size: 12px !important;
     font-weight: 600 !important;

@@ -93,7 +93,7 @@ export default {
         }
       ],
       empty: {
-        message: "There isn't any top rules, yet"
+        message: "There isn't any top rules"
       }
     }
   },

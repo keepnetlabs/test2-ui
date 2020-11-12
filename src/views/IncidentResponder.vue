@@ -6,6 +6,7 @@
         :status="isShowRoi"
         icon="mdi-cog"
         :title="'ROI Summary Settings'"
+        @changeStatus="isShowRoi = false"
         subtitle="To calculate saving in time and money for automating the email analysis"
         class-name="roi-modal"
       >
@@ -229,7 +230,7 @@
                     <span class="body-row__text">manual</span>
                   </div>
                 </div>
-                <div class="card-status mt-7">Incidents resolved</div>
+                <div class="card-status mt-7">Incident(s) resolved</div>
               </div>
               <div class="columns-row__body" v-else>
                 <div class="card-footer no-data-text">No investigation started</div>
@@ -266,9 +267,7 @@
             >
               <div class="card-header">
                 <span class="head">ROI Summary</span>
-                <v-icon color="#fff" v-if="isRoiSummaryEmpty(irSummary)" @click="isShowRoi = true"
-                  >mdi-cog</v-icon
-                >
+                <v-icon color="#fff" @click="isShowRoi = true">mdi-cog</v-icon>
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
@@ -1006,11 +1005,7 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: [
-            { text: 'Non Malicious', value: 'NonMalicious' },
-            'Malicious',
-            'Phishing'
-          ],
+          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -1649,7 +1644,7 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: reportAllPages ? 500 : pageSize,
-          orderBy: 'CreateDate',
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType

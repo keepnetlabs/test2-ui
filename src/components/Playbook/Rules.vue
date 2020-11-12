@@ -3,33 +3,16 @@
     <app-dialog
       :status="isWantToDelete"
       icon="mdi-alert"
-      size="big"
       title="Delete Playbook Rule"
       :subtitle="deleteMessage(deleteValues)"
       @changeStatus="isWantToDelete = false"
       body="Do you want to delete playbook rule?"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#f56c6c"
-              @click="isWantToDelete = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="isWantToDeleteRuleConfirm(true)"
-              >Delete
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="isWantToDeleteRuleConfirm(true)"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -143,9 +126,11 @@ import { getMatchingIncidents } from '@/api/incidentResponder'
 import AppDialog from '../AppDialog'
 import { exportPlaybookRules, deletePlaybookRule } from '@/api/playbook'
 import AppModal from '@/components/AppModal'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'Rules',
   components: {
+    AppDialogFooter,
     AppModal,
     Datatable,
     CreateOrEditRule,

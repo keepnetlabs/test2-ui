@@ -76,7 +76,7 @@ const login = {
     loginAction({ commit, dispatch }, payload) {
       let isSessionExpired = payload.sessionExpired
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
-      //@todo arda set expired
+      //@todo iceman set expired
       loginAction(payload)
         .then((response) => {
           commit('common/SET_ERROR_STATE', false, { root: true })

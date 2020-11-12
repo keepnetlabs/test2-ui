@@ -647,7 +647,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: capitalize !important;
+    text-transform: uppercase !important;
   }
 
   .ts-community-industry {

@@ -58,7 +58,7 @@ export default {
     Badge
   },
   watch: {
-    scope(val) {
+    scope() {
       this.getBadges()
     }
   },
@@ -75,11 +75,10 @@ export default {
   computed: {
     getTooltipText() {
       const unRenderedBadges = this.badges.slice(this.maximumRenderedBadgeCount, this.badges.length)
-      const text = unRenderedBadges.reduce((acc, item, index) => {
+      return unRenderedBadges.reduce((acc, item) => {
         acc += `${item}\n`
         return acc
       }, '')
-      return text
     }
   },
   props: {

@@ -1,11 +1,11 @@
 <template>
   <div class="datatable-fiber__container">
     <div class="datatable-fiber__item">
-      <template v-if="scope.row.addInStatus === 'Online'">
-        <img src="../../assets/img/fiber-manual-record-online.svg" />
+      <template v-if="scope.row[rowKey] === 'Online'">
+        <img src="../../assets/img/fiber-manual-record-online.svg" alt="icon" />
       </template>
       <template v-else>
-        <img src="../../assets/img/fiber-manual-record-offline.svg" />
+        <img src="../../assets/img/fiber-manual-record-offline.svg" alt="icon" />
       </template>
     </div>
     <span v-if="scope.row && scope.row[col.property]">
@@ -24,6 +24,10 @@ export default {
     },
     col: {
       type: Object
+    },
+    rowKey: {
+      type: String,
+      default: 'addInStatus'
     }
   },
   computed: {

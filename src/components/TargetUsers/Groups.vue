@@ -65,10 +65,8 @@
 <script>
 import DataTable from '../DataTable'
 import {
-  getTargetGroups,
   createTargetGroup,
   updateTargetGroup,
-  deleteTargetUser,
   deleteTargetGroup,
   searchTargetGroups
 } from '@/api/targetUsers'
@@ -286,7 +284,7 @@ export default {
           })
           this.callForTargetGroups()
         })
-        .catch((error) => {
+        .catch(() => {
           //this.showNewUserGroupModal = false
         })
     },
@@ -321,7 +319,7 @@ export default {
         .then(() => {
           this.callForTargetGroups()
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             message: 'Target groups can not be updated',
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR

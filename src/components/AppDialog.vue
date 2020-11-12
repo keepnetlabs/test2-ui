@@ -196,6 +196,7 @@ export default {
     font-weight: 600;
     line-height: 1.71;
     letter-spacing: normal;
+    padding: 0 8px !important;
   }
 
   &__footer {

@@ -19,18 +19,10 @@
         body="Once you stopped, you cannot resume this investigation."
       >
         <template v-slot:app-dialog-footer>
-          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-            <v-btn
-              text
-              color="#f56c6c"
-              class="k-dialog__button"
-              @click="isWantToStopInvestigation = false"
-              >CANCEL</v-btn
-            >
-            <v-btn text color="#2196f3" class="k-dialog__button" @click="stopInvestigation"
-              >CONFIRM</v-btn
-            >
-          </div>
+          <app-dialog-footer
+            @handleClose="isWantToStopInvestigation = false"
+            @handleConfirm="stopInvestigation"
+          />
         </template>
       </app-dialog>
       <v-card class="investigations__container-card" light>
@@ -117,8 +109,10 @@ import { exportInvestigationList } from '@/api/incidentResponder'
 import { getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   components: {
+    AppDialogFooter,
     Datatable,
     newInvestigation,
     AppDialog,
@@ -273,7 +267,6 @@ export default {
     },
     isColumnFilterActive: false,
     bodyData: {
-      // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
       pageSize: 500,
       orderBy: 'createDate',

@@ -85,14 +85,10 @@
             </v-list-item>
           </template>
           <template v-slot:app-dialog-footer>
-            <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-              <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToWarn = false"
-                >CANCEL</v-btn
-              >
-              <v-btn class="k-dialog__button" text color="#2196f3" @click="isWantToWarnConfirm"
-                >Send</v-btn
-              >
-            </div>
+            <app-dialog-footer
+              @handleClose="isWantToWarn = false"
+              @handleConfirm="isWantToWarnConfirm"
+            />
           </template>
         </app-dialog>
         <app-dialog
@@ -105,14 +101,11 @@
           body="Once stopped, you cannot resume this investigation"
         >
           <template v-slot:app-dialog-footer>
-            <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-              <v-btn text color="#f56c6c" class="k-dialog__button" @click="isWantToStop = false"
-                >CANCEL</v-btn
-              >
-              <v-btn text color="#2196f3" class="k-dialog__button" @click="isWantToStopConfirm"
-                >Stop</v-btn
-              >
-            </div>
+            <app-dialog-footer
+              @handleClose="isWantToStop = false"
+              @handleConfirm="isWantToStopConfirm"
+              action-button-text="STOP"
+            />
           </template>
         </app-dialog>
 
@@ -911,8 +904,10 @@ import { required, trim } from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
 import ThreeRowLoading from '../components/SkeletonLoading/ThreeRowLoading'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   components: {
+    AppDialogFooter,
     Datatable,
     newInvestigation,
     AppDialog,
@@ -1212,7 +1207,6 @@ export default {
       backgroundColor: ['#3f51b5', '#00bcd4']
     },
     bodyData: {
-      // @todo pagesize is not statci shoudl be dynamic. Discsss with back end @arda
       pageNumber: 1,
       pageSize: 5000,
       orderBy: 'ExpireDate',

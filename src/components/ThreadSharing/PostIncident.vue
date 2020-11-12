@@ -410,19 +410,11 @@
                   class="tlp-select"
                 >
                   <template v-slot:selection="{ attrs, item, select }">
-                    <v-chip
-                      @click="select"
-                      :close="true"
-                      :class="item.cssClass"
-                      @click:close="removeTLP(item)"
-                    >
+                    <v-chip @click="select" :class="item.cssClass">
                       <span>{{ item.text }}</span>
                     </v-chip>
                   </template>
-                  <template v-slot:item="{ item, attrs }">
-                    <v-list-item-action>
-                      <v-checkbox :input-value="attrs.inputValue" color="primary"></v-checkbox>
-                    </v-list-item-action>
+                  <template v-slot:item="{ item }">
                     <v-list-item-content>
                       <v-list-item-title>{{ item.text }}</v-list-item-title>
                       <v-list-item-subtitle>{{ item.desc }}</v-list-item-subtitle>
@@ -433,7 +425,7 @@
                           backgroundColor: item.color,
                           width: '16px',
                           height: '16px',
-                          border: '1px solid #000'
+                          border: '1px solid #000000'
                         }"
                       ></div>
                     </v-list-item-avatar>
@@ -966,7 +958,9 @@
                       <v-checkbox
                         v-model="allLinks"
                         @change="allUrlsValChange"
-                        :indeterminate="!allLinks"
+                        :indeterminate="
+                          uploadRespond.urls.find((item) => item.isHidden) && !allLinks
+                        "
                         hide-details
                       ></v-checkbox>
                       <label v-if="filterOpened">All Links</label>
@@ -1071,7 +1065,9 @@
                       <v-checkbox
                         v-model="allAttachments"
                         @change="allAttachmentsValChange"
-                        :indeterminate="!allAttachments"
+                        :indeterminate="
+                          uploadRespond.attachments.find((item) => item.isHidden) && !allAttachments
+                        "
                         hide-details
                       ></v-checkbox>
                       <label v-if="filterOpened">All Attachments</label>
@@ -2168,7 +2164,7 @@ export default {
     validDisc: false,
     validAffect: false,
     validScope: false,
-    autocomplete: [(v) => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
+    autocomplete: [(v) => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
     title: [(v) => !!v || 'Title is required'],
     category: [(v) => (!!v && v.length >= 1) || 'Category is required'],
     titleRule: {
@@ -2177,7 +2173,7 @@ export default {
         (!!v && v.length >= 4 && v.length <= 80) ||
         'Title must be between 4 and 80 characters long',
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
@@ -2187,7 +2183,7 @@ export default {
         (!!v && v.length >= 5 && v.length <= 300) ||
         'Description must be between 5 and 300 characters long',
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => {
         if (!v) return true
@@ -2202,7 +2198,7 @@ export default {
       }
     },
     explanationRules: {
-      default: (v) => !!v || 'Explanation is required',
+      default: (v) => !!v || 'Discovery and Detection is required',
       required: (v) =>
         (!!v && v.length >= 5 && v.length <= 300) ||
         'Explanation should be between 5 - 300 characters long',
@@ -2214,13 +2210,13 @@ export default {
         (!!v && v.length >= 5 && v.length <= 200) ||
         'Explanation should be between 5 - 200 characters long',
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
     affectRules: {
       regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+        /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen'
     },
     createInc: {
@@ -2456,6 +2452,7 @@ export default {
     allUrlsValChange(val) {
       this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
         item.isHidden = val
+        item.isFlagged = false
         this.urlSwitchChange(item)
         return { ...item, isHidden: val }
       })
@@ -2465,7 +2462,7 @@ export default {
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {
-        return { ...item, isHidden: val }
+        return { ...item, isHidden: val, isFlagged: false }
       })
     },
     checkAttachmentsChangeForAllLinksSwitch() {
@@ -2477,6 +2474,11 @@ export default {
       this.uploadRespond.isToHidden = val
       this.uploadRespond.isCcHidden = val
       this.uploadRespond.isBccHidden = val
+      this.uploadRespond.isSubjectFlagged = false
+      this.uploadRespond.isFromFlagged = false
+      this.uploadRespond.isToFlagged = false
+      this.uploadRespond.isCcFlagged = false
+      this.uploadRespond.isBccFlagged = false
     },
     checkAllHeaderCheck() {
       this.allHeader =
@@ -2602,6 +2604,7 @@ export default {
       }
     },
     onCancelClicked() {
+      this.$emit('refreshData')
       this.$emit('closeIncidentModal')
     },
     stepChange(num) {
@@ -2704,7 +2707,6 @@ export default {
               message: 'Post has been updated'
             })
             this.onCancelClicked()
-            this.$emit('refreshData')
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
@@ -2756,8 +2758,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Post has been created'
             })
-            this.$emit('closeIncidentModal')
-            this.$emit('refreshData')
+            this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
@@ -2825,7 +2826,7 @@ export default {
       }
     },
     regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(val)
+      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(val)
     },
     edit(index, item) {
       if (!this.editing) {

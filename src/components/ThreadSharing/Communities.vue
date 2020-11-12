@@ -23,26 +23,11 @@
       :body="`${deleteCommunityName} will be deleted. All posts and data will be lost`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end flex-row">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToDelete = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="deleteCommunityConfirm()"
-              >Delete
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteCommunityConfirm()"
+          actionButtonText="DELETE"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -54,26 +39,11 @@
       :body="`You are leaving ${leaveCommunityName}. You won’t be able to post incidents to this community`"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <div>
-            <v-btn
-              class="pa-0 k-dialog__button mr-2"
-              text
-              color="#f56c6c"
-              @click="isWantToToLeaveFromCommunity = false"
-              >CANCEL
-            </v-btn>
-          </div>
-          <div class="d-flex flex-row flex-end">
-            <v-btn
-              class="pa-0 k-dialog__button"
-              text
-              color="#2196f3"
-              @click="leaveFromCommunityConfirm"
-              >LEAVE
-            </v-btn>
-          </div>
-        </div>
+        <app-dialog-footer
+          @handleClose="isWantToToLeaveFromCommunity = false"
+          @handleConfirm="leaveFromCommunityConfirm"
+          actionButtonText="LEAVE"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -171,18 +141,10 @@
         </v-list-item>-->
       </template>
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#f56c6c"
-            class="k-dialog__button"
-            @click="openNotificationModal = false"
-            >CANCEL</v-btn
-          >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="saveNotificationSetting"
-            >Save</v-btn
-          >
-        </div>
+        <app-dialog-footer
+          @handleClose="openNotificationModal = false"
+          @handleConfirm="saveNotificationSetting"
+        />
       </template>
     </app-dialog>
     <app-dialog
@@ -387,6 +349,28 @@
                       JOIN
                     </v-btn>
                     <v-btn
+                      v-else-if="
+                        item.membershipStatusId && (item.membershipStatusId == 5 && item.privacyStatusName == 'Private')
+                      "
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                    >
+                      Request Declined
+                    </v-btn>
+                    <v-btn
+                      v-else-if="
+                        item.membershipStatusId && (item.membershipStatusId == 5 && item.privacyStatusName == 'Public')
+                      "
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                    >
+                      Request Declined
+                    </v-btn>
+                    <v-btn
                       v-else-if="item.membershipStatusId == 4"
                       outlined
                       rounded
@@ -538,7 +522,13 @@
               </div>
             </div>
           </template>
-          <template v-if="filter && filter.length > 3" slot="no-data">
+          <template
+            v-if="
+              (!communityLoading && filter && filter.length > 3) ||
+              (industryValue && !communityLoading)
+            "
+            slot="no-data"
+          >
             <div
               class="empty-communities"
               v-if="selectedTab === 'tab-1' || selectedTab === 'tab-0'"
@@ -549,13 +539,26 @@
                 </span>
               </div>
             </div>
+            <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
+              <div class="empty-communities-inline">
+                <span class="no-community">
+                  You don't have any invitations from communities
+                </span>
+                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                  Browse Communities
+                </v-btn>
+              </div>
+            </div>
           </template>
-          <template v-if="!filter || filter.length < 1" slot="no-data">
+          <template
+            v-if="!communityLoading && !industryValue && (!filter || filter.length < 1)"
+            slot="no-data"
+          >
             <v-skeleton-loader :loading="communityLoading" type="article, actions">
               <div class="empty-communities" v-if="selectedTab === 'tab-1'">
                 <div class="empty-communities-inline">
                   <span class="no-community">
-                    No community has been created, yet
+                    No community has been created
                   </span>
                   <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
                     Create Community
@@ -565,14 +568,14 @@
               <div class="empty-communities" v-if="selectedTab === 'tab-0'">
                 <div class="empty-communities-inline">
                   <span class="no-community">
-                    You haven’t joined any communities, yet
+                    You haven’t joined any communities
                   </span>
                   <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
                     Browse Communities
                   </v-btn>
                 </div>
               </div>
-              <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2">
+              <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2-2">
                 <div class="empty-communities-inline">
                   <span class="no-community">
                     You don't have any invitations from communities
@@ -584,7 +587,7 @@
               </div>
             </v-skeleton-loader>
           </template>
-          <template v-if="filter && communityLoading" slot="no-data">
+          <template v-if="(filter || industryValue) && communityLoading" slot="no-data">
             <v-skeleton-loader
               :loading="communityLoading"
               type="article, actions"
@@ -615,9 +618,11 @@ import { isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
 import { isOwner } from '../../utils/functions'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
   components: {
+    AppDialogFooter,
     VClamp,
     NewCommunity,
     AppDialog
@@ -1154,15 +1159,13 @@ export default {
       background: white !important;
     }
     > div {
-      &:first-child {
-        width: 220px;
-      }
-      padding-right: 8px;
       width: 220px;
+      &:nth-child(2) {
+        width: 315px !important;
+      }
     }
     &__search-filter {
       font-size: 16px !important;
-      padding-right: 8px;
       .v-input__slot {
         min-height: 40px !important;
       }
@@ -1303,7 +1306,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: unset !important;
+    text-transform: uppercase !important;
   }
 
   .v-cart-icon-wrapper {

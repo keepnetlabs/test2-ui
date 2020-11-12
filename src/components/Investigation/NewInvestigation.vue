@@ -393,7 +393,9 @@ export default {
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: 'Manual Investigation',
+      investgationName: `Manual Investigation - ${new Date().getDate()}.${
+        new Date().getMonth() + 1
+      }.${new Date().getFullYear()} ${new Date().getUTCMonth()}:${new Date().getMinutes()}`,
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
@@ -464,26 +466,26 @@ export default {
         },
         from: {
           required: (v) => (v && v.length <= 255) || 'From must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid from address'
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         to: {
           required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid to address'
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         cc: {
           required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid cc address'
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         bcc: {
           required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid bcc address'
+          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         subject: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          required: (v) => (v && v.length <= 255) || 'Required',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
         },
         from_name: {
-          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
+          required: (v) => (v && v.length <= 1000) || 'Required',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
         },
         url: {
@@ -494,19 +496,17 @@ export default {
             ) || 'invalid url'
         },
         keyword: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          required: (v) => (v && v.length <= 255) || 'Required',
           format: (v) => {
             return (v && !v.startsWith(' ')) || 'Cannot start with space'
           } // format ekle
         },
         size: {
-          required: (v) => v && v.length <= 255,
-          format: (v) => {
-            return (v && !v.startsWith(' ')) || 'Cannot start with space'
-          }
+          required: (v) => (v && v.length <= 255) || 'File size in bytes',
+          format: (v) => /^\d+$/gi.test(v) || 'Numbers only'
         },
         name: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          required: (v) => (v && v.length <= 255) || 'Required',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         sha512: {
@@ -518,7 +518,7 @@ export default {
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         extension: {
-          required: (v) => (v && v.length <= 10) || 'It must between 1 - 10 characters',
+          required: (v) => (v && v.length <= 10) || 'Required',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
       },
@@ -1119,7 +1119,9 @@ export default {
           if (!item.isHidden && item.isFlagged)
             this.filterList.push({ option: 'url', text: item.url })
         })
-      this.investgationName = 'Manual Investigation'
+      this.investgationName = `Manual Investigation - ${new Date().getDate()}.${
+        new Date().getMonth() + 1
+      }.${new Date().getFullYear()} ${new Date().getUTCMonth()}:${new Date().getMinutes()}`
     }
     document.querySelector('.page-nav').style.zIndex = 8
   },

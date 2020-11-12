@@ -7,11 +7,13 @@
       :opacity="1"
       :z-index="9"
       color="white"
+      v-if="showPostIncident"
     >
       <post-incident
         :editItem="editItem"
         @closeIncidentModal="closeIncidentModal"
         @refreshData="refreshDataFunc"
+        v-if="showPostIncident"
       />
     </v-overlay>
     <v-card id="component-incidents" flat color="basil">
@@ -114,10 +116,14 @@
               <div class="empty-communities">
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
-                    {{ search ? 'Search criteria has no results' : 'No incident has been shared' }}
+                    {{
+                      search || companyValue
+                        ? 'Search criteria has no results'
+                        : 'No incident has been shared'
+                    }}
                   </span>
                   <div
-                    v-if="!search"
+                    v-if="!search && !companyValue && routerName === 'Community'"
                     class="create-post-incident"
                     @click="showPostIncident = true"
                     block
@@ -146,12 +152,17 @@ import {
 } from '../../api/threadSharing'
 import PostIncident from '../ThreadSharing/PostIncident'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getCompanyList } from '../../api/company'
+import { getCompanyList, getCompanyListForThreatSharing } from '../../api/company'
 
 export default {
   components: {
     PostIncident,
     SinglePost
+  },
+  computed: {
+    routerName() {
+      return this.$route.name
+    }
   },
   props: {
     posts: {
@@ -257,6 +268,9 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Incidents can not be reached'
           })
+        })
+        .finally(() => {
+          this.incidentLoading = false
         })
     },
     getIncidentList(memberId, companyId) {
@@ -375,7 +389,7 @@ export default {
     }
   },
   mounted() {
-    getCompanyList().then((response) => (this.companyItem = response.data.data))
+    getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
     this.getThreats()
     if (this.$route.query && this.$route.query.postId) {
       this.isSharedPost = true
@@ -424,15 +438,13 @@ export default {
       background: white !important;
     }
     > div {
-      &:first-child {
-        width: 220px;
+      width: 220px !important;
+      &:nth-child(2) {
+        width: 315px !important;
       }
-      padding-right: 8px;
-      width: 220px;
     }
     &__search-filter {
       font-size: 16px !important;
-      padding-right: 8px;
       .v-input__slot {
         min-height: 40px !important;
       }
@@ -656,7 +668,7 @@ export default {
     line-height: 1.71;
     letter-spacing: normal;
     height: 36px !important;
-    text-transform: capitalize !important;
+    text-transform: uppercase !important;
     padding-bottom: 10px;
     width: 193px !important;
     max-width: 193px !important;

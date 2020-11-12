@@ -262,7 +262,7 @@ export default {
     },
     callForCreateSmtpSettings(payload = {}) {
       createSMTPSettings(payload)
-        .then((response) => {
+        .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             message: 'New SMTP settings has been created',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -270,7 +270,7 @@ export default {
           })
           this.$emit('closeOverlayWithUpdate')
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'New SMTP settings can not be created'
@@ -279,7 +279,7 @@ export default {
     },
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
-        .then((response) => {
+        .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             message: 'SMTP settings have been updated',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -287,7 +287,7 @@ export default {
           })
           this.$emit('closeOverlayWithUpdate')
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'New SMTP settings can not be updated'
