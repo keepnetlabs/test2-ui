@@ -546,16 +546,16 @@
                 <v-icon :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
                   >mdi-thumb-up</v-icon
                 >
-                Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
+                Useful ( {{ (postDetails && postDetails.likeCount) || post.likeCount }} )
               </v-btn>
               <v-btn
                 v-else-if="postDetails && postDetails.isLikedByUser"
                 @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
-                color="#2196f3"
+                :class="{ 'active-act': postDetails.isLikedByUser }"
                 :id="'unlike-btn' + post.communityPostResourceId"
               >
                 <v-icon class="active-act">mdi-thumb-up</v-icon>
-                Useful {{ (postDetails && postDetails.likeCount) || post.likeCount }}
+                Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
               </v-btn>
               <v-btn
                 :id="'comments-btn' + post.communityPostResourceId"
