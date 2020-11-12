@@ -208,7 +208,7 @@
                 <v-skeleton-loader :loading="membersLoading" type="article, actions">
                   <div class="empty-members">
                     <p class="empty-members-span">
-                      No member in your communities, yet
+                      No member in your communities
                     </p>
                   </div>
                 </v-skeleton-loader>
@@ -221,7 +221,7 @@
                     {{
                       search.length
                         ? 'Search criteria has no results'
-                        : 'No member in your communities, yet'
+                        : 'No member in your communities'
                     }}
                   </p>
                 </div>
@@ -454,7 +454,7 @@ export default {
       )
     },
     userCompany() {
-      //return this.$store.state.auth.user.currentCompany.id @todo arda delete
+      //return this.$store.state.auth.user.currentCompany.id @todo iceman delete
       return localStorage.getItem('companyName')
     }
   },

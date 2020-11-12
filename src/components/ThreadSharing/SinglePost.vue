@@ -1264,8 +1264,8 @@ export default {
     },
     shareIncident() {
       let id = this.sharedIncitedId
-      if (this.$refs.shareModal.validate())
-        setTimeout(() => {
+      setTimeout(() => {
+        if (this.$refs.shareModal.validate()) {
           const payload = {
             emailarray: this.shareEmail
           }
@@ -1279,7 +1279,8 @@ export default {
             }, 500)
             this.openShareModal = false
           })
-        }, 200)
+        }
+      }, 200)
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
@@ -1386,7 +1387,6 @@ export default {
       //postId = '4pDtxLYSG0mb'
       if (bool) {
         this.getComments(this.post.communityPostResourceId)
-
         //getSelectedEmailPreview('4pDtxLYSG0mb')
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           const comId = this.post.communityPostResourceId

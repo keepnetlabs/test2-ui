@@ -502,10 +502,8 @@ export default {
           } // format ekle
         },
         size: {
-          required: (v) => v && v.length <= 255,
-          format: (v) => {
-            return (v && !v.startsWith(' ')) || 'Cannot start with space'
-          }
+          required: (v) => (v && v.length <= 255) || 'File size in bytes',
+          format: (v) => /^\d+$/gi.test(v) || 'Numbers only'
         },
         name: {
           required: (v) => (v && v.length <= 255) || 'Required',
