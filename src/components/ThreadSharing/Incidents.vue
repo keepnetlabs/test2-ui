@@ -268,6 +268,10 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Incidents can not be reached'
           })
+
+          if (error.response.status === 403) {
+            this.$router.push({ name: 'Threat Sharing', params: { isCommunity: true } })
+          }
         })
         .finally(() => {
           this.incidentLoading = false
@@ -434,13 +438,29 @@ export default {
     justify-content: flex-start;
     background-color: #f2f2f2;
     border-radius: 8px;
+    .edit-select {
+      font-size: 13px !important;
+      .v-input__control {
+        .v-select__slot {
+          .v-select__selections {
+            flex-wrap: nowrap;
+            span {
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
+              max-width: 130px;
+            }
+          }
+        }
+      }
+    }
     .v-text-field--outlined > .v-input__control > .v-input__slot {
       background: white !important;
     }
     > div {
       width: 220px !important;
       &:nth-child(2) {
-        width: 315px !important;
+        //width: 315px !important;
       }
     }
     &__search-filter {
