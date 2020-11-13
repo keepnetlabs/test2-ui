@@ -69,6 +69,7 @@ export default {
       maximumRenderedBadgeCount: 0,
       unRenderedBadgeCount: 0,
       isDescending: false,
+      width: null,
       isAscending: true
     }
   },
@@ -87,9 +88,8 @@ export default {
     }
   },
   created() {
-    const stringBadges = this.scope.row[this.col.property]
-    if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
-      this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
+    const badges = this.scope.row[this.col.property]
+    if (badges.length) {
       this.getBadges()
     }
   },
@@ -99,17 +99,33 @@ export default {
       return `${index}ab-${Math.random()}`
     },
     getBadges() {
-      const stringBadges = this.scope.row[this.col.property]
-      if (stringBadges && stringBadges.charAt(stringBadges.length - 1) === ',') {
-        this.badges = stringBadges.substring(0, stringBadges.length - 1).split(',')
-        const width = this.scope.column.width + (this.badges.length === 1 ? -16 : 16)
-        this.maximumRenderedBadgeCount = Math.floor(
-          width / (stringBadges.substring(0, stringBadges.length - 1).length * 8)
-        )
+      const badges = this.scope.row[this.col.property]
+      const width = this.scope.column.width
+      if (badges.length && width !== this.width) {
+        this.width = width
+        this.badges = badges
+        let totalWidth = Math.floor(this.width) - 20
+
+        let maximumRenderedBadgeCount = 0
+        for (let text of this.badges) {
+          let multiplyBy = text.length > 15 ? 7.5 : text.length > 5 ? 8 : 10
+          const itemWidth = Math.floor(text.length * multiplyBy) + 5
+          if (itemWidth > totalWidth) {
+            break
+          } else {
+            totalWidth -= itemWidth
+            maximumRenderedBadgeCount++
+          }
+        }
+        this.maximumRenderedBadgeCount = maximumRenderedBadgeCount
         if (this.maximumRenderedBadgeCount > this.badges.length) {
           this.maximumRenderedBadgeCount = this.badges.length
         }
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
+        if (this.unRenderedBadgeCount && totalWidth - 26 < 0) {
+          this.maximumRenderedBadgeCount--
+          this.unRenderedBadgeCount++
+        }
       }
     }
   }
