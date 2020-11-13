@@ -814,7 +814,6 @@ export default {
       return getTextColor(this.getDataTableFieldLabel(type))
     },
     getDataTableFieldLabel(type) {
-      debugger
       return getDataTableFieldLabel(type)
     },
     hasEditPopupFooter() {

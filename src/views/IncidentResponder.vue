@@ -1084,7 +1084,7 @@ export default {
           filterableType: 'date'
         },
         {
-          property: PROPERTY_STORE.RESULTTAG,
+          property: 'tags',
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),
