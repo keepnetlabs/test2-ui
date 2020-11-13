@@ -268,6 +268,10 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Incidents can not be reached'
           })
+
+          if (error.response.status === 403) {
+            this.$router.push({ name: 'Threat Sharing', params: { isCommunity: true } })
+          }
         })
         .finally(() => {
           this.incidentLoading = false
