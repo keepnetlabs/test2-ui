@@ -328,7 +328,9 @@
                       rounded
                       medium
                       class="join-button"
-                      @click="requestJoin(item.communityResourceId, 'requestToJoin')"
+                      @click="
+                        requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
+                      "
                     >
                       <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                       REQUEST TO JOIN
@@ -343,7 +345,7 @@
                       rounded
                       medium
                       class="join-button"
-                      @click="requestJoin(item.communityResourceId, 'join')"
+                      @click="requestJoin(item.communityResourceId, item.communityName, 'join')"
                     >
                       <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                       JOIN
@@ -1064,7 +1066,7 @@ export default {
           return false
       }
     },
-    requestJoin(communityId) {
+    requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       joinCommunity(communityId)
         .then((response) => {
@@ -1072,11 +1074,18 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: response.data.message
           })
-          if (this.selectedTab === 'tab-1') {
-            this.getAllCommunitiesListData()
+          if (type === 'join') {
+            localStorage.setItem('communityName', communityName)
+            localStorage.setItem('communityResourceIdForRedirect', communityId)
+            this.$router.push(`/community/${communityId}`)
           } else {
-            this.getMyCommunitiesListData()
+            if (this.selectedTab === 'tab-1') {
+              this.getAllCommunitiesListData()
+            } else {
+              this.getMyCommunitiesListData()
+            }
           }
+
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
           }, 500)
