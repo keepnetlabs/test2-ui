@@ -167,7 +167,7 @@
                     v-for="badge in copyOfEditedRows[0][col.property]"
                     class-name="mr-1 mb-1"
                     :key="badge"
-                    :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
+                    :text="getDataTableFieldLabel(badge)"
                   />
                 </div>
 

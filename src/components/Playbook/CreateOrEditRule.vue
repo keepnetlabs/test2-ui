@@ -578,16 +578,22 @@ export default {
         } else if (this.activeStep === 1) {
           isFormValid = this.$refs.refStep1Form.validate()
         }
-        if (isFormValid) {
-          this.transformQuery()
-          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-        }
         const ref = this.$refs.refStep1Form
-        if (this.activeStep === 1 && !this.$refs.refStep1Form.validate()) {
+        const ref2 = this.$refs.refStep2Form
+        if (this.activeStep === 1 && !ref.validate()) {
           return this.$nextTick(() => {
             const el = ref.$el.querySelector('.error--text')
             scrollToComponent(el)
           })
+        } else if (this.activeStep === 2 && !ref2.validate()) {
+          return this.$nextTick(() => {
+            const el = ref2.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        }
+        if (isFormValid) {
+          this.transformQuery()
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
         }
       } else {
         this.$store.dispatch('common/createSnackBar', {
