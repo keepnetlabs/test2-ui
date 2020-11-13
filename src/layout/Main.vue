@@ -435,7 +435,9 @@
     >
       <account-dropdown />
       <v-spacer />
+
       <v-menu
+        v-if="false"
         offset-y
         min-width="300"
         max-width="300"

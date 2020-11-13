@@ -213,7 +213,7 @@
                   >
                     <div class="v-messages theme--light error--text" role="alert">
                       <div class="v-messages__wrapper">
-                        <div class="v-messages__message">Source Select required</div>
+                        <div class="v-messages__message">Required</div>
                       </div>
                     </div>
                   </div>
@@ -535,8 +535,7 @@ export default {
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       targetUsers: {
-        required: (v) =>
-          (!!v && v.length > 0) || 'Target users required for creating a investigation'
+        required: (v) => (!!v && v.length > 0) || 'Required'
       },
       checkboxRule: {
         required: (v) => this.sources.find((item) => item.value)

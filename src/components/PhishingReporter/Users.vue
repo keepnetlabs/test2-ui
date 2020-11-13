@@ -15,6 +15,7 @@
 
     <data-table
       :loading="isLoading"
+      :select-event="tableOptions.selectEvent"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -70,6 +71,12 @@ export default {
       tableOptions: {
         isColumnFilterActive: false,
         table: [],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         columns: [
           {
             property: PROPERTY_STORE.FIRSTNAME,

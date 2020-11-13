@@ -167,7 +167,7 @@ export default {
       showWelcomeEmailModal: false,
       statusItems: [
         { name: 'Active', val: 1 },
-        { name: 'Passive', val: 0 }
+        { name: 'Inactive', val: 0 }
       ],
       roleItems: [],
       validations: {
