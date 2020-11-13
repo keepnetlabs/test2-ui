@@ -904,7 +904,7 @@ export default {
       this.communityLoading = true
       const payload = {
         pageNumber: 1,
-        pageSize: 100,
+        pageSize: 50000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -975,7 +975,7 @@ export default {
       this.communityLoading = true
       const payload = {
         pageNumber: 1,
-        pageSize: 100,
+        pageSize: 50000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -1065,17 +1065,25 @@ export default {
       }
     },
     requestJoin(communityId) {
-      joinCommunity(communityId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Join request has been sent'
+      this.communityLoading = true
+      joinCommunity(communityId)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: 'Join request has been sent'
+          })
+          if (this.selectedTab === 'tab-1') {
+            this.getAllCommunitiesListData()
+          } else {
+            this.getMyCommunitiesListData()
+          }
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
         })
-        this.getAllCommunitiesListData()
-        this.getMyCommunitiesListData()
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
+        .finally(() => {
+          this.communityLoading = false
+        })
     },
     createNewCommunity() {
       this.isWantToAddNewCommunity = true
