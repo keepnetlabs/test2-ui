@@ -254,7 +254,6 @@
                   :items="privacyList"
                   placeholder="Privacy"
                   outlined
-                  class="edit-select"
                   v-model="privacyValue"
                   multiple
                   hide-details
@@ -1178,7 +1177,7 @@ export default {
     > div {
       width: 220px;
       &:nth-child(2) {
-        width: 315px !important;
+        //width: 315px !important;
       }
     }
     &__search-filter {
@@ -1381,9 +1380,35 @@ export default {
   }
 
   .edit-name-textfield,
-  .edit-description,
+  .edit-description {
+    font-size: 13px !important;
+  }
+
   .edit-select {
     font-size: 13px !important;
+
+    .v-input__control {
+      .v-select__slot {
+        .v-select__selections {
+          flex-wrap: nowrap;
+          span {
+            &:first-child {
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
+              max-width: 160px;
+            }
+            &.caption {
+              top: 10px;
+              right: 15px;
+            }
+          }
+          input {
+            min-width: 1px !important;
+          }
+        }
+      }
+    }
   }
 
   .delete-dialog-body {
