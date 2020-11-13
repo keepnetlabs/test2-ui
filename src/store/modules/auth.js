@@ -20,11 +20,16 @@ const auth = {
         let data = payload.currentUserData
         state.user = data
         state.companyName = data.userCompany.name
+        state.selectedCompanyName =
+          localStorage.getItem('selectedCompanyName') ||
+          localStorage.getItem('companyName') ||
+          data.userCompany.name
         state.userRoleName = data.role.name
       } else {
         state.user = payload.currentUserData
         state.companyName = payload.currentUserData.userCompany.name
         state.userRoleName = payload.currentUserData.role.name
+        state.selectedCompanyName = payload.currentUserData.userCompany.name
       }
     }
   },

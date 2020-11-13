@@ -526,7 +526,7 @@
 
           <div class="page-header__breadcrumb">
             <router-link class="breadcrumb-links" to="/">
-              {{ companyName || 'Company' }}
+              {{ getSelectedCompanyName || 'Company' }}
             </router-link>
 
             <router-link
@@ -1014,6 +1014,12 @@ export default {
         return ''
       }
       return this.$store.state.auth.companyName
+    },
+    getSelectedCompanyName() {
+      if (this.$store.state.auth.companyName == undefined) {
+        return ''
+      }
+      return this.$store.state.auth.selectedCompanyName
     },
     getRolename() {
       if (this.$store.state.auth.userRoleName == undefined) {

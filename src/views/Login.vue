@@ -658,7 +658,6 @@ export default {
                 localStorage.setItem('username', this.email)
                 localStorage.setItem('password', this.password)
                 localStorage.setItem('isRemember', this.rememberMe)
-                this.getCurrentUser()
               } else {
                 localStorage.removeItem('username')
                 localStorage.removeItem('password')
