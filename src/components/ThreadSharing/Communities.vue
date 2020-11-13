@@ -1067,10 +1067,10 @@ export default {
     requestJoin(communityId) {
       this.communityLoading = true
       joinCommunity(communityId)
-        .then(() => {
+        .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Join request has been sent'
+            message: response.data.message
           })
           if (this.selectedTab === 'tab-1') {
             this.getAllCommunitiesListData()
