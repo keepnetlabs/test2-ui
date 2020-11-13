@@ -1613,7 +1613,7 @@ export default {
       line-height: normal;
       letter-spacing: normal;
       text-align: center;
-      color: #2196f3;
+      color: rgba(0, 0, 0, 0.87);
       // border: solid red 1px;
     }
   }
@@ -1623,7 +1623,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    cursor: pointer;
   }
 
   .user-name-dropdown-font {
@@ -1641,6 +1640,7 @@ export default {
     max-width: 240px;
     word-wrap: break-word;
     white-space: initial;
+    cursor: pointer;
   }
 
   .user-wrapper {
