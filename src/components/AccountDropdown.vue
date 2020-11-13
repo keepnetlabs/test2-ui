@@ -46,6 +46,7 @@ export default {
       },
       set(newValue) {
         if (newValue.companyId == 'default') {
+          this.$store.commit('SET_CURRENTUSER', this.selectedCompany)
           this.setDialogSwitch(true)
         }
       }

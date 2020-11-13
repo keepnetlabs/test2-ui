@@ -298,7 +298,7 @@
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"
-                    >+ Invite new members</a
+                    >+ Invite</a
                   >
                 </v-col>
               </v-row>
