@@ -506,32 +506,7 @@
                       !att.isFlagged ? 'blue-attach' : ''
                     ]"
                   >
-                    <v-tooltip v-if="att.isFlagged" bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
-                        <div v-on="on" class="attach-icon red-icon">
-                          <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                        </div>
-                      </template>
-                      <span>This attachment has been reported as a malicious file</span>
-                    </v-tooltip>
-                    <div v-else class="attach-icon blue-icon">
-                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                    </div>
-                    <v-tooltip bottom opacity="1" z-index="9999">
-                      <template v-slot:activator="{ on }">
-                        <div
-                          v-on="on"
-                          v-if="!att.isHidden"
-                          class="file-name safari-hide-tooltip max-char pl-2"
-                        >
-                          {{ att.name }}
-                        </div>
-                        <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
-                          hidden by owner
-                        </div>
-                      </template>
-                      <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
-                    </v-tooltip>
+                    <AttachmentsPreview :att="att" />
                   </div>
                 </div>
               </div>
@@ -948,7 +923,7 @@ import {
 } from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-
+import AttachmentsPreview from './AttachmentsPreview'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1071,7 +1046,8 @@ export default {
     PreviewHeaderForSinglePost,
     VClamp,
     NewInvestigation,
-    AppDialog
+    AppDialog,
+    AttachmentsPreview
   },
   props: {
     openEditPopupItem: {
