@@ -254,7 +254,6 @@
                   :items="privacyList"
                   placeholder="Privacy"
                   outlined
-                  class="edit-select"
                   v-model="privacyValue"
                   multiple
                   hide-details
@@ -328,7 +327,9 @@
                       rounded
                       medium
                       class="join-button"
-                      @click="requestJoin(item.communityResourceId, 'requestToJoin')"
+                      @click="
+                        requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
+                      "
                     >
                       <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                       REQUEST TO JOIN
@@ -343,7 +344,7 @@
                       rounded
                       medium
                       class="join-button"
-                      @click="requestJoin(item.communityResourceId, 'join')"
+                      @click="requestJoin(item.communityResourceId, item.communityName, 'join')"
                     >
                       <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
                       JOIN
@@ -1064,19 +1065,26 @@ export default {
           return false
       }
     },
-    requestJoin(communityId) {
+    requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       joinCommunity(communityId)
-        .then(() => {
+        .then((response) => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Join request has been sent'
+            message: response.data.message
           })
-          if (this.selectedTab === 'tab-1') {
-            this.getAllCommunitiesListData()
+          if (type === 'join') {
+            localStorage.setItem('communityName', communityName)
+            localStorage.setItem('communityResourceIdForRedirect', communityId)
+            this.$router.push(`/community/${communityId}`)
           } else {
-            this.getMyCommunitiesListData()
+            if (this.selectedTab === 'tab-1') {
+              this.getAllCommunitiesListData()
+            } else {
+              this.getMyCommunitiesListData()
+            }
           }
+
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
           }, 500)
@@ -1169,7 +1177,7 @@ export default {
     > div {
       width: 220px;
       &:nth-child(2) {
-        width: 315px !important;
+        //width: 315px !important;
       }
     }
     &__search-filter {
@@ -1372,9 +1380,35 @@ export default {
   }
 
   .edit-name-textfield,
-  .edit-description,
+  .edit-description {
+    font-size: 13px !important;
+  }
+
   .edit-select {
     font-size: 13px !important;
+
+    .v-input__control {
+      .v-select__slot {
+        .v-select__selections {
+          flex-wrap: nowrap;
+          span {
+            &:first-child {
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              overflow: hidden;
+              max-width: 160px;
+            }
+            &.caption {
+              top: 10px;
+              right: 15px;
+            }
+          }
+          input {
+            min-width: 1px !important;
+          }
+        }
+      }
+    }
   }
 
   .delete-dialog-body {

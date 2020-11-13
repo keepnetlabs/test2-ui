@@ -213,7 +213,7 @@
                   >
                     <div class="v-messages theme--light error--text" role="alert">
                       <div class="v-messages__wrapper">
-                        <div class="v-messages__message">Source Select required</div>
+                        <div class="v-messages__message">Required</div>
                       </div>
                     </div>
                   </div>
@@ -469,15 +469,15 @@ export default {
           format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         to: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          required: (v) => (v && v.length <= 255) || 'To must between 1 - 255 characters',
           format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         cc: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          required: (v) => (v && v.length <= 255) || 'CC must between 1 - 255 characters',
           format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         bcc: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
+          required: (v) => (v && v.length <= 255) || 'BCC must between 1 - 255 characters',
           format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
         },
         subject: {
@@ -489,7 +489,7 @@ export default {
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
         },
         url: {
-          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
+          required: (v) => (v && v.length <= 1000) || 'URL must between 1 - 1000 characters',
           format: (v) =>
             /(ftp:\/\/|http:\/\/|https:\/\/|mailto:)(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
               v
@@ -510,15 +510,15 @@ export default {
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         sha512: {
-          required: (v) => (v && v.length <= 512) || 'It must between 1 - 512 characters',
+          required: (v) => (v && v.length <= 512) || 'SHA512 must between 1 - 512 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         md5: {
-          required: (v) => (v && v.length <= 128) || 'It must between 1 - 128 characters',
+          required: (v) => (v && v.length <= 128) || 'MD5 must between 1 - 128 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         extension: {
-          required: (v) => (v && v.length <= 10) || 'Required',
+          required: (v) => (v && v.length <= 10) || 'Extension can be maximum 10 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
       },
@@ -535,8 +535,7 @@ export default {
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       targetUsers: {
-        required: (v) =>
-          (!!v && v.length > 0) || 'Target users required for creating a investigation'
+        required: (v) => (!!v && v.length > 0) || 'Required'
       },
       checkboxRule: {
         required: (v) => this.sources.find((item) => item.value)

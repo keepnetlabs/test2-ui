@@ -74,6 +74,8 @@ export default {
   mounted() {
     if (this.$route.query.detailsId) {
       this.tab = 1
+    } else if (this.$route.params.isCommunity) {
+      this.tab = 1
     }
   },
   methods: {

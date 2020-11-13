@@ -485,8 +485,7 @@ export default {
       },
       scanTypes: [],
       targetUsers: {
-        required: (v) =>
-          (!!v && v.length > 0) || 'Target users required for creating a investigation'
+        required: (v) => (!!v && v.length > 0) || 'Required'
       },
       searchUserGroup: '',
       userGroupsItems: [],

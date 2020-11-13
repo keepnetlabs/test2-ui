@@ -435,7 +435,9 @@
     >
       <account-dropdown />
       <v-spacer />
+
       <v-menu
+        v-if="false"
         offset-y
         min-width="300"
         max-width="300"
@@ -526,7 +528,7 @@
 
           <div class="page-header__breadcrumb">
             <router-link class="breadcrumb-links" to="/">
-              {{ companyName || 'Company' }}
+              {{ getSelectedCompanyName || 'Company' }}
             </router-link>
 
             <router-link
@@ -1014,6 +1016,12 @@ export default {
         return ''
       }
       return this.$store.state.auth.companyName
+    },
+    getSelectedCompanyName() {
+      if (this.$store.state.auth.companyName == undefined) {
+        return ''
+      }
+      return this.$store.state.auth.selectedCompanyName
     },
     getRolename() {
       if (this.$store.state.auth.userRoleName == undefined) {
@@ -1607,7 +1615,7 @@ export default {
       line-height: normal;
       letter-spacing: normal;
       text-align: center;
-      color: #2196f3;
+      color: rgba(0, 0, 0, 0.87);
       // border: solid red 1px;
     }
   }
@@ -1617,7 +1625,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    cursor: pointer;
   }
 
   .user-name-dropdown-font {
@@ -1635,6 +1642,7 @@ export default {
     max-width: 240px;
     word-wrap: break-word;
     white-space: initial;
+    cursor: pointer;
   }
 
   .user-wrapper {

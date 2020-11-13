@@ -287,27 +287,7 @@
                           !att.isHidden ? 'clean-attach' : ''
                         ]"
                       >
-                        <div v-if="att.isFlagged" class="attach-icon red-icon">
-                          <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                        </div>
-                        <div v-else class="attach-icon blue-icon">
-                          <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                        </div>
-                        <v-tooltip bottom opacity="1" z-index="9999">
-                          <template v-slot:activator="{ on }">
-                            <div
-                              v-on="on"
-                              v-if="!att.isHidden"
-                              class="file-name safari-hide-tooltip max-char pl-2"
-                            >
-                              {{ att.name }}
-                            </div>
-                            <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
-                              hidden by owner
-                            </div>
-                          </template>
-                          <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
-                        </v-tooltip>
+                        <AttachmentsPreview :att="att" />
                       </div>
                     </div>
                   </div>
@@ -569,27 +549,7 @@
                         !att.isHidden ? 'clean-attach' : ''
                       ]"
                     >
-                      <div v-if="att.isFlagged" class="attach-icon red-icon">
-                        <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                      </div>
-                      <div v-else class="attach-icon blue-icon">
-                        <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                      </div>
-                      <v-tooltip bottom opacity="1" z-index="9999">
-                        <template v-slot:activator="{ on }">
-                          <div
-                            v-on="on"
-                            v-if="!att.isHidden"
-                            class="file-name safari-hide-tooltip max-char pl-2"
-                          >
-                            {{ att.name }}
-                          </div>
-                          <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
-                            hidden by owner
-                          </div>
-                        </template>
-                        <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
-                      </v-tooltip>
+                      <AttachmentsPreview :att="att" />
                     </div>
                   </div>
                 </div>
@@ -1087,7 +1047,7 @@
                     <div class="d-flex">
                       <v-checkbox
                         v-model="attachment.isHidden"
-                        @change="checkAttachmentsChangeForAllLinksSwitch()"
+                        @change="checkAttachmentsChangeForAllLinksSwitch(attachment, ind)"
                         hide-details
                       ></v-checkbox>
                       <v-tooltip bottom opacity="1" z-index="9999">
@@ -1114,14 +1074,14 @@
                         right
                         offset-x
                         transition="scale-transition"
-                        :disabled="urls.isHidden"
+                        :disabled="attachment.isHidden"
                         @click="urls[ind] = !urls[ind]"
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
                             class="chevron-btn-menu"
                             icon
-                            :class="{ 'disabled-chevron': urls.isHidden }"
+                            :class="{ 'disabled-chevron': attachment.isHidden }"
                           >
                             <v-icon :class="{ 'chevron-down': urls[ind] }" v-on="on"
                               >mdi-chevron-down
@@ -1419,33 +1379,7 @@
                                   !att.isHidden ? 'clean-attach' : ''
                                 ]"
                               >
-                                <div v-if="att.isFlagged" class="attach-icon red-icon">
-                                  <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                                </div>
-                                <div v-else class="attach-icon blue-icon">
-                                  <v-icon color="white" style="font-size: 20px;"
-                                    >mdi-paperclip</v-icon
-                                  >
-                                </div>
-                                <v-tooltip bottom opacity="1" z-index="9999">
-                                  <template v-slot:activator="{ on }">
-                                    <div
-                                      v-on="on"
-                                      v-if="!att.isHidden"
-                                      class="file-name safari-hide-tooltip max-char pl-2"
-                                    >
-                                      {{ att.name }}
-                                    </div>
-                                    <div
-                                      v-on="on"
-                                      v-if="att.isHidden"
-                                      class="file-name max-char pl-2"
-                                    >
-                                      hidden by owner
-                                    </div>
-                                  </template>
-                                  <span>{{ !att.isHidden ? att.name : 'hidden by owner' }}</span>
-                                </v-tooltip>
+                                <AttachmentsPreview :att="att" />
                               </div>
                             </div>
                           </div>
@@ -1870,6 +1804,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
 import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
 import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
+import AttachmentsPreview from './AttachmentsPreview'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1993,7 +1928,8 @@ export default {
     PreviewHeader,
     GrapesWebPageModal,
     AppModal,
-    PreviewHeaderForSinglePost
+    PreviewHeaderForSinglePost,
+    AttachmentsPreview
   },
   props: {
     editItem: {
@@ -2465,8 +2401,11 @@ export default {
         return { ...item, isHidden: val, isFlagged: false }
       })
     },
-    checkAttachmentsChangeForAllLinksSwitch() {
-      this.allAttachments = !this.uploadRespond.attachments.find((item) => !item.isHidden)
+    checkAttachmentsChangeForAllLinksSwitch(att, index) {
+      att.isFlagged = false
+      this.allAttachments = !this.uploadRespond.attachments.find((item) => {
+        !item.isHidden
+      })
     },
     headerValChange(val) {
       this.uploadRespond.isSubjectHidden = val
