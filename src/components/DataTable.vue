@@ -1118,7 +1118,7 @@ export default {
         this.showOverFlowTooltip = false
       }
       if (this.showfilteredData && this.search) {
-        this.searchChangedEvent()
+        this.searchChangedEvent(0)
       } else if (this.sortProps) {
         this.sortChangedEvent(this.sortProps)
       } else {
@@ -1530,7 +1530,7 @@ export default {
       }, delay)
     },
 
-    searchChangedEvent() {
+    searchChangedEvent(debounceTime = 500) {
       if (this.isServerSide) {
         const filterItems = this.columns
           .filter((column) => column.isFilterable)
@@ -1596,7 +1596,7 @@ export default {
           this.unRenderedFilterData = filteredData
           this.filteredDataLength = filteredData.length
           if (!this.showfilteredData) this.filteredData = []
-        }, 500)
+        }, debounceTime)
       }
     },
     addUsersAction(actionName, row) {
