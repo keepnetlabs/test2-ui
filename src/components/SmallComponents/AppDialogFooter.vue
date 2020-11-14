@@ -10,6 +10,7 @@
 </template>
 
 <script>
+//todo bu satırı sil
 export default {
   name: 'AppDialogFooter',
   props: {

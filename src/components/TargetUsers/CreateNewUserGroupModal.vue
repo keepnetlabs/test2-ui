@@ -27,7 +27,7 @@
             v-model="groupName"
             :rules="[
               (v) => validations.required(v, 'Required'),
-              (v) => validations.maxLength(v, 150, 'User group name cannot exceed 150 characters')
+              (v) => validations.maxLength(v, 40, 'User group name cannot exceed 40 characters')
             ]"
           ></v-text-field>
         </v-list-item-content>

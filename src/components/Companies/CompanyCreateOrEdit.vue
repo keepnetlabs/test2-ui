@@ -852,7 +852,7 @@ export default {
   },
   watch: {
     isActive(value) {
-      this.formData.statusId = value ? 1 : 2
+      this.formData.statusId = value ? 1 : 0
     },
     search(val) {
       if (val && val.length > 2) {
