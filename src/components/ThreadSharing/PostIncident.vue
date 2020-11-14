@@ -1225,7 +1225,7 @@
                         <v-btn v-if="maliciousCount" text x-small icon color="red">
                           <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
                         </v-btn>
-                        <span class="ts-actions">{{ maliciousCount }} harmful items</span>
+                        <span class="ts-actions">{{ maliciousCount }} harmful item(s)</span>
                       </div>
                       <div class="flex-grow-1"></div>
                       <div class="ts-tags">

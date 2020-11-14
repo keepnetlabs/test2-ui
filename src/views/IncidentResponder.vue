@@ -337,10 +337,10 @@
               >
                 <template v-slot:datatable-column-popup="{ scope, col }">
                   <span v-if="scope.row[col.property] === 0">
-                    No Matches
+                    No Match
                   </span>
                   <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Match(es)
                   </span>
                   <app-dialog
                     :status="scope.row.resourceId === selectedMatch.resourceId"
@@ -1084,7 +1084,7 @@ export default {
           filterableType: 'date'
         },
         {
-          property: PROPERTY_STORE.RESULTTAG,
+          property: 'tags',
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),

@@ -1114,21 +1114,30 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-      this.tableData = [...table].slice(
-        (this.currentPage - 1) * this.rowCount,
-        this.currentPage * this.rowCount
-      )
-
-      if (table.length && !this.tableData.length && this.currentPage !== 1) {
-        this.currentPage -= 1
+      if (!table.length && this.showOverFlowTooltip) {
+        this.showOverFlowTooltip = false
+      }
+      if (this.showfilteredData && this.search) {
+        this.searchChangedEvent()
+      } else if (this.sortProps) {
+        this.sortChangedEvent(this.sortProps)
+      } else {
         this.tableData = [...table].slice(
           (this.currentPage - 1) * this.rowCount,
           this.currentPage * this.rowCount
         )
-      }
 
-      if (!this.showClusterItemsRowAction) {
-        this.hideChildRowActions()
+        if (table.length && !this.tableData.length && this.currentPage !== 1) {
+          this.currentPage -= 1
+          this.tableData = [...table].slice(
+            (this.currentPage - 1) * this.rowCount,
+            this.currentPage * this.rowCount
+          )
+        }
+
+        if (!this.showClusterItemsRowAction) {
+          this.hideChildRowActions()
+        }
       }
     },
     tableData(data) {
@@ -1572,6 +1581,9 @@ export default {
             })
             return acc
           }, [])
+          if (!filteredData.length && this.showOverFlowTooltip) {
+            this.showOverFlowTooltip = false
+          }
           this.filteredData = filteredData.slice(
             (this.currentPage - 1) * this.rowCount,
             this.currentPage * this.rowCount

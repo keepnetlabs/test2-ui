@@ -1457,13 +1457,13 @@ export default {
         case 'totalEmailCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `of total ${val} emails`
+              return `of total ${val} email(s)`
             case 'Cancelled':
-              return `of total ${val} emails`
+              return `of total ${val} email(s)`
             case 'Expired':
-              return `of total ${val} emails`
+              return `of total ${val} email(s)`
             case 'Finished':
-              return `of total ${val} emails`
+              return `of total ${val} email(s)`
             default:
               break
           }

@@ -136,7 +136,8 @@ export default {
       this.showMatchingModal = !this.showMatchingModal
     },
     getValue(value) {
-      return `${value} ${value === 1 ? 'Match' : 'Matches'}`
+      //`${value} ${value === 1 ? 'Match' : 'Matches'}`
+      return `${value} match(es)`
     }
   }
 }
