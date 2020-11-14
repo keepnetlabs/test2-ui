@@ -343,7 +343,7 @@
             <v-btn readonly v-if="post.harmfulItemCount" text x-small icon color="red">
               <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
             </v-btn>
-            <span class="ts-actions">{{ post.harmfulItemCount }} harmful items</span>
+            <span class="ts-actions">{{ post.harmfulItemCount }} harmful item(s)</span>
           </div>
           <!-- solution field missing for now
           <div class="ts-success mt-1">
