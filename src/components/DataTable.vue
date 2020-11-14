@@ -1197,7 +1197,8 @@ export default {
         if (!val.some((col) => col.show)) this.allHidden = true
         else this.allHidden = false
       }
-    }
+    },
+    currentPage(newVal, oldVal) {}
   },
   created() {
     //Init column standardisation
@@ -1584,9 +1585,13 @@ export default {
           if (!filteredData.length && this.showOverFlowTooltip) {
             this.showOverFlowTooltip = false
           }
+          let maxPage = Math.ceil(filteredData.length / this.rowCount)
+          if (maxPage > this.currentPage) {
+            maxPage = this.currentPage
+          }
           this.filteredData = filteredData.slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
+            (maxPage - 1) * this.rowCount,
+            maxPage * this.rowCount
           )
           this.unRenderedFilterData = filteredData
           this.filteredDataLength = filteredData.length
