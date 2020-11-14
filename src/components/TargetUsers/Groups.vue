@@ -317,6 +317,11 @@ export default {
     callForUpdateTargetGroup(payload) {
       updateTargetGroup(payload)
         .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Target Group has been updated',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
           this.callForTargetGroups()
         })
         .catch(() => {
@@ -345,7 +350,7 @@ export default {
             this.$store.dispatch('common/createSnackBar', {
               message: 'Target group has been deleted',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
+              icon: 'mdi-check-circle'
             })
             this.callForTargetGroups()
           }

@@ -102,6 +102,7 @@
                       persistent-hint
                       small-chips
                       :return-object="false"
+                      @input="handleTagItemChange"
                       hide-details="auto"
                     ></v-combobox>
                   </v-list-item-content>
@@ -410,6 +411,9 @@ export default {
     }
   },
   methods: {
+    handleTagItemChange(value) {
+      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+    },
     addAction() {
       this.actionList.push({ id: this.idCounter })
       this.idCounter = this.idCounter + 1
