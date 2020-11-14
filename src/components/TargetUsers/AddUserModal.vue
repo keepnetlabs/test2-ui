@@ -29,7 +29,7 @@
               id="firstName"
               height="40"
               :rules="[
-                (v) => validations.maxLength(v, 150, 'First name cannot exceed 150 characters')
+                (v) => validations.maxLength(v, 40, 'First name cannot exceed 40 characters')
               ]"
             ></v-text-field>
           </v-list-item-content>
@@ -80,7 +80,7 @@
               id="department"
               height="40"
               :rules="[
-                (v) => validations.maxLength(v, 150, 'Department name cannot exceed 150 characters')
+                (v) => validations.maxLength(v, 40, 'Department name cannot exceed 40 characters')
               ]"
             ></v-text-field>
           </v-list-item-content>

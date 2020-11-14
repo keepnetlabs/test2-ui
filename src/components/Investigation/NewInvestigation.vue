@@ -548,7 +548,8 @@ export default {
     'investigationDetailsTargetUsersListData',
     'investigationDetailsData',
     'status',
-    'selectedMail'
+    'selectedMail',
+    'isTs'
   ],
   methods: {
     checkCheckboxValidation() {
@@ -1075,49 +1076,53 @@ export default {
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
+      const isTs = this.isTs
       this.selectedMail.attachments &&
         this.selectedMail.attachments.map((item) => {
-          if (!item.isHidden && item.isFlagged)
-            this.filterList.push({ option: 'md5', text: item.md5 })
-          if (!item.isHidden && item.isFlagged)
-            this.filterList.push({ option: 'sha512', text: item.sha512 })
+          const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true
+          if (attachmentCase) this.filterList.push({ option: 'md5', text: item.md5 })
+          if (attachmentCase) this.filterList.push({ option: 'sha512', text: item.sha512 })
         })
+      const bccCase = isTs ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged : true
       this.selectedMail.bcc &&
-        !this.selectedMail.isBccHidden &&
-        this.selectedMail.isBccFlagged &&
+        bccCase &&
         this.selectedMail.bcc.map((item) => {
           this.filterList.push({ option: 'bcc', text: item })
         })
+      const ccCase = isTs ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged : true
       this.selectedMail.cc &&
-        !this.selectedMail.isCcHidden &&
-        this.selectedMail.isCcFlagged &&
+        ccCase &&
         this.selectedMail.cc.map((item) => {
           this.filterList.push({ option: 'cc', text: item })
         })
+      const fromCase = isTs
+        ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
+        : true
       this.selectedMail.from &&
-        !this.selectedMail.isFromHidden &&
-        this.selectedMail.isFromFlagged &&
+        fromCase &&
         this.filterList.push({
           option: 'from',
           text: this.selectedMail.from
         })
+      const subjectCase = isTs
+        ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
+        : true
       this.selectedMail.subject &&
-        !this.selectedMail.isSubjectHidden &&
-        this.selectedMail.isSubjectFlagged &&
+        subjectCase &&
         this.filterList.push({
           option: 'subject',
           text: this.selectedMail.subject
         })
+      const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
       this.selectedMail.to &&
-        !this.selectedMail.isToHidden &&
-        this.selectedMail.isToFlagged &&
+        toCase &&
         this.selectedMail.to.map((item) => {
           this.filterList.push({ option: 'to', text: item })
         })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
-          if (!item.isHidden && item.isFlagged)
-            this.filterList.push({ option: 'url', text: item.url })
+          const urlCase = isTs ? !item.isHidden && item.isFlagged : true
+          if (urlCase) this.filterList.push({ option: 'url', text: item.url })
         })
       this.investgationName = `Manual Investigation - ${new Date().getDate()}.${
         new Date().getMonth() + 1

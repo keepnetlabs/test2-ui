@@ -395,10 +395,11 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'ExpireDate',
-          ascending: true,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          orderBy: this.bodyData.orderBy,
+          ascending: this.bodyData.ascending,
+          reportAllPages: reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
         }
 
         exportInvestigationList(payload).then((response) => {

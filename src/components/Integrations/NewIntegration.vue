@@ -237,6 +237,7 @@
                   persistent-hint
                   placeholder="Enter Tag"
                   small-chips
+                  @input="handleTagItemChange"
                 ></v-combobox>
               </div>
             </v-list-item-content>
@@ -526,6 +527,9 @@ export default {
             })
           })
       }
+    },
+    handleTagItemChange(value) {
+      value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
     submit() {
       const refForm = this.$refs.form

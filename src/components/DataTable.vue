@@ -1118,7 +1118,7 @@ export default {
         this.showOverFlowTooltip = false
       }
       if (this.showfilteredData && this.search) {
-        this.searchChangedEvent()
+        this.searchChangedEvent(0)
       } else if (this.sortProps) {
         this.sortChangedEvent(this.sortProps)
       } else {
@@ -1197,7 +1197,8 @@ export default {
         if (!val.some((col) => col.show)) this.allHidden = true
         else this.allHidden = false
       }
-    }
+    },
+    currentPage(newVal, oldVal) {}
   },
   created() {
     //Init column standardisation
@@ -1529,7 +1530,7 @@ export default {
       }, delay)
     },
 
-    searchChangedEvent() {
+    searchChangedEvent(debounceTime = 500) {
       if (this.isServerSide) {
         const filterItems = this.columns
           .filter((column) => column.isFilterable)
@@ -1584,14 +1585,18 @@ export default {
           if (!filteredData.length && this.showOverFlowTooltip) {
             this.showOverFlowTooltip = false
           }
+          let maxPage = Math.ceil(filteredData.length / this.rowCount)
+          if (maxPage > this.currentPage) {
+            maxPage = this.currentPage
+          }
           this.filteredData = filteredData.slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
+            (maxPage - 1) * this.rowCount,
+            maxPage * this.rowCount
           )
           this.unRenderedFilterData = filteredData
           this.filteredDataLength = filteredData.length
           if (!this.showfilteredData) this.filteredData = []
-        }, 500)
+        }, debounceTime)
       }
     },
     addUsersAction(actionName, row) {

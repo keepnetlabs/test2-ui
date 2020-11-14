@@ -3,6 +3,8 @@
 }
 .el-picker-panel{
   z-index:9999999 !important;
+  border-radius: 8px;
+  overflow: auto;
 }
 .el-range-editor.el-input__inner{
   display: inline-flex;
