@@ -101,7 +101,10 @@ export default {
     getBadges() {
       const badges = this.scope.row[this.col.property]
       const width = this.scope.column.width
-      if (badges.length && width !== this.width) {
+      if (
+        badges.length &&
+        (width !== this.width || JSON.stringify(badges) !== JSON.stringify(this.badges))
+      ) {
         this.width = width
         this.badges = badges
         let totalWidth = Math.floor(this.width) - 20
