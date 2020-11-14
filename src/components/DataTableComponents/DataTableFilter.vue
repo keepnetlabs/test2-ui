@@ -221,7 +221,6 @@ export default {
   },
   methods: {
     changeDateSelect() {
-
       this.filteredDateValue =
         this.filteredSelectValueDate !== 'between'
           ? this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
