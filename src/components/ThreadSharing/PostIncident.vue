@@ -2304,6 +2304,7 @@ export default {
             el.style.backgroundColor = '#757575'
             el.style.color = '#ffffff'
             el.style.position = 'relative'
+            el.style.pointerEvents = 'none'
           } else if (!!url && !!url.name) {
             el.innerHTML = url.name
             el.setAttribute('href', url.url)
@@ -2322,6 +2323,7 @@ export default {
             el.style.backgroundColor = '#f3e1e5'
             el.style.color = '#bb2a45'
             el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+            el.style.pointerEvents = 'none'
 
             //el.appendChild(iEl)
           } else if (!url.isFlagged && !url.isHidden) {
