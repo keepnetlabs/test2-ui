@@ -73,3 +73,8 @@ export function trim(value, message) {
   value = getValue(value).trim()
   return value.length > 0 || message
 }
+
+export function startsWithEmpty(value, message) {
+  value = getValue(value)
+  return !value.startsWith(' ') || message
+}

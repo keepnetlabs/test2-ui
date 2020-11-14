@@ -25,7 +25,10 @@
             v-model.trim="formValues.firstName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.startsWithEmpty(v, 'Cannot start with space')
+            ]"
           ></v-text-field>
         </form-group>
         <form-group title="Last Name" has-hint>
@@ -36,7 +39,10 @@
             v-model.trim="formValues.lastName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.startsWithEmpty(v, 'Cannot start with space')
+            ]"
           ></v-text-field>
         </form-group>
         <form-group title="Email Address" has-hint>
@@ -49,6 +55,7 @@
             persistent-hint
             :rules="[
               (v) => validations.required(v, 'Required'),
+              (v) => validations.startsWithEmpty(v, 'Cannot start with space'),
               (v) => validations.mail(v, 'Invalid email address')
             ]"
           ></v-text-field>
@@ -113,7 +120,10 @@
             item-text="roleName"
             :menu-props="{ offsetY: true }"
             item-value="resourceId"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.startsWithEmpty(v, 'Cannot start with space')
+            ]"
           ></v-select>
         </form-group>
         <form-group v-if="selectedRow">
@@ -130,7 +140,7 @@
 <script>
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { mail, maxLength, required } from '@/utils/validations'
+import { mail, maxLength, required, startsWithEmpty } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
@@ -180,7 +190,8 @@ export default {
       validations: {
         maxLength,
         required,
-        mail
+        mail,
+        startsWithEmpty
       }
     }
   },

@@ -335,7 +335,7 @@
                   row-height="15"
                   solo
                   validate-on-blur
-                  :rules="[descRule.required, descRule.regex, descRule.empty, descRule.default]"
+                  :rules="[descRule.required, descRule.empty, descRule.default]"
                   v-model.trim="uploadRespond.Description"
                 ></v-textarea>
               </v-form>
@@ -1180,16 +1180,16 @@
                     <div class="ts-user-comp">
                       <div id="last-prev-user-comp" class="ts-user-comp-detail">
                         by
-                        <a v-if="uploadRespond.from" href="#" class="pl-1 pr-1">
+                        <b v-if="uploadRespond.from" class="pl-1 pr-1">
                           <span v-if="!isAnonym">{{ getByValue() }}</span>
                           <span v-else>Anonymous</span>
-                        </a>
+                        </b>
                         <a v-else href="#" class="pl-1 pr-1">{{ getFromValue() }}</a>
                         from
-                        <a v-if="currentCompany" :id="currentCompany" href="#" class="pl-1 pr-1">
+                        <b v-if="currentCompany" :id="currentCompany" class="pl-1 pr-1">
                           <span v-if="!isAnonym">{{ currentCompany }}</span>
                           <span v-else>Anonymous</span>
-                        </a>
+                        </b>
                         <a v-else class="pl-1 pr-1">Company Name</a> on
                         <a class="pl-1 pr-1">
                           {{ currentCommunityName }}
@@ -2304,6 +2304,7 @@ export default {
             el.style.backgroundColor = '#757575'
             el.style.color = '#ffffff'
             el.style.position = 'relative'
+            el.style.pointerEvents = 'none'
           } else if (!!url && !!url.name) {
             el.innerHTML = url.name
             el.setAttribute('href', url.url)
@@ -2322,6 +2323,7 @@ export default {
             el.style.backgroundColor = '#f3e1e5'
             el.style.color = '#bb2a45'
             el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+            el.style.pointerEvents = 'none'
 
             //el.appendChild(iEl)
           } else if (!url.isFlagged && !url.isHidden) {
@@ -2818,7 +2820,7 @@ export default {
     }
     this.searchNotifiedMail()
     this.getListThreatCategories()
-    this.currentCompany = localStorage.getItem('companyName')
+    this.currentCompany = localStorage.getItem('selectedCompanyName')
     this.currentCommunityName = localStorage.getItem('communityName')
   },
   beforeDestroy() {
