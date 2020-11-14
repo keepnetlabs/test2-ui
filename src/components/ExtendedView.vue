@@ -838,6 +838,7 @@ export default {
       })
     },
     handleEditComboBoxChange(value, props) {
+      value[value.length - 1] = value[value.length - 1].substring(0, 20)
       this.copyOfEditedRows.map((item) => {
         item[props] = value.join(',')
       })
