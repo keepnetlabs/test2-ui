@@ -518,7 +518,7 @@ export default {
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         },
         extension: {
-          required: (v) => (v && v.length <= 10) || 'Extension can be maximum 10 characters',
+          required: (v) => (v && v.length <= 10) || 'Extension must between 1 - 10 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
         }
       },

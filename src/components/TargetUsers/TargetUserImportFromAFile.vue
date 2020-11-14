@@ -331,7 +331,7 @@ export default {
     font-style: normal;
     line-height: 1.29;
     letter-spacing: normal;
-    color: #2196f3;
+    color: rgba(0, 0, 0, 0.87);
     margin-top: 16px;
   }
   .stepper {

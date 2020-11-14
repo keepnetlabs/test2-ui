@@ -523,11 +523,14 @@
               </div>
             </div>
           </template>
+          <template v-if="communityLoading" slot="no-data">
+            <v-skeleton-loader
+              :loading="communityLoading"
+              type="article, actions"
+            ></v-skeleton-loader>
+          </template>
           <template
-            v-if="
-              (!communityLoading && filter && filter.length > 3) ||
-              (industryValue && !communityLoading)
-            "
+            v-if="(!communityLoading && filter) || (!communityLoading && industryValue.length)"
             slot="no-data"
           >
             <div
@@ -551,48 +554,37 @@
               </div>
             </div>
           </template>
-          <template
-            v-if="!communityLoading && !industryValue && (!filter || filter.length < 1)"
-            slot="no-data"
-          >
-            <v-skeleton-loader :loading="communityLoading" type="article, actions">
-              <div class="empty-communities" v-if="selectedTab === 'tab-1'">
-                <div class="empty-communities-inline">
-                  <span class="no-community">
-                    No community has been created
-                  </span>
-                  <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
-                    Create Community
-                  </v-btn>
-                </div>
+          <template v-if="!communityLoading && !industryValue.length && !filter" slot="no-data">
+            <div class="empty-communities" v-if="selectedTab === 'tab-1'">
+              <div class="empty-communities-inline">
+                <span class="no-community">
+                  No community has been created
+                </span>
+                <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
+                  Create Community
+                </v-btn>
               </div>
-              <div class="empty-communities" v-if="selectedTab === 'tab-0'">
-                <div class="empty-communities-inline">
-                  <span class="no-community">
-                    You haven’t joined any communities
-                  </span>
-                  <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
-                    Browse Communities
-                  </v-btn>
-                </div>
+            </div>
+            <div class="empty-communities" v-if="selectedTab === 'tab-0'">
+              <div class="empty-communities-inline">
+                <span class="no-community">
+                  You haven’t joined any communities
+                </span>
+                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                  Browse Communities
+                </v-btn>
               </div>
-              <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2-2">
-                <div class="empty-communities-inline">
-                  <span class="no-community">
-                    You don't have any invitations from communities
-                  </span>
-                  <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
-                    Browse Communities
-                  </v-btn>
-                </div>
+            </div>
+            <div class="empty-communities" v-if="selectedTab === 'tab-2'" id="tab-2-2">
+              <div class="empty-communities-inline">
+                <span class="no-community">
+                  You don't have any invitations from communities
+                </span>
+                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                  Browse Communities
+                </v-btn>
               </div>
-            </v-skeleton-loader>
-          </template>
-          <template v-if="(filter || industryValue) && communityLoading" slot="no-data">
-            <v-skeleton-loader
-              :loading="communityLoading"
-              type="article, actions"
-            ></v-skeleton-loader>
+            </div>
           </template>
         </v-data-iterator>
       </v-card-text>
