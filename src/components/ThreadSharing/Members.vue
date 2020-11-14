@@ -1001,7 +1001,7 @@ export default {
     max-width: 78px !important;
     height: 36px !important;
     margin-right: 14px;
-    text-transform: capitalize !important;
+    text-transform: uppercase !important;
   }
 
   .accept-btn {
@@ -1012,7 +1012,7 @@ export default {
     min-width: 78px !important;
     max-width: 78px !important;
     height: 36px !important;
-    text-transform: capitalize !important;
+    text-transform: uppercase !important;
   }
 
   @media only screen and (max-width: 950px) {
