@@ -89,7 +89,7 @@
           No Match
         </span>
         <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Matches
+          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Match(es)
         </span>
       </template>
     </datatable>
