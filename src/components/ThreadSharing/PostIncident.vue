@@ -155,6 +155,7 @@
                 :rules="autocomplete"
                 required
                 @change="getSelectedEmailPreview"
+                @input="handleTagItemChange"
               >
                 <template v-slot:selection="{ attrs, item }">
                   <v-chip
@@ -471,6 +472,7 @@
                   onPaste="return false"
                   @blur="validateAffectArea"
                   :rules="[affectRules.regex]"
+                  @input="handleTagItemChange"
                 ></v-combobox>
               </v-form>
 
@@ -2234,6 +2236,9 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    handleTagItemChange(value) {
+      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+    },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
     },
