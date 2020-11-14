@@ -151,7 +151,7 @@ export default {
       filteredSelectValue: 'Contains',
       filteredSelectValueNum: '=',
       filteredSelectValueDate: '<=',
-      filteredDateValue: null,
+      filteredDateValue: this.changeDateSelect(),
       filterValue: '',
       filterChecked: [],
       textFilterItems: [
@@ -208,7 +208,7 @@ export default {
     }
   },
   mounted() {
-    //this.changeDateSelect()
+    this.changeDateSelect()
   },
   created() {
     if (this.filterableType === 'select') {
@@ -221,6 +221,7 @@ export default {
   },
   methods: {
     changeDateSelect() {
+
       this.filteredDateValue =
         this.filteredSelectValueDate !== 'between'
           ? this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
