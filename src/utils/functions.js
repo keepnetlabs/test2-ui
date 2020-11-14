@@ -786,8 +786,8 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
         el.style.backgroundColor = '#f3e1e5'
         el.style.color = '#bb2a45'
         el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
-        el.style.pointerEvents = 'none'
-
+        el.style.cursor = 'default'
+        el.setAttribute('onclick', 'return false;')
         //el.appendChild(iEl)
       } else if (!url.isFlagged && !url.isHidden) {
         !isReview && (el.innerHTML = url.urlHtml || url.name || url.url)
