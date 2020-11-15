@@ -45,7 +45,7 @@
               id="lastName"
               height="40"
               :rules="[
-                (v) => validations.maxLength(v, 150, 'Last name cannot exceed 150 characters')
+                (v) => validations.maxLength(v, 40, 'Last name cannot exceed 40 characters')
               ]"
             ></v-text-field>
           </v-list-item-content>

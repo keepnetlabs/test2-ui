@@ -144,17 +144,20 @@ export default {
   },
   computed: {},
   mounted() {
-    searchCompanies(this.payload).then((response) => {
-      this.companies =
-        response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-          ? response.data.data.results
-          : []
-    })
+    this.getDefaultCompanies()
   },
   beforeUpdate() {
     this.editHandler()
   },
   methods: {
+    getDefaultCompanies() {
+      searchCompanies(this.payload).then((response) => {
+        this.companies =
+          response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+            ? response.data.data.results
+            : []
+      })
+    },
     editHandler() {
       if ((this.isShow && this.isEdit) || (this.isShow && this.forCompany)) {
         const _p = this.payload
@@ -178,7 +181,7 @@ export default {
     changeStatus(value) {
       this.$emit('changeModalStatus', value)
       if (value === false) {
-        this.companies = []
+        this.companies = this.getDefaultCompanies()
         this.groupName = null
         this.selectedCompanies = null
         this.$refs.refCreateGroupForm.reset()
