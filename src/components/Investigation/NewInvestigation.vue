@@ -115,6 +115,8 @@
                   <div class="filter-item__selectbox">
                     <v-select
                       :items="filterListOption"
+                      item-text="name"
+                      item-value="val"
                       v-model.trim="list.option"
                       placeholder="Select filter"
                       outlined
@@ -428,20 +430,20 @@ export default {
       filterList: [{ option: '', text: '' }],
       sources: [],
       filterListOption: [
-        'ip',
-        'from',
-        'to',
-        'cc',
-        'bcc',
-        'subject',
-        'from_name',
-        'url',
-        'keyword',
-        'size',
-        'name',
-        'sha512',
-        'md5',
-        'extension'
+        { name: 'IP', val: 'ip' },
+        { name: 'From', val: 'from' },
+        { name: 'To', val: 'to' },
+        { name: 'CC', val: 'cc' },
+        { name: 'BCC', val: 'bcc' },
+        { name: 'Subject', val: 'subject' },
+        { name: 'Sender Name', val: 'from_name' },
+        { name: 'Url', val: 'url' },
+        { name: 'Keyword', val: 'keyword' },
+        { name: 'Size', val: 'size' },
+        { name: 'File Name', val: 'name' },
+        { name: 'SHA512', val: 'sha512' },
+        { name: 'MD5', val: 'md5' },
+        { name: 'File Extension', val: 'extension' }
       ],
       valid: false,
       menu1: '',
