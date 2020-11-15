@@ -172,7 +172,7 @@ export default {
             hasTooltip: true,
             filterableType: 'select',
             filterableCustomFieldName: 'Status',
-            filterableItems: ['Active', 'InActive']
+            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -386,7 +386,11 @@ export default {
       } else {
         const elem = filter
         elem.FieldName = filter.FieldName
-        requestBody.push(elem)
+        const { FieldName, Value } = filter
+        if (FieldName === 'Status' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
       }
 
       this.bodyData.filter.FilterGroups[0].FilterItems = requestBody

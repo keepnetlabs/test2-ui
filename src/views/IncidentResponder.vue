@@ -1681,7 +1681,11 @@ export default {
       } else {
         const elem = filter
         elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        requestBody.push(elem)
+        const { FieldName, Value } = filter
+        if (FieldName === 'Result' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
       }
 
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody

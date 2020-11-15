@@ -321,7 +321,6 @@ export default {
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
       let items = []
-      let filterPayload = []
       this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
         if (x.FieldName !== filter.FieldName) {
           items.push(x)
@@ -335,10 +334,15 @@ export default {
           this.bodyData.filter.FilterGroups[0].FilterItems.push(filter[i])
         })
       } else {
-        this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+        const { FieldName, Value } = filter
+        if (FieldName === 'status' && Value === '') {
+        } else {
+          this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
+        }
       }
 
       const _this = this
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
       })

@@ -1709,7 +1709,11 @@ export default {
       } else {
         const elem = filter
         elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        filterPayload.push(elem)
+        const { FieldName, Value } = filter
+        if (FieldName === 'ScanType' && Value === '') {
+        } else {
+          filterPayload.push(elem)
+        }
       }
 
       this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
@@ -1755,7 +1759,11 @@ export default {
       } else {
         const elem = filter
         elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        filterPayload.push(elem)
+        const { FieldName, Value } = filter
+        if ((FieldName === 'ScanType' || FieldName === 'UserStatus') && Value === '') {
+        } else {
+          filterPayload.push(elem)
+        }
       }
 
       this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
