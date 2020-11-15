@@ -75,9 +75,7 @@ export default {
     text-align: center;
   }
   &__tooltip {
-    font-size: 12px !important;
-    font-family: 'Open Sans', sans-serif !important;
-    margin-bottom: 3px !important;
+    margin-bottom: 0 !important;
   }
   &__empty {
     border-radius: 50%;

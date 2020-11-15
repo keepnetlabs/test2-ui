@@ -221,7 +221,7 @@ export default {
             hasTooltip: true,
             filterableType: 'select',
             filterableCustomFieldName: 'Status',
-            filterableItems: ['Active', 'InActive']
+            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
           },
           {
             property: PROPERTY_STORE.PRIORITY,
@@ -236,7 +236,13 @@ export default {
             hasTooltip: true,
             filterableType: 'select',
             filterableCustomFieldName: 'Priority',
-            filterableItems: ['VeryLow', 'Low', 'Medium', 'High', 'VeryHigh']
+            filterableItems: [
+              { text: 'Very Low', value: 'VeryLow' },
+              'Low',
+              'Medium',
+              'High',
+              { text: 'Very High', value: 'VeryHigh' }
+            ]
           }
         ],
         empty: {
@@ -277,13 +283,7 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'Status',
-                  Operator: '=',
-                  Value: 'Active'
-                }
-              ],
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -486,7 +486,11 @@ export default {
       } else {
         const elem = filter
         elem.FieldName = filter.FieldName
-        requestBody.push(elem)
+        const { FieldName, Value } = filter
+        if ((FieldName === 'Status' || FieldName === 'Priority') && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
       }
 
       this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
