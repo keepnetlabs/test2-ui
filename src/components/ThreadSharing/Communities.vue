@@ -828,7 +828,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'You have been removed from the community'
+            message: `You left the ${this.leaveCommunityName}`
           })
           this.isWantToToLeaveFromCommunity = false
           this.getAllCommunitiesListData()
