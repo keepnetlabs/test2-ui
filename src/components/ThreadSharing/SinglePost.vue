@@ -47,6 +47,7 @@
       icon="mdi-send"
       title="Share incident"
       size="big"
+      @changeStatus="openShareModal = false"
     >
       <template v-slot:app-dialog-body>
         <v-form ref="shareModal">

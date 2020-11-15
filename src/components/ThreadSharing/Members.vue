@@ -356,6 +356,7 @@ import {
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
+import { isOwnerOrMember } from '../../utils/functions'
 
 export default {
   components: {
@@ -500,6 +501,10 @@ export default {
     getCommunityDetails() {
       this.membersLoading = true
       getCommunityDetails(this.$route.params.id).then((response) => {
+        localStorage.setItem(
+          'isCommunityOwner',
+          response.data.data.myMembershipStatusId == 1 ? 'owner' : 'member'
+        )
         this.communityDetails = response.data.data
         this.getMembers()
         this.getRequestMembers()
