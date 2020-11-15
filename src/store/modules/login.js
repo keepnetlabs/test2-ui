@@ -3,6 +3,8 @@ import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import store from '../index'
 import { getCompanyList } from '../../api/company'
+import jwt_decode from 'jwt-decode'
+import { setGlobalUserData } from '../../utils/functions'
 
 const login = {
   namespaced: true,
@@ -102,6 +104,24 @@ const login = {
             })
           }
           if (isSessionExpired) {
+            let token = JSON.parse(localStorage.getItem('auth-token')).token
+            let tokenData = jwt_decode(token)
+            let currentUserData = setGlobalUserData(tokenData)
+            localStorage.setItem('userData', JSON.stringify(currentUserData))
+            localStorage.setItem('selectedCompanyName', currentUserData.name)
+            localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+            if (
+              currentUserData &&
+              currentUserData.role &&
+              currentUserData.role.name !== 'CompanyAdmin'
+            ) {
+              dispatch('dashboard/selectCompany', currentUserData, { root: true })
+            }
+            let payload = {
+              currentUserData: currentUserData,
+              isSelectCompany: false
+            }
+            commit('SET_CURRENTUSER', payload)
             store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
               location.reload()
             })
