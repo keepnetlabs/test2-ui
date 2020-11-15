@@ -878,6 +878,11 @@ export default {
   &__btn-unlimited {
     height: 40px !important;
     margin-left: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
   }
   &__side-label {
     display: inline-flex;
