@@ -996,6 +996,7 @@ export default {
 
   .v-list-item__content {
     padding: 0;
+    margin-bottom: 18px;
   }
 
   .v-autocomplete:not(.v-input--is-focused).v-select--chips input {
