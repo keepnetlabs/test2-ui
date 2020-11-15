@@ -1126,7 +1126,9 @@ export default {
           (this.currentPage - 1) * this.rowCount,
           this.currentPage * this.rowCount
         )
-
+        setTimeout(() => {
+          this.renderFixedItems()
+        }, 500)
         if (table.length && !this.tableData.length && this.currentPage !== 1) {
           this.currentPage -= 1
           this.tableData = [...table].slice(
@@ -1243,12 +1245,8 @@ export default {
       this.lastColFixed = false
       this.actionFixed = false
     }
-    const _this = this
-    /*
-    setTimeout(function () {
-      _this.setDatatableUI = true
-    }, 1)
-     */
+
+    window.addEventListener('resize', this.renderFixedItems)
   },
   methods: {
     /**
@@ -1261,6 +1259,40 @@ export default {
         let index = columns.findIndex((col) => col.property === x.property)
         columns[index] = { ...columns[index], ...x }
       })
+    },
+    renderFixedItems() {
+      const table = this.$el
+      const tableFixedItem = table.querySelector('.el-table__fixed')
+      const tableFixedRightItem = table.querySelector('.el-table__fixed-right')
+      if (tableFixedItem && tableFixedItem.style.height) {
+        const bodyWrapperHeight = Number(
+          getComputedStyle(
+            tableFixedItem.querySelector('.el-table__fixed-body-wrapper')
+          ).height.slice(0, -2)
+        )
+        const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2))
+        if (fixedItemHeight - bodyWrapperHeight < 45) {
+          const aggregate = window.innerWidth > 1300 ? 15 : 5
+          tableFixedItem.style.height = `${
+            Number(tableFixedItem.style.height.slice(0, -2)) + aggregate
+          }px`
+        }
+      }
+      if (tableFixedRightItem && tableFixedRightItem.style.height) {
+        const bodyWrapperHeight = Number(
+          getComputedStyle(
+            tableFixedRightItem.querySelector('.el-table__fixed-body-wrapper')
+          ).height.slice(0, -2)
+        )
+
+        const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2))
+        if (fixedItemHeight - bodyWrapperHeight < 45) {
+          const aggregate = window.innerWidth > 1300 ? 15 : 5
+          tableFixedRightItem.style.height = `${
+            Number(tableFixedRightItem.style.height.slice(0, -2)) + aggregate
+          }px`
+        }
+      }
     },
     setRenderedColumns() {
       this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property)

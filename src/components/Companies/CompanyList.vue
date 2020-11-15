@@ -134,7 +134,7 @@ export default {
           sortable: true,
           show: true,
           type: 'slot',
-          minWidth: 180
+          width: 180
         },
         {
           property: PROPERTY_STORE.INDUSTRYNAME,
