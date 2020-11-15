@@ -77,7 +77,7 @@
       @deleteFunction="deleteRule($event)"
       @addAction="toggleRuleModal"
       @onEmptyBtnClicked="toggleRuleModal"
-      @downloadEvent="exportPlaybookRules"
+      @downloadEvent="exportRules"
       id="playbook-data-table"
       @deleteAction="deleteRule($event)"
       @editAction="handleEdit"
@@ -394,14 +394,14 @@ export default {
         })
         .finally(() => (this.isMatchingTableLoading = false))
     },
-    exportPlaybookRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateDate',
-          ascending: false,
-          reportAllPages,
+          orderBy: this.tableCredientials.orderBy,
+          ascending: this.tableCredientials.ascending,
+          reportAllPages: reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.tableCredientials.filter
         }
