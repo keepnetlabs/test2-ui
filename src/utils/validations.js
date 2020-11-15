@@ -8,14 +8,14 @@ function getValue(value) {
 export function maxLength(value, length, message) {
   //length patlamasın diye.
   value = getValue(value)
-  return value.length < length || message
+  return value.length <= length || message
 }
 
 export function minLength(value, length, message) {
   //length patlamasın diye.
   value = getValue(value)
 
-  return value.length > length || message
+  return value.length >= length || message
 }
 
 export function mail(value, message) {

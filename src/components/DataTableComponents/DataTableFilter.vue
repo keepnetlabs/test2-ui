@@ -311,7 +311,6 @@ export default {
     margin-top: 7px;
   }
   &__container {
-    // background-color: white;
   }
   &__body-container {
     background-color: white;
