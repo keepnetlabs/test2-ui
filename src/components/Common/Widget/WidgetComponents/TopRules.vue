@@ -121,15 +121,9 @@ export default {
         })
     },
     handleRuleNameClick({ resourceId = '' }) {
-      this.$router.push({
-        name: 'Playbook',
-        params: {
-          playbookId: resourceId
-        }
-      })
+      this.$emit('handleSelectPlaybookId', { resourceId, callback: this.callForTopRules })
     },
     handleSelectMatch(row) {
-      this.selectedMatch = row
       this.toggleMatchingIncidentModal()
     },
     toggleMatchingIncidentModal() {
