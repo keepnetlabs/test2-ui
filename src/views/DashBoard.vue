@@ -120,7 +120,7 @@ export default {
         this.getPhishingCampaigns(999)
         this.getLastFiveCompaignsStats()
         this.getCompanyInformation()
-        this.getDropdownCompanies(this.$store.state.auth.userRoleName)
+        //this.getDropdownCompanies(localStorage.getItem('userRole'))
         this.getOverallStats(12)
       } else {
         //this.$router.push('/login')

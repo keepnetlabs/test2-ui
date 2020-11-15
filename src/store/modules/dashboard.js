@@ -329,7 +329,7 @@ const dashboard = {
           dispatch('getPhishingCampaigns', 999)
           dispatch('getOverallStats', 12)
           dispatch('getCompanyInformation')
-          dispatch('getDropdownCompanies')
+          dispatch('getDropdownCompanies', payload)
           //commit('threadSharing/SET_COLLAPSE_TO_INCIDENTS', false, { root: true })
         }
       })
@@ -355,7 +355,6 @@ const dashboard = {
           .map((e) => arr[e])
         return unique
       }*/
-
       if (payload !== 'CompanyAdmin') {
         getCompanyList().then((response) => {
           const result = response.data.data && response.data.data
