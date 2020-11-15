@@ -395,7 +395,7 @@ export default {
       checkboxError: false,
       investgationName: `Manual Investigation - ${new Date().getDate()}.${
         new Date().getMonth() + 1
-      }.${new Date().getFullYear()} ${new Date().getUTCMonth()}:${new Date().getMinutes()}`,
+      }.${new Date().getFullYear()} ${new Date().getHours()}:${new Date().getMinutes()}`,
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
@@ -1126,7 +1126,7 @@ export default {
         })
       this.investgationName = `Manual Investigation - ${new Date().getDate()}.${
         new Date().getMonth() + 1
-      }.${new Date().getFullYear()} ${new Date().getUTCMonth()}:${new Date().getMinutes()}`
+      }.${new Date().getFullYear()} ${new Date().getHours()}:${new Date().getMinutes()}`
     }
     document.querySelector('.page-nav').style.zIndex = 8
   },
