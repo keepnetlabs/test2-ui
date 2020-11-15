@@ -622,7 +622,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'You have been removed from the community'
+            message: `You left the ${this.communityDetails.name}`
           })
           this.isWantToToLeaveFromCommunity = false
           this.$router.push(`/threat-sharing`)
