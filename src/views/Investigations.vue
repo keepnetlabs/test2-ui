@@ -342,9 +342,10 @@ export default {
       }
 
       const _this = this
-
+      this.loading = true
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+        this.loading = false
       })
     },
     columnFilterCleared(fieldName) {

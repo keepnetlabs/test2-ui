@@ -69,12 +69,14 @@
           v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
+          popper-class="filter__date-picker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
         />
         <el-date-picker
           :key="column.property"
           v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
+          popper-class="filter__date-picker"
           type="datetimerange"
           style="margin-bottom: 14px;"
         />
@@ -356,5 +358,7 @@ export default {
       background-color: #ffffff;
     }
   }
+}
+.data-table-filter__date-picker {
 }
 </style>
