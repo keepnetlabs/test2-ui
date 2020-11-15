@@ -365,7 +365,8 @@
               class="tag-btn text-none"
               id="incident-badge-att"
             >
-              <span>Attachment</span>
+              <span v-if="post.categoryResourceIdArray.length === 1">Attachment</span>
+              <span v-else-if="post.categoryResourceIdArray.length > 1">Attachments</span>
             </v-btn>
             <v-btn
               v-if="post.categoryResourceIdArray && post.categoryResourceIdArray.length"
@@ -798,7 +799,7 @@
                       <div class="detail-part-item__text">
                         Link:
                         <span class="detail-part-item__hide-overflow">
-                          {{ el.name }} ({{ el.url }}
+                          {{ el.name }} {{ el.url }}
                         </span>
                       </div>
                     </div>

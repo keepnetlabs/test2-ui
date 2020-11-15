@@ -155,6 +155,7 @@
                 :rules="autocomplete"
                 required
                 @change="getSelectedEmailPreview"
+                @input="handleTagItemChange"
               >
                 <template v-slot:selection="{ attrs, item }">
                   <v-chip
@@ -471,6 +472,7 @@
                   onPaste="return false"
                   @blur="validateAffectArea"
                   :rules="[affectRules.regex]"
+                  @input="handleTagItemChange"
                 ></v-combobox>
               </v-form>
 
@@ -1298,15 +1300,30 @@
                           </v-btn>
                           <div
                             v-if="
+                              hoverTool &&
                               uploadRespond.CategoryResourceIdArray &&
                               uploadRespond.CategoryResourceIdArray.length >= 1
                             "
-                            v-show="hoverTool"
                             class="tooltip-wrapper"
                           >
                             <div
-                              v-if="uploadRespond.attachments && uploadRespond.attachments.length"
+                              v-if="
+                                uploadRespond.attachments.length &&
+                                uploadRespond.CategoryResourceIdArray &&
+                                uploadRespond.CategoryResourceIdArray.length === 4
+                              "
                             >
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[1])
+                              }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[2])
+                              }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[3])
+                              }}</span>
+                            </div>
+                            <div v-else-if="uploadRespond.attachments.length">
                               <span>{{
                                 findCategory(uploadRespond.CategoryResourceIdArray[1])
                               }}</span>
@@ -1315,7 +1332,8 @@
                               }}</span>
                             </div>
                             <div
-                              v-if="
+                              v-else-if="
+                                uploadRespond.attachments.length &&
                                 uploadRespond.CategoryResourceIdArray &&
                                 uploadRespond.CategoryResourceIdArray.length === 1
                               "
@@ -1323,14 +1341,16 @@
                               <span>{{
                                 findCategory(uploadRespond.CategoryResourceIdArray[1])
                               }}</span>
-                            </div>
-                            <div
-                              v-else-if="
-                                uploadRespond.attachments && !uploadRespond.attachments.length
-                              "
-                            >
                               <span>{{
                                 findCategory(uploadRespond.CategoryResourceIdArray[2])
+                              }}</span>
+                            </div>
+                            <div v-else-if="!uploadRespond.attachments.length">
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[2])
+                              }}</span>
+                              <span>{{
+                                findCategory(uploadRespond.CategoryResourceIdArray[3])
                               }}</span>
                             </div>
                           </div>
@@ -2216,6 +2236,9 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    handleTagItemChange(value) {
+      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+    },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
     },
@@ -2295,8 +2318,11 @@ export default {
       if (els && els.length) {
         for (let i = 0, l = els.length; i < l; i++) {
           let el = els[i]
+          el.style.pointerEvents = 'auto'
+          el.style.cursor = 'pointer'
           el.setAttribute('target', '_blank')
           el.setAttribute('index', url.index)
+          el.removeAttribute('data-title')
           if (url.isHidden) {
             url.isFlagged = false
             el.innerHTML = url.urlHtml || url.name || url.url
@@ -2323,7 +2349,8 @@ export default {
             el.style.backgroundColor = '#f3e1e5'
             el.style.color = '#bb2a45'
             el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
-            el.style.pointerEvents = 'none'
+            el.style.cursor = 'default'
+            el.setAttribute('onclick', 'return false;')
 
             //el.appendChild(iEl)
           } else if (!url.isFlagged && !url.isHidden) {
@@ -2820,8 +2847,11 @@ export default {
     }
     this.searchNotifiedMail()
     this.getListThreatCategories()
-    this.currentCompany = localStorage.getItem('selectedCompanyName')
-    this.currentCommunityName = localStorage.getItem('communityName')
+    this.currentCompany =
+      (this.editItem && this.editItem.postedUserCompanyName) ||
+      localStorage.getItem('selectedCompanyName')
+    this.currentCommunityName =
+      (this.editItem && this.editItem.communityName) || localStorage.getItem('communityName')
   },
   beforeDestroy() {
     document.querySelector('html').style.overflowY = 'initial'

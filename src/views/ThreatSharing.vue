@@ -812,7 +812,7 @@ export default {
     font-style: normal !important;
     line-height: 1.71 !important;
     letter-spacing: normal !important;
-    text-transform: capitalize;
+    text-transform: uppercase;
   }
 
   .v-overlay {
