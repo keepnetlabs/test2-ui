@@ -1,5 +1,22 @@
 <template>
   <div class="k-widget__container">
+    <app-modal
+      :status="showPlaybookModal"
+      v-if="showPlaybookModal"
+      :icon-name="'mdi-pencil'"
+      :title="'Edit Rule'"
+      :show-footer="false"
+      class-name="incident-responder__playbook"
+    >
+      <template v-slot:overlay-body>
+        <CreateOrEditRule
+          :playbookId="selectedPlaybookId"
+          @cancelForm="togglePlaybookModal"
+          @closeFormWithUpdate="closePlaybookWithUpdate"
+          v-if="showPlaybookModal"
+        />
+      </template>
+    </app-modal>
     <div class="k-widget__header">
       <available-widgets
         @handleEdit="changeWidgetStatus"
@@ -34,6 +51,7 @@
           :resizable="false"
           :editMode="editMode"
           @deleteWidget="deleteWidget(item, index)"
+          @handleSelectPlaybookId="handleSelectedPlaybook"
         />
       </smart-widget>
     </k-smart-grid>
@@ -57,17 +75,22 @@ import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/
 import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
 import { getWidgets, postWidgets } from '@/api/widgets'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
+import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
+import AppModal from '@/components/AppModal'
 export default {
   name: 'Widgets',
   components: {
     KSmartGrid,
-    AvailableWidgets
+    AvailableWidgets,
+    AppModal,
+    CreateOrEditRule
   },
   data() {
     return {
       activeBreakpoint: 'lg',
       layout: [],
+      showPlaybookModal: false,
+      selectedPlaybookId: null,
       newItemY: 0,
       colNum: 12,
       editMode: false,
@@ -270,7 +293,8 @@ export default {
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
         'background:transparent ;' +
-        ' border:none}'
+        ' border:none}',
+      callbackOfPlaybook: null
     }
   },
   methods: {
@@ -308,6 +332,18 @@ export default {
       })
     },
     layoutUpdated(newLayout) {},
+    togglePlaybookModal() {
+      this.showPlaybookModal = !this.showPlaybookModal
+    },
+    handleSelectedPlaybook({ resourceId, callback }) {
+      this.selectedPlaybookId = resourceId
+      this.callbackOfPlaybook = callback
+      this.togglePlaybookModal()
+    },
+    closePlaybookWithUpdate() {
+      this.callbackOfPlaybook()
+      this.togglePlaybookModal()
+    },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
       this.availableWidgets.push({ key: item.key, name: item.title })
