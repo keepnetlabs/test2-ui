@@ -113,15 +113,17 @@
         <div class="company-list-extend__body-key d-flex align-center">Status</div>
         <div class="company-list-extend__body-value">
           <v-btn
-            :dark="selectedExtend.statusId == 2 ? false : true"
-            :disabled="selectedExtend.statusId == 2 ? true : false"
+            v-if="selectedExtend.statusId == '0' || selectedExtend.statusId == '1'"
+            :dark="selectedExtend.statusId == 0 ? false : true"
+            :disabled="selectedExtend.statusId == 0 ? true : false"
             color="#2196f3"
             height="24"
             depressed
             small
             :ripple="false"
-            >{{ selectedExtend.statusName }}</v-btn
           >
+            {{ selectedExtend.statusName }}
+          </v-btn>
         </div>
       </div>
     </div>

@@ -69,6 +69,7 @@
       </template>
     </app-dialog>
     <app-dialog
+      @changeStatus="openNotificationModal = false"
       :status="openNotificationModal"
       icon="mdi-bell"
       title="Community Notification Settings"
@@ -1040,6 +1041,8 @@ export default {
           name: `Community`,
           params: { id: item.communityResourceId, item: item }
         })
+      } else {
+        localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
       }
     },
     updateCommunities() {

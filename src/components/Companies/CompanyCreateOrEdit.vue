@@ -156,11 +156,13 @@
                   <v-list-item-content>
                     <v-switch
                       :ripple="false"
-                      v-model="isActive"
+                      v-model="formData.statusId"
                       dense
-                      :label="isActive ? 'Active' : 'Inactive'"
+                      :label="formData.statusId == '1' ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
+                      :true-value="'1'"
+                      :false-value="'0'"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -544,7 +546,6 @@ export default {
         CompanyGroupResourceIdArray: [],
         statusId: '1'
       },
-
       LicenseDates: [],
       isActive: true,
       expiryPeriods: [],
@@ -611,8 +612,7 @@ export default {
       this.formData.IsVersionVisible = this.selectedExtend.isVersionVisible
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
-      this.formData.statusId = this.selectedExtend.statusId
-      this.isActive = this.selectedExtend.statusId === 1 ? true : false
+      this.formData.statusId = this.selectedExtend.statusId.toString()
       this.LicenseDates = [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
@@ -878,6 +878,11 @@ export default {
   &__btn-unlimited {
     height: 40px !important;
     margin-left: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
   }
   &__side-label {
     display: inline-flex;
