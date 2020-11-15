@@ -66,11 +66,14 @@ const investigations = {
       state.getStatsAndMenuData = data
     },
     SET_INVESTIGATIONLIST(state, payload) {
-      const pagination = {}
       let data = payload.data
       data.results.userStats = payload.data.results
       let stateData = data.results.map((item) => {
-        return { ...item, userStatus: [item.completedUsersCount, item.scannedUsersCount] }
+        const { completedUsersCount = 0, scannedUsersCount = 0 } = item
+        return {
+          ...item,
+          userStatus: [completedUsersCount, scannedUsersCount - completedUsersCount]
+        }
       })
 
       state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
