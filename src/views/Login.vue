@@ -389,6 +389,8 @@ import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
+import store from '../store'
+import indexStore from '../store/index'
 
 export default {
   name: 'Login',
@@ -451,12 +453,16 @@ export default {
     }
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
-        this.$route.query &&
-        !!this.$route.query.communityResourceId &&
+        (this.$route.query &&
+          !!this.$route.query.communityResourceId &&
+          !!this.$route.query['amp;communityPostResourceId']) ||
         !!this.$route.query.communityPostResourceId
       ) {
         this.$router.push(
-          `/community/${this.$route.query.communityResourceId}?postId=${this.$route.query.communityPostResourceId}`
+          `/community/${this.$route.query.communityResourceId}?postId=${
+            this.$route.query['amp;communityPostResourceId'] ||
+            !!this.$route.query.communityPostResourceId
+          }`
         )
       } else if (this.$route.query && !!this.$route.query.CommunityRequestId) {
         this.$router.push(
@@ -594,6 +600,7 @@ export default {
             createPasswordByToken(payload)
               .then((response) => {
                 let url = new URL(location.href)
+                this.$router.replace({ query: {} })
                 url.searchParams.delete('cp')
                 this.blurConfirm = false
                 this.isPasswordStep5Complete = true
@@ -610,6 +617,7 @@ export default {
             resetPasswordByToken(payload)
               .then((response) => {
                 let url = new URL(location.href)
+                this.$router.replace({ query: {} })
                 url.searchParams.delete('rp')
                 this.blurConfirm = false
                 this.isPasswordStep5Complete = true
@@ -652,23 +660,58 @@ export default {
             password: this.password,
             router: this.$router
           })
-          .then(() => {
+          .then((response) => {
+            if (
+              (_this.$route.query &&
+                !!_this.$route.query.communityResourceId &&
+                !!_this.$route.query['amp;communityPostResourceId']) ||
+              !!_this.$route.query.communityPostResourceId
+            ) {
+              _this.$router.push(
+                `/community/${_this.$route.query.communityResourceId}?postId=${
+                  _this.$route.query['amp;communityPostResourceId'] ||
+                  !!_this.$route.query.communityPostResourceId
+                }`
+              )
+            } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
+              _this.$router.push(
+                `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
+              )
+            } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
+              _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
+            } else if (_this.$route.query) {
+              if (_this.$route.query.cp) {
+                _this.pageNumber = 5
+                _this.token = _this.getToken('cp', window.location.href)
+                _this.resetType = 'createPassword'
+              } else if (_this.$route.query.rp) {
+                _this.pageNumber = 5
+                _this.token = _this.getToken('rp', window.location.href)
+                _this.resetType = 'resetPassword'
+              } else if (!indexStore.getters['common/getSessionCheck']) {
+                _this.$router.push('/')
+              } else {
+                _this.$router.push('/')
+              }
+            } else if (!indexStore.getters['common/getSessionCheck']) {
+              _this.$router.push('/')
+            } else {
+              _this.$router.push('/')
+            }
+
             setTimeout(() => {
-              if (this.rememberMe) {
-                localStorage.setItem('username', this.email)
-                localStorage.setItem('password', this.password)
-                localStorage.setItem('isRemember', this.rememberMe)
+              if (_this.rememberMe) {
+                localStorage.setItem('username', _this.email)
+                localStorage.setItem('password', _this.password)
+                localStorage.setItem('isRemember', _this.rememberMe)
               } else {
                 localStorage.removeItem('username')
                 localStorage.removeItem('password')
                 localStorage.removeItem('isRemember')
               }
-
-              /*if (!!Object.keys(mainUrl.query).length) { @todo query forward iceman
-                _this.$router.push(mainUrl.fullPath)
-              }*/
             }, 500)
           })
+          .catch((error) => {})
       } else if (
         this.$refs.email.validate() &&
         this.$refs.password.validate &&
