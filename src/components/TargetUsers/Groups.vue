@@ -2,6 +2,7 @@
   <div class="target-users-groups">
     <create-new-user-group-modal
       :status="showNewUserGroupModal"
+      v-if="showNewUserGroupModal"
       @changeNewUserGroupStatus="changeNewUserGroupStatus"
       @handleSave="callForCreateNewUserGroup"
     />

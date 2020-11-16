@@ -264,8 +264,15 @@ export default {
       const seconds = today.getUTCSeconds()
       switch (this.selectedDate) {
         case this.listItems[0]:
-          const fourMinutesBefore = new Date(year, month, day, hours, minutes - 4, seconds)
-          const fourMinutesBeforeMonth = fourMinutesBefore.getUTCMonth()
+          const fourMinutesBefore = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+            today.getHours(),
+            today.getMinutes() - 4,
+            today.getSeconds()
+          )
+          const fourMinutesBeforeMonth = fourMinutesBefore.getUTCMonth() + 1
           const fourMinutesBeforeDay = fourMinutesBefore.getUTCDate()
           const fourMinutesBeforeHours = fourMinutesBefore.getUTCHours()
           const fourMinutesBeforeMinutes = fourMinutesBefore.getUTCMinutes()
