@@ -99,11 +99,14 @@ export default {
     padding: 0 24px !important;
     border-bottom: 1px solid #e0e0e0;
   }
+  .v-list-item__content {
+    padding: 0 !important;
+  }
   .feedback-button {
     height: 52px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 0 24px;
     &--cancel {
       font-size: 14px;
