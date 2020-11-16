@@ -90,6 +90,9 @@ export default {
 
 <style lang="scss">
 .feedback-popup {
+  .v-card {
+    border-radius: 12px !important;
+  }
   &__header {
     padding: 24px !important;
     border-bottom: 1px solid #e0e0e0;
@@ -117,6 +120,7 @@ export default {
       letter-spacing: normal;
       text-align: center;
       color: #f56c6c;
+      margin-right: 16px;
     }
     &--success {
       font-size: 14px;
