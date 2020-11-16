@@ -55,6 +55,7 @@
       </template>
     </app-dialog>
     <app-dialog
+      @changeStatus="openNotificationModal = false"
       :status="openNotificationModal"
       icon="mdi-bell"
       title="Community Notification Settings"
@@ -159,6 +160,7 @@
         title="Invite Members"
         subtitle="Bring new members to the community"
         size="big"
+        @changeStatus="openInviteModal = false"
       >
         <template v-slot:app-dialog-body>
           <v-form ref="inviteModal">
@@ -622,7 +624,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'You have been removed from the community'
+            message: `You left the ${this.communityDetails.name}`
           })
           this.isWantToToLeaveFromCommunity = false
           this.$router.push(`/threat-sharing`)
@@ -679,7 +681,7 @@ export default {
             .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Members are invited to community'
+                message: response.data.message || 'Members are invited to community'
               })
               this.emailarray = []
               this.openInviteModal = false

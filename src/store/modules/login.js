@@ -3,6 +3,8 @@ import AuthenticationService from '../../services/authentication'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import store from '../index'
 import { getCompanyList } from '../../api/company'
+import jwt_decode from 'jwt-decode'
+import { setGlobalUserData } from '../../utils/functions'
 
 const login = {
   namespaced: true,
@@ -76,53 +78,72 @@ const login = {
     loginAction({ commit, dispatch }, payload) {
       let isSessionExpired = payload.sessionExpired
       dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
-      //@todo iceman set expired
-      loginAction(payload)
-        .then((response) => {
-          commit('common/SET_ERROR_STATE', false, { root: true })
-          AuthenticationService.setToken(
-            response.data.access_token,
-            response.data.expiredIn || 9999999999999,
-            response.data.status || 1
-          )
-          if (response.data.status === 3) {
-            commit('SET_PAGE_NUMBER', 4)
-            dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
-          } else {
-            dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
-            commit('EMPTY_LOGIN_ATTEMPT', 0)
-            if (!store.getters['common/getSessionCheck']) {
-              payload.router.push('/')
+      return new Promise((resolve, reject) => {
+        //@todo iceman set expired
+        loginAction(payload)
+          .then((response) => {
+            resolve(response)
+            commit('common/SET_ERROR_STATE', false, { root: true })
+            AuthenticationService.setToken(
+              response.data.access_token,
+              response.data.expiredIn || 9999999999999,
+              response.data.status || 1
+            )
+            if (response.data.status === 3) {
+              commit('SET_PAGE_NUMBER', 4)
+              dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+            } else {
+              dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+              commit('EMPTY_LOGIN_ATTEMPT', 0)
             }
-          }
-          if (payload.sessionExpired) {
-            getCompanyList().then((response) => {
-              const result = response.data.data && response.data.data
-              commit('SET_DROPDOWN_COMPANIES', result)
-            })
-          }
-          if (isSessionExpired) {
-            store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
-              location.reload()
-            })
-          }
-        })
-        .catch((error) => {
-          dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
-          commit('WRONG_LOGIN_ATTEMPT', 1)
-          if (error.response && error.response.status === 401) {
-            commit('common/SET_ERROR_STATE', true, { root: true })
-            commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
-              root: true
-            })
-          } else {
-            commit('common/SET_ERROR_STATE', true, { root: true })
-            let content = error.response.data.error_description
-              ? error.response.data.error_description
-              : 'Unknown Error Occured !!!'
-            commit('common/SET_ERROR_MESSAGE', content, { root: true })
-          }
-        })
+            if (payload.sessionExpired) {
+              getCompanyList().then((response) => {
+                const result = response.data.data && response.data.data
+                commit('SET_DROPDOWN_COMPANIES', result)
+              })
+            }
+            if (isSessionExpired) {
+              let token = JSON.parse(localStorage.getItem('auth-token')).token
+              let tokenData = jwt_decode(token)
+              let currentUserData = setGlobalUserData(tokenData)
+              localStorage.setItem('userData', JSON.stringify(currentUserData))
+              localStorage.setItem('selectedCompanyName', currentUserData.name)
+              localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+              if (
+                currentUserData &&
+                currentUserData.role &&
+                currentUserData.role.name !== 'CompanyAdmin'
+              ) {
+                dispatch('dashboard/selectCompany', currentUserData, { root: true })
+              }
+              let payload = {
+                currentUserData: currentUserData,
+                isSelectCompany: false
+              }
+              commit('SET_CURRENTUSER', payload)
+              store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+                location.reload()
+              })
+            }
+          })
+          .catch((error) => {
+            reject(error)
+            dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, { root: true })
+            commit('WRONG_LOGIN_ATTEMPT', 1)
+            if (error.response && error.response.status === 401) {
+              commit('common/SET_ERROR_STATE', true, { root: true })
+              commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
+                root: true
+              })
+            } else {
+              commit('common/SET_ERROR_STATE', true, { root: true })
+              let content = error.response.data.error_description
+                ? error.response.data.error_description
+                : 'Unknown Error Occured !!!'
+              commit('common/SET_ERROR_MESSAGE', content, { root: true })
+            }
+          })
+      })
     }
   }
 }

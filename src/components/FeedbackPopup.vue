@@ -104,7 +104,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px;
+    padding: 0 12px;
     &--cancel {
       font-size: 14px;
       font-weight: 600;

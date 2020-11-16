@@ -69,12 +69,14 @@
           v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
+          popper-class="filter__date-picker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
         />
         <el-date-picker
           :key="column.property"
           v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
+          popper-class="filter__date-picker"
           type="datetimerange"
           style="margin-bottom: 14px;"
         />
@@ -105,7 +107,7 @@
           Clear
         </v-btn>
         <v-btn
-          :disabled="this.filterValue === '' && this.filterChecked.length === 0"
+          :disabled="getFilterButtonDisabled"
           text
           class="filter__footer-button"
           color="#2196f3"
@@ -291,6 +293,20 @@ export default {
           })
         : this.convertedFilterableItems
     },
+    getFilterButtonDisabled() {
+      switch (this.filterableType) {
+        case 'text':
+          return !this.filterValue
+        case 'select':
+          return !this.filterChecked.length
+        case 'numeric':
+          return !this.filterValue
+        case 'date':
+          return !this.filteredDateValue
+        default:
+          return false
+      }
+    },
     fieldName: function () {
       return this.filterableCustomFieldName || this.column.property
     }
@@ -352,5 +368,7 @@ export default {
       background-color: #ffffff;
     }
   }
+}
+.data-table-filter__date-picker {
 }
 </style>

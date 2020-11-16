@@ -212,6 +212,7 @@ export default {
       this.loading = true
       this.isHeaderLoading = true
       const dateObj = this.getDates()
+      console.log('dateObj', dateObj)
       getPhishingReportSummary({
         startDate: dateObj.startDate,
         endDate: dateObj.endDate
@@ -255,27 +256,34 @@ export default {
     },
     getDates() {
       const today = new Date()
-      const day = today.getDate()
-      const month = today.getMonth() + 1
-      const year = today.getFullYear()
-      const hours = today.getHours()
-      const minutes = today.getMinutes()
-      const seconds = today.getSeconds()
+      const day = today.getUTCDate()
+      const month = today.getUTCMonth() + 1
+      const year = today.getUTCFullYear()
+      const hours = today.getUTCHours()
+      const minutes = today.getUTCMinutes()
+      const seconds = today.getUTCSeconds()
       switch (this.selectedDate) {
         case this.listItems[0]:
-          const fourMinutesBefore = new Date(year, month, day, hours, minutes - 4, seconds)
-          const fourMinutesBeforeMonth = fourMinutesBefore.getMonth()
-          const fourMinutesBeforeDay = fourMinutesBefore.getDate()
-          const fourMinutesBeforeHours = fourMinutesBefore.getHours()
-          const fourMinutesBeforeMinutes = fourMinutesBefore.getMinutes()
-          const fourMinutesBeforeSeconds = fourMinutesBefore.getSeconds()
+          const fourMinutesBefore = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+            today.getHours(),
+            today.getMinutes() - 4,
+            today.getSeconds()
+          )
+          const fourMinutesBeforeMonth = fourMinutesBefore.getUTCMonth() + 1
+          const fourMinutesBeforeDay = fourMinutesBefore.getUTCDate()
+          const fourMinutesBeforeHours = fourMinutesBefore.getUTCHours()
+          const fourMinutesBeforeMinutes = fourMinutesBefore.getUTCMinutes()
+          const fourMinutesBeforeSeconds = fourMinutesBefore.getUTCSeconds()
           return {
             endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(
               day
             )}-${this.getDateValue(hours)}-${this.getDateValue(minutes)}-${this.getDateValue(
               seconds
             )}`,
-            startDate: `${fourMinutesBefore.getFullYear()}-${this.getDateValue(
+            startDate: `${fourMinutesBefore.getUTCFullYear()}-${this.getDateValue(
               fourMinutesBeforeMonth
             )}-${this.getDateValue(fourMinutesBeforeDay)}-${this.getDateValue(
               fourMinutesBeforeHours
@@ -284,52 +292,67 @@ export default {
             )}`
           }
         case this.listItems[1]:
-          const yesterday = new Date(new Date().setDate(day - 1))
-          const tomorrow = new Date(new Date().setDate(day + 1))
+          const yesterday = new Date(new Date().setUTCDate(day - 1))
           return {
-            startDate: `${yesterday.getFullYear()}-${this.getDateValue(
-              yesterday.getMonth() + 1
-            )}-${this.getDateValue(yesterday.getDate())}-00-00-00`,
-            endDate: `${tomorrow.getFullYear()}-${this.getDateValue(
-              tomorrow.getMonth() + 1
-            )}-${this.getDateValue(tomorrow.getDate())}-00-00-00`
+            startDate: `${yesterday.getUTCFullYear()}-${this.getDateValue(
+              yesterday.getUTCMonth() + 1
+            )}-${this.getDateValue(yesterday.getUTCDate())}-${this.getDateValue(
+              hours
+            )}-${this.getDateValue(minutes)}-${this.getDateValue(seconds)}`,
+            endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(
+              day
+            )}-${this.getDateValue(hours)}-${this.getDateValue(minutes)}-${this.getDateValue(
+              seconds
+            )}`
           }
         case this.listItems[2]:
-          const sevenDaysAgo = new Date(new Date().setDate(day - 7))
+          const sevenDaysAgo = new Date(new Date().setUTCDate(day - 7))
           return {
-            startDate: `${sevenDaysAgo.getFullYear()}-${this.getDateValue(
-              sevenDaysAgo.getMonth() + 1
-            )}-${this.getDateValue(sevenDaysAgo.getDate())}-00-00-00`,
+            startDate: `${sevenDaysAgo.getUTCFullYear()}-${this.getDateValue(
+              sevenDaysAgo.getUTCMonth() + 1
+            )}-${this.getDateValue(sevenDaysAgo.getUTCDate())}-${this.getDateValue(
+              hours
+            )}-${this.getDateValue(minutes)}-${this.getDateValue(seconds)}`,
             endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(
-              new Date(new Date().setDate(day)).getDate()
-            )}-00-00-00`
+              new Date(new Date().setUTCDate(day)).getUTCDate()
+            )}-${this.getDateValue(hours)}-${this.getDateValue(minutes)}-${this.getDateValue(
+              seconds
+            )}`
           }
         case this.listItems[3]:
-          const last30DayDate = new Date(new Date().setDate(day - 30))
+          const last30DayDate = new Date(new Date().setUTCDate(day - 30))
           return {
             endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(
-              new Date(new Date().setDate(day)).getDate()
-            )}-00-00-00`,
-            startDate: `${last30DayDate.getFullYear()}-${this.getDateValue(
-              last30DayDate.getMonth() + 1
-            )}-${this.getDateValue(last30DayDate.getDate())}-00-00-00`
+              new Date(new Date().setUTCDate(day)).getUTCDate()
+            )}-${this.getDateValue(hours)}-${this.getDateValue(minutes)}-${this.getDateValue(
+              seconds
+            )}`,
+            startDate: `${last30DayDate.getUTCFullYear()}-${this.getDateValue(
+              last30DayDate.getUTCMonth() + 1
+            )}-${this.getDateValue(last30DayDate.getUTCDate())}-${this.getDateValue(
+              hours
+            )}-${this.getDateValue(minutes)}-${this.getDateValue(seconds)}`
           }
         case this.listItems[4]:
           return {
             startDate: `${year}-${this.getDateValue(month)}-01-00-00-00`,
-            endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(day)}-00-00-00`
+            endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(
+              day
+            )}-${this.getDateValue(hours)}-${this.getDateValue(minutes)}-${this.getDateValue(
+              seconds
+            )}`
           }
         case this.listItems[5]:
-          const lastMonthDate = new Date(new Date().setMonth(month - 1))
+          const lastMonthDate = new Date(new Date().setUTCMonth(month - 1))
 
           return {
-            startDate: `${lastMonthDate.getFullYear()}-${this.getDateValue(
-              lastMonthDate.getMonth()
+            startDate: `${lastMonthDate.getUTCFullYear()}-${this.getDateValue(
+              lastMonthDate.getUTCMonth()
             )}-01-00-00-00`,
-            endDate: `${lastMonthDate.getFullYear()}-${this.getDateValue(
-              lastMonthDate.getMonth()
+            endDate: `${lastMonthDate.getUTCFullYear()}-${this.getDateValue(
+              lastMonthDate.getUTCMonth()
             )}-${this.getDateValue(
-              new Date(lastMonthDate.getFullYear(), lastMonthDate.getMonth(), 0).getDate()
+              new Date(lastMonthDate.getUTCFullYear(), lastMonthDate.getUTCMonth(), 0).getUTCDate()
             )}-00-00-00`
           }
       }

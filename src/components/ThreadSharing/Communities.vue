@@ -69,6 +69,7 @@
       </template>
     </app-dialog>
     <app-dialog
+      @changeStatus="openNotificationModal = false"
       :status="openNotificationModal"
       icon="mdi-bell"
       title="Community Notification Settings"
@@ -827,7 +828,7 @@ export default {
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'You have been removed from the community'
+            message: `You left the ${this.leaveCommunityName}`
           })
           this.isWantToToLeaveFromCommunity = false
           this.getAllCommunitiesListData()
@@ -1040,6 +1041,8 @@ export default {
           name: `Community`,
           params: { id: item.communityResourceId, item: item }
         })
+      } else {
+        localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
       }
     },
     updateCommunities() {

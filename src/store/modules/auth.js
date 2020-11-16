@@ -45,7 +45,13 @@ const auth = {
         }
         //commit('SET_SELECTED_COMPANY', payload.currentUserData)
         commit('SET_CURRENTUSER', payload)
-        dispatch('dashboard/selectCompany', payload.currentUserData, { root: true })
+        if (
+          payload.currentUserData &&
+          payload.currentUserData.role &&
+          payload.currentUserData.role.name !== 'CompanyAdmin'
+        ) {
+          dispatch('dashboard/selectCompany', payload.currentUserData, { root: true })
+        }
       } else {
         let token = JSON.parse(localStorage.getItem('auth-token')).token
         let tokenData = jwt_decode(token)
@@ -62,7 +68,13 @@ const auth = {
         //systemUser(systemUserData).then() @todo iceman check all systemuserdata endpoint
         localStorage.setItem('selectedCompanyName', currentUserData.name)
         localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
-        dispatch('dashboard/selectCompany', currentUserData, { root: true })
+        if (
+          currentUserData &&
+          currentUserData.role &&
+          currentUserData.role.name !== 'CompanyAdmin'
+        ) {
+          dispatch('dashboard/selectCompany', currentUserData, { root: true })
+        }
         let payload = {
           currentUserData: currentUserData,
           isSelectCompany: false

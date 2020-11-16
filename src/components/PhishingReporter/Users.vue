@@ -232,6 +232,10 @@ export default {
       this.selectedRow = row
       this.isWantToDelete = true
     },
+    getDateValue(value) {
+      value = typeof value == 'string' ? value : value.toString()
+      return value.length === 1 ? `0${value}` : `${value}`
+    },
     handleEdit(rows) {},
     handleAdd(row) {},
     callForPhishingReporterUser() {
@@ -243,7 +247,25 @@ export default {
             }
           } = response
 
-          this.tableOptions.table = results || []
+          this.tableOptions.table =
+            results.map((item) => {
+              const { lastSeen } = item
+              const dateOfLastSeen = new Date(lastSeen)
+              const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
+              const timezonedDate = new Date(
+                dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
+              )
+
+              const timezonedLastSeen = `${timezonedDate.getFullYear()}-${this.getDateValue(
+                timezonedDate.getMonth() + 1
+              )}-${this.getDateValue(timezonedDate.getDate())}
+              ${this.getDateValue(timezonedDate.getHours())}:${this.getDateValue(
+                timezonedDate.getMinutes()
+              )}:${this.getDateValue(timezonedDate.getSeconds())}
+              `
+              const newItem = { ...item, lastSeen: timezonedLastSeen }
+              return newItem
+            }) || []
           this.isLoading = false
         })
         .catch(() => {
@@ -314,6 +336,19 @@ export default {
         })
       } else {
         const elem = filter
+        if (filter.FieldName === 'LastSeen') {
+          const { Value: value } = filter
+          const lastSeenDate = new Date(value)
+          const utcLastSeen = `${lastSeenDate.getUTCFullYear()}-${this.getDateValue(
+            lastSeenDate.getUTCMonth() + 1
+          )}-${this.getDateValue(lastSeenDate.getUTCDate())} ${this.getDateValue(
+            lastSeenDate.getUTCHours()
+          )}:${this.getDateValue(lastSeenDate.getUTCMinutes())}:${this.getDateValue(
+            lastSeenDate.getUTCSeconds()
+          )}`
+          filter.Value = utcLastSeen
+        }
+
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
