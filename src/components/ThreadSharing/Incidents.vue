@@ -267,36 +267,23 @@ export default {
         })
         .catch((error) => {
           if (error.response.status === 403) {
-            getCommunityDetails(localStorage.getItem('communityResourceIdForRedirect'))
-              .then((response) => {
-                this.$router
-                  .push({
-                    name: 'Threat Sharing',
-                    params: {
-                      isCommunity: true,
-                      postId: _this.$route.query.postId,
-                      communityName: localStorage.getItem('communityName'),
-                      communityId: localStorage.getItem('communityResourceIdForRedirect')
-                    }
-                  })
-                  .finally(() => {
-                    this.$store.dispatch('common/createSnackBar', {
-                      color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                      message: `you need to join the ${response.data.data.name} before viewing the post`
-                    })
-                  })
-              })
-              .catch((response) => {
-                this.$router.push({
+            getCommunityDetails(_this.$route.params['communityId']).then((response) => {
+              this.$router
+                .push({
                   name: 'Threat Sharing',
                   params: {
                     isCommunity: true,
                     postId: _this.$route.query.postId,
-                    communityName: localStorage.getItem('communityName'),
-                    communityId: localStorage.getItem('communityResourceIdForRedirect')
+                    communityId: _this.$route.params['communityId']
                   }
                 })
-              })
+                .finally(() => {
+                  this.$store.dispatch('common/createSnackBar', {
+                    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                    message: `you need to join the ${response.data.data.name} before viewing the post`
+                  })
+                })
+            })
           }
         })
         .finally(() => {

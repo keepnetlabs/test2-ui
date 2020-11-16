@@ -398,7 +398,9 @@
                   <template v-slot:item="{ item }">
                     <v-list-item-content>
                       <v-list-item-title>{{ item.text }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ item.desc }}</v-list-item-subtitle>
+                      <v-list-item-subtitle class="tlp_subtitle">{{
+                        item.desc
+                      }}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-avatar>
                       <div

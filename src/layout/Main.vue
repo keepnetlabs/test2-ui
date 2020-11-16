@@ -193,7 +193,11 @@
                   class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                   v-on="onMenu"
                 >
-                  <v-tooltip bottom :disabled="getFullName && getFullName.length < 14">
+                  <v-tooltip
+                    bottom
+                    :disabled="getFullName && getFullName.length < 14"
+                    ref="accountTooltip"
+                  >
                     <template #activator="{ on: onTooltip }">
                       <div v-on="{ ...onTooltip }" class="user-name-dropdown-font__tooltip-wrapper">
                         <div class="user-name-dropdown-font">
@@ -1116,7 +1120,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-
+    removeTooltip() {
+      this.$refs.accountTooltip.isActive = false
+    },
     changePassword() {
       if (this.$refs.newPasswordByMain.validate()) {
         let payload = {

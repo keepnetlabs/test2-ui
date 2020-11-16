@@ -87,7 +87,7 @@
           </form-group>
 
           <v-list-item class="add-user-overlay__list-item">
-            <v-list-item-content>
+            <v-list-item-content class="test-connection-wrapper">
               <TestConnection
                 :values="formValues"
                 :isValidate="isValidate"
@@ -462,10 +462,13 @@ export default {
     }
   }),
   methods: {
-    testConnectionValues(isSuccess) {
+    testConnectionValues(isSuccess, isSave) {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         this.saveButtonDisabled = false
+        if (isSave) {
+          this.submit()
+        }
       }
     },
     isValidate() {
@@ -574,7 +577,7 @@ export default {
         }
       } else if (this.$refs.mailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
-        this.$refs.testConnection.testConnection(false)
+        this.$refs.testConnection.testConnection(true)
         setTimeout(() => {
           let el = this.$el.querySelector('.test-connection__testing-content__item')
           scrollToComponent(el)
@@ -788,9 +791,13 @@ export default {
     }
   }
   .add-user-overlay {
+    max-width: 774px;
     &__list-item {
       margin-bottom: 24px;
     }
+  }
+  .test-connection-wrapper {
+    max-width: 774px !important;
   }
   &__modal {
     padding: 0 6rem;
