@@ -104,6 +104,7 @@ export default {
   props: ['values', 'isValidate', 'isEdit'],
   data() {
     return {
+      isSave: false,
       checkApiConnectivity: null,
       checkPrivileges: null,
       checkAllUsersAccess: null,
@@ -147,12 +148,13 @@ export default {
         this.checkUpdateCategory === 'success' &&
         this.checkDeleteEmail === 'success' &&
         this.checkInboxAccess === 'success'
-      this.$emit('testConnectionValues', isSuccess)
+      this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
     }
   },
   methods: {
-    testConnection() {
+    testConnection(isSave) {
+      this.isSave = isSave
       if (this.isValidate()) {
         this.isLoadingStarted = true
         this.setLoadingStates()
@@ -171,7 +173,10 @@ export default {
           })
           .catch((error) => {
             this.checkApiConnectivity = 'error'
-            this.checkApiConnectivityMessage = error.response.data.message
+            this.checkApiConnectivityMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
         checkPrivileges(payload)
           .then((response) => {
@@ -179,7 +184,10 @@ export default {
           })
           .catch((error) => {
             this.checkPrivileges = 'error'
-            this.checkPrivilegesMessage = error.response.data.message
+            this.checkPrivilegesMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
         checkAllUsersAccess(payload)
           .then((response) => {
@@ -187,7 +195,10 @@ export default {
           })
           .catch((error) => {
             this.checkAllUsersAccess = 'error'
-            this.checkAllUsersAccessMessage = error.response.data.message
+            this.checkAllUsersAccessMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
         checkEmailAccess(payload)
           .then((response) => {
@@ -195,7 +206,10 @@ export default {
           })
           .catch((error) => {
             this.checkEmailAccess = 'error'
-            this.checkEmailAccessMessage = error.response.data.message
+            this.checkEmailAccessMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
         checkCreateNewCategory(payload)
           .then((response) => {
@@ -203,7 +217,10 @@ export default {
           })
           .catch((error) => {
             this.checkCreateNewCategory = 'error'
-            this.checkCreateNewCategoryMessage = error.response.data.message
+            this.checkCreateNewCategoryMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
           .finally((response) => {
             checkUpdateCategory(payload)
@@ -212,7 +229,10 @@ export default {
               })
               .catch((error) => {
                 this.checkUpdateCategory = 'error'
-                this.checkUpdateCategoryMessage = error.response.data.message
+                this.checkUpdateCategoryMessage =
+                  (error.response.data.validationMessages &&
+                    error.response.data.validationMessages[0]) ||
+                  error.response.data.message
               })
           })
         checkDeleteEmail(payload)
@@ -221,7 +241,10 @@ export default {
           })
           .catch((error) => {
             this.checkDeleteEmail = 'error'
-            this.checkDeleteEmailMessage = error.response.data.message
+            this.checkDeleteEmailMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
         checkInboxAccess(payload)
           .then((response) => {
@@ -229,7 +252,10 @@ export default {
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
-            this.checkInboxAccessMessage = error.response.data.message
+            this.checkInboxAccessMessage =
+              (error.response.data.validationMessages &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message
           })
       }
     },

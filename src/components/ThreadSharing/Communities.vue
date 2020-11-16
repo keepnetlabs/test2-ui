@@ -598,6 +598,7 @@ import {
   cancelRequest,
   deleteCommunity,
   getAllCommunityList,
+  getCommunityDetails,
   getInvitationCount,
   getInvitations,
   getMyCommunityList,
@@ -691,7 +692,18 @@ export default {
   mounted() {
     this.getIndustryList()
     if (this.isCommunity) {
-      this.filter = this.$route.params.communityName
+      if (this.$route.params.communityName === 'empty') {
+        getCommunityDetails(this.$route.params.communityId)
+          .then((response) => {
+            this.communityDetails = response.data.data
+            this.filter = response.data.data.name
+          })
+          .catch((error) => {
+            error.response.data
+          })
+      } else {
+        this.filter = this.$route.params.communityName
+      }
     }
     this.selectedTab = 'tab-1'
   },
