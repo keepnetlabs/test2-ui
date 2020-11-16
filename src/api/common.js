@@ -6,3 +6,6 @@ export function getTimezones() {
 export function getLookupListByTypeId(id) {
   return testRequest.get(`lookups/${id}`)
 }
+export function getLookupListByTypeIdList(obj) {
+  return testRequest.post(`lookups`, obj)
+}
