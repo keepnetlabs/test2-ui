@@ -46,15 +46,16 @@
             <div class="company-list-extend__body-key">Company Groups</div>
             <div class="company-list-extend__body-value">
               <template v-if="!!selectedExtend && !!selectedExtend.companyGroups && groupCount > 0">
-                <span
+                <a
                   v-for="(group, index) of selectedExtend.companyGroups.slice(0, limiter)"
                   :key="group.name"
                   class="fixxer"
+                  @click="goToDetails(group.name, group.resourceId)"
                   >{{ group.name
                   }}<span v-if="index + 1 < selectedExtend.companyGroups.slice(0, limiter).length"
                     >,
                   </span>
-                </span>
+                </a>
                 <a v-if="groupCount > 3 && groupCount > limiter" @click="limitOn">
                   +{{ groupCount - limiter }} See more &#62;</a
                 >
@@ -136,13 +137,11 @@
 <script>
 import Pie from '@/components/Common/Charts/Pie'
 import CompanyListExtendLoading from '@/components/SkeletonLoading/CompanyListExtend'
-import VClamp from 'vue-clamp'
 
 export default {
   name: 'CompanyListExtend',
   components: {
     CompanyListExtendLoading
-    //VClamp
     //Pie
   },
   props: {
@@ -196,6 +195,14 @@ export default {
     },
     limitOff() {
       this.limiter = 3
+    },
+    goToDetails(groupName, resourceId) {
+      localStorage.setItem('companyGroupName', groupName)
+      localStorage.setItem('companyGroupResouceId', resourceId)
+      this.$router.push({
+        name: 'Company Group Details',
+        params: { groupId: resourceId }
+      })
     }
   },
 
