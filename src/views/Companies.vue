@@ -2,7 +2,7 @@
   <div class="companies">
     <v-layout wrap class="companies__container">
       <v-card class="companies__container-card">
-        <template v-if="!$route.params.groupId">
+        <template v-if="!$route.params.groupId && $route.name === 'Companies'">
           <el-tabs v-model="tab">
             <el-tab-pane label="Companies" name="first">
               <company-list v-if="tab === 'first'"
@@ -33,7 +33,11 @@ export default {
       tab: 'first'
     }
   },
-  mounted() {},
+  updated() {
+    if (this.$route.params && this.$route.params.tab) {
+      this.tab = this.$route.params.tab
+    }
+  },
   methods: {
     changeTabStatus(status) {
       this.tab = status

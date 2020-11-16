@@ -56,7 +56,7 @@
               class="row-edit-div"
               v-for="col in options.col"
               v-if="
-                !col.hideLabel && col.property !== 'createDate' && col.property !== 'lastUpdateDate'
+                !col.hideLabel && col.property !== 'createTime' && col.property !== 'lastUpdateDate'
               "
             >
               <div v-if="!col.showOnlyPreview || editMode">
@@ -67,7 +67,7 @@
                   v-if="
                     (!editMode || !col.isEditable) &&
                     multipleValues(col.property) &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.property !== 'lastUpdateDate'
                   "
                   :class="[multipleValues(col.property) ? 'font-italic' : '']"
@@ -78,7 +78,7 @@
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     col.type === 'text' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.property !== 'lastUpdateDate'
                   "
                 >
@@ -88,7 +88,7 @@
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     col.type === 'copy' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.property !== 'lastUpdateDate'
                   "
                   style="display: flex;"
@@ -108,7 +108,7 @@
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     col.type === 'analysisSource' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.property !== 'lastUpdateDate'
                   "
                 >
@@ -138,7 +138,7 @@
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     (col.type === 'colorfulText' || col.showColorfulText) &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.property !== 'lastUpdateDate'
                   "
                   :style="[
@@ -322,7 +322,7 @@
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.editOptions.component === 'textfield'
                   "
                   :disabled="
@@ -364,7 +364,7 @@
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.editOptions.component === 'textarea'
                   "
                   rows="2"
@@ -395,7 +395,7 @@
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.editOptions.component === 'datepicker'
                   "
                 >
@@ -460,7 +460,7 @@
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.editOptions.component === 'combobox'
                   "
                   :value="getMultipleComboValue(multipleEditModels[col.property])"
@@ -492,7 +492,7 @@
                     col.type !== 'chart' &&
                     col.type !== 'progress' &&
                     col.type !== 'date' &&
-                    col.property !== 'createDate' &&
+                    col.property !== 'createTime' &&
                     col.editOptions.component === 'select'
                   "
                   :value="multipleEditModels[col.property]"
@@ -517,13 +517,13 @@
                   <div
                     class="edit-date-created"
                     v-if="
-                      copyOfEditedRows[0]['createDate'] !== undefined ||
+                      copyOfEditedRows[0]['createTime'] !== undefined ||
                       copyOfEditedRows[0]['createTime'] !== undefined
                     "
                   >
                     <label>{{ options.footer[0].label }}</label>
                     <span>{{
-                      multipleValues('createDate')
+                      multipleValues('createTime')
                         ? 'Multiple Values'
                         : multipleValues('createTime')
                         ? 'Multiple Values'
@@ -818,7 +818,7 @@ export default {
     },
     hasEditPopupFooter() {
       return this.copyOfEditedRows.some((item) => {
-        return item['createDate'] || item['lastUpdateDate'] || item['createTime']
+        return item['createTime'] || item['lastUpdateDate'] || item['createTime']
       })
     },
     handleMultipleEdits(item, key, value) {
