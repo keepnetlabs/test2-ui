@@ -202,7 +202,8 @@ export default {
           orderBy: PROPERTY_STORE.CREATETIME,
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyOptions.filter
         }
         exportSmtpSettings(payload).then((response) => {
           const { data } = response

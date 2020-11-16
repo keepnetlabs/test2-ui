@@ -178,7 +178,7 @@ export default {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             fixed: false,
             sortable: true,
             show: true,
@@ -327,10 +327,11 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'Name',
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
         }
         exportReportedEmails(payload)
           .then((response) => {

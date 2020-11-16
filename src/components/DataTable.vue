@@ -1262,35 +1262,37 @@ export default {
     },
     renderFixedItems() {
       const table = this.$el
-      const tableFixedItem = table.querySelector('.el-table__fixed')
-      const tableFixedRightItem = table.querySelector('.el-table__fixed-right')
-      if (tableFixedItem && tableFixedItem.style.height) {
-        const bodyWrapperHeight = Number(
-          getComputedStyle(
-            tableFixedItem.querySelector('.el-table__fixed-body-wrapper')
-          ).height.slice(0, -2)
-        )
-        const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2))
-        if (fixedItemHeight - bodyWrapperHeight < 45) {
-          const aggregate = window.innerWidth > 1300 ? 15 : 5
-          tableFixedItem.style.height = `${
-            Number(tableFixedItem.style.height.slice(0, -2)) + aggregate
-          }px`
+      if (table) {
+        const tableFixedItem = table.querySelector('.el-table__fixed')
+        const tableFixedRightItem = table.querySelector('.el-table__fixed-right')
+        if (tableFixedItem && tableFixedItem.style.height) {
+          const bodyWrapperHeight = Number(
+            getComputedStyle(
+              tableFixedItem.querySelector('.el-table__fixed-body-wrapper')
+            ).height.slice(0, -2)
+          )
+          const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2))
+          if (fixedItemHeight - bodyWrapperHeight < 45) {
+            const aggregate = window.innerWidth > 1300 ? 15 : 5
+            tableFixedItem.style.height = `${
+              Number(tableFixedItem.style.height.slice(0, -2)) + aggregate
+            }px`
+          }
         }
-      }
-      if (tableFixedRightItem && tableFixedRightItem.style.height) {
-        const bodyWrapperHeight = Number(
-          getComputedStyle(
-            tableFixedRightItem.querySelector('.el-table__fixed-body-wrapper')
-          ).height.slice(0, -2)
-        )
+        if (tableFixedRightItem && tableFixedRightItem.style.height) {
+          const bodyWrapperHeight = Number(
+            getComputedStyle(
+              tableFixedRightItem.querySelector('.el-table__fixed-body-wrapper')
+            ).height.slice(0, -2)
+          )
 
-        const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2))
-        if (fixedItemHeight - bodyWrapperHeight < 45) {
-          const aggregate = window.innerWidth > 1300 ? 15 : 5
-          tableFixedRightItem.style.height = `${
-            Number(tableFixedRightItem.style.height.slice(0, -2)) + aggregate
-          }px`
+          const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2))
+          if (fixedItemHeight - bodyWrapperHeight < 45) {
+            const aggregate = window.innerWidth > 1300 ? 15 : 5
+            tableFixedRightItem.style.height = `${
+              Number(tableFixedRightItem.style.height.slice(0, -2)) + aggregate
+            }px`
+          }
         }
       }
     },

@@ -179,10 +179,10 @@ export default {
         filterableItems: ['Idle', 'Running', 'Cancelled', 'Expired', 'Finished']
       },
       {
-        property: 'createDate',
+        property: 'createTime',
         align: 'left',
         editable: false,
-        label: getStoreValue('createDate'),
+        label: getStoreValue('createTime'),
         fixed: false,
         sortable: true,
         show: true,
@@ -268,8 +268,8 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 500,
-      orderBy: 'createDate',
+      pageSize: 50000,
+      orderBy: 'createTime',
       ascending: false,
       filter: {
         Condition: 'AND',

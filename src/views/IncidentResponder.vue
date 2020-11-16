@@ -474,7 +474,6 @@
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
             :pageSizes="emails.pageSizes"
-            :defaultSort="'createDate'"
             :selectable="true"
             :filterable="true"
             :options="true"
@@ -778,10 +777,10 @@ export default {
           minWidth: '33'
         },
         {
-          property: 'createDate',
+          property: 'createTime',
           align: 'left',
           editable: false,
-          label: getStoreValue('createDate'),
+          label: getStoreValue('createTime'),
           fixed: false,
           sortable: false,
           show: true,
@@ -824,7 +823,7 @@ export default {
         footer: [
           {
             label: 'Date Created',
-            key: 'createDate'
+            key: 'createTime'
           },
           {
             label: 'Last update',
@@ -1521,7 +1520,7 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 500,
-        orderBy: 'CreateDate',
+        orderBy: 'createTime',
         ascending: true
       }
       getMatchingIncidents(payload, match.resourceId)
@@ -1643,11 +1642,12 @@ export default {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
-          pageSize: reportAllPages ? 500 : pageSize,
+          pageSize: reportAllPages ? 50000 : pageSize,
           orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.requestBodyReportedEmails.filter
         }
         exportNotifiedEmails(payload)
           .then((response) => {
@@ -2290,7 +2290,7 @@ export default {
   display: flex;
   text-align: left;
   color: #212121;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   font-stretch: normal;
   font-style: normal;
