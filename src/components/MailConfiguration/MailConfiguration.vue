@@ -325,6 +325,7 @@ export default {
     }
   },
   data: () => ({
+    delaySaveFunction: false,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
     gsuite: {
@@ -466,8 +467,10 @@ export default {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         this.saveButtonDisabled = false
-        if (isSave) {
-          this.submit()
+        if (isSave && !this.delaySaveFunction) {
+          this.$nextTick(() => {
+            this.submit()
+          })
         }
       }
     },
