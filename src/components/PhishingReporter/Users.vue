@@ -239,6 +239,7 @@ export default {
     handleEdit(rows) {},
     handleAdd(row) {},
     callForPhishingReporterUser() {
+      this.isLoading = true
       searchPhishingReporterUser(this.requestBody)
         .then((response) => {
           const {
