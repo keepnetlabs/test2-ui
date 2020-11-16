@@ -2427,14 +2427,14 @@ export default {
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {
-        return { ...item, isHidden: val, isFlagged: false }
+        item.isHidden = val
+        item.isFlagged = false
+        return { ...item, isHidden: val }
       })
     },
     checkAttachmentsChangeForAllLinksSwitch(att, index) {
+      this.allAttachments = !this.uploadRespond.attachments.find((item) => !item.isHidden)
       att.isFlagged = false
-      this.allAttachments = !this.uploadRespond.attachments.find((item) => {
-        !item.isHidden
-      })
     },
     headerValChange(val) {
       this.uploadRespond.isSubjectHidden = val
