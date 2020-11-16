@@ -78,7 +78,7 @@
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Industry</label>
-                    <v-select
+                    <v-autocomplete
                       :items="industries"
                       v-model="formData.IndustryResourceId"
                       item-text="name"
@@ -89,13 +89,13 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Country</label>
-                    <v-select
+                    <v-autocomplete
                       v-model="formData.CountryResourceId"
                       :items="countries"
                       item-text="name"
@@ -106,7 +106,7 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -535,6 +535,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AuthenticationService from '@/services/authentication'
 import AuthenticationStatus from '@/model/constants/authenticationStatus'
 import { scrollToComponent } from '@/utils/functions'
+import { getLookupListByTypeIdList } from '@/api/common'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -607,14 +608,7 @@ export default {
     }
   },
   mounted() {
-    this.getCountries()
-    this.getIndustries()
-    this.getLicenceTypes()
-    this.getExpiryPeriods()
-    this.getCompanyGroups()
-    this.getNotificationTemplates()
-    this.getTrainingContent()
-    this.getSmtpConfigurations()
+    this.getLookupContents()
 
     if (this.edit) {
       this.stepLock = this.edit
@@ -649,54 +643,19 @@ export default {
     }
   },
   methods: {
-    getIndustries() {
-      getLookupListByTypeId(2)
+    getLookupContents() {
+      getLookupListByTypeIdList({ typeidlist: [1, 2, 3, 4, 5, 6, 7] })
         .then((response) => {
-          this.industries = response.data.data
+          const res = response.data.data
+          this.countries = res.filter((item) => item.genericCodeTypeId === 1)
+          this.industries = res.filter((item) => item.genericCodeTypeId === 2)
+          this.licenceTypes = res.filter((item) => item.genericCodeTypeId === 3)
+          this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
+          this.notificationTemplates = res.filter((item) => item.genericCodeTypeId === 5)
+          this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
+          this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
         })
-        .catch((error) => {})
-    },
-    getCountries() {
-      getLookupListByTypeId(1)
-        .then((response) => {
-          this.countries = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getLicenceTypes() {
-      getLookupListByTypeId(3)
-        .then((response) => {
-          this.licenceTypes = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getExpiryPeriods() {
-      getLookupListByTypeId(4)
-        .then((response) => {
-          this.expiryPeriods = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getNotificationTemplates() {
-      getLookupListByTypeId(5)
-        .then((response) => {
-          this.notificationTemplates = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getTrainingContent() {
-      getLookupListByTypeId(6)
-        .then((response) => {
-          this.trainingContents = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getSmtpConfigurations() {
-      getLookupListByTypeId(7)
-        .then((response) => {
-          this.smtpConfigurations = response.data.data
-        })
-        .catch((error) => {})
+        .catch(() => {})
     },
     getCompanyGroups() {
       getCompanyGroups()
