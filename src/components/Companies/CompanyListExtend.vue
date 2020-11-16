@@ -49,29 +49,16 @@
                 <span
                   v-for="(group, index) of selectedExtend.companyGroups.slice(0, limiter)"
                   :key="group.name"
-                >
-                  {{ group.name
+                  class="fixxer"
+                  >{{ group.name
                   }}<span v-if="index + 1 < selectedExtend.companyGroups.slice(0, limiter).length"
                     >,
                   </span>
                 </span>
-                <a
-                  v-if="groupCount > 3 && groupCount > limiter"
-                  @click="
-                    () => {
-                      this.limiter = this.groupCount
-                    }
-                  "
-                >
+                <a v-if="groupCount > 3 && groupCount > limiter" @click="limitOn">
                   +{{ groupCount - limiter }} See more &#62;</a
                 >
-                <a
-                  v-if="groupCount > 3 && groupCount === limiter"
-                  @click="
-                    () => {
-                      this.limiter = 3
-                    }
-                  "
+                <a v-if="groupCount > 3 && groupCount === limiter" @click="limitOff"
                   >&nbsp; &#60; See less</a
                 >
               </template>
@@ -149,10 +136,13 @@
 <script>
 import Pie from '@/components/Common/Charts/Pie'
 import CompanyListExtendLoading from '@/components/SkeletonLoading/CompanyListExtend'
+import VClamp from 'vue-clamp'
+
 export default {
   name: 'CompanyListExtend',
   components: {
     CompanyListExtendLoading
+    //VClamp
     //Pie
   },
   props: {
@@ -200,6 +190,12 @@ export default {
     clickClose() {
       this.isLoading = true
       this.$emit('close')
+    },
+    limitOn() {
+      this.limiter = this.groupCount
+    },
+    limitOff() {
+      this.limiter = 3
     }
   },
 
@@ -271,7 +267,18 @@ export default {
     &-value {
       line-height: 19px;
       font-size: 12px;
-      width: 100%;
+      max-width: 230px;
+      display: flex;
+      flex-wrap: wrap;
+      .fixxer {
+        display: inline-block;
+        max-width: 200px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 19px;
+        overflow: hidden;
+        padding-right: 4px;
+      }
     }
   }
   &__footer {
