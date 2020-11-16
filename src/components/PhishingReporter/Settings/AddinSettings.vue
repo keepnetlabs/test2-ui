@@ -89,7 +89,7 @@
           </div>
 
           <k-file-upload
-            hint="Only pdf, jpg, png files. Max. file size 30MB"
+            hint="Only jpg, png, gif, bmp files. Max. file size 3MB"
             ref="refFileUpload"
             @inputFile="onFileChanged"
           />

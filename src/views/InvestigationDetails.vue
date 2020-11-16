@@ -284,7 +284,12 @@
                     </div>
                     <div class="investigation-details__container__stats__cards__card-right">
                       <h3 class="investigation-details__container__stats__cards__card-right__title">
-                        {{ getStatusText('scannedUserCount', statsAndMenuData.scannedUserCount) }}
+                        {{
+                          getStatusText(
+                            'scannedUserCount',
+                            statsAndMenuData.completedScannedUserCount
+                          )
+                        }}
                       </h3>
                       <p class="investigation-details__container__stats__cards__card-right__stats">
                         {{
