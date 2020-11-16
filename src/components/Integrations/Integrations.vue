@@ -185,7 +185,7 @@ export default {
             type: 'text',
             width: 185,
             filterableType: 'date',
-            filterableCustomFieldName: 'createDate'
+            filterableCustomFieldName: 'createTime'
             //minWidth: 80
           }
         ],
