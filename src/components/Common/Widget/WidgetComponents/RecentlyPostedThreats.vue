@@ -122,7 +122,11 @@ export default {
       localStorage.setItem('communityResourceIdForRedirect', row.communityResourceId)
       this.$router.push({
         path: `/community/${row.communityResourceId}`,
-        query: { postId: row.communityPostResourceId }
+        query: {
+          postId: row.communityPostResourceId,
+          communityName: localStorage.getItem('communityName'),
+          communityId: localStorage.getItem('communityResourceIdForRedirect')
+        }
       })
     },
     handleCommunitySelection(row) {

@@ -664,7 +664,8 @@ export default {
   props: {
     refresh: {
       type: Boolean
-    }
+    },
+    isCommunity: { required: false }
   },
   watch: {
     refresh: function (newVal, oldVal) {
@@ -689,6 +690,9 @@ export default {
   created() {},
   mounted() {
     this.getIndustryList()
+    if (this.isCommunity) {
+      this.filter = this.$route.params.communityName
+    }
     this.selectedTab = 'tab-1'
   },
   methods: {

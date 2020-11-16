@@ -88,7 +88,13 @@
 
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content>
-              <TestConnection :values="formValues" :isValidate="isValidate" :isEdit="editData" />
+              <TestConnection
+                :values="formValues"
+                :isValidate="isValidate"
+                :isEdit="editData"
+                ref="testConnection"
+                @testConnectionValues="testConnectionValues"
+              />
             </v-list-item-content>
           </v-list-item>
         </v-form>
@@ -110,6 +116,7 @@
             rounded
             color="#2196f3"
             @click="submit"
+            :disabled="saveButtonDisabled"
           >
             SAVE
           </v-btn>
@@ -318,6 +325,8 @@ export default {
     }
   },
   data: () => ({
+    saveButtonDisabled: false,
+    isTestConnectionWorkedBefore: false,
     gsuite: {
       name: null,
       json: null,
@@ -453,6 +462,12 @@ export default {
     }
   }),
   methods: {
+    testConnectionValues(isSuccess) {
+      if (isSuccess) {
+        this.isTestConnectionWorkedBefore = true
+        this.saveButtonDisabled = false
+      }
+    },
     isValidate() {
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
     },
@@ -534,7 +549,7 @@ export default {
       this.deleteDialog = true
     },
     submit() {
-      if (this.$refs.mailConfiguration.validate()) {
+      if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         if (this.editData) {
           let editData = this.formValues
           updateO365(editData, this.editData.resourceId).then(() => {
@@ -557,6 +572,13 @@ export default {
             this.getTableData()
           })
         }
+      } else if (this.$refs.mailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
+        this.saveButtonDisabled = true
+        this.$refs.testConnection.testConnection(false)
+        setTimeout(() => {
+          let el = this.$el.querySelector('.test-connection__testing-content__item')
+          scrollToComponent(el)
+        }, 50)
       } else {
         const el = this.$refs.mailConfiguration.$el
         scrollToComponent(el)
@@ -579,6 +601,8 @@ export default {
             email: null
           }
           this.editData = null
+          this.isTestConnectionWorkedBefore = false
+          this.saveButtonDisabled = false
           this.status = true
           break
         default:
@@ -602,6 +626,8 @@ export default {
         directoryId: selectedRow.directoryId,
         email: selectedRow.email
       }
+      this.isTestConnectionWorkedBefore = false
+      this.saveButtonDisabled = false
       this.status = true
     },
     handleEditFieldsClick() {
