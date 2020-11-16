@@ -147,7 +147,7 @@
                       <img
                         v-if="edit && this.formData.logoURL"
                         :src="this.formData.logoURL"
-                        style="max-height: 60px; object-fit: contain;"
+                        style="max-height: 60px; object-fit: contain; margin-top: 16px;"
                       />
                     </div>
                   </v-list-item-content>
@@ -615,6 +615,7 @@ export default {
   },
   mounted() {
     this.getLookupContents()
+    this.getCompanyGroups()
 
     if (this.edit) {
       this.stepLock = this.edit
