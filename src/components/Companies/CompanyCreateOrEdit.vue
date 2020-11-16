@@ -360,51 +360,78 @@
                   <v-list-item-content>
                     <label class="bottom-margin">Notification Templates</label>
                     <v-select
-                      :items="notificationTemplates"
                       v-model="formData.NotificationTemplateTypeResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
+                      :items="notificationTemplates"
+                      :return-object="false"
+                      class="tlp-select"
                       :rules="[(v) => !!v || 'Required']"
+                      outlined
                       hint="*Required"
                       persistent-hint
                       :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
-                    ></v-select>
+                      item-text="name"
+                      item-value="resourceId"
+                    >
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Training Content</label>
                     <v-select
-                      :items="trainingContents"
                       v-model="formData.TrainingContentTypeResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
+                      :items="trainingContents"
+                      :return-object="false"
+                      class="tlp-select"
                       :rules="[(v) => !!v || 'Required']"
+                      outlined
                       hint="*Required"
                       persistent-hint
                       :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
-                    ></v-select>
+                      item-text="name"
+                      item-value="resourceId"
+                    >
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">SMTP Configurations</label>
                     <v-select
-                      :items="smtpConfigurations"
                       v-model="formData.SmtpConfigurationTypeResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
+                      :items="smtpConfigurations"
+                      :return-object="false"
+                      class="tlp-select"
                       :rules="[(v) => !!v || 'Required']"
+                      outlined
                       hint="*Required"
                       persistent-hint
                       :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
-                    ></v-select>
+                      item-text="name"
+                      item-value="resourceId"
+                    >
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
