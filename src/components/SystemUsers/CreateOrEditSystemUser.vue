@@ -62,15 +62,13 @@
             :inputOptions="{
               showDialCode: true
             }"
-            :maxLen="17"
+            :maxLen="maxLen"
             mode="international"
-            :class="['k-tel-input', !isPhoneNumberValid && isSubmitted && 'phone-number-invalid']"
+            :class="['k-tel-input', !isPhoneNumberValid && 'phone-number-invalid']"
             ref="refTelInput"
+            @blur="handleTelBlur"
           />
-          <div
-            class="v-text-field__details checkbox-error"
-            v-if="!isPhoneNumberValid && isSubmitted"
-          >
+          <div class="v-text-field__details checkbox-error" v-if="!isPhoneNumberValid">
             <transition appear name="bounce">
               <div class="v-messages theme--light error--text" role="alert">
                 <div class="v-messages__wrapper">
@@ -117,7 +115,7 @@
             :rules="[(v) => validations.required(v, 'Required')]"
           ></v-select>
         </form-group>
-        <form-group v-if="selectedRow">
+        <form-group v-if="false">
           <v-btn color="#2196f3" rounded class="white--text btn-util">
             <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
             Send Information Email
@@ -131,7 +129,7 @@
 <script>
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { mail, maxLength, required, startsWithEmpty } from '@/utils/validations'
+import { mail, maxLength, required } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
@@ -170,8 +168,8 @@ export default {
         isLdap: false,
         statusId: 1
       },
-      isPhoneNumberValid: false,
-      isSubmitted: false,
+      maxLen: 17,
+      isPhoneNumberValid: true,
       showWelcomeEmailModal: false,
       statusItems: [
         { name: 'Active', val: 1 },
@@ -181,8 +179,7 @@ export default {
       validations: {
         maxLength,
         required,
-        mail,
-        startsWithEmpty
+        mail
       }
     }
   },
@@ -207,8 +204,11 @@ export default {
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
+    handleTelBlur() {
+      this.validatePhoneNumber()
+    },
     submit() {
-      this.isSubmitted = true
+      this.validatePhoneNumber()
       if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
@@ -245,7 +245,7 @@ export default {
       this.toggleWelcomeEmailModal()
     },
     callForCreateSystemUser(payload) {
-      createSystemUser(payload).then((response) => {
+      createSystemUser(payload).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'System user has been created',
           icon: 'mdi-check-circle',
@@ -255,7 +255,7 @@ export default {
       })
     },
     callForUpdateSystemUser(payload) {
-      updateSystemUser(payload).then((response) => {
+      updateSystemUser(payload).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'System user has been updated',
           icon: 'mdi-check-circle',
@@ -263,12 +263,15 @@ export default {
         })
         this.$emit('closeOverlayWithUpdate')
       })
+    },
+    validatePhoneNumber() {
+      this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
     }
   },
   watch: {
-    'formValues.phoneNumber'(val) {
+    'formValues.phoneNumber'() {
       this.$nextTick(() => {
-        this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+        this.validatePhoneNumber()
         this.$refs.refTelInput.$forceUpdate()
       })
     }

@@ -117,7 +117,7 @@ export default {
     extensions: {
       type: Array,
       default: () => {
-        return ['gif', 'jpg', 'jpeg', 'png']
+        return ['gif', 'jpg', 'jpeg', 'png', 'bmp']
       }
     },
     accept: {
