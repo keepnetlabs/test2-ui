@@ -656,7 +656,7 @@
       :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'"
       :class="{ 'bg-blur': sessionCheck }"
     >
-      <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0">
+      <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0 pb-12">
         <router-view :key="$router.fullPath" />
       </v-container>
       <app-footer />

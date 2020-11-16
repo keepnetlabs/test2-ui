@@ -13,6 +13,7 @@ export default {
 }
 .container {
   padding: 0 !important;
+  padding-bottom: 47px !important;
 }
 .v-autocomplete__content.v-menu__content {
   border-radius: 20px !important;
