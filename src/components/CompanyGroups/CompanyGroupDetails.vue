@@ -275,7 +275,7 @@ export default {
             this.getTableData()
           }
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Company group can not be updated'

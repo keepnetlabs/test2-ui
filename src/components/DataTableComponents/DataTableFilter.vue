@@ -105,11 +105,7 @@
           Clear
         </v-btn>
         <v-btn
-          :disabled="
-            this.filterValue === '' &&
-            this.filterChecked.length === 0 &&
-            this.filteredDateValue === null
-          "
+          :disabled="this.filterValue === '' && this.filterChecked.length === 0"
           text
           class="filter__footer-button"
           color="#2196f3"

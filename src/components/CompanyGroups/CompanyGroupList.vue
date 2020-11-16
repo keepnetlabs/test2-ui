@@ -7,6 +7,7 @@
       @confirmDelete="deleteConfirmedItem"
     />
     <create-item-modal
+      v-if="isShowAddModal"
       :is-show="isShowAddModal"
       :isEdit="editAddModal"
       :selectedRow="selectedRow"
@@ -145,7 +146,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             }
@@ -205,6 +206,8 @@ export default {
       this.isShowAddModal = status
     },
     addButton() {
+      this.selectedRow = null
+      this.editAddModal = false
       this.changeAddModalStatus(true)
     },
     companyGroupCreated() {
