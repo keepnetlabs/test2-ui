@@ -176,8 +176,9 @@
       </div>
       <div class="d-flex justify-center flex-wrap user-wrapper mb-12">
         <div class="user-name-dropdown">
-          <div class="user-name-dropdown-font">
+          <div class="user-name-dropdown__menu">
             <v-menu
+              class="user-name-dropdown__menu"
               :disabled="false"
               :absolute="false"
               :open-on-hover="false"
@@ -185,14 +186,24 @@
               :close-on-content-click="true"
               :offset-x="false"
               :offset-y="true"
+              :z-index="999"
             >
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on: onMenu }">
                 <div
-                  class="v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text pr-0 pl-2"
-                  v-on="on"
+                  class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
+                  v-on="onMenu"
                 >
-                  <div class="user-name-dropdown-font">{{ getFullName }}</div>
-                  <v-icon>mdi-chevron-down</v-icon>
+                  <v-tooltip bottom :disabled="getFullName && getFullName.length < 10">
+                    <template #activator="{ on: onTooltip }">
+                      <div v-on="{ ...onTooltip }" class="user-name-dropdown-font__tooltip-wrapper">
+                        <div class="user-name-dropdown-font">
+                          {{ getFullName }}
+                        </div>
+                        <v-icon class="user-name-dropdown-font__icon">mdi-chevron-down</v-icon>
+                      </div>
+                    </template>
+                    <span>{{ getFullName }}</span>
+                  </v-tooltip>
                 </div>
               </template>
 
@@ -1625,6 +1636,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
   }
 
   .user-name-dropdown-font {
@@ -1639,10 +1651,26 @@ export default {
     text-align: center;
     color: rgba(0, 0, 0, 0.87);
     text-transform: capitalize !important;
-    max-width: 240px;
+    max-width: 215px;
     word-wrap: break-word;
     white-space: initial;
     cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    height: 28px !important;
+    padding: 0 !important;
+    &__icon {
+      margin-top: 2px;
+      &::before {
+        color: black;
+        font-weight: 900;
+      }
+    }
+    &__tooltip-wrapper {
+      display: flex;
+      max-width: 215px;
+    }
   }
 
   .user-wrapper {

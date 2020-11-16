@@ -2,7 +2,8 @@
   <div class="test-connection">
     <div
       :class="{
-        'test-connection__disabled-text': isLoading
+        'test-connection__disabled-text': isLoading,
+        '': isAllSuccess
       }"
       class="new-integration__api-key__text"
       @click="testConnection(false)"
@@ -19,25 +20,31 @@
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Authenticating</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkApiConnectivity" />
+          <TestConnectivityStatus
+            :state="checkApiConnectivity"
+            :message="checkApiConnectivityMessage"
+          />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Checking permissions</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkPrivileges" />
+          <TestConnectivityStatus :state="checkPrivileges" :message="checkPrivilegesMessage" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Fetching users</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkAllUsersAccess" />
+          <TestConnectivityStatus
+            :state="checkAllUsersAccess"
+            :message="checkAllUsersAccessMessage"
+          />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Fetching email body</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkEmailAccess" />
+          <TestConnectivityStatus :state="checkEmailAccess" :message="checkEmailAccessMessage" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
@@ -45,25 +52,31 @@
           Testing: Create a new category
         </div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkCreateNewCategory" />
+          <TestConnectivityStatus
+            :state="checkCreateNewCategory"
+            :message="checkCreateNewCategoryMessage"
+          />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Testing: Update a category</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkUpdateCategory" />
+          <TestConnectivityStatus
+            :state="checkUpdateCategory"
+            :message="checkUpdateCategoryMessage"
+          />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Testing: Delete an email</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkDeleteEmail" />
+          <TestConnectivityStatus :state="checkDeleteEmail" :message="checkInboxAccessMessage" />
         </div>
       </div>
       <div class="test-connection__testing-content__item">
         <div class="test-connection__testing-content__item--label">Accessing user inbox</div>
         <div class="test-connection__testing-content__item--value">
-          <TestConnectivityStatus :state="checkInboxAccess" />
+          <TestConnectivityStatus :state="checkInboxAccess" :message="checkInboxAccessMessage" />
         </div>
       </div>
     </div>
@@ -100,7 +113,15 @@ export default {
       loadingState: null,
       checkDeleteEmail: null,
       checkInboxAccess: null,
-      isLoadingStarted: false
+      isLoadingStarted: false,
+      checkApiConnectivityMessage: null,
+      checkPrivilegesMessage: null,
+      checkAllUsersAccessMessage: null,
+      checkEmailAccessMessage: null,
+      checkCreateNewCategoryMessage: null,
+      checkUpdateCategoryMessage: null,
+      checkDeleteEmailMessage: null,
+      checkInboxAccessMessage: null
     }
   },
   computed: {
@@ -115,6 +136,19 @@ export default {
         this.checkDeleteEmail !== 'loading' &&
         this.checkInboxAccess !== 'loading'
       return !isLoading
+    },
+    isAllSuccess() {
+      let isSuccess =
+        this.checkApiConnectivity === 'success' &&
+        this.checkPrivileges === 'success' &&
+        this.checkAllUsersAccess === 'success' &&
+        this.checkEmailAccess === 'success' &&
+        this.checkCreateNewCategory === 'success' &&
+        this.checkUpdateCategory === 'success' &&
+        this.checkDeleteEmail === 'success' &&
+        this.checkInboxAccess === 'success'
+      this.$emit('testConnectionValues', isSuccess)
+      return isSuccess
     }
   },
   methods: {
@@ -137,6 +171,7 @@ export default {
           })
           .catch((error) => {
             this.checkApiConnectivity = 'error'
+            this.checkApiConnectivityMessage = error.response.data.message
           })
         checkPrivileges(payload)
           .then((response) => {
@@ -144,6 +179,7 @@ export default {
           })
           .catch((error) => {
             this.checkPrivileges = 'error'
+            this.checkPrivilegesMessage = error.response.data.message
           })
         checkAllUsersAccess(payload)
           .then((response) => {
@@ -151,6 +187,7 @@ export default {
           })
           .catch((error) => {
             this.checkAllUsersAccess = 'error'
+            this.checkAllUsersAccessMessage = error.response.data.message
           })
         checkEmailAccess(payload)
           .then((response) => {
@@ -158,6 +195,7 @@ export default {
           })
           .catch((error) => {
             this.checkEmailAccess = 'error'
+            this.checkEmailAccessMessage = error.response.data.message
           })
         checkCreateNewCategory(payload)
           .then((response) => {
@@ -165,6 +203,7 @@ export default {
           })
           .catch((error) => {
             this.checkCreateNewCategory = 'error'
+            this.checkCreateNewCategoryMessage = error.response.data.message
           })
           .finally((response) => {
             checkUpdateCategory(payload)
@@ -173,6 +212,7 @@ export default {
               })
               .catch((error) => {
                 this.checkUpdateCategory = 'error'
+                this.checkUpdateCategoryMessage = error.response.data.message
               })
           })
         checkDeleteEmail(payload)
@@ -181,6 +221,7 @@ export default {
           })
           .catch((error) => {
             this.checkDeleteEmail = 'error'
+            this.checkDeleteEmailMessage = error.response.data.message
           })
         checkInboxAccess(payload)
           .then((response) => {
@@ -188,6 +229,7 @@ export default {
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
+            this.checkInboxAccessMessage = error.response.data.message
           })
       }
     },
@@ -238,9 +280,7 @@ export default {
         line-height: 1.5;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
-        margin-right: 5px;
-      }
-      &--value {
+        margin-right: 8px;
       }
     }
   }

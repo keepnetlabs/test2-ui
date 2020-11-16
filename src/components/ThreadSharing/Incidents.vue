@@ -145,6 +145,7 @@
 <script>
 import SinglePost from '../ThreadSharing/SinglePost'
 import {
+  getCommunityDetails,
   getCOmmunityIncidentList,
   getCommunityPost,
   getIncidentList,
@@ -255,6 +256,7 @@ export default {
       })
     },
     getSharedPost() {
+      let _this = this
       getCommunityPost(this.$route.query.postId)
         .then((response) => {
           let item = response.data.data
@@ -264,13 +266,37 @@ export default {
           this.incidentLoading = false
         })
         .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Incidents can not be reached'
-          })
-
           if (error.response.status === 403) {
-            this.$router.push({ name: 'Threat Sharing', params: { isCommunity: true } })
+            getCommunityDetails(localStorage.getItem('communityResourceIdForRedirect'))
+              .then((response) => {
+                this.$router
+                  .push({
+                    name: 'Threat Sharing',
+                    params: {
+                      isCommunity: true,
+                      postId: _this.$route.query.postId,
+                      communityName: localStorage.getItem('communityName'),
+                      communityId: localStorage.getItem('communityResourceIdForRedirect')
+                    }
+                  })
+                  .finally(() => {
+                    this.$store.dispatch('common/createSnackBar', {
+                      color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                      message: `you need to join the ${response.data.data.name} before viewing the post`
+                    })
+                  })
+              })
+              .catch((response) => {
+                this.$router.push({
+                  name: 'Threat Sharing',
+                  params: {
+                    isCommunity: true,
+                    postId: _this.$route.query.postId,
+                    communityName: localStorage.getItem('communityName'),
+                    communityId: localStorage.getItem('communityResourceIdForRedirect')
+                  }
+                })
+              })
           }
         })
         .finally(() => {

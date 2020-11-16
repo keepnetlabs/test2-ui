@@ -28,7 +28,11 @@
               <incidents ref="tsIncidents" />
             </v-tab-item>
             <v-tab-item>
-              <communities ref="tsCommunities" :refresh="refreshMemberTable" />
+              <communities
+                ref="tsCommunities"
+                :refresh="refreshMemberTable"
+                :isCommunity="this.$route.params.isCommunity"
+              />
             </v-tab-item>
           </v-tabs-items>
         </v-card>
