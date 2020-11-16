@@ -107,11 +107,7 @@
           Clear
         </v-btn>
         <v-btn
-          :disabled="
-            this.filterValue === '' &&
-            this.filterChecked.length === 0 &&
-            this.filteredDateValue === null
-          "
+          :disabled="getFilterButtonDisabled"
           text
           class="filter__footer-button"
           color="#2196f3"
@@ -296,6 +292,20 @@ export default {
             return item.text.toLowerCase().startsWith(this.filterValue.toLowerCase())
           })
         : this.convertedFilterableItems
+    },
+    getFilterButtonDisabled() {
+      switch (this.filterableType) {
+        case 'text':
+          return !this.filterValue
+        case 'select':
+          return !this.filterChecked.length
+        case 'numeric':
+          return !this.filterValue
+        case 'date':
+          return !this.filteredDateValue
+        default:
+          return false
+      }
     },
     fieldName: function () {
       return this.filterableCustomFieldName || this.column.property
