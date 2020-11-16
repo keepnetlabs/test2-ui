@@ -69,6 +69,7 @@
       </template>
       <template v-slot:extended-custom-view-slot>
         <company-list-extend
+          ref="extend"
           v-show="isShowExtended"
           :selectedRow="selectedRow"
           :top="extendTop"
@@ -238,7 +239,13 @@ export default {
       ascending: false,
       filter: {
         Condition: 'AND',
-        FilterGroups: []
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
       }
     }
   }),
@@ -299,12 +306,13 @@ export default {
     },
     handleCompanyNameClick({ row, column, event }) {
       if (column.property === 'companyName') {
+        this.$refs.extend.clickClose()
         this.selectedRow = row
         this.selectedExtend = {}
         this.isShowExtended = true
         this.tableHeight = this.$refs.refDataList.$el.clientHeight
         this.extendTop = event.offsetTop
-        getCompanyByID(row.companyResourceId)
+        getCompanyByID(row.companyResourceId, false)
           .then((response) => {
             this.selectedExtend = response.data.data
           })
@@ -323,36 +331,11 @@ export default {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
-          orderBy: 'LicenseTypeName',
-          ascending: true,
+          orderBy: this.payload.orderBy,
+          ascending: this.payload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: [
-                  {
-                    FieldName: 'CompanyName',
-                    Operator: 'Contains',
-                    Value: ''
-                  },
-                  {
-                    FieldName: 'IndustryName',
-                    Operator: 'Contains',
-                    Value: ''
-                  },
-                  {
-                    FieldName: 'LicenseTypeName',
-                    Operator: 'Contains',
-                    Value: ''
-                  }
-                ],
-                FilterGroups: []
-              }
-            ]
-          }
+          filter: this.payload.filter
         }
         exportCompanies(payload)
           .then((response) => {
@@ -362,7 +345,7 @@ export default {
             link.download = `Companies.${item.toLocaleLowerCase()}`
             link.click()
           })
-          .catch((error) => {})
+          .catch(() => {})
       })
     },
     addButton() {
@@ -395,9 +378,9 @@ export default {
       this.getTableData({ orderBy: 'createTime', ascending: false })
     },
     closeExtend() {
+      this.selectedExtend = {}
       this.isShowExtended = false
       this.selectedRow = {}
-      this.selectedExtend = {}
     },
     handleAddGroupToModal(v) {
       if (Array.isArray(v)) {
