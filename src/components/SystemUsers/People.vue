@@ -204,34 +204,8 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  FieldName: 'FirstName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'LastName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'PhoneNumber',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'StatusId',
-                  Operator: '=',
-                  Value: ''
-                }
-              ],
+              Condition: 'AND',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
