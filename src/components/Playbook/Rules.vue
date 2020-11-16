@@ -196,10 +196,10 @@ export default {
             emptyText: 'No Match'
           },
           {
-            property: PROPERTY_STORE.CREATEDATE,
+            property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             fixed: false,
             sortable: true,
             show: true,
@@ -275,8 +275,8 @@ export default {
       },
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateDate',
+        pageSize: 5000,
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
           Condition: 'AND',
@@ -304,10 +304,10 @@ export default {
             minWidth: '33'
           },
           {
-            property: 'createDate',
+            property: 'createTime',
             align: 'left',
             editable: false,
-            label: getStoreValue('createDate'),
+            label: getStoreValue('createTime'),
             fixed: false,
             sortable: false,
             show: true,
@@ -377,7 +377,7 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 500,
-        orderBy: 'CreateDate',
+        orderBy: 'CreateTime',
         ascending: true
       }
       getMatchingIncidents(payload, match.resourceId)

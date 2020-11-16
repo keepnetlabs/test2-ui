@@ -157,7 +157,7 @@ export default {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
             show: true,
             fixed: false,

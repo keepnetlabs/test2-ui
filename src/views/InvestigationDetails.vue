@@ -339,7 +339,9 @@
                     Expiry Time
                   </div>
                   <div class="investigation-details__container__content--left-menu--time--progress">
-                    <span>{{ investigationDetailsData.createDate }}</span>
+                    <span>{{
+                      investigationDetailsData.createDate || investigationDetailsData.createTime
+                    }}</span>
                     <span>{{ investigationDetailsData.expireDate }}</span>
                   </div>
                   <div
@@ -1289,7 +1291,7 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: reportAllPages ? this.investigationDetailsList.length + 25 : pageSize,
-          orderBy: 'ReceivedTime',
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType
@@ -1330,7 +1332,9 @@ export default {
     },
     calculateProgressData() {
       let today = moment(new Date()).toDate()
-      let createDate = moment(this.investigationDetailsData.createDate).toDate()
+      const createD =
+        this.investigationDetailsData.createDate || this.investigationDetailsData.createTime
+      let createDate = moment(createD).toDate()
       let expireDate = moment(this.investigationDetailsData.expireDate).toDate()
       let startDate = moment(this.investigationDetailsData.startDate).toDate()
       let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)

@@ -78,10 +78,10 @@ export default {
           minWidth: '33'
         },
         {
-          property: 'createDate',
+          property: 'createTime',
           align: 'left',
           editable: false,
-          label: getStoreValue('createDate'),
+          label: getStoreValue('createTime'),
           fixed: false,
           sortable: false,
           show: true,
@@ -118,7 +118,7 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 500,
-        orderBy: 'CreateDate',
+        orderBy: 'CreateTime',
         ascending: true
       }
       this.isMatchingModalLoading = true

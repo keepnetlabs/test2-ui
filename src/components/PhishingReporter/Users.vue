@@ -288,7 +288,8 @@ export default {
           orderBy: 'LastSeen',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.requestBody.filter
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
