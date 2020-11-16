@@ -7,7 +7,6 @@
       @confirmDelete="deleteConfirmedItem"
     />
     <create-item-modal
-      v-if="isShowAddModal"
       :is-show="isShowAddModal"
       :isEdit="editAddModal"
       :selectedRow="selectedRow"
@@ -146,7 +145,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
