@@ -27,7 +27,7 @@
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v, 'Required'),
-                (v) => validations.maxLength(v, 150, 'Max 150 characters')
+                (v) => validations.maxLength(v, 50, 'Max 50 characters')
               ]"
             ></v-text-field>
           </v-list-item-content>
