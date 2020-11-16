@@ -613,6 +613,7 @@ export default {
   },
   mounted() {
     this.getLookupContents()
+    this.getCompanyGroups()
 
     if (this.edit) {
       this.stepLock = this.edit
