@@ -244,7 +244,13 @@ export default {
               ? response.data.data.results
               : []
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error.response.status === 403) {
+            this.$router.push({
+              name: 'Companies',
+              params: { tab: 'second' }
+            })
+          }
           this.tableData = []
         })
         .finally(() => (this.loading = false))

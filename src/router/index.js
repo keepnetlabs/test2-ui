@@ -92,7 +92,9 @@ const router = new Router({
           component: Companies,
           meta: {
             isAuthenticated: true
-          }
+          },
+          props: true,
+          params: true
         },
         {
           path: '/company-group-details/:groupId',
