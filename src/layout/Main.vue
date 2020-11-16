@@ -193,7 +193,7 @@
                   class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                   v-on="onMenu"
                 >
-                  <v-tooltip bottom :disabled="getFullName && getFullName.length < 10">
+                  <v-tooltip bottom :disabled="getFullName && getFullName.length < 14">
                     <template #activator="{ on: onTooltip }">
                       <div v-on="{ ...onTooltip }" class="user-name-dropdown-font__tooltip-wrapper">
                         <div class="user-name-dropdown-font">
