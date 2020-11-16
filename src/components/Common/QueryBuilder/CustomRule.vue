@@ -10,8 +10,13 @@
           :items="rule.operands"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
+          :class="`${attachId + 1}`"
+          :menu-props="{
+            offsetY: true,
+            contentClass: 'rule-select__menu'
+          }"
           @input="handleOperandChange"
+          :attach="getAttachedItem(attachId + 1)"
         />
       </v-col>
       <v-col
@@ -28,9 +33,11 @@
           :items="rule.operators"
           outlined
           hide-details
+          :class="`${attachId + 2}`"
           item-value="value"
-          :menu-props="{ offsetY: true }"
+          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
           item-text="text"
+          :attach="getAttachedItem(attachId + 2)"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'SenderIp'">
@@ -40,7 +47,9 @@
           :items="rule.operandsSenderIP"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
+          :class="`${attachId + 7}`"
+          :attach="getAttachedItem(attachId + 7)"
+          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
@@ -50,7 +59,9 @@
           :items="rule.operandsFrom"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
+          :class="`${attachId + 3}`"
+          :attach="getAttachedItem(attachId + 3)"
+          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'To'">
@@ -60,7 +71,9 @@
           :items="rule.operandsTo"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
+          :class="`${attachId + 4}`"
+          :attach="getAttachedItem(attachId + 4)"
+          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'CC'">
@@ -70,7 +83,9 @@
           :items="rule.operandsCC"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
+          :class="`${attachId + 5}`"
+          :attach="getAttachedItem(attachId + 5)"
+          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'Analysis result'">
@@ -79,7 +94,9 @@
           v-model="query.value"
           :items="rule.operandsAnalysisResult"
           outlined
-          :menu-props="{ offsetY: true }"
+          :class="`${attachId + 6}`"
+          :attach="getAttachedItem(attachId + 6)"
+          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
         />
       </v-col>
       <v-col
@@ -210,10 +227,15 @@ export default {
         domain,
         extension,
         maxLength
-      }
+      },
+      attachId: null
     }
   },
   methods: {
+    getAttachedItem(item) {
+      item = `.${item}`
+      return document.querySelector(item)
+    },
     getRules() {
       switch (this.query && this.query.format) {
         case 'Email':
@@ -298,9 +320,21 @@ export default {
     }
   },
   created() {
+    this.attachId = `id-${Math.floor(Math.random() * 10000).toString()}`
     if (!this.query.format) {
       this.query.format = 'Email'
     }
   }
 }
 </script>
+<style lang="scss">
+.rule-select__menu {
+  z-index: 1000 !important;
+  @media (max-width: 2000px) {
+    min-width: 175px !important;
+  }
+  .v-list-item {
+    padding: 0 16px !important;
+  }
+}
+</style>
