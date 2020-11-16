@@ -404,7 +404,9 @@
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
                           <v-list-item-title>{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+                          <v-list-item-subtitle class="tlp_subtitle">{{
+                            item.description
+                          }}</v-list-item-subtitle>
                         </v-list-item-content>
                       </template>
                     </v-select>
@@ -430,7 +432,7 @@
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
                           <v-list-item-title>{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle class="subtitle__custom_select">{{
+                          <v-list-item-subtitle class="tlp_subtitle">{{
                             item.description
                           }}</v-list-item-subtitle>
                         </v-list-item-content>

@@ -2886,6 +2886,16 @@ export default {
 }
 
 .tlp-select {
+  .tlp_subtitle {
+    opacity: 0.7;
+    font-size: 9px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #474747;
+  }
   &__chip {
     &--green {
       background-color: #43a047 !important;
