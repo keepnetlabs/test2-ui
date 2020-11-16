@@ -455,13 +455,13 @@ export default {
       if (
         (this.$route.query &&
           !!this.$route.query.communityResourceId &&
-          !!this.$route.query['amp;communityPostResourceId']) ||
-        !!this.$route.query.communityPostResourceId
+          !!this.$route.query.communityPostResourceId) ||
+        !!this.$route.query['amp;communityPostResourceId']
       ) {
         this.$router.push(
           `/community/${this.$route.query.communityResourceId}?postId=${
-            this.$route.query['amp;communityPostResourceId'] ||
-            !!this.$route.query.communityPostResourceId
+            this.$route.query.communityPostResourceId ||
+            this.$route.query['amp;communityPostResourceId']
           }`
         )
       } else if (this.$route.query && !!this.$route.query.CommunityRequestId) {
@@ -664,13 +664,13 @@ export default {
             if (
               (_this.$route.query &&
                 !!_this.$route.query.communityResourceId &&
-                !!_this.$route.query['amp;communityPostResourceId']) ||
-              !!_this.$route.query.communityPostResourceId
+                !!_this.$route.query.communityPostResourceId) ||
+              !!_this.$route.query['amp;communityPostResourceId']
             ) {
               _this.$router.push(
                 `/community/${_this.$route.query.communityResourceId}?postId=${
-                  _this.$route.query['amp;communityPostResourceId'] ||
-                  !!_this.$route.query.communityPostResourceId
+                  _this.$route.query.communityPostResourceId ||
+                  _this.$route.query['amp;communityPostResourceId']
                 }`
               )
             } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {

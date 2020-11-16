@@ -270,7 +270,6 @@ export default {
           })
 
           if (error.response.status === 403) {
-            debugger
             this.$router.push({ name: 'Threat Sharing', params: { isCommunity: true } })
           }
         })
