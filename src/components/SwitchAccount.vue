@@ -143,18 +143,7 @@ export default {
     onClickSelectedAccount(account) {
       this.getSelectedCompanyDetails(account)
       this.setDialogBar(false)
-      this.selectCompany(account).then((response) => {
-        /*localStorage.setItem('companyManager', account.companyName)
-        localStorage.setItem('companyId', account.companyResourceId)
-        localStorage.setItem('companyRequestId', account.companyResourceId)
-        localStorage.setItem('companyResourceId', account.companyResourceId)
-        localStorage.setItem('companyName', account.companyName)
-        localStorage.setItem('userId', account.companyResourceId)
-        localStorage.setItem('businessCatId', account.userCompany.licenseTypeResourceId)
-        localStorage.setItem('userName', account.fullName)*/
-        //dispatch('dashboard/selectCompany', account, { root: true })
-        //commit('SET_CURRENTUSER', account)
-      })
+      this.selectCompany(account).then((response) => {})
 
       this.search = ''
     }
