@@ -316,7 +316,7 @@
             </v-tooltip>
           </div>
         </div>
-        <div class="selection-row" v-if="multipleSelection.length">
+        <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
             @click.native="toggleAll(multipleSelection)"
