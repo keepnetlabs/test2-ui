@@ -57,6 +57,7 @@
         <v-select
           :items="dateFilterItems"
           dense
+          @click="handleDateClick"
           height="40"
           outlined
           required
@@ -70,6 +71,7 @@
           v-show="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
+          ref="refPicker"
           popper-class="filter__date-picker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
         />
@@ -77,6 +79,7 @@
           :key="column.property"
           v-show="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
+          ref="refPicker2"
           popper-class="filter__date-picker"
           type="datetimerange"
           style="margin-bottom: 14px;"
@@ -194,7 +197,11 @@ export default {
         this.filteredSelectValueDate !== 'between'
           ? Date.now()
           : [this.$moment(Date.now()).subtract(1, 'months').format('x'), Date.now()]
-      console.log(this.filteredDateValue)
+    },
+    handleDateClick() {
+      const { refPicker, refPicker2 } = this.$refs
+      refPicker.pickerVisible = false
+      refPicker2.pickerVisible = false
     },
     clearFilter() {
       this.menu = false
