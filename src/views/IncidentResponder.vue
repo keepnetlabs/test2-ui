@@ -14,14 +14,17 @@
           <v-form ref="form" lazy-validation>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">Average time saved per reported email</label>
+                <label class="roi-modal__label">Average hours saved per reported email</label>
                 <v-text-field
                   placeholder="Saved Time"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHour"
-                  v-mask="'#######################'"
-                  :rules="[(v) => validations.required(v, 'Required')]"
+                  v-mask="'###'"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+                  ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -33,8 +36,11 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHourCost"
-                  v-mask="'#######################'"
-                  :rules="[(v) => validations.required(v, 'Required')]"
+                  v-mask="'###'"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+                  ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -271,15 +277,17 @@
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
-                  <span class="body-row__number">
-                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+                  <span class="body-row__number" style="white-space: nowrap;">
+                    {{
+                      `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time} h` || '0h'
+                    }}
                   </span>
 
                   <span class="body-row__text" style="margin-left: 4px;">Time</span>
                 </div>
                 <div class="body-row">
                   <span class="body-row__number">
-                    {{ getRoiSummaryValue }}
+                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}$
                   </span>
 
                   <span class="body-row__text" style="margin-left: 2px;">Money</span>
@@ -610,7 +618,7 @@ import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { maxLength, required } from '../utils/validations'
+import { startsWith, required } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import IRSummaryLoading from '../components/SkeletonLoading/IRSummaryLoading'
@@ -650,7 +658,8 @@ export default {
     baseManHour: null,
     baseManHourCost: null,
     validations: {
-      required
+      required,
+      startsWith
     },
     extendedViewValue: [],
     topRules: {
@@ -1039,7 +1048,7 @@ export default {
           fullWidth: true,
           filterableType: 'select',
           filterableItems: [
-            { text: 'Being Analyzed', value: 'BeingAnalyzed' },
+            { text: 'In Analysis', value: 'BeingAnalyzed' },
             'Open',
             'Closed',
             { text: 'In Progress', value: 'InProgress' },
@@ -1204,6 +1213,7 @@ export default {
     },
 
     getRoiSummaryValue() {
+      /*
       if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
         let revenue = Number(this.irSummary.roiSummary.revenue)
         if (revenue < 1000) {
@@ -1252,6 +1262,8 @@ export default {
         return `$0`
       }
       return `$0`
+      */
+      return '$0'
     },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
@@ -1347,19 +1359,21 @@ export default {
       })
     },
     submitRoiModal() {
-      updateRoiSettings({
-        baseManHour: this.baseManHour,
-        baseManHourCost: this.baseManHourCost
-      }).then((response) => {
-        this.callForGetRoiSettings()
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'ROI settings has been updated',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      if (this.$refs.form.validate()) {
+        updateRoiSettings({
+          baseManHour: this.baseManHour,
+          baseManHourCost: this.baseManHourCost
+        }).then((response) => {
+          this.callForGetRoiSettings()
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'ROI settings has been updated',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$store.dispatch('investigations/getIrSummary')
         })
-        this.$store.dispatch('investigations/getIrSummary')
-      })
-      this.isShowRoi = false
+        this.isShowRoi = false
+      }
     },
     isRoiSummaryEmpty(summary) {
       const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
@@ -1844,7 +1858,7 @@ export default {
         }
 
         .biggest {
-          font-size: 48px;
+          font-size: 44px;
           line-height: 1;
           font-weight: normal;
           font-stretch: normal;
@@ -1861,7 +1875,7 @@ export default {
         }
 
         .body-row__number {
-          font-size: 48px;
+          font-size: 44px;
           line-height: 1;
           letter-spacing: normal;
           color: #ffffff;
