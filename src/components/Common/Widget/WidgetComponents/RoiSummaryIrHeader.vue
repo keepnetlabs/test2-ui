@@ -25,14 +25,14 @@
         <div class="card-body d-flex roi-summary__body-container">
           <div class="body-row">
             <span class="body-row__number" style="white-space: nowrap;">
-              {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time} h` || '0h' }}
+              {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || '0' }}
             </span>
 
-            <span class="body-row__text" style="margin-left: 4px;">Time</span>
+            <span class="body-row__text" style="margin-left: 4px;">Hours</span>
           </div>
           <div class="body-row">
             <span class="body-row__number">
-              {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}$
+              ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
             </span>
 
             <span class="body-row__text" style="margin-left: 2px;">Money</span>
@@ -152,17 +152,17 @@ export default {
   margin-top: 13px;
   @media (max-width: 1900px) {
     .body-row:last-child {
-      margin-left: 8px;
+      margin-left: 16px;
     }
   }
   @media (max-width: 1899px) and (min-width: 1500px) {
     .body-row:last-child {
-      margin-left: 8px;
+      margin-left: 16px;
     }
   }
   @media (max-width: 1499px) and (min-width: 1026px) {
     .body-row:last-child {
-      margin-left: 8px;
+      margin-left: 16px;
     }
   }
   @media (min-width: 1901px) {

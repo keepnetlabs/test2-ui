@@ -205,6 +205,7 @@ export default {
         } else {
           updateCompanyGroup(this.selectedRow.resourceId, payload).then((response) => {
             if (response.data && response.data.code === 'RESOURCE_UPDATED') {
+              localStorage.setItem('companyGroupName', this.groupName)
               this.$store.dispatch('common/createSnackBar', {
                 message: 'Company group has been updated',
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
