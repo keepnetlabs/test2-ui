@@ -129,7 +129,7 @@
       :icon-name="'mdi-book-search'"
       :title="'Create GSuite Mail Configuration'"
       className="mail-configuration__modal"
-      v-if="statusGsuite"
+      v-if="false"
     >
       <template v-slot:overlay-body>
         <v-form ref="gsuiteConfiguration">
@@ -272,6 +272,7 @@
             <p class="mail-configuration__no-data__body">Create now!</p>
             <div class="mail-configuration__no-data__buttons">
               <div
+                v-if="false"
                 class="mail-configuration__no-data__buttons--button"
                 @click="statusGsuite = true"
               >
@@ -456,7 +457,7 @@ export default {
         }
       ]
     },
-    addUsersItems: ['GSuite', 'O365'],
+    addUsersItems: ['O365'],
     validations: {
       required,
       mail
@@ -596,9 +597,6 @@ export default {
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
-          this.statusGsuite = true
-          break
-        case this.addUsersItems[1]:
           this.formValues = {
             name: null,
             applicationId: null,
