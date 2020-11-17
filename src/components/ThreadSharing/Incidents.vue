@@ -267,23 +267,24 @@ export default {
         })
         .catch((error) => {
           if (error.response.status === 403) {
-            getCommunityDetails(_this.$route.params['communityId']).then((response) => {
-              this.$router
-                .push({
-                  name: 'Threat Sharing',
-                  params: {
-                    isCommunity: true,
-                    postId: _this.$route.query.postId,
-                    communityId: _this.$route.params['communityId']
-                  }
+            this.$router
+              .push({
+                name: 'Threat Sharing',
+                params: {
+                  isCommunity: true,
+                  postId: _this.$route.query.postId,
+                  communityId: _this.$route.params['id'],
+                  communityName: localStorage.getItem('communityName')
+                }
+              })
+              .finally(() => {
+                this.$store.dispatch('common/createSnackBar', {
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  message: `you need to join the ${localStorage.getItem(
+                    'communityName'
+                  )} before viewing the post`
                 })
-                .finally(() => {
-                  this.$store.dispatch('common/createSnackBar', {
-                    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                    message: `you need to join the ${response.data.data.name} before viewing the post`
-                  })
-                })
-            })
+              })
           }
         })
         .finally(() => {
