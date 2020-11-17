@@ -820,14 +820,12 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: response.data.message
         })
-        debugger
         if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
             this.$router.push(`/community/${resourceId}`)
             this.$router.go(`/community/${resourceId}`)
             this.$emit('joinRequestSuccess')
           } else {
-            debugger
             this.$emit('joinRequestSuccess')
             this.$router.push(`/community/${resourceId}`)
           }
