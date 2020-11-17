@@ -9,11 +9,7 @@ export function deleteSmtpSettings(id) {
 }
 
 export function createSMTPSettings(payload) {
-  return testRequest.post(
-    `/companies/${localStorage.getItem('companyId')}/smtp-settings`,
-    payload,
-    { loading: true }
-  )
+  return testRequest.post(`/companies/smtp-settings`, payload, { loading: true })
 }
 
 export function getSmtpSettings(resourceId) {
