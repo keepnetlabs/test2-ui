@@ -38,7 +38,6 @@
         :selectable="true"
         :sizeable="true"
         @editAction="handleEdit"
-        @deleteAction="handleDelete"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
@@ -177,11 +176,6 @@ export default {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction'
-          },
-          {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction'
           }
         ],
         empty: {
