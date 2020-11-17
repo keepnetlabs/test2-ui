@@ -281,7 +281,7 @@
                     {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || '0' }}
                   </span>
 
-                  <span class="body-row__text" style="margin-left: 4px;">Hours</span>
+                  <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
                 </div>
                 <div class="body-row">
                   <span class="body-row__number">
