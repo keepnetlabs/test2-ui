@@ -847,24 +847,10 @@
                             1 && 'ml-1'
                         ]"
                         class="datatable-progress__per"
-                        >{{
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) ===
-                          1
-                            ? 'Completed'
-                            : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCoun)
-                            ? Math.floor(
-                                scope.row.analyzedMailCount / scope.row.filteredMailCount
-                              ) *
-                                100 +
-                              '%'
-                            : 0 + '%'
-                        }}</span
+                        >{{ getProgressText(scope) }}</span
                       >
                       <v-progress-linear
-                        :value="
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) *
-                          100
-                        "
+                        :value="getProgressValue(scope)"
                         background-color="#b3d4fc"
                         color="#2196f3"
                         height="4"
@@ -1235,6 +1221,20 @@ export default {
     }
   }),
   methods: {
+    getProgressText(scope) {
+      return Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) === 1 ||
+        scope.row.status === 'Completed'
+        ? 'Completed'
+        : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCount)
+        ? Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100) + '%'
+        : 0 + '%'
+    },
+    getProgressValue(scope) {
+      if (scope.row.analyzedMailCount === 0 && scope.row.filteredMailCount === 0) {
+        return 100
+      }
+      return Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100)
+    },
     getIconColor(status) {
       let retValue
       switch (status) {
