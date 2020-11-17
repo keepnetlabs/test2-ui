@@ -880,6 +880,7 @@ export default {
 .ts-user-comp-detail {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
 }
 
 .ts-community-industry {
