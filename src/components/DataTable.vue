@@ -1122,10 +1122,12 @@ export default {
       } else if (this.sortProps) {
         this.sortChangedEvent(this.sortProps)
       } else {
-        this.tableData = [...table].slice(
-          (this.currentPage - 1) * this.rowCount,
-          this.currentPage * this.rowCount
-        )
+        let maxPage = Math.ceil(table.length / this.rowCount)
+        if (maxPage > this.currentPage) {
+          maxPage = this.currentPage
+        }
+        this.tableData = table.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
+
         setTimeout(() => {
           this.renderFixedItems()
         }, 500)
@@ -1447,17 +1449,24 @@ export default {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.showfilteredData && this.filteredData && this.filteredData.length) {
-          this.filteredData = this.sortFunction(this.unRenderedFilterData, sortProps).slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
+          const filteredData = this.sortFunction(this.unRenderedFilterData, sortProps)
+
+          let maxPage = Math.ceil(filteredData.length / this.rowCount)
+          if (maxPage > this.currentPage) {
+            maxPage = this.currentPage
+          }
+          this.filteredData = filteredData.slice(
+            (maxPage - 1) * this.rowCount,
+            maxPage * this.rowCount
           )
           return this.filteredData
         } else {
           const data = this.sortFunction(this.initialData, sortProps)
-          this.tableData = data.slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
-          )
+          let maxPage = Math.ceil(data.length / this.rowCount)
+          if (maxPage > this.currentPage) {
+            maxPage = this.currentPage
+          }
+          this.tableData = data.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
           return this.tableData
         }
       }

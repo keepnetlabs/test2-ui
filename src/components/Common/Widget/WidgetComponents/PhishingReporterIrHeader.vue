@@ -178,7 +178,7 @@ export default {
     letter-spacing: normal;
     color: #fff;
     .biggest {
-      font-size: 48px;
+      font-size: 44px;
       line-height: 1;
       font-weight: normal;
       font-stretch: normal;
@@ -193,7 +193,7 @@ export default {
       -ms-flex-direction: column;
       flex-direction: column;
       &__number {
-        font-size: 48px;
+        font-size: 44px;
         line-height: 1;
         letter-spacing: normal;
         color: #ffffff;
