@@ -122,7 +122,6 @@ export default {
         ascending: true
       }
       this.isMatchingModalLoading = true
-      debugger
       getMatchingIncidents(payload, this.selectedMatch.resourceId)
         .then((response) => {
           this.$refs.refMatchingInvestigation.loadWithDataArray(response.data.data.results || [])

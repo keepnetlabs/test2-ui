@@ -703,6 +703,9 @@ export default {
           })
       } else {
         this.filter = this.$route.params.communityName
+        setTimeout(() => {
+          this.isCommunity = false
+        }, 2000)
       }
     }
     this.selectedTab = 'tab-1'
@@ -910,6 +913,7 @@ export default {
         })
     },
     getAllCommunitiesListData() {
+      let _this = this
       this.listData = []
       this.communityLoading = true
       const payload = {
@@ -964,7 +968,13 @@ export default {
       getAllCommunityList(payload)
         .then((response) => {
           const { data } = response
-          this.listData = data.data.results
+          if (this.isCommunity) {
+            _this.listData = data.data.results.filter(
+              (item) => item.communityResourceId === _this.$route.params.communityId
+            )
+          } else {
+            _this.listData = data.data.results
+          }
         })
 
         .catch((error) => {
@@ -1067,7 +1077,7 @@ export default {
           this.getMyCommunitiesListData()
           break
         case 'tab-1':
-          this.getAllCommunitiesListData()
+          if (!this.isCommunity) this.getAllCommunitiesListData()
           break
         case 'tab-2':
           this.getInvitions()
