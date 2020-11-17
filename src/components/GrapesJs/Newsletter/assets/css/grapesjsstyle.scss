@@ -28,7 +28,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 20px;
+    height: 40px;
   }
 }
 .gjs-one-bg {
@@ -48,4 +48,31 @@
 }
 .gjs-title{
   color: #ffffff;
+}
+@media (max-width: 1400px) {
+  .merged-text{
+    min-height: 40px;
+    padding: 3px;
+    .gjs-block-label{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      font-size: 0.55rem;
+    }
+  }
+  .gjs-fonts::before{
+    font-size: 4em;
+  }
+}
+@media (max-width: 1200px) {
+  .gjs-fonts::before{
+    font-size: 3em;
+  }
+  .gjs-block-label{
+    font-size: 0.50rem;
+  }
+  .gjs-title{
+    font-size: .65rem;
+  }
 }
