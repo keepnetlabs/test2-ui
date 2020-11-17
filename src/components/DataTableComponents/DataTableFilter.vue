@@ -66,7 +66,8 @@
           placeholder="Select an option"
         ></v-select>
         <el-date-picker
-          v-if="filteredSelectValueDate !== 'between'"
+          :key="column.property + 'a'"
+          v-show="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
           popper-class="filter__date-picker"
@@ -74,7 +75,7 @@
         />
         <el-date-picker
           :key="column.property"
-          v-if="filteredSelectValueDate === 'between'"
+          v-show="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
           popper-class="filter__date-picker"
           type="datetimerange"
@@ -149,7 +150,7 @@ export default {
       filteredSelectValue: 'Contains',
       filteredSelectValueNum: '=',
       filteredSelectValueDate: '<=',
-      filteredDateValue: this.changeDateSelect(),
+      filteredDateValue: null,
       filterValue: '',
       filterChecked: [],
       textFilterItems: [
@@ -171,37 +172,7 @@ export default {
         { text: 'Before', value: '<=' },
         { text: 'Between', value: 'between' }
       ],
-      pickerOptions: {
-        shortcuts: [
-          {
-            text: 'Last week',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: 'Last month',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-              picker.$emit('pick', [start, end])
-            }
-          },
-          {
-            text: 'Last 3 months',
-            onClick(picker) {
-              const end = new Date()
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-              picker.$emit('pick', [start, end])
-            }
-          }
-        ]
-      },
+      pickerOptions: {},
       convertedFilterableItems: []
     }
   },
@@ -221,11 +192,9 @@ export default {
     changeDateSelect() {
       this.filteredDateValue =
         this.filteredSelectValueDate !== 'between'
-          ? this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
-          : [
-              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
-              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
-            ]
+          ? Date.now()
+          : [this.$moment(Date.now()).subtract(1, 'months').format('x'), Date.now()]
+      console.log(this.filteredDateValue)
     },
     clearFilter() {
       this.menu = false
