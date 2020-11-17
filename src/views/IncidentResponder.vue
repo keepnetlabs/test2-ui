@@ -278,16 +278,14 @@
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
                   <span class="body-row__number" style="white-space: nowrap;">
-                    {{
-                      `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time} h` || '0h'
-                    }}
+                    {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || '0' }}
                   </span>
 
-                  <span class="body-row__text" style="margin-left: 4px;">Time</span>
+                  <span class="body-row__text" style="margin-left: 4px;">Hours</span>
                 </div>
                 <div class="body-row">
                   <span class="body-row__number">
-                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}$
+                    ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
                   </span>
 
                   <span class="body-row__text" style="margin-left: 2px;">Money</span>
@@ -1655,7 +1653,7 @@ export default {
     exportReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber: pageNumber,
+          pageNumber: reportAllPages ? 1 : pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
           orderBy: 'CreateTime',
           ascending: false,
