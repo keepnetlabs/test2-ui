@@ -1048,7 +1048,7 @@ export default {
           fullWidth: true,
           filterableType: 'select',
           filterableItems: [
-            { text: 'Being Analyzed', value: 'BeingAnalyzed' },
+            { text: 'In Analysis', value: 'BeingAnalyzed' },
             'Open',
             'Closed',
             { text: 'In Progress', value: 'InProgress' },
