@@ -54,4 +54,7 @@
 }
 .filter__date-picker {
   overflow: inherit !important;
+  .el-time-panel{
+    margin-left: -32px !important;
+  }
 }
