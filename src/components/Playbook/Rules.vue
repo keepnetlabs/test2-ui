@@ -304,10 +304,10 @@ export default {
             minWidth: '33'
           },
           {
-            property: 'createTime',
+            property: 'createDate',
             align: 'left',
             editable: false,
-            label: getStoreValue('createTime'),
+            label: getStoreValue('createDate'),
             fixed: false,
             sortable: false,
             show: true,
@@ -376,8 +376,8 @@ export default {
       this.toggleMatchingModal()
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateTime',
+        pageSize: 50000,
+        orderBy: 'CreateDate',
         ascending: true
       }
       getMatchingIncidents(payload, match.resourceId)

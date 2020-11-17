@@ -78,10 +78,10 @@ export default {
           minWidth: '33'
         },
         {
-          property: 'createTime',
+          property: 'createDate',
           align: 'left',
           editable: false,
-          label: getStoreValue('createTime'),
+          label: getStoreValue('createDate'),
           fixed: false,
           sortable: false,
           show: true,
@@ -117,11 +117,12 @@ export default {
     callForMatchingIncident() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateTime',
+        pageSize: 50000,
+        orderBy: 'createDate',
         ascending: true
       }
       this.isMatchingModalLoading = true
+      debugger
       getMatchingIncidents(payload, this.selectedMatch.resourceId)
         .then((response) => {
           this.$refs.refMatchingInvestigation.loadWithDataArray(response.data.data.results || [])
