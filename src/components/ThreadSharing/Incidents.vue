@@ -292,6 +292,7 @@ export default {
         })
     },
     getIncidentList(memberId, companyId) {
+      debugger
       let companyResourceId = this.companyValue
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,

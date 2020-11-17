@@ -186,6 +186,7 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     getIncidents() {
+      debugger
       this.$router.replace({ postId: null })
       setTimeout(() => {
         this.$refs.refIncidents.getIncidentList()
