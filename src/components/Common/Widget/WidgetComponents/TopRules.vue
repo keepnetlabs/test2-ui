@@ -124,6 +124,7 @@ export default {
       this.$emit('handleSelectPlaybookId', { resourceId, callback: this.callForTopRules })
     },
     handleSelectMatch(row) {
+      this.selectedMatch = row
       this.toggleMatchingIncidentModal()
     },
     toggleMatchingIncidentModal() {

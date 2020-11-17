@@ -777,10 +777,10 @@ export default {
           minWidth: '33'
         },
         {
-          property: 'createTime',
+          property: 'createDate',
           align: 'left',
           editable: false,
-          label: getStoreValue('createTime'),
+          label: getStoreValue('createDate'),
           fixed: false,
           sortable: false,
           show: true,
@@ -1519,8 +1519,8 @@ export default {
       this.isMatchingInvestigationLoading = true
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'createTime',
+        pageSize: 50000,
+        orderBy: 'createDate',
         ascending: true
       }
       getMatchingIncidents(payload, match.resourceId)
