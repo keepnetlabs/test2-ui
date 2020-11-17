@@ -27,6 +27,7 @@
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v, 'Required'),
+                (v) => validations.startsWithEmpty(v, 'Required'),
                 (v) => validations.maxLength(v, 50, 'Max 50 characters')
               ]"
             ></v-text-field>
@@ -86,7 +87,7 @@ import {
   searchGroupCompanies,
   updateCompanyGroup
 } from '@/api/company'
-import { maxLength, required } from '@/utils/validations'
+import { maxLength, required, startsWithEmpty } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CreateItemModal',
@@ -117,7 +118,8 @@ export default {
       selectedCompanies: null,
       validations: {
         required,
-        maxLength
+        maxLength,
+        startsWithEmpty
       },
       payload: {
         pageSize: 100,
