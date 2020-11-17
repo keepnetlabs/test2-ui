@@ -4643,6 +4643,7 @@ export default {
     align-items: center;
     display: flex;
     margin-top: 8px;
+    flex-wrap: wrap;
   }
 
   .v-btn--contained {
