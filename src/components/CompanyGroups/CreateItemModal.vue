@@ -27,7 +27,7 @@
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v, 'Required'),
-                (v) => validations.startsWithEmpty(v, 'Required'),
+                (v) => validations.startsWithEmpty(v, 'Cannot start with space'),
                 (v) => validations.maxLength(v, 50, 'Max 50 characters')
               ]"
             ></v-text-field>
