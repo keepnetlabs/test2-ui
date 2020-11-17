@@ -25,7 +25,10 @@
             v-model.trim="formValues.firstName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.maxLength(v, 40, 'Max 40 characters')
+            ]"
           ></v-text-field>
         </form-group>
         <form-group title="Last Name" has-hint>
@@ -36,7 +39,10 @@
             v-model.trim="formValues.lastName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.maxLength(v, 40, 'Max 40 characters')
+            ]"
           ></v-text-field>
         </form-group>
         <form-group title="Email Address" has-hint>
@@ -49,7 +55,6 @@
             persistent-hint
             :rules="[
               (v) => validations.required(v, 'Required'),
-
               (v) => validations.mail(v, 'Invalid email address')
             ]"
           ></v-text-field>
