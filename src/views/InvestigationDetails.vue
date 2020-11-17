@@ -974,7 +974,7 @@ export default {
     },
     investigationTargetUsersListBodyData: {
       pageNumber: 1,
-      pageSize: 3,
+      pageSize: 500000,
       orderBy: 'Email',
       ascending: true,
       filter: {
