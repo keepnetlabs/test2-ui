@@ -1289,10 +1289,11 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: reportAllPages ? this.investigationDetailsList.length + 25 : pageSize,
-          orderBy: 'CreateTime',
+          orderBy: 'ReceivedTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.investigationListBodyData.filter
         }
         exportInvestigationEmailList(payload, this.$route.params.id).then((response) => {
           const { data } = response
@@ -1303,15 +1304,16 @@ export default {
         })
       })
     },
-    exportTargetUsers({ exportTypes, reportAllPages, pageNumber }) {
+    exportTargetUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber,
-          pageSize: 5,
+          pageSize: reportAllPages ? 50000 : pageSize,
           orderBy: 'CreateTime',
           ascending: true,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.investigationTargetUsersListBodyData.filter
         }
 
         exportInvestigationUserList(payload, this.$route.params.id).then((response) => {

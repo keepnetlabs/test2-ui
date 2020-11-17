@@ -262,7 +262,7 @@ export default {
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4'],
-      labels: ['Completed User Count', 'Users Not Scanned '],
+      labels: ['Completed User Count', 'Not Started User Count '],
       showTooltipLine: true
     },
     isColumnFilterActive: false,
