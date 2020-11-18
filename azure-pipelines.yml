@@ -10,6 +10,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- script: |
+    rm public/config.js
+    mv public/config.production.js public/config.js
+  displayName: 'Copy config.js'
+
 - script: yarn install
   displayName: 'yarn install'  
 
@@ -19,9 +24,6 @@ steps:
 - script: yarn run build
   displayName: 'yarn build'
 
-- script: |
-    rm config/config.js
-    mv config/config.production.js config/config.js
 
 - task: CopyFiles@2
   inputs:
