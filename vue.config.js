@@ -1,9 +1,9 @@
 // vue.config.js
-
 const path = require('path')
+
 module.exports = {
   publicPath: '/',
-  productionSourceMap: false,
+  productionSourceMap: process.env.NODE_ENV != 'production',
   configureWebpack: {
     module: {
       rules: [
