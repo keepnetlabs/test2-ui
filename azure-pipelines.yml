@@ -12,9 +12,9 @@ pool:
 steps:
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(system.defaultworkingdirectory)/dist'
+    SourceFolder: '$(system.defaultworkingdirectory)/config'
     Contents: '**'
-    TargetFolder: '$(build.artifactstagingdirectory)/dist'
+    TargetFolder: '$(build.artifactstagingdirectory)/config'
     CleanTargetFolder: true
     OverWrite: true
 - task: NodeTool@0
