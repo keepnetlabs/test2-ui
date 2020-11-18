@@ -19,6 +19,10 @@ steps:
 - script: yarn run build
   displayName: 'yarn build'
 
+- script: |
+    rm config.js
+    mv config.production.js config.js
+
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(System.DefaultWorkingDirectory)/dist'
