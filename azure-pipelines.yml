@@ -20,8 +20,8 @@ steps:
   displayName: 'yarn build'
 
 - script: |
-    rm config.js
-    mv config.production.js config.js
+    rm config/config.js
+    mv config/config.production.js config/config.js
 
 - task: CopyFiles@2
   inputs:
