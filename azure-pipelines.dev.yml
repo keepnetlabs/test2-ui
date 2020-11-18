@@ -22,7 +22,7 @@ steps:
   displayName: 'yarn lint'
   
 - script: yarn run build
-  displayName: 'yarn build'
+  displayName: 'yarn build:production'
 
 - script: mv Web.config dist
   displayName: 'Move web.config'
