@@ -4,12 +4,12 @@ const APP_CONFIG = (() => {
     VUE_APP_HOTJAR_ID: '2045435',
     VUE_APP_FULLSTORY_ID: 'TRDZX',
     VUE_APP_ANALYTICS_ID: 'UA-131042304-4',
-    VUE_APP_ROOT_API: '#{knl_api_address}/api',
-    VUE_APP_WEB_API: '#{knl_api_address}/api',
-    VUE_APP_WEB_API_TEST: '#{knl_api_address}/api',
-    VUE_APP_API_KEY: '#{knl_api_key}',
-    VUE_APP_AUTH_API_TEST: '#{knl_api_address}',
-    VUE_APP_APP_API_TEST: '#{knl_api_address}/api',
+    VUE_APP_ROOT_API: '#{knl_api_address}#/api',
+    VUE_APP_WEB_API: '#{knl_api_address}#/api',
+    VUE_APP_WEB_API_TEST: '#{knl_api_address}#/api',
+    VUE_APP_API_KEY: '#{knl_api_key}#',
+    VUE_APP_AUTH_API_TEST: '#{knl_api_address}#',
+    VUE_APP_APP_API_TEST: '#{knl_api_address}#/api',
     VUE_APP_NEW_RELIC: () => {
       window.NREUM || (NREUM = {})
       NREUM.init = { privacy: { cookies_enabled: true } }
