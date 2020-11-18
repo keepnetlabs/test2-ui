@@ -251,7 +251,7 @@ export default {
           this.tableOptions.table =
             results.map((item) => {
               const { lastSeen } = item
-              const dateOfLastSeen = new Date(lastSeen)
+              const dateOfLastSeen = new Date(lastSeen.replace(/\s/, 'T'))
               const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
               const timezonedDate = new Date(
                 dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
