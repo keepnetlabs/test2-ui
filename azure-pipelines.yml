@@ -24,6 +24,8 @@ steps:
 - script: yarn run build
   displayName: 'yarn build'
 
+- script: mv Web.config dist
+  displayName: 'Move web.config'
 
 - task: CopyFiles@2
   inputs:
