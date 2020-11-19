@@ -78,7 +78,8 @@
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Industry</label>
-                    <v-autocomplete
+                    <k-select
+                      type="autocomplete"
                       :items="industries"
                       v-model="formData.IndustryResourceId"
                       item-text="name"
@@ -89,13 +90,14 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-autocomplete>
+                    ></k-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Country</label>
-                    <v-autocomplete
+                    <k-select
+                      type="autocomplete"
                       v-model="formData.CountryResourceId"
                       :items="countries"
                       item-text="name"
@@ -106,7 +108,7 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-autocomplete>
+                    ></k-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -190,7 +192,7 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content class="mb-2">
                     <label class="bottom-margin">Licence Type</label>
-                    <v-select
+                    <k-select
                       :items="licenceTypes"
                       v-model="formData.LicenseTypeResourceId"
                       item-text="name"
@@ -202,13 +204,13 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-select>
+                    ></k-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="mb-2">
                     <label class="bottom-margin">Expiry Period</label>
-                    <v-select
+                    <k-select
                       :items="expiryPeriods"
                       v-model="formData.LicensePeriodTypeResourceId"
                       item-text="name"
@@ -237,7 +239,7 @@
                           >
                         </span>
                       </template>
-                    </v-select>
+                    </k-select>
                     <el-form>
                       <el-form-item
                         class="mt-2"
@@ -327,7 +329,8 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">Company Groups</label>
-                    <v-autocomplete
+                    <k-select
+                      type="autocomplete"
                       :items="companyGroupList"
                       v-model="formData.CompanyGroupResourceIdArray"
                       chips
@@ -338,7 +341,7 @@
                       small-chips
                       outlined
                       placeholder="Select company groups (optional)"
-                    ></v-autocomplete>
+                    ></k-select>
                   </v-list-item-content>
                 </v-list-item>
               </v-form>
@@ -359,7 +362,7 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">Notification Templates</label>
-                    <v-select
+                    <k-select
                       v-model="formData.NotificationTemplateTypeResourceId"
                       :items="notificationTemplates"
                       :return-object="false"
@@ -381,13 +384,13 @@
                           }}</v-list-item-subtitle>
                         </v-list-item-content>
                       </template>
-                    </v-select>
+                    </k-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Training Content</label>
-                    <v-select
+                    <k-select
                       v-model="formData.TrainingContentTypeResourceId"
                       :items="trainingContents"
                       :return-object="false"
@@ -409,13 +412,13 @@
                           }}</v-list-item-subtitle>
                         </v-list-item-content>
                       </template>
-                    </v-select>
+                    </k-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">SMTP Configurations</label>
-                    <v-select
+                    <k-select
                       v-model="formData.SmtpConfigurationTypeResourceId"
                       :items="smtpConfigurations"
                       :return-object="false"
@@ -437,7 +440,7 @@
                           }}</v-list-item-subtitle>
                         </v-list-item-content>
                       </template>
-                    </v-select>
+                    </k-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -542,6 +545,7 @@ import AuthenticationService from '@/services/authentication'
 import AuthenticationStatus from '@/model/constants/authenticationStatus'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeIdList } from '@/api/common'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -550,7 +554,7 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KFileUpload },
+  components: { KSelect, KFileUpload },
   data() {
     return {
       stepLock: false,
@@ -990,6 +994,7 @@ export default {
   .v-list-item__content {
     padding: 0;
     margin-bottom: 18px;
+    overflow: visible;
   }
 
   .v-autocomplete:not(.v-input--is-focused).v-select--chips input {

@@ -5,7 +5,7 @@
     :attach="`.${uniqueSelector}`"
     :menu-props="{
       offsetY: true,
-      position: position,
+      top: position === 'top',
       contentClass: 'k-select__menu'
     }"
     v-bind="$attrs"
@@ -47,10 +47,20 @@ export default {
 </script>
 
 <style lang="scss">
-.k-select__menu {
-  z-index: 1000 !important;
-  .v-list-item {
-    padding: 0 16px !important;
+.v-menu__content.k-select__menu {
+  z-index: 99999 !important;
+  .v-list.v-select-list {
+    .v-list-item {
+      padding: 0 16px !important;
+      min-height: 40px !important;
+      &__content {
+        margin-bottom: 0 !important;
+        padding: 8px 0 !important;
+        .v-list-item__title {
+          overflow: visible !important;
+        }
+      }
+    }
   }
 }
 </style>

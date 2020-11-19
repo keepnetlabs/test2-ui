@@ -71,7 +71,8 @@
             <v-list-item-content class="pt-0 pb-0">
               <label class="edit-labels">Industry</label>
               <label class="edit-sub-labels">Select an industry category</label>
-              <v-autocomplete
+              <k-select
+                type="autocomplete"
                 :items="categories"
                 return-object
                 item-text="name"
@@ -81,7 +82,7 @@
                 v-model.trim="selectedCategory"
                 :rules="[categoryRule]"
                 required
-              ></v-autocomplete>
+              ></k-select>
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-industry-area pa-0 target-users-select">
@@ -149,9 +150,11 @@ import { createCommunity, listBusinessCategories, updateCommunity } from '../../
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 import { scrollToComponent } from '../../utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   components: {
+    KSelect,
     AppDialog
   },
   props: {

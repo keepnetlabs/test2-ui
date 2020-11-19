@@ -236,7 +236,6 @@
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
-                  :menu-props="{ offsetY: true }"
                   placeholder="3 Days"
                 ></k-select>
               </v-list-item-content>
@@ -255,6 +254,7 @@
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"
+                  position="top"
                   placeholder="Delete Email"
                 ></k-select>
               </v-list-item-content>

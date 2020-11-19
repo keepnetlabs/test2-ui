@@ -119,15 +119,13 @@
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content>
             <label class="add-user-overlay__label" for="priority">Priority</label>
-            <v-select
+            <k-select
               :items="priorityItems"
               outlined
               dense
               v-model.trim="formValues.priority"
               id="department"
-              :menu-props="{ offsetY: true }"
-              height="40"
-            ></v-select>
+            ></k-select>
           </v-list-item-content>
         </v-list-item>
 
@@ -166,9 +164,10 @@ import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targe
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'AddUserModal',
-  components: { AppModal },
+  components: { KSelect, AppModal },
   props: {
     status: {
       type: Boolean
