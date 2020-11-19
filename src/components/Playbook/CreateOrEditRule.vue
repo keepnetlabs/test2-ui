@@ -95,7 +95,7 @@
                       @keyup.tab="updateTags"
                       @paste="updateTags"
                       outlined
-                      class="hide-caret"
+                      class="hide-caret playbook_tag-select"
                       multiple
                       dense
                       placeholder="Enter tag and press enter key"
