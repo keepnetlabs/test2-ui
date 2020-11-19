@@ -30,6 +30,7 @@
       :extended-view-options="tableOptions.extendedViewOptions"
       :disableExtendedViewTransition="true"
       :extendedViewValue="extendedViewValue"
+      :extendedViewLoading="extendedViewLoading"
       :selectEvent="tableOptions.selectEvent"
       @handleMultipleDelete="handleMultipleDelete"
       :is-downloadable="false"
@@ -92,6 +93,7 @@ export default {
     return {
       loading: true,
       tableData: [],
+      extendedViewLoading: true,
       tableOptions: {
         isColumnFilterActive: false,
         columns: [
@@ -254,17 +256,6 @@ export default {
   },
   methods: {
     handleSyncWithLDAP(row) {},
-    handleAddGroups(item) {
-      switch (item) {
-        case this.addGroupsItems[0]:
-          this.changeNewUserGroupStatus(true)
-          break
-        case this.addGroupsItems[1]:
-          break
-        default:
-          break
-      }
-    },
     handleMultipleDelete(selection) {
       this.selectedRow = selection
       this.changeDeleteGroupModalStatus(true)
@@ -312,9 +303,6 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    callForDeleteGroup() {
-      //TODO
-    },
     callForUpdateTargetGroup(payload) {
       updateTargetGroup(payload)
         .then(() => {
@@ -338,6 +326,7 @@ export default {
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen) {
+        this.extendedViewLoading = false
         this.extendedViewValue = [...selections]
       }
     },
