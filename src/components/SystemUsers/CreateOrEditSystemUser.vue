@@ -94,20 +94,19 @@
           </div>
         </form-group>
         <form-group title="Status">
-          <v-select
+          <k-select
             placeholder="Select Option"
             outlined
             dense
             :items="statusItems"
             item-text="name"
             item-value="val"
-            :menu-props="{ offsetY: true }"
             v-model.trim="formValues.statusId"
             @change="handleChangeStatus"
-          ></v-select>
+          />
         </form-group>
         <form-group title="Role">
-          <v-select
+          <k-select
             placeholder="Select Option"
             outlined
             dense
@@ -116,10 +115,9 @@
             hint="*Required"
             persistent-hint
             item-text="roleName"
-            :menu-props="{ offsetY: true }"
             item-value="resourceId"
             :rules="[(v) => validations.required(v, 'Required')]"
-          ></v-select>
+          />
         </form-group>
         <form-group v-if="false">
           <v-btn color="#2196f3" rounded class="white--text btn-util">
@@ -143,9 +141,11 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
 import { VueTelInput } from 'vue-tel-input'
 import { getUserRoles } from '@/api/systemUsers'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
+    KSelect,
     AppModal,
     AppModalBodyHeader,
     FormGroup,

@@ -1017,7 +1017,7 @@ export default {
   box-shadow: none;
   overflow: visible;
   .v-stepper__items {
-    overflow: visible;
+    //overflow: visible;
   }
   &__header.v-stepper__header {
     justify-content: flex-start;

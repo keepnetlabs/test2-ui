@@ -251,7 +251,7 @@
                 </v-combobox>
               </div>
               <div class="d-flex">
-                <v-select
+                <k-select
                   :items="privacyList"
                   placeholder="Privacy"
                   outlined
@@ -280,7 +280,7 @@
                       (+{{ privacyValue.length - 1 }})</span
                     >
                   </template>
-                </v-select>
+                </k-select>
               </div>
             </div>
           </template>

@@ -122,7 +122,7 @@
         </v-list-item>
       </v-col>
       <v-col md="3">
-        <v-select
+        <k-select
           v-model="investigateData.filters"
           :items="act.investigateFilters"
           placeholder="Select Filters"
@@ -147,7 +147,7 @@
         </v-list-item>
       </v-col>
       <v-col md="3">
-        <v-select
+        <k-select
           v-model="investigationRange"
           :items="act.investigateRanges"
           outlined
@@ -216,7 +216,7 @@
         </v-list-item>
       </v-col>
       <v-col md="3">
-        <v-select
+        <k-select
           v-model="investigationDuration"
           :items="act.investigateDurations"
           outlined
@@ -239,20 +239,18 @@
       <v-col md="6">
         <v-row>
           <v-col>
-            <v-select
+            <k-select
               v-model="investigateData.actionType"
               :items="act.investigateActions"
               outlined
-              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
           <v-col v-if="investigateData.actionType === 'Notify'">
-            <v-select
+            <k-select
               v-model="investigateData.actionNotifyTargetUserType"
               :items="act.investigateActionNotifications"
               outlined
-              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
@@ -260,13 +258,14 @@
             style="padding-right: 0 !important ;"
             v-if="investigateData.actionType === 'Notify'"
           >
-            <v-select
+            <k-select
               v-model="investigateActionNotificationTemplate"
               :items="act.notifyTemplates"
               item-text="label"
               item-value="value"
               outlined
-              :menu-props="{ offsetY: true }"
+              add-min-width
+              position="top"
               hide-details
             />
           </v-col>
@@ -285,8 +284,10 @@ import {
   getTargetUsersByEmail
 } from '../../api/targetUsers'
 import { getInvestigationScanTypes } from '@/api/investigations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'Investigate',
+  components: { KSelect },
   props: {
     act: {
       type: Object

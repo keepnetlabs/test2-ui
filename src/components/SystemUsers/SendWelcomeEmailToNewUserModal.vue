@@ -13,13 +13,13 @@
     <template v-slot:app-dialog-body>
       <v-form ref="refForm" lazy-validation>
         <form-group title="SMTP Settings" sub-title="Select SMTP profile">
-          <v-select
+          <k-select
             placeholder="Select Option"
             outlined
             dense
             :items="smtpItems"
             v-model="formValues.smtp"
-          ></v-select>
+          ></k-select>
         </form-group>
         <form-group title="From Name" sub-title="Enter a name to show as sender name">
           <v-text-field
@@ -97,9 +97,11 @@
 import AppDialog from '@/components/AppDialog'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { mail } from '@/utils/validations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'SendWelcomeEmailToNewUserModal',
   components: {
+    KSelect,
     AppDialog,
     FormGroup
   },

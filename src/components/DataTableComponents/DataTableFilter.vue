@@ -183,7 +183,6 @@ export default {
     this.changeDateSelect()
   },
   created() {
-    debugger
     if (this.filterableType === 'select') {
       this.filterableItems.forEach((x) => {
         this.convertedFilterableItems.push(

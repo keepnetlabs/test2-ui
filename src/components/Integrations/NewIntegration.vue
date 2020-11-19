@@ -77,7 +77,6 @@
               item-value="resourceId"
               outlined
               placeholder="Select integration type"
-              position="top"
               @input="handleIntegrationTypeChange"
             ></k-select>
           </form-group>
@@ -322,7 +321,7 @@
                   <div v-if="formValues.isUploadOtherFileType" class="ml-8 mt-1">
                     <div class="d-flex align-center">
                       <span class="mr-4 type-text">File Types</span>
-                      <v-select
+                      <k-select
                         v-model.trim="formValues.uploadFileTypes"
                         :items="uploadFileTypes"
                         class="new-integration__select"
@@ -332,7 +331,7 @@
                         hide-details
                         placeholder="Select integration type"
                         required
-                      ></v-select>
+                      ></k-select>
                     </div>
                   </div>
                 </div>

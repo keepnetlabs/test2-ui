@@ -344,7 +344,7 @@
               <div class="input-header pt-6">Category</div>
               <div class="input-sub pb-1">Select threat categories</div>
               <v-form onSubmit="return false;" v-model="categoryValid" ref="categoryInput">
-                <v-select
+                <k-select
                   id="post-category-select"
                   class="cat-select"
                   v-model.trim="uploadRespond.CategoryResourceIdArray"
@@ -365,7 +365,7 @@
                   }"
                 >
                   <template v-slot:append-item></template>
-                </v-select>
+                </k-select>
               </v-form>
               <!--<span class="required">*Required</span>-->
 
@@ -382,7 +382,7 @@
                 for more information.
               </div>
               <v-form>
-                <v-select
+                <k-select
                   v-model="value"
                   :items="items2"
                   :return-object="false"
@@ -413,7 +413,7 @@
                       ></div>
                     </v-list-item-avatar>
                   </template>
-                </v-select>
+                </k-select>
               </v-form>
             </div>
           </div>
@@ -1827,6 +1827,7 @@ import AppModal from '../AppModal'
 import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
 import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
+import KSelect from '@/components/Common/Inputs/KSelect'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1945,6 +1946,7 @@ a{position:relative}
 
 export default {
   components: {
+    KSelect,
     KFileUpload,
     VClamp,
     PreviewHeader,

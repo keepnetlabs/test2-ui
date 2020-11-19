@@ -393,7 +393,7 @@
 
               <div class="input-header mt-6">Duration</div>
               <div class="input-sub">Select how many days the investigation will run</div>
-              <v-select
+              <k-select
                 :items="durations"
                 placeholder="3 days"
                 outlined
@@ -402,11 +402,11 @@
                 v-model="selectedDuration"
                 :rules="[(v) => !!v || 'Duration is required']"
                 required
-              ></v-select>
+              ></k-select>
 
               <div class="input-header">Action</div>
               <div class="input-sub">Select action to be executed if email is found</div>
-              <v-select
+              <k-select
                 :items="actions"
                 placeholder="Delete email"
                 outlined
@@ -415,7 +415,7 @@
                 v-model="selectedAction"
                 :rules="[(v) => !!v || 'Action is required']"
                 required
-              ></v-select>
+              ></k-select>
             </div>
           </v-form>
         </div>
@@ -442,8 +442,10 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
+  components: { KSelect },
   props: {
     selectedPostTitle: {
       type: String

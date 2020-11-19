@@ -40,7 +40,7 @@
                 ></v-text-field>
               </div>
               <div>
-                <v-select
+                <k-select
                   :items="companyItem"
                   :placeholder="'Company'"
                   outlined
@@ -55,7 +55,7 @@
                 />
               </div>
               <div class="d-flex">
-                <v-select
+                <k-select
                   :items="threatsList"
                   placeholder="Threat"
                   outlined
@@ -84,7 +84,7 @@
                       (+{{ threats.length - 1 }})</span
                     >
                   </template>
-                </v-select>
+                </k-select>
               </div>
             </div>
           </template>
@@ -154,9 +154,11 @@ import {
 import PostIncident from '../ThreadSharing/PostIncident'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { getCompanyList, getCompanyListForThreatSharing } from '../../api/company'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   components: {
+    KSelect,
     PostIncident,
     SinglePost
   },

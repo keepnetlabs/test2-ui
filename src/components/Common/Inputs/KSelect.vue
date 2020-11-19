@@ -6,7 +6,7 @@
     :menu-props="{
       offsetY: true,
       top: position === 'top',
-      contentClass: 'k-select__menu'
+      contentClass: `k-select__menu ${addMinWidth ? 'k-select__menu-min-width' : ''}`
     }"
     v-bind="$attrs"
     v-on="$listeners"
@@ -21,6 +21,10 @@ export default {
     position: {
       type: String,
       default: 'bottom'
+    },
+    addMinWidth: {
+      type: Boolean,
+      default: false
     }
   },
   created() {
@@ -61,6 +65,11 @@ export default {
         }
       }
     }
+  }
+}
+.k-select__menu-min-width {
+  @media (max-width: 2000px) {
+    min-width: 380px !important;
   }
 }
 </style>

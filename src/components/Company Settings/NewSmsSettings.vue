@@ -11,13 +11,13 @@
       <app-modal-body-header title="SMS Configuration" sub-title="Set new SMS Provider" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="Provider">
-          <v-select
+          <k-select
             placeholder="Select option"
             outlined
             dense
             :items="providerItems"
             v-model.trim="formValues.provider"
-          ></v-select>
+          ></k-select>
         </form-group>
         <form-group title="Account SID">
           <v-text-field
@@ -75,9 +75,11 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import { maxLength, minLength } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'NewSmsSettings',
   components: {
+    KSelect,
     AppModal,
     AppModalBodyHeader,
     PhoneNumber,

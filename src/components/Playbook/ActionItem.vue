@@ -117,7 +117,7 @@
     <v-form ref="refForm" v-model="isFormValid" lazy-validation>
       <v-row v-for="(action, index) in actions" :key="index" class="vqb-rule action-items__item">
         <v-col md="2">
-          <v-select
+          <k-select
             :value="actionsValues[index]"
             :items="act.actionTypes"
             :return-object="true"
@@ -126,16 +126,14 @@
             height="40"
             item-text="name"
             item-value="val"
-            :menu-props="{ offsetY: true }"
             @input="setAvailableItems($event, actionsValues[index], index)"
           />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'markAs'" md="2">
-          <v-select
+          <k-select
             v-model="playbookAction.markType"
             :items="act.markAsOpts"
             outlined
-            :menu-props="{ offsetY: true }"
             hide-details
           />
         </v-col>
@@ -181,11 +179,10 @@
           ></v-combobox>
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2">
-          <v-select
+          <k-select
             v-model="targetUserType[index]"
             :items="getNotifyTypes()"
             outlined
-            :menu-props="{ offsetY: true }"
             @input="tarUsers[index] = []"
             :rules="[(v) => validations.required(v, 'Required')]"
           />
@@ -257,13 +254,13 @@
           </v-combobox>
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2">
-          <v-select
+          <k-select
             v-model="notifyTemplate"
             :items="act.notifyTemplates"
             item-value="value"
             item-text="label"
             outlined
-            :menu-props="{ offsetY: true }"
+            addMinWidth
             hide-details
           />
         </v-col>
@@ -311,8 +308,9 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
-  components: { AppDialog, Investigate },
+  components: { KSelect, AppDialog, Investigate },
 
   name: 'ActionItem',
   props: {
