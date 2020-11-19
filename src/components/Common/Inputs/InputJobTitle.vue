@@ -15,6 +15,7 @@ export default {
     placeholder: {
       default: 'Enter a name for the job title'
     },
+
     hint: {
       default: '*Required'
     },
