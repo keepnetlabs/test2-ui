@@ -15,9 +15,6 @@ export default {
     placeholder: {
       default: 'Enter a name for the department'
     },
-    hint: {
-      default: '*Required'
-    },
     persistentHint: {
       default: true
     },
@@ -26,7 +23,6 @@ export default {
     },
     rules: {
       default: () => [
-        (v) => Validations.required(v, 'Required'),
         (v) => Validations.startsWithEmpty(v, 'Cannot start with space'),
         (v) => Validations.maxLength(v, 64, 'Max 64 characters')
       ]
