@@ -14,14 +14,17 @@
           <v-form ref="form" lazy-validation>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">Average time saved per reported email</label>
+                <label class="roi-modal__label">Average hours saved per reported email</label>
                 <v-text-field
                   placeholder="Saved Time"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHour"
-                  v-mask="'#######################'"
-                  :rules="[(v) => validations.required(v, 'Required')]"
+                  v-mask="'###'"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+                  ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -33,8 +36,11 @@
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHourCost"
-                  v-mask="'#######################'"
-                  :rules="[(v) => validations.required(v, 'Required')]"
+                  v-mask="'###'"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+                  ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -271,15 +277,15 @@
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
-                  <span class="body-row__number">
-                    {{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.time) || 0 }}h
+                  <span class="body-row__number" style="white-space: nowrap;">
+                    {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || '0' }}
                   </span>
 
-                  <span class="body-row__text" style="margin-left: 4px;">Time</span>
+                  <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
                 </div>
                 <div class="body-row">
                   <span class="body-row__number">
-                    {{ getRoiSummaryValue }}
+                    ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
                   </span>
 
                   <span class="body-row__text" style="margin-left: 2px;">Money</span>
@@ -470,11 +476,11 @@
             id="incident-responder-reported-emails-data-table"
             :columns="emails.columns"
             :countRow="5"
+            :extended-view-loading="extendedViewLoading"
             :changeFooterPosition="true"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
             :pageSizes="emails.pageSizes"
-            :defaultSort="'createDate'"
             :selectable="true"
             :filterable="true"
             :options="true"
@@ -611,7 +617,7 @@ import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { maxLength, required } from '../utils/validations'
+import { startsWith, required } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import IRSummaryLoading from '../components/SkeletonLoading/IRSummaryLoading'
@@ -640,6 +646,7 @@ export default {
     roiTask: '',
     selectedMatch: null,
     isShowRoi: false,
+    extendedViewLoading: true,
     openInvestigationOverlay: false,
     investigationListData: [],
     matchingInvestigationData: [],
@@ -651,7 +658,8 @@ export default {
     baseManHour: null,
     baseManHourCost: null,
     validations: {
-      required
+      required,
+      startsWith
     },
     extendedViewValue: [],
     topRules: {
@@ -824,7 +832,7 @@ export default {
         footer: [
           {
             label: 'Date Created',
-            key: 'createDate'
+            key: 'createTime'
           },
           {
             label: 'Last update',
@@ -1040,7 +1048,7 @@ export default {
           fullWidth: true,
           filterableType: 'select',
           filterableItems: [
-            { text: 'Being Analyzed', value: 'BeingAnalyzed' },
+            { text: 'In Analysis', value: 'BeingAnalyzed' },
             'Open',
             'Closed',
             { text: 'In Progress', value: 'InProgress' },
@@ -1205,6 +1213,7 @@ export default {
     },
 
     getRoiSummaryValue() {
+      /*
       if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
         let revenue = Number(this.irSummary.roiSummary.revenue)
         if (revenue < 1000) {
@@ -1253,6 +1262,8 @@ export default {
         return `$0`
       }
       return `$0`
+      */
+      return '$0'
     },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
@@ -1348,19 +1359,21 @@ export default {
       })
     },
     submitRoiModal() {
-      updateRoiSettings({
-        baseManHour: this.baseManHour,
-        baseManHourCost: this.baseManHourCost
-      }).then((response) => {
-        this.callForGetRoiSettings()
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'ROI settings has been updated',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      if (this.$refs.form.validate()) {
+        updateRoiSettings({
+          baseManHour: this.baseManHour,
+          baseManHourCost: this.baseManHourCost
+        }).then((response) => {
+          this.callForGetRoiSettings()
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'ROI settings has been updated',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.$store.dispatch('investigations/getIrSummary')
         })
-        this.$store.dispatch('investigations/getIrSummary')
-      })
-      this.isShowRoi = false
+        this.isShowRoi = false
+      }
     },
     isRoiSummaryEmpty(summary) {
       const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
@@ -1386,27 +1399,30 @@ export default {
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen) {
+        this.extendedViewLoading = true
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
         if (selections.length === 1) {
-          getNotifiedEmail(selections[0].resourceId, true).then((response) => {
-            const selectedItem = response.data.data
-            this.extendedView.isNotify = selectedItem.isNotifyUser
-            this.extendedView.customMessage = selectedItem.customMessage
-            this.extendedView.isMessage = selectedItem.customMessage ? true : false
-            this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
-            this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
-            this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
-            this.extendedViewValue = [
-              {
-                ...selectedItem,
-                resourceId: selections[0].resourceId,
-                reportedBy: selections[0].reportedBy,
-                matchingPlaybooks: selections[0].matchingPlaybooks,
-                source: selections[0].source
-              }
-            ]
-          })
+          getNotifiedEmail(selections[0].resourceId)
+            .then((response) => {
+              const selectedItem = response.data.data
+              this.extendedView.isNotify = selectedItem.isNotifyUser
+              this.extendedView.customMessage = selectedItem.customMessage
+              this.extendedView.isMessage = selectedItem.customMessage ? true : false
+              this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
+              this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
+              this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
+              this.extendedViewValue = [
+                {
+                  ...selectedItem,
+                  resourceId: selections[0].resourceId,
+                  reportedBy: selections[0].reportedBy,
+                  matchingPlaybooks: selections[0].matchingPlaybooks,
+                  source: selections[0].source
+                }
+              ]
+            })
+            .finally(() => (this.extendedViewLoading = false))
           this.hasMultipleNoteValue = false
         } else if (selections.length > 1) {
           const rows = []
@@ -1414,26 +1430,33 @@ export default {
           this.extendedView.isNotify = true
           this.extendedView.isMessage = false
           this.extendedView.customMessage = ''
+          this.extendedViewLoading = true
           selections.map((a, ind) => {
-            getNotifiedEmail(selections[index].resourceId, true).then((response) => {
-              const selectedItem = response.data.data
-              rows.push({
-                ...selectedItem,
-                resourceId: selections[ind].resourceId,
-                reportedBy: selections[ind].reportedBy,
-                matchingPlaybooks: selections[ind].matchingPlaybooks,
-                source: selections[ind].source
-              })
-              if (index === selections.length) {
-                const note = rows[0].note
-                rows.map((item, i) => {
-                  if (item.note !== note) {
-                    this.hasMultipleNoteValue = true
-                  }
+            getNotifiedEmail(selections[index].resourceId)
+              .then((response) => {
+                const selectedItem = response.data.data
+                rows.push({
+                  ...selectedItem,
+                  resourceId: selections[ind].resourceId,
+                  reportedBy: selections[ind].reportedBy,
+                  matchingPlaybooks: selections[ind].matchingPlaybooks,
+                  source: selections[ind].source
                 })
-                this.extendedViewValue = rows
-              }
-            })
+                if (index === selections.length) {
+                  const note = rows[0].note
+                  rows.map((item, i) => {
+                    if (item.note !== note) {
+                      this.hasMultipleNoteValue = true
+                    }
+                  })
+                  this.extendedViewValue = rows
+                }
+              })
+              .finally(() => {
+                if (ind === selections.length - 1) {
+                  this.extendedViewLoading = false
+                }
+              })
             index++
           })
         } else {
@@ -1520,8 +1543,8 @@ export default {
       this.isMatchingInvestigationLoading = true
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateDate',
+        pageSize: 50000,
+        orderBy: 'createDate',
         ascending: true
       }
       getMatchingIncidents(payload, match.resourceId)
@@ -1642,12 +1665,13 @@ export default {
     exportReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
-          pageNumber: pageNumber,
-          pageSize: reportAllPages ? 500 : pageSize,
+          pageNumber: reportAllPages ? 1 : pageNumber,
+          pageSize: reportAllPages ? 50000 : pageSize,
           orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.requestBodyReportedEmails.filter
         }
         exportNotifiedEmails(payload)
           .then((response) => {
@@ -1844,7 +1868,7 @@ export default {
         }
 
         .biggest {
-          font-size: 48px;
+          font-size: 44px;
           line-height: 1;
           font-weight: normal;
           font-stretch: normal;
@@ -1861,7 +1885,7 @@ export default {
         }
 
         .body-row__number {
-          font-size: 48px;
+          font-size: 44px;
           line-height: 1;
           letter-spacing: normal;
           color: #ffffff;
@@ -2290,7 +2314,7 @@ export default {
   display: flex;
   text-align: left;
   color: #212121;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   font-stretch: normal;
   font-style: normal;

@@ -34,6 +34,7 @@
       :forCompany="forCompany"
       @changeModalStatus="handleCreateItemModal"
       :is-edit="editCreateGroup"
+      @companyGroupCreated="handleSubmit"
     />
 
     <datatable
@@ -54,6 +55,7 @@
       :selectable="true"
       :is-downloadable="false"
       @addButton="addButton"
+      @onEmptyBtnClicked="addButton"
       @edit="handleTableItemEdit"
       @remove="handleTableItemRemove"
       @editAction="editAction"
@@ -244,7 +246,13 @@ export default {
               ? response.data.data.results
               : []
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error.response.status === 403) {
+            this.$router.push({
+              name: 'Companies',
+              params: { tab: 'second' }
+            })
+          }
           this.tableData = []
         })
         .finally(() => (this.loading = false))
@@ -351,6 +359,12 @@ export default {
         ...{ resourceId: this.groupId }
       }
       this.showCreateNewGroupWithCompany = true
+    },
+    handleSubmit() {
+      localStorage.setItem('companyGroupResouceId', this.groupId)
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     }
   }
 }

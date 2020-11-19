@@ -176,8 +176,9 @@
       </div>
       <div class="d-flex justify-center flex-wrap user-wrapper mb-12">
         <div class="user-name-dropdown">
-          <div class="user-name-dropdown-font">
+          <div class="user-name-dropdown__menu">
             <v-menu
+              class="user-name-dropdown__menu"
               :disabled="false"
               :absolute="false"
               :open-on-hover="false"
@@ -185,14 +186,28 @@
               :close-on-content-click="true"
               :offset-x="false"
               :offset-y="true"
+              :z-index="999"
             >
-              <template v-slot:activator="{ on }">
+              <template #activator="{ on: onMenu }">
                 <div
-                  class="v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text pr-0 pl-2"
-                  v-on="on"
+                  class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
+                  v-on="onMenu"
                 >
-                  <div class="user-name-dropdown-font">{{ getFullName }}</div>
-                  <v-icon>mdi-chevron-down</v-icon>
+                  <v-tooltip
+                    bottom
+                    :disabled="getFullName && getFullName.length < 14"
+                    ref="accountTooltip"
+                  >
+                    <template #activator="{ on: onTooltip }">
+                      <div v-on="{ ...onTooltip }" class="user-name-dropdown-font__tooltip-wrapper">
+                        <div class="user-name-dropdown-font">
+                          {{ getFullName }}
+                        </div>
+                        <v-icon class="user-name-dropdown-font__icon">mdi-chevron-down</v-icon>
+                      </div>
+                    </template>
+                    <span>{{ getFullName }}</span>
+                  </v-tooltip>
                 </div>
               </template>
 
@@ -497,7 +512,7 @@
             v-for="(item, index) in rightDropdownData"
             :key="index"
             :disabled="item.disabled"
-            @click="changeDropdownItem2(item)"
+            @click="handleClickRightDropdown(item)"
           >
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
@@ -645,7 +660,11 @@
       :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'"
       :class="{ 'bg-blur': sessionCheck }"
     >
-      <v-container fluid style="height: 100%;" class="app-container ml-0 pa-0 pt-2 mr-0">
+      <v-container
+        fluid
+        style="height: 100%; padding-bottom: 47px !important;"
+        class="app-container ml-0 pa-0 pt-2 mr-0 pb-12"
+      >
         <router-view :key="$router.fullPath" />
       </v-container>
       <app-footer />
@@ -744,19 +763,13 @@ export default {
           text: 'Documentation',
           icon: 'mdi-file-document',
           url: '',
-          disabled: true
+          disabled: false
         },
         {
           text: 'Get Help',
           icon: 'mdi-help-circle',
           url: '',
-          disabled: true
-        },
-        {
-          text: 'Video Tutorial',
-          icon: 'mdi-play-speed',
-          url: '',
-          disabled: true
+          disabled: false
         },
         {
           text: 'Feedback',
@@ -1105,7 +1118,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
-
+    removeTooltip() {
+      this.$refs.accountTooltip.isActive = false
+    },
     changePassword() {
       if (this.$refs.newPasswordByMain.validate()) {
         let payload = {
@@ -1141,12 +1156,24 @@ export default {
       const date1 = new Date('2019-10-24T08:41:23.927')
       return `${date1.toDateString().split(' ')[2]} ${date1.toDateString().split(' ')[0]}`
     },
-    changeDropdownItem2(item) {
-      if (item.text == 'Tour' && this.routerName === 'Dashboard') {
-        this.$tours.myTour.start()
-        this.setTourStatus(true)
-      } else if (item.text == 'Feedback') {
-        this.feedbackdialog = true
+    handleClickRightDropdown(item = { text: '' }) {
+      const { text } = item
+      const domElem = document.createElement('a')
+      switch (text) {
+        case 'Feedback':
+          this.feedbackdialog = true
+          break
+        case 'Get Help':
+          domElem.href = 'mailto:support@keepnetlabs.com'
+          domElem.click()
+          break
+        case 'Documentation':
+          domElem.href = 'https://doc.keepnetlabs.com'
+          domElem.target = '_blank'
+          domElem.click()
+          break
+        default:
+          break
       }
     },
     changeDropdownItem(item) {
@@ -1625,6 +1652,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
   }
 
   .user-name-dropdown-font {
@@ -1639,10 +1667,26 @@ export default {
     text-align: center;
     color: rgba(0, 0, 0, 0.87);
     text-transform: capitalize !important;
-    max-width: 240px;
+    max-width: 215px;
     word-wrap: break-word;
     white-space: initial;
     cursor: pointer;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    height: 28px !important;
+    padding: 0 !important;
+    &__icon {
+      margin-top: 2px;
+      &::before {
+        color: black;
+        font-weight: 900;
+      }
+    }
+    &__tooltip-wrapper {
+      display: flex;
+      max-width: 215px;
+    }
   }
 
   .user-wrapper {

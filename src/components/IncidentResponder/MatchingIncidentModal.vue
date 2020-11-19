@@ -117,8 +117,8 @@ export default {
     callForMatchingIncident() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
-        orderBy: 'CreateDate',
+        pageSize: 50000,
+        orderBy: 'createDate',
         ascending: true
       }
       this.isMatchingModalLoading = true

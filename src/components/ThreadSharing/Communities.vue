@@ -598,6 +598,7 @@ import {
   cancelRequest,
   deleteCommunity,
   getAllCommunityList,
+  getCommunityDetails,
   getInvitationCount,
   getInvitations,
   getMyCommunityList,
@@ -664,7 +665,8 @@ export default {
   props: {
     refresh: {
       type: Boolean
-    }
+    },
+    isCommunity: { required: false }
   },
   watch: {
     refresh: function (newVal, oldVal) {
@@ -689,6 +691,23 @@ export default {
   created() {},
   mounted() {
     this.getIndustryList()
+    if (this.isCommunity) {
+      if (this.$route.params.communityName === 'empty') {
+        getCommunityDetails(this.$route.params.communityId)
+          .then((response) => {
+            this.communityDetails = response.data.data
+            this.filter = response.data.data.name
+          })
+          .catch((error) => {
+            error.response.data
+          })
+      } else {
+        this.filter = this.$route.params.communityName
+        setTimeout(() => {
+          this.isCommunity = false
+        }, 2000)
+      }
+    }
     this.selectedTab = 'tab-1'
   },
   methods: {
@@ -894,6 +913,7 @@ export default {
         })
     },
     getAllCommunitiesListData() {
+      let _this = this
       this.listData = []
       this.communityLoading = true
       const payload = {
@@ -948,7 +968,13 @@ export default {
       getAllCommunityList(payload)
         .then((response) => {
           const { data } = response
-          this.listData = data.data.results
+          if (this.isCommunity) {
+            _this.listData = data.data.results.filter(
+              (item) => item.communityResourceId === _this.$route.params.communityId
+            )
+          } else {
+            _this.listData = data.data.results
+          }
         })
 
         .catch((error) => {
@@ -1051,7 +1077,7 @@ export default {
           this.getMyCommunitiesListData()
           break
         case 'tab-1':
-          this.getAllCommunitiesListData()
+          if (!this.isCommunity) this.getAllCommunitiesListData()
           break
         case 'tab-2':
           this.getInvitions()
@@ -1252,6 +1278,7 @@ export default {
   .ts-user-comp-detail {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
   }
 
   .ts-community-industry {

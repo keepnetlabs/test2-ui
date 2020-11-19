@@ -339,7 +339,7 @@
                     Expiry Time
                   </div>
                   <div class="investigation-details__container__content--left-menu--time--progress">
-                    <span>{{ investigationDetailsData.createDate }}</span>
+                    <span>{{ investigationDetailsData.createTime }}</span>
                     <span>{{ investigationDetailsData.expireDate }}</span>
                   </div>
                   <div
@@ -847,24 +847,10 @@
                             1 && 'ml-1'
                         ]"
                         class="datatable-progress__per"
-                        >{{
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) ===
-                          1
-                            ? 'Completed'
-                            : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCoun)
-                            ? Math.floor(
-                                scope.row.analyzedMailCount / scope.row.filteredMailCount
-                              ) *
-                                100 +
-                              '%'
-                            : 0 + '%'
-                        }}</span
+                        >{{ getProgressText(scope) }}</span
                       >
                       <v-progress-linear
-                        :value="
-                          Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) *
-                          100
-                        "
+                        :value="getProgressValue(scope)"
                         background-color="#b3d4fc"
                         color="#2196f3"
                         height="4"
@@ -974,7 +960,7 @@ export default {
     },
     investigationTargetUsersListBodyData: {
       pageNumber: 1,
-      pageSize: 3,
+      pageSize: 500000,
       orderBy: 'Email',
       ascending: true,
       filter: {
@@ -1235,6 +1221,20 @@ export default {
     }
   }),
   methods: {
+    getProgressText(scope) {
+      return Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) === 1 ||
+        scope.row.status === 'Completed'
+        ? 'Completed'
+        : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCount)
+        ? Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100) + '%'
+        : 0 + '%'
+    },
+    getProgressValue(scope) {
+      if (scope.row.analyzedMailCount === 0 && scope.row.filteredMailCount === 0) {
+        return 100
+      }
+      return Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100)
+    },
     getIconColor(status) {
       let retValue
       switch (status) {
@@ -1292,7 +1292,8 @@ export default {
           orderBy: 'ReceivedTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.investigationListBodyData.filter
         }
         exportInvestigationEmailList(payload, this.$route.params.id).then((response) => {
           const { data } = response
@@ -1303,15 +1304,16 @@ export default {
         })
       })
     },
-    exportTargetUsers({ exportTypes, reportAllPages, pageNumber }) {
+    exportTargetUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber,
-          pageSize: 5,
+          pageSize: reportAllPages ? 50000 : pageSize,
           orderBy: 'CreateTime',
           ascending: true,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.investigationTargetUsersListBodyData.filter
         }
 
         exportInvestigationUserList(payload, this.$route.params.id).then((response) => {
@@ -1330,7 +1332,7 @@ export default {
     },
     calculateProgressData() {
       let today = moment(new Date()).toDate()
-      let createDate = moment(this.investigationDetailsData.createDate).toDate()
+      let createDate = moment(this.investigationDetailsData.createTime).toDate()
       let expireDate = moment(this.investigationDetailsData.expireDate).toDate()
       let startDate = moment(this.investigationDetailsData.startDate).toDate()
       let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)

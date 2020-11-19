@@ -38,7 +38,6 @@
         :selectable="true"
         :sizeable="true"
         @editAction="handleEdit"
-        @deleteAction="handleDelete"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
@@ -157,7 +156,7 @@ export default {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
             show: true,
             fixed: false,
@@ -177,11 +176,6 @@ export default {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction'
-          },
-          {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction'
           }
         ],
         empty: {
@@ -204,34 +198,8 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  FieldName: 'FirstName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'LastName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'PhoneNumber',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'StatusId',
-                  Operator: '=',
-                  Value: ''
-                }
-              ],
+              Condition: 'AND',
+              FilterItems: [],
               FilterGroups: []
             }
           ]

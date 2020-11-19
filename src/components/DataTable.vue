@@ -100,6 +100,7 @@
           @closeEditPopup="closeEditPopup"
           :changeFooterPosition="changeFooterPosition"
           :extendedViewDisableChanger="extendedViewDisableChanger"
+          :loading="extendedViewLoading"
         >
           <template v-slot:body>
             <slot name="extended-view-slot" :scope="multipleSelection"></slot>
@@ -316,7 +317,7 @@
             </v-tooltip>
           </div>
         </div>
-        <div class="selection-row" v-if="multipleSelection.length">
+        <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
             @click.native="toggleAll(multipleSelection)"
@@ -877,6 +878,9 @@ export default {
       type: Array,
       required: true
     },
+    extendedViewLoading: {
+      type: Boolean
+    },
     changeFooterPosition: {
       type: Boolean,
       default: false
@@ -1122,10 +1126,12 @@ export default {
       } else if (this.sortProps) {
         this.sortChangedEvent(this.sortProps)
       } else {
-        this.tableData = [...table].slice(
-          (this.currentPage - 1) * this.rowCount,
-          this.currentPage * this.rowCount
-        )
+        let maxPage = Math.ceil(table.length / this.rowCount)
+        if (maxPage > this.currentPage) {
+          maxPage = this.currentPage
+        }
+        this.tableData = table.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
+
         setTimeout(() => {
           this.renderFixedItems()
         }, 500)
@@ -1262,35 +1268,37 @@ export default {
     },
     renderFixedItems() {
       const table = this.$el
-      const tableFixedItem = table.querySelector('.el-table__fixed')
-      const tableFixedRightItem = table.querySelector('.el-table__fixed-right')
-      if (tableFixedItem && tableFixedItem.style.height) {
-        const bodyWrapperHeight = Number(
-          getComputedStyle(
-            tableFixedItem.querySelector('.el-table__fixed-body-wrapper')
-          ).height.slice(0, -2)
-        )
-        const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2))
-        if (fixedItemHeight - bodyWrapperHeight < 45) {
-          const aggregate = window.innerWidth > 1300 ? 15 : 5
-          tableFixedItem.style.height = `${
-            Number(tableFixedItem.style.height.slice(0, -2)) + aggregate
-          }px`
+      if (table) {
+        const tableFixedItem = table.querySelector('.el-table__fixed')
+        const tableFixedRightItem = table.querySelector('.el-table__fixed-right')
+        if (tableFixedItem && tableFixedItem.style.height) {
+          const bodyWrapperHeight = Number(
+            getComputedStyle(
+              tableFixedItem.querySelector('.el-table__fixed-body-wrapper')
+            ).height.slice(0, -2)
+          )
+          const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2))
+          if (fixedItemHeight - bodyWrapperHeight < 45) {
+            const aggregate = window.innerWidth > 1300 ? 15 : 5
+            tableFixedItem.style.height = `${
+              Number(tableFixedItem.style.height.slice(0, -2)) + aggregate
+            }px`
+          }
         }
-      }
-      if (tableFixedRightItem && tableFixedRightItem.style.height) {
-        const bodyWrapperHeight = Number(
-          getComputedStyle(
-            tableFixedRightItem.querySelector('.el-table__fixed-body-wrapper')
-          ).height.slice(0, -2)
-        )
+        if (tableFixedRightItem && tableFixedRightItem.style.height) {
+          const bodyWrapperHeight = Number(
+            getComputedStyle(
+              tableFixedRightItem.querySelector('.el-table__fixed-body-wrapper')
+            ).height.slice(0, -2)
+          )
 
-        const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2))
-        if (fixedItemHeight - bodyWrapperHeight < 45) {
-          const aggregate = window.innerWidth > 1300 ? 15 : 5
-          tableFixedRightItem.style.height = `${
-            Number(tableFixedRightItem.style.height.slice(0, -2)) + aggregate
-          }px`
+          const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2))
+          if (fixedItemHeight - bodyWrapperHeight < 45) {
+            const aggregate = window.innerWidth > 1300 ? 15 : 5
+            tableFixedRightItem.style.height = `${
+              Number(tableFixedRightItem.style.height.slice(0, -2)) + aggregate
+            }px`
+          }
         }
       }
     },
@@ -1445,17 +1453,24 @@ export default {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.showfilteredData && this.filteredData && this.filteredData.length) {
-          this.filteredData = this.sortFunction(this.unRenderedFilterData, sortProps).slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
+          const filteredData = this.sortFunction(this.unRenderedFilterData, sortProps)
+
+          let maxPage = Math.ceil(filteredData.length / this.rowCount)
+          if (maxPage > this.currentPage) {
+            maxPage = this.currentPage
+          }
+          this.filteredData = filteredData.slice(
+            (maxPage - 1) * this.rowCount,
+            maxPage * this.rowCount
           )
           return this.filteredData
         } else {
           const data = this.sortFunction(this.initialData, sortProps)
-          this.tableData = data.slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
-          )
+          let maxPage = Math.ceil(data.length / this.rowCount)
+          if (maxPage > this.currentPage) {
+            maxPage = this.currentPage
+          }
+          this.tableData = data.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
           return this.tableData
         }
       }

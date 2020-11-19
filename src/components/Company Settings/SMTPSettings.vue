@@ -154,8 +154,7 @@ export default {
           }
         ],
         empty: {
-          message: 'You do not have any SMTP configuration, yet',
-          subMes: 'Create a new user directory integration',
+          message: 'No SMTP Configurations',
           btn: 'Create SMTP Configuration',
           icon: 'mdi-plus'
         },
@@ -202,7 +201,8 @@ export default {
           orderBy: PROPERTY_STORE.CREATETIME,
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyOptions.filter
         }
         exportSmtpSettings(payload).then((response) => {
           const { data } = response

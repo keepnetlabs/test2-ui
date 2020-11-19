@@ -28,7 +28,7 @@
                 <v-checkbox
                   class="k-checkbox"
                   color="#2196f3"
-                  v-model="acceptAllAnalysisEngines"
+                  v-model="getAllCheckboxSelection"
                   @change="acceptAllAnalysisEnginesClick"
                   hide-details
                 />
@@ -328,6 +328,16 @@ export default {
     editedNotifications: Array,
     editedPlaybookActionInvestigations: Array
   },
+  computed: {
+    getAllCheckboxSelection: {
+      get() {
+        return this.analysisEngines.every((item) => item.selected)
+      },
+      set(val) {
+        this.acceptAllAnalysisEngines = val
+      }
+    }
+  },
   data() {
     return {
       searchEnginesData: null,
@@ -601,7 +611,7 @@ export default {
           ...item,
           isCheckUrl: val,
           isCheckHash: val,
-          isCheckFile: val,
+          isCheckFile: false,
           selected: val
         }
       })

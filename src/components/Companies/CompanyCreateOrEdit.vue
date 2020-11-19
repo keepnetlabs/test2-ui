@@ -78,7 +78,7 @@
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Industry</label>
-                    <v-select
+                    <v-autocomplete
                       :items="industries"
                       v-model="formData.IndustryResourceId"
                       item-text="name"
@@ -89,13 +89,13 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Country</label>
-                    <v-select
+                    <v-autocomplete
                       v-model="formData.CountryResourceId"
                       :items="countries"
                       item-text="name"
@@ -106,7 +106,7 @@
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
-                    ></v-select>
+                    ></v-autocomplete>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -147,7 +147,7 @@
                       <img
                         v-if="edit && this.formData.logoURL"
                         :src="this.formData.logoURL"
-                        style="max-height: 60px; object-fit: contain;"
+                        style="max-height: 60px; object-fit: contain; margin-top: 16px;"
                       />
                     </div>
                   </v-list-item-content>
@@ -360,51 +360,84 @@
                   <v-list-item-content>
                     <label class="bottom-margin">Notification Templates</label>
                     <v-select
-                      :items="notificationTemplates"
                       v-model="formData.NotificationTemplateTypeResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
+                      :items="notificationTemplates"
+                      :return-object="false"
+                      class="tlp-select"
                       :rules="[(v) => !!v || 'Required']"
+                      outlined
                       hint="*Required"
                       persistent-hint
                       :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
-                    ></v-select>
+                      item-text="name"
+                      item-value="resourceId"
+                    >
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle class="tlp_subtitle">{{
+                            item.description
+                          }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Training Content</label>
                     <v-select
-                      :items="trainingContents"
                       v-model="formData.TrainingContentTypeResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
+                      :items="trainingContents"
+                      :return-object="false"
+                      class="tlp-select"
                       :rules="[(v) => !!v || 'Required']"
+                      outlined
                       hint="*Required"
                       persistent-hint
                       :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
-                    ></v-select>
+                      item-text="name"
+                      item-value="resourceId"
+                    >
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle class="tlp_subtitle">{{
+                            item.description
+                          }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">SMTP Configurations</label>
                     <v-select
-                      :items="smtpConfigurations"
                       v-model="formData.SmtpConfigurationTypeResourceId"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
+                      :items="smtpConfigurations"
+                      :return-object="false"
+                      class="tlp-select"
                       :rules="[(v) => !!v || 'Required']"
+                      outlined
                       hint="*Required"
                       persistent-hint
                       :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
-                    ></v-select>
+                      item-text="name"
+                      item-value="resourceId"
+                    >
+                      <template v-slot:item="{ item }">
+                        <v-list-item-content>
+                          <v-list-item-title>{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle class="tlp_subtitle">{{
+                            item.description
+                          }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -508,6 +541,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AuthenticationService from '@/services/authentication'
 import AuthenticationStatus from '@/model/constants/authenticationStatus'
 import { scrollToComponent } from '@/utils/functions'
+import { getLookupListByTypeIdList } from '@/api/common'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -580,14 +614,8 @@ export default {
     }
   },
   mounted() {
-    this.getCountries()
-    this.getIndustries()
-    this.getLicenceTypes()
-    this.getExpiryPeriods()
+    this.getLookupContents()
     this.getCompanyGroups()
-    this.getNotificationTemplates()
-    this.getTrainingContent()
-    this.getSmtpConfigurations()
 
     if (this.edit) {
       this.stepLock = this.edit
@@ -622,54 +650,19 @@ export default {
     }
   },
   methods: {
-    getIndustries() {
-      getLookupListByTypeId(2)
+    getLookupContents() {
+      getLookupListByTypeIdList({ typeidlist: [1, 2, 3, 4, 5, 6, 7] })
         .then((response) => {
-          this.industries = response.data.data
+          const res = response.data.data
+          this.countries = res.filter((item) => item.genericCodeTypeId === 1)
+          this.industries = res.filter((item) => item.genericCodeTypeId === 2)
+          this.licenceTypes = res.filter((item) => item.genericCodeTypeId === 3)
+          this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
+          this.notificationTemplates = res.filter((item) => item.genericCodeTypeId === 5)
+          this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
+          this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
         })
-        .catch((error) => {})
-    },
-    getCountries() {
-      getLookupListByTypeId(1)
-        .then((response) => {
-          this.countries = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getLicenceTypes() {
-      getLookupListByTypeId(3)
-        .then((response) => {
-          this.licenceTypes = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getExpiryPeriods() {
-      getLookupListByTypeId(4)
-        .then((response) => {
-          this.expiryPeriods = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getNotificationTemplates() {
-      getLookupListByTypeId(5)
-        .then((response) => {
-          this.notificationTemplates = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getTrainingContent() {
-      getLookupListByTypeId(6)
-        .then((response) => {
-          this.trainingContents = response.data.data
-        })
-        .catch((error) => {})
-    },
-    getSmtpConfigurations() {
-      getLookupListByTypeId(7)
-        .then((response) => {
-          this.smtpConfigurations = response.data.data
-        })
-        .catch((error) => {})
+        .catch(() => {})
     },
     getCompanyGroups() {
       getCompanyGroups()

@@ -713,12 +713,16 @@ export default {
           })
           .catch((error) => {
             if (error.response.data.code) {
-              this.$router.push('/threat-sharing')
+              this.$router.push({
+                name: 'Threat Sharing',
+                params: {
+                  isCommunity: true,
+                  postId: _this.$route.query.postId,
+                  communityId: _this.$route.params['id'],
+                  communityName: 'empty'
+                }
+              })
             }
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Community can not be found'
-            })
           })
       }
     },
@@ -818,8 +822,9 @@ export default {
         })
         if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
-            this.$emit('joinRequestSuccess')
+            this.$router.push(`/community/${resourceId}`)
             this.$router.go(`/community/${resourceId}`)
+            this.$emit('joinRequestSuccess')
           } else {
             this.$emit('joinRequestSuccess')
             this.$router.push(`/community/${resourceId}`)

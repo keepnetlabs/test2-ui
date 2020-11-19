@@ -25,7 +25,10 @@
             v-model.trim="formValues.firstName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.maxLength(v, 40, 'Max 40 characters')
+            ]"
           ></v-text-field>
         </form-group>
         <form-group title="Last Name" has-hint>
@@ -36,7 +39,10 @@
             v-model.trim="formValues.lastName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.maxLength(v, 40, 'Max 40 characters')
+            ]"
           ></v-text-field>
         </form-group>
         <form-group title="Email Address" has-hint>
@@ -49,7 +55,6 @@
             persistent-hint
             :rules="[
               (v) => validations.required(v, 'Required'),
-
               (v) => validations.mail(v, 'Invalid email address')
             ]"
           ></v-text-field>
@@ -67,6 +72,7 @@
             :class="['k-tel-input', !isPhoneNumberValid && 'phone-number-invalid']"
             ref="refTelInput"
             @blur="handleTelBlur"
+            @input="handleTelChange"
           />
           <div class="v-text-field__details checkbox-error" v-if="!isPhoneNumberValid">
             <transition appear name="bounce">
@@ -201,6 +207,9 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
+    handleTelChange(val) {
+      this.$refs.refTelInput.phone = val
+    },
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
@@ -266,13 +275,21 @@ export default {
     },
     validatePhoneNumber() {
       this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+    },
+    updatePhoneNumber() {
+      this.validatePhoneNumber()
+      this.$refs.refTelInput.$forceUpdate()
     }
   },
   watch: {
-    'formValues.phoneNumber'() {
+    'formValues.phoneNumber'(newVal, oldVal) {
+      if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
+        this.formValues.phoneNumber = oldVal
+        this.$refs.refTelInput.phone = oldVal
+        this.updatePhoneNumber()
+      }
       this.$nextTick(() => {
-        this.validatePhoneNumber()
-        this.$refs.refTelInput.$forceUpdate()
+        this.updatePhoneNumber()
       })
     }
   },

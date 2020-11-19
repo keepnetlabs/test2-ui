@@ -9,62 +9,60 @@
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
-      <v-skeleton-loader
-        v-bind="attrs"
-        v-show="isLoading"
-        type="article@2, actions"
-      ></v-skeleton-loader>
-      <v-form ref="refCreateGroupForm" lazy-validation>
-        <div v-show="!isLoading">
-          <v-list-item class="px-0">
-            <v-list-item-content class="pt-0">
-              <label class="create-company-group__label">Company Group Name</label>
-              <v-text-field
-                v-model="groupName"
-                placeholder="Enter name"
-                dense
-                outlined
-                persistent-hint
-                hint="*Required"
-                autocomplete="off"
-                :rules="[
-                  (v) => validations.required(v, 'Required'),
-                  (v) => validations.maxLength(v, 150, 'Max 150 characters')
-                ]"
-              ></v-text-field>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item class="p-0">
-            <v-list-item-content class="py-0">
-              <label class="create-company-group__label mb-0">Add Members</label>
-              <v-list-item-title
-                class="v-card-sub-header bottom-margin create-company-group__label--sub"
-              >
-                You can select multiple companies
-              </v-list-item-title>
-              <v-autocomplete
-                v-model="selectedCompanies"
-                :items="companies"
-                no-data-text="No companies displayed"
-                :return-object="true"
-                :search-input.sync="search"
-                auto-select-first
-                autocomplete="off"
-                chips
-                item-text="companyName"
-                item-value="companyNameResourceId"
-                multiple
-                outlined
-                persistent-hint
-                placeholder="Select companies"
-              ></v-autocomplete>
-            </v-list-item-content>
-          </v-list-item>
-        </div>
+      <v-form
+        v-if="(!!selectedRow && !!isEdit === true) || !!isEdit === false"
+        ref="refCreateGroupForm"
+        lazy-validation
+      >
+        <v-list-item class="px-0">
+          <v-list-item-content class="pt-0">
+            <label class="create-company-group__label">Company Group Name</label>
+            <v-text-field
+              v-model="groupName"
+              placeholder="Enter name"
+              dense
+              outlined
+              persistent-hint
+              hint="*Required"
+              autocomplete="off"
+              :rules="[
+                (v) => validations.required(v, 'Required'),
+                (v) => validations.startsWithEmpty(v, 'Cannot start with space'),
+                (v) => validations.maxLength(v, 50, 'Max 50 characters')
+              ]"
+            ></v-text-field>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item class="p-0">
+          <v-list-item-content class="py-0">
+            <label class="create-company-group__label mb-0">Add Members</label>
+            <v-list-item-title
+              class="v-card-sub-header bottom-margin create-company-group__label--sub"
+            >
+              You can select multiple companies
+            </v-list-item-title>
+            <v-autocomplete
+              v-model="selectedCompanies"
+              :items="companies"
+              no-data-text="No companies displayed"
+              :return-object="true"
+              :search-input.sync="search"
+              auto-select-first
+              autocomplete="off"
+              chips
+              item-text="companyName"
+              item-value="companyNameResourceId"
+              multiple
+              outlined
+              persistent-hint
+              placeholder="Select companies"
+            ></v-autocomplete>
+          </v-list-item-content>
+        </v-list-item>
       </v-form>
     </template>
     <template v-slot:app-dialog-footer>
-      <div class="delete-user__footer" v-if="!isLoading">
+      <div class="delete-user__footer">
         <v-btn @click="changeStatus(false)" color="#f56c6c" class="delete-user__footer-button" text
           >CANCEL</v-btn
         >
@@ -89,7 +87,7 @@ import {
   searchGroupCompanies,
   updateCompanyGroup
 } from '@/api/company'
-import { maxLength, required } from '@/utils/validations'
+import { maxLength, required, startsWithEmpty } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CreateItemModal',
@@ -114,14 +112,14 @@ export default {
   },
   data() {
     return {
-      isLoading: true,
       search: null,
       groupName: '',
       companies: [],
       selectedCompanies: null,
       validations: {
         required,
-        maxLength
+        maxLength,
+        startsWithEmpty
       },
       payload: {
         pageSize: 100,
@@ -137,10 +135,6 @@ export default {
             }
           ]
         }
-      },
-      attrs: {
-        class: 'mb-6',
-        boilerplate: true
       }
     }
   },
@@ -158,7 +152,6 @@ export default {
           response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
             ? response.data.data.results
             : []
-        this.isLoading = false
       })
     },
     editHandler() {
@@ -182,13 +175,13 @@ export default {
       }
     },
     changeStatus(value) {
-      this.$emit('changeModalStatus', value)
       if (value === false) {
-        this.companies = []
+        this.companies = this.getDefaultCompanies()
         this.groupName = null
         this.selectedCompanies = null
         this.$refs.refCreateGroupForm.reset()
       }
+      this.$emit('changeModalStatus', value)
     },
     save() {
       if (this.$refs.refCreateGroupForm.validate()) {
@@ -214,6 +207,7 @@ export default {
         } else {
           updateCompanyGroup(this.selectedRow.resourceId, payload).then((response) => {
             if (response.data && response.data.code === 'RESOURCE_UPDATED') {
+              localStorage.setItem('companyGroupName', this.groupName)
               this.$store.dispatch('common/createSnackBar', {
                 message: 'Company group has been updated',
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,

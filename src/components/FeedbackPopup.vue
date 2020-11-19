@@ -90,6 +90,9 @@ export default {
 
 <style lang="scss">
 .feedback-popup {
+  .v-card {
+    border-radius: 12px !important;
+  }
   &__header {
     padding: 24px !important;
     border-bottom: 1px solid #e0e0e0;
@@ -99,12 +102,15 @@ export default {
     padding: 0 24px !important;
     border-bottom: 1px solid #e0e0e0;
   }
+  .v-list-item__content {
+    padding: 0 !important;
+  }
   .feedback-button {
     height: 52px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
+    justify-content: flex-end;
+    padding: 0 24px;
     &--cancel {
       font-size: 14px;
       font-weight: 600;
@@ -114,6 +120,7 @@ export default {
       letter-spacing: normal;
       text-align: center;
       color: #f56c6c;
+      margin-right: 16px;
     }
     &--success {
       font-size: 14px;

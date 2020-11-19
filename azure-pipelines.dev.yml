@@ -1,0 +1,42 @@
+# Node.js with Vue
+# Build a Node.js project that uses Vue.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    rm public/config.js
+    mv public/config.Production.js public/config.js
+  displayName: 'Copy config.js'
+
+- script: yarn install
+  displayName: 'yarn install'  
+
+- script: yarn run lint
+  displayName: 'yarn lint'
+  
+- script: yarn run build
+  displayName: 'yarn build'
+
+- script: mv Web.config dist
+  displayName: 'Move web.config'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/dist'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/dist'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dist'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

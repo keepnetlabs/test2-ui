@@ -87,8 +87,14 @@
           </form-group>
 
           <v-list-item class="add-user-overlay__list-item">
-            <v-list-item-content>
-              <TestConnection :values="formValues" :isValidate="isValidate" :isEdit="editData" />
+            <v-list-item-content class="test-connection-wrapper">
+              <TestConnection
+                :values="formValues"
+                :isValidate="isValidate"
+                :isEdit="editData"
+                ref="testConnection"
+                @testConnectionValues="testConnectionValues"
+              />
             </v-list-item-content>
           </v-list-item>
         </v-form>
@@ -110,6 +116,7 @@
             rounded
             color="#2196f3"
             @click="submit"
+            :disabled="saveButtonDisabled"
           >
             SAVE
           </v-btn>
@@ -122,7 +129,7 @@
       :icon-name="'mdi-book-search'"
       :title="'Create GSuite Mail Configuration'"
       className="mail-configuration__modal"
-      v-if="statusGsuite"
+      v-if="false"
     >
       <template v-slot:overlay-body>
         <v-form ref="gsuiteConfiguration">
@@ -265,6 +272,7 @@
             <p class="mail-configuration__no-data__body">Create now!</p>
             <div class="mail-configuration__no-data__buttons">
               <div
+                v-if="false"
                 class="mail-configuration__no-data__buttons--button"
                 @click="statusGsuite = true"
               >
@@ -318,6 +326,9 @@ export default {
     }
   },
   data: () => ({
+    delaySaveFunction: false,
+    saveButtonDisabled: false,
+    isTestConnectionWorkedBefore: false,
     gsuite: {
       name: null,
       json: null,
@@ -404,7 +415,7 @@ export default {
           property: PROPERTY_STORE.CREATETIME,
           align: 'left',
           editable: false,
-          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+          label: getStoreValue(PROPERTY_STORE.CREATETIME),
           sortable: true,
           show: true,
           fixed: false,
@@ -446,13 +457,24 @@ export default {
         }
       ]
     },
-    addUsersItems: ['GSuite', 'O365'],
+    addUsersItems: ['O365'],
     validations: {
       required,
       mail
     }
   }),
   methods: {
+    testConnectionValues(isSuccess, isSave) {
+      if (isSuccess) {
+        this.isTestConnectionWorkedBefore = true
+        this.saveButtonDisabled = false
+        if (isSave && !this.delaySaveFunction) {
+          this.$nextTick(() => {
+            this.submit()
+          })
+        }
+      }
+    },
     isValidate() {
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
     },
@@ -534,7 +556,7 @@ export default {
       this.deleteDialog = true
     },
     submit() {
-      if (this.$refs.mailConfiguration.validate()) {
+      if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         if (this.editData) {
           let editData = this.formValues
           updateO365(editData, this.editData.resourceId).then(() => {
@@ -557,6 +579,13 @@ export default {
             this.getTableData()
           })
         }
+      } else if (this.$refs.mailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
+        this.saveButtonDisabled = true
+        this.$refs.testConnection.testConnection(true)
+        setTimeout(() => {
+          let el = this.$el.querySelector('.test-connection__testing-content__item')
+          scrollToComponent(el)
+        }, 50)
       } else {
         const el = this.$refs.mailConfiguration.$el
         scrollToComponent(el)
@@ -568,9 +597,6 @@ export default {
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
-          this.statusGsuite = true
-          break
-        case this.addUsersItems[1]:
           this.formValues = {
             name: null,
             applicationId: null,
@@ -579,6 +605,8 @@ export default {
             email: null
           }
           this.editData = null
+          this.isTestConnectionWorkedBefore = false
+          this.saveButtonDisabled = false
           this.status = true
           break
         default:
@@ -602,6 +630,8 @@ export default {
         directoryId: selectedRow.directoryId,
         email: selectedRow.email
       }
+      this.isTestConnectionWorkedBefore = false
+      this.saveButtonDisabled = false
       this.status = true
     },
     handleEditFieldsClick() {
@@ -762,9 +792,13 @@ export default {
     }
   }
   .add-user-overlay {
+    max-width: 774px;
     &__list-item {
       margin-bottom: 24px;
     }
+  }
+  .test-connection-wrapper {
+    max-width: 774px !important;
   }
   &__modal {
     padding: 0 6rem;

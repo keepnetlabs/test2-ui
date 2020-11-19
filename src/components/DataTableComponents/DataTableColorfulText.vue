@@ -37,7 +37,7 @@ export default {
 <style lang="scss">
 .datatable {
   &__colorful-text {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     line-height: 1.29;
     letter-spacing: normal;

@@ -74,6 +74,12 @@ export function trim(value, message) {
   return value.length > 0 || message
 }
 
+export function startsWith(value = '', message = 'Cannot start with', startedValue = '') {
+  value = getValue(value).toString()
+  startedValue = startedValue.toString()
+  return !value.startsWith(startedValue) || message
+}
+
 export function startsWithEmpty(value, message) {
   value = getValue(value)
   return !value.startsWith(' ') || message
