@@ -512,7 +512,7 @@
             v-for="(item, index) in rightDropdownData"
             :key="index"
             :disabled="item.disabled"
-            @click="changeDropdownItem2(item)"
+            @click="handleClickRightDropdown(item)"
           >
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
@@ -769,7 +769,7 @@ export default {
           text: 'Get Help',
           icon: 'mdi-help-circle',
           url: '',
-          disabled: true
+          disabled: false
         },
         {
           text: 'Video Tutorial',
@@ -1162,12 +1162,19 @@ export default {
       const date1 = new Date('2019-10-24T08:41:23.927')
       return `${date1.toDateString().split(' ')[2]} ${date1.toDateString().split(' ')[0]}`
     },
-    changeDropdownItem2(item) {
-      if (item.text == 'Tour' && this.routerName === 'Dashboard') {
-        this.$tours.myTour.start()
-        this.setTourStatus(true)
-      } else if (item.text == 'Feedback') {
-        this.feedbackdialog = true
+    handleClickRightDropdown(item = { text: '' }) {
+      const { text } = item
+      switch (text) {
+        case 'Feedback':
+          this.feedbackdialog = true
+          break
+        case 'Get Help':
+          const domElem = document.createElement('a')
+          domElem.href = 'mailto:support@keepnetlabs.com'
+          domElem.click()
+          break
+        default:
+          break
       }
     },
     changeDropdownItem(item) {
