@@ -763,7 +763,7 @@ export default {
           text: 'Documentation',
           icon: 'mdi-file-document',
           url: '',
-          disabled: true
+          disabled: false
         },
         {
           text: 'Get Help',
@@ -1164,13 +1164,18 @@ export default {
     },
     handleClickRightDropdown(item = { text: '' }) {
       const { text } = item
+      const domElem = document.createElement('a')
       switch (text) {
         case 'Feedback':
           this.feedbackdialog = true
           break
         case 'Get Help':
-          const domElem = document.createElement('a')
           domElem.href = 'mailto:support@keepnetlabs.com'
+          domElem.click()
+          break
+        case 'Documentation':
+          domElem.href = 'https://docs.keepnetlabs.com'
+          domElem.target = '_blank'
           domElem.click()
           break
         default:
