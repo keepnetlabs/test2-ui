@@ -100,6 +100,7 @@
           @closeEditPopup="closeEditPopup"
           :changeFooterPosition="changeFooterPosition"
           :extendedViewDisableChanger="extendedViewDisableChanger"
+          :loading="extendedViewLoading"
         >
           <template v-slot:body>
             <slot name="extended-view-slot" :scope="multipleSelection"></slot>
@@ -876,6 +877,9 @@ export default {
     columns: {
       type: Array,
       required: true
+    },
+    extendedViewLoading: {
+      type: Boolean
     },
     changeFooterPosition: {
       type: Boolean,

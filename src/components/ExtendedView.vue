@@ -1,9 +1,6 @@
 <template>
   <div
     class="settings-popup edit-popup"
-    v-if="
-      options && options.col && options.col.length && copyOfEditedRows && copyOfEditedRows.length
-    "
     :style="[
       containerStyle,
       !disableTransition &&
@@ -15,7 +12,14 @@
       }
     ]"
   >
-    <div class="inline-wrapper">
+    <extended-view-loading :loading="true" v-show="loading" />
+    <div
+      class="inline-wrapper"
+      v-show="!loading"
+      v-if="
+        options && options.col && options.col.length && copyOfEditedRows && copyOfEditedRows.length
+      "
+    >
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
           {{ copyOfEditedRows[0][options.titleKey] || options.title }}
@@ -584,9 +588,11 @@ import {
   getTextColor,
   getDataTableFieldLabel
 } from '../utils/functions'
+import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
 export default {
   name: 'ExtendedView',
   components: {
+    ExtendedViewLoading,
     Badge
   },
   props: {
@@ -595,6 +601,9 @@ export default {
       default: () => {
         return {}
       }
+    },
+    loading: {
+      type: Boolean
     },
     changeFooterPosition: {
       type: Boolean,
