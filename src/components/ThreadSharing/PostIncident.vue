@@ -207,6 +207,8 @@
                   :extensions="['eml', 'msg']"
                   :is-stand-alone="true"
                   @inputFile="uploadFile"
+                  @clear="clearUpload"
+                  :on-upload-progress="onUploadProgress"
                 />
                 <!-- <div
                   class="v-input up-btn v-input--dense theme--light v-text-field v-text-field--is-booted v-text-field--placeholder"
@@ -1827,6 +1829,7 @@ import AppModal from '../AppModal'
 import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
 import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
+
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -2226,7 +2229,8 @@ export default {
     allHeader: false,
     allLinks: false,
     allAttachments: false,
-    isAnonym: false
+    isAnonym: false,
+    onUploadProgress: null
   }),
   watch: {
     searchIncident(val) {
@@ -2493,7 +2497,9 @@ export default {
     uploadFile(e) {
       this.msgEmlFile = e
 
-      uploadEmlOrMsg(this.msgEmlFile)
+      uploadEmlOrMsg(this.msgEmlFile, (e) => {
+        this.onUploadProgress = e
+      })
         .then((response) => {
           this.selectedEmail = response.data.data.from
           this.uploadRespond = response.data.data
@@ -2506,6 +2512,9 @@ export default {
             message: 'File can not be uploaded'
           })
         })
+    },
+    clearUpload() {
+      //this.uploadFile(null)
     },
     searchNotifiedMail() {
       const payload = {
