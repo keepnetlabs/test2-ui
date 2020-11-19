@@ -18,18 +18,7 @@
       <app-modal-body-header :title="getBodyTitle" sub-title="Fill information below" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="First Name" has-hint>
-          <v-text-field
-            placeholder="Enter first name"
-            outlined
-            dense
-            v-model.trim="formValues.firstName"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.maxLength(v, 40, 'Max 40 characters')
-            ]"
-          ></v-text-field>
+          <input-first-name placeholder="Enter first name" v-model.trim="formValues.firstName" />
         </form-group>
         <form-group title="Last Name" has-hint>
           <v-text-field
@@ -142,9 +131,11 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
 import { VueTelInput } from 'vue-tel-input'
 import { getUserRoles } from '@/api/systemUsers'
+import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
+    InputFirstName,
     AppModal,
     AppModalBodyHeader,
     FormGroup,
