@@ -22,21 +22,18 @@
             <span
               v-if="isStandAlone && file.progress"
               class="k-file-uploads__item-details--progress-value"
-              >{{ file.progress }}%</span
+              >{{ uploadProgress }}%</span
             >
           </div>
           <div
             v-if="isStandAlone && file.progress"
             class="k-file-uploads__item-details--fileprogress"
           >
-            <v-progress-linear :value="file.progress" />
+            <v-progress-linear :value="uploadProgress" />
           </div>
         </div>
         <div v-if="isStandAlone" class="k-file-uploads__item-actions">
-          <v-icon>mdi-close-circle</v-icon>
-          <v-icon v-if="file.active" @click.prevent="$refs.upload.update(file, { active: false })"
-            >mdi-close-circle</v-icon
-          >
+          <v-icon @click="clear">mdi-close-circle</v-icon>
         </div>
         <!--
       <div>{{ file.speed | formatSize }}</div>
@@ -127,11 +124,16 @@ export default {
     hint: {
       type: String,
       default: null
+    },
+    onUploadProgress: {
+      type: ProgressEvent,
+      default: undefined
     }
   },
   data() {
     return {
-      files: []
+      files: [],
+      uploadProgress: 0
     }
   },
   computed: {
@@ -172,10 +174,22 @@ export default {
           newFile.url = URL.createObjectURL(newFile.file)
         }
       }
+    },
+    clear() {
+      //debugger
+      //this.$emit('clear')
+      //this.$refs.upload.update(file, { active: false })
+      this.files = []
+      this.uploadProgress = 0
     }
   },
   watch: {
-    files(val) {}
+    // files(val) {},
+    onUploadProgress() {
+      return (this.uploadProgress = Math.round(
+        (100 * this.onUploadProgress.loaded) / this.onUploadProgress.total
+      ))
+    }
   }
 }
 </script>
