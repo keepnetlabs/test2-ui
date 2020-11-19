@@ -772,12 +772,6 @@ export default {
           disabled: false
         },
         {
-          text: 'Video Tutorial',
-          icon: 'mdi-play-speed',
-          url: '',
-          disabled: true
-        },
-        {
           text: 'Feedback',
           icon: 'mdi-message-alert',
           url: '',
@@ -1174,7 +1168,7 @@ export default {
           domElem.click()
           break
         case 'Documentation':
-          domElem.href = 'https://docs.keepnetlabs.com'
+          domElem.href = 'https://doc.keepnetlabs.com'
           domElem.target = '_blank'
           domElem.click()
           break
