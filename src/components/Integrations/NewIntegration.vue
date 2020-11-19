@@ -66,7 +66,7 @@
             ></v-text-field>
           </form-group>
           <form-group title="Integration Type" has-hint>
-            <v-select
+            <k-select
               v-model.trim="formValues.analysisEngineTypeResourceId"
               :items="integrationTypes"
               :rules="[integrationTypeRules.required]"
@@ -77,10 +77,9 @@
               item-value="resourceId"
               outlined
               placeholder="Select integration type"
-              required
-              :menu-props="{ offsetY: true }"
+              position="top"
               @input="handleIntegrationTypeChange"
-            ></v-select>
+            ></k-select>
           </form-group>
           <form-group title="API URL" has-hint>
             <v-text-field
@@ -396,9 +395,11 @@ import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'NewIntegration',
   components: {
+    KSelect,
     FormGroup,
     AppModal,
     AppModalBodyHeader

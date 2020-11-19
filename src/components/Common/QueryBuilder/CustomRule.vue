@@ -5,18 +5,12 @@
       <!-- <label class="mr-5">{{ rule.label }}</label> -->
       <v-col md="2">
         <!-- List of operands (optional) -->
-        <v-select
+        <k-select
           v-model.trim="query.operand"
           :items="rule.operands"
           outlined
           hide-details
-          :class="`${attachId + 1}`"
-          :menu-props="{
-            offsetY: true,
-            contentClass: 'rule-select__menu'
-          }"
           @input="handleOperandChange"
-          :attach="getAttachedItem(attachId + 1)"
         />
       </v-col>
       <v-col
@@ -28,76 +22,39 @@
         "
       >
         <!-- List of operators (e.g. =, !=, >, <) -->
-        <v-select
+        <k-select
           v-model="query.operator"
           :items="rule.operators"
           outlined
           hide-details
-          :class="`${attachId + 2}`"
           item-value="value"
-          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
           item-text="text"
-          :attach="getAttachedItem(attachId + 2)"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'SenderIp'">
         <!-- List of "From" operands-->
-        <v-select
+        <k-select
           v-model.trim="query.operator"
           :items="rule.operandsSenderIP"
           outlined
           hide-details
-          :class="`${attachId + 7}`"
-          :attach="getAttachedItem(attachId + 7)"
-          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
         <!-- List of "From" operands-->
-        <v-select
-          v-model.trim="query.format"
-          :items="rule.operandsFrom"
-          outlined
-          hide-details
-          :class="`${attachId + 3}`"
-          :attach="getAttachedItem(attachId + 3)"
-          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
-        />
+        <k-select v-model.trim="query.format" :items="rule.operandsFrom" outlined hide-details />
       </v-col>
       <v-col md="2" v-if="query.operand === 'To'">
         <!-- List of "From" operands-->
-        <v-select
-          v-model.trim="query.format"
-          :items="rule.operandsTo"
-          outlined
-          hide-details
-          :class="`${attachId + 4}`"
-          :attach="getAttachedItem(attachId + 4)"
-          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
-        />
+        <k-select v-model.trim="query.format" :items="rule.operandsTo" outlined hide-details />
       </v-col>
       <v-col md="2" v-if="query.operand === 'CC'">
         <!-- List of "From" operands-->
-        <v-select
-          v-model.trim="query.format"
-          :items="rule.operandsCC"
-          outlined
-          hide-details
-          :class="`${attachId + 5}`"
-          :attach="getAttachedItem(attachId + 5)"
-          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
-        />
+        <k-select v-model.trim="query.format" :items="rule.operandsCC" outlined hide-details />
       </v-col>
       <v-col md="2" v-if="query.operand === 'Analysis result'">
         <!-- List of "Analysis result" operands-->
-        <v-select
-          v-model="query.value"
-          :items="rule.operandsAnalysisResult"
-          outlined
-          :class="`${attachId + 6}`"
-          :attach="getAttachedItem(attachId + 6)"
-          :menu-props="{ offsetY: true, contentClass: 'rule-select__menu' }"
-        />
+        <k-select v-model="query.value" :items="rule.operandsAnalysisResult" outlined />
       </v-col>
       <v-col
         v-if="
@@ -216,7 +173,9 @@
 <script>
 import QueryBuilderRule from 'vue-query-builder/src/components/QueryBuilderRule'
 import { mail, required, ip, domain, extension, maxLength } from '../../../utils/validations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
+  components: { KSelect },
   extends: QueryBuilderRule,
   data() {
     return {
@@ -327,14 +286,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.rule-select__menu {
-  z-index: 1000 !important;
-  @media (max-width: 2000px) {
-    min-width: 175px !important;
-  }
-  .v-list-item {
-    padding: 0 16px !important;
-  }
-}
-</style>

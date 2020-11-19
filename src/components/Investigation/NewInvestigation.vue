@@ -113,7 +113,7 @@
                 >
                 <div class="filter-item" v-for="(list, index) in filterList" :key="index">
                   <div class="filter-item__selectbox">
-                    <v-select
+                    <k-select
                       :items="filterListOption"
                       item-text="name"
                       item-value="val"
@@ -122,10 +122,9 @@
                       outlined
                       class="edit-select standard-height"
                       required
-                      :menu-props="{ offsetY: true }"
                       @change="handleChangeFilterListItem"
                       :rules="[filterSelectRules.required]"
-                    ></v-select>
+                    ></k-select>
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
@@ -229,7 +228,7 @@
                 <label class="edit-sub-labels"
                   >Select how many days the investigation will run</label
                 >
-                <v-select
+                <k-select
                   :items="durations"
                   outlined
                   class="input-select standard-height"
@@ -239,7 +238,7 @@
                   item-value="durationValue"
                   :menu-props="{ offsetY: true }"
                   placeholder="3 Days"
-                ></v-select>
+                ></k-select>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area mt-2 pa-0">
@@ -248,7 +247,7 @@
                 <label class="edit-sub-labels"
                   >Select action to be executed if email is found</label
                 >
-                <v-select
+                <k-select
                   :items="actions"
                   outlined
                   class="input-select standard-height"
@@ -256,9 +255,8 @@
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"
-                  :menu-props="{ offsetY: true }"
                   placeholder="Delete Email"
-                ></v-select>
+                ></k-select>
               </v-list-item-content>
             </v-list-item>
           </v-form>
@@ -285,8 +283,10 @@ import {
 import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { scrollToComponent } from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   components: {
+    KSelect,
     AppModalBodyHeader,
     AppModal
   },
