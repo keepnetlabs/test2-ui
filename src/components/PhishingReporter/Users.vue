@@ -251,7 +251,17 @@ export default {
           this.tableOptions.table =
             results.map((item) => {
               const { lastSeen } = item
-              const dateOfLastSeen = new Date(lastSeen.replace(/\s/, 'T'))
+              const lastSeenSplittedFormat = lastSeen.split(' ')
+              const lastSeenDateSide = lastSeenSplittedFormat[0].split('-')
+              const lastSeenTimeSide = lastSeenSplittedFormat[1].split(':')
+              const dateOfLastSeen = new Date(
+                lastSeenDateSide[0],
+                lastSeenDateSide[1],
+                lastSeenDateSide[2],
+                lastSeenTimeSide[0],
+                lastSeenTimeSide[1],
+                lastSeenTimeSide[2]
+              )
               const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
               const timezonedDate = new Date(
                 dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
