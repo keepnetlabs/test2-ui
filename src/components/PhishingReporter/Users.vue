@@ -254,7 +254,6 @@ export default {
               const lastSeenSplittedFormat = lastSeen.split(' ')
               const lastSeenDateSide = lastSeenSplittedFormat[0].split('-')
               const lastSeenTimeSide = lastSeenSplittedFormat[1].split(':')
-              debugger
               const dateOfLastSeen = new Date(
                 lastSeenDateSide[0],
                 lastSeenDateSide[1] - 1,
