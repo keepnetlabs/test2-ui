@@ -371,10 +371,10 @@
                       outlined
                       hint="*Required"
                       persistent-hint
-                      :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
                       item-text="name"
                       item-value="resourceId"
+                      :slots="{ item: true, selection: false }"
                     >
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
@@ -399,10 +399,10 @@
                       outlined
                       hint="*Required"
                       persistent-hint
-                      :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
                       item-text="name"
                       item-value="resourceId"
+                      :slots="{ item: true, selection: false }"
                     >
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
@@ -427,10 +427,10 @@
                       outlined
                       hint="*Required"
                       persistent-hint
-                      :menu-props="{ offsetY: true }"
                       placeholder="Select an option"
                       item-text="name"
                       item-value="resourceId"
+                      :slots="{ item: true, selection: false }"
                     >
                       <template v-slot:item="{ item }">
                         <v-list-item-content>

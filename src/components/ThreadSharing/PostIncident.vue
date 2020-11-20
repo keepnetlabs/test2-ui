@@ -140,7 +140,8 @@
               <div class="input-header">Find Incident</div>
               <div class="input-sub">Search and find emails among reported incidents</div>
               <input style="display: none;" type="text" name="fakeusernameremembered" />
-              <v-autocomplete
+              <k-select
+                type="autocomplete"
                 id="select-incident-autocomplete"
                 v-model.trim="selectedEmail"
                 :search-input.sync="searchIncident"
@@ -156,6 +157,7 @@
                 required
                 @change="getSelectedEmailPreview"
                 @input="handleTagItemChange"
+                :slots="{ selection: true, item: true }"
               >
                 <template v-slot:selection="{ attrs, item }">
                   <v-chip
@@ -197,7 +199,7 @@
                     </div>
                   </div>
                 </template>
-              </v-autocomplete>
+              </k-select>
               <div class="input-header mb-6">- or -</div>
               <div class="input-header">Upload Email</div>
               <div class="input-sub">.eml or .msg files only.</div>
@@ -389,6 +391,8 @@
                   outlined
                   placeholder="Select an option"
                   class="tlp-select"
+                  position="top"
+                  :slots="{ selection: true, item: true }"
                 >
                   <template v-slot:selection="{ attrs, item, select }">
                     <v-chip @click="select" :class="item.cssClass">
@@ -454,7 +458,8 @@
               <div class="input-sec-header">Affect Area</div>
               <div class="input-sub">Which systems and programs are affected by the threat?</div>
               <v-form onSubmit="return false;" v-model="validAffect" ref="affectInput">
-                <v-combobox
+                <k-select
+                  type="combobox"
                   id="post-affect-area-combobox"
                   v-model.trim="uploadRespond.AffectArea"
                   :search-input.sync="affectSearch"
@@ -475,7 +480,7 @@
                   @blur="validateAffectArea"
                   :rules="[affectRules.regex]"
                   @input="handleTagItemChange"
-                ></v-combobox>
+                ></k-select>
               </v-form>
 
               <div class="input-sec-header pt-3">Scope</div>

@@ -31,7 +31,7 @@
                   <v-radio-group
                     v-model="targetUserType"
                     :mandatory="false"
-                    @change="targetUsersValue = []"
+                    @change="handleTargetUserTypeChange"
                     row
                   >
                     <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
@@ -40,7 +40,8 @@
                   </v-radio-group>
                 </div>
                 <div class="target-users-select__input-area">
-                  <v-combobox
+                  <k-select
+                    type="combobox"
                     :items="[]"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -58,8 +59,9 @@
                     v-if="targetUserType === 'AllUsers'"
                     :disabled="targetUserType === 'AllUsers'"
                     required
-                  ></v-combobox>
-                  <v-combobox
+                  />
+                  <k-select
+                    type="combobox"
                     :items="userGroupsItems"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -79,8 +81,9 @@
                     :return-object="true"
                     autocomplete="disabled"
                     v-if="targetUserType === 'Groups'"
-                  ></v-combobox>
-                  <v-combobox
+                  />
+                  <k-select
+                    type="combobox"
                     :items="specificUserItems"
                     v-if="targetUserType === 'SpecificUsers'"
                     placeholder="Enter user email Addresses"
@@ -100,7 +103,7 @@
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     v-model.trim="targetUsersValue"
-                  ></v-combobox>
+                  />
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -296,6 +299,11 @@ export default {
         this.isDateValid = true
       } else {
         this.isDateValid = false
+      }
+    },
+    targetUsersValue(newVal, oldVal) {
+      if (newVal[0] === '') {
+        newVal.splice(0, 1)
       }
     },
     searchTargetUsersGroupsValue(val) {
@@ -561,6 +569,10 @@ export default {
       } else {
         this.checkboxError = false
       }
+    },
+    handleTargetUserTypeChange() {
+      debugger
+      this.targetUsersValue = []
     },
     handleChangeFilterListItem() {
       this.$nextTick(() => {

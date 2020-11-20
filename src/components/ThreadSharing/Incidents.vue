@@ -67,6 +67,7 @@
                   item-text="name"
                   item-value="resourceId"
                   @change="getIncidentList()"
+                  :slots="{ selection: true }"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span

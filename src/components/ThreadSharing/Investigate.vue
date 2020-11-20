@@ -293,7 +293,8 @@
             <div class="filters-content">
               <div class="input-header">Target Users</div>
               <div class="input-sub">Select departments, groups or users to investigate</div>
-              <v-autocomplete
+              <k-select
+                type="autocomplete"
                 v-model="targetUsers"
                 :items="targets"
                 :search-input.sync="search"
@@ -322,7 +323,7 @@
                   {{ item }}
                   <v-list-item-title v-text="item.name"></v-list-item-title>
                 </template>
-              </v-autocomplete>
+              </k-select>
 
               <div class="input-header">Email Date Range</div>
               <div class="input-sub">Select range of emails’ sending date</div>

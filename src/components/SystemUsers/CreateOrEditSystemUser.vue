@@ -274,6 +274,7 @@ export default {
       })
     },
     validatePhoneNumber() {
+      debugger
       this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
     },
     updatePhoneNumber() {
@@ -283,9 +284,20 @@ export default {
   },
   watch: {
     'formValues.phoneNumber'(newVal, oldVal) {
+      debugger
       if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
         this.formValues.phoneNumber = oldVal
         this.$refs.refTelInput.phone = oldVal
+        this.updatePhoneNumber()
+      } else if (
+        //CHINA BUG
+        newVal.length === 17 &&
+        this.$refs.refTelInput.phoneObject.regionCode === 'CN' &&
+        newVal[4] !== '1'
+      ) {
+        const val = newVal.substring(0, 16)
+        this.formValues.phoneNumber = val
+        this.$refs.refTelInput.phone = val
         this.updatePhoneNumber()
       }
       this.$nextTick(() => {

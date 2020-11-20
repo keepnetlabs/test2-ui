@@ -10,7 +10,14 @@
     }"
     v-bind="$attrs"
     v-on="$listeners"
-  />
+  >
+    <template v-slot:selection="props" v-if="slots.selection">
+      <slot name="selection" v-bind="props" />
+    </template>
+    <template v-slot:item="props" v-if="slots.item">
+      <slot name="item" v-bind="props" />
+    </template>
+  </component>
 </template>
 
 <script>
@@ -25,6 +32,13 @@ export default {
     addMinWidth: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: Boolean
+    },
+    slots: {
+      type: Object,
+      default: () => ({ selection: false, item: false })
     }
   },
   created() {
@@ -37,6 +51,7 @@ export default {
   },
   computed: {
     getComponentType() {
+      console.log('this.type', this.type)
       switch (this.type) {
         case 'autocomplete':
           return VAutocomplete
@@ -62,6 +77,15 @@ export default {
         padding: 8px 0 !important;
         .v-list-item__title {
           overflow: visible !important;
+        }
+      }
+      .v-list-item__action {
+        .v-simple-checkbox {
+          .mdi {
+            &::before {
+              font-size: 24px !important;
+            }
+          }
         }
       }
     }

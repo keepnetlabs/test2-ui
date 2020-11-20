@@ -164,7 +164,8 @@
       >
         <template v-slot:app-dialog-body>
           <v-form ref="inviteModal">
-            <v-combobox
+            <k-select
+              type="combobox"
               :items="[]"
               placeholder="Enter email addresses of the companies to be invited (max. 5)"
               multiple
@@ -179,7 +180,7 @@
               class="pop-up-card__invite-member"
               hint="Press enter to separate email adresses"
               @change="comboboxChange"
-            ></v-combobox>
+            ></k-select>
           </v-form>
         </template>
         <template v-slot:app-dialog-footer>
@@ -491,6 +492,7 @@ import NewCommunity from '../ThreadSharing/NewCommunity'
 import CommunitiesCardLoading from '../SkeletonLoading/CommunitiesCardLoading'
 import PostCardLoading from '../SkeletonLoading/PostCardLoading'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   data() {
     return {
@@ -554,6 +556,7 @@ export default {
     }
   },
   components: {
+    KSelect,
     AppDialogFooter,
     AppDialog,
     NewCommunity,

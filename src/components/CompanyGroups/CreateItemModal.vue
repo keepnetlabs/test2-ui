@@ -41,7 +41,8 @@
             >
               You can select multiple companies
             </v-list-item-title>
-            <v-autocomplete
+            <k-select
+              type="autocomplete"
               v-model="selectedCompanies"
               :items="companies"
               no-data-text="No companies displayed"
@@ -56,7 +57,7 @@
               outlined
               persistent-hint
               placeholder="Select companies"
-            ></v-autocomplete>
+            ></k-select>
           </v-list-item-content>
         </v-list-item>
       </v-form>
@@ -89,6 +90,7 @@ import {
 } from '@/api/company'
 import { maxLength, required, startsWithEmpty } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'CreateItemModal',
   props: {
@@ -108,6 +110,7 @@ export default {
     }
   },
   components: {
+    KSelect,
     AppDialog
   },
   data() {

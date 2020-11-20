@@ -464,5 +464,11 @@ export default {
   .k-overlay__container {
     padding: 0 !important;
   }
+  .v-overlay__content {
+    overflow-x: hidden;
+  }
+  .v-stepper__items {
+    overflow: visible;
+  }
 }
 </style>

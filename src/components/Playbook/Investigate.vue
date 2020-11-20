@@ -45,7 +45,8 @@
             hide-details
             required
           ></v-combobox>
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="userGroupsItems"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -84,8 +85,9 @@
                 >
               </v-chip>
             </template>
-          </v-combobox>
-          <v-combobox
+          </k-select>
+          <k-select
+            type="combobox"
             :items="specificUserItems"
             v-if="investigateData.targetUserType === 'SpecificUsers'"
             placeholder="Enter Email Addresses"
@@ -106,7 +108,7 @@
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
             v-model="investigateData.targetUsers"
             hide-details
-          ></v-combobox>
+          ></k-select>
         </div>
       </v-col>
     </v-row>
