@@ -18,32 +18,10 @@
       <app-modal-body-header :title="getBodyTitle" sub-title="Fill information below" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="First Name" has-hint>
-          <v-text-field
-            placeholder="Enter first name"
-            outlined
-            dense
-            v-model.trim="formValues.firstName"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.maxLength(v, 40, 'Max 40 characters')
-            ]"
-          ></v-text-field>
+          <InputFirstName v-model.trim="formValues.firstName" />
         </form-group>
         <form-group title="Last Name" has-hint>
-          <v-text-field
-            placeholder="Enter last name"
-            outlined
-            dense
-            v-model.trim="formValues.lastName"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.maxLength(v, 40, 'Max 40 characters')
-            ]"
-          ></v-text-field>
+          <InputLastName v-model.trim="formValues.lastName" />
         </form-group>
         <form-group title="Email Address" has-hint>
           <v-text-field
@@ -143,9 +121,13 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
 import { VueTelInput } from 'vue-tel-input'
 import { getUserRoles } from '@/api/systemUsers'
+import InputFirstName from '@/components/Common/Inputs/InputFirstName'
+import InputLastName from '@/components/Common/Inputs/InputLastName'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
+    InputFirstName,
+    InputLastName,
     AppModal,
     AppModalBodyHeader,
     FormGroup,

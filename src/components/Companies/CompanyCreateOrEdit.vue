@@ -41,19 +41,7 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">Company Name</label>
-                    <v-text-field
-                      placeholder="Enter a name for the company"
-                      outlined
-                      dense
-                      hint="*Required"
-                      persistent-hint
-                      autocomplete="off"
-                      v-model.trim="formData.Name"
-                      :rules="[
-                        (v) => validations.required(v, 'Required'),
-                        (v) => validations.maxLength(v, 150, 'Max 150 characters')
-                      ]"
-                    ></v-text-field>
+                    <InputCompany v-model.trim="formData.Name" />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -542,6 +530,7 @@ import AuthenticationService from '@/services/authentication'
 import AuthenticationStatus from '@/model/constants/authenticationStatus'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeIdList } from '@/api/common'
+import InputCompany from '@/components/Common/Inputs/InputCompany'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -550,7 +539,7 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KFileUpload },
+  components: { InputCompany, KFileUpload },
   data() {
     return {
       stepLock: false,
