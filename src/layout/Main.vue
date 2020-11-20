@@ -104,7 +104,12 @@
       </div>
     </v-overlay>
     <v-row justify="center">
-      <v-dialog v-model="switchDialog" content-class="switch-dialog" width="600">
+      <v-dialog
+        v-model="isSwitchDialogOpen"
+        content-class="switch-dialog"
+        width="600"
+        @click:outside="setSwitchDialog(!isSwitchDialogOpen)"
+      >
         <switch-account></switch-account>
       </v-dialog>
     </v-row>
@@ -166,7 +171,7 @@
             <router-link to="/">
               <img
                 v-if="!mini && drawer"
-                style="max-width: 180px; max-height: 180px;"
+                class="page-nav__logo-wrapper__logo"
                 src="../assets/img/logo-full-color.png"
               />
               <img v-else src="../assets/img/account-circle.png" class="menu-mini-img" />
@@ -174,48 +179,89 @@
           </div>
         </div>
       </div>
-      <div class="d-flex justify-center flex-wrap user-wrapper mb-12">
+      <div class="d-flex justify-center flex-wrap user-wrapper">
         <div class="user-name-dropdown">
           <div class="user-name-dropdown__menu">
             <v-menu
-              class="user-name-dropdown__menu"
+              class="user-name-dropdown__menu-item"
               :disabled="false"
               :absolute="false"
               :open-on-hover="false"
               :close-on-click="true"
               :close-on-content-click="true"
-              :offset-x="false"
-              :offset-y="true"
+              :offset-x="true"
+              :offset-y="false"
               :z-index="999"
+              :nudge-right="19"
+              :nudge-top="25"
+              max-width="226"
+              @click="removeTooltip"
             >
               <template #activator="{ on: onMenu }">
                 <div
                   class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                   v-on="onMenu"
                 >
-                  <v-tooltip
-                    bottom
-                    :disabled="getFullName && getFullName.length < 14"
-                    ref="accountTooltip"
-                  >
-                    <template #activator="{ on: onTooltip }">
-                      <div v-on="{ ...onTooltip }" class="user-name-dropdown-font__tooltip-wrapper">
-                        <div class="user-name-dropdown-font">
-                          {{ getFullName }}
-                        </div>
-                        <v-icon class="user-name-dropdown-font__icon">mdi-chevron-down</v-icon>
-                      </div>
-                    </template>
-                    <span>{{ getFullName }}</span>
-                  </v-tooltip>
+                  <div class="user-name-dropdown-font__tooltip-wrapper">
+                    <div class="user-name-dropdown__logo">
+                      <img v-if="!!getLogoImage" :src="getLogoImage" />
+                    </div>
+                    <div class="user-name-dropdown__details">
+                      <v-tooltip
+                        bottom
+                        :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
+                        ref="accountTooltip"
+                      >
+                        <template #activator="{ on: onTooltip }">
+                          <span v-on="{ ...onTooltip }" class="user-name-dropdown__details-item">{{
+                            getSelectedCompanyName
+                          }}</span>
+                        </template>
+                        <span>{{ getSelectedCompanyName }}</span>
+                      </v-tooltip>
+                      <v-tooltip
+                        bottom
+                        :disabled="getFirstName && getFirstName.length < 15"
+                        ref="firstNameTooltip"
+                      >
+                        <template #activator="{ on: onTooltipFirstName }">
+                          <span
+                            v-on="{ ...onTooltipFirstName }"
+                            class="user-name-dropdown__details-item"
+                            >{{ getFirstName }}</span
+                          >
+                        </template>
+                        <span>{{ getFirstName }}</span>
+                      </v-tooltip>
+                      <v-tooltip
+                        bottom
+                        :disabled="getRolename && getRolename.length < 15"
+                        ref="roleTooltip"
+                      >
+                        <template #activator="{ on: onTooltipRoleName }">
+                          <span
+                            v-on="{ ...onTooltipRoleName }"
+                            class="user-name-dropdown__details--item"
+                            >{{ getRolename }}</span
+                          >
+                        </template>
+                        <span>{{ getRolename }}</span>
+                      </v-tooltip>
+                    </div>
+                    <div class="user-name-dropdown__icon">
+                      <v-icon class="user-name-dropdown-font__icon">mdi-chevron-right</v-icon>
+                    </div>
+                  </div>
                 </div>
               </template>
 
-              <v-list class="v-cart-dropdown-list">
+              <v-list class="user-name-dropdown__content">
                 <v-list-item
                   v-for="item in dropdownData"
                   :key="item.key"
-                  @click="changeDropdownItem(item)"
+                  @click="changeDropdownItem(item.value)"
+                  v-if="setDropdownVisibility(item)"
+                  :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
                 >
                   <v-list-item-title>
                     <v-icon>{{ item.icon }}</v-icon>
@@ -224,10 +270,6 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-          </div>
-          <div class="user-name-dropdown-detail">
-            <span>{{ getRolename }}</span>
-            <span>{{ getCompanyName }}</span>
           </div>
         </div>
         <div class="user-role-wrapper"></div>
@@ -448,83 +490,7 @@
       flat
       :class="{ 'bg-blur': sessionCheck }"
     >
-      <account-dropdown />
-      <v-spacer />
-
-      <v-menu
-        v-if="false"
-        offset-y
-        min-width="300"
-        max-width="300"
-        max-height="520"
-        :close-on-content-click="false"
-        transition="scale-transition"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn icon color="white" v-on="on">
-            <div class="notification-bell">
-              <v-icon color="white">mdi-bell</v-icon>
-              <span v-if="getUnreadMessages > 0" class="manuel-badge">
-                {{ getUnreadMessages }}
-              </span>
-            </div>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item-group>
-            <div v-if="!notificationList.length" class="no-notification">No notifications</div>
-            <template
-              v-for="(notification, index) in notificationList"
-              v-if="notificationList.length"
-            >
-              <v-list-item :key="index">
-                <v-list-item-content>
-                  <v-list-item-title>{{ notification.content }}</v-list-item-title>
-                  <v-list-item-subtitle
-                    >{{ getFormattedDate(notification.date) }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action v-if="notification.isSeen === false">
-                  <v-btn
-                    :key="index"
-                    v-on:click="onNotificationSeen(notification)"
-                    v-ripple="false"
-                    icon
-                  >
-                    <v-icon x-small color="#409eff">mdi-circle</v-icon>
-                  </v-btn>
-                </v-list-item-action>
-              </v-list-item>
-              <v-divider v-if="index + 1 < notificationList.length" :key="index" />
-            </template>
-          </v-list-item-group>
-        </v-list>
-      </v-menu>
-
-      <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
-        <template v-slot:activator="{ on }">
-          <v-btn icon color="white" v-on="on">
-            <v-icon>mdi-help-circle</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="(item, index) in rightDropdownData"
-            :key="index"
-            :disabled="item.disabled"
-            @click="handleClickRightDropdown(item)"
-          >
-            <v-list-item-icon>
-              <v-icon v-text="item.icon"></v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.text"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <template v-slot:extension>
+      <div class="page-header__details">
         <div class="page-header__content">
           <div class="page-header__title">
             <h1 v-if="routerName === 'Community'">
@@ -653,7 +619,80 @@
             </router-link>
           </div>
         </div>
-      </template>
+      </div>
+      <div class="page-header__actions">
+        <v-menu
+          v-if="false"
+          offset-y
+          min-width="300"
+          max-width="300"
+          max-height="520"
+          :close-on-content-click="false"
+          transition="scale-transition"
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn icon color="white" v-on="on">
+              <div class="notification-bell">
+                <v-icon color="white">mdi-bell</v-icon>
+                <span v-if="getUnreadMessages > 0" class="manuel-badge">
+                  {{ getUnreadMessages }}
+                </span>
+              </div>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item-group>
+              <div v-if="!notificationList.length" class="no-notification">No notifications</div>
+              <template
+                v-for="(notification, index) in notificationList"
+                v-if="notificationList.length"
+              >
+                <v-list-item :key="index">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ notification.content }}</v-list-item-title>
+                    <v-list-item-subtitle
+                      >{{ getFormattedDate(notification.date) }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action v-if="notification.isSeen === false">
+                    <v-btn
+                      :key="index"
+                      v-on:click="onNotificationSeen(notification)"
+                      v-ripple="false"
+                      icon
+                    >
+                      <v-icon x-small color="#409eff">mdi-circle</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                </v-list-item>
+                <v-divider v-if="index + 1 < notificationList.length" :key="index" />
+              </template>
+            </v-list-item-group>
+          </v-list>
+        </v-menu>
+        <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
+          <template v-slot:activator="{ on }">
+            <v-btn icon color="white" v-on="on">
+              <v-icon>mdi-help-circle</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(item, index) in rightDropdownData"
+              :key="index"
+              :disabled="item.disabled"
+              @click="handleClickRightDropdown(item)"
+            >
+              <v-list-item-icon>
+                <v-icon v-text="item.icon"></v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.text"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
     </v-app-bar>
     <!-- Header End -->
     <v-content
@@ -674,7 +713,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import offline from 'v-offline'
-import AccountDropdown from '../components/AccountDropdown'
 import ConnectionLost from '../components/ConnectionLost'
 import SessionExpired from '../components/SessionExpired'
 import SwitchAccount from '../components/SwitchAccount'
@@ -690,13 +728,13 @@ import AppDialog from '../components/AppDialog'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 import { updatePassword } from '../api/auth'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import { getCompanyList } from '../api/company'
 
 export default {
   name: 'Main',
   components: {
     FeedbackPopup,
     AppFooter,
-    AccountDropdown,
     ConnectionLost,
     SessionExpired,
     SwitchAccount,
@@ -708,6 +746,7 @@ export default {
   },
   data() {
     return {
+      switchDialogStatus: false,
       showNewPassword: false,
       currentPassword: null,
       show1: false,
@@ -788,9 +827,22 @@ export default {
 
          */
         {
+          text: 'Switch Company',
+          icon: 'mdi-swap-horizontal',
+          url: '',
+          value: 'switchCompany'
+        },
+        {
+          text: 'Return to Main Account',
+          icon: 'mdi-rotate-left',
+          url: '',
+          value: 'returnToMainAccount'
+        },
+        {
           text: 'Change Password',
           icon: 'mdi-lock',
-          url: ''
+          url: '',
+          value: 'changePassword'
         },
         /*
 {
@@ -803,7 +855,8 @@ export default {
         {
           text: 'Logout',
           icon: 'mdi-login-variant',
-          url: ''
+          url: '',
+          value: 'logout'
         }
       ],
       selectedOpt1: 'Programming',
@@ -962,6 +1015,23 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    isReturnMainAccountVisible() {
+      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
+      let recFunction = () => {
+        if (
+          !localStorage.getItem('companyResourceId') ||
+          !localStorage.getItem('selectedCompanyRequestId')
+        ) {
+          recFunction()
+        }
+      }
+      recFunction()
+      return (
+        this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
+        localStorage.getItem('companyResourceId') !==
+          localStorage.getItem('selectedCompanyRequestId')
+      )
+    },
     companyName() {
       return localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
     },
@@ -1018,22 +1088,35 @@ export default {
     getUnreadMessages() {
       return this.notificationList.filter((x) => x.isSeen == false).length
     },
-    getFullName() {
+    getLogoImage() {
       if (this.$store.state.auth.user == undefined) {
         return ''
       }
-      return this.$store.state.auth.user.fullName
+      let image =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
+    getFirstName() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
+      return this.$store.state.auth.user.firstName
     },
     getCompanyName() {
       if (this.$store.state.auth.companyName == undefined) {
         return ''
       }
-      return this.$store.state.auth.companyName
+      return (
+        this.$store.state.dashboard.selectedCompanyObject.name || this.$store.state.auth.companyName
+      )
     },
     getSelectedCompanyName() {
       if (this.$store.state.auth.companyName == undefined) {
         return ''
       }
+      console.log(this.$store.state.auth.selectedCompanyName)
       return this.$store.state.auth.selectedCompanyName
     },
     getRolename() {
@@ -1121,6 +1204,26 @@ export default {
     removeTooltip() {
       this.$refs.accountTooltip.isActive = false
     },
+    setDropdownDivider(item) {
+      if (item.value === 'switchCompany') {
+        return (
+          this.$store.state.auth.userRoleName !== 'CompanyAdmin' && !this.isReturnMainAccountVisible
+        )
+      } else if (item.value === 'returnToMainAccount') {
+        return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
+      } else {
+        return false
+      }
+    },
+    setDropdownVisibility(item) {
+      if (item.value === 'switchCompany') {
+        return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+      } else if (item.value === 'returnToMainAccount') {
+        return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
+      } else {
+        return true
+      }
+    },
     changePassword() {
       if (this.$refs.newPasswordByMain.validate()) {
         let payload = {
@@ -1176,17 +1279,6 @@ export default {
           break
       }
     },
-    changeDropdownItem(item) {
-      if (item.text == 'Logout') {
-        this.logoutUser()
-        //this.$router.push('/login')
-      } else if (item.text === 'Change Password') {
-        this.currentPassword = null
-        this.newPassword = null
-        this.reNewPassword = null
-        this.openPasswordChange = true
-      }
-    },
     ...mapActions({
       setSnackStatus: 'common/setSnackStatus',
       changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
@@ -1198,6 +1290,34 @@ export default {
       notificationSeen: 'dashboard/notificationSeen',
       changeSessionExpiredStatus: 'common/changeSessionExpiredStatus'
     }),
+    changeDropdownItem(item) {
+      switch (item) {
+        case 'logout':
+          this.logoutUser()
+          break
+        case 'changePassword':
+          this.currentPassword = null
+          this.newPassword = null
+          this.reNewPassword = null
+          this.openPasswordChange = true
+          break
+        case 'switchCompany':
+          this.setSwitchDialog(true)
+          break
+        case 'returnToMainAccount':
+          let mainCompanyId = localStorage.getItem('companyResourceId')
+          let mainCompanyName = localStorage.getItem('companyName')
+          localStorage.setItem('isSelectCompany', false)
+          localStorage.setItem('companyId', mainCompanyId)
+          localStorage.setItem('companyRequestId', mainCompanyId)
+          localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
+          localStorage.setItem('selectedCompanyName', mainCompanyName)
+          this.$router.go(0)
+          break
+        default:
+          return
+      }
+    },
     onIUndestandClick(data) {
       this.isDisconnected = data
     },
@@ -1232,6 +1352,22 @@ export default {
 </script>
 <style lang="scss">
 .layout-container {
+  .user-name-dropdown__content {
+    .v-list-item__title {
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      display: flex;
+      i {
+        margin-right: 16px;
+        font-size: 20px;
+      }
+    }
+  }
   .no-notification {
     color: rgba(0, 0, 0, 0.54);
     font-size: 14px;
@@ -1258,7 +1394,17 @@ export default {
     border: none !important;
     box-shadow: none !important;
     padding-right: 16px;
-    padding-top: 8px;
+    margin: 16px 0 !important;
+    .v-toolbar__content {
+      justify-content: space-between;
+      padding-left: 8px;
+      padding-right: 0;
+    }
+    &__details {
+      max-width: 85%;
+    }
+    &__actions {
+    }
     &__search {
       width: 180px;
       .v-text-field {
@@ -1293,10 +1439,6 @@ export default {
       width: 100%;
       padding-left: 8px;
       margin-bottom: 1px;
-      @media (max-width: 896px) {
-        flex-direction: column;
-        align-items: flex-start;
-      }
     }
     &__title {
       margin-bottom: 6px;
@@ -1308,12 +1450,18 @@ export default {
         }
         font-weight: bold;
         margin: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
       &-link {
         color: white;
         font-size: 34px;
         font-weight: bold;
         margin: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
     }
     &__breadcrumb {
@@ -1337,18 +1485,22 @@ export default {
     overflow: visible;
     &__menu-toggle {
       left: 232px;
-      top: 16px;
+      top: 25px !important;
       position: fixed;
       z-index: 9;
       transition: all 0.2s ease-in-out;
       box-shadow: 0 2px 10px 5px rgba(33, 150, 243, 0.2);
       background-color: #edf7fd;
-      margin-left: 16px;
+      margin-left: -15px;
     }
     &__logo-wrapper {
-      margin: 56px auto 16px;
       width: 180px;
       height: 60px;
+      margin: 25px 24px 15px;
+      &__logo {
+        width: 139px;
+        height: 50px;
+      }
     }
     &.v-navigation-drawer--mini-variant {
       min-width: 64px;
@@ -1648,34 +1800,90 @@ export default {
   }
 
   .user-name-dropdown {
-    align-items: center;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     position: relative;
+    padding: 21px 16px;
+    &__content--divider {
+      border-bottom: 1px solid #e0e0e0;
+    }
+    width: 100%;
+    &__menu {
+      width: 100%;
+      &-item {
+        width: 100%;
+      }
+    }
+    &__logo {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+
+      img {
+        max-width: 60px;
+        max-height: 60px;
+        border-radius: 40px;
+        margin-right: 8px;
+      }
+    }
+    &__details {
+      flex-flow: column;
+      display: flex;
+      height: 60px;
+      text-transform: capitalize !important;
+      word-wrap: break-word;
+      max-width: 150px;
+      min-width: 150px;
+      cursor: pointer;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      &-item {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      span {
+        max-width: 150px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #313131;
+        &:first-child {
+          font-weight: 600;
+          margin-bottom: 5px;
+        }
+        &:last-child {
+          opacity: 0.9;
+          font-size: 12px;
+          font-weight: 600;
+        }
+      }
+    }
+    &__icon {
+      i {
+        cursor: pointer;
+        &:before {
+          opacity: 0.8;
+          color: #383b41;
+        }
+      }
+    }
   }
 
   .user-name-dropdown-font {
     align-items: flex-start;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: bold;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: rgba(0, 0, 0, 0.87);
-    text-transform: capitalize !important;
-    max-width: 215px;
-    word-wrap: break-word;
-    white-space: initial;
-    cursor: pointer;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    height: 28px !important;
+    height: 60px !important;
     padding: 0 !important;
+    justify-content: flex-start;
+    &:hover:before {
+      opacity: 0 !important;
+    }
     &__icon {
       margin-top: 2px;
       &::before {
@@ -1685,14 +1893,17 @@ export default {
     }
     &__tooltip-wrapper {
       display: flex;
-      max-width: 215px;
+      width: 100%;
+      align-items: center;
+      display: flex;
+      height: 60px;
+      cursor: pointer;
     }
   }
 
   .user-wrapper {
-    width: 237px;
-    height: 87px;
-    margin: 0 auto;
+    margin: 0 0 88px;
+    background: white;
   }
 
   .logo-wrapper {
@@ -1833,6 +2044,7 @@ export default {
   .v-content {
     // min-height: calc(100vh - 46px);
     height: 100%;
+    margin-top: 16px;
     @media only screen and (max-width: 1025px) {
       padding: 160px 0 0 65px !important;
     }
@@ -2008,10 +2220,6 @@ export default {
     }
   }
   /*
-    .header-container > ::v-deep .v-toolbar__content {
-      padding-bottom: 0 !important;
-      padding-top: 4px !important;
-    }
 
     .breadcrumb-links {
       text-decoration: none !important;

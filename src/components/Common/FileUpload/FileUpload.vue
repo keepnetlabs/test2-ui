@@ -176,7 +176,6 @@ export default {
       }
     },
     clear() {
-      //debugger
       //this.$emit('clear')
       //this.$refs.upload.update(file, { active: false })
       this.files = []
