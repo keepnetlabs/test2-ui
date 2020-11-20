@@ -242,8 +242,19 @@
             class="selection-all-check"
             color="white"
             v-model="selectionCheckbox"
+            :disabled="getSelectionCheckboxDisabledValue"
           />
-          <span class="selection-span">{{ multipleSelection.length }} Selected</span>
+          <span class="selection-span">{{ getSelectionText }}</span>
+          <v-btn
+            :ripple="false"
+            class="btn-all-selection"
+            rounded
+            color="white"
+            style="box-shadow: none;"
+            @click="handleSelectButtonClick"
+          >
+            {{ getSelectionButtonText }}
+          </v-btn>
           <div class="action-icons">
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.clipboard">
               <template v-slot:activator="{ on }">
@@ -978,8 +989,19 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    getSelectionText() {
+      return this.isSelectedAll
+        ? 'All selected'
+        : `${this.multipleSelection.length} item(s) selected`
+    },
+    getSelectionButtonText() {
+      return `Select all ${this.initialData.length} item(s)`
+    },
     getTableHeaderClass() {
       return this.tableData.length === 0 && 'table-header-disable'
+    },
+    getSelectionCheckboxDisabledValue() {
+      return this.showfilteredData ? !this.filteredData.length : false
     }
   },
   data() {
@@ -991,6 +1013,7 @@ export default {
       sortProps: null,
       initialData: [],
       dataLength: 0,
+      isSelectedAll: false,
       selectedCluster: '',
       tableData: [],
       selectedRows: [],
@@ -1063,6 +1086,11 @@ export default {
     tableData(data) {
       if (data && this.groupable) {
         this.totalLength = this.getTotalLength(data)
+      }
+      if (this.isSelectedAll) {
+        for (let item of data) {
+          this.$refs.elTableRef.toggleRowSelection(item, true)
+        }
       }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
@@ -1162,6 +1190,13 @@ export default {
         let index = columns.findIndex((col) => col.property === x.property)
         columns[index] = { ...columns[index], ...x }
       })
+    },
+    handleSelectButtonClick() {
+      this.multipleSelection = [...this.initialData]
+      for (let item of this.multipleSelection) {
+        this.$refs.elTableRef.toggleRowSelection(item, true)
+      }
+      this.isSelectedAll = true
     },
     renderFixedItems() {
       const table = this.$el
@@ -1613,7 +1648,7 @@ export default {
         if (row.children) {
           this.unSelectChildrenByRowCheckbox(row.children, selection)
         }
-        debugger
+
         const clusteredIndex = this.clusteredItems.findIndex(
           (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(row)
         )
@@ -1668,6 +1703,7 @@ export default {
         }
         this.$emit('handleSelectionChange', selection)
       }
+      this.isSelectedAll = false
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
@@ -1751,13 +1787,32 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
+      debugger
       if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
-        if (this.selectionCheckbox) {
+        if (this.isSelectedAll) {
+          debugger
+          for (let item of this.multipleSelection) {
+            this.$refs.elTableRef.toggleRowSelection(item, false)
+          }
+          this.multipleSelection = []
+          this.isSelectedAll = false
+        } else if (this.selectionCheckbox) {
           this.$refs.elTableRef.toggleAllSelection()
         } else {
-          this.$refs.elTableRef.clearSelection()
+          const selectedItems = this.multipleSelection.filter((item) => {
+            return this.tableData.find(
+              (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+            )
+          })
+          if (selectedItems.length) {
+            for (let selectedItem of selectedItems) {
+              this.$refs.elTableRef.toggleRowSelection(selectedItem)
+            }
+          } else {
+            this.$refs.elTableRef.clearSelection()
+          }
         }
       }
     },

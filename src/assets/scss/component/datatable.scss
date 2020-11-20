@@ -378,15 +378,12 @@
           z-index: 4;
 
           .selection-span {
-            font-family: "Open Sans", sans-serif;
             font-size: 12px;
             font-weight: 600;
-            font-stretch: normal;
-            font-style: normal;
             line-height: normal;
             letter-spacing: normal;
             color: #fff;
-            margin-left: 20px;
+            margin-left: 16px;
           }
 
           .action-icons {
@@ -865,7 +862,7 @@
     }
 
     .selection-all-check {
-      margin-left: 5px !important;
+      margin-left: 2px !important;
       margin-top: 9px !important;
 
       i {
@@ -1041,4 +1038,20 @@
 }
 .el-table__empty-block{
   border-top: 1px solid rgb(158, 158, 158);
+}
+.btn-all-selection{
+  margin-left:104px;
+  &:before{
+    background-color: #2196f3;
+  }
+ .v-btn__content{
+   font-size: 14px;
+   font-weight: 600;
+   line-height: 1.71;
+   letter-spacing: normal;
+   color: #2196f3;
+   text-transform: initial;
+ }
+
+
 }
