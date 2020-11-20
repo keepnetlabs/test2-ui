@@ -9,7 +9,8 @@ const auth = {
     permissions: [],
     user: {},
     companyName: '',
-    userRoleName: ''
+    userRoleName: '',
+    logoUrl: ''
   },
   getters: {
     userGetter: (state) => state.user
@@ -25,11 +26,15 @@ const auth = {
           localStorage.getItem('companyName') ||
           data.userCompany.name
         state.userRoleName = data.role.name
+        state.logoUrl = data.userCompany.logoPath
+        state.firstName = data.firstName
       } else {
         state.user = payload.currentUserData
         state.companyName = payload.currentUserData.userCompany.name
         state.userRoleName = payload.currentUserData.role.name
         state.selectedCompanyName = payload.currentUserData.userCompany.name
+        state.logoUrl = payload.currentUserData.userCompany.logoPath
+        state.firstName = payload.currentUserData.firstName
       }
     }
   },
@@ -57,15 +62,6 @@ const auth = {
         let tokenData = jwt_decode(token)
         let currentUserData = setGlobalUserData(tokenData)
         localStorage.setItem('userData', JSON.stringify(currentUserData))
-        /*let systemUserData = {
-          UserId: currentUserData.id,
-          FirstName: currentUserData.name,
-          LastName: currentUserData.surname,
-          Email: currentUserData.email,
-          CompanyId: currentUserData.userCompany.id,
-          CompanyName: currentUserData.userCompany.name
-        }*/
-        //systemUser(systemUserData).then() @todo iceman check all systemuserdata endpoint
         localStorage.setItem('selectedCompanyName', currentUserData.name)
         localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
         if (
