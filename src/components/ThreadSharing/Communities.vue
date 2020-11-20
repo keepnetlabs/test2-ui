@@ -232,6 +232,7 @@
                   hide-details
                   multiple
                   :disabled="selectedTab === 'tab-2'"
+                  :slots="{ selection: true, item: false }"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -264,6 +265,7 @@
                   @change="updateCommunities()"
                   :menu-props="{ offsetY: true }"
                   :disabled="selectedTab === 'tab-2'"
+                  :slots="{ selection: true, item: false }"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span

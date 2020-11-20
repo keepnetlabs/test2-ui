@@ -26,7 +26,8 @@
           </v-radio-group>
         </div>
         <div class="target-users-select__input-area">
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="[]"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -44,7 +45,7 @@
             :disabled="investigateData.targetUserType === 'AllUsers'"
             hide-details
             required
-          ></v-combobox>
+          />
           <k-select
             type="combobox"
             :items="userGroupsItems"
@@ -67,6 +68,7 @@
             autocomplete="off"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
+            :slots="{ selection: true, item: false }"
           >
             <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
               <v-chip
@@ -266,8 +268,8 @@
               item-text="label"
               item-value="value"
               outlined
-              add-min-width
-              position="top"
+              min-width-type="big"
+              :nudge-width="170"
               hide-details
             />
           </v-col>

@@ -135,6 +135,7 @@
             :items="act.markAsOpts"
             outlined
             hide-details
+            height="40"
           />
         </v-col>
         <v-col
@@ -161,7 +162,8 @@
         </v-col>
 
         <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="flex-grow-1">
-          <v-combobox
+          <k-select
+            type="combobox"
             v-model="playbookAction.tags"
             :items="[]"
             chips
@@ -176,7 +178,7 @@
             :return-object="false"
             placeholder="Enter tags and press enter key"
             required
-          ></v-combobox>
+          />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2">
           <k-select
@@ -191,7 +193,8 @@
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
           md="5"
         >
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="specificUserItems"
             placeholder="Select target users"
             outlined
@@ -209,13 +212,14 @@
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
-          ></v-combobox>
+          />
         </v-col>
         <v-col
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
           md="5"
         >
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="userGroupsItems"
             placeholder="Select user groups"
             outlined
@@ -233,6 +237,7 @@
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
+            :slots="{ selection: true, item: false }"
           >
             <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
               <v-chip
@@ -251,7 +256,7 @@
                 >
               </v-chip>
             </template>
-          </v-combobox>
+          </k-select>
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2">
           <k-select
@@ -260,7 +265,8 @@
             item-value="value"
             item-text="label"
             outlined
-            addMinWidth
+            min-width-type="medium"
+            nudge-width="50"
             hide-details
           />
         </v-col>

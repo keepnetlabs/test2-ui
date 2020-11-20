@@ -222,7 +222,8 @@
                 Use enter key to use tags
               </v-list-item-subtitle>
               <div class="max-width__form new-integration__api-key__combobox">
-                <v-combobox
+                <k-select
+                  type="combobox"
                   v-model.trim="formValues.tags"
                   :items="[]"
                   :return-object="false"
@@ -236,7 +237,7 @@
                   placeholder="Enter Tag"
                   small-chips
                   @input="handleTagItemChange"
-                ></v-combobox>
+                />
               </div>
             </v-list-item-content>
           </v-list-item>

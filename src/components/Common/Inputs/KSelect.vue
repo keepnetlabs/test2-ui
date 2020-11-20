@@ -5,8 +5,9 @@
     :attach="`.${uniqueSelector}`"
     :menu-props="{
       offsetY: true,
-      top: position === 'top',
-      contentClass: `k-select__menu ${addMinWidth ? 'k-select__menu-min-width' : ''}`
+      ...getPosition,
+      contentClass: getContentClass,
+      nudgeWidth
     }"
     v-bind="$attrs"
     v-on="$listeners"
@@ -29,12 +30,17 @@ export default {
       type: String,
       default: 'bottom'
     },
-    addMinWidth: {
-      type: Boolean,
-      default: false
+    minWidthType: {
+      type: String,
+      default: ''
+    },
+    nudgeWidth: {
+      type: String || Number,
+      default: 5
     },
     type: {
-      type: Boolean
+      type: String,
+      default: 'select'
     },
     slots: {
       type: Object,
@@ -57,9 +63,19 @@ export default {
           return VAutocomplete
         case 'combobox':
           return VCombobox
+        case 'select':
+          return VSelect
         default:
           return VSelect
       }
+    },
+    getPosition() {
+      return { [this.position]: true }
+    },
+    getContentClass() {
+      return `k-select__menu ${
+        this.minWidthType ? `k-select__menu--${this.minWidthType.toLowerCase()}` : ''
+      }`
     }
   }
 }
@@ -90,10 +106,20 @@ export default {
       }
     }
   }
-}
-.k-select__menu-min-width {
-  @media (max-width: 2000px) {
-    min-width: 380px !important;
+  &--big {
+    @media (max-width: 1400px) {
+      min-width: 300px !important;
+    }
+  }
+  &--medium {
+    @media (max-width: 1400px) {
+      min-width: 250px !important;
+    }
+  }
+  &--small {
+    @media (max-width: 1400px) {
+      min-width: 190px !important;
+    }
   }
 }
 </style>

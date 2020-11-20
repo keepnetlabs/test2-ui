@@ -468,7 +468,7 @@ export default {
     overflow-x: hidden;
   }
   .v-stepper__items {
-    overflow: visible;
+    min-height: 75vh;
   }
 }
 </style>

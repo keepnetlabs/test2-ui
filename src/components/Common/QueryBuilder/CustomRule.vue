@@ -9,6 +9,8 @@
           v-model.trim="query.operand"
           :items="rule.operands"
           outlined
+          min-width-type="small"
+          :nudge-width="20"
           hide-details
           @input="handleOperandChange"
         />
@@ -28,6 +30,7 @@
           outlined
           hide-details
           item-value="value"
+          min-width-type="small"
           item-text="text"
         />
       </v-col>
@@ -37,24 +40,48 @@
           v-model.trim="query.operator"
           :items="rule.operandsSenderIP"
           outlined
+          min-width-type="small"
           hide-details
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
         <!-- List of "From" operands-->
-        <k-select v-model.trim="query.format" :items="rule.operandsFrom" outlined hide-details />
+        <k-select
+          min-width-type="small"
+          v-model.trim="query.format"
+          :items="rule.operandsFrom"
+          outlined
+          hide-details
+        />
       </v-col>
       <v-col md="2" v-if="query.operand === 'To'">
         <!-- List of "From" operands-->
-        <k-select v-model.trim="query.format" :items="rule.operandsTo" outlined hide-details />
+        <k-select
+          min-width-type="small"
+          v-model.trim="query.format"
+          :items="rule.operandsTo"
+          outlined
+          hide-details
+        />
       </v-col>
       <v-col md="2" v-if="query.operand === 'CC'">
         <!-- List of "From" operands-->
-        <k-select v-model.trim="query.format" :items="rule.operandsCC" outlined hide-details />
+        <k-select
+          min-width-type="small"
+          v-model.trim="query.format"
+          :items="rule.operandsCC"
+          outlined
+          hide-details
+        />
       </v-col>
       <v-col md="2" v-if="query.operand === 'Analysis result'">
         <!-- List of "Analysis result" operands-->
-        <k-select v-model="query.value" :items="rule.operandsAnalysisResult" outlined />
+        <k-select
+          min-width-type="small"
+          v-model="query.value"
+          :items="rule.operandsAnalysisResult"
+          outlined
+        />
       </v-col>
       <v-col
         v-if="

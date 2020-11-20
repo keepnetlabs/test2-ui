@@ -193,7 +193,7 @@ export default {
         },
         {
           id: 2,
-          subject: 'Suspicious Email Analysis Report',
+          subject: 'Suspicious Email Analysis',
           reported: 'Kobe Byrant',
           source: 'Manual',
           priority: 'High',

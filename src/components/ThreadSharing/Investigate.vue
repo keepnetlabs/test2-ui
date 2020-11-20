@@ -307,6 +307,7 @@
                 solo
                 :rules="autocomplete"
                 required
+                :slots="{ selection: true, item: true }"
               >
                 <template v-slot:selection="{ attr, on, item, selected }">
                   <v-chip
