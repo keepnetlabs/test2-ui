@@ -56,7 +56,7 @@
               outlined
               persistent-hint
               placeholder="Select companies"
-            ></v-autocomplete>
+            />
           </v-list-item-content>
         </v-list-item>
       </v-form>

@@ -66,7 +66,7 @@
             ></v-text-field>
           </form-group>
           <form-group title="Integration Type" has-hint>
-            <v-select
+            <k-select
               v-model.trim="formValues.analysisEngineTypeResourceId"
               :items="integrationTypes"
               :rules="[integrationTypeRules.required]"
@@ -77,10 +77,8 @@
               item-value="resourceId"
               outlined
               placeholder="Select integration type"
-              required
-              :menu-props="{ offsetY: true }"
               @input="handleIntegrationTypeChange"
-            ></v-select>
+            ></k-select>
           </form-group>
           <form-group title="API URL" has-hint>
             <v-text-field
@@ -224,7 +222,8 @@
                 Use enter key to use tags
               </v-list-item-subtitle>
               <div class="max-width__form new-integration__api-key__combobox">
-                <v-combobox
+                <k-select
+                  type="combobox"
                   v-model.trim="formValues.tags"
                   :items="[]"
                   :return-object="false"
@@ -238,7 +237,7 @@
                   placeholder="Enter Tag"
                   small-chips
                   @input="handleTagItemChange"
-                ></v-combobox>
+                />
               </div>
             </v-list-item-content>
           </v-list-item>
@@ -323,7 +322,7 @@
                   <div v-if="formValues.isUploadOtherFileType" class="ml-8 mt-1">
                     <div class="d-flex align-center">
                       <span class="mr-4 type-text">File Types</span>
-                      <v-select
+                      <k-select
                         v-model.trim="formValues.uploadFileTypes"
                         :items="uploadFileTypes"
                         class="new-integration__select"
@@ -333,7 +332,7 @@
                         hide-details
                         placeholder="Select integration type"
                         required
-                      ></v-select>
+                      ></k-select>
                     </div>
                   </div>
                 </div>
@@ -396,9 +395,11 @@ import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'NewIntegration',
   components: {
+    KSelect,
     FormGroup,
     AppModal,
     AppModalBodyHeader

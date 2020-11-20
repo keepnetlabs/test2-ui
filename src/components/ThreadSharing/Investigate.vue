@@ -293,7 +293,8 @@
             <div class="filters-content">
               <div class="input-header">Target Users</div>
               <div class="input-sub">Select departments, groups or users to investigate</div>
-              <v-autocomplete
+              <k-select
+                type="autocomplete"
                 v-model="targetUsers"
                 :items="targets"
                 :search-input.sync="search"
@@ -306,6 +307,7 @@
                 solo
                 :rules="autocomplete"
                 required
+                :slots="{ selection: true, item: true }"
               >
                 <template v-slot:selection="{ attr, on, item, selected }">
                   <v-chip
@@ -322,7 +324,7 @@
                   {{ item }}
                   <v-list-item-title v-text="item.name"></v-list-item-title>
                 </template>
-              </v-autocomplete>
+              </k-select>
 
               <div class="input-header">Email Date Range</div>
               <div class="input-sub">Select range of emails’ sending date</div>
@@ -393,7 +395,7 @@
 
               <div class="input-header mt-6">Duration</div>
               <div class="input-sub">Select how many days the investigation will run</div>
-              <v-select
+              <k-select
                 :items="durations"
                 placeholder="3 days"
                 outlined
@@ -402,11 +404,11 @@
                 v-model="selectedDuration"
                 :rules="[(v) => !!v || 'Duration is required']"
                 required
-              ></v-select>
+              ></k-select>
 
               <div class="input-header">Action</div>
               <div class="input-sub">Select action to be executed if email is found</div>
-              <v-select
+              <k-select
                 :items="actions"
                 placeholder="Delete email"
                 outlined
@@ -415,7 +417,7 @@
                 v-model="selectedAction"
                 :rules="[(v) => !!v || 'Action is required']"
                 required
-              ></v-select>
+              ></k-select>
             </div>
           </v-form>
         </div>
@@ -442,8 +444,10 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
+  components: { KSelect },
   props: {
     selectedPostTitle: {
       type: String

@@ -26,7 +26,8 @@
           </v-radio-group>
         </div>
         <div class="target-users-select__input-area">
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="[]"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -44,8 +45,9 @@
             :disabled="investigateData.targetUserType === 'AllUsers'"
             hide-details
             required
-          ></v-combobox>
-          <v-combobox
+          />
+          <k-select
+            type="combobox"
             :items="userGroupsItems"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -66,6 +68,7 @@
             autocomplete="off"
             v-if="investigateData.targetUserType === 'Groups'"
             hide-details
+            :slots="{ selection: true, item: false }"
           >
             <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
               <v-chip
@@ -84,8 +87,9 @@
                 >
               </v-chip>
             </template>
-          </v-combobox>
-          <v-combobox
+          </k-select>
+          <k-select
+            type="combobox"
             :items="specificUserItems"
             v-if="investigateData.targetUserType === 'SpecificUsers'"
             placeholder="Enter Email Addresses"
@@ -106,7 +110,7 @@
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
             v-model="investigateData.targetUsers"
             hide-details
-          ></v-combobox>
+          ></k-select>
         </div>
       </v-col>
     </v-row>
@@ -122,7 +126,7 @@
         </v-list-item>
       </v-col>
       <v-col md="3">
-        <v-select
+        <k-select
           v-model="investigateData.filters"
           :items="act.investigateFilters"
           placeholder="Select Filters"
@@ -147,7 +151,7 @@
         </v-list-item>
       </v-col>
       <v-col md="3">
-        <v-select
+        <k-select
           v-model="investigationRange"
           :items="act.investigateRanges"
           outlined
@@ -216,7 +220,7 @@
         </v-list-item>
       </v-col>
       <v-col md="3">
-        <v-select
+        <k-select
           v-model="investigationDuration"
           :items="act.investigateDurations"
           outlined
@@ -239,20 +243,18 @@
       <v-col md="6">
         <v-row>
           <v-col>
-            <v-select
+            <k-select
               v-model="investigateData.actionType"
               :items="act.investigateActions"
               outlined
-              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
           <v-col v-if="investigateData.actionType === 'Notify'">
-            <v-select
+            <k-select
               v-model="investigateData.actionNotifyTargetUserType"
               :items="act.investigateActionNotifications"
               outlined
-              :menu-props="{ offsetY: true }"
               hide-details
             />
           </v-col>
@@ -260,13 +262,14 @@
             style="padding-right: 0 !important ;"
             v-if="investigateData.actionType === 'Notify'"
           >
-            <v-select
+            <k-select
               v-model="investigateActionNotificationTemplate"
               :items="act.notifyTemplates"
               item-text="label"
               item-value="value"
               outlined
-              :menu-props="{ offsetY: true }"
+              min-width-type="big"
+              :nudge-width="170"
               hide-details
             />
           </v-col>
@@ -285,8 +288,10 @@ import {
   getTargetUsersByEmail
 } from '../../api/targetUsers'
 import { getInvestigationScanTypes } from '@/api/investigations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'Investigate',
+  components: { KSelect },
   props: {
     act: {
       type: Object

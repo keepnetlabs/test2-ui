@@ -5,12 +5,13 @@
       <!-- <label class="mr-5">{{ rule.label }}</label> -->
       <v-col md="2">
         <!-- List of operands (optional) -->
-        <v-select
+        <k-select
           v-model.trim="query.operand"
           :items="rule.operands"
           outlined
+          min-width-type="small"
+          :nudge-width="20"
           hide-details
-          :menu-props="{ offsetY: true }"
           @input="handleOperandChange"
         />
       </v-col>
@@ -23,63 +24,63 @@
         "
       >
         <!-- List of operators (e.g. =, !=, >, <) -->
-        <v-select
+        <k-select
           v-model="query.operator"
           :items="rule.operators"
           outlined
           hide-details
           item-value="value"
-          :menu-props="{ offsetY: true }"
+          min-width-type="small"
           item-text="text"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'SenderIp'">
         <!-- List of "From" operands-->
-        <v-select
+        <k-select
           v-model.trim="query.operator"
           :items="rule.operandsSenderIP"
           outlined
+          min-width-type="small"
           hide-details
-          :menu-props="{ offsetY: true }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'From'">
         <!-- List of "From" operands-->
-        <v-select
+        <k-select
+          min-width-type="small"
           v-model.trim="query.format"
           :items="rule.operandsFrom"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'To'">
         <!-- List of "From" operands-->
-        <v-select
+        <k-select
+          min-width-type="small"
           v-model.trim="query.format"
           :items="rule.operandsTo"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'CC'">
         <!-- List of "From" operands-->
-        <v-select
+        <k-select
+          min-width-type="small"
           v-model.trim="query.format"
           :items="rule.operandsCC"
           outlined
           hide-details
-          :menu-props="{ offsetY: true }"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'Analysis result'">
         <!-- List of "Analysis result" operands-->
-        <v-select
+        <k-select
+          min-width-type="small"
           v-model="query.value"
           :items="rule.operandsAnalysisResult"
           outlined
-          :menu-props="{ offsetY: true }"
         />
       </v-col>
       <v-col
@@ -199,7 +200,9 @@
 <script>
 import QueryBuilderRule from 'vue-query-builder/src/components/QueryBuilderRule'
 import { mail, required, ip, domain, extension, maxLength } from '../../../utils/validations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
+  components: { KSelect },
   extends: QueryBuilderRule,
   data() {
     return {
@@ -210,10 +213,15 @@ export default {
         domain,
         extension,
         maxLength
-      }
+      },
+      attachId: null
     }
   },
   methods: {
+    getAttachedItem(item) {
+      item = `.${item}`
+      return document.querySelector(item)
+    },
     getRules() {
       switch (this.query && this.query.format) {
         case 'Email':
@@ -298,6 +306,7 @@ export default {
     }
   },
   created() {
+    this.attachId = `id-${Math.floor(Math.random() * 10000).toString()}`
     if (!this.query.format) {
       this.query.format = 'Email'
     }

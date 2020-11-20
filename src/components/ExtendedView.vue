@@ -290,7 +290,7 @@
                   v-bind="col.editOptions.props"
                   row-height="20"
                 ></v-textarea>
-                <v-select
+                <k-select
                   class="edit-select"
                   dense
                   outlined
@@ -481,7 +481,7 @@
                   </template>
                 </v-combobox>
 
-                <v-select
+                <k-select
                   class="edit-select"
                   dense
                   outlined
@@ -511,7 +511,7 @@
                       EDIT
                     </v-btn>
                   </template>
-                </v-select>
+                </k-select>
               </div>
             </div>
             <slot name="body" v-if="editMode"> </slot>
@@ -589,9 +589,11 @@ import {
   getDataTableFieldLabel
 } from '../utils/functions'
 import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'ExtendedView',
   components: {
+    KSelect,
     ExtendedViewLoading,
     Badge
   },
