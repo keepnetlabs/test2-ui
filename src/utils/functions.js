@@ -182,7 +182,7 @@ export function isPostedByMe(isPostedByMe) {
 export function copyToClipboard(e) {}
 
 export function setGlobalUserData(userData, isCompanySelect) {
-  let currentUserData
+  let currentUserData = {}
   if (isCompanySelect) {
     currentUserData = {
       id: userData.resourceId,
@@ -190,6 +190,7 @@ export function setGlobalUserData(userData, isCompanySelect) {
       surname: userData.name,
       email: userData.websiteUrl,
       fullName: userData.name,
+      familyName: userData.givenName,
       countryCode: null,
       phone: null,
       status: null,
@@ -216,6 +217,7 @@ export function setGlobalUserData(userData, isCompanySelect) {
       fullName: userData.given_name,
       countryCode: null,
       phone: userData.phone_number,
+      firstName: userData.given_name,
       status: null,
       userCompany: {
         id: userData.user_company_resourceid,
