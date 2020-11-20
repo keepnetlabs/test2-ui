@@ -63,13 +63,24 @@ export function getSelectedEmailPreview(id) {
   return testRequest.get(`/community-posts/notified-email-preview/${id}`)
 }
 
-export function uploadEmlOrMsg(file) {
+export function uploadEmlOrMsg(file, onUploadProgress) {
   const formData = new FormData()
   formData.append('File', file)
   return testRequest.post(`community-posts/message-file-preview`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
-    }
+    },
+    onUploadProgress
+  })
+}
+export function uploadEmlOrMsgCancel(file, onUploadProgress) {
+  const formData = new FormData()
+  formData.append('File', file)
+  return testRequest.post(`community-posts/message-file-preview`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    onUploadProgress
   })
 }
 

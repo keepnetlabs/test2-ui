@@ -71,18 +71,8 @@
         </v-list-item>
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content>
-            <label class="add-user-overlay__label" for="department">Department</label>
-            <v-text-field
-              placeholder="Enter department name"
-              outlined
-              dense
-              v-model.trim="formValues.department"
-              id="department"
-              height="40"
-              :rules="[
-                (v) => validations.maxLength(v, 40, 'Department name cannot exceed 40 characters')
-              ]"
-            ></v-text-field>
+            <label class="add-user-overlay__label">Department</label>
+            <InputDepartment v-model.trim="formValues.department" />
           </v-list-item-content>
         </v-list-item>
 
@@ -164,10 +154,11 @@ import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targe
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
+import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'AddUserModal',
-  components: { KSelect, AppModal },
+  components: { InputDepartment, AppModal, KSelect },
   props: {
     status: {
       type: Boolean
