@@ -188,7 +188,7 @@ export function setGlobalUserData(userData) {
     name: userData.user_company_name,
     surname: userData.family_name,
     email: userData.email,
-    fullName: userData.given_name,
+    fullName: userData.name,
     countryCode: null,
     phone: userData.phone_number,
     firstName: userData.given_name,
