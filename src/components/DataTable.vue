@@ -13,43 +13,6 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <v-overlay :opacity="0.46" :value="isWantToAddUsers" :z-index="999" fixed>
-      <v-card class="download-card pb-4 pa-6" light style="max-width: 580px;">
-        <v-list-item>
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Add row overlay</v-list-item-title>
-            <v-list-item-subtitle class="v-card-sub-header">Subtitle...</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="check-wrapper pl-0 pr-0">
-          <div class="check-row">
-            <v-checkbox
-              class="k-checkbox"
-              color="#2196f3"
-              label="ITEM 1"
-              v-model="download.xls"
-              value="XLS"
-            />
-          </div>
-          <div class="check-row">
-            <v-checkbox
-              class="k-checkbox"
-              color="#2196f3"
-              label="ITEM 2"
-              v-model="download.csv"
-              value="CSV"
-            />
-          </div>
-        </v-list-item>
-        <div class="d-flex download-buttons flex-row flex-wrap">
-          <v-btn @click="isWantToAddUsers = false" color="#f56c6c" text>CANCEL</v-btn>
-          <v-btn @click="addRow()" color="#2196f3" text>ADD</v-btn>
-        </div>
-      </v-card>
-    </v-overlay>
 
     <v-card v-show="!loading" class="card">
       <v-list-item class="pl-2 pr-0 pb-8" v-if="title && title.icon">
@@ -203,51 +166,6 @@
                 </v-list>
               </v-menu>
             </div>
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on }">
-                <v-menu
-                  offset-y
-                  transition="scale-transition"
-                  v-if="addUsers && addUsers.show && !addUsers.popUp && !addUsers.action"
-                  v-on="on"
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn class="btn-hover mr-1" icon v-on="on">
-                      <v-icon>mdi-plus-circle</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list class="v-cart-dropdown-list">
-                    <v-list-item>
-                      <v-list-item-title>Add users manually</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title>Import .xls</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title>LDAP Integration</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-
-                <v-btn
-                  class="btn-add mr-1"
-                  icon
-                  v-else-if="addUsers && addUsers.show && addUsers.popUp"
-                  v-on="on"
-                >
-                  <v-icon @click="isWantToAddUsers = true">mdi-plus</v-icon>
-                </v-btn>
-                <v-btn
-                  class="btn-add mr-1"
-                  icon
-                  v-else-if="addUsers && addUsers.show && addUsers.action"
-                  v-on="on"
-                >
-                  <v-icon @click="addUsersAction(addUsers.action)">mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">{{ (addUsers && addUsers.tooltip) || 'Add' }}</span>
-            </v-tooltip>
 
             <slot name="addUsers">
               <v-tooltip bottom opacity="1">
@@ -443,7 +361,13 @@
             style="width: 100%;"
             v-if="!allHidden"
           >
-            <el-table-column align="center" type="selection" v-if="selectable" width="48" />
+            <el-table-column
+              align="center"
+              type="selection"
+              :reserve-selection="true"
+              v-if="selectable"
+              width="48"
+            />
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
@@ -1060,7 +984,6 @@ export default {
   },
   data() {
     return {
-      setDatatableUI: false,
       filteredData: [],
       renderedColumns: [],
       filteredDataLength: 0,
@@ -1070,8 +993,8 @@ export default {
       dataLength: 0,
       selectedCluster: '',
       tableData: [],
+      selectedRows: [],
       rowCount: 10,
-      totalCount: 100,
       extendedViewStyle: null,
       currentPage: 1,
       multipleSelection: [],
@@ -1079,11 +1002,9 @@ export default {
       timeout: null,
       selectionCheckbox: false,
       selectionAll: false,
-      series: [44, 55, 13, 43],
       search: '',
       downloadModalTitle: '',
       isSettingsOpened: false,
-      isWantToAddUsers: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
       firstColFixed: true,
@@ -1100,15 +1021,7 @@ export default {
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
-      printObj: {
-        id: 'table-container',
-        popTitle: 'Datatable Print',
-        extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
-        extraHead: '<meta http-equiv="Content-Language" content="zh-cn"/>'
-      },
       clusterChevron: false,
-      actionsWidth: 0,
-      init: true,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate: false,
       totalLength: 0
@@ -1131,10 +1044,6 @@ export default {
           maxPage = this.currentPage
         }
         this.tableData = table.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
-
-        setTimeout(() => {
-          this.renderFixedItems()
-        }, 500)
         if (table.length && !this.tableData.length && this.currentPage !== 1) {
           this.currentPage -= 1
           this.tableData = [...table].slice(
@@ -1142,6 +1051,9 @@ export default {
             this.currentPage * this.rowCount
           )
         }
+        setTimeout(() => {
+          this.renderFixedItems()
+        }, 500)
 
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
@@ -1155,7 +1067,6 @@ export default {
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
-    isRowActionsMenuOpen(val) {},
     firstColFixed(val) {
       if (!val) {
         const fixedCol = this.columns.filter((c) => c.fixed === 'left')
@@ -1177,26 +1088,24 @@ export default {
       }
     },
     multipleSelection(selecteds) {
-      //this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
-      if (this.groupable) {
-        if (selecteds.length === this.totalLength) {
+      const comparedValueLength = this.groupable ? this.totalLength : this.tableData.length
+      const selectedItems = this.tableData.filter((item) => {
+        return this.multipleSelection.find(
+          (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+        )
+      })
+      if (selectedItems.length) {
+        if (selectedItems.length + this.clusteredItems.length === comparedValueLength) {
           this.selectionCheckbox = true
           this.selectionRowCheckboxDeterminate = false
-        } else if (selecteds.length > 0) {
-          this.selectionRowCheckboxDeterminate = true
         } else {
-          this.selectionCheckbox = false
+          this.selectionRowCheckboxDeterminate = true
         }
       } else {
-        if (selecteds.length === this.tableData.length) {
-          this.selectionCheckbox = true
-          this.selectionRowCheckboxDeterminate = false
-        } else if (selecteds.length > 0) {
-          this.selectionRowCheckboxDeterminate = true
-        } else {
-          this.selectionCheckbox = false
-        }
+        this.selectionCheckbox = false
       }
+
+      console.log('selecteds', selecteds)
     },
     columns: {
       deep: true,
@@ -1223,20 +1132,8 @@ export default {
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
-    const browser = navigator.userAgent.toLowerCase()
-    if (browser.indexOf('safari') != -1) {
-      if (browser.indexOf('chrome') > -1) {
-        this.setDatatableUI = true
-      }
-    }
-  },
-  updated() {
-    if (this.init) {
-      this.init = false
-    }
   },
   mounted() {
-    this.init = true
     if (window.outerWidth < 1023) {
       this.actionFixed = false
       const leftFixed = this.columns.filter((col) => col.fixed === 'left')
@@ -1716,6 +1613,13 @@ export default {
         if (row.children) {
           this.unSelectChildrenByRowCheckbox(row.children, selection)
         }
+        debugger
+        const clusteredIndex = this.clusteredItems.findIndex(
+          (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(row)
+        )
+        if (clusteredIndex > -1) {
+          this.clusteredItems.splice(clusteredIndex, 1)
+        }
         this.$refs.elTableRef.toggleRowSelection(row, false)
         const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row))
         if (ind > -1) {
@@ -1746,6 +1650,12 @@ export default {
               const ind = selection.findIndex(
                 (item) => JSON.stringify(item) === JSON.stringify(child)
               )
+              const clusteredIndex = this.clusteredItems.findIndex(
+                (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(child)
+              )
+              if (clusteredIndex > -1) {
+                this.clusteredItems.splice(clusteredIndex, 1)
+              }
               if (ind > -1) {
                 selection.splice(ind, 1)
               }
@@ -1793,14 +1703,15 @@ export default {
       if (this.isServerSide) {
         this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
-        if (pageNum === 1) {
-          this.tableData = this.initialData.slice(0, this.rowCount)
-        } else {
-          this.tableData = this.initialData.slice(
-            (pageNum - 1) * this.rowCount,
-            pageNum * this.rowCount
+        this.tableData = this.initialData.slice(
+          (pageNum - 1) * this.rowCount,
+          pageNum * this.rowCount
+        )
+        this.selectionCheckbox = this.tableData.every((item) => {
+          return this.multipleSelection.find(
+            (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
           )
-        }
+        })
       }
     },
     handleFilteredCurrentChange(pageNum) {
@@ -1843,7 +1754,11 @@ export default {
       if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
-        this.$refs.elTableRef.clearSelection()
+        if (this.selectionCheckbox) {
+          this.$refs.elTableRef.toggleAllSelection()
+        } else {
+          this.$refs.elTableRef.clearSelection()
+        }
       }
     },
     rowAct(action, row, scope, tableData) {

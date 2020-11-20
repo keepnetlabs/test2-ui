@@ -51,6 +51,7 @@
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
       :refName="'companyList'"
+      row-key="companyName"
       :rowActions="tableOptions.rowActions"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
@@ -263,6 +264,7 @@ export default {
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
+          console.log("response.data.data.hasOwnProperty('results')", response.data.data)
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? response.data.data.results
