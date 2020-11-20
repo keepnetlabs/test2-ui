@@ -465,7 +465,6 @@ export default {
   },
   methods: {
     memberImage(member) {
-      debugger
       return member.logoUrl || require('../../assets/img/no-logo.png')
     },
     seePostedIncidentsClick(item) {
