@@ -10,7 +10,7 @@
           :items="rule.operands"
           outlined
           min-width-type="small"
-          :nudge-width="20"
+          nudge-width="20"
           hide-details
           @input="handleOperandChange"
         />

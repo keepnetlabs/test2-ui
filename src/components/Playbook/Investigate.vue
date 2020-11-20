@@ -269,7 +269,7 @@
               item-value="value"
               outlined
               min-width-type="big"
-              :nudge-width="170"
+              nudge-width="170"
               hide-details
             />
           </v-col>

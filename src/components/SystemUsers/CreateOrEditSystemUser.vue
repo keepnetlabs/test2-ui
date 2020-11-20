@@ -256,7 +256,6 @@ export default {
       })
     },
     validatePhoneNumber() {
-      debugger
       this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
     },
     updatePhoneNumber() {
@@ -266,7 +265,6 @@ export default {
   },
   watch: {
     'formValues.phoneNumber'(newVal, oldVal) {
-      debugger
       if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
         this.formValues.phoneNumber = oldVal
         this.$refs.refTelInput.phone = oldVal
