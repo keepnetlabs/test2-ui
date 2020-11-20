@@ -1016,6 +1016,7 @@ export default {
       sessionCheck: 'common/getSessionCheck'
     }),
     isReturnMainAccountVisible() {
+      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
       let recFunction = () => {
         if (
           !localStorage.getItem('companyResourceId') ||
@@ -1091,10 +1092,11 @@ export default {
       if (this.$store.state.auth.user == undefined) {
         return ''
       }
-      return (
-        this.$store.state.dashboard.selectedCompanyObject.logoUrl ||
-        require('../assets/img/no-logo.png')
-      )
+      let image =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
+      return image || require('../assets/img/no-logo.png')
     },
     getFirstName() {
       if (this.$store.state.auth.user == undefined) {
