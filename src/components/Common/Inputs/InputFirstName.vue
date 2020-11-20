@@ -25,6 +25,7 @@ export default {
       default: 'off'
     },
     rules: {
+      //
       default: () => [
         (v) => Validations.required(v, 'Required'),
         (v) => Validations.startsWithEmpty(v, 'Cannot start with space'),
