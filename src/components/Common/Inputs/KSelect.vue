@@ -35,8 +35,8 @@ export default {
       default: ''
     },
     nudgeWidth: {
-      type: String || Number,
-      default: 5
+      type: String,
+      default: '5'
     },
     type: {
       type: String,
@@ -57,7 +57,6 @@ export default {
   },
   computed: {
     getComponentType() {
-      console.log('this.type', this.type)
       switch (this.type) {
         case 'autocomplete':
           return VAutocomplete

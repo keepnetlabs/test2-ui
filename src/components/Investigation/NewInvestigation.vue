@@ -571,7 +571,6 @@ export default {
       }
     },
     handleTargetUserTypeChange() {
-      debugger
       this.targetUsersValue = []
     },
     handleChangeFilterListItem() {
