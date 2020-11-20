@@ -209,7 +209,7 @@
                     <div class="user-name-dropdown__details">
                       <v-tooltip
                         bottom
-                        :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 14"
+                        :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
                         ref="accountTooltip"
                       >
                         <template #activator="{ on: onTooltip }">
@@ -221,7 +221,7 @@
                       </v-tooltip>
                       <v-tooltip
                         bottom
-                        :disabled="getFirstName && getFirstName.length < 14"
+                        :disabled="getFirstName && getFirstName.length < 15"
                         ref="firstNameTooltip"
                       >
                         <template #activator="{ on: onTooltipFirstName }">
@@ -235,7 +235,7 @@
                       </v-tooltip>
                       <v-tooltip
                         bottom
-                        :disabled="getRolename && getRolename.length < 14"
+                        :disabled="getRolename && getRolename.length < 15"
                         ref="roleTooltip"
                       >
                         <template #activator="{ on: onTooltipRoleName }">
