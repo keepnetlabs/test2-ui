@@ -181,54 +181,29 @@ export function isPostedByMe(isPostedByMe) {
 
 export function copyToClipboard(e) {}
 
-export function setGlobalUserData(userData, isCompanySelect) {
-  let currentUserData
-  if (isCompanySelect) {
-    currentUserData = {
-      id: userData.resourceId,
-      name: userData.name,
-      surname: userData.name,
-      email: userData.websiteUrl,
-      fullName: userData.name,
-      countryCode: null,
-      phone: null,
-      status: null,
-      userCompany: {
-        id: userData.resourceId,
-        name: userData.name,
-        logoPath: userData.logoUrl,
-        businessCategoryId: userData.industryResourceId,
-        resellerId: userData.null,
-        timeZone: null,
-        isDemo: false
-      },
-      role: {
-        //name: userData.role.toString()
-        name: null
-      }
-    }
-  } else {
-    currentUserData = {
+export function setGlobalUserData(userData) {
+  let currentUserData = {}
+  currentUserData = {
+    id: userData.user_company_resourceid,
+    name: userData.user_company_name,
+    surname: userData.family_name,
+    email: userData.email,
+    fullName: userData.name,
+    countryCode: null,
+    phone: userData.phone_number,
+    firstName: userData.given_name,
+    status: null,
+    userCompany: {
       id: userData.user_company_resourceid,
       name: userData.user_company_name,
-      surname: userData.family_name,
-      email: userData.email,
-      fullName: userData.given_name,
-      countryCode: null,
-      phone: userData.phone_number,
-      status: null,
-      userCompany: {
-        id: userData.user_company_resourceid,
-        name: userData.user_company_name,
-        logoPath: userData.user_company_logopath,
-        businessCategoryId: userData.user_company_industry_resourceid,
-        resellerId: userData.user_company_parentcompany_resourceid,
-        timeZone: null,
-        isDemo: false
-      },
-      role: {
-        name: userData.role.toString()
-      }
+      logoPath: userData.user_company_logopath,
+      businessCategoryId: userData.user_company_industry_resourceid,
+      resellerId: userData.user_company_parentcompany_resourceid,
+      timeZone: null,
+      isDemo: false
+    },
+    role: {
+      name: userData.role.toString()
     }
   }
   localStorage.setItem('companyId', currentUserData.userCompany.id)

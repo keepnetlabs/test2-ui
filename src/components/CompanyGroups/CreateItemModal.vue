@@ -26,7 +26,7 @@
               hint="*Required"
               autocomplete="off"
               :rules="[
-                (v) => validations.required(v, 'Required'),
+                (v) => validations.required(v),
                 (v) => validations.startsWithEmpty(v, 'Cannot start with space'),
                 (v) => validations.maxLength(v, 50, 'Max 50 characters')
               ]"
@@ -56,7 +56,7 @@
               outlined
               persistent-hint
               placeholder="Select companies"
-            ></v-autocomplete>
+            />
           </v-list-item-content>
         </v-list-item>
       </v-form>

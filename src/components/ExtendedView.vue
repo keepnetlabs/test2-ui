@@ -1,9 +1,6 @@
 <template>
   <div
     class="settings-popup edit-popup"
-    v-if="
-      options && options.col && options.col.length && copyOfEditedRows && copyOfEditedRows.length
-    "
     :style="[
       containerStyle,
       !disableTransition &&
@@ -15,7 +12,14 @@
       }
     ]"
   >
-    <div class="inline-wrapper">
+    <extended-view-loading :loading="true" v-show="loading" />
+    <div
+      class="inline-wrapper"
+      v-show="!loading"
+      v-if="
+        options && options.col && options.col.length && copyOfEditedRows && copyOfEditedRows.length
+      "
+    >
       <div class="edit-popup__header">
         <span class="settings-span" v-if="value.length === 1">
           {{ copyOfEditedRows[0][options.titleKey] || options.title }}
@@ -286,7 +290,7 @@
                   v-bind="col.editOptions.props"
                   row-height="20"
                 ></v-textarea>
-                <v-select
+                <k-select
                   class="edit-select"
                   dense
                   outlined
@@ -477,7 +481,7 @@
                   </template>
                 </v-combobox>
 
-                <v-select
+                <k-select
                   class="edit-select"
                   dense
                   outlined
@@ -507,7 +511,7 @@
                       EDIT
                     </v-btn>
                   </template>
-                </v-select>
+                </k-select>
               </div>
             </div>
             <slot name="body" v-if="editMode"> </slot>
@@ -584,9 +588,13 @@ import {
   getTextColor,
   getDataTableFieldLabel
 } from '../utils/functions'
+import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'ExtendedView',
   components: {
+    KSelect,
+    ExtendedViewLoading,
     Badge
   },
   props: {
@@ -595,6 +603,9 @@ export default {
       default: () => {
         return {}
       }
+    },
+    loading: {
+      type: Boolean
     },
     changeFooterPosition: {
       type: Boolean,

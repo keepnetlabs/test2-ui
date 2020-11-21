@@ -94,7 +94,8 @@
           <v-list-item-content class="pt-0 pb-0">
             <label class="edit-labels">Industry</label>
             <label class="edit-sub-labels">Select an industry category</label>
-            <v-autocomplete
+            <k-select
+              type="autocomplete"
               :items="categories"
               return-object
               item-text="name"
@@ -104,7 +105,7 @@
               v-model.trim="selectedCategory"
               :rules="[categoryRule]"
               required
-            ></v-autocomplete>
+            ></k-select>
           </v-list-item-content>
         </v-list-item>
       </v-form>
@@ -134,8 +135,10 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
+  components: { KSelect },
   data() {
     return {
       name: '',

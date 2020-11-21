@@ -476,6 +476,7 @@
             id="incident-responder-reported-emails-data-table"
             :columns="emails.columns"
             :countRow="5"
+            :extended-view-loading="extendedViewLoading"
             :changeFooterPosition="true"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
@@ -645,6 +646,7 @@ export default {
     roiTask: '',
     selectedMatch: null,
     isShowRoi: false,
+    extendedViewLoading: true,
     openInvestigationOverlay: false,
     investigationListData: [],
     matchingInvestigationData: [],
@@ -1397,27 +1399,30 @@ export default {
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen) {
+        this.extendedViewLoading = true
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
         if (selections.length === 1) {
-          getNotifiedEmail(selections[0].resourceId, true).then((response) => {
-            const selectedItem = response.data.data
-            this.extendedView.isNotify = selectedItem.isNotifyUser
-            this.extendedView.customMessage = selectedItem.customMessage
-            this.extendedView.isMessage = selectedItem.customMessage ? true : false
-            this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
-            this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
-            this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
-            this.extendedViewValue = [
-              {
-                ...selectedItem,
-                resourceId: selections[0].resourceId,
-                reportedBy: selections[0].reportedBy,
-                matchingPlaybooks: selections[0].matchingPlaybooks,
-                source: selections[0].source
-              }
-            ]
-          })
+          getNotifiedEmail(selections[0].resourceId)
+            .then((response) => {
+              const selectedItem = response.data.data
+              this.extendedView.isNotify = selectedItem.isNotifyUser
+              this.extendedView.customMessage = selectedItem.customMessage
+              this.extendedView.isMessage = selectedItem.customMessage ? true : false
+              this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
+              this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
+              this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
+              this.extendedViewValue = [
+                {
+                  ...selectedItem,
+                  resourceId: selections[0].resourceId,
+                  reportedBy: selections[0].reportedBy,
+                  matchingPlaybooks: selections[0].matchingPlaybooks,
+                  source: selections[0].source
+                }
+              ]
+            })
+            .finally(() => (this.extendedViewLoading = false))
           this.hasMultipleNoteValue = false
         } else if (selections.length > 1) {
           const rows = []
@@ -1425,26 +1430,33 @@ export default {
           this.extendedView.isNotify = true
           this.extendedView.isMessage = false
           this.extendedView.customMessage = ''
+          this.extendedViewLoading = true
           selections.map((a, ind) => {
-            getNotifiedEmail(selections[index].resourceId, true).then((response) => {
-              const selectedItem = response.data.data
-              rows.push({
-                ...selectedItem,
-                resourceId: selections[ind].resourceId,
-                reportedBy: selections[ind].reportedBy,
-                matchingPlaybooks: selections[ind].matchingPlaybooks,
-                source: selections[ind].source
-              })
-              if (index === selections.length) {
-                const note = rows[0].note
-                rows.map((item, i) => {
-                  if (item.note !== note) {
-                    this.hasMultipleNoteValue = true
-                  }
+            getNotifiedEmail(selections[index].resourceId)
+              .then((response) => {
+                const selectedItem = response.data.data
+                rows.push({
+                  ...selectedItem,
+                  resourceId: selections[ind].resourceId,
+                  reportedBy: selections[ind].reportedBy,
+                  matchingPlaybooks: selections[ind].matchingPlaybooks,
+                  source: selections[ind].source
                 })
-                this.extendedViewValue = rows
-              }
-            })
+                if (index === selections.length) {
+                  const note = rows[0].note
+                  rows.map((item, i) => {
+                    if (item.note !== note) {
+                      this.hasMultipleNoteValue = true
+                    }
+                  })
+                  this.extendedViewValue = rows
+                }
+              })
+              .finally(() => {
+                if (ind === selections.length - 1) {
+                  this.extendedViewLoading = false
+                }
+              })
             index++
           })
         } else {
@@ -2325,6 +2337,9 @@ export default {
 .incident-responder__playbook {
   .k-overlay__container {
     padding: 0 !important;
+  }
+  .v-overlay__content {
+    overflow-x: hidden;
   }
   .k-overlay__list-item.k-overlay__header {
     padding: 32px 96px 0 96px;

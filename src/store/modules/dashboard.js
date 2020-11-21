@@ -37,6 +37,10 @@ const dashboard = {
     singleCampaignList: [],
     dropdownCompanies: [],
     selectedCompany: 'Loading...',
+    selectedCompanyObject: {
+      logoUrl: null,
+      name: null
+    },
     overallStatsList: [],
     switchAccountDropdown: [
       {
@@ -137,10 +141,8 @@ const dashboard = {
       localStorage.setItem('isSelectCompany', 'true')
       payload.name = localStorage.getItem('selectedCompanyName')
       payload.id = localStorage.getItem('selectedCompanyRequestId')
-      /*localStorage.removeItem('isSelectCompany')
-      localStorage.removeItem('selectedCompanyName')
-      localStorage.removeItem('selectedCompanyRequestId')*/
       state.selectedCompany = payload
+      state.selectedCompanyName = payload
       defaultAccountDropdown.push(payload)
       defaultAccountDropdown.push({
         companyId: 'default',
@@ -318,11 +320,12 @@ const dashboard = {
     setSwitchDialog({ commit }, payload) {
       commit('SET_SWITCH_DIALOG', payload)
     },
-    selectCompany({ commit, dispatch }, payload) {
+    selectCompany({ commit, dispatch, state }, payload) {
       payload.companyResourceId && localStorage.setItem('companyId', payload.companyResourceId)
       payload.companyResourceId &&
         localStorage.setItem('companyRequestId', payload.companyResourceId)
-      return selectCompany(payload).then(() => {
+      return selectCompany(payload).then((response) => {
+        state.selectedCompanyObject = response.data.data
         commit('SET_SELECTED_COMPANY', payload)
         if (window.location.pathname !== '/') {
           dispatch('getLastFiveCompaignsStats')

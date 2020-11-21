@@ -22,7 +22,7 @@
       }
     }
   }
-  .v-text-field--outlined:not(.v-input--is-focused).v-input--is-disabled > .v-input__control > .v-input__slot fieldset {
+  .v-text-field--outlined:not(.v-input--is-focused).v-input--is-disabled > .v-input__control > .v-input__slot {
     background-color: #f2f2f2 !important;
   }
   @-moz-document url-prefix() {
@@ -34,6 +34,6 @@
   }
   .v-autocomplete:not(.v-input--is-focused).v-select--chips input {
     max-height: 32px;
-    padding: 0;
+    padding: 0
   }
 }

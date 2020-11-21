@@ -23,26 +23,24 @@
           ></v-text-field>
         </form-group>
         <form-group title="Category">
-          <v-select
+          <k-select
             v-model.trim="formValues.category"
             :items="categoryItems"
             class="new-integration__select"
             dense
-            :menu-props="{ offsetY: true }"
             outlined
             placeholder="Select Option"
-          ></v-select>
+          />
         </form-group>
         <form-group title="SMTP">
-          <v-select
+          <k-select
             v-model.trim="formValues.smtp"
             :items="smtpItems"
             class="new-integration__select"
             dense
-            :menu-props="{ offsetY: true }"
             outlined
             placeholder="Select Option"
-          ></v-select>
+          />
         </form-group>
         <form-group title="From Email">
           <v-text-field
@@ -83,9 +81,11 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { mail } from '@/utils/validations'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'NewNotificationTemplate',
   components: {
+    KSelect,
     EmailTemplate,
     AppModal,
     AppModalBodyHeader,

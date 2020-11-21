@@ -28,7 +28,7 @@
                 <v-checkbox
                   class="k-checkbox"
                   color="#2196f3"
-                  v-model="acceptAllAnalysisEngines"
+                  v-model="getAllCheckboxSelection"
                   @change="acceptAllAnalysisEnginesClick"
                   hide-details
                 />
@@ -117,7 +117,7 @@
     <v-form ref="refForm" v-model="isFormValid" lazy-validation>
       <v-row v-for="(action, index) in actions" :key="index" class="vqb-rule action-items__item">
         <v-col md="2">
-          <v-select
+          <k-select
             :value="actionsValues[index]"
             :items="act.actionTypes"
             :return-object="true"
@@ -126,17 +126,16 @@
             height="40"
             item-text="name"
             item-value="val"
-            :menu-props="{ offsetY: true }"
             @input="setAvailableItems($event, actionsValues[index], index)"
           />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'markAs'" md="2">
-          <v-select
+          <k-select
             v-model="playbookAction.markType"
             :items="act.markAsOpts"
             outlined
-            :menu-props="{ offsetY: true }"
             hide-details
+            height="40"
           />
         </v-col>
         <v-col
@@ -163,7 +162,8 @@
         </v-col>
 
         <v-col v-if="actionsValues[index].val === 'tag'" md="auto" class="flex-grow-1">
-          <v-combobox
+          <k-select
+            type="combobox"
             v-model="playbookAction.tags"
             :items="[]"
             chips
@@ -178,14 +178,13 @@
             :return-object="false"
             placeholder="Enter tags and press enter key"
             required
-          ></v-combobox>
+          />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2">
-          <v-select
+          <k-select
             v-model="targetUserType[index]"
             :items="getNotifyTypes()"
             outlined
-            :menu-props="{ offsetY: true }"
             @input="tarUsers[index] = []"
             :rules="[(v) => validations.required(v, 'Required')]"
           />
@@ -194,7 +193,8 @@
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Users'"
           md="5"
         >
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="specificUserItems"
             placeholder="Select target users"
             outlined
@@ -212,13 +212,14 @@
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
-          ></v-combobox>
+          />
         </v-col>
         <v-col
           v-if="actionsValues[index].val === 'notify' && targetUserType[index] === 'Groups'"
           md="5"
         >
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="userGroupsItems"
             placeholder="Select user groups"
             outlined
@@ -236,6 +237,7 @@
             :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
+            :slots="{ selection: true, item: false }"
           >
             <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
               <v-chip
@@ -254,16 +256,17 @@
                 >
               </v-chip>
             </template>
-          </v-combobox>
+          </k-select>
         </v-col>
         <v-col v-if="actionsValues[index].val === 'notify'" md="2">
-          <v-select
+          <k-select
             v-model="notifyTemplate"
             :items="act.notifyTemplates"
             item-value="value"
             item-text="label"
             outlined
-            :menu-props="{ offsetY: true }"
+            min-width-type="medium"
+            nudge-width="50"
             hide-details
           />
         </v-col>
@@ -311,8 +314,9 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
-  components: { AppDialog, Investigate },
+  components: { KSelect, AppDialog, Investigate },
 
   name: 'ActionItem',
   props: {
@@ -327,6 +331,16 @@ export default {
     },
     editedNotifications: Array,
     editedPlaybookActionInvestigations: Array
+  },
+  computed: {
+    getAllCheckboxSelection: {
+      get() {
+        return this.analysisEngines.every((item) => item.selected)
+      },
+      set(val) {
+        this.acceptAllAnalysisEngines = val
+      }
+    }
   },
   data() {
     return {
@@ -601,7 +615,7 @@ export default {
           ...item,
           isCheckUrl: val,
           isCheckHash: val,
-          isCheckFile: val,
+          isCheckFile: false,
           selected: val
         }
       })

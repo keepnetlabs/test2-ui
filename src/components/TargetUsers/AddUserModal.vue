@@ -89,15 +89,13 @@
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content>
             <label class="add-user-overlay__label" for="priority">Priority</label>
-            <v-select
+            <k-select
               :items="priorityItems"
               outlined
               dense
               v-model.trim="formValues.priority"
               id="department"
-              :menu-props="{ offsetY: true }"
-              height="40"
-            ></v-select>
+            ></k-select>
           </v-list-item-content>
         </v-list-item>
 
@@ -139,9 +137,10 @@ import { scrollToComponent } from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'AddUserModal',
-  components: { InputDepartment, AppModal, InputFirstName, InputLastName },
+  components: { InputDepartment, AppModal, KSelect, InputFirstName, InputLastName },
   props: {
     status: {
       type: Boolean

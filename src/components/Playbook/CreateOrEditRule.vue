@@ -86,7 +86,8 @@
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Define tags for the rule
                     </v-list-item-title>
-                    <v-combobox
+                    <k-select
+                      type="combobox"
                       v-model.trim="tags"
                       :items="[]"
                       chips
@@ -95,7 +96,7 @@
                       @keyup.tab="updateTags"
                       @paste="updateTags"
                       outlined
-                      class="hide-caret"
+                      class="hide-caret playbook_tag-select"
                       multiple
                       dense
                       placeholder="Enter tag and press enter key"
@@ -104,7 +105,7 @@
                       :return-object="false"
                       @input="handleTagItemChange"
                       hide-details="auto"
-                    ></v-combobox>
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item class="margin-top">
@@ -226,10 +227,11 @@ import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import { maxLength, required } from '../../utils/validations'
 import { createPlaybook, getPlaybook, updatePlaybook } from '../../api/playbook'
 import { scrollToComponent } from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'CreateOrEditRule',
-  components: { ActionItem, VueQueryBuilder, QueryBuilderGroup },
+  components: { KSelect, ActionItem, VueQueryBuilder, QueryBuilderGroup },
   props: {
     playbookId: {
       type: String,

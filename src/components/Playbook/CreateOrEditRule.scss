@@ -92,6 +92,7 @@
   }
   .v-stepper__items{
     padding-bottom: 68px;
+    overflow: visible;
   }
   .v-list-item__content{
     padding: 0;
@@ -325,4 +326,9 @@
 .v-btn:before {
   top: -1px !important;
   left: -1px !important;
+}
+.playbook_tag-select{
+  .v-chip{
+  margin: 4px !important;
+         }
 }
