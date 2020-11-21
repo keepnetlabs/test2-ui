@@ -543,7 +543,7 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KSelect,InputCompany, KFileUpload },
+  components: { KSelect, InputCompany, KFileUpload },
   data() {
     return {
       stepLock: false,
