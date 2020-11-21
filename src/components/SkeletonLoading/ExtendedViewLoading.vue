@@ -1,7 +1,8 @@
 <template>
-  <v-skeleton-loader :loading="loading" v-bind="attrs" :type="getType"
-    ><slot name="skeleton-content"></slot></v-skeleton-loader
-></template>
+  <v-skeleton-loader :loading="loading" v-bind="attrs" :type="getType">
+    <slot name="skeleton-content"></slot>
+  </v-skeleton-loader>
+</template>
 
 <script>
 export default {

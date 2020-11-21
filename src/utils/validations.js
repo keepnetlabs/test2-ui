@@ -1,6 +1,7 @@
 export function hasValue(value) {
   return value && value
 }
+
 function getValue(value) {
   return value !== null && value !== undefined ? value : ''
 }
@@ -22,7 +23,7 @@ export function mail(value, message) {
   return !value || /\S+@\S+\.\S+/gi.test(value) || message
 }
 
-export function ip(value, message) {
+export function ip(value, message = 'Invalid ip address') {
   value = getValue(value)
   return (
     /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
@@ -45,11 +46,13 @@ export function domain(value, message) {
   value = getValue(value)
   return /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/gi.test(value) || message
 }
+
 export function phone(value, message) {
   //e.164
   value = getValue(value)
   return /^\+[1-9]\d{10,14}$/gi.test(value) || message
 }
+
 export function email(value, message) {
   value = getValue(value)
   return (
@@ -64,7 +67,7 @@ export function extension(value, message) {
   return !value.startsWith('.') || message
 }
 
-export function required(value, message) {
+export function required(value, message = 'Required') {
   return !!hasValue(value) || message
 }
 
@@ -79,7 +82,7 @@ export function startsWith(value = '', message = 'Cannot start with', startedVal
   return !value.startsWith(startedValue) || message
 }
 
-export function startsWithEmpty(value, message) {
+export function startsWithSpace(value, message = 'Cannot start with space') {
   value = getValue(value)
   return !value.startsWith(' ') || message
 }

@@ -110,12 +110,13 @@
       </v-col>
       <v-col v-if="query.operand === 'SenderIp'">
         <!-- Condition text input-->
-        <v-text-field
+        <InputIpAddress
           v-model.trim="query.value"
           placeholder="Enter IP or a regular expression"
-          outlined
-          :rules="getSenderIpRules()"
-          autocomplete="disabled"
+          :rules="[
+            (v) => validations.required(v, 'Required'),
+            (v) => validations.startsWithSpace(v, 'Cannot start with space')
+          ]"
           md=""
           sm="10"
         />
@@ -199,21 +200,18 @@
 
 <script>
 import QueryBuilderRule from 'vue-query-builder/src/components/QueryBuilderRule'
-import { mail, required, ip, domain, extension, maxLength } from '../../../utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import * as validations from '../../../utils/validations'
+import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 export default {
-  components: { KSelect },
   extends: QueryBuilderRule,
+  components: {
+    InputIpAddress,
+    KSelect
+  },
   data() {
     return {
-      validations: {
-        required,
-        mail,
-        ip,
-        domain,
-        extension,
-        maxLength
-      },
+      validations: validations,
       attachId: null
     }
   },

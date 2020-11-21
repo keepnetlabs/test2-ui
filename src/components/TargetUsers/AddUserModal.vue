@@ -20,34 +20,14 @@
         </v-list-item>
         <v-list-item class="add-user-overlay__list-item mt-6">
           <v-list-item-content>
-            <label class="add-user-overlay__label" for="firstName">First Name</label>
-            <v-text-field
-              placeholder="Enter first name"
-              outlined
-              dense
-              v-model.trim="formValues.firstName"
-              id="firstName"
-              height="40"
-              :rules="[
-                (v) => validations.maxLength(v, 40, 'First name cannot exceed 40 characters')
-              ]"
-            ></v-text-field>
+            <label class="add-user-overlay__label">First Name</label>
+            <InputFirstName v-model.trim="formValues.firstName" id="firstName" />
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content>
-            <label class="add-user-overlay__label" for="lastName">Last Name</label>
-            <v-text-field
-              placeholder="Enter last name"
-              outlined
-              dense
-              v-model.trim="formValues.lastName"
-              id="lastName"
-              height="40"
-              :rules="[
-                (v) => validations.maxLength(v, 40, 'Last name cannot exceed 40 characters')
-              ]"
-            ></v-text-field>
+            <label class="add-user-overlay__label">Last Name</label>
+            <InputLastName v-model.trim="formValues.lastName" id="lastName" />
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
@@ -155,10 +135,12 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
+import InputLastName from '@/components/Common/Inputs/InputLastName'
+import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'AddUserModal',
-  components: { InputDepartment, AppModal, KSelect },
+  components: { InputDepartment, AppModal, KSelect, InputFirstName, InputLastName },
   props: {
     status: {
       type: Boolean

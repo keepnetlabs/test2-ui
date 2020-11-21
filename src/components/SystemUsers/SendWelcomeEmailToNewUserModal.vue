@@ -39,7 +39,7 @@
             dense
             v-model.trim="formValues.fromEmailAddress"
             :rules="[(v) => validations.mail(v, 'Invalid email address')]"
-          ></v-text-field>
+          />
         </form-group>
         <form-group title="Subject">
           <v-text-field
