@@ -23,7 +23,7 @@ export default {
     },
     rules: {
       default: () => [
-        (v) => Validations.startsWithEmpty(v, 'Cannot start with space'),
+        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
         (v) => Validations.maxLength(v, 64, 'Max 64 characters')
       ]
     }

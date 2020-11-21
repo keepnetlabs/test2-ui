@@ -87,7 +87,7 @@ import {
   searchGroupCompanies,
   updateCompanyGroup
 } from '@/api/company'
-import { maxLength, required, startsWithEmpty } from '@/utils/validations'
+import { maxLength, required, startsWithSpace } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'CreateItemModal',
@@ -119,7 +119,7 @@ export default {
       validations: {
         required,
         maxLength,
-        startsWithEmpty
+        startsWithEmpty: startsWithSpace
       },
       payload: {
         pageSize: 100,
