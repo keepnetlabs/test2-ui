@@ -1086,6 +1086,7 @@ export default {
     tableData(data) {
       if (data && this.groupable) {
         this.totalLength = this.getTotalLength(data)
+        this.calculateAllSelected()
       }
       if (this.isSelectedAll) {
         for (let item of data) {
@@ -1116,24 +1117,7 @@ export default {
       }
     },
     multipleSelection(selecteds) {
-      const comparedValueLength = this.groupable ? this.totalLength : this.tableData.length
-      const selectedItems = this.tableData.filter((item) => {
-        return this.multipleSelection.find(
-          (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-        )
-      })
-      if (selectedItems.length) {
-        if (selectedItems.length + this.clusteredItems.length === comparedValueLength) {
-          this.selectionCheckbox = true
-          this.selectionRowCheckboxDeterminate = false
-        } else {
-          this.selectionRowCheckboxDeterminate = true
-        }
-      } else {
-        this.selectionCheckbox = false
-      }
-
-      console.log('selecteds', selecteds)
+      this.calculateAllSelected()
     },
     columns: {
       deep: true,
@@ -1180,6 +1164,26 @@ export default {
     window.addEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    calculateAllSelected(){
+      const comparedValueLength = this.groupable ? this.totalLength : this.tableData.length
+      const selectedItems = this.tableData.filter((item) => {
+        return this.multipleSelection.find(
+          (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+        )
+      })
+      if (selectedItems.length) {
+        if (selectedItems.length + this.clusteredItems.length === comparedValueLength) {
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
+        } else {
+          this.selectionRowCheckboxDeterminate = true
+        }
+      } else {
+        this.selectionCheckbox = false
+        this.selectionRowCheckboxDeterminate = false
+      }
+      this.isSelectedAll=this.multipleSelection.length===this.initialData.length
+    },
     /**
      * Override column props with standards
      *
@@ -1320,8 +1324,6 @@ export default {
     },
     closeEditPopup() {
       this.isWantToEditRow = false
-      this.$refs.elTableRef.clearSelection()
-      this.multipleSelection = []
     },
 
     getBtnStatusColor(type) {
@@ -1703,7 +1705,6 @@ export default {
         }
         this.$emit('handleSelectionChange', selection)
       }
-      this.isSelectedAll = false
     },
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
@@ -1723,6 +1724,7 @@ export default {
             this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
           this.tableData = temp.length === 0 ? [{}] : temp
         }
+        this.calculateAllSelected()
       }
     },
     handleClientSideSizeChange(rows) {
@@ -1743,11 +1745,7 @@ export default {
           (pageNum - 1) * this.rowCount,
           pageNum * this.rowCount
         )
-        this.selectionCheckbox = this.tableData.every((item) => {
-          return this.multipleSelection.find(
-            (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-          )
-        })
+        this.calculateAllSelected()
       }
     },
     handleFilteredCurrentChange(pageNum) {
@@ -1787,19 +1785,29 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      debugger
       if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
         if (this.isSelectedAll) {
-          debugger
-          for (let item of this.multipleSelection) {
-            this.$refs.elTableRef.toggleRowSelection(item, false)
-          }
+          this.$refs.elTableRef.clearSelection()
           this.multipleSelection = []
           this.isSelectedAll = false
         } else if (this.selectionCheckbox) {
-          this.$refs.elTableRef.toggleAllSelection()
+          if(this.selectionRowCheckboxDeterminate){
+            const selectedItems = this.tableData.filter((item) => {
+              return this.multipleSelection.find(
+                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+              )
+            })
+            for(let item of selectedItems){
+              this.$refs.elTableRef.toggleRowSelection(item,false)
+            }
+            this.selectionRowCheckboxDeterminate=false
+            this.selectionCheckbox=false
+          }
+          else {
+            this.$refs.elTableRef.toggleAllSelection()
+          }
         } else {
           const selectedItems = this.multipleSelection.filter((item) => {
             return this.tableData.find(
