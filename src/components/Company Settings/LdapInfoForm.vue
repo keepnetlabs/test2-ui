@@ -12,18 +12,7 @@
       ></v-text-field>
     </form-group>
     <form-group title="URL" has-hint>
-      <v-text-field
-        placeholder="Enter Active Directory URL"
-        outlined
-        dense
-        v-model.trim="formValues.url"
-        hint="*Required"
-        persistent-hint
-        :rules="[
-          (v) => validations.required(v, 'Required'),
-          (v) => validations.url(v, 'Invalid URL')
-        ]"
-      ></v-text-field>
+      <InputUrl placeholder="Enter Active Directory URL" v-model.trim="formValues.url" />
     </form-group>
     <form-group title="Username" has-hint>
       <v-text-field
@@ -98,12 +87,15 @@
 </template>
 
 <script>
-import { maxLength, required, url, mail } from '@/utils/validations'
+import {mail, maxLength, required, url} from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
+
 export default {
   name: 'LdapInfoForm',
   components: {
-    FormGroup
+    FormGroup,
+    InputUrl
   },
   data() {
     return {
