@@ -33,7 +33,7 @@
       :is-show="showCreateNewGroupWithCompany"
       :selectedRow="selectedRow"
       :forCompany="true"
-      @changeModalStatus="(status) => (showCreateNewGroupWithCompany = status)"
+      @changeModalStatus="changeGroupModalStatus"
     />
 
     <datatable
@@ -86,20 +86,15 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { searchCompanies, deleteCompany, getCompanyByID, exportCompanies } from '../../api/company'
+import {deleteCompany, exportCompanies, getCompanyByID, searchCompanies} from '../../api/company'
 import DeleteModal from './DeleteModal'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  LABEL_STORE,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import {COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE} from '../../model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
 import AppModal from '@/components/AppModal'
+
 export default {
   name: 'CompanyList',
   components: {
@@ -398,8 +393,11 @@ export default {
       }
     },
     handleCreateNewGroupWithCompany(row) {
+      this.changeGroupModalStatus(true)
       this.selectedRow = { ...row, ...{ name: null }, ...{ resourceId: row.companyResourceId } }
-      this.showCreateNewGroupWithCompany = true
+    },
+    changeGroupModalStatus(status) {
+      this.showCreateNewGroupWithCompany = status
     }
   }
 }
