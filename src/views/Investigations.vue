@@ -41,7 +41,7 @@
           :filterable="true"
           :options="true"
           :rowActions="rowActions"
-          :addUsers="addUsers"
+          :addButton="addUsers"
           :empty="iEmpty"
           :selectEvent="selectEvent"
           :chartOptions="chartOptions"
@@ -245,7 +245,6 @@ export default {
     ],
     addUsers: {
       show: true,
-      popUp: false,
       tooltip: 'Start an Investigation',
       action: 'createCommunityFromMobileInfo'
     },

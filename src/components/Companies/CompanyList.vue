@@ -51,6 +51,7 @@
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
       :refName="'companyList'"
+      row-key="companyName"
       :rowActions="tableOptions.rowActions"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
