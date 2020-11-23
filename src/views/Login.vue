@@ -177,17 +177,13 @@
                     <v-row align="center" justify="center">
                       <v-col md="6" sm="12">
                         <v-form v-model.trim="validReset" ref="resetEmail">
-                          <v-text-field
+                          <InputEmail
                             v-model.trim="resePasswordModel"
-                            :rules="[rules.required, rules.email, rules.max]"
-                            label="Email Address"
                             class="reset-pass-textfield"
                             @click="resetPasswordError = false"
-                            outlined
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
-                            autocomplete="disabled"
-                          ></v-text-field>
+                          />
                           <div class="captcha-wrapper p-0" style="height: 78px;">
                             <vue-recaptcha
                               :sitekey="recaptcha"
@@ -384,17 +380,17 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha'
-import { mapActions, mapGetters } from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
-import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../api/auth'
+import {createPasswordByToken, resetPassword, resetPasswordByToken} from '../api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import store from '../store'
 import indexStore from '../store/index'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
 
 export default {
   name: 'Login',
-  components: { VueRecaptcha, PasswordChecker },
+  components: { VueRecaptcha, PasswordChecker, InputEmail },
   data() {
     return {
       showReNewPassword: false,

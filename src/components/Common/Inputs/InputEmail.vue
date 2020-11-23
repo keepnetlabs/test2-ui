@@ -1,5 +1,5 @@
 <script>
-import { VTextField } from 'vuetify/lib'
+import {VTextField} from 'vuetify/lib'
 import * as Validations from '@/utils/validations'
 
 export default {
@@ -13,7 +13,7 @@ export default {
       default: true
     },
     placeholder: {
-      default: 'Enter a URL'
+      default: 'Enter a email address'
     },
     hint: {
       default: '*Required'
@@ -27,6 +27,7 @@ export default {
     rules: {
       default: () => [
         (v) => Validations.required(v, 'Required'),
+        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
         (v) => Validations.email(v, 'Invalid email address'),
         (v) => Validations.minLength(v, 8, 'Minimum 8 characters'),
         (v) => Validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
