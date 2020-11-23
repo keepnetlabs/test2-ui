@@ -135,7 +135,6 @@
 </template>
 
 <script>
-import Pie from '@/components/Common/Charts/Pie'
 import CompanyListExtendLoading from '@/components/SkeletonLoading/CompanyListExtend'
 
 export default {
@@ -285,6 +284,9 @@ export default {
         line-height: 19px;
         overflow: hidden;
         padding-right: 4px;
+      }
+      a {
+        text-decoration-line: none;
       }
     }
   }

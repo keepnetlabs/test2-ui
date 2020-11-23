@@ -122,7 +122,7 @@
                       v-model="formData.WebsiteUrl"
                       :rules="[
                         (v) => {
-                          return v === '' || validations.url(v)
+                          return v === '' || v === null || validations.url(v)
                         }
                       ]"
                     />
