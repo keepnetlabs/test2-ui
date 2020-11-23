@@ -12,13 +12,12 @@
       <app-modal-body-header title="Rest API Configuration" sub-title="Set new API" />
       <v-form lazy-validation ref="refForm">
         <form-group title="URL">
-          <v-text-field
-            placeholder="Enter URL"
-            outlined
-            dense
+          <InputUrl
+            hint=""
+            :persistent-hint="false"
             :rules="[(v) => validations.url(v, 'Invalid URL')]"
             v-model.trim="formValues.url"
-          ></v-text-field>
+          ></InputUrl>
         </form-group>
         <form-group title="Auth. Key" class-name="auth-key">
           <div class="auth-key__container">
@@ -123,13 +122,16 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { url } from '@/utils/validations'
+import {url} from '@/utils/validations'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
+
 export default {
   name: 'NewRestApiConfiguration',
   components: {
     AppModal,
     AppModalBodyHeader,
-    FormGroup
+    FormGroup,
+    InputUrl
   },
   props: {
     status: {

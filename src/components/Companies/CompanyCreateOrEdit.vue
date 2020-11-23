@@ -116,14 +116,12 @@
                 <v-list-item>
                   <v-list-item-content>
                     <label class="bottom-margin">Website URL</label>
-                    <v-text-field
-                      placeholder="Enter a URL"
-                      outlined
-                      dense
-                      autocomplete="off"
+                    <InputUrl
+                      :persistent-hint="false"
+                      hint=""
                       v-model="formData.WebsiteUrl"
-                      :rules="[checkURL]"
-                    ></v-text-field>
+                      :rules="[(v) => validations.url(v)]"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -457,14 +455,10 @@
                       ></v-checkbox>
                       <template v-if="formData.IsReleaseNotesVisible">
                         <label class="company-create-modal__side-label">URL</label>
-                        <v-text-field
+                        <InputUrl
                           placeholder="https://doc.sitename.com/"
-                          outlined
-                          dense
-                          autocomplete="off"
                           v-model="formData.ReleaseNotesUrl"
-                          :rules="[checkURL, (v) => !!v || 'Required']"
-                        ></v-text-field>
+                        ></InputUrl>
                       </template>
                     </div>
                   </v-list-item-content>
@@ -524,17 +518,15 @@
   </div>
 </template>
 <script>
-import { maxLength, required } from '@/utils/validations'
-import { getLookupListByTypeId } from '../../api/common'
-import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
+import * as validations from '@/utils/validations'
+import {createCompany, getCompanyGroups, searchCompanies, updateCompany} from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import AuthenticationService from '@/services/authentication'
-import AuthenticationStatus from '@/model/constants/authenticationStatus'
-import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeIdList } from '@/api/common'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import {scrollToComponent} from '@/utils/functions'
+import {getLookupListByTypeIdList} from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -543,7 +535,7 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KSelect, InputCompany, KFileUpload },
+  components: { KSelect, InputCompany, InputUrl, KFileUpload },
   data() {
     return {
       stepLock: false,
@@ -588,14 +580,7 @@ export default {
           return date < new Date() - 3600 * 1000 * 24
         }
       },
-      validations: {
-        required,
-        maxLength
-      },
-      nameRules: {
-        required: (v) => (v && v.length <= 150) || 'Name must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Name cannot start with space'
-      }
+      validations: validations
     }
   },
   computed: {
@@ -744,19 +729,6 @@ export default {
     },
     onFileChanged(file) {
       this.formData.File = file
-    },
-    checkURL(value) {
-      let validation = true
-      if (value && value.length > 0) {
-        if (
-          !/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
-            value
-          )
-        ) {
-          validation = 'Invalid URL'
-        }
-      }
-      return validation
     },
     clickUnlimited() {
       this.formData.IsNumberOfUsersLimited = !this.formData.IsNumberOfUsersLimited

@@ -40,10 +40,8 @@
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">Recipient Email Address</label>
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
+
+          <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.to"
             :rules="
@@ -63,17 +61,13 @@
                 : []
             "
             :readonly="!showForm"
-            height="40"
-          ></v-text-field>
+          />
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">CC</label>
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
+          <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.cc"
             :rules="
@@ -85,17 +79,13 @@
                 : []
             "
             :readonly="!showForm"
-            height="40"
-          ></v-text-field>
+          />
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">BCC</label>
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
+          <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.bcc"
             :readonly="!showForm"
@@ -107,17 +97,14 @@
                   ]
                 : []
             "
-            height="40"
-          ></v-text-field>
+          />
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">Email Subject</label>
-          <v-text-field
+          <InputEmail
             placeholder="Suspicious Email"
-            outlined
-            dense
             class="k-textfield mt-2"
             v-model.trim="formValues.subject"
             :rules="
@@ -135,8 +122,7 @@
                 : []
             "
             :readonly="!showForm"
-            height="40"
-          ></v-text-field>
+          ></InputEmail>
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="px-0 email-settings__list-item">
@@ -178,11 +164,14 @@
 </template>
 
 <script>
-import { maxLength, mail, required } from '@/utils/validations'
+import {mail, maxLength, required} from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
+
 export default {
   name: 'EmailSettings',
   components: {
+    InputEmail,
     PhishingSettingsFooter
   },
   watch: {

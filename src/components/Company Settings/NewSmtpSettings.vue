@@ -102,40 +102,60 @@
           />
         </form-group>
         <form-group title="Reply to">
-          <v-text-field
+          <InputEmail
             placeholder="Enter Reply to"
-            outlined
-            dense
-            :rules="[(v) => validations.mail(v, 'Invalid email address')]"
             v-model.trim="formValues.replyTo"
-          ></v-text-field>
+            :hint="null"
+            :persistent-hint="false"
+            :rules="[
+              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+              (v) => validations.email(v, 'Invalid email address'),
+              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
+              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
+            ]"
+          />
         </form-group>
         <form-group title="Error to">
-          <v-text-field
+          <InputEmail
             placeholder="Enter Error to"
-            outlined
-            dense
-            :rules="[(v) => validations.mail(v, 'Invalid email address')]"
             v-model.trim="formValues.errorTo"
-          ></v-text-field>
+            :hint="null"
+            :persistent-hint="false"
+            :rules="[
+              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+              (v) => validations.email(v, 'Invalid email address'),
+              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
+              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
+            ]"
+          />
         </form-group>
         <form-group title="CC">
-          <v-text-field
+          <InputEmail
             placeholder="Enter CC address"
-            outlined
-            :rules="[(v) => validations.mail(v, 'Invalid email address')]"
-            dense
             v-model.trim="formValues.cC"
-          ></v-text-field>
+            :hint="null"
+            :persistent-hint="false"
+            :rules="[
+              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+              (v) => validations.email(v, 'Invalid email address'),
+              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
+              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
+            ]"
+          />
         </form-group>
         <form-group title="BCC">
-          <v-text-field
+          <InputEmail
             placeholder="Enter BCC address"
-            outlined
-            dense
-            :rules="[(v) => validations.mail(v, 'Invalid email address')]"
             v-model.trim="formValues.bCC"
-          ></v-text-field>
+            :hint="null"
+            :persistent-hint="false"
+            :rules="[
+              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+              (v) => validations.email(v, 'Invalid email address'),
+              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
+              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
+            ]"
+          />
         </form-group>
         <form-group title="Custom Header">
           <v-textarea
@@ -157,13 +177,15 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { maxLength, required, mail, startsWithSpace } from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeId } from '@/api/common'
-import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import * as validations from '@/utils/validations'
+import {scrollToComponent} from '@/utils/functions'
+import {getLookupListByTypeId} from '@/api/common'
+import {createSMTPSettings, getSmtpSettings, updateSmtpSettings} from '@/api/smtpSettings'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
+
 export default {
   name: 'NewSmtpSettings',
   components: {
@@ -171,7 +193,8 @@ export default {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    InputUrl
+    InputUrl,
+    InputEmail
   },
   props: {
     status: {
@@ -207,12 +230,7 @@ export default {
       showPassword: false,
       serviceProviderItems: [],
       companyItems: [],
-      validations: {
-        maxLength,
-        required,
-        mail,
-        startsWithSpace
-      }
+      validations: validations
     }
   },
   methods: {

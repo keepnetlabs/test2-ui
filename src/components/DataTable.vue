@@ -13,43 +13,6 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <v-overlay :opacity="0.46" :value="isWantToAddUsers" :z-index="999" fixed>
-      <v-card class="download-card pb-4 pa-6" light style="max-width: 580px;">
-        <v-list-item>
-          <div class="v-btn v-cart-icon-wrapper">
-            <v-icon class="ml-2" color="blue" left medium>mdi-account-plus</v-icon>
-          </div>
-          <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline">Add row overlay</v-list-item-title>
-            <v-list-item-subtitle class="v-card-sub-header">Subtitle...</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="check-wrapper pl-0 pr-0">
-          <div class="check-row">
-            <v-checkbox
-              class="k-checkbox"
-              color="#2196f3"
-              label="ITEM 1"
-              v-model="download.xls"
-              value="XLS"
-            />
-          </div>
-          <div class="check-row">
-            <v-checkbox
-              class="k-checkbox"
-              color="#2196f3"
-              label="ITEM 2"
-              v-model="download.csv"
-              value="CSV"
-            />
-          </div>
-        </v-list-item>
-        <div class="d-flex download-buttons flex-row flex-wrap">
-          <v-btn @click="isWantToAddUsers = false" color="#f56c6c" text>CANCEL</v-btn>
-          <v-btn @click="addRow()" color="#2196f3" text>ADD</v-btn>
-        </div>
-      </v-card>
-    </v-overlay>
 
     <v-card v-show="!loading" class="card">
       <v-list-item class="pl-2 pr-0 pb-8" v-if="title && title.icon">
@@ -203,51 +166,6 @@
                 </v-list>
               </v-menu>
             </div>
-            <v-tooltip bottom opacity="1">
-              <template v-slot:activator="{ on }">
-                <v-menu
-                  offset-y
-                  transition="scale-transition"
-                  v-if="addUsers && addUsers.show && !addUsers.popUp && !addUsers.action"
-                  v-on="on"
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn class="btn-hover mr-1" icon v-on="on">
-                      <v-icon>mdi-plus-circle</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list class="v-cart-dropdown-list">
-                    <v-list-item>
-                      <v-list-item-title>Add users manually</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title>Import .xls</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title>LDAP Integration</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-
-                <v-btn
-                  class="btn-add mr-1"
-                  icon
-                  v-else-if="addUsers && addUsers.show && addUsers.popUp"
-                  v-on="on"
-                >
-                  <v-icon @click="isWantToAddUsers = true">mdi-plus</v-icon>
-                </v-btn>
-                <v-btn
-                  class="btn-add mr-1"
-                  icon
-                  v-else-if="addUsers && addUsers.show && addUsers.action"
-                  v-on="on"
-                >
-                  <v-icon @click="addUsersAction(addUsers.action)">mdi-plus</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">{{ (addUsers && addUsers.tooltip) || 'Add' }}</span>
-            </v-tooltip>
 
             <slot name="addUsers">
               <v-tooltip bottom opacity="1">
@@ -324,8 +242,19 @@
             class="selection-all-check"
             color="white"
             v-model="selectionCheckbox"
+            :disabled="getSelectionCheckboxDisabledValue"
           />
-          <span class="selection-span">{{ multipleSelection.length }} Selected</span>
+          <span class="selection-span">{{ getSelectionText }}</span>
+          <v-btn
+            :ripple="false"
+            class="btn-all-selection"
+            rounded
+            color="white"
+            style="box-shadow: none;"
+            @click="handleSelectButtonClick"
+          >
+            {{ getSelectionButtonText }}
+          </v-btn>
           <div class="action-icons">
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.clipboard">
               <template v-slot:activator="{ on }">
@@ -443,7 +372,13 @@
             style="width: 100%;"
             v-if="!allHidden"
           >
-            <el-table-column align="center" type="selection" v-if="selectable" width="48" />
+            <el-table-column
+              align="center"
+              type="selection"
+              :reserve-selection="true"
+              v-if="selectable"
+              width="48"
+            />
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
@@ -850,7 +785,7 @@ import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   components: {
     DataTableFilter,
@@ -1054,13 +989,25 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    getSelectionText() {
+      return this.isSelectedAll
+        ? 'All selected'
+        : `${this.multipleSelection.length} item(s) selected`
+    },
+    getSelectionButtonText() {
+      const text = this.isSelectedAll ? 'Unselect' : 'Select'
+      //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
+      return `${text} all ${this.initialData.length} item(s)`
+    },
     getTableHeaderClass() {
       return this.tableData.length === 0 && 'table-header-disable'
+    },
+    getSelectionCheckboxDisabledValue() {
+      return this.showfilteredData ? !this.filteredData.length : false
     }
   },
   data() {
     return {
-      setDatatableUI: false,
       filteredData: [],
       renderedColumns: [],
       filteredDataLength: 0,
@@ -1068,10 +1015,11 @@ export default {
       sortProps: null,
       initialData: [],
       dataLength: 0,
+      isSelectedAll: false,
       selectedCluster: '',
       tableData: [],
+      selectedRows: [],
       rowCount: 10,
-      totalCount: 100,
       extendedViewStyle: null,
       currentPage: 1,
       multipleSelection: [],
@@ -1079,11 +1027,9 @@ export default {
       timeout: null,
       selectionCheckbox: false,
       selectionAll: false,
-      series: [44, 55, 13, 43],
       search: '',
       downloadModalTitle: '',
       isSettingsOpened: false,
-      isWantToAddUsers: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
       firstColFixed: true,
@@ -1100,15 +1046,7 @@ export default {
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
-      printObj: {
-        id: 'table-container',
-        popTitle: 'Datatable Print',
-        extraCss: 'https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css',
-        extraHead: '<meta http-equiv="Content-Language" content="zh-cn"/>'
-      },
       clusterChevron: false,
-      actionsWidth: 0,
-      init: true,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate: false,
       totalLength: 0
@@ -1131,10 +1069,6 @@ export default {
           maxPage = this.currentPage
         }
         this.tableData = table.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
-
-        setTimeout(() => {
-          this.renderFixedItems()
-        }, 500)
         if (table.length && !this.tableData.length && this.currentPage !== 1) {
           this.currentPage -= 1
           this.tableData = [...table].slice(
@@ -1142,6 +1076,9 @@ export default {
             this.currentPage * this.rowCount
           )
         }
+        setTimeout(() => {
+          this.renderFixedItems()
+        }, 500)
 
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
@@ -1151,11 +1088,22 @@ export default {
     tableData(data) {
       if (data && this.groupable) {
         this.totalLength = this.getTotalLength(data)
+        this.calculateAllSelected()
+      }
+      if (this.isSelectedAll) {
+        for (let item of data) {
+          this.$refs.elTableRef.toggleRowSelection(item, true)
+        }
       }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
-    isRowActionsMenuOpen(val) {},
+    filteredData(data) {
+      if (data && this.groupable) {
+        this.totalLength = this.getTotalLength(data)
+        this.calculateAllSelected()
+      }
+    },
     firstColFixed(val) {
       if (!val) {
         const fixedCol = this.columns.filter((c) => c.fixed === 'left')
@@ -1176,37 +1124,16 @@ export default {
         this.actionFixed = 'right'
       }
     },
-    multipleSelection(selecteds) {
-      //this.$emit('onEditClick', { selected: selecteds, isEditPopupOpen: this.isWantToEditRow })
-      if (this.groupable) {
-        if (selecteds.length === this.totalLength) {
-          this.selectionCheckbox = true
-          this.selectionRowCheckboxDeterminate = false
-        } else if (selecteds.length > 0) {
-          this.selectionRowCheckboxDeterminate = true
-        } else {
-          this.selectionCheckbox = false
-        }
-      } else {
-        if (selecteds.length === this.tableData.length) {
-          this.selectionCheckbox = true
-          this.selectionRowCheckboxDeterminate = false
-        } else if (selecteds.length > 0) {
-          this.selectionRowCheckboxDeterminate = true
-        } else {
-          this.selectionCheckbox = false
-        }
-      }
+    multipleSelection() {
+      this.calculateAllSelected()
     },
     columns: {
       deep: true,
       handler(val) {
         this.setRenderedColumns()
-        if (!val.some((col) => col.show)) this.allHidden = true
-        else this.allHidden = false
+        this.allHidden = !val.some((col) => col.show)
       }
-    },
-    currentPage(newVal, oldVal) {}
+    }
   },
   created() {
     //Init column standardisation
@@ -1219,24 +1146,11 @@ export default {
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
     }
-    //this.extendedViewOptions = this.columns
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
-    const browser = navigator.userAgent.toLowerCase()
-    if (browser.indexOf('safari') != -1) {
-      if (browser.indexOf('chrome') > -1) {
-        this.setDatatableUI = true
-      }
-    }
-  },
-  updated() {
-    if (this.init) {
-      this.init = false
-    }
   },
   mounted() {
-    this.init = true
     if (window.outerWidth < 1023) {
       this.actionFixed = false
       const leftFixed = this.columns.filter((col) => col.fixed === 'left')
@@ -1255,6 +1169,28 @@ export default {
     window.addEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    calculateAllSelected() {
+      const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+      const totalLength = this.getTotalLength(this.tableData)
+      const comparedValueLength = this.groupable ? totalLength : dataRef.length
+      const selectedItems = dataRef.filter((item) => {
+        return this.multipleSelection.find(
+          (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+        )
+      })
+      if (selectedItems.length) {
+        if (selectedItems.length + this.clusteredItems.length === comparedValueLength) {
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
+        } else {
+          this.selectionRowCheckboxDeterminate = true
+        }
+      } else {
+        this.selectionCheckbox = false
+        this.selectionRowCheckboxDeterminate = false
+      }
+      this.isSelectedAll = this.multipleSelection.length === this.initialData.length
+    },
     /**
      * Override column props with standards
      *
@@ -1265,6 +1201,28 @@ export default {
         let index = columns.findIndex((col) => col.property === x.property)
         columns[index] = { ...columns[index], ...x }
       })
+    },
+    handleSelectButtonClick() {
+      if (this.isSelectedAll) {
+        this.multipleSelection = []
+        this.isSelectedAll = false
+        this.$refs.elTableRef.clearSelection()
+      } else {
+        //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
+        /*
+        if (dataRef === this.unRenderedFilterData) {
+          this.multipleSelection = [...this.multipleSelection, ...dataRef]
+        } else {
+          this.multipleSelection = [...dataRef]
+        }
+        */
+        this.multipleSelection = [...this.initialData]
+
+        for (let item of this.multipleSelection) {
+          this.$refs.elTableRef.toggleRowSelection(item, true)
+        }
+        this.isSelectedAll = true
+      }
     },
     renderFixedItems() {
       const table = this.$el
@@ -1388,8 +1346,6 @@ export default {
     },
     closeEditPopup() {
       this.isWantToEditRow = false
-      this.$refs.elTableRef.clearSelection()
-      this.multipleSelection = []
     },
 
     getBtnStatusColor(type) {
@@ -1670,7 +1626,7 @@ export default {
           break
       }
     },
-    getColumnLabelClass(key, value) {
+    getColumnLabelClass(key) {
       if (key === 'priority' || key === 'status' || key === 'detected') {
         return 'popup__badge'
       }
@@ -1716,6 +1672,13 @@ export default {
         if (row.children) {
           this.unSelectChildrenByRowCheckbox(row.children, selection)
         }
+
+        const clusteredIndex = this.clusteredItems.findIndex(
+          (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(row)
+        )
+        if (clusteredIndex > -1) {
+          this.clusteredItems.splice(clusteredIndex, 1)
+        }
         this.$refs.elTableRef.toggleRowSelection(row, false)
         const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row))
         if (ind > -1) {
@@ -1746,6 +1709,12 @@ export default {
               const ind = selection.findIndex(
                 (item) => JSON.stringify(item) === JSON.stringify(child)
               )
+              const clusteredIndex = this.clusteredItems.findIndex(
+                (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(child)
+              )
+              if (clusteredIndex > -1) {
+                this.clusteredItems.splice(clusteredIndex, 1)
+              }
               if (ind > -1) {
                 selection.splice(ind, 1)
               }
@@ -1777,6 +1746,7 @@ export default {
             this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
           this.tableData = temp.length === 0 ? [{}] : temp
         }
+        this.calculateAllSelected()
       }
     },
     handleClientSideSizeChange(rows) {
@@ -1793,14 +1763,11 @@ export default {
       if (this.isServerSide) {
         this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
-        if (pageNum === 1) {
-          this.tableData = this.initialData.slice(0, this.rowCount)
-        } else {
-          this.tableData = this.initialData.slice(
-            (pageNum - 1) * this.rowCount,
-            pageNum * this.rowCount
-          )
-        }
+        this.tableData = this.initialData.slice(
+          (pageNum - 1) * this.rowCount,
+          pageNum * this.rowCount
+        )
+        this.calculateAllSelected()
       }
     },
     handleFilteredCurrentChange(pageNum) {
@@ -1813,6 +1780,7 @@ export default {
           pageNum * this.rowCount
         )
       }
+      this.calculateAllSelected()
     },
     handleFilteredSizeChange(rows) {
       this.rowCount = rows
@@ -1824,6 +1792,7 @@ export default {
           []
         this.filteredData = temp.length === 0 ? [{}] : temp
       }
+      this.calculateAllSelected()
     },
     onEmptyBtnClicked(e) {
       this.$emit('onEmptyBtnClicked', e)
@@ -1833,7 +1802,7 @@ export default {
         exportTypes: downloadTypes,
         pageNumber: this.currentPage,
         pageSize: this.rowCount || this.countRow,
-        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1] ? true : false
+        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       })
     },
     handleSubMenuItemClick(item) {
@@ -1843,10 +1812,40 @@ export default {
       if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
-        this.$refs.elTableRef.clearSelection()
+        if (this.selectionCheckbox) {
+          if (this.selectionRowCheckboxDeterminate) {
+            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+            const selectedItems = dataRef.filter((item) => {
+              return this.multipleSelection.find(
+                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+              )
+            })
+            for (let item of selectedItems) {
+              this.$refs.elTableRef.toggleRowSelection(item, false)
+            }
+            this.selectionRowCheckboxDeterminate = false
+            this.selectionCheckbox = false
+          } else {
+            this.$refs.elTableRef.toggleAllSelection()
+          }
+        } else {
+          const selectedItems = this.multipleSelection.filter((item) => {
+            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+            return dataRef.find(
+              (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+            )
+          })
+          if (selectedItems.length) {
+            for (let selectedItem of selectedItems) {
+              this.$refs.elTableRef.toggleRowSelection(selectedItem)
+            }
+          } else {
+            this.$refs.elTableRef.clearSelection()
+          }
+        }
       }
     },
-    rowAct(action, row, scope, tableData) {
+    rowAct(action, row, scope) {
       switch (action) {
         case 'details':
           this.$router.push('/analysis-details')
@@ -1886,9 +1885,6 @@ export default {
     printMethod() {
       printJS('table-container', 'html')
     },
-    addRow() {
-      // Do something
-    },
     clusterSelected(name, ind) {
       this.selectedCluster = name
       this.$emit('clusterChanged', name)
@@ -1908,7 +1904,7 @@ export default {
       let columnsLength = []
       let text = ''
       let selectionsCopy = JSON.parse(JSON.stringify(selections))
-      selectionsCopy.forEach((item, index) => {
+      selectionsCopy.forEach((item) => {
         headerKeys.forEach((a, i) => {
           if (!item[a]) item[a] = 'Empty'
           let lengthOfItem = item[a].toString().length || 0
@@ -1941,7 +1937,7 @@ export default {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle-outline'
+          icon: 'mdi-check-circle'
         })
       })
     },
