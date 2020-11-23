@@ -24,18 +24,7 @@
           <InputLastName v-model.trim="formValues.lastName" />
         </form-group>
         <form-group title="Email Address" has-hint>
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
-            v-model.trim="formValues.email"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.mail(v, 'Invalid email address')
-            ]"
-          ></v-text-field>
+          <InputEmail v-model.trim="formValues.email" />
         </form-group>
         <form-group title="Phone Number" class-name="mb-6">
           <vue-tel-input
@@ -111,22 +100,24 @@
 <script>
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { mail, maxLength, required } from '@/utils/validations'
+import {mail, maxLength, required} from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
-import { createSystemUser, updateSystemUser } from '@/api/systemUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { scrollToComponent } from '@/utils/functions'
-import { VueTelInput } from 'vue-tel-input'
-import { getUserRoles } from '@/api/systemUsers'
+import {createSystemUser, getUserRoles, updateSystemUser} from '@/api/systemUsers'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import {scrollToComponent} from '@/utils/functions'
+import {VueTelInput} from 'vue-tel-input'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
+
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
     InputFirstName,
     InputLastName,
+    InputEmail,
     AppModal,
     AppModalBodyHeader,
     FormGroup,

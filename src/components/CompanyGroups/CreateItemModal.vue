@@ -81,14 +81,10 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import {
-  searchCompanies,
-  createCompanyGroups,
-  searchGroupCompanies,
-  updateCompanyGroup
-} from '@/api/company'
-import { maxLength, required, startsWithSpace } from '@/utils/validations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {createCompanyGroups, searchCompanies, searchGroupCompanies, updateCompanyGroup} from '@/api/company'
+import {maxLength, required, startsWithSpace} from '@/utils/validations'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+
 export default {
   name: 'CreateItemModal',
   props: {
