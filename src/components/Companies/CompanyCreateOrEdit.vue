@@ -120,7 +120,11 @@
                       :persistent-hint="false"
                       hint=""
                       v-model="formData.WebsiteUrl"
-                      :rules="[(v) => validations.url(v)]"
+                      :rules="[
+                        (v) => {
+                          return v === '' || validations.url(v)
+                        }
+                      ]"
                     />
                   </v-list-item-content>
                 </v-list-item>
