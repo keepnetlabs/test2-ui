@@ -27,7 +27,6 @@ export default {
     rules: {
       default: () => [
         (v) => Validations.required(v, 'Required'),
-        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
         (v) => Validations.url(v, 'Invalid URL')
       ]
     }

@@ -13,7 +13,7 @@ export default {
       default: true
     },
     placeholder: {
-      default: 'Enter a email address'
+      default: 'Enter an email address'
     },
     hint: {
       default: '*Required'
