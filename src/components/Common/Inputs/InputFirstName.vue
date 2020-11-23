@@ -25,9 +25,10 @@ export default {
       default: 'off'
     },
     rules: {
+      //
       default: () => [
         (v) => Validations.required(v, 'Required'),
-        (v) => Validations.startsWithEmpty(v, 'Cannot start with space'),
+        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
         (v) => Validations.maxLength(v, 40, 'Max 40 characters')
       ]
     }

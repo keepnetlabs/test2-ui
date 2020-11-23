@@ -26,7 +26,7 @@
           ></v-text-field>
         </form-group>
         <form-group title="Service Provider" has-hint>
-          <v-select
+          <k-select
             v-model.trim="formValues.serviceProvider"
             :items="serviceProviderItems"
             class="new-integration__select"
@@ -38,28 +38,24 @@
             :menu-props="{ offsetY: true }"
             persistent-hint
             @change="handleChangeServiceProvider"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
             placeholder="Select option"
-          ></v-select>
+          ></k-select>
         </form-group>
         <form-group title="SMTP Server Address" has-hint>
           <div class="new-smtp-setting__server-address-container">
-            <v-text-field
+            <InputUrl
               placeholder="Server URL or IP Address"
-              outlined
-              dense
               v-model.trim="formValues.serverAddress"
-              hint="*Required"
-              persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
-            ></v-text-field>
+              :rules="[(v) => validations.required(v), (v) => validations.startsWithSpace(v)]"
+            ></InputUrl>
             <v-text-field
               placeholder="Port"
               outlined
               ref="refTextField"
               dense
               @input="onPortChange"
-              :rules="[(v) => validations.required(v, 'Required')]"
+              :rules="[(v) => validations.required(v)]"
               :value="formValues.serverPort"
             ></v-text-field>
           </div>
@@ -161,17 +157,21 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { maxLength, required, mail } from '@/utils/validations'
+import { maxLength, required, mail, startsWithSpace } from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeId } from '@/api/common'
 import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
 export default {
   name: 'NewSmtpSettings',
   components: {
+    KSelect,
     AppModal,
     AppModalBodyHeader,
-    FormGroup
+    FormGroup,
+    InputUrl
   },
   props: {
     status: {
@@ -210,7 +210,8 @@ export default {
       validations: {
         maxLength,
         required,
-        mail
+        mail,
+        startsWithSpace
       }
     }
   },

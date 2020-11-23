@@ -1,21 +1,21 @@
 <template>
   <div class="company-list">
-    <v-dialog
+    <app-modal
+      :status="isShowCreateOrEditModal"
       v-if="isShowCreateOrEditModal"
-      v-model="isShowCreateOrEditModal"
-      fullscreen
-      scrollable
-      persistent
-      no-click-animation
-      hide-overlay
+      :show-footer="false"
+      class-name="company-create-edit"
+      :show-header="false"
     >
-      <CompanyCreateOrEdit
-        @cancelForm="cancelCreateOrEditForm"
-        :selectedRow="selectedRow"
-        :selectedExtend="selectedExtend"
-        :edit="editModal"
-      />
-    </v-dialog>
+      <template v-slot:overlay-body>
+        <CompanyCreateOrEdit
+          @cancelForm="cancelCreateOrEditForm"
+          :selectedRow="selectedRow"
+          :selectedExtend="selectedExtend"
+          :edit="editModal"
+        />
+      </template>
+    </app-modal>
     <remove-modal
       :is-show="isShowRemoveModal"
       :selectedRow="selectedRow"
@@ -74,9 +74,11 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+import AppModal from '@/components/AppModal'
 export default {
   name: 'CompanyGroupDetails',
   components: {
+    AppModal,
     CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,

@@ -46,13 +46,13 @@
               </v-list-item>
               <v-list-item class="map-fields__list-item map-fields__list-item--1">
                 <p class="map-fields__title mr-7">Select Group</p>
-                <v-select
+                <k-select
                   class="map-fields__select"
                   :items="[]"
                   outlined
                   v-model="formValues.group"
                   placeholder="Delete Email"
-                ></v-select>
+                ></k-select>
               </v-list-item>
               <v-list-item class="map-fields__list-item map-fields__list-item--2">
                 <p class="map-fields__title" style="margin-right: 34px;">Select Sheet</p>
@@ -125,9 +125,11 @@
 <script>
 import AppModal from '../AppModal'
 import Mapper from '../Mapper'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'ImportUsersFromFileModal',
   components: {
+    KSelect,
     AppModal,
     Mapper
   },

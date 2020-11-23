@@ -62,7 +62,8 @@
             "
             >Recipients</span
           >
-          <v-combobox
+          <k-select
+            type="combobox"
             :items="[]"
             placeholder="Enter emails (max. 10)"
             multiple
@@ -76,7 +77,7 @@
             :rules="[shareEmailRules.limit, shareEmailRules.email, shareEmailRules.required]"
             class="pop-up-card__invite-member"
             hint="Press enter to separate email adresses"
-          ></v-combobox>
+          ></k-select>
         </v-form>
       </template>
       <template v-slot:app-dialog-footer>
@@ -927,6 +928,7 @@ import {
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from './AttachmentsPreview'
+import KSelect from '@/components/Common/Inputs/KSelect'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1045,6 +1047,7 @@ a{position:relative}
 })
 export default {
   components: {
+    KSelect,
     AppDialogFooter,
     PreviewHeaderForSinglePost,
     VClamp,

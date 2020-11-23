@@ -99,6 +99,7 @@
       :icon-name="getIconName"
       :title="getTitle"
       :show-footer="false"
+      class="playbook-modal"
     >
       <template v-slot:overlay-body>
         <CreateOrEditRule
@@ -573,6 +574,11 @@ export default {
     padding: 32px 96px 0 96px;
     margin-bottom: 24px;
     flex-shrink: 0;
+  }
+}
+.playbook-modal {
+  .v-overlay__content {
+    overflow-x: hidden;
   }
 }
 </style>

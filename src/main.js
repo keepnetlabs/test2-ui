@@ -14,9 +14,13 @@ import VueMask, { VueMaskDirective } from 'v-mask'
 import * as Sentry from '@sentry/browser'
 import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
-
+import { VSelect, VAutocomplete, VCombobox } from 'vuetify/lib'
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
+//dynamic kullanımda bindingi gelmiyordu
+Vue.component('VSelect', VSelect)
+Vue.component('VAutocomplete', VAutocomplete)
+Vue.component('VCombobox', VCombobox)
 
 Vue.component(
   'phishing-settings',

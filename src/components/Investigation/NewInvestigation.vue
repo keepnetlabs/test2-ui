@@ -31,7 +31,7 @@
                   <v-radio-group
                     v-model="targetUserType"
                     :mandatory="false"
-                    @change="targetUsersValue = []"
+                    @change="handleTargetUserTypeChange"
                     row
                   >
                     <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
@@ -40,7 +40,8 @@
                   </v-radio-group>
                 </div>
                 <div class="target-users-select__input-area">
-                  <v-combobox
+                  <k-select
+                    type="combobox"
                     :items="[]"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -58,8 +59,9 @@
                     v-if="targetUserType === 'AllUsers'"
                     :disabled="targetUserType === 'AllUsers'"
                     required
-                  ></v-combobox>
-                  <v-combobox
+                  />
+                  <k-select
+                    type="combobox"
                     :items="userGroupsItems"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -79,8 +81,9 @@
                     :return-object="true"
                     autocomplete="disabled"
                     v-if="targetUserType === 'Groups'"
-                  ></v-combobox>
-                  <v-combobox
+                  />
+                  <k-select
+                    type="combobox"
                     :items="specificUserItems"
                     v-if="targetUserType === 'SpecificUsers'"
                     placeholder="Enter user email Addresses"
@@ -100,7 +103,7 @@
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     v-model.trim="targetUsersValue"
-                  ></v-combobox>
+                  />
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -113,7 +116,7 @@
                 >
                 <div class="filter-item" v-for="(list, index) in filterList" :key="index">
                   <div class="filter-item__selectbox">
-                    <v-select
+                    <k-select
                       :items="filterListOption"
                       item-text="name"
                       item-value="val"
@@ -122,10 +125,9 @@
                       outlined
                       class="edit-select standard-height"
                       required
-                      :menu-props="{ offsetY: true }"
                       @change="handleChangeFilterListItem"
                       :rules="[filterSelectRules.required]"
-                    ></v-select>
+                    ></k-select>
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
@@ -229,7 +231,7 @@
                 <label class="edit-sub-labels"
                   >Select how many days the investigation will run</label
                 >
-                <v-select
+                <k-select
                   :items="durations"
                   outlined
                   class="input-select standard-height"
@@ -237,9 +239,8 @@
                   :rules="[(v) => !!v || 'Duration is required']"
                   item-text="durationLabel"
                   item-value="durationValue"
-                  :menu-props="{ offsetY: true }"
                   placeholder="3 Days"
-                ></v-select>
+                ></k-select>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area mt-2 pa-0">
@@ -248,7 +249,7 @@
                 <label class="edit-sub-labels"
                   >Select action to be executed if email is found</label
                 >
-                <v-select
+                <k-select
                   :items="actions"
                   outlined
                   class="input-select standard-height"
@@ -256,9 +257,9 @@
                   :rules="[(v) => !!v || 'Action is required']"
                   item-text="actionLabel"
                   item-value="actionValue"
-                  :menu-props="{ offsetY: true }"
+                  position="top"
                   placeholder="Delete Email"
-                ></v-select>
+                ></k-select>
               </v-list-item-content>
             </v-list-item>
           </v-form>
@@ -285,8 +286,10 @@ import {
 import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { scrollToComponent } from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   components: {
+    KSelect,
     AppModalBodyHeader,
     AppModal
   },
@@ -296,6 +299,11 @@ export default {
         this.isDateValid = true
       } else {
         this.isDateValid = false
+      }
+    },
+    targetUsersValue(newVal, oldVal) {
+      if (newVal[0] === '') {
+        newVal.splice(0, 1)
       }
     },
     searchTargetUsersGroupsValue(val) {
@@ -561,6 +569,9 @@ export default {
       } else {
         this.checkboxError = false
       }
+    },
+    handleTargetUserTypeChange() {
+      this.targetUsersValue = []
     },
     handleChangeFilterListItem() {
       this.$nextTick(() => {

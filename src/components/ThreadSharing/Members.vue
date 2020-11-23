@@ -114,7 +114,11 @@
                     <v-expansion-panel class="threat-sharing-content">
                       <div class="ts-header">
                         <div class="ts-title">
-                          <img src="../../assets/img/logo-min.png" alt="logo" class="d-flex" />
+                          <img
+                            class="threat-sharing-content__logo d-flex"
+                            :src="memberImage(member)"
+                            alt="logo"
+                          />
                           <div class="community-info-wrapper">
                             <h2>{{ member.companyName }}</h2>
                             <div class="community-sub-info">
@@ -460,6 +464,9 @@ export default {
     }
   },
   methods: {
+    memberImage(member) {
+      return member.logoUrl || require('../../assets/img/no-logo.png')
+    },
     seePostedIncidentsClick(item) {
       this.$emit('selectedMemberPost', item)
     },
@@ -733,6 +740,11 @@ export default {
   box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
     0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   background-color: #ffffff;
+  &__logo {
+    font-size: 12px;
+    height: 46px;
+    width: 46px;
+  }
 }
 
 .threat-sharing-content.community-rqts {

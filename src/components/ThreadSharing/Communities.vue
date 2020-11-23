@@ -218,7 +218,8 @@
                 ></v-text-field>
               </div>
               <div>
-                <v-combobox
+                <k-select
+                  type="combobox"
                   :items="industryList"
                   item-text="name"
                   item-value="resourceId"
@@ -231,6 +232,7 @@
                   hide-details
                   multiple
                   :disabled="selectedTab === 'tab-2'"
+                  :slots="{ selection: true, item: false }"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -248,10 +250,10 @@
                       (+{{ industryValue.length - 1 }})</span
                     >
                   </template>
-                </v-combobox>
+                </k-select>
               </div>
               <div class="d-flex">
-                <v-select
+                <k-select
                   :items="privacyList"
                   placeholder="Privacy"
                   outlined
@@ -263,6 +265,7 @@
                   @change="updateCommunities()"
                   :menu-props="{ offsetY: true }"
                   :disabled="selectedTab === 'tab-2'"
+                  :slots="{ selection: true, item: false }"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -280,7 +283,7 @@
                       (+{{ privacyValue.length - 1 }})</span
                     >
                   </template>
-                </v-select>
+                </k-select>
               </div>
             </div>
           </template>
@@ -614,9 +617,11 @@ import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
 import { isOwner } from '../../utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   components: {
+    KSelect,
     AppDialogFooter,
     VClamp,
     NewCommunity,

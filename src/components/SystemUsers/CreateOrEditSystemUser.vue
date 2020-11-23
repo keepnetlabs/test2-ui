@@ -72,20 +72,19 @@
           </div>
         </form-group>
         <form-group title="Status">
-          <v-select
+          <k-select
             placeholder="Select Option"
             outlined
             dense
             :items="statusItems"
             item-text="name"
             item-value="val"
-            :menu-props="{ offsetY: true }"
             v-model.trim="formValues.statusId"
             @change="handleChangeStatus"
-          ></v-select>
+          />
         </form-group>
         <form-group title="Role">
-          <v-select
+          <k-select
             placeholder="Select Option"
             outlined
             dense
@@ -94,10 +93,9 @@
             hint="*Required"
             persistent-hint
             item-text="roleName"
-            :menu-props="{ offsetY: true }"
             item-value="resourceId"
             :rules="[(v) => validations.required(v, 'Required')]"
-          ></v-select>
+          />
         </form-group>
         <form-group v-if="false">
           <v-btn color="#2196f3" rounded class="white--text btn-util">
@@ -123,6 +121,7 @@ import { VueTelInput } from 'vue-tel-input'
 import { getUserRoles } from '@/api/systemUsers'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
@@ -132,7 +131,8 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     SendWelcomeEmailToNewUserModal,
-    VueTelInput
+    VueTelInput,
+    KSelect
   },
   props: {
     status: {
@@ -268,6 +268,16 @@ export default {
       if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
         this.formValues.phoneNumber = oldVal
         this.$refs.refTelInput.phone = oldVal
+        this.updatePhoneNumber()
+      } else if (
+        //CHINA BUG
+        newVal.length === 17 &&
+        this.$refs.refTelInput.phoneObject.regionCode === 'CN' &&
+        newVal[4] !== '1'
+      ) {
+        const val = newVal.substring(0, 16)
+        this.formValues.phoneNumber = val
+        this.$refs.refTelInput.phone = val
         this.updatePhoneNumber()
       }
       this.$nextTick(() => {

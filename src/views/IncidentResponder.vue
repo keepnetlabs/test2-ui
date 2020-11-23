@@ -2338,6 +2338,9 @@ export default {
   .k-overlay__container {
     padding: 0 !important;
   }
+  .v-overlay__content {
+    overflow-x: hidden;
+  }
   .k-overlay__list-item.k-overlay__header {
     padding: 32px 96px 0 96px;
     margin-bottom: 24px;
