@@ -785,7 +785,7 @@ import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   components: {
     DataTableFilter,
@@ -995,7 +995,9 @@ export default {
         : `${this.multipleSelection.length} item(s) selected`
     },
     getSelectionButtonText() {
-      return `Select all ${this.initialData.length} item(s)`
+      const text = this.isSelectedAll ? 'Unselect' : 'Select'
+      //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
+      return `${text} all ${this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
       return this.tableData.length === 0 && 'table-header-disable'
@@ -1096,6 +1098,12 @@ export default {
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
+    filteredData(data) {
+      if (data && this.groupable) {
+        this.totalLength = this.getTotalLength(data)
+        this.calculateAllSelected()
+      }
+    },
     firstColFixed(val) {
       if (!val) {
         const fixedCol = this.columns.filter((c) => c.fixed === 'left')
@@ -1116,18 +1124,16 @@ export default {
         this.actionFixed = 'right'
       }
     },
-    multipleSelection(selecteds) {
+    multipleSelection() {
       this.calculateAllSelected()
     },
     columns: {
       deep: true,
       handler(val) {
         this.setRenderedColumns()
-        if (!val.some((col) => col.show)) this.allHidden = true
-        else this.allHidden = false
+        this.allHidden = !val.some((col) => col.show)
       }
-    },
-    currentPage(newVal, oldVal) {}
+    }
   },
   created() {
     //Init column standardisation
@@ -1140,7 +1146,6 @@ export default {
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
     }
-    //this.extendedViewOptions = this.columns
 
     this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
     if (this.countRow) this.rowCount = this.countRow
@@ -1164,9 +1169,11 @@ export default {
     window.addEventListener('resize', this.renderFixedItems)
   },
   methods: {
-    calculateAllSelected(){
-      const comparedValueLength = this.groupable ? this.totalLength : this.tableData.length
-      const selectedItems = this.tableData.filter((item) => {
+    calculateAllSelected() {
+      const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+      const totalLength = this.getTotalLength(this.tableData)
+      const comparedValueLength = this.groupable ? totalLength : dataRef.length
+      const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find(
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
@@ -1182,7 +1189,7 @@ export default {
         this.selectionCheckbox = false
         this.selectionRowCheckboxDeterminate = false
       }
-      this.isSelectedAll=this.multipleSelection.length===this.initialData.length
+      this.isSelectedAll = this.multipleSelection.length === this.initialData.length
     },
     /**
      * Override column props with standards
@@ -1196,11 +1203,26 @@ export default {
       })
     },
     handleSelectButtonClick() {
-      this.multipleSelection = [...this.initialData]
-      for (let item of this.multipleSelection) {
-        this.$refs.elTableRef.toggleRowSelection(item, true)
+      if (this.isSelectedAll) {
+        this.multipleSelection = []
+        this.isSelectedAll = false
+        this.$refs.elTableRef.clearSelection()
+      } else {
+        //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
+        /*
+        if (dataRef === this.unRenderedFilterData) {
+          this.multipleSelection = [...this.multipleSelection, ...dataRef]
+        } else {
+          this.multipleSelection = [...dataRef]
+        }
+        */
+        this.multipleSelection = [...this.initialData]
+
+        for (let item of this.multipleSelection) {
+          this.$refs.elTableRef.toggleRowSelection(item, true)
+        }
+        this.isSelectedAll = true
       }
-      this.isSelectedAll = true
     },
     renderFixedItems() {
       const table = this.$el
@@ -1604,7 +1626,7 @@ export default {
           break
       }
     },
-    getColumnLabelClass(key, value) {
+    getColumnLabelClass(key) {
       if (key === 'priority' || key === 'status' || key === 'detected') {
         return 'popup__badge'
       }
@@ -1758,6 +1780,7 @@ export default {
           pageNum * this.rowCount
         )
       }
+      this.calculateAllSelected()
     },
     handleFilteredSizeChange(rows) {
       this.rowCount = rows
@@ -1769,6 +1792,7 @@ export default {
           []
         this.filteredData = temp.length === 0 ? [{}] : temp
       }
+      this.calculateAllSelected()
     },
     onEmptyBtnClicked(e) {
       this.$emit('onEmptyBtnClicked', e)
@@ -1778,7 +1802,7 @@ export default {
         exportTypes: downloadTypes,
         pageNumber: this.currentPage,
         pageSize: this.rowCount || this.countRow,
-        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1] ? true : false
+        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       })
     },
     handleSubMenuItemClick(item) {
@@ -1788,29 +1812,26 @@ export default {
       if (this.totalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
-        if (this.isSelectedAll) {
-          this.$refs.elTableRef.clearSelection()
-          this.multipleSelection = []
-          this.isSelectedAll = false
-        } else if (this.selectionCheckbox) {
-          if(this.selectionRowCheckboxDeterminate){
-            const selectedItems = this.tableData.filter((item) => {
+        if (this.selectionCheckbox) {
+          if (this.selectionRowCheckboxDeterminate) {
+            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+            const selectedItems = dataRef.filter((item) => {
               return this.multipleSelection.find(
                 (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
               )
             })
-            for(let item of selectedItems){
-              this.$refs.elTableRef.toggleRowSelection(item,false)
+            for (let item of selectedItems) {
+              this.$refs.elTableRef.toggleRowSelection(item, false)
             }
-            this.selectionRowCheckboxDeterminate=false
-            this.selectionCheckbox=false
-          }
-          else {
+            this.selectionRowCheckboxDeterminate = false
+            this.selectionCheckbox = false
+          } else {
             this.$refs.elTableRef.toggleAllSelection()
           }
         } else {
           const selectedItems = this.multipleSelection.filter((item) => {
-            return this.tableData.find(
+            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+            return dataRef.find(
               (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
             )
           })
@@ -1824,7 +1845,7 @@ export default {
         }
       }
     },
-    rowAct(action, row, scope, tableData) {
+    rowAct(action, row, scope) {
       switch (action) {
         case 'details':
           this.$router.push('/analysis-details')
@@ -1864,9 +1885,6 @@ export default {
     printMethod() {
       printJS('table-container', 'html')
     },
-    addRow() {
-      // Do something
-    },
     clusterSelected(name, ind) {
       this.selectedCluster = name
       this.$emit('clusterChanged', name)
@@ -1886,7 +1904,7 @@ export default {
       let columnsLength = []
       let text = ''
       let selectionsCopy = JSON.parse(JSON.stringify(selections))
-      selectionsCopy.forEach((item, index) => {
+      selectionsCopy.forEach((item) => {
         headerKeys.forEach((a, i) => {
           if (!item[a]) item[a] = 'Empty'
           let lengthOfItem = item[a].toString().length || 0
@@ -1919,7 +1937,7 @@ export default {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle-outline'
+          icon: 'mdi-check-circle'
         })
       })
     },

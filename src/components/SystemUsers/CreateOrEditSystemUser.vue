@@ -361,6 +361,9 @@ export default {
         this.formValues.email = email
         this.formValues.statusId = statusId
         this.formValues.phoneNumber = phoneNumber.split(' ').join('')
+        this.$nextTick(() => {
+          this.formValues.phoneNumber = this.$refs.refTelInput.phoneObject.number.international
+        })
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {
