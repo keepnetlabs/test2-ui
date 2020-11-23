@@ -17,7 +17,7 @@
             dense
             :items="providerItems"
             v-model.trim="formValues.provider"
-          ></k-select>
+          />
         </form-group>
         <form-group title="Account SID">
           <v-text-field

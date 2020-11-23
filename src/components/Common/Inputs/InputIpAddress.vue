@@ -3,7 +3,7 @@ import { VTextField } from 'vuetify/lib'
 import * as Validations from '@/utils/validations'
 
 export default {
-  name: 'InputCompany',
+  name: 'InputIpAddress',
   extends: VTextField,
   props: {
     outlined: {
@@ -25,11 +25,7 @@ export default {
       default: 'off'
     },
     rules: {
-      default: () => [
-        (v) => Validations.required(v, 'Required'),
-        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
-        (v) => Validations.maxLength(v, 64, 'Max 64 characters')
-      ]
+      default: () => [(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]
     }
   }
 }
