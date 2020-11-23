@@ -1202,6 +1202,7 @@ export default {
      * @param tree --> object
      * @param treeNode --> object
      * @param resolve --> function
+     * @param callback --> function
      */
     handleLoad(tree, treeNode, resolve) {
       this.$emit('handleClusterLazyLoad', {
@@ -1211,8 +1212,10 @@ export default {
         callback: this.callbackOfLazyLoad
       })
     },
+    /**
+     *This function must use calls when lazy load used
+     */
     callbackOfLazyLoad() {
-      //
       this.totalLength = this.getTotalLength(this.initialData)
       this.calculateAllSelected()
     },
@@ -1254,7 +1257,12 @@ export default {
         this.isSelectedAll = true
       }
     },
-    getAllItems(arr, retArr) {
+    /**
+     * This function returns all items on the table.
+     * @param arr --> for example tableData
+     * @param retArr --> returned value
+     */
+    getAllItems(arr = [], retArr = []) {
       for (let item of arr) {
         if (item.children) {
           this.getAllItems(item.children, retArr)
@@ -1314,7 +1322,7 @@ export default {
       this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property)
     },
     /**
-     * This function fires when someone click download button o table and make selection
+     * This function fires when someone click download button on table and make selection
      *
      * @param item --> String
      */
@@ -1328,6 +1336,8 @@ export default {
     handleListBulletedClick() {
       this.selectedCluster = ''
       this.$emit('handleListBulleted')
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
     },
     /**
      * This function returns which cluster is selected
@@ -1346,6 +1356,9 @@ export default {
       })
       this.isWantToEditRow = true
     },
+    /**
+     * This functions removes visibility of the right actions columns.
+     */
     hideChildRowActions() {
       const objStyle = document.createElement('style')
       objStyle.innerHTML =
@@ -1427,15 +1440,30 @@ export default {
     getDataTableFieldLabel(field) {
       return getDataTableFieldLabel(field)
     },
+    /**
+     * This event fires when clicked in the cell
+     */
     cellEnter(row, column, cell) {
       this.hasOverflowTooltip(row, column, cell)
     },
+    /**
+     * This event fires when clicked in the cell
+     */
     cellClick(row, column, event) {
       this.$emit('cellClick', { row, column, event })
     },
+    /**
+     * This event fires when mouse leave on cell
+     */
     cellLeave() {
       this.showOverFlowTooltip = false
     },
+    /**
+     * This function calculates if there is an overflow on the cell
+     * @param row
+     * @param column
+     * @param cell
+     */
     hasOverflowTooltip(row, column, cell) {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
@@ -1970,6 +1998,8 @@ export default {
     clusterSelected(name, ind) {
       this.selectedCluster = name
       this.$emit('clusterChanged', name)
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },
