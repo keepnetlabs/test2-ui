@@ -28,6 +28,7 @@ const auth = {
         state.userRoleName = data.role.name
         state.logoUrl = data.userCompany.logoPath
         state.firstName = data.firstName
+        state.permissions = payload.permissions
       } else {
         state.user = payload.currentUserData
         state.companyName = payload.currentUserData.userCompany.name
@@ -35,6 +36,7 @@ const auth = {
         state.selectedCompanyName = payload.currentUserData.userCompany.name
         state.logoUrl = payload.currentUserData.userCompany.logoPath
         state.firstName = payload.currentUserData.firstName
+        state.permissions = payload.permissions
       }
     }
   },
@@ -43,10 +45,13 @@ const auth = {
   },
   actions: {
     getCurrentUser({ commit, dispatch }) {
+      let token = JSON.parse(localStorage.getItem('auth-token')).token
+      let tokenData = jwt_decode(token)
       if (localStorage.getItem('isSelectCompany')) {
         let payload = {
           currentUserData: JSON.parse(localStorage.getItem('userData')),
-          isSelectCompany: true
+          isSelectCompany: true,
+          permissions: tokenData.Permission
         }
         //commit('SET_SELECTED_COMPANY', payload.currentUserData)
         commit('SET_CURRENTUSER', payload)
@@ -58,8 +63,6 @@ const auth = {
           dispatch('dashboard/selectCompany', payload.currentUserData, { root: true })
         }
       } else {
-        let token = JSON.parse(localStorage.getItem('auth-token')).token
-        let tokenData = jwt_decode(token)
         let currentUserData = setGlobalUserData(tokenData)
         localStorage.setItem('userData', JSON.stringify(currentUserData))
         localStorage.setItem('selectedCompanyName', currentUserData.name)
@@ -73,7 +76,8 @@ const auth = {
         }
         let payload = {
           currentUserData: currentUserData,
-          isSelectCompany: false
+          isSelectCompany: false,
+          permissions: tokenData.Permission
         }
         commit('SET_CURRENTUSER', payload)
       }

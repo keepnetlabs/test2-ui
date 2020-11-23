@@ -118,7 +118,8 @@ const login = {
               }
               let payload = {
                 currentUserData: currentUserData,
-                isSelectCompany: false
+                isSelectCompany: false,
+                permissions: tokenData.Permission
               }
               commit('SET_CURRENTUSER', payload)
               store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
