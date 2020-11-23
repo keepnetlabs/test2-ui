@@ -1,5 +1,5 @@
 <script>
-import { VTextField } from 'vuetify/lib'
+import {VTextField} from 'vuetify/lib'
 import * as Validations from '@/utils/validations'
 
 export default {
@@ -13,7 +13,7 @@ export default {
       default: true
     },
     placeholder: {
-      default: 'Enter a name for the company'
+      default: 'Enter an ip adress'
     },
     hint: {
       default: '*Required'

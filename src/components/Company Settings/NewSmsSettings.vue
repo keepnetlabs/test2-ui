@@ -73,9 +73,10 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
-import { maxLength, minLength } from '@/utils/validations'
+import {maxLength, minLength} from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 export default {
   name: 'NewSmsSettings',
   components: {

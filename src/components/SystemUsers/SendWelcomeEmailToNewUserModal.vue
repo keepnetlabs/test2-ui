@@ -33,12 +33,16 @@
           title="From Email Address"
           sub-title="Enter email address to show as sender email address"
         >
-          <v-text-field
-            placeholder="Enter from email address"
-            outlined
-            dense
+          <InputEmail
+            :persistent-hint="false"
+            :hint="null"
             v-model.trim="formValues.fromEmailAddress"
-            :rules="[(v) => validations.mail(v, 'Invalid email address')]"
+            :rules="[
+              (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
+              (v) => Validations.email(v, 'Invalid email address'),
+              (v) => Validations.minLength(v, 8, 'Minimum 8 characters'),
+              (v) => Validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
+            ]"
           />
         </form-group>
         <form-group title="Subject">
@@ -96,8 +100,9 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { mail } from '@/utils/validations'
+import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 export default {
   name: 'SendWelcomeEmailToNewUserModal',
   components: {
@@ -113,6 +118,7 @@ export default {
   },
   data() {
     return {
+      Validations: Validations,
       formValues: {
         smtp: '',
         fromName: '',
