@@ -1,3 +1,5 @@
+import store from '../store'
+
 export function getBtnStatusColor(type) {
   switch (type && type.toLowerCase()) {
     case 'pending':
@@ -792,4 +794,8 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
       }
     }
   }
+}
+
+export function checkPermission(permission, type, store = { store }) {
+  console.log(store.dispatch('threadSharing/getCommunities'))
 }

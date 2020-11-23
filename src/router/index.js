@@ -26,6 +26,7 @@ import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
 import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
+import { checkPermission } from '../utils/functions'
 Vue.use(Router)
 
 const router = new Router({
@@ -55,12 +56,30 @@ const router = new Router({
             isAuthenticated: true,
             permissions: [PermissionTypes.Permissions_Administrator]
           },
-          component: DashBoard
+          component: DashBoard,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+            next()
+          }
         },
         {
           path: '/threat-sharing',
           name: 'Threat Sharing',
           component: ThreatSharing,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -71,6 +90,16 @@ const router = new Router({
           path: '/community/:id',
           name: 'Community',
           component: Community,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -82,6 +111,16 @@ const router = new Router({
           path: '/target-users',
           name: 'Target Users',
           component: TargetUsers,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           }
@@ -90,6 +129,16 @@ const router = new Router({
           path: '/companies',
           name: 'Companies',
           component: Companies,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -100,6 +149,16 @@ const router = new Router({
           path: '/company-group-details/:groupId',
           name: 'Company Group Details',
           component: Companies,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -110,6 +169,16 @@ const router = new Router({
           path: '/incident-responder',
           name: 'Incident Responder',
           component: IncidentResponder,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -120,6 +189,16 @@ const router = new Router({
           path: '/company-settings',
           name: 'Company Settings',
           component: CompanySettings,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -130,6 +209,16 @@ const router = new Router({
           path: '/widgets',
           name: 'Widgets',
           component: Widgets,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -140,6 +229,16 @@ const router = new Router({
           path: '/system-users',
           name: 'System Users',
           component: SystemUsers,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -150,6 +249,16 @@ const router = new Router({
           path: '/incident-responder/:id',
           name: 'Analysis Details',
           component: EmailDetails,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -160,6 +269,16 @@ const router = new Router({
           path: '/phishing-reporter',
           name: 'Phishing Reporter',
           component: PhishingReporter,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -170,6 +289,16 @@ const router = new Router({
           path: '/integrations',
           name: 'Integrations',
           component: Integrations,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -180,6 +309,16 @@ const router = new Router({
           path: '/playbook',
           name: 'Playbook',
           component: Playbook,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -190,6 +329,16 @@ const router = new Router({
           path: '/mailConfiguration',
           name: 'Mail Configurations',
           component: MailConfiguration,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -200,6 +349,16 @@ const router = new Router({
           path: '/investigations',
           name: 'Investigations',
           component: InvestigationComponent,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -209,6 +368,16 @@ const router = new Router({
           path: '/investigation-details/:id',
           name: 'Investigation Details',
           component: InvestigationDetailsComponent,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -219,6 +388,16 @@ const router = new Router({
           path: '/analysis-details',
           name: 'Analysis Details',
           component: AnalysisDetails,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -229,6 +408,16 @@ const router = new Router({
           path: '/test',
           name: 'test',
           component: Test,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: false
           }
@@ -237,6 +426,16 @@ const router = new Router({
           path: '/workshop',
           name: 'Workshop',
           component: Workshop,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           }
@@ -245,6 +444,16 @@ const router = new Router({
           path: '/grapesjs',
           name: 'Grapes',
           component: ExampleGrapesJS,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
           meta: {
             isAuthenticated: true
           },
@@ -268,8 +477,8 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+  //global guard structure
   const storeRef = store
-  //storeli alakalı route değişiklikleri burada yönetilecek.
   if (to.meta.isAuthenticated) {
     let authenticationStatus = AuthenticationService.getAuthenticationStatus()
     if (authenticationStatus === AuthenticationStatus.AUTHENTICATED) {
@@ -277,6 +486,7 @@ router.beforeEach((to, from, next) => {
         storeRef.dispatch('common/changeDownloadModalStatus', false)
         next(false)
       } else {
+        //console.log(storeRef.state.auth.permissions)
         next()
       }
     } else {
