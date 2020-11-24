@@ -365,6 +365,7 @@
             @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
+            :load="handleLoad"
             :indent="32"
             lazy
             ref="elTableRef"
@@ -997,7 +998,7 @@ export default {
     getSelectionButtonText() {
       const text = this.isSelectedAll ? 'Unselect' : 'Select'
       //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
-      return `${text} all ${this.initialData.length} item(s)`
+      return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
       return this.tableData.length === 0 && 'table-header-disable'
@@ -1049,6 +1050,7 @@ export default {
       clusterChevron: false,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate: false,
+      renderedTotalLength: 0,
       totalLength: 0
     }
   },
@@ -1056,6 +1058,7 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
+      this.totalLength = table.length
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
@@ -1086,10 +1089,7 @@ export default {
       }
     },
     tableData(data) {
-      if (data && this.groupable) {
-        this.totalLength = this.getTotalLength(data)
-        this.calculateAllSelected()
-      }
+      this.calculateAllSelected()
       if (this.isSelectedAll) {
         for (let item of data) {
           this.$refs.elTableRef.toggleRowSelection(item, true)
@@ -1098,11 +1098,8 @@ export default {
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
-    filteredData(data) {
-      if (data && this.groupable) {
-        this.totalLength = this.getTotalLength(data)
-        this.calculateAllSelected()
-      }
+    filteredData() {
+      this.calculateAllSelected()
     },
     firstColFixed(val) {
       if (!val) {
@@ -1142,6 +1139,7 @@ export default {
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
+      this.totalLength = this.table.length
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
@@ -1170,16 +1168,21 @@ export default {
   },
   methods: {
     calculateAllSelected() {
-      const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-      const totalLength = this.getTotalLength(this.tableData)
-      const comparedValueLength = this.groupable ? totalLength : dataRef.length
+      const dataRef = this.showfilteredData
+        ? this.filteredData
+        : this.groupable
+        ? [...this.tableData, ...this.clusteredItems]
+        : this.tableData
+      const renderedTotalLength = this.getTotalLength(this.tableData)
+      this.renderedTotalLength = renderedTotalLength
+      const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
       const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find(
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
       if (selectedItems.length) {
-        if (selectedItems.length + this.clusteredItems.length === comparedValueLength) {
+        if (selectedItems.length === comparedValueLength) {
           this.selectionCheckbox = true
           this.selectionRowCheckboxDeterminate = false
         } else {
@@ -1189,7 +1192,32 @@ export default {
         this.selectionCheckbox = false
         this.selectionRowCheckboxDeterminate = false
       }
-      this.isSelectedAll = this.multipleSelection.length === this.initialData.length
+      const length = this.groupable
+        ? this.getTotalLength(this.initialData)
+        : this.initialData.length
+      this.isSelectedAll = this.multipleSelection.length === length
+    },
+    /**
+     * This event comes from el-table for lazy-loading children
+     * @param tree --> object
+     * @param treeNode --> object
+     * @param resolve --> function
+     * @param callback --> function
+     */
+    handleLoad(tree, treeNode, resolve) {
+      this.$emit('handleClusterLazyLoad', {
+        tree,
+        treeNode,
+        resolve,
+        callback: this.callbackOfLazyLoad
+      })
+    },
+    /**
+     *This function must use calls when lazy load used
+     */
+    callbackOfLazyLoad() {
+      this.totalLength = this.getTotalLength(this.initialData)
+      this.calculateAllSelected()
     },
     /**
      * Override column props with standards
@@ -1202,10 +1230,15 @@ export default {
         columns[index] = { ...columns[index], ...x }
       })
     },
+    /**
+     * This event is throwed when All select button clicked
+     * No param
+     */
     handleSelectButtonClick() {
       if (this.isSelectedAll) {
         this.multipleSelection = []
         this.isSelectedAll = false
+        this.clusteredItems = []
         this.$refs.elTableRef.clearSelection()
       } else {
         //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
@@ -1216,7 +1249,8 @@ export default {
           this.multipleSelection = [...dataRef]
         }
         */
-        this.multipleSelection = [...this.initialData]
+
+        this.multipleSelection = this.getAllItems(this.initialData, [])
 
         for (let item of this.multipleSelection) {
           this.$refs.elTableRef.toggleRowSelection(item, true)
@@ -1224,6 +1258,28 @@ export default {
         this.isSelectedAll = true
       }
     },
+    /**
+     * This function returns all items on the table.
+     * @param arr --> for example tableData
+     * @param retArr --> returned value
+     */
+    getAllItems(arr = [], retArr = []) {
+      for (let item of arr) {
+        if (item.children) {
+          this.getAllItems(item.children, retArr)
+        }
+
+        if (item.isChild) {
+          this.addItemToClusteredItems(item)
+        }
+        retArr.push(item)
+      }
+      return retArr
+    },
+
+    /**
+     * This function for rendering overflowed actions bug. This is element io bug and solved with this function
+     */
     renderFixedItems() {
       const table = this.$el
       if (table) {
@@ -1260,18 +1316,35 @@ export default {
         }
       }
     },
+    /**
+     * This function sets rendered columns on table
+     */
     setRenderedColumns() {
       this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property)
     },
-    handleDownloadButtonClick(item) {
+    /**
+     * This function fires when someone click download button on table and make selection
+     *
+     * @param item --> String
+     */
+    handleDownloadButtonClick(item = '') {
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
     },
+    /**
+     * This function fires when someone click list bulleted. Main purpose is deleting all clusters and make normal list view
+     */
     handleListBulletedClick() {
       this.selectedCluster = ''
       this.$emit('handleListBulleted')
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
     },
-    isEqualCluster(name) {
+    /**
+     * This function returns which cluster is selected
+     * @param name --> String
+     */
+    isEqualCluster(name = '') {
       return name === this.selectedCluster
     },
     handleMultipleSelectedEdits() {
@@ -1284,6 +1357,9 @@ export default {
       })
       this.isWantToEditRow = true
     },
+    /**
+     * This functions removes visibility of the right actions columns.
+     */
     hideChildRowActions() {
       const objStyle = document.createElement('style')
       objStyle.innerHTML =
@@ -1319,11 +1395,19 @@ export default {
             this.selectChildren(child, selection)
           }
           this.$refs.elTableRef.toggleRowSelection(child, true)
-          this.clusteredItems.push(child)
+          this.addItemToClusteredItems(child)
           if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
             selection.push(child)
           }
         }
+      }
+    },
+    addItemToClusteredItems(item = {}) {
+      const index = this.clusteredItems.findIndex(
+        (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(item)
+      )
+      if (index === -1) {
+        this.clusteredItems.push(item)
       }
     },
     calculateLength(children) {
@@ -1357,15 +1441,30 @@ export default {
     getDataTableFieldLabel(field) {
       return getDataTableFieldLabel(field)
     },
+    /**
+     * This event fires when clicked in the cell
+     */
     cellEnter(row, column, cell) {
       this.hasOverflowTooltip(row, column, cell)
     },
+    /**
+     * This event fires when clicked in the cell
+     */
     cellClick(row, column, event) {
       this.$emit('cellClick', { row, column, event })
     },
+    /**
+     * This event fires when mouse leave on cell
+     */
     cellLeave() {
       this.showOverFlowTooltip = false
     },
+    /**
+     * This function calculates if there is an overflow on the cell
+     * @param row
+     * @param column
+     * @param cell
+     */
     hasOverflowTooltip(row, column, cell) {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
@@ -1662,7 +1761,7 @@ export default {
         }
         this.$refs.elTableRef.toggleRowSelection(row, true)
         if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
-          this.clusteredItems.push(row)
+          this.addItemToClusteredItems(row)
           selection.push(row)
         }
       }
@@ -1696,7 +1795,7 @@ export default {
               }
               this.$refs.elTableRef.toggleRowSelection(child, true)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
-                this.clusteredItems.push(child)
+                this.addItemToClusteredItems(child)
                 selection.push(child)
               }
             }
@@ -1718,6 +1817,17 @@ export default {
               if (ind > -1) {
                 selection.splice(ind, 1)
               }
+            }
+          }
+        } else {
+          if (row.isChild) {
+            const index = this.clusteredItems.findIndex(
+              (item) => JSON.stringify(item) === JSON.stringify(row)
+            )
+            if (index > -1) {
+              this.clusteredItems.splice(index, 1)
+            } else {
+              this.clusteredItems.push(row)
             }
           }
         }
@@ -1809,7 +1919,7 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      if (this.totalLength === selections.length) {
+      if (this.renderedTotalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
         if (this.selectionCheckbox) {
@@ -1835,6 +1945,7 @@ export default {
               (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
             )
           })
+
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {
               this.$refs.elTableRef.toggleRowSelection(selectedItem)
@@ -1888,6 +1999,8 @@ export default {
     clusterSelected(name, ind) {
       this.selectedCluster = name
       this.$emit('clusterChanged', name)
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },
