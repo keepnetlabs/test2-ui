@@ -23,7 +23,7 @@
     />
     <custom-fields-modal
       :status="isWantToShowCustomFieldsModal"
-      @closeCustomFieldsModal="isWantToShowCustomFieldsModal = false"
+      @closeCustomFieldsModal="toggleCustomFieldsModal"
       @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
       v-if="isWantToShowCustomFieldsModal"
     />
@@ -281,6 +281,9 @@ export default {
     closeImportModal() {
       this.isWantToImportFile = false
     },
+    toggleCustomFieldsModal() {
+      this.isWantToShowCustomFieldsModal = !this.isWantToShowCustomFieldsModal
+    },
     handleAddUsers(item) {
       switch (item) {
         case this.addUsersItems[0]:
@@ -295,7 +298,7 @@ export default {
       }
     },
     closeCustomFieldsModalWithUpdate() {
-      this.isWantToShowCustomFieldsModal = false
+      this.toggleCustomFieldsModal()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     closeAddUserModalWithUpdate() {
@@ -307,7 +310,7 @@ export default {
       this.isWantToShowAddUsersModal = true
     },
     handleEditFieldsClick() {
-      this.isWantToShowCustomFieldsModal = true
+      this.toggleCustomFieldsModal()
     },
     setCellClassName(obj) {
       if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
@@ -402,9 +405,17 @@ export default {
       this.loading = true
       getTargetUsers(this.tableCredientials)
         .then((response) => {
-          let data = response.data.data
-          this.tableData =
-            data.hasOwnProperty('results') && data.results.length > 0 ? data.results : []
+          let data = response.data.data.results.map((item, index) => {
+            const { customFieldValues } = item
+            console.log('customFieldValues', customFieldValues)
+            for (let { name, value } of customFieldValues) {
+              item[name] = value
+            }
+            return item
+          })
+          debugger
+
+          this.tableData = data
         })
         .catch(() => {
           this.tableData = []
@@ -418,6 +429,16 @@ export default {
           this.customFields = data.data.filter((item) => {
             return item.isActive
           })
+          const sortProp = 'sortOrder'
+          this.customFields.sort((a, b) => {
+            if (a[sortProp] > b[sortProp]) {
+              return 1
+            } else if (a[sortProp] === b[sortProp]) {
+              return 0
+            }
+            return -1
+          })
+
           const columnsOfCustomFields = this.customFields.map((field) => {
             return {
               property: field.name,
@@ -427,7 +448,7 @@ export default {
               label: field.name,
               align: 'left',
               show: true,
-              width: field.name.length > 12 ? 200 : 150
+              width: 60 + field.name.length * 7
             }
           })
           this.tableOptions.columns = [
