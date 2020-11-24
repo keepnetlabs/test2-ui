@@ -1238,6 +1238,7 @@ export default {
       if (this.isSelectedAll) {
         this.multipleSelection = []
         this.isSelectedAll = false
+        this.clusteredItems = []
         this.$refs.elTableRef.clearSelection()
       } else {
         //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
