@@ -407,7 +407,6 @@ export default {
         .then((response) => {
           let data = response.data.data.results.map((item, index) => {
             const { customFieldValues } = item
-            console.log('customFieldValues', customFieldValues)
             for (let { name, value } of customFieldValues) {
               item[name] = value
             }

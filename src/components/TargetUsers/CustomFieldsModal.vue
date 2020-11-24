@@ -16,14 +16,14 @@
         subtitle="Do you want to delete this custom field?"
         @changeStatus="isWantToDelete = false"
       >
-        <template v-slot:app-dialog-body> This custom field status is will be changed ! </template>
+        <template v-slot:app-dialog-body> This custom field will be deleted ! </template>
         <template v-slot:app-dialog-footer>
           <div class="d-flex download-buttons flex-row flex-wrap justify-end">
             <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"
               >CANCEL</v-btn
             >
             <v-btn class="users__button" text color="#2196f3" @click="deleteCustomField">
-              {{ getAppDialogButtonText }}</v-btn
+              DELETE</v-btn
             >
           </div>
         </template>
@@ -38,29 +38,64 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <draggable v-bind="dragOptions" v-model="customFields" handle=".handle">
-        <v-list-item :key="item.name" v-for="item in customFields">
+      <ExtendedViewLoading
+        size="big"
+        class="custom-fields-overlay__loader"
+        v-if="loading"
+        :loading="loading"
+      />
+      <template v-else>
+        <v-list-item-title class="k-form-group__title mb-2">Active Custom fields</v-list-item-title>
+        <draggable
+          v-bind="dragOptions"
+          group="a"
+          :list="customFields"
+          handle=".handle"
+          @change="handleChangeOfList"
+        >
+          <v-list-item :key="item.name" v-for="item in customFields">
+            <v-list-item-content>
+              <table-field
+                isDeleteable
+                :item="item"
+                @deleteTableField="handleDeleteTableField(item)"
+              />
+            </v-list-item-content>
+          </v-list-item>
+        </draggable>
+        <v-list-item>
           <v-list-item-content>
-            <table-field
-              isDeleteable
-              :item="item"
-              @deleteTableField="handleDeleteTableField(item)"
-            />
+            <div @click="handleAddCustomField" class="custom-fields-overlay__add">
+              <v-icon color="blue" left medium>
+                mdi-plus
+              </v-icon>
+              <div>
+                ADD CUSTOM FIELD
+              </div>
+            </div>
           </v-list-item-content>
         </v-list-item>
-      </draggable>
-      <v-list-item>
-        <v-list-item-content>
-          <div @click="handleAddCustomField" class="custom-fields-overlay__add">
-            <v-icon color="blue" left medium>
-              mdi-plus
-            </v-icon>
-            <div>
-              ADD CUSTOM FIELD
-            </div>
-          </div>
-        </v-list-item-content>
-      </v-list-item>
+        <v-list-item-title class="k-form-group__title mb-2"
+          >Unactive Custom fields</v-list-item-title
+        >
+        <draggable
+          @change="handleChangeOfList"
+          v-bind="dragOptions"
+          group="a"
+          :list="unActiveCustomFields"
+          handle=".handle"
+        >
+          <v-list-item :key="item.name" v-for="item in unActiveCustomFields">
+            <v-list-item-content>
+              <table-field
+                isDeleteable
+                :item="item"
+                @deleteTableField="handleDeleteTableField(item)"
+              />
+            </v-list-item-content>
+          </v-list-item>
+        </draggable>
+      </template>
     </template>
     <template v-slot:overlay-footer>
       <v-btn @click="closeOverlay" class="new-integration__footer-btn-cancel" rounded>
@@ -87,14 +122,16 @@ import TableField from './subcomponents/TableField'
 import Draggable from 'vuedraggable'
 import {
   getTargetUserCustomFieldsByCompanyId,
-  updateTargetUserCustomField,
-  createTargetUserCustomField
-} from '../../api/targetUsers'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+  createTargetUserCustomField,
+  bulkUpdateOfCustomFields
+} from '@/api/targetUsers'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
 
 export default {
   name: 'CustomFieldsModal',
   components: {
+    ExtendedViewLoading,
     AppModal,
     AppDialog,
     TableField,
@@ -114,11 +151,13 @@ export default {
     return {
       customFields: [],
       selectedItem: null,
+      loading: true,
       isWantToDelete: false,
       dragOptions: {
         animation: 200,
         ghostClass: 'ghost'
       },
+      unActiveCustomFields: [],
       copyOfCustomFields: [],
       isMakePost: false
     }
@@ -137,68 +176,123 @@ export default {
         fieldOwner: 'Company',
         fieldDataType: 'String',
         isActive: true,
-        isNew: true
+        isNew: true,
+        sortOrder: this.customFields.length + 10
       })
     },
+    handleChangeOfList(element = {}) {
+      if (element && element.added) {
+        const {
+          added: { element: newElement }
+        } = element
+        newElement.isActive = !newElement.isActive
+      }
+    },
     deleteCustomField() {
-      this.selectedItem.isActive = !this.selectedItem.isActive
-      updateTargetUserCustomField({ ...this.selectedItem, fieldDataType: 'String' })
-        .then((response) => {
-          this.isWantToDelete = false
-          this.selectedItem = null
-          this.callForGetTargetUserCustomFieldsByCompanyId()
-          this.isMakePost = true
-        })
-        .catch((error) => {
-          this.isWantToDelete = false
-          this.selectedItem = null
-        })
+      this.findCustomFieldAndDelete()
+      this.isWantToDelete = false
+    },
+    findCustomFieldAndDelete() {
+      let index = this.customFields.findIndex(
+        (item) => JSON.stringify(item) === JSON.stringify(this.selectedItem)
+      )
+      if (index > -1) {
+        this.customFields.splice(index, 1)
+      } else {
+        index = this.unActiveCustomFields.findIndex(
+          (item) => JSON.stringify(item) === JSON.stringify(this.selectedItem)
+        )
+        if (index > -1) {
+          this.unActiveCustomFields.splice(index, 1)
+        }
+      }
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
+      this.loading = true
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const { data } = response
           this.customFields = data.data.filter((item) => {
             return item.isActive
           })
+          this.unActiveCustomFields = data.data.filter((item) => {
+            return !item.isActive
+          })
+          this.sortCustomFields(this.customFields)
+          this.sortCustomFields(this.unActiveCustomFields)
           this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))
         })
-        .catch((error) => {})
+        .finally(() => (this.loading = false))
+    },
+    sortCustomFields(data = []) {
+      const sortProp = 'sortOrder'
+      data.sort((a, b) => {
+        if (a[sortProp] > b[sortProp]) {
+          return 1
+        } else if (a[sortProp] === b[sortProp]) {
+          return 0
+        }
+        return -1
+      })
+    },
+    addSortPropToCustomFields(data = []) {
+      const sortProp = 'sortOrder'
+      data = data.reduce((acc, item) => {
+        item[sortProp] = acc
+        return ++acc
+      }, 0)
     },
     submit() {
       if (this.$refs.refAppModal.$refs.refForm.validate()) {
-        this.customFields.map((item) => {
-          if (item.isNew) {
-            createTargetUserCustomField(item)
-              .then((response) => {
-                this.isMakePost = true
-                this.callForGetTargetUserCustomFieldsByCompanyId()
-              })
-              .catch((error) => {})
+        this.addSortPropToCustomFields(this.customFields)
+        this.addSortPropToCustomFields(this.unActiveCustomFields)
+        const createdFields = []
+        const updatedFields = []
+        const allFields = [...this.customFields, ...this.unActiveCustomFields]
+        for (let field of allFields) {
+          if (field.isNew) {
+            createdFields.push(field)
           } else {
-            const updatedField = this.copyOfCustomFields.find((copyField) => {
-              return (
-                copyField.resourceId === item.resourceId &&
-                (item.name !== copyField.name || item.isActive !== copyField.isActive)
-              )
-            })
-
-            if (updatedField) {
-              updateTargetUserCustomField({ ...item, fieldDataType: 'String' })
-                .then((response) => {
-                  const message = response.data.message
-                  this.isMakePost = true
-                  this.$store.dispatch('common/createSnackBar', {
-                    message,
-                    color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-                  })
-                  this.callForGetTargetUserCustomFieldsByCompanyId()
-                })
-                .catch((error) => {})
-            }
+            updatedFields.push(field)
           }
-        })
+        }
+        if (createdFields.length) {
+          const promises = []
+          for (let newItem of createdFields) {
+            promises.push(createTargetUserCustomField(newItem))
+          }
+          Promise.all(promises).then((responses) => {
+            responses.forEach((response, index) => {
+              const { resourceId } = response.data.data
+              createdFields[index]['resourceId'] = resourceId
+              updatedFields.push(createdFields[index])
+            })
+            this.isMakePost = true
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Custom field(s) has been created',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+            this.callForUpdateCustomFields(updatedFields)
+          })
+        } else if (updatedFields.length) {
+          this.callForUpdateCustomFields(updatedFields)
+        }
       }
+    },
+    callForUpdateCustomFields(updatedFields) {
+      const payload = {
+        targetUserCustomFields: updatedFields
+      }
+      bulkUpdateOfCustomFields(payload).then(() => {
+        this.isMakePost = true
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'Custom fields has been updated',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+        this.callForGetTargetUserCustomFieldsByCompanyId()
+      })
     },
     handleDeleteTableField(item) {
       this.isWantToDelete = true
@@ -207,12 +301,18 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
+  },
+  watch: {
+    customFields(newVal, oldVal) {}
   }
 }
 </script>
 
 <style lang="scss">
 .custom-fields-overlay {
+  &__loader {
+    max-width: 600px;
+  }
   &__list-item {
     .v-list-item__title {
       font-size: 24px;
