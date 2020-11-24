@@ -1,6 +1,7 @@
 <template>
   <app-dialog
-    :status="isShow"
+    v-if="isShow"
+    :status="true"
     icon="mdi-account-multiple-plus"
     :title="this.isEdit ? 'Edit Company Group' : 'Create New Company Group'"
     :subtitle="
@@ -27,7 +28,7 @@
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v),
-                (v) => validations.startsWithEmpty(v, 'Cannot start with space'),
+                (v) => validations.startsWithSpace(v, 'Cannot start with space'),
                 (v) => validations.maxLength(v, 50, 'Max 50 characters')
               ]"
             ></v-text-field>
@@ -115,7 +116,7 @@ export default {
       validations: {
         required,
         maxLength,
-        startsWithEmpty: startsWithSpace
+        startsWithSpace
       },
       payload: {
         pageSize: 100,
@@ -136,9 +137,10 @@ export default {
   },
   computed: {},
   mounted() {
-    this.getDefaultCompanies()
+    //this.getDefaultCompanies()
   },
   beforeUpdate() {
+    this.selectedCompanies = this.selectedRow
     this.editHandler()
   },
   methods: {
@@ -153,7 +155,6 @@ export default {
     editHandler() {
       if ((this.isShow && this.isEdit) || (this.isShow && this.forCompany)) {
         const _p = this.payload
-        //_p.pageSize = 500
         this.groupName = this.forCompany ? null : this.selectedRow.name
         if (this.forCompany) {
           this.selectedCompanies = [this.selectedRow]
@@ -172,7 +173,7 @@ export default {
     },
     changeStatus(value) {
       if (value === false) {
-        this.companies = this.getDefaultCompanies()
+        this.companies = null
         this.groupName = null
         this.selectedCompanies = null
         this.$refs.refCreateGroupForm.reset()
@@ -243,6 +244,9 @@ export default {
             .catch(() => {})
         }, 500)
       }
+    },
+    isShow(status) {
+      status && this.getDefaultCompanies()
     }
   }
 }
