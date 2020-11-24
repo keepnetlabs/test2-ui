@@ -8,108 +8,114 @@
   >
     <template v-slot:overlay-body>
       <v-form ref="refForm">
-        <v-list-item class="add-user-overlay__list-item mt-8">
-          <v-list-item-content>
-            <v-list-item-title class="add-user-overlay__main-title">
-              {{ editData ? 'Edit  User Manually' : 'Add New User Manually' }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="add-user-overlay__main-sub-title"
-              >Define user properties
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item mt-6">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">First Name</label>
-            <InputFirstName v-model.trim="formValues.firstName" id="firstName" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Last Name</label>
-            <InputLastName v-model.trim="formValues.lastName" id="lastName" />
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item" style="margin-bottom: 14px;">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="email">Email</label>
-            <v-text-field
-              placeholder="Enter email address"
-              outlined
-              dense
-              v-model.trim="formValues.email"
-              hint="*Required"
-              persistent-hint
-              :rules="[
-                (v) => validations.required(v, 'Required'),
-                (v) => validations.mail(v, 'Invalid email address')
-              ]"
-              id="email"
-              height="40"
-            ></v-text-field>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label">Department</label>
-            <InputDepartment v-model.trim="formValues.department" />
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item
-          class="add-user-overlay__list-item"
+        <app-modal-body-header
+          :title="editData ? 'Edit  User Manually' : 'Add New User Manually'"
+          sub-title="Define user properties"
+        />
+        <form-group title="First Name" has-hint>
+          <InputFirstName v-model.trim="formValues.firstName" id="firstName" />
+        </form-group>
+        <form-group title="Last Name" has-hint>
+          <InputLastName v-model.trim="formValues.lastName" id="lastName" />
+        </form-group>
+        <form-group has-hint title="Email">
+          <v-text-field
+            placeholder="Enter email address"
+            outlined
+            dense
+            v-model.trim="formValues.email"
+            hint="*Required"
+            persistent-hint
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.mail(v, 'Invalid email address')
+            ]"
+            id="email"
+          />
+        </form-group>
+        <form-group title="Department">
+          <InputDepartment v-model.trim="formValues.department" />
+        </form-group>
+        <form-group
+          :title="item.name"
+          :has-hint="item.isRequired"
           :key="index"
           v-for="(item, index) in customFields"
         >
-          <v-list-item-content>
-            <label class="add-user-overlay__label">{{ item.name }}</label>
-            <v-text-field
-              outlined
-              dense
-              v-model.trim="customFieldsModels[item.name]"
-              :placeholder="`Enter ${item.name}`"
-              height="40"
-              :type="item.fieldDataType === 'Number' ? 'number' : 'text'"
-              v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
-            ></v-text-field>
+          <v-text-field
+            outlined
+            dense
+            v-model.trim="customFieldsModels[item.resourceId]"
+            :placeholder="`Enter ${item.name}`"
+            height="40"
+            v-bind="getCustomFieldItemProps(item)"
+            v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
+            v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
+          ></v-text-field>
+          <div
+            v-else-if="item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date'"
+            class="mb-5"
+            :class="[
+              'mb-5',
+              item.isRequired && validatePicker(item) && 'add-user-overlay__picker--error',
+              'add-user-overlay__picker'
+            ]"
+          >
             <el-date-picker
-              v-model.trim="customFieldsModels[item.name]"
+              v-model.trim="customFieldsModels[item.resourceId]"
               :placeholder="`Enter ${item.name}`"
-              type="date"
-              v-else-if="item.fieldDataType === 'Date'"
+              popper-class="filter__date-picker"
+              :type="item.fieldDataType === 'DateTime' ? 'datetime' : 'date'"
             />
-            <v-checkbox
-              v-model.trim="customFieldsModels[item.name]"
-              :label="item.name"
-              v-if="item.fieldDataType === 'Boolean'"
-            />
-          </v-list-item-content>
-        </v-list-item>
+            <template v-if="item.isRequired">
+              <div class="v-text-field__details checkbox-error" v-if="validatePicker(item)">
+                <transition appear name="bounce">
+                  <div class="v-messages theme--light error--text" role="alert">
+                    <div class="v-messages__wrapper">
+                      <div class="v-messages__message" style="padding-left: 10px;">
+                        Required
+                      </div>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+              <div v-else>
+                <div class="v-messages theme--light" role="alert">
+                  <div class="v-messages__wrapper">
+                    <div class="v-messages__message" style="padding-left: 10px; font-size: 9px;">
+                      *Required
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
 
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="priority">Priority</label>
-            <k-select
-              :items="priorityItems"
-              outlined
-              dense
-              v-model.trim="formValues.priority"
-              id="department"
-            ></k-select>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content>
-            <label class="add-user-overlay__label" for="isActive">Active</label>
-            <v-switch
-              id="isActive"
-              v-model="formValues.isActive"
-              color="#2196f3"
-              :label="formValues.isActive ? 'Yes' : 'No'"
-            />
-          </v-list-item-content>
-        </v-list-item>
+          <v-checkbox
+            v-model.trim="customFieldsModels[item.resourceId]"
+            :label="item.name"
+            color="#2196f3"
+            v-bind="getCustomFieldItemProps(item)"
+            v-if="item.fieldDataType === 'Boolean'"
+          />
+        </form-group>
+        <form-group title="Priority">
+          <k-select
+            :items="priorityItems"
+            outlined
+            dense
+            v-model.trim="formValues.priority"
+            id="department"
+          />
+        </form-group>
+        <form-group title="Active">
+          <v-switch
+            id="isActive"
+            v-model="formValues.isActive"
+            color="#2196f3"
+            :label="formValues.isActive ? 'Yes' : 'No'"
+          />
+        </form-group>
       </v-form>
     </template>
     <template v-slot:overlay-footer>
@@ -138,9 +144,19 @@ import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   name: 'AddUserModal',
-  components: { InputDepartment, AppModal, KSelect, InputFirstName, InputLastName },
+  components: {
+    FormGroup,
+    AppModalBodyHeader,
+    InputDepartment,
+    AppModal,
+    KSelect,
+    InputFirstName,
+    InputLastName
+  },
   props: {
     status: {
       type: Boolean
@@ -170,6 +186,7 @@ export default {
         priority: 'Medium',
         isActive: true
       },
+      isPickersValidated: {},
       customFieldsModels: {},
       priorityItems: [
         { text: 'Very Low', value: 'VeryLow' },
@@ -189,7 +206,21 @@ export default {
     closeOverlay() {
       this.$emit('closeAddUserModal')
     },
+    validatePicker(item = {}) {
+      return (
+        (item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date') &&
+        !this.customFieldsModels[item.name] &&
+        this.isPickersValidated[item.name]
+      )
+    },
     submit() {
+      const keys = Object.keys(this.isPickersValidated)
+      for (let key of keys) {
+        if (!this.customFieldsModels[key]) {
+          this.$set(this.isPickersValidated, key, true)
+        }
+      }
+      this.$forceUpdate()
       if (!this.$refs.refForm.validate()) {
         return this.$nextTick(() => {
           const el = this.$el.querySelector('.error--text')
@@ -202,10 +233,26 @@ export default {
         this.callForCreateTargetUser()
       }
     },
-    callForCreateTargetUser() {
-      const payload = {
-        ...this.formValues
+    getCustomFieldItemProps(item) {
+      const props = {}
+      const { isRequired } = item
+      if (isRequired) {
+        props['persistentHint'] = true
+        props['hint'] = '*Required'
+        props['rules'] = this.getCustomFieldRules(item)
       }
+
+      return props
+    },
+    getCustomFieldRules(item = {}) {
+      const rules = []
+      rules.push((v) => this.validations.required(v, 'Required'))
+      item.fieldDataType === 'Email' &&
+        rules.push((v) => this.validations.email(v, 'Invalid email address'))
+      return rules
+    },
+    callForCreateTargetUser() {
+      const payload = this.getCustomFieldsPayload()
 
       createTargetUser(payload)
         .then(({ data }) => {
@@ -223,41 +270,59 @@ export default {
             this.$emit('closeAddUserModalWithUpdate')
           }
         })
-        .catch(() => {})
+        .catch((error) => {
+          debugger
+        })
+    },
+    getCustomFieldsPayload() {
+      const keys = Object.keys(this.customFieldsModels)
+      return {
+        ...this.formValues,
+        customFields: keys.reduce((acc, key) => {
+          acc.push({ resourceId: key, value: this.customFieldsModels[key] })
+          return acc
+        }, [])
+      }
     },
     callForUpdateTargetUser() {
-      const payload = {
-        ...this.formValues
-      }
+      const payload = this.getCustomFieldsPayload()
       delete payload.status
-      updateTargetUser(payload)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-          }
-          this.$emit('closeAddUserModalWithUpdate')
-        })
-        .catch(() => {})
+      updateTargetUser(payload).then((response) => {
+        if (response.data && response.data.message) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+        }
+        this.$emit('closeAddUserModalWithUpdate')
+      })
     },
     callForTargetGroups() {
       getTargetGroups().then((response) => {
         const { data } = response.data
-        this.autoCompleteItems = data
       })
     }
   },
   created() {
-    /*
-    this.callForTargetGroups()
-     */
+    for (let field of this.customFields) {
+      const { fieldDataType, name } = field
+      if (fieldDataType === 'Date' || fieldDataType === 'DateTime') {
+        this.$set(this.isPickersValidated, name, false)
+      }
+    }
     if (this.editData) {
+      const editedData = { ...this.editData }
+      const customFieldProp = 'customFieldValues'
+      const customFields = editedData[customFieldProp]
+      for (let { resourceId, value, name } of customFields) {
+        this.$set(this.customFieldsModels, resourceId, value)
+        delete editedData[name]
+      }
+      delete customFields[customFieldProp]
       this.formValues = {
-        ...this.editData,
-        isActive: this.editData.status === 'Active'
+        ...editedData,
+        isActive: editedData.status === 'Active'
       }
     }
   }
@@ -276,6 +341,17 @@ export default {
     overflow-y: auto;
   }
 
+  &__picker {
+    .el-date-editor.el-input,
+    .el-date-editor.el-input__inner {
+      width: 100% !important;
+    }
+    &--error {
+      .el-input__inner {
+        border: 1px solid #ff5252 !important;
+      }
+    }
+  }
   &__list-item {
     padding: 0 !important;
     margin-top: 1px;
