@@ -772,6 +772,12 @@
       float: right !important;
       margin-top: 2px;
       transform: rotate(-90deg);
+      @media not all and (min-resolution:.001dpcm) {
+        @supports (-webkit-appearance:none) {
+          position:absolute;
+          right:8px ;
+        }
+      }
       .el-icon-arrow-right:before {
         font-weight: 900;
         font-size: 15px;
@@ -796,6 +802,11 @@
     }
     .el-table [class*="el-table__row--level"] .el-table__expand-icon--expanded{
       transform: rotate(90deg) !important;
+      @media not all and (min-resolution:.001dpcm) {
+        @supports (-webkit-appearance:none) {
+          right:10px ;
+        }
+      }
     }
 
     .cluster {
