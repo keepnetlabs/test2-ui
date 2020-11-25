@@ -48,6 +48,7 @@
             v-model.trim="customFieldsModels[item.resourceId]"
             :placeholder="`Enter ${item.name}`"
             height="40"
+            :key="item.name"
             v-bind="getCustomFieldItemProps(item)"
             v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
             v-if="
@@ -58,9 +59,8 @@
           ></v-text-field>
           <div
             v-else-if="item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date'"
-            class="mb-5"
             :class="[
-              'mb-5',
+              item.isRequired ? 'mb-2' : 'mb-6',
               item.isRequired && validatePicker(item) && 'add-user-overlay__picker--error',
               'add-user-overlay__picker'
             ]"
@@ -68,6 +68,7 @@
             <el-date-picker
               v-model.trim="customFieldsModels[item.resourceId]"
               popper-class="filter__date-picker"
+              :key="item.name"
               v-bind="getDatePickerProps(item)"
               :type="item.fieldDataType === 'DateTime' ? 'datetime' : 'date'"
             />
@@ -99,6 +100,7 @@
             v-model.trim="customFieldsModels[item.resourceId]"
             :label="item.name"
             color="#2196f3"
+            class="mb-2 mt-n1"
             v-bind="getCustomFieldItemProps(item)"
             v-if="item.fieldDataType === 'Boolean'"
           />
@@ -213,28 +215,35 @@ export default {
     validatePicker(item = {}) {
       return (
         (item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date') &&
-        !this.customFieldsModels[item.name] &&
-        this.isPickersValidated[item.name]
+        !this.customFieldsModels[item.resourceId] &&
+        this.isPickersValidated[item.resourceId]
       )
     },
     submit() {
       const keys = Object.keys(this.isPickersValidated)
+      let isPickersValid = true
+
       for (let key of keys) {
-        if (!this.customFieldsModels[key]) {
+        if (
+          !this.customFieldsModels[key] &&
+          this.customFields.find((item) => item.resourceId === key)['isRequired']
+        ) {
           this.$set(this.isPickersValidated, key, true)
+          isPickersValid = false
         }
       }
       this.$forceUpdate()
-      if (!this.$refs.refForm.validate()) {
+      if (!this.$refs.refForm.validate() || !isPickersValid) {
         return this.$nextTick(() => {
           const el = this.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
-      }
-      if (this.editData) {
-        this.callForUpdateTargetUser()
       } else {
-        this.callForCreateTargetUser()
+        if (this.editData) {
+          this.callForUpdateTargetUser()
+        } else {
+          this.callForCreateTargetUser()
+        }
       }
     },
     getCustomFieldItemProps(item) {
@@ -243,8 +252,8 @@ export default {
       if (isRequired) {
         props['persistentHint'] = true
         props['hint'] = '*Required'
-        props['rules'] = this.getCustomFieldRules(item)
       }
+      props['rules'] = this.getCustomFieldRules(item)
 
       return props
     },
@@ -253,14 +262,17 @@ export default {
       const { fieldDataType, name } = item
       props['type'] = fieldDataType.toLowerCase()
       props['placeholder'] = `Enter ${name}`
-      props['value-format'] = 'yyyy-MM-dd HH:mm:ss'
+      props['value-format'] =
+        fieldDataType.toLowerCase() === 'datetime' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd'
+      props['format'] =
+        fieldDataType.toLowerCase() === 'datetime' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd'
       return props
     },
     getCustomFieldRules(item = {}) {
       const rules = []
-      rules.push((v) => this.validations.required(v, 'Required'))
+      item.isRequired && rules.push((v) => this.validations.required(v, 'Required'))
       item.fieldDataType === 'Email' &&
-        rules.push((v) => this.validations.email(v, 'Invalid email address'))
+        rules.push((v) => this.validations.mail(v, 'Invalid email address'))
       return rules
     },
     callForCreateTargetUser() {
@@ -287,15 +299,15 @@ export default {
       return {
         ...this.formValues,
         customFields: keys.reduce((acc, key) => {
-          const itemType = this.editData.customFieldValues.find((item) => item.resourceId === key)[
-            'dataType'
-          ]
-          const isBoolean = itemType === 'Boolean'
+          const item = this.customFields.find((item) => item.resourceId === key)
           let value = this.customFieldsModels[key]
-          if (isBoolean) {
+          if (item.fieldDataType === 'Boolean') {
             value = this.setStringBoolean(value)
           }
-          acc.push({ resourceId: key, value })
+          if (!(value === null || value === undefined || value === '')) {
+            acc.push({ resourceId: key, value })
+          }
+
           return acc
         }, [])
       }
@@ -335,16 +347,16 @@ export default {
       })
     },
     callForTargetGroups() {
-      getTargetGroups().then((response) => {
-        const { data } = response.data
+      getTargetGroups().then(() => {
+        //const { data } = response.data
       })
     }
   },
   created() {
     for (let field of this.customFields) {
-      const { fieldDataType, name } = field
+      const { fieldDataType, resourceId } = field
       if (fieldDataType === 'Date' || fieldDataType === 'DateTime') {
-        this.$set(this.isPickersValidated, name, false)
+        this.$set(this.isPickersValidated, resourceId, false)
       }
     }
     if (this.editData) {
