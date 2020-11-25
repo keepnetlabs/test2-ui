@@ -50,7 +50,11 @@
             height="40"
             v-bind="getCustomFieldItemProps(item)"
             v-mask="item.fieldDataType === 'Number' ? '##########' : ''"
-            v-if="item.fieldDataType === 'String' || item.fieldDataType === 'Number'"
+            v-if="
+              item.fieldDataType === 'String' ||
+              item.fieldDataType === 'Number' ||
+              item.fieldDataType === 'Email'
+            "
           ></v-text-field>
           <div
             v-else-if="item.fieldDataType === 'DateTime' || item.fieldDataType === 'Date'"
@@ -63,8 +67,8 @@
           >
             <el-date-picker
               v-model.trim="customFieldsModels[item.resourceId]"
-              :placeholder="`Enter ${item.name}`"
               popper-class="filter__date-picker"
+              v-bind="getDatePickerProps(item)"
               :type="item.fieldDataType === 'DateTime' ? 'datetime' : 'date'"
             />
             <template v-if="item.isRequired">
@@ -244,6 +248,14 @@ export default {
 
       return props
     },
+    getDatePickerProps(item) {
+      const props = {}
+      const { fieldDataType, name } = item
+      props['type'] = fieldDataType.toLowerCase()
+      props['placeholder'] = `Enter ${name}`
+      props['value-format'] = 'yyyy-MM-dd HH:mm:ss'
+      return props
+    },
     getCustomFieldRules(item = {}) {
       const rules = []
       rules.push((v) => this.validations.required(v, 'Required'))
@@ -254,35 +266,59 @@ export default {
     callForCreateTargetUser() {
       const payload = this.getCustomFieldsPayload()
 
-      createTargetUser(payload)
-        .then(({ data }) => {
-          if (data.status === 'FAILED') {
-            this.$store.dispatch('common/createSnackBar', {
-              message: data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-            })
-          } else {
-            this.$store.dispatch('common/createSnackBar', {
-              message: '1 user added to Users List ',
-              icon: 'mdi-check-circle',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-            })
-            this.$emit('closeAddUserModalWithUpdate')
-          }
-        })
-        .catch((error) => {
-          debugger
-        })
+      createTargetUser(payload).then(({ data }) => {
+        if (data.status === 'FAILED') {
+          this.$store.dispatch('common/createSnackBar', {
+            message: data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+          })
+        } else {
+          this.$store.dispatch('common/createSnackBar', {
+            message: '1 user added to Users List ',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+          this.$emit('closeAddUserModalWithUpdate')
+        }
+      })
     },
     getCustomFieldsPayload() {
       const keys = Object.keys(this.customFieldsModels)
       return {
         ...this.formValues,
         customFields: keys.reduce((acc, key) => {
-          acc.push({ resourceId: key, value: this.customFieldsModels[key] })
+          const itemType = this.editData.customFieldValues.find((item) => item.resourceId === key)[
+            'dataType'
+          ]
+          const isBoolean = itemType === 'Boolean'
+          let value = this.customFieldsModels[key]
+          if (isBoolean) {
+            value = this.setStringBoolean(value)
+          }
+          acc.push({ resourceId: key, value })
           return acc
         }, [])
       }
+    },
+    setStringBoolean(value) {
+      if (value === true) {
+        value = 'True'
+      } else if (value === false) {
+        value = 'False'
+      } else {
+        value = !!value
+      }
+      return value
+    },
+    getBooleanValue(value) {
+      if (value === 'True') {
+        value = true
+      } else if (value === false) {
+        value = false
+      } else {
+        value = !!value
+      }
+      return value
     },
     callForUpdateTargetUser() {
       const payload = this.getCustomFieldsPayload()
@@ -315,11 +351,14 @@ export default {
       const editedData = { ...this.editData }
       const customFieldProp = 'customFieldValues'
       const customFields = editedData[customFieldProp]
-      for (let { resourceId, value, name } of customFields) {
+      for (let { resourceId, value, name, dataType } of customFields) {
+        if (dataType === 'Boolean') {
+          value = this.getBooleanValue(value)
+        }
         this.$set(this.customFieldsModels, resourceId, value)
         delete editedData[name]
       }
-      delete customFields[customFieldProp]
+      delete editedData[customFieldProp]
       this.formValues = {
         ...editedData,
         isActive: editedData.status === 'Active'

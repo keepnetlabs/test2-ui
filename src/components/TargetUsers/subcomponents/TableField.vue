@@ -57,11 +57,19 @@ export default {
           value: 'String'
         },
         {
-          text: 'Number',
+          text: 'Numeric',
           value: 'Number'
         },
         {
+          text: 'Email',
+          value: 'Email'
+        },
+        {
           text: 'Date',
+          value: 'Date'
+        },
+        {
+          text: 'Date and Time',
           value: 'DateTime'
         },
         {

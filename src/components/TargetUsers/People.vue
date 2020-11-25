@@ -19,6 +19,7 @@
       @closeAddUserModal="closeAddUserModal"
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
       :editData="selectedRow"
+      :custom-fields="customFields"
       v-if="isWantToShowAddUsersModal"
     />
     <custom-fields-modal
@@ -412,7 +413,6 @@ export default {
             }
             return item
           })
-          debugger
 
           this.tableData = data
         })
@@ -447,7 +447,7 @@ export default {
               label: field.name,
               align: 'left',
               show: true,
-              width: 60 + field.name.length * 7
+              width: 80 + field.name.length * 7
             }
           })
           this.tableOptions.columns = [

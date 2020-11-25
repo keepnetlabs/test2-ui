@@ -38,7 +38,7 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <ExtendedViewLoading
+      <CustomFieldsLoading
         size="big"
         class="custom-fields-overlay__loader"
         v-if="loading"
@@ -53,7 +53,7 @@
           handle=".handle"
           @change="handleChangeOfList"
         >
-          <v-list-item :key="item.name" v-for="item in customFields">
+          <v-list-item :key="item.name" v-for="item in customFields" style="max-width: 650px;">
             <v-list-item-content>
               <table-field
                 isDeleteable
@@ -126,12 +126,12 @@ import {
   bulkUpdateOfCustomFields
 } from '@/api/targetUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
+import CustomFieldsLoading from '@/components/SkeletonLoading/CustomFieldsLoading'
 
 export default {
   name: 'CustomFieldsModal',
   components: {
-    ExtendedViewLoading,
+    CustomFieldsLoading,
     AppModal,
     AppDialog,
     TableField,
@@ -173,10 +173,11 @@ export default {
     handleAddCustomField() {
       this.customFields.push({
         name: '',
-        fieldOwner: 'Company',
         fieldDataType: 'String',
         isActive: true,
         isNew: true,
+        ownerType: 'Company',
+        isRequired: false,
         sortOrder: this.customFields.length + 10
       })
     },
@@ -261,20 +262,18 @@ export default {
           for (let newItem of createdFields) {
             promises.push(createTargetUserCustomField(newItem))
           }
-          Promise.all(promises).then((responses) => {
-            responses.forEach((response, index) => {
-              const { resourceId } = response.data.data
-              createdFields[index]['resourceId'] = resourceId
-              updatedFields.push(createdFields[index])
+          this.loading = true
+          Promise.all(promises)
+            .then((responses) => {
+              responses.forEach((response, index) => {
+                const { resourceId } = response.data.data
+                createdFields[index]['resourceId'] = resourceId
+                updatedFields.push(createdFields[index])
+              })
+              this.isMakePost = true
+              this.callForUpdateCustomFields(updatedFields)
             })
-            this.isMakePost = true
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Custom field(s) has been created',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
-            this.callForUpdateCustomFields(updatedFields)
-          })
+            .catch(() => (this.loading = false))
         } else if (updatedFields.length) {
           this.callForUpdateCustomFields(updatedFields)
         }
@@ -284,15 +283,18 @@ export default {
       const payload = {
         targetUserCustomFields: updatedFields
       }
-      bulkUpdateOfCustomFields(payload).then(() => {
-        this.isMakePost = true
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'Custom fields has been updated',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      this.loading = true
+      bulkUpdateOfCustomFields(payload)
+        .then(() => {
+          this.isMakePost = true
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Custom fields has been updated',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          this.callForGetTargetUserCustomFieldsByCompanyId()
         })
-        this.callForGetTargetUserCustomFieldsByCompanyId()
-      })
+        .catch(() => (this.loading = false))
     },
     handleDeleteTableField(item) {
       this.isWantToDelete = true
