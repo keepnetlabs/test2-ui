@@ -10,20 +10,18 @@
         dense
         :rules="[
           (v) => validations.required(v, 'Required'),
-          (v) => validations.minLength(v, 4, 'Must between 5-50 characters'),
-          (v) => validations.maxLength(v, 50, 'Must between 5-50 characters')
+          (v) => validations.maxLength(v, 50, 'Max 50 characters')
         ]"
       ></v-text-field>
-      <v-select
+      <k-select
         class="mx-2 table-field__input"
         v-model="item.fieldDataType"
         :items="fieldItems"
-        :disabled="!item.isNew"
         dense
         outlined
       />
       <v-checkbox
-        v-model="item.checkbox"
+        v-model="item.isRequired"
         color="#2196f3"
         class="ml-1"
         label="Required"
@@ -36,10 +34,12 @@
 </template>
 
 <script>
-import { required, minLength, maxLength } from '../../../utils/validations'
+import { required, minLength, maxLength } from '@/utils/validations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
   name: 'TableField',
+  components: { KSelect },
   props: {
     isDeleteable: {
       type: Boolean,
@@ -57,11 +57,19 @@ export default {
           value: 'String'
         },
         {
-          text: 'Number',
+          text: 'Numeric',
           value: 'Number'
         },
         {
+          text: 'Email',
+          value: 'Email'
+        },
+        {
           text: 'Date',
+          value: 'Date'
+        },
+        {
+          text: 'Date and Time',
           value: 'DateTime'
         },
         {

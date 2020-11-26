@@ -22,11 +22,12 @@ import Playbook from '../views/Playbook'
 import MailConfiguration from '../components/MailConfiguration/MailConfiguration'
 import store from '../store'
 import Companies from '@/views/Companies'
+import Company from '@/views/Company'
 import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
 import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
-import { checkPermission } from '../utils/functions'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -67,6 +68,24 @@ const router = new Router({
           }
         },
         {
+          path: '/',
+          name: 'Company',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard'
+          },
+          //redirect: { path: '/' },
+          component: Company,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+            next()
+          }
+        },
+        {
           path: '/threat-sharing',
           name: 'Threat Sharing',
           component: ThreatSharing,
@@ -81,10 +100,11 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Dashboard'
           },
-          props: true,
-          params: true
+          params: true,
+          props: true
         },
         {
           path: '/community/:id',
@@ -101,7 +121,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Threat Sharing'
           },
           props: true,
           params: true,
@@ -122,7 +143,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Company'
           }
         },
         {
@@ -140,7 +162,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Company'
           },
           props: true,
           params: true
@@ -160,7 +183,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Company'
           },
           props: true,
           params: true
@@ -180,7 +204,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Dashboard'
           },
           props: true,
           params: true
@@ -200,7 +225,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Company'
           },
           props: true,
           params: true
@@ -240,7 +266,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Company'
           },
           props: true,
           params: true
@@ -260,7 +287,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
           },
           props: true,
           params: true
@@ -280,7 +308,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Dashboard'
           },
           props: true,
           params: true
@@ -300,7 +329,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
           },
           props: true,
           params: true
@@ -320,7 +350,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
           },
           props: true,
           params: true
@@ -340,7 +371,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
           },
           props: true,
           params: true
@@ -360,7 +392,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
           },
           props: true
         },
@@ -379,7 +412,8 @@ const router = new Router({
             next()
           },
           meta: {
-            isAuthenticated: true
+            isAuthenticated: true,
+            parentName: 'Investigations'
           },
           props: true,
           params: true

@@ -947,6 +947,7 @@ export default {
           action: this.selectedAction,
           scanTypes: this.scanTypes
         }
+
         // post request with body data
         this.$store
           .dispatch('investigations/createInvestigation', newInvestigationObj)
@@ -1023,8 +1024,8 @@ export default {
         if (this.investigationDetailsData.targetUserType == 'Groups') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
             let obj = {
-              name: item.targetGroup,
-              groupId: item.targetGroupId
+              name: item.targetUser,
+              resourceId: item.targetGroupResourceId
             }
             return obj
           })

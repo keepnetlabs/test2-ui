@@ -30,6 +30,7 @@
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
+        @handleClusterLazyLoad="handleClusterLoad"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
       />
@@ -197,24 +198,7 @@ export default {
           status: 'Active',
           createDate: '2020-10-30 15:10:44',
           description: 'Description',
-          children: [
-            {
-              id: 33,
-              name: '1.1',
-              email: 'gurkan@keepnetlabs.com',
-              status: 'Inactive',
-              createDate: '2020-10-18 15:10:44',
-              description: 'Description'
-            },
-            {
-              id: 33,
-              name: '1.2',
-              email: 'gurkan@keepnetlabs.com',
-              status: 'Active',
-              createDate: '2020-10-08 19:10:22',
-              description: 'Description'
-            }
-          ]
+          hasChildren: true
         },
         {
           id: 34,
@@ -223,16 +207,7 @@ export default {
           description: 'Description Description',
           status: 'Active',
           createDate: '2020-10-03 10:58:12',
-          children: [
-            {
-              id: 40,
-              name: '2.1',
-              email: 'ozan@keepnetlabs.com',
-              description: 'Description Description',
-              createDate: '2020-10-01 10:58:59',
-              status: 'Active'
-            }
-          ]
+          hasChildren: true
         },
         {
           id: 55,
@@ -246,14 +221,62 @@ export default {
     }
   },
   methods: {
+    handleClusterLoad({ tree, treeNode, resolve, callback }) {
+      if (tree.id === 3) {
+        setTimeout(() => {
+          const data = [
+            {
+              id: 33,
+              name: '1.1',
+              email: 'gurkan@keepnetlabs.com',
+              status: 'Inactive',
+              createDate: '2020-10-18 15:10:44',
+              description: 'Description',
+              isChild: true
+            },
+            {
+              id: 33,
+              name: '1.2',
+              email: 'gurkan@keepnetlabs.com',
+              status: 'Active',
+              createDate: '2020-10-08 19:10:22',
+              description: 'Description',
+              isChild: true
+            }
+          ]
+          tree['children'] = data
+          treeNode['children'] = data
+          resolve(data)
+          callback()
+        }, 1000)
+      } else {
+        setTimeout(() => {
+          const data = [
+            {
+              id: 40,
+              name: '2.1',
+              email: 'ozan@keepnetlabs.com',
+              description: 'Description Description',
+              createDate: '2020-10-01 10:58:59',
+              status: 'Active',
+              isChild: true
+            }
+          ]
+          tree['children'] = data
+          treeNode['children'] = data
+          resolve(data)
+          callback()
+        }, 1000)
+      }
+    },
     toggleNewNotificationTemplate() {
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
     },
     handleListBulleted() {
-      this.$refs.refNotificationList.loadWithDataArray(this.listData)
+      this.tableOptions.tableData = this.listData
     },
     clusterChanged() {
-      this.$refs.refNotificationList.loadWithDataArray(this.clusterData)
+      this.tableOptions.tableData = this.clusterData
     }
   },
   created() {
