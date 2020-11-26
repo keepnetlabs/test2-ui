@@ -92,3 +92,7 @@ export function getPermissions() {
   })
   */
 }
+
+export function getNotifiedEmailsTrend(payload) {
+  return testRequest.post('/dashboard/reported-email-trends', payload)
+}
