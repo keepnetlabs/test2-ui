@@ -5,7 +5,7 @@
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
-      v-if="options && isDownloadable && isWantToDownload"
+      v-if="options && downloadButton.show && isWantToDownload"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -171,11 +171,15 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on }">
                   <v-btn
-                    class="btn-add mr-1"
                     icon
+                    :class="[
+                      'btn-add mr-1',
+                      addButton && addButton.disabled && 'btn-add--disabled'
+                    ]"
                     style="order: 3;"
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
+                    :disabled="addButton && addButton['disabled']"
                   >
                     <v-icon @click="addButtonFunction(addButton.action)">mdi-plus</v-icon>
                   </v-btn>
@@ -185,7 +189,7 @@
                 }}</span>
               </v-tooltip>
             </slot>
-            <v-menu bottom left offset-y v-if="isDownloadable">
+            <v-menu bottom left offset-y v-if="downloadButton.show">
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -194,6 +198,7 @@
                       icon
                       style="order: 4;"
                       v-bind="attrs"
+                      :disabled="downloadButton.disabled"
                       v-on="{ ...tooltip, ...menu }"
                     >
                       <v-icon>mdi-download</v-icon>
@@ -639,6 +644,7 @@
                           ? handleEdit(scope.row, scope.$index)
                           : rowAct(rowActions[0].action, scope.row)
                       "
+                      :disabled="rowActions[0]['disabled']"
                       class="btn-hover mr-1"
                       icon
                       v-on="on"
@@ -655,7 +661,8 @@
                         scope.row.status === 'Cancelled' ||
                         scope.row.status === 'Expired' ||
                         scope.row.status === 'Finished' ||
-                        scope.row.status === 'NoMatch'
+                        scope.row.status === 'NoMatch' ||
+                        rowActions[1]['disabled']
                       "
                       @click.native="rowAct(rowActions[1].action, scope.row)"
                       class="btn-hover"
@@ -683,7 +690,13 @@
             <slot name="empty-table-inline">
               <h2>{{ empty.message }}</h2>
               <p>{{ empty.subMes }}</p>
-              <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
+              <v-btn
+                :disabled="empty['disabled']"
+                @click="onEmptyBtnClicked"
+                class="empty-btn"
+                :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
+                v-if="empty.btn"
+              >
                 <!-- empty action -->
                 <v-icon class="mr-2">{{ empty.icon }}</v-icon>
                 {{ empty.btn }}
@@ -967,9 +980,12 @@ export default {
       type: Boolean,
       default: true
     },
-    isDownloadable: {
-      type: Boolean,
-      default: true
+    downloadButton: {
+      type: Object,
+      default: () => ({
+        show: true,
+        disabled: false
+      })
     },
     settingsPopupStyle: {
       type: Object

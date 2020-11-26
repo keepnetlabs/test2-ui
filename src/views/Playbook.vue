@@ -4,7 +4,9 @@
       <v-col class="p-0" cols="12">
         <v-card class="pr-card">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Rules" name="first"><rules /></el-tab-pane>
+            <el-tab-pane label="Rules" name="first"
+              ><rules :PERMISSIONS="PERMISSIONS"
+            /></el-tab-pane>
           </el-tabs>
         </v-card>
       </v-col>
@@ -14,7 +16,8 @@
 
 <script>
 import Rules from '../components/Playbook/Rules'
-
+import { checkPermission } from '@/utils/functions'
+import PERMISSIONS from '@/permissions'
 export default {
   name: 'Playbook',
   components: {
@@ -27,16 +30,29 @@ export default {
   },
   data() {
     return {
-      tab: 'first'
+      tab: 'first',
+      PERMISSIONS: []
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
+    },
+    getPermissions() {
+      const { PLAYBOOK_PERMISSIONS } = PERMISSIONS
+      const COPY_OF_PERMISSIONS = { ...PLAYBOOK_PERMISSIONS }
+      const permissions = Object.keys(COPY_OF_PERMISSIONS)
+      for (let permissionKey of permissions) {
+        const permission = COPY_OF_PERMISSIONS[permissionKey]
+        const { url, method } = permission
+        permission.hasPermission = checkPermission(url, method)
+      }
+      this.PERMISSIONS = COPY_OF_PERMISSIONS
     }
   },
-
-  mounted() {}
+  created() {
+    this.getPermissions()
+  }
 }
 </script>
 
