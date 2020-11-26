@@ -2285,7 +2285,6 @@ export default {
           .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
         if (els && els.length) {
           for (let i = 0, l = els.length; i < l; i++) {
-            debugger
             let el = els[i]
             el.style.pointerEvents = 'auto'
             el.style.cursor = 'pointer'
