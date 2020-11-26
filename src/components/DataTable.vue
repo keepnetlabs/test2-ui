@@ -58,7 +58,7 @@
           @closeCreateMode="$emit('closeCreateMode')"
           :options="extendedViewOptions"
           :container-style="extendedViewStyle"
-          @handleEdit="$emit('handleEdit', $event)"
+          @handleEdit="handleExtendedViewEdit"
           :disable-transition="disableExtendedViewTransition"
           @closeEditPopup="closeEditPopup"
           :changeFooterPosition="changeFooterPosition"
@@ -1167,6 +1167,11 @@ export default {
     window.addEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    handleExtendedViewEdit(val) {
+      this.$emit('handleEdit', val)
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
+    },
     calculateAllSelected() {
       const dataRef = this.showfilteredData
         ? this.filteredData

@@ -523,11 +523,11 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import {createCompany, getCompanyGroups, searchCompanies, updateCompany} from '../../api/company'
+import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
-import {scrollToComponent} from '@/utils/functions'
-import {getLookupListByTypeIdList} from '@/api/common'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { scrollToComponent } from '@/utils/functions'
+import { getLookupListByTypeIdList } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'

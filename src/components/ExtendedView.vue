@@ -501,6 +501,7 @@
                   "
                   :value="multipleEditModels[col.property]"
                   @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
+                  :slots="{ append: true }"
                 >
                   <template v-slot:append v-if="!multipleEditDisables[col.property]">
                     <v-btn

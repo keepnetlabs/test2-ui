@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import {mail, maxLength, required, url} from '@/utils/validations'
+import { mail, maxLength, required, url } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 

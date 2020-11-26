@@ -130,6 +130,7 @@
             </div>
           </div>
           <div id="post-step-one" v-if="step === 1">
+            <!-- Step 1 Starts -->
             <div class="incident-header pb-6">
               <p>Select Incident</p>
               <span
@@ -158,6 +159,7 @@
                 @change="getSelectedEmailPreview"
                 @input="handleTagItemChange"
                 :slots="{ selection: true, item: true }"
+                autocomplete="off"
               >
                 <template v-slot:selection="{ attrs, item }">
                   <v-chip
@@ -272,7 +274,10 @@
                   </v-icon>
                   <PreviewHeaderForSinglePost :uploadRespond="uploadRespond" />
                   <div id="last-preview-body-preview" class="preview-body">
-                    <k-shadow-frame id="incident-preview-1" :content="uploadRespond.body" />
+                    <k-shadow-frame
+                      id="incident-preview-1"
+                      :content="uploadRespond.editableBody || uploadRespond.initialBody"
+                    />
                   </div>
                   <div
                     id="preview-footer-container-att-preview"
@@ -511,6 +516,7 @@
             </div>
           </div>
           <div id="post-step-four" v-if="step === 4">
+            <!-- Step 4 Starts -->
             <div class="investigate-header">
               <p>Attributes</p>
               <span>
@@ -523,7 +529,7 @@
                 <PreviewHeader :uploadRespond="uploadRespond" />
                 <div class="preview-header position-relative">
                   <h2
-                    v-if="uploadRespond.body"
+                    v-if="uploadRespond.editableBody || uploadRespond.visibleBody"
                     style="padding: 0 2px; border-bottom: 1px solid transparent;"
                   >
                     Body
@@ -536,10 +542,25 @@
                   >
                 </div>
 
-                <div v-if="uploadRespond.body" id="last-preview-body-preview" class="preview-body">
+                <div
+                  v-if="uploadRespond.editableBody || uploadRespond.initialBody"
+                  id="last-preview-body-preview"
+                  class="preview-body"
+                >
                   <k-shadow-frame
                     id="last-preview-body-shadow-root"
-                    :content="uploadRespond.body"
+                    :content="uploadRespond.editableBody || uploadRespond.initialBody"
+                  />
+                </div>
+                <div
+                  v-if="uploadRespond.editableBody || uploadRespond.initialBody"
+                  id="last-preview-body-preview"
+                  class="preview-body"
+                  style="display: none;"
+                >
+                  <k-shadow-frame
+                    id="last-preview-body-shadow-root-for-preview"
+                    :content="uploadRespond.visibleBodyForPreview"
                   />
                 </div>
                 <div
@@ -962,7 +983,7 @@
                             v-if="filterOpened"
                             class="investigation-filters__area--filter--label"
                             >{{ url.name || url.url }}
-                            <span class="url-badge">{{ url.index }}</span></label
+                            <span class="url-badge">{{ url.orderNumber }}</span></label
                           >
                         </template>
                         <span class="tool">{{ url.name || url.url }}</span>
@@ -1134,6 +1155,7 @@
             </div>
           </div>
           <div id="post-step-five" v-if="step === 5">
+            <!-- Step 5 Stars here -->
             <div class="incident-header pb-8">
               <p>Preview</p>
               <span>See how your post will look like</span>
@@ -1388,7 +1410,7 @@
                           <div class="preview-body">
                             <k-shadow-frame
                               id="last-preview-body-shadow-root-review"
-                              :content="uploadRespond.body"
+                              :content="uploadRespond.editableBody || uploadRespond.initialBody"
                             />
                           </div>
                           <div
@@ -1825,14 +1847,19 @@ import {
   listThreatCategories,
   createCommunityPost,
   updateCommunityPost,
-  getCommunityPost
+  getCommunityPost,
+  parseEmail
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
 import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
-import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
+import {
+  incidenPostReviewElementBind,
+  scrollToComponent,
+  setIncidentVisibleBody
+} from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
@@ -2030,6 +2057,7 @@ export default {
     }
   },
   data: () => ({
+    visibleBodyForPreview: null,
     termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
     acceptCheckbox: false,
     editHtmlData: null,
@@ -2248,6 +2276,32 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    setVisibleBody() {
+      let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden)
+      for (let url of urls) {
+        let els = document
+          .getElementById('last-preview-body-shadow-root-for-preview')
+          .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+        if (els && els.length) {
+          for (let i = 0, l = els.length; i < l; i++) {
+            debugger
+            let el = els[i]
+            el.style.pointerEvents = 'auto'
+            el.style.cursor = 'pointer'
+            el.removeAttribute('data-title')
+            el.setAttribute('data-post-item-hidden', 'false')
+            el.innerHTML = 'Hidden by Owner'
+            el.style.backgroundColor = '#757575'
+            el.style.color = '#ffffff'
+            el.style.position = 'relative'
+            el.style.pointerEvents = 'none'
+          }
+        }
+      }
+      this.uploadRespond.visibleBodyForPreview = document.getElementById(
+        'last-preview-body-shadow-root-for-preview'
+      ).shadowRoot.innerHTML
+    },
     handleTagItemChange(value) {
       value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
@@ -2259,16 +2313,21 @@ export default {
     },
     saveGrapesJs() {
       let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
-      this.uploadRespond.body = editedHtml
-      this.showWebPageGrapes = false
+      let payload = { htmlBody: editedHtml }
+      parseEmail(payload).then((response) => {
+        let urls = response.data.data.map((item) => {
+          return { ...item, isFlagged: false, isHidden: false }
+        })
+        this.showWebPageGrapes = false
+        this.uploadRespond.urls = urls
+        this.uploadRespond.editableBody = editedHtml
+        this.uploadRespond.visibleBodyForPreview = editedHtml
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      })
     },
     editHtmlTemplate() {
-      this.editHtmlData = this.uploadRespond.body
+      this.editHtmlData = this.uploadRespond.editableBody || this.uploadRespond.initialBody
       this.showWebPageGrapes = true
-    },
-    removeTLP(item) {
-      this.value.splice(this.value.indexOf(item), 1)
-      this.value = [...this.value]
     },
     querySelections(val) {
       let _this = this
@@ -2371,7 +2430,7 @@ export default {
             el.style.color = 'inherit'
           }
           if (this.step === 4) {
-            el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.index}</span>`
+            el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.orderNumber}</span>`
           }
         }
       }
@@ -2509,7 +2568,10 @@ export default {
         .then((response) => {
           this.selectedEmail = response.data.data.from
           this.uploadRespond = response.data.data
-          this.uploadRespond.body = response.data.data.body
+          this.uploadRespond.initialBody = response.data.data.initialBody
+          this.uploadRespond.visibleBody = response.data.data.initialBody
+          this.uploadRespond.editableBody = response.data.data.initialBody
+          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
           this.setShadowRootMalicousLink('incident-preview-1')
         })
         .catch((error) => {
@@ -2542,6 +2604,10 @@ export default {
           .then((response) => {
             const { data } = response
             _this.uploadRespond = data.data.communityPostEmail
+            _this.uploadRespond.visibleBodyForPreview =
+              data.data.communityPostEmail.editableBody ||
+              data.data.communityPostEmail.visibleBody ||
+              data.data.communityPostEmail.initialBody
             if (_this.editItem) {
               _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
               _this.uploadRespond.Title = _this.editItem.title
@@ -2577,8 +2643,12 @@ export default {
           .then((response) => {
             const { data } = response
             this.uploadRespond = data.data
+            this.uploadRespond.initialBody = data.data.initialBody
+            this.uploadRespond.visibleBody = data.data.initialBody
+            this.uploadRespond.editableBody = response.data.data.initialBody
+            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
             // this.setShadowRootMalicousLink('incident-preview-1')
-            //this.listData = data.data.results
+            // this.listData = data.data.results
           })
           .catch((error) => {
             this.$store.dispatch('common/createSnackBar', {
@@ -2628,6 +2698,7 @@ export default {
       }
     },
     onBeforeLastStep() {
+      this.setVisibleBody()
       this.step++
       this.setShadowRootMalicousLink('last-preview-body-shadow-root-review')
     },
@@ -2661,6 +2732,8 @@ export default {
           IsAnonymous: this.isAnonym,
           securityLabelResourceIdArray: [this.value],
           CommunityPostEmail: {
+            editableBody: this.uploadRespond.editableBody,
+            visibleBody: this.uploadRespond.visibleBodyForPreview,
             resourceId: this.uploadRespond.resourceId,
             from: this.uploadRespond.from,
             isFromHidden: this.uploadRespond.isFromHidden,
@@ -2714,7 +2787,9 @@ export default {
           IsAnonymous: this.isAnonym,
           securityLabelResourceIdArray: [this.value],
           EmailPreview: {
-            body: this.uploadRespond.body,
+            initialBody: this.uploadRespond.initialBody,
+            editableBody: this.uploadRespond.editableBody,
+            visibleBody: this.uploadRespond.visibleBodyForPreview,
             from: this.uploadRespond.from,
             isFromHidden: this.uploadRespond.isFromHidden,
             isFromFlagged: this.uploadRespond.isFromFlagged,
