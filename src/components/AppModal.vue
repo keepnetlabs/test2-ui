@@ -8,7 +8,7 @@
     class="k-overlay"
     :class="className"
   >
-    <v-card light class="k-overlay__container">
+    <v-card light class="k-overlay__container" :class="{ 'p-0': !showHeader }">
       <v-form lazy-validation ref="refForm">
         <slot name="overlay-header" v-if="showHeader">
           <v-list-item class="k-overlay__list-item k-overlay__header">
