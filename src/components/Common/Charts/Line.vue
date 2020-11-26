@@ -11,7 +11,6 @@ export default {
   },
   watch: {
     chartData(newVal) {
-      debugger
       this.renderChart(this.chartData, this.chartOptions)
     }
   }

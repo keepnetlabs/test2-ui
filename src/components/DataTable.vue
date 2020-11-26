@@ -1168,13 +1168,11 @@ export default {
   },
   methods: {
     handleExtendedViewEdit(val) {
-      console.log('val', val)
       this.$emit('handleEdit', val)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
     },
     calculateAllSelected() {
-      debugger
       const dataRef = this.showfilteredData
         ? this.filteredData
         : this.groupable
