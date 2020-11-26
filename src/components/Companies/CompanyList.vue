@@ -86,9 +86,13 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import {deleteCompany, exportCompanies, getCompanyByID, searchCompanies} from '../../api/company'
+import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '../../api/company'
 import DeleteModal from './DeleteModal'
-import {COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE} from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'

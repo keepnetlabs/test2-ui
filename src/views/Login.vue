@@ -380,10 +380,10 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha'
-import {mapActions, mapGetters} from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
-import {createPasswordByToken, resetPassword, resetPasswordByToken} from '../api/auth'
+import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
