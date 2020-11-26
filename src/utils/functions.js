@@ -1,4 +1,5 @@
 import store from '../store'
+import jwt_decode from 'jwt-decode'
 
 export function getBtnStatusColor(type) {
   switch (type && type.toLowerCase()) {
@@ -731,21 +732,26 @@ export function reviewElementBind(els, url) {
 }
 
 export function incidenPostReviewElementBind(url, id, rootId, isReview) {
-  let els = document
-    .getElementById(rootId || 'last-preview-body-shadow-root')
-    .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+  let els
+  if (url.url === 'Hidden by Owner') {
+    els = document
+      .getElementById(rootId || 'last-preview-body-shadow-root')
+      .shadowRoot.querySelectorAll('[data-post-item-hidden]')
+  } else {
+    els = document
+      .getElementById(rootId || 'last-preview-body-shadow-root')
+      .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+  }
+
   if (els && els.length) {
     for (let i = 0, l = els.length; i < l; i++) {
       let el = els[i]
       el.setAttribute('target', '_blank')
       if (url.isHidden) {
         url.isFlagged = false
-        el.innerHTML = url.urlHtml || url.name || url.url
-        el.innerHTML = 'hidden by owner'
         el.style.backgroundColor = '#757575'
         el.style.color = '#ffffff'
         el.style.position = 'relative'
-        el.style.pointerEvents = 'none'
       } else if (!!url && !!url.name) {
         el.innerHTML = url.name
         el.setAttribute('href', url.url)
@@ -796,6 +802,9 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
   }
 }
 
-export function checkPermission(permission, type, store = { store }) {
-  console.log(store.dispatch('threadSharing/getCommunities'))
+export function checkPermission(permission, type) {
+  let token = JSON.parse(localStorage.getItem('auth-token')).token
+  let tokenData = jwt_decode(token)
+  let permissions = tokenData.Permission
+  return permissions.includes(`${permission}|${type}`)
 }

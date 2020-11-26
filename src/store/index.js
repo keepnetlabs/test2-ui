@@ -11,8 +11,7 @@ import playbook from './modules/playbook'
 import rightColumn from './modules/rightColumn'
 
 Vue.use(Vuex)
-
-export default new Vuex.Store({
+let store = new Vuex.Store({
   modules: {
     common,
     permission,
@@ -25,3 +24,5 @@ export default new Vuex.Store({
     rightColumn
   }
 })
+
+export default store
