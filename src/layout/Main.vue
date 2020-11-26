@@ -507,117 +507,7 @@
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
-          <div class="page-header__breadcrumb">
-            <router-link class="breadcrumb-links" to="/">
-              {{ getSelectedCompanyName || 'Company' }}
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/threat-sharing"
-              v-if="routerName === 'Community'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              {{ breadcrumbs[2].text }}
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/phishing-reporter"
-              style="display: flex; align-items: center; opacity: 1 !important;"
-              v-if="routerName === 'Phishing Reporter'"
-            >
-              <v-icon style="color: #fff; font-size: 16px; opacity: 1 !important;"
-                >mdi-chevron-right</v-icon
-              >
-              <span style="opacity: 0.7 !important;">Phishing Reporter</span>
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links cursor-default"
-              to="/companies"
-              style="display: flex; align-items: center;"
-              v-if="routerName === 'Company Group Details'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              Company
-            </router-link>
-
-            <router-link
-              class="breadcrumb-links"
-              to="/investigations"
-              style="display: flex; align-items: center;"
-              v-if="routerName === 'Investigation Details'"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-              Investigations
-            </router-link>
-
-            <router-link
-              v-if="
-                routerName === 'Incident Responder' ||
-                routerName === 'Investigations' ||
-                routerName === 'Integrations' ||
-                routerName === 'Playbook' ||
-                routerName === 'Mail Configurations'
-              "
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links cursor-default"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-
-              Incident Responder
-            </router-link>
-
-            <router-link
-              v-if="routerName === 'Target Users'"
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links cursor-default"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-
-              Company
-            </router-link>
-            <router-link
-              v-if="routerName === 'Companies'"
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links cursor-default"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-
-              Company
-            </router-link>
-            <router-link
-              v-if="routerName === 'System Users'"
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links cursor-default"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-
-              Company
-            </router-link>
-            <router-link
-              v-if="routerName === 'Company Settings'"
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links cursor-default"
-            >
-              <v-icon style="color: #fff; font-size: 16px;">mdi-chevron-right</v-icon>
-
-              Company
-            </router-link>
-            <v-icon
-              v-if="routerName !== 'Phishing Reporter'"
-              style="color: #fff; font-size: 16px; line-height: 0.25;"
-              >mdi-chevron-right
-            </v-icon>
-            <router-link
-              v-if="routerName !== 'Phishing Reporter'"
-              :to="$route.path"
-              class="bread-last-step breadcrumb-links cursor-default"
-              :class="{ 'cursor-default': routerName === 'Dashboard' }"
-              >{{ routerName === 'Incident Responder' ? 'Dashboard' : routerName }}
-            </router-link>
-          </div>
+          <Breadcrumb :base-name="getSelectedCompanyName" />
         </div>
       </div>
       <div class="page-header__actions">
@@ -711,7 +601,7 @@
   </v-app>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
 import SessionExpired from '../components/SessionExpired'
@@ -726,9 +616,9 @@ import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import AppDialog from '../components/AppDialog'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import { updatePassword } from '../api/auth'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
-import { getCompanyList } from '../api/company'
+import {updatePassword} from '../api/auth'
+import {COMMON_CONSTANTS} from '../model/constants/commonConstants'
+import Breadcrumb from '@/components/Breadcrumb'
 
 export default {
   name: 'Main',
@@ -742,7 +632,8 @@ export default {
     TourWidget,
     AppSnackbar,
     AppDialog,
-    PasswordChecker
+    PasswordChecker,
+    Breadcrumb
   },
   data() {
     return {
