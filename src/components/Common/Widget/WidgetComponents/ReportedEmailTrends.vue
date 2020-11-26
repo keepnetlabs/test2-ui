@@ -57,6 +57,7 @@ export default {
   },
   data() {
     return {
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       empty: {
         message: "There isn't any reported emails yet."
       },
@@ -131,26 +132,14 @@ export default {
               },
               tooltips: {
                 callbacks: {
-                  title: (tooltipItem, object) => {
+                  title: (tooltipItem) => {
                     const newDate = new Date(tooltipItem[0].xLabel)
-                    const months = [
-                      'Jan',
-                      'Feb',
-                      'Mar',
-                      'Apr',
-                      'May',
-                      'Jun',
-                      'July',
-                      'Aug',
-                      'Sep',
-                      'Oct',
-                      'Nov',
-                      'Dec'
-                    ]
-
-                    return `${months[newDate.getMonth()]}, ${newDate.getFullYear()}`
+                    const months = this.months
+                    return `${months[newDate.getMonth()]} ${newDate.getFullYear()}`
                   }
-                }
+                },
+                backgroundColor: '#6d6d6d',
+                displayColors: false
               },
               responsive: true,
               maintainAspectRatio: false,
