@@ -16,7 +16,7 @@
 
 <script>
 import Rules from '../components/Playbook/Rules'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getPermissionsOfAllItems } from '@/utils/functions'
 import PERMISSIONS from '@/permissions'
 export default {
   name: 'Playbook',
@@ -40,14 +40,7 @@ export default {
     },
     getPermissions() {
       const { PLAYBOOK_PERMISSIONS } = PERMISSIONS
-      const COPY_OF_PERMISSIONS = { ...PLAYBOOK_PERMISSIONS }
-      const permissions = Object.keys(COPY_OF_PERMISSIONS)
-      for (let permissionKey of permissions) {
-        const permission = COPY_OF_PERMISSIONS[permissionKey]
-        const { url, method } = permission
-        permission.hasPermission = checkPermission(url, method)
-      }
-      this.PERMISSIONS = COPY_OF_PERMISSIONS
+      this.PERMISSIONS = getPermissionsOfAllItems(PLAYBOOK_PERMISSIONS)
     }
   },
   created() {

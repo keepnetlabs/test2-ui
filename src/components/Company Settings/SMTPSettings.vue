@@ -2,7 +2,7 @@
   <div class="smtp-settings">
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
     <new-smtp-settings
-      v-if="newSmtpModalStatus"
+      v-if="newSmtpModalStatus && PERMISSIONS.CREATE.hasPermission"
       :status="newSmtpModalStatus"
       @closeOverlay="toggleSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
@@ -13,7 +13,7 @@
     <delete-smtp-settings
       :status="deleteSmtpModalStatus"
       :data="selectedDeleteSmtpSettings"
-      v-if="deleteSmtpModalStatus"
+      v-if="deleteSmtpModalStatus && PERMISSIONS.DELETE.hasPermission"
       @closeOverlay="toggleDeleteSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
       @handleMultipleDelete="handleDeleteMultipleSmtpSettings"
@@ -31,6 +31,7 @@
         @addNewSmtpSetting="toggleSmtpModalStatus"
         :filterable="true"
         :options="true"
+        :download-button="tableOptions.downloadButton"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :is-downloadable="true"
@@ -66,10 +67,16 @@ export default {
     DataTable,
     NewSmtpSettings
   },
+  props: {
+    PERMISSIONS: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       tableData: [],
-      loading: true,
+      loading: false,
       selectedDeleteSmtpSettings: null,
       selectedEditSmtpSettings: null,
       isEdit: false,
@@ -138,37 +145,45 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: true,
+          delete: this.PERMISSIONS.DELETE.hasPermission,
           download: false
+        },
+        downloadButton: {
+          show: true,
+          disabled: !this.PERMISSIONS.EXPORT.disabled
         },
         rowActions: [
           {
             name: 'Edit',
             icon: 'mdi-pencil',
-            action: 'editAction'
+            action: 'editAction',
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'deleteAction'
+            action: 'deleteAction',
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
         empty: {
           message: 'No SMTP Configurations',
           btn: 'Create SMTP Configuration',
-          icon: 'mdi-plus'
+          icon: 'mdi-plus',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
           action: 'addNewSmtpSetting',
-          tooltip: 'Add SMTP Setting'
+          tooltip: 'Add SMTP Setting',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },
       newSmtpModalStatus: false,
       deleteSmtpModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 5000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -190,71 +205,89 @@ export default {
         this.resourceId = null
         this.isEdit = false
       }
-
       this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
     exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      exportTypes.map((exportType) => {
-        const payload = {
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          orderBy: PROPERTY_STORE.CREATETIME,
-          ascending: false,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.bodyOptions.filter
-        }
-        exportSmtpSettings(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `smtp-settings.${exportType.toLocaleLowerCase()}`
-          link.click()
+      const { EXPORT } = this.PERMISSIONS
+      if (EXPORT.hasPermission) {
+        exportTypes.map((exportType) => {
+          const payload = {
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            orderBy: PROPERTY_STORE.CREATETIME,
+            ascending: false,
+            reportAllPages,
+            exportType: exportType === 'XLS' ? 'Excel' : exportType,
+            filter: this.bodyOptions.filter
+          }
+          exportSmtpSettings(payload).then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `smtp-settings.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
         })
-      })
+      }
     },
     toggleDeleteSmtpModalStatus() {
       this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
     },
     callForSearchSmtpSettings() {
-      this.loading = true
-      searchSmtpSettings(this.bodyOptions)
-        .then((response) => {
-          const { data: { data: { results = [] } = {} } = {} } = response
-          this.tableData = results
-        })
-        .finally(() => (this.loading = false))
+      debugger
+      const { SEARCH } = this.PERMISSIONS
+      if (SEARCH.hasPermission) {
+        this.loading = true
+        searchSmtpSettings(this.bodyOptions)
+          .then((response) => {
+            const { data: { data: { results = [] } = {} } = {} } = response
+            this.tableData = results
+          })
+          .finally(() => (this.loading = false))
+      }
     },
     handleEditAction({ resourceId } = {}) {
-      this.isEdit = true
-      this.selectedEditSmtpSettings = resourceId
-      this.toggleSmtpModalStatus()
+      const { UPDATE, GET } = this.PERMISSIONS
+      if (UPDATE.hasPermission && GET.hasPermission) {
+        this.isEdit = true
+        this.selectedEditSmtpSettings = resourceId
+        this.toggleSmtpModalStatus()
+      }
     },
     closeOverlayWithUpdate() {
       this.toggleSmtpModalStatus()
       this.callForSearchSmtpSettings()
     },
     callForDeleteSmtpSettings(resourceId) {
-      deleteSmtpSettings(resourceId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle-outline'
+      const { DELETE } = this.PERMISSIONS
+      if (DELETE.hasPermission) {
+        deleteSmtpSettings(resourceId)
+          .then((response) => {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle-outline'
+            })
+            this.callForSearchSmtpSettings()
           })
-          this.callForSearchSmtpSettings()
-        })
-        .finally(() => {
-          this.selectedDeleteSmtpSettings = null
-        })
+          .finally(() => {
+            this.selectedDeleteSmtpSettings = null
+          })
+      }
     },
     handleDeleteSmtpSettings(row) {
-      const { resourceId } = row
-      this.callForDeleteSmtpSettings(resourceId)
+      const { DELETE } = this.PERMISSIONS
+      if (DELETE.hasPermission) {
+        const { resourceId } = row
+        this.callForDeleteSmtpSettings(resourceId)
+      }
     },
     handleDeleteAction(selectedRow) {
-      this.selectedDeleteSmtpSettings = selectedRow
-      this.toggleDeleteSmtpModalStatus()
+      const { DELETE } = this.PERMISSIONS
+      if (DELETE.hasPermission) {
+        this.selectedDeleteSmtpSettings = selectedRow
+        this.toggleDeleteSmtpModalStatus()
+      }
     },
     columnFilterChanged(filter) {
       let items = []
@@ -294,11 +327,17 @@ export default {
       this.callForSearchSmtpSettings()
     },
     handleMultipleDelete(selections) {
-      this.selectedDeleteSmtpSettings = selections
-      this.toggleDeleteSmtpModalStatus()
+      const { DELETE } = this.PERMISSIONS
+      if (DELETE.hasPermission) {
+        this.selectedDeleteSmtpSettings = selections
+        this.toggleDeleteSmtpModalStatus()
+      }
     },
     handleDeleteMultipleSmtpSettings(selections) {
-      selections.forEach((item) => this.handleDeleteSmtpSettings(item))
+      const { DELETE } = this.PERMISSIONS
+      if (DELETE.hasPermission) {
+        selections.forEach((item) => this.handleDeleteSmtpSettings(item))
+      }
     }
   },
   created() {

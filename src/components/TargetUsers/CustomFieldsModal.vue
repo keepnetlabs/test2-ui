@@ -85,7 +85,11 @@
           :list="unActiveCustomFields"
           handle=".handle"
         >
-          <v-list-item :key="item.name" v-for="item in unActiveCustomFields">
+          <v-list-item
+            :key="item.name"
+            v-for="item in unActiveCustomFields"
+            style="max-width: 650px;"
+          >
             <v-list-item-content>
               <table-field
                 isDeleteable

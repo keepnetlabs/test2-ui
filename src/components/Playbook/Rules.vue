@@ -145,7 +145,8 @@ export default {
       type: String
     },
     PERMISSIONS: {
-      type: Object
+      type: Object,
+      required: true
     }
   },
   data() {

@@ -40,5 +40,37 @@ export default {
       hasPermission: false,
       method: 'POST'
     }
+  },
+  SMTP_SETTINGS_PERMISSIONS: {
+    CREATE: {
+      url: 'companies/smtp-settings',
+      hasPermission: false,
+      method: 'POST'
+    },
+    SEARCH: {
+      url: 'companies/smtp-settings/search',
+      hasPermission: false,
+      method: 'POST'
+    },
+    UPDATE: {
+      url: 'companies/smtp-settings/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    },
+    DELETE: {
+      url: 'companies/smtp-settings/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    },
+    GET: {
+      url: 'companies/smtp-settings/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    EXPORT: {
+      url: 'companies/smtp-settings/search/export',
+      hasPermission: false,
+      method: 'EXPORT'
+    }
   }
 }

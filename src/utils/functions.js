@@ -808,3 +808,14 @@ export function checkPermission(permission, type) {
   let permissions = tokenData.Permission
   return permissions.includes(`${permission}|${type}`)
 }
+
+export function getPermissionsOfAllItems(PERMISSIONS = {}) {
+  const COPY_OF_PERMISSIONS = { ...PERMISSIONS }
+  const permissions = Object.keys(COPY_OF_PERMISSIONS)
+  for (let permissionKey of permissions) {
+    const permission = COPY_OF_PERMISSIONS[permissionKey]
+    const { url, method } = permission
+    permission.hasPermission = checkPermission(url, method)
+  }
+  return COPY_OF_PERMISSIONS
+}
