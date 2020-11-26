@@ -67,18 +67,6 @@ export default {
         components: this.editorHtml || '',
         style: setGrapesjsStyle()
       })
-      /*
-      this.editor = GrapesWebPageModal.init({
-       container: '#gjsWebPageModal',
-       fromElement: 1,
-       storageManager: { type: 0 },
-       plugins: ['gjs-preset-newsletter', cssParser, s3],
-       pluginsOpts: {
-         'gjs-plugin-s3': GrapesS3Options
-       },
-       components: this.editorHtml || '',
-       style: setGrapesjsStyle()
-     })*/
       let pn = this.editor.Panels
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)
