@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {VAutocomplete, VCombobox, VSelect} from 'vuetify/lib'
+import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 
 export default {
   name: 'KSelect',
