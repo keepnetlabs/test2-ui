@@ -146,7 +146,6 @@ export default {
     callForDownloadOutlookAddIn(transactionId) {
       downloadOutlookAddIn(transactionId)
         .then((response) => {
-          debugger
           this.outlookSpinnerStatus = false
           this.clearOutlookAddInTimeout()
           const { data } = response
@@ -156,7 +155,6 @@ export default {
           link.click()
         })
         .catch((error) => {
-          debugger
           if (error.response.status === 404 && error.response.statusText === 'Not Found') {
             this.outlookSpinnerStatus = true
             this.downloadOutlookAddInTimeout = setTimeout(() => {
