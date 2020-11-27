@@ -2196,6 +2196,7 @@ export default {
   .switch-dialog {
     width: 600px !important;
     border-radius: 20px !important;
+    overflow: visible !important;
   }
 
   .v-application--wrap {

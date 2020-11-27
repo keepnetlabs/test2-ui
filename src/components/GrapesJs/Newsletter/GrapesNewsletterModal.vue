@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div class="form">
-      <!--<div class="input-header">Upload Email</div>
+  <div style="margin-bottom: 70px !important;">
+    <!--<div class="form">
+      <div class="input-header">Upload Email</div>
       <div class="input-sub">.eml or .msg files only.</div>
       <div class="upload-wrapper">
         <k-file-upload
@@ -25,8 +25,8 @@
           :rules="[url.required, url.format]"
         ></v-text-field>
         <v-btn @click="cloneUrlButtonCLick">Clone Url</v-btn>
-      </div>-->
-    </div>
+      </div>
+    </div>-->
     <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
