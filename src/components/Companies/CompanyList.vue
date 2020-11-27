@@ -48,6 +48,7 @@
       :groupable="true"
       :empty="tableOptions.iEmpty"
       :filterable="true"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
@@ -65,6 +66,8 @@
       @onEmptyBtnClicked="addButton"
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
     >
       <template v-slot:datatable-custom-column="{ scope }">
@@ -140,6 +143,7 @@ export default {
           sortable: true,
           show: true,
           type: 'slot',
+          filterableType: 'text',
           width: 180
         },
         {
@@ -158,7 +162,6 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
-
           sortable: true,
           show: true,
           type: 'text',
@@ -198,6 +201,7 @@ export default {
         }
       ],
       pageSizes: [5, 10, 25],
+      isColumnFilterActive: true,
       selectEvent: {
         clipboard: true,
         edit: false,
@@ -273,6 +277,7 @@ export default {
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
               : []
+          debugger
         })
         .catch(() => {
           this.tableData = []
@@ -428,6 +433,53 @@ export default {
     },
     changeGroupModalStatus(status) {
       this.showCreateNewGroupWithCompany = status
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName =
+            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+        const { FieldName, Value } = filter
+        if (FieldName === 'Result' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
+      }
+
+      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.getTableData()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.tableOptions.isColumnFilterActive =
+        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.getTableData()
     }
   }
 }
