@@ -1074,7 +1074,7 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-      this.totalLength = table.length
+      this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
@@ -1106,11 +1106,6 @@ export default {
     },
     tableData(data) {
       this.calculateAllSelected()
-      if (this.isSelectedAll) {
-        for (let item of data) {
-          this.$refs.elTableRef.toggleRowSelection(item, true)
-        }
-      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
@@ -1155,7 +1150,7 @@ export default {
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
-      this.totalLength = this.table.length
+      this.totalLength = this.getTotalLength(this.table)
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
@@ -1188,26 +1183,30 @@ export default {
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
     },
+
     calculateAllSelected() {
-      const dataRef = this.showfilteredData
-        ? this.filteredData
-        : this.groupable
-        ? [...this.tableData, ...this.clusteredItems]
-        : this.tableData
+      let dataRef = this.showfilteredData ? this.filteredData : this.tableData
       const renderedTotalLength = this.getTotalLength(this.tableData)
       this.renderedTotalLength = renderedTotalLength
       const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
+      if (this.groupable && comparedValueLength >= this.getAllItems(dataRef, []).length) {
+        dataRef = this.getAllItems(this.tableData, [], false, false)
+      }
       const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find(
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
-      if (selectedItems.length) {
+      if (this.isSelectedAll && this.multipleSelection.length === this.totalLength) {
+        this.selectionCheckbox = true
+        this.selectionRowCheckboxDeterminate = false
+      } else if (selectedItems.length) {
         if (selectedItems.length === comparedValueLength) {
           this.selectionCheckbox = true
           this.selectionRowCheckboxDeterminate = false
         } else {
           this.selectionRowCheckboxDeterminate = true
+          console.log('this.multipleSelection', this.multipleSelection.length)
         }
       } else {
         this.selectionCheckbox = false
@@ -1284,14 +1283,18 @@ export default {
      * @param arr --> for example tableData
      * @param retArr --> returned value
      */
-    getAllItems(arr = [], retArr = []) {
+    getAllItems(arr = [], retArr = [], addToClusterItems = true, deleteFromClusteredItems = false) {
       for (let item of arr) {
         if (item.children) {
-          this.getAllItems(item.children, retArr)
+          this.getAllItems(item.children, retArr, addToClusterItems, deleteFromClusteredItems)
         }
 
-        if (item.isChild) {
+        if (item.isChild && addToClusterItems) {
           this.addItemToClusteredItems(item)
+        }
+        if (deleteFromClusteredItems) {
+          console.log('item', item)
+          this.deleteItemFromClusteredItems(item)
         }
         retArr.push(item)
       }
@@ -1431,6 +1434,14 @@ export default {
         this.clusteredItems.push(item)
       }
     },
+    deleteItemFromClusteredItems(item = {}) {
+      const index = this.clusteredItems.findIndex(
+        (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(item)
+      )
+      if (index > -1) {
+        this.clusteredItems.splice(index, 1)
+      }
+    },
     calculateLength(children) {
       return children.reduce((acc, item) => {
         if (item.children) {
@@ -1489,8 +1500,9 @@ export default {
     hasOverflowTooltip(row, column, cell) {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
+      console.log('widthOfParent', widthOfParent)
       const span =
-        cell.querySelector('span') ||
+        cell.querySelector('span:last-child') ||
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
@@ -1501,6 +1513,7 @@ export default {
           spanWidth += Number(padding)
         }
       }
+      console.log('spanWidth', spanWidth)
 
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
@@ -1940,17 +1953,14 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
+      debugger
       if (this.renderedTotalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
         if (this.selectionCheckbox) {
           if (this.selectionRowCheckboxDeterminate) {
             const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            const selectedItems = dataRef.filter((item) => {
-              return this.multipleSelection.find(
-                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-              )
-            })
+            const selectedItems = this.getAllItems(dataRef, [], false, true)
             for (let item of selectedItems) {
               this.$refs.elTableRef.toggleRowSelection(item, false)
             }
@@ -1960,12 +1970,17 @@ export default {
             this.$refs.elTableRef.toggleAllSelection()
           }
         } else {
-          const selectedItems = this.multipleSelection.filter((item) => {
-            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            return dataRef.find(
-              (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-            )
-          })
+          const selectedItems = this.getAllItems(
+            this.multipleSelection.filter((item) => {
+              const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+              return dataRef.find(
+                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+              )
+            }),
+            [],
+            false,
+            true
+          )
 
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {

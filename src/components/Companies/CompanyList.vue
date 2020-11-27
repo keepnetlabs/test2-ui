@@ -45,12 +45,15 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :countRow="5"
+      :groupable="true"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
       :refName="'companyList'"
+      :clusterItems="[{ name: 'Company Name' }]"
+      @clusterChanged="clusterChanged"
       row-key="companyName"
       :rowActions="tableOptions.rowActions"
       @edit="handleTableItemEdit"
@@ -58,6 +61,7 @@
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
       @addButton="addButton"
+      @handleListBulleted="handleListBulletedClick"
       @onEmptyBtnClicked="addButton"
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
@@ -115,6 +119,7 @@ export default {
     tableData: [],
     tableHeight: 0,
     extendTop: 0,
+    isClustered: false,
     editModal: false,
     isShowDeleteModal: false,
     isShowExtended: false,
@@ -259,20 +264,41 @@ export default {
   },
   methods: {
     getTableData(payload) {
-      const _payload = { ...this.payload, ...payload }
+      const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
+
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-              ? response.data.data.results
+              ? this.getManipulatedTableData(response.data.data.results)
               : []
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
         })
         .finally(() => (this.loading = false))
     },
+    getManipulatedTableData(data, isChild = false) {
+      data.forEach((item) => {
+        if (isChild) {
+          item.isChild = true
+        }
+        if (item.children) {
+          this.getManipulatedTableData(item.children, true)
+        }
+      })
+      return data
+    },
+    clusterChanged() {
+      this.isClustered = true
+      this.getTableData()
+    },
+    handleListBulletedClick() {
+      this.isClustered = false
+      this.getTableData()
+    },
+    handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
