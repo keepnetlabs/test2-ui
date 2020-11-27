@@ -356,7 +356,13 @@
           box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
           background-color: #2196f3;
           color: white;
-
+          &--disabled{
+            background-color: rgba(0, 0, 0, 0.12) !important;
+            cursor:default !important;
+            button {
+              cursor:default !important;
+            }
+          }
           .v-icon {
             font-size: 18px !important;
           }
@@ -434,7 +440,7 @@
           }
 
           .table-settings {
-            cursor: pointer;
+            //cursor: pointer;
             display: flex;
             @media only screen and (max-width: 500px) {
               padding-right: 0;
@@ -737,9 +743,12 @@
 
         .empty-btn {
           border-radius: 18px;
-          box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+          box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
           background-color: #2196f3 !important;
           color: #fff !important;
+          &--disabled{
+            box-shadow: none;
+          }
           text-transform: capitalize !important;
           font-size: 14px;
           font-weight: 600 !important;

@@ -7,6 +7,7 @@
       :subtitle="deleteMessage(deleteValues)"
       @changeStatus="isWantToDelete = false"
       body="Do you want to delete playbook rule?"
+      v-if="getDeleteModalPermission"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -19,7 +20,7 @@
       :status="showMatchingModal"
       icon="mdi-email"
       title="Matching Incidents"
-      v-if="showMatchingModal"
+      v-if="getMatchingModalRenderStatus"
       :subtitle="getSelectedMatchingIncidentsSubtitle"
       @changeStatus="toggleMatchingModal"
       size="maximum"
@@ -39,6 +40,7 @@
                 :loading="isMatchingTableLoading"
                 :defaultSort="'subject'"
                 :selectable="false"
+                :download-button="getMatchingModalDownloadButton"
                 :filterable="true"
                 :options="true"
                 :rowActions="[]"
@@ -76,6 +78,7 @@
       :selectEvent="tableOptions.selectEvent"
       @deleteFunction="deleteRule($event)"
       @addAction="toggleRuleModal"
+      :download-button="getDownloadButton"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportRules"
       id="playbook-data-table"
@@ -88,14 +91,14 @@
         <span v-if="scope.row[col.property] === 0">
           No Match
         </span>
-        <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
+        <span v-else @click="matchingPopupClick(scope.row)" :class="getMatchingPlaybookPermission">
           {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Match(es)
         </span>
       </template>
     </datatable>
     <app-modal
       :status="showRuleModal"
-      v-if="showRuleModal"
+      v-if="getModalRenderStatus"
       :icon-name="getIconName"
       :title="getTitle"
       :show-footer="false"
@@ -140,12 +143,16 @@ export default {
   props: {
     playbookId: {
       type: String
+    },
+    PERMISSIONS: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
       tableData: [],
-      loading: true,
+      loading: false,
       matchingPlaybookData: [],
       showRuleModal: false,
       selectedMatch: null,
@@ -246,32 +253,13 @@ export default {
             ]
           }
         ],
-        empty: {
-          message: LABEL_STORE.NO_RULES_CONFIGURED,
-          btn: 'ADD A RULE',
-          icon: 'mdi-plus'
-        },
-        rowActions: [
-          {
-            name: 'Edit',
-            icon: 'mdi-pencil',
-            action: 'editAction'
-          },
-          {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction'
-          }
-        ],
+        empty: this.getTableEmptyStatus(),
+        rowActions: this.getRowActions(),
         pageSizes: [5, 10, 25],
-        addButton: {
-          show: true,
-          action: 'addAction',
-          tooltip: 'Add a Rule'
-        },
+        addButton: this.getAddButton(),
         selectEvent: {
           clipboard: true,
-          delete: true
+          delete: this.PERMISSIONS.DELETE.hasPermission
         }
       },
       tableCredientials: {
@@ -348,6 +336,47 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    getTableEmptyStatus() {
+      const emptyObj = {
+        message: LABEL_STORE.NO_RULES_CONFIGURED,
+        icon: 'mdi-plus',
+        btn: 'Add a Rule'
+      }
+      if (!this.PERMISSIONS.CREATE.hasPermission) {
+        emptyObj['disabled'] = true
+      }
+      return emptyObj
+    },
+    getRowActions() {
+      const rowActions = [
+        {
+          name: 'Edit',
+          icon: 'mdi-pencil',
+          action: 'editAction'
+        },
+        {
+          name: 'Delete',
+          icon: 'mdi-delete',
+          action: 'deleteAction'
+        }
+      ]
+      const { UPDATE, DELETE, GET } = this.PERMISSIONS
+      if (!(UPDATE.hasPermission || GET.hasPermission)) {
+        rowActions[0]['disabled'] = true
+      }
+      if (!DELETE.hasPermission) {
+        rowActions[1]['disabled'] = true
+      }
+      return rowActions
+    },
+    getAddButton() {
+      const obj = {
+        show: true,
+        action: 'addAction',
+        tooltip: 'Add a Rule'
+      }
+      return this.PERMISSIONS.CREATE.hasPermission ? obj : { ...obj, disabled: true }
+    },
     getStatus(row) {
       return JSON.stringify(row.resourceId) === JSON.stringify(this.selectedMatch.resourceId)
     },
@@ -372,28 +401,30 @@ export default {
         .finally(() => (this.loading = false))
     },
     matchingPopupClick(match) {
-      this.selectedMatch = match
-      this.isMatchingTableLoading = true
-      this.toggleMatchingModal()
-      const payload = {
-        pageNumber: 1,
-        pageSize: 50000,
-        orderBy: 'CreateDate',
-        ascending: true
-      }
-      getMatchingIncidents(payload, match.resourceId)
-        .then((response) => {
-          const matchingPlaybookData = response.data.data
-          this.matchingPlaybookData = matchingPlaybookData.results || []
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            errorState: true,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the matching rules!'
+      if (this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission) {
+        this.selectedMatch = match
+        this.isMatchingTableLoading = true
+        this.toggleMatchingModal()
+        const payload = {
+          pageNumber: 1,
+          pageSize: 50000,
+          orderBy: 'CreateDate',
+          ascending: true
+        }
+        getMatchingIncidents(payload, match.resourceId)
+          .then((response) => {
+            const matchingPlaybookData = response.data.data
+            this.matchingPlaybookData = matchingPlaybookData.results || []
           })
-        })
-        .finally(() => (this.isMatchingTableLoading = false))
+          .catch(() => {
+            this.$store.dispatch('common/createSnackBar', {
+              errorState: true,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              message: 'Error when getting the matching rules!'
+            })
+          })
+          .finally(() => (this.isMatchingTableLoading = false))
+      }
     },
     exportRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
@@ -424,40 +455,43 @@ export default {
       this.deleteValues = value
     },
     isWantToDeleteRuleConfirm() {
-      let values = []
-      let _this = this
-      if (this.totalSelectedItemsCount > 1) {
-        for (const [key, value] of Object.entries(this.deleteValues)) {
-          values.push(value.resourceId)
+      const { DELETE } = this.PERMISSIONS
+      if (DELETE.hasPermission) {
+        let values = []
+        let _this = this
+        if (this.totalSelectedItemsCount > 1) {
+          for (const [key, value] of Object.entries(this.deleteValues)) {
+            values.push(value.resourceId)
+          }
+        } else {
+          values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
         }
-      } else {
-        values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
-      }
-      values.map((item) => {
-        deletePlaybookRule(item)
-          .then(() => {
-            _this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Playbook rule deleted successfully!'
-            })
-            this.isWantToDelete = false
-            this.loading = true
-            _this
-              .getPlaybookList(_this.tableCredientials)
-              .then(() => {
-                this.tableData = _this.playbookList.results
+        values.map((item) => {
+          deletePlaybookRule(item)
+            .then(() => {
+              _this.$store.dispatch('common/createSnackBar', {
+                errorState: true,
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                message: 'Playbook rule deleted successfully!'
               })
-              .finally(() => (this.loading = false))
-          })
-          .catch(() => {
-            _this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting the matching rules!'
+              this.isWantToDelete = false
+              this.loading = true
+              _this
+                .getPlaybookList(_this.tableCredientials)
+                .then(() => {
+                  this.tableData = _this.playbookList.results
+                })
+                .finally(() => (this.loading = false))
             })
-          })
-      })
+            .catch(() => {
+              _this.$store.dispatch('common/createSnackBar', {
+                errorState: true,
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message: 'Error when getting the matching rules!'
+              })
+            })
+        })
+      }
     },
     deleteMessage(item) {
       const nameValues =
@@ -521,31 +555,77 @@ export default {
           this.tableData = this.playbookList.results
         })
         .finally(() => (this.loading = false))
+    },
+    callForSearchPlaybook() {
+      this.loading = true
+      this.getPlaybookList(this.tableCredientials)
+        .then(() => {
+          this.tableData = this.playbookList.results
+        })
+        .finally(() => (this.loading = false))
+    },
+    controlGetAndUpdatePermission(playbookId = '') {
+      const { UPDATE, GET } = this.PERMISSIONS
+      if (playbookId && GET.hasPermission) {
+        if (UPDATE.hasPermission) {
+          this.selectedPlaybookId = playbookId
+          this.showRuleModal = true
+        }
+      }
     }
   },
   mounted() {
-    this.loading = true
-    this.getPlaybookList(this.tableCredientials)
-      .then(() => {
-        this.tableData = this.playbookList.results
-      })
-      .finally(() => (this.loading = false))
-
-    if (this.playbookId) {
-      this.selectedPlaybookId = this.playbookId
-      this.showRuleModal = true
+    if (this.PERMISSIONS.SEARCH.hasPermission) {
+      this.callForSearchPlaybook()
     }
+    this.controlGetAndUpdatePermission(this.playbookId)
   },
   created() {
     if (this.$route.params && this.$route.params.playbookId) {
-      this.selectedPlaybookId = this.$route.params.playbookId
-      this.showRuleModal = true
+      this.controlGetAndUpdatePermission(this.$route.params.playbookId)
     }
   },
   computed: {
     ...mapGetters({
       playbookList: 'playbook/playbookListGetter'
     }),
+    getMatchingPlaybookPermission() {
+      return this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission && 'popup-link'
+    },
+    getDeleteModalPermission() {
+      return this.isWantToDelete && this.PERMISSIONS.DELETE.hasPermission
+    },
+    getDownloadButton() {
+      const { EXPORT } = this.PERMISSIONS
+      const obj = {
+        show: true
+      }
+      if (!EXPORT.hasPermission) {
+        obj['disabled'] = true
+      }
+      return obj
+    },
+    getMatchingModalDownloadButton() {
+      const { MATCHING_PLAYBOOKS_EXPORT } = this.PERMISSIONS
+      const obj = {
+        show: true
+      }
+      if (!MATCHING_PLAYBOOKS_EXPORT.hasPermission) {
+        obj['disabled'] = true
+      }
+      return obj
+    },
+    getModalRenderStatus() {
+      const { CREATE, UPDATE } = this.PERMISSIONS
+      return this.showRuleModal && (CREATE.hasPermission || UPDATE.hasPermission)
+    },
+    getMatchingModalRenderStatus() {
+      const { MATCHING_PLAYBOOKS_SEARCH, MATCHING_PLAYBOOKS_EXPORT } = this.PERMISSIONS
+      return (
+        this.showMatchingModal &&
+        (MATCHING_PLAYBOOKS_SEARCH.hasPermission || MATCHING_PLAYBOOKS_EXPORT.hasPermission)
+      )
+    },
     ...mapState({
       playbookList: (state) => state.playbook.playbookList
     }),
