@@ -401,7 +401,6 @@ export default {
         .finally(() => (this.loading = false))
     },
     matchingPopupClick(match) {
-      debugger
       if (this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission) {
         this.selectedMatch = match
         this.isMatchingTableLoading = true

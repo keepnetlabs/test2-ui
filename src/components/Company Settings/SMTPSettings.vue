@@ -234,7 +234,6 @@ export default {
       this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
     },
     callForSearchSmtpSettings() {
-      debugger
       const { SEARCH } = this.PERMISSIONS
       if (SEARCH.hasPermission) {
         this.loading = true
