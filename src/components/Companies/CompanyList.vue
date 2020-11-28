@@ -57,14 +57,18 @@
       @clusterChanged="clusterChanged"
       row-key="companyName"
       :rowActions="tableOptions.rowActions"
+      active-cluster="Company Name"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
+      :is-server-side="true"
+      :server-side-events="{ search: true }"
       @addButton="addButton"
       @handleListBulleted="handleListBulletedClick"
       @onEmptyBtnClicked="addButton"
       @editAction="editAction"
+      @searchChangedEvent="handleSearchChange"
       @AddGroupToModal="handleAddGroupToModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
@@ -105,6 +109,7 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
+import { getLookupListByTypeIdList } from '@/api/common'
 
 export default {
   name: 'CompanyList',
@@ -122,7 +127,7 @@ export default {
     tableData: [],
     tableHeight: 0,
     extendTop: 0,
-    isClustered: false,
+    isClustered: true,
     editModal: false,
     isShowDeleteModal: false,
     isShowExtended: false,
@@ -151,10 +156,11 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
-
           sortable: true,
           show: true,
           type: 'text',
+          filterableType: 'select',
+          filterableItems: [],
           width: 150
         },
         {
@@ -165,6 +171,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
+          filterableType: 'select',
+          filterableItems: [],
           width: 150
         },
         {
@@ -182,7 +190,6 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
-
           sortable: true,
           show: true,
           type: 'text',
@@ -196,12 +203,13 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
+          filterableType: 'date',
           type: 'text',
           width: 180
         }
       ],
       pageSizes: [5, 10, 25],
-      isColumnFilterActive: true,
+      isColumnFilterActive: false,
       selectEvent: {
         clipboard: true,
         edit: false,
@@ -252,7 +260,12 @@ export default {
           {
             Condition: 'AND',
             FilterItems: [],
-            FilterGroups: []
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: []
+              }
+            ]
           }
         ]
       }
@@ -263,13 +276,42 @@ export default {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
     }
   },
+  created() {
+    this.getLookUpDatas()
+  },
   mounted() {
     this.getTableData()
   },
   methods: {
+    handleSearchChange(bodyData = {}, columnFilterActive = false) {
+      this.payload.filter.FilterGroups[0].FilterItems = [
+        ...bodyData.filter.FilterGroups[0].FilterItems
+      ]
+
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.getTableData()
+    },
+    getLookUpDatas() {
+      getLookupListByTypeIdList({ typeidlist: [2, 3] }).then((response) => {
+        const res = response.data.data
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          res
+            .filter((item) => item.genericCodeTypeId === 2)
+            .map((item) => ({ text: item.name, value: item.name }))
+        )
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          res
+            .filter((item) => item.genericCodeTypeId === 3)
+            .map((item) => ({ text: item.name, value: item.name }))
+        )
+      })
+    },
     getTableData(payload) {
       const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
-
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
@@ -277,7 +319,6 @@ export default {
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
               : []
-          debugger
         })
         .catch(() => {
           this.tableData = []

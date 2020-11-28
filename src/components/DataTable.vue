@@ -827,8 +827,15 @@ export default {
       type: Array,
       required: true
     },
+    activeCluster: {
+      type: String
+    },
     extendedViewLoading: {
       type: Boolean
+    },
+    serverSideEvents: {
+      type: Object,
+      default: () => ({ search: false, sort: false, pagination: false })
     },
     changeFooterPosition: {
       type: Boolean,
@@ -1017,7 +1024,11 @@ export default {
       return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
-      return this.tableData.length === 0 && 'table-header-disable'
+      if (this.serverSideEvents.search) {
+        return this.tableData.length === 0 && !this.search && 'table-header-disable'
+      } else {
+        return this.tableData.length === 0 && 'table-header-disable'
+      }
     },
     getSelectionCheckboxDisabledValue() {
       return this.showfilteredData ? !this.filteredData.length : false
@@ -1033,7 +1044,7 @@ export default {
       initialData: [],
       dataLength: 0,
       isSelectedAll: false,
-      selectedCluster: '',
+      selectedCluster: this.activeCluster,
       tableData: [],
       selectedRows: [],
       rowCount: 10,
@@ -1206,7 +1217,6 @@ export default {
           this.selectionRowCheckboxDeterminate = false
         } else {
           this.selectionRowCheckboxDeterminate = true
-          console.log('this.multipleSelection', this.multipleSelection.length)
         }
       } else {
         this.selectionCheckbox = false
@@ -1293,7 +1303,6 @@ export default {
           this.addItemToClusteredItems(item)
         }
         if (deleteFromClusteredItems) {
-          console.log('item', item)
           this.deleteItemFromClusteredItems(item)
         }
         retArr.push(item)
@@ -1500,7 +1509,6 @@ export default {
     hasOverflowTooltip(row, column, cell) {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
-      console.log('widthOfParent', widthOfParent)
       const span =
         cell.querySelector('span:last-child') ||
         cell.querySelector('.datatable-chart__empty') ||
@@ -1513,8 +1521,6 @@ export default {
           spanWidth += Number(padding)
         }
       }
-      console.log('spanWidth', spanWidth)
-
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]
@@ -1538,7 +1544,7 @@ export default {
     },
     sortChangedEvent(sortProps) {
       this.sortProps = sortProps
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.sort) {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.showfilteredData && this.filteredData && this.filteredData.length) {
@@ -1655,7 +1661,8 @@ export default {
     },
 
     paginationChangedEvent(paginationProps) {
-      if (this.isServerSide) this.$emit('paginationChangedEvent', paginationProps)
+      if (this.isServerSide && this.serverSideEvents.pagination)
+        this.$emit('paginationChangedEvent', paginationProps)
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -1667,29 +1674,31 @@ export default {
     },
 
     searchChangedEvent(debounceTime = 500) {
-      if (this.isServerSide) {
-        const filterItems = this.columns
-          .filter((column) => column.isFilterable)
-          .reduce((acc, filterItem) => {
-            acc.push({
-              FieldName: filterItem.property,
-              Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
-              Value: this.$refs.searchInput.value
-            })
-            return acc
-          }, [])
-        const bodyDataFilter = {
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: filterItems
-              }
-            ]
+      if (this.isServerSide && this.serverSideEvents.search) {
+        this.debounce(() => {
+          const filterItems = this.columns
+            .filter((column) => column.filterableType)
+            .reduce((acc, filterItem) => {
+              acc.push({
+                FieldName: filterItem.property,
+                Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
+                Value: this.search
+              })
+              return acc
+            }, [])
+          const bodyDataFilter = {
+            filter: {
+              Condition: 'AND',
+              FilterGroups: [
+                {
+                  Condition: 'AND',
+                  FilterItems: filterItems
+                }
+              ]
+            }
           }
-        }
-        this.$emit('searchChangedEvent', bodyDataFilter)
+          this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+        }, 500)
       } else {
         this.debounce(() => {
           const searchValue = this.search
@@ -1880,7 +1889,7 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.pagination) {
         this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {
         if (this.currentPage === 1) {
@@ -1904,7 +1913,7 @@ export default {
     },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.pagination) {
         this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
         this.tableData = this.initialData.slice(
@@ -1953,7 +1962,6 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      debugger
       if (this.renderedTotalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
