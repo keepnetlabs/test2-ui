@@ -15,3 +15,6 @@ export function updateSystemUser(payload) {
 export function getUserRoles(payload) {
   return testRequest.post(`/roles/search`, payload, { loading: true })
 }
+export function getSystemUsersRole() {
+  return testRequest.get(`/roles`)
+}
