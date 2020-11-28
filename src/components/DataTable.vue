@@ -827,8 +827,15 @@ export default {
       type: Array,
       required: true
     },
+    activeCluster: {
+      type: String
+    },
     extendedViewLoading: {
       type: Boolean
+    },
+    serverSideEvents: {
+      type: Object,
+      default: () => ({ search: false, sort: false, pagination: false })
     },
     changeFooterPosition: {
       type: Boolean,
@@ -1017,7 +1024,11 @@ export default {
       return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
-      return this.tableData.length === 0 && 'table-header-disable'
+      if (this.serverSideEvents.search) {
+        return this.tableData.length === 0 && !this.search && 'table-header-disable'
+      } else {
+        return this.tableData.length === 0 && 'table-header-disable'
+      }
     },
     getSelectionCheckboxDisabledValue() {
       return this.showfilteredData ? !this.filteredData.length : false
@@ -1033,7 +1044,7 @@ export default {
       initialData: [],
       dataLength: 0,
       isSelectedAll: false,
-      selectedCluster: '',
+      selectedCluster: this.activeCluster,
       tableData: [],
       selectedRows: [],
       rowCount: 10,
@@ -1074,7 +1085,7 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-      this.totalLength = table.length
+      this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
@@ -1106,11 +1117,6 @@ export default {
     },
     tableData(data) {
       this.calculateAllSelected()
-      if (this.isSelectedAll) {
-        for (let item of data) {
-          this.$refs.elTableRef.toggleRowSelection(item, true)
-        }
-      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
@@ -1155,7 +1161,7 @@ export default {
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
-      this.totalLength = this.table.length
+      this.totalLength = this.getTotalLength(this.table)
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
@@ -1188,21 +1194,24 @@ export default {
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
     },
+
     calculateAllSelected() {
-      const dataRef = this.showfilteredData
-        ? this.filteredData
-        : this.groupable
-        ? [...this.tableData, ...this.clusteredItems]
-        : this.tableData
+      let dataRef = this.showfilteredData ? this.filteredData : this.tableData
       const renderedTotalLength = this.getTotalLength(this.tableData)
       this.renderedTotalLength = renderedTotalLength
       const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
+      if (this.groupable && comparedValueLength >= this.getAllItems(dataRef, []).length) {
+        dataRef = this.getAllItems(this.tableData, [], false, false)
+      }
       const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find(
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
-      if (selectedItems.length) {
+      if (this.isSelectedAll && this.multipleSelection.length === this.totalLength) {
+        this.selectionCheckbox = true
+        this.selectionRowCheckboxDeterminate = false
+      } else if (selectedItems.length) {
         if (selectedItems.length === comparedValueLength) {
           this.selectionCheckbox = true
           this.selectionRowCheckboxDeterminate = false
@@ -1284,14 +1293,17 @@ export default {
      * @param arr --> for example tableData
      * @param retArr --> returned value
      */
-    getAllItems(arr = [], retArr = []) {
+    getAllItems(arr = [], retArr = [], addToClusterItems = true, deleteFromClusteredItems = false) {
       for (let item of arr) {
         if (item.children) {
-          this.getAllItems(item.children, retArr)
+          this.getAllItems(item.children, retArr, addToClusterItems, deleteFromClusteredItems)
         }
 
-        if (item.isChild) {
+        if (item.isChild && addToClusterItems) {
           this.addItemToClusteredItems(item)
+        }
+        if (deleteFromClusteredItems) {
+          this.deleteItemFromClusteredItems(item)
         }
         retArr.push(item)
       }
@@ -1431,6 +1443,14 @@ export default {
         this.clusteredItems.push(item)
       }
     },
+    deleteItemFromClusteredItems(item = {}) {
+      const index = this.clusteredItems.findIndex(
+        (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(item)
+      )
+      if (index > -1) {
+        this.clusteredItems.splice(index, 1)
+      }
+    },
     calculateLength(children) {
       return children.reduce((acc, item) => {
         if (item.children) {
@@ -1490,7 +1510,7 @@ export default {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
       const span =
-        cell.querySelector('span') ||
+        cell.querySelector('span:last-child') ||
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
@@ -1501,7 +1521,6 @@ export default {
           spanWidth += Number(padding)
         }
       }
-
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]
@@ -1525,7 +1544,7 @@ export default {
     },
     sortChangedEvent(sortProps) {
       this.sortProps = sortProps
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.sort) {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.showfilteredData && this.filteredData && this.filteredData.length) {
@@ -1642,7 +1661,8 @@ export default {
     },
 
     paginationChangedEvent(paginationProps) {
-      if (this.isServerSide) this.$emit('paginationChangedEvent', paginationProps)
+      if (this.isServerSide && this.serverSideEvents.pagination)
+        this.$emit('paginationChangedEvent', paginationProps)
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -1654,29 +1674,31 @@ export default {
     },
 
     searchChangedEvent(debounceTime = 500) {
-      if (this.isServerSide) {
-        const filterItems = this.columns
-          .filter((column) => column.isFilterable)
-          .reduce((acc, filterItem) => {
-            acc.push({
-              FieldName: filterItem.property,
-              Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
-              Value: this.$refs.searchInput.value
-            })
-            return acc
-          }, [])
-        const bodyDataFilter = {
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: filterItems
-              }
-            ]
+      if (this.isServerSide && this.serverSideEvents.search) {
+        this.debounce(() => {
+          const filterItems = this.columns
+            .filter((column) => column.filterableType)
+            .reduce((acc, filterItem) => {
+              acc.push({
+                FieldName: filterItem.property,
+                Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
+                Value: this.search
+              })
+              return acc
+            }, [])
+          const bodyDataFilter = {
+            filter: {
+              Condition: 'AND',
+              FilterGroups: [
+                {
+                  Condition: 'AND',
+                  FilterItems: filterItems
+                }
+              ]
+            }
           }
-        }
-        this.$emit('searchChangedEvent', bodyDataFilter)
+          this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+        }, 500)
       } else {
         this.debounce(() => {
           const searchValue = this.search
@@ -1867,7 +1889,7 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.pagination) {
         this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {
         if (this.currentPage === 1) {
@@ -1891,7 +1913,7 @@ export default {
     },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.pagination) {
         this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
         this.tableData = this.initialData.slice(
@@ -1946,11 +1968,7 @@ export default {
         if (this.selectionCheckbox) {
           if (this.selectionRowCheckboxDeterminate) {
             const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            const selectedItems = dataRef.filter((item) => {
-              return this.multipleSelection.find(
-                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-              )
-            })
+            const selectedItems = this.getAllItems(dataRef, [], false, true)
             for (let item of selectedItems) {
               this.$refs.elTableRef.toggleRowSelection(item, false)
             }
@@ -1960,12 +1978,17 @@ export default {
             this.$refs.elTableRef.toggleAllSelection()
           }
         } else {
-          const selectedItems = this.multipleSelection.filter((item) => {
-            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            return dataRef.find(
-              (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-            )
-          })
+          const selectedItems = this.getAllItems(
+            this.multipleSelection.filter((item) => {
+              const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+              return dataRef.find(
+                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+              )
+            }),
+            [],
+            false,
+            true
+          )
 
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {
