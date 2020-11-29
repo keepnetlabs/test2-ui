@@ -9,12 +9,12 @@ import vuetify from './plugins/vuetify'
 import 'vue-tour/dist/vue-tour.css'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
-import {SmartWidget, SmartWidgetGrid} from 'vue-smart-widget'
-import VueMask, {VueMaskDirective} from 'v-mask'
+import { SmartWidget, SmartWidgetGrid } from 'vue-smart-widget'
+import VueMask, { VueMaskDirective } from 'v-mask'
 import * as Sentry from '@sentry/browser'
-import {Vue as VueIntegration} from '@sentry/integrations'
-import {Integrations} from '@sentry/tracing'
-import {VAutocomplete, VCombobox, VSelect} from 'vuetify/lib'
+import { Vue as VueIntegration } from '@sentry/integrations'
+import { Integrations } from '@sentry/tracing'
+import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 
 Vue.use(VueTelInputVuetify, {
   vuetify
