@@ -51,7 +51,7 @@ import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetList from '@/components/Common/Widget/WidgetList'
-import {getTextColor} from '@/utils/functions'
+import { getTextColor } from '@/utils/functions'
 
 export default {
   name: 'Reporters',

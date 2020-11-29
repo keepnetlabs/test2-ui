@@ -32,7 +32,7 @@
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import NewSmsSettings from '@/components/Company Settings/NewSmsSettings'
-import {getStoreValue, PROPERTY_STORE} from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 export default {
   name: 'SmsSettings',

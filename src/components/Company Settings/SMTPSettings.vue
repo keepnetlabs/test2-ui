@@ -52,11 +52,11 @@
 </template>
 
 <script>
-import {COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
-import {deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings} from '@/api/smtpSettings'
+import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
 import DeleteSmtpSettings from '@/components/Company Settings/DeleteSmtpSettings'
 
 export default {

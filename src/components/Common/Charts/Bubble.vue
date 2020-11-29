@@ -1,5 +1,5 @@
 <script>
-import {Bubble} from 'vue-chartjs'
+import { Bubble } from 'vue-chartjs'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 
 export default {

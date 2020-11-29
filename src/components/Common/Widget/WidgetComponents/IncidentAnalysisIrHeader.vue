@@ -62,7 +62,7 @@
 
 <script>
 import CardLoading from '@/components/SkeletonLoading/CardLoading'
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'IncidentAnalysisIrHeader',

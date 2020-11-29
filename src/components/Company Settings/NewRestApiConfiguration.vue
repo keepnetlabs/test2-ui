@@ -122,7 +122,7 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import {url} from '@/utils/validations'
+import { url } from '@/utils/validations'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 
 export default {

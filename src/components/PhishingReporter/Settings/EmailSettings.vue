@@ -164,7 +164,7 @@
 </template>
 
 <script>
-import {mail, maxLength, required} from '@/utils/validations'
+import { mail, maxLength, required } from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 

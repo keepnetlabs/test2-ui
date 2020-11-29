@@ -1,5 +1,5 @@
 <script>
-import {VueTelInputVuetify} from 'vue-tel-input-vuetify/lib/plugin.js'
+import { VueTelInputVuetify } from 'vue-tel-input-vuetify/lib/plugin.js'
 
 class isValid {
   constructor(status) {
