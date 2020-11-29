@@ -12,6 +12,7 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+
 export default {
   name: 'DeleteModal',
   props: {

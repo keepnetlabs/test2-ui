@@ -17,6 +17,7 @@ import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import Line from '@/components/Common/Charts/Line'
+
 export default {
   name: 'ReportedEmailTrends',
   components: {

@@ -12,8 +12,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import {mapActions, mapGetters, mapState} from 'vuex'
 import OverallStats from '@/components/Dashboard/OverallStats'
+
 export default {
   name: 'OverallStatsWidget',
   components: {

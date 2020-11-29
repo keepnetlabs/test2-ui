@@ -123,6 +123,7 @@ import {
   generateDiagnosticTool,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
+
 export default {
   name: 'DownloadAddInModal',
   props: {

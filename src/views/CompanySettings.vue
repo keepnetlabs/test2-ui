@@ -21,8 +21,8 @@
 <script>
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
-import RestApi from '@/components/Company Settings/RestApi'
 import CustomApi from '@/components/Company Settings/CustomApi'
+
 export default {
   name: 'CompanySettings',
   components: {

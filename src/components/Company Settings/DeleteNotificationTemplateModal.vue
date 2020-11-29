@@ -20,6 +20,7 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
+
 export default {
   name: 'DeleteNotificationTemplateModal',
   components: {

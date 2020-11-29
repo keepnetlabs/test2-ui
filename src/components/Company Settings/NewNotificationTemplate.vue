@@ -79,9 +79,10 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { mail } from '@/utils/validations'
+import {mail} from '@/utils/validations'
 import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 export default {
   name: 'NewNotificationTemplate',
   components: {

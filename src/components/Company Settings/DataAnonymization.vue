@@ -60,6 +60,7 @@
 
 <script>
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+
 export default {
   name: 'DataAnonymization',
   components: {

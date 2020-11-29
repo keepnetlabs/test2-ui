@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { maxLength, minLength } from '@/utils/validations'
+import {maxLength, minLength} from '@/utils/validations'
 
 export default {
   name: 'PhoneNumber',
