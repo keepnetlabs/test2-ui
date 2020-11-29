@@ -21,7 +21,7 @@ Vue.use(VueTelInputVuetify, {
 })
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
-//dynamic kullanımda bindingi gelmiyordu
+//dynamic kullanımda bindingi gelmiyodu
 Vue.component('VSelect', VSelect)
 Vue.component('VAutocomplete', VAutocomplete)
 Vue.component('VCombobox', VCombobox)
