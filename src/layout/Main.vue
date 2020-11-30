@@ -91,9 +91,9 @@
             @click="openPasswordChange = false"
             >{{ labels.Cancel }}</v-btn
           >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword"
-            >CONFIRM</v-btn
-          >
+          <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword">{{
+            labels.Confirm
+          }}</v-btn>
         </div>
       </template>
     </app-dialog>

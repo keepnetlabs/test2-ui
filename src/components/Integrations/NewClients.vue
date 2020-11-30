@@ -92,7 +92,7 @@
         </v-btn>
         <div class="new-client__footer__right-col">
           <v-btn class="new-client__footer-btn-save" color="#2196f3" rounded @click="submit">
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </div>

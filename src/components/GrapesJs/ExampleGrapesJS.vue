@@ -11,11 +11,11 @@
       </template>
       <template v-slot:overlay-footer>
         <v-btn class="new-integration__footer-btn-cancel" rounded @click="showModalGrapes = false">
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
           <v-btn class="new-integration__footer-btn-save white--text" color="#2196f3" rounded>
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>
@@ -36,7 +36,7 @@
           rounded
           @click="showWebPageGrapes = false"
         >
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
           <v-btn
@@ -45,7 +45,7 @@
             rounded
             type="button"
           >
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>
@@ -64,11 +64,13 @@
 import GrapesWebPageModal from './WebPage/GrapesWebPageModal'
 import GrapesNewsletterModal from './Newsletter/GrapesNewsletterModal'
 import AppModal from '../AppModal'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'ExampleGrapesJS',
   data() {
     return {
+      labels,
       showModalGrapes: false,
       showWebPageGrapes: false
     }

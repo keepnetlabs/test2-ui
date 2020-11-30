@@ -17,7 +17,7 @@ export default {
   props: {
     actionButtonText: {
       type: String,
-      default: 'CONFIRM'
+      default: labels.Confirm
     }
   },
   data() {

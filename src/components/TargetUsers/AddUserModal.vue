@@ -12,10 +12,10 @@
           :title="editData ? 'Edit  User Manually' : 'Add New User Manually'"
           sub-title="Define user properties"
         />
-        <form-group title="First Name" has-hint>
+        <form-group :title="labels.FirstName" has-hint>
           <InputFirstName v-model.trim="formValues.firstName" id="firstName" />
         </form-group>
-        <form-group title="Last Name" has-hint>
+        <form-group :title="labels.LastName" has-hint>
           <InputLastName v-model.trim="formValues.lastName" id="lastName" />
         </form-group>
         <form-group has-hint title="Email">
@@ -134,7 +134,7 @@
         rounded
         @click="submit"
       >
-        SAVE
+        {{ labels.Save }}
       </v-btn>
     </template>
   </app-modal>

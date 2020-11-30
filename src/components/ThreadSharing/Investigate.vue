@@ -427,7 +427,7 @@
           labels.Cancel
         }}</v-btn>
         <v-btn v-if="step === 1" class="create-btn" text color="#2196f3" @click="onContinue"
-          >NEXT
+          >{{ labels.Next }}
         </v-btn>
         <div v-if="step === 2">
           <v-btn
@@ -436,7 +436,7 @@
             text
             color="#2196f3"
             @click="step = 1"
-            >BACK
+            >{{ labels.Back }}
           </v-btn>
           <v-btn class="create-btn" text color="#2196f3" @click="onStart">START</v-btn>
         </div>

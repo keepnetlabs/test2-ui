@@ -11,7 +11,9 @@
     </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-        <v-btn class="users__button" text color="#f56c6c" @click="closeOverlay">CANCEL</v-btn>
+        <v-btn class="users__button" text color="#f56c6c" @click="closeOverlay">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn class="users__button" text color="#2196f3" @click="handleDelete">DELETE</v-btn>
       </div>
     </template>
@@ -20,10 +22,17 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'DeleteSystemUserRoleModal',
   components: {
     AppDialog
+  },
+  data() {
+    return {
+      labels
+    }
   },
   props: {
     status: {

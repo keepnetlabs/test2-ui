@@ -5,7 +5,7 @@
     </v-btn>
     <div class="app-modal-footer__right-col">
       <v-btn class="app-modal-footer__btn-save" color="#2196f3" rounded @click="submit">
-        SAVE
+        {{ labels.Save }}
       </v-btn>
     </div>
   </div>

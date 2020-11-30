@@ -61,9 +61,9 @@
           text
           >{{ labels.Cancel }}</v-btn
         >
-        <v-btn class="new-user-group__button mr-n4" @click="handleSave" color="#2196f3" text
-          >SAVE</v-btn
-        >
+        <v-btn class="new-user-group__button mr-n4" @click="handleSave" color="#2196f3" text>{{
+          labels.Save
+        }}</v-btn>
       </div>
     </template>
   </app-dialog>

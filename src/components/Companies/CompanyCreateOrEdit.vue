@@ -494,7 +494,7 @@
           color="cyan"
           @click="prevStep"
         >
-          BACK
+          {{ labels.Back }}
         </v-btn>
 
         <v-btn
@@ -505,7 +505,7 @@
           color="#2196f3"
           @click="nextStep"
         >
-          NEXT
+          {{ labels.Next }}
         </v-btn>
 
         <v-btn
@@ -515,7 +515,7 @@
           color="#2196f3"
           @click="handleSave"
         >
-          SAVE
+          {{ labels.Save }}
         </v-btn>
       </div>
     </div>

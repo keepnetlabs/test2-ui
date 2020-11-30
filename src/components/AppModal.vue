@@ -27,7 +27,7 @@
               {{ labels.Cancel }}
             </v-btn>
             <v-btn class="k-overlay__btn-save white--text" color="#2196f3" rounded @click="submit">
-              SAVE
+              {{ labels.Save }}
             </v-btn>
           </slot>
         </div>

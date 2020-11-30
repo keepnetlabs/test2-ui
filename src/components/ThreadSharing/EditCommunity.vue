@@ -128,7 +128,7 @@
       </v-list-item>
       <div class="d-flex flex-row flex-wrap justify-end">
         <v-btn text color="#f56c6c" @click="onCancelClicked">{{ labels.Cancel }}</v-btn>
-        <v-btn text color="#2196f3" @click="onSaveClicked">SAVE</v-btn>
+        <v-btn text color="#2196f3" @click="onSaveClicked">{{ labels.Save }}</v-btn>
       </div>
     </v-card>
   </div>

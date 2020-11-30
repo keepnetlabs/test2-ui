@@ -49,7 +49,7 @@
             rounded
             v-if="step > 1"
           >
-            BACK
+            {{ labels.Back }}
           </v-btn>
           <v-btn
             @click="changeStep(+1)"
@@ -58,7 +58,7 @@
             rounded
             v-if="step < 2"
           >
-            NEXT
+            {{ labels.Next }}
           </v-btn>
           <v-btn
             @click="submit"
@@ -67,7 +67,7 @@
             rounded
             v-if="step === 2"
           >
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>

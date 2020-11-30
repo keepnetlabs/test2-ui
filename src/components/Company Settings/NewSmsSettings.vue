@@ -62,7 +62,7 @@
           rounded
           @click="submit"
         >
-          SAVE
+          {{ labels.Save }}
         </v-btn>
       </div>
     </template>

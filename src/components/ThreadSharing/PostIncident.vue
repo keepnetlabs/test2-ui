@@ -25,7 +25,7 @@
             rounded
             @click="saveGrapesJs()"
           >
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>

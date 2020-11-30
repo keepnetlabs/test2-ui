@@ -48,7 +48,7 @@
             text
             v-if="editMode"
             :disabled="isSaveButtonDisabled"
-            >SAVE
+            >{{ labels.Save }}
           </v-btn>
         </div>
       </div>

@@ -77,7 +77,7 @@
           class="delete-user__footer-button"
           style="padding: 0;"
           text
-          >SAVE</v-btn
+          >{{ labels.Save }}</v-btn
         >
       </div>
     </template>

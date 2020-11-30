@@ -132,8 +132,12 @@
           text
           >{{ labels.Cancel }}</v-btn
         >
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="onClickSelectedAccount(value)"
-          >CONFIRM</v-btn
+        <v-btn
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="onClickSelectedAccount(value)"
+          >{{ labels.Confirm }}</v-btn
         >
       </div>
     </v-card>
