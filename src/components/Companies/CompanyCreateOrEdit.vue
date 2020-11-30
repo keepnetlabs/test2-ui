@@ -40,13 +40,13 @@
               <v-form ref="refStep1Form" lazy-validation>
                 <v-list-item class="mt-6">
                   <v-list-item-content>
-                    <label class="bottom-margin">Company Name</label>
+                    <label class="bottom-margin"></label>
                     <InputCompany v-model.trim="formData.Name" />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">Description</label>
+                    <label class="bottom-margin">{{ labels.Description }}</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Describe the company briefly
                     </v-list-item-title>
@@ -65,7 +65,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label class="bottom-margin">Industry</label>
+                    <label class="bottom-margin">{{ labels.Industry }}</label>
                     <k-select
                       type="autocomplete"
                       :items="industries"
@@ -477,7 +477,7 @@
           rounded
           color="error"
           @click="$emit('cancelForm')"
-          >CANCEL</v-btn
+          >{{ labels.Cancel }}</v-btn
         >
       </div>
 
@@ -490,7 +490,7 @@
           color="cyan"
           @click="prevStep"
         >
-          BACK
+          {{ labels.Back }}
         </v-btn>
 
         <v-btn
@@ -501,7 +501,7 @@
           color="#2196f3"
           @click="nextStep"
         >
-          NEXT
+          {{ labels.Next }}
         </v-btn>
 
         <v-btn
@@ -511,7 +511,7 @@
           color="#2196f3"
           @click="handleSave"
         >
-          SAVE
+          {{ labels.Save }}
         </v-btn>
       </div>
     </div>
@@ -527,6 +527,7 @@ import {getLookupListByTypeIdList} from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
+import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 
 export default {
@@ -539,6 +540,7 @@ export default {
   components: { KSelect, InputCompany, InputUrl, KFileUpload, InputDate },
   data() {
     return {
+      labels,
       stepLock: false,
       totalStep: 4,
       activeStep: 1,

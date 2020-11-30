@@ -130,10 +130,14 @@
           class="delete-user__footer-button"
           @click="setSwitchDialog(false)"
           text
-          >CANCEL</v-btn
+          >{{ labels.Cancel }}</v-btn
         >
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="onClickSelectedAccount(value)"
-          >CONFIRM</v-btn
+        <v-btn
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="onClickSelectedAccount(value)"
+          >{{ labels.Confirm }}</v-btn
         >
       </div>
     </v-card>
@@ -141,15 +145,18 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { getCompanyList } from '../api/company'
 import PostCardLoading from './SkeletonLoading/PostCardLoading'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'SwitchAccount',
   data() {
     return {
+      labels,
       value: null,
       keys: ['name'],
       itemsPerPageOptions: [4, 8, 12],

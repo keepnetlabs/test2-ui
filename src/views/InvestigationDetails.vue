@@ -30,7 +30,7 @@
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
                 <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToDelete = false"
-                  >CANCEL
+                  >{{ labels.Cancel }}
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
@@ -150,7 +150,7 @@
                   color="#f56c6c"
                   @click="isWantToWarnAndDelete = false"
                 >
-                  CANCEL
+                  {{ labels.Cancel }}
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
@@ -896,6 +896,8 @@ import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/In
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
 import ThreeRowLoading from '../components/SkeletonLoading/ThreeRowLoading'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import labels from '@/model/constants/labels'
+
 export default {
   components: {
     AppDialogFooter,
@@ -908,6 +910,7 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    labels,
     isColumnFilterActive: false,
     isColumnFilterActiveTargetUsers: false,
     loading: true,

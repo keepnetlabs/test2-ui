@@ -53,7 +53,7 @@
               @click="isShowRoi = false"
               color="#f56c6c"
               text
-              >CANCEL</v-btn
+              >{{ labels.Cancel }}</v-btn
             >
             <v-btn class="mr-n2 download-modal__button" @click="submitRoiModal" color="#2196f3" text
               >Save</v-btn
@@ -602,26 +602,29 @@
   </div>
 </template>
 <script>
-import { getRoiSettings, updateNotifiedEmail, updateRoiSettings } from '../api/incidentResponder'
+import {
+  getMatchingIncidents,
+  getRoiSettings,
+  getRunningInvestigations,
+  getTopRules,
+  searchNotifiedMail,
+  updateNotifiedEmail,
+  updateRoiSettings
+} from '../api/incidentResponder'
 import { checkPermission, getDataTableFieldLabel } from '../utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
-import {
-  getTopRules,
-  getRunningInvestigations,
-  searchNotifiedMail,
-  getMatchingIncidents
-} from '../api/incidentResponder'
 import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { startsWith, required } from '../utils/validations'
+import { required, startsWith } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
-import IRSummaryLoading from '../components/SkeletonLoading/IRSummaryLoading'
+import labels from '@/model/constants/labels'
+
 export default {
   components: {
     Datatable,
@@ -634,6 +637,7 @@ export default {
   },
 
   data: () => ({
+    labels,
     topRulesLoading: true,
     investigationsLoading: true,
     investigationsData: [],

@@ -12,10 +12,10 @@
           :title="editData ? 'Edit  User Manually' : 'Add New User Manually'"
           sub-title="Define user properties"
         />
-        <form-group title="First Name" has-hint>
+        <form-group :title="labels.FirstName" has-hint>
           <InputFirstName v-model.trim="formValues.firstName" id="firstName" />
         </form-group>
-        <form-group title="Last Name" has-hint>
+        <form-group :title="labels.LastName" has-hint>
           <InputLastName v-model.trim="formValues.lastName" id="lastName" />
         </form-group>
         <form-group has-hint title="Email">
@@ -126,7 +126,7 @@
     </template>
     <template v-slot:overlay-footer>
       <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
-        CANCEL
+        {{ labels.Cancel }}
       </v-btn>
       <v-btn
         class="add-user-overlay__footer-btn-save white--text"
@@ -134,18 +134,18 @@
         rounded
         @click="submit"
       >
-        SAVE
+        {{ labels.Save }}
       </v-btn>
     </template>
   </app-modal>
 </template>
 
 <script>
-import {mail, maxLength, required} from '@/utils/validations'
-import {createTargetUser, getTargetGroups, updateTargetUser} from '@/api/targetUsers'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import { mail, maxLength, required } from '@/utils/validations'
+import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import {scrollToComponent} from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
@@ -153,6 +153,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputDate from '@/components/Common/Inputs/InputDate'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'AddUserModal',
@@ -187,6 +188,7 @@ export default {
   },
   data() {
     return {
+      labels,
       formValues: {
         firstName: '',
         lastName: '',

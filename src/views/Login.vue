@@ -263,7 +263,7 @@
                     "
                   >
                     <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
-                    BACK
+                    {{ labels.Back }}
                   </v-btn>
                   <v-btn color="blue" class="pl-4 white--text" rounded @click="onTwoStepLogin">
                     LOGIN
@@ -367,7 +367,7 @@
               <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
                 <div class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
-                  BACK
+                  {{ labels.Back }}
                 </div>
               </div>
             </v-card>
@@ -387,12 +387,14 @@ import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../a
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'Login',
   components: { VueRecaptcha, PasswordChecker, InputEmail },
   data() {
     return {
+      labels,
       showReNewPassword: false,
       isPasswordStep5Complete: false,
       blurConfirm: false,

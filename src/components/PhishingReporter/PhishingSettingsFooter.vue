@@ -14,7 +14,7 @@
     />
     <div class="add-in-settings__footer mr-2" :class="className">
       <v-btn @click="submit" class="white--text btn-util btn-save-changes" color="#2196f3" rounded>
-        SAVE CHANGES
+        {{ labels.Save }} CHANGES
       </v-btn>
       <v-btn
         @click="submitWithDownload"
@@ -35,6 +35,8 @@
 <script>
 import ReporterVersionModal from '@/components/PhishingReporter/Settings/ReporterVersionModal'
 import VersionHistoryModal from './Settings/VersionHistoryModal'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'PhishingSettingsFooter',
   components: {
@@ -43,6 +45,7 @@ export default {
   },
   data() {
     return {
+      labels,
       versionHistoryModalStatus: false,
       selectedVersionRow: null,
       reporterVersionModalStatus: false

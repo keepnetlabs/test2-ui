@@ -29,7 +29,7 @@
         </v-list-item>
         <div class="d-flex flex-row flex-wrap justify-end">
           <v-btn id="privacy-cancel-all-btn" text color="#f56c6c" @click="cancelPrivateToPublic()"
-            >CANCEL
+            >{{ labels.Cancel }}
           </v-btn>
           <v-btn id="privacy-accept-all-btn" text color="#2196f3" @click="privateToPublic = false"
             >ACCEPT ALL
@@ -127,8 +127,8 @@
         </v-list-item-content>
       </v-list-item>
       <div class="d-flex flex-row flex-wrap justify-end">
-        <v-btn text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
-        <v-btn text color="#2196f3" @click="onSaveClicked">SAVE</v-btn>
+        <v-btn text color="#f56c6c" @click="onCancelClicked">{{ labels.Cancel }}</v-btn>
+        <v-btn text color="#2196f3" @click="onSaveClicked">{{ labels.Save }}</v-btn>
       </div>
     </v-card>
   </div>
@@ -136,11 +136,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   components: { KSelect },
   data() {
     return {
+      labels,
       name: '',
       communId: '',
       description: '',

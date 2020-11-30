@@ -64,8 +64,12 @@
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
-        <v-btn @click="changeStatus(false)" color="#f56c6c" class="delete-user__footer-button" text
-          >CANCEL</v-btn
+        <v-btn
+          @click="changeStatus(false)"
+          color="#f56c6c"
+          class="delete-user__footer-button"
+          text
+          >{{ labels.Cancel }}</v-btn
         >
         <v-btn
           @click="save"
@@ -73,7 +77,7 @@
           class="delete-user__footer-button"
           style="padding: 0;"
           text
-          >SAVE</v-btn
+          >{{ labels.Save }}</v-btn
         >
       </div>
     </template>
@@ -90,6 +94,7 @@ import {
 } from '@/api/company'
 import { maxLength, required, startsWithSpace } from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'CreateItemModal',
@@ -114,6 +119,7 @@ export default {
   },
   data() {
     return {
+      labels,
       search: null,
       groupName: '',
       companies: [],

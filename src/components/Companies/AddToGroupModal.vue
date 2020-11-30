@@ -36,8 +36,12 @@
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
-        <v-btn @click="changeStatus(false)" color="#f56c6c" class="delete-user__footer-button" text
-          >CANCEL</v-btn
+        <v-btn
+          @click="changeStatus(false)"
+          color="#f56c6c"
+          class="delete-user__footer-button"
+          text
+          >{{ labels.Cancel }}</v-btn
         >
         <v-btn
           @click="confirm"
@@ -45,7 +49,7 @@
           color="#2196f3"
           class="delete-user__footer-button"
           text
-          >CONFIRM</v-btn
+          >{{ labels.Confirm }}</v-btn
         >
       </div>
     </template>
@@ -54,9 +58,10 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { getCompanyGroups, updateCompanyGroup } from '../../api/company'
+import {getCompanyGroups, updateCompanyGroup} from '../../api/company'
 import Datatable from '../../components/DataTable'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'AddGroupToModal',
@@ -74,6 +79,7 @@ export default {
   },
   data() {
     return {
+      labels,
       selectedArray: [],
       showTable: false,
       tableOptions: {
