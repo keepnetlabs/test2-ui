@@ -14,7 +14,7 @@
             color="#f56c6c"
             class="k-dialog__button"
             @click=";(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
-            >CANCEL</v-btn
+            >{{ labels.Cancel }}</v-btn
           >
           <v-btn text color="#2196f3" class="k-dialog__button" @click="isWantToAccept = false"
             >Accept All</v-btn
@@ -138,7 +138,9 @@
       </v-card>
     </div>
     <div class="footer-actions">
-      <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
+      <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
+        labels.Cancel
+      }}</v-btn>
       <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">{{
         resourceId ? 'Update' : 'Create'
       }}</v-btn>
@@ -151,6 +153,7 @@ import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 import { scrollToComponent } from '../../utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   components: {
@@ -167,6 +170,7 @@ export default {
   },
   data() {
     return {
+      labels,
       termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
       isWantToAccept: false,
       oldPrivacyValue: null,
