@@ -605,7 +605,7 @@
   </v-app>
 </template>
 <script>
-import {mapActions, mapGetters} from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
 import SessionExpired from '../components/SessionExpired'
@@ -620,8 +620,8 @@ import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import AppDialog from '../components/AppDialog'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import {updatePassword} from '../api/auth'
-import {COMMON_CONSTANTS} from '../model/constants/commonConstants'
+import { updatePassword } from '../api/auth'
+import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import Breadcrumb from '@/components/Breadcrumb'
 import labels from '@/model/constants/labels'
 

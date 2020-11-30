@@ -145,8 +145,8 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from 'vuex'
-import {getCompanyList} from '../api/company'
+import { mapActions, mapGetters, mapState } from 'vuex'
+import { getCompanyList } from '../api/company'
 import PostCardLoading from './SkeletonLoading/PostCardLoading'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'

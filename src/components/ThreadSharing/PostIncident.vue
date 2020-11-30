@@ -1851,13 +1851,13 @@ import {
   updateCommunityPost,
   uploadEmlOrMsg
 } from '../../api/threadSharing'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
 import labels from '@/model/constants/labels'
 import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
-import {incidenPostReviewElementBind, scrollToComponent} from '../../utils/functions'
+import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 

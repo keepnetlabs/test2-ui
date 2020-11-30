@@ -610,9 +610,9 @@ import {
   refuseInvitation,
   removeFromCommunities
 } from '../../api/threadSharing'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
-import {isOwner, isOwnerOrMember} from '../../utils/functions'
+import { isOwner, isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'

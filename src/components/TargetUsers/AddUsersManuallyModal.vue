@@ -79,7 +79,7 @@
 
 <script>
 import DataTable from '../../components/DataTable'
-import {getStoreValue} from '../../model/constants/commonConstants'
+import { getStoreValue } from '../../model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 export default {

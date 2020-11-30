@@ -902,6 +902,8 @@
 import VClamp from 'vue-clamp'
 import NewInvestigation from '../Investigation/NewInvestigation'
 import KShadowFrame from '../KShadowFrame'
+import { mapGetters } from 'vuex'
+import vueCustomElement from 'vue-custom-element'
 import AppDialog from '../AppDialog'
 import labels from '@/model/constants/labels'
 import {
@@ -915,8 +917,8 @@ import {
   shareAPost,
   updateComments
 } from '../../api/threadSharing'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
-import {incidenPostReviewElementBind, isOwner, isPostedByMe} from '../../utils/functions'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { incidenPostReviewElementBind, isOwner, isPostedByMe } from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from './AttachmentsPreview'

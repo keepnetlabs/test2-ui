@@ -358,7 +358,7 @@ import {
   refuseCommunityMembershipRequest,
   removeFromCommunity
 } from '../../api/threadSharing'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
 import labels from '@/model/constants/labels'
 

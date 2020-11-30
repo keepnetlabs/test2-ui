@@ -101,8 +101,8 @@
 </template>
 
 <script>
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
-import {createClient, updateClient} from '../../api/clients'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { createClient, updateClient } from '../../api/clients'
 import labels from '@/model/constants/labels'
 
 export default {

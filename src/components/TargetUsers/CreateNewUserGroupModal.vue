@@ -71,7 +71,7 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import {maxLength, required} from '@/utils/validations'
+import { maxLength, required } from '@/utils/validations'
 import labels from '@/model/constants/labels'
 
 export default {

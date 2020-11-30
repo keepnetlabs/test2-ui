@@ -583,7 +583,12 @@
   ]
    */
 import Badge from './Badge'
-import {getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel, getTextColor} from '../utils/functions'
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getDataTableFieldLabel,
+  getTextColor
+} from '../utils/functions'
 import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'

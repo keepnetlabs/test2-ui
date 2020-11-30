@@ -148,10 +148,10 @@
   </div>
 </template>
 <script>
-import {createCommunity, listBusinessCategories, updateCommunity} from '../../api/threadSharing'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import { createCommunity, listBusinessCategories, updateCommunity } from '../../api/threadSharing'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
-import {scrollToComponent} from '../../utils/functions'
+import { scrollToComponent } from '../../utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 

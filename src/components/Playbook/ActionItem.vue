@@ -308,11 +308,15 @@
 </template>
 
 <script>
-import {getAnalysisEngine} from '../../api/playbook'
+import { getAnalysisEngine } from '../../api/playbook'
 import AppDialog from '../AppDialog'
 import Investigate from './Investigate'
-import {required} from '../../utils/validations'
-import {getTargetGroups, getTargetGroupsByName, getTargetUsersByEmail} from '../../api/targetUsers'
+import { required } from '../../utils/validations'
+import {
+  getTargetGroups,
+  getTargetGroupsByName,
+  getTargetUsersByEmail
+} from '../../api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 

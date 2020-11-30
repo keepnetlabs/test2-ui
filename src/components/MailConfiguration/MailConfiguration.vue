@@ -294,7 +294,7 @@
 <script>
 import Datatable from '../../components/DataTable'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import {COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import {
@@ -304,10 +304,10 @@ import {
   getMailConfigurationList,
   updateO365
 } from '@/api/mailConfiguration'
-import {mail, required} from '@/utils/validations'
+import { mail, required } from '@/utils/validations'
 import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import {scrollToComponent} from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 

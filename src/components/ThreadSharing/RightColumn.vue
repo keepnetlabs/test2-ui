@@ -474,7 +474,7 @@
   </div>
 </template>
 <script>
-import {mapGetters, mapState} from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import {
   deleteCommunity,
   getCommunityDetails,
@@ -486,8 +486,8 @@ import {
   removeFromCommunities
 } from '../../api/threadSharing'
 import AppDialog from '../AppDialog'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
-import {isOwner} from '../../utils/functions'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { isOwner } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import CommunitiesCardLoading from '../SkeletonLoading/CommunitiesCardLoading'
 import PostCardLoading from '../SkeletonLoading/PostCardLoading'

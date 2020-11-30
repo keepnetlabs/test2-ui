@@ -141,11 +141,11 @@
 </template>
 
 <script>
-import {mail, maxLength, required} from '@/utils/validations'
-import {createTargetUser, getTargetGroups, updateTargetUser} from '@/api/targetUsers'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import { mail, maxLength, required } from '@/utils/validations'
+import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import {scrollToComponent} from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'

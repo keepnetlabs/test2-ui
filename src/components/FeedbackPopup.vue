@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
-import {sendFeedback} from '../api/dashboard'
+import { mapActions } from 'vuex'
+import { sendFeedback } from '../api/dashboard'
 import labels from '@/model/constants/labels'
 
 export default {

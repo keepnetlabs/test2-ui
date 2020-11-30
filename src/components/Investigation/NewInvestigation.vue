@@ -280,10 +280,14 @@
 </template>
 <script>
 import AppModal from '../AppModal'
-import {getTargetGroups, getTargetGroupsByName, getTargetUsersByEmail} from '../../api/targetUsers'
-import {getInvestigationScanTypes} from '@/api/investigations'
+import {
+  getTargetGroups,
+  getTargetGroupsByName,
+  getTargetUsersByEmail
+} from '../../api/targetUsers'
+import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import {scrollToComponent} from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 

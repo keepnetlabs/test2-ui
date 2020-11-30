@@ -129,7 +129,7 @@ import {
   createTargetUserCustomField,
   getTargetUserCustomFieldsByCompanyId
 } from '@/api/targetUsers'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import CustomFieldsLoading from '@/components/SkeletonLoading/CustomFieldsLoading'
 import labels from '@/model/constants/labels'
 

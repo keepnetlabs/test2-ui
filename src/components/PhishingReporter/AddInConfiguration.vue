@@ -143,7 +143,7 @@ import {
   generateDiagnosticTool,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import labels from '@/model/constants/labels'

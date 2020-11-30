@@ -59,8 +59,12 @@
 import DataTable from '../DataTable'
 import NewClients from './NewClients'
 import AppDialog from '../AppDialog'
-import {COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE} from '../../model/constants/commonConstants'
-import {deleteClient, exportClientList, getClientList} from '../../api/clients'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
+import { deleteClient, exportClientList, getClientList } from '../../api/clients'
 import labels from '@/model/constants/labels'
 
 export default {

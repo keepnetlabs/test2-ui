@@ -134,8 +134,8 @@
 import AppModal from '../AppModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '../SmallComponents/FormGroup'
-import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
-import {uploadExcelOrCsvForTargetUsers} from '../../api/targetUsers'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import { uploadExcelOrCsvForTargetUsers } from '../../api/targetUsers'
 import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 

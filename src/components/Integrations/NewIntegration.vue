@@ -390,9 +390,9 @@ import {
   testAnalysis,
   updateIntegration
 } from '@/api/integrations'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import {scrollToComponent} from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
