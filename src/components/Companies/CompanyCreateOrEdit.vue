@@ -239,19 +239,15 @@
                         prop="LicenseDates"
                         :error="datePickerValidation()"
                       >
-                        <el-date-picker
+                        <InputDate
                           v-model="LicenseDates"
-                          start-placeholder="Start Date"
-                          end-placeholder="End Date"
                           type="daterange"
                           :picker-options="datePickerOptions"
-                          :default-time="['00:00:00']"
                           :rules="[(v) => !!v || 'Required']"
                           value-format="yyyy-MM-dd"
+                          format="yyyy-MM-dd"
                           @change="dataPickerChange"
                           :disabled="stepLock"
-                          hint="*Required"
-                          persistent-hint
                         />
                       </el-form-item>
                     </el-form>
@@ -523,14 +519,15 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
+import {createCompany, getCompanyGroups, searchCompanies, updateCompany} from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeIdList } from '@/api/common'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import {scrollToComponent} from '@/utils/functions'
+import {getLookupListByTypeIdList} from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
+import InputDate from '@/components/Common/Inputs/InputDate'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -539,7 +536,7 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KSelect, InputCompany, InputUrl, KFileUpload },
+  components: { KSelect, InputCompany, InputUrl, KFileUpload, InputDate },
   data() {
     return {
       stepLock: false,
