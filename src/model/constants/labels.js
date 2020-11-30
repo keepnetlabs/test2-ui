@@ -6,6 +6,7 @@ export const labels = {
   Next: 'NEXT',
   Prev: 'PREV',
   Back: 'BACK',
+  Name: 'Name',
   Description: 'Description',
   Industry: 'Industry',
   Country: 'Country',
@@ -13,7 +14,33 @@ export const labels = {
   WebsiteUrl: 'Website URL',
   FirstName: 'First Name',
   LastName: 'Last Name',
-  CompanyGroup: 'Company Group'
+  CompanyGroup: 'Company Group',
+  User: 'User',
+  Users: 'Users',
+  Setting: 'Setting',
+  Settings: 'Settings',
+  Latest: 'Latest',
+  Release: 'Release',
+  AddIn: 'Add-in',
+  General: 'General',
+  Brand: 'Brand',
+  Installation: 'Installation',
+  Configuration: 'Configuration',
+  And: 'and',
+  Guide: 'Guide',
+  Logo: 'Logo',
+  Heading: 'Heading',
+  DialogBox: 'Dialog Box',
+  Offline: 'Offline',
+  Online: 'Online',
+  Required: 'Required',
+  AlertBox: 'Alertbox',
+  InvalidEmailAddress: 'Invalid email address',
+  SaveAndDownload: 'Save and Download',
+  SaveChanges: 'Save Changes',
+  getMaxLengthMessage(val = '', length = 64) {
+    return `${val} cannot exceed ${length} characters`
+  }
 }
 
 export default labels

@@ -44,19 +44,29 @@
           <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.to"
+            :persistent-hint="formValues.isSendInformationEmail"
+            :hint="formValues.isSendInformationEmail ? '*Required' : ''"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
                   ? [
-                      (v) => this.validations.mail(v, 'Invalid recipient email address'),
+                      (v) => this.validations.mail(v, labels.InvalidEmailAddress),
                       (v) =>
-                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters'),
-                      (v) => this.validations.required(v, 'Required')
+                        this.validations.maxLength(
+                          v,
+                          64,
+                          labels.getMaxLengthMessage('Email address')
+                        ),
+                      (v) => this.validations.required(v, labels.Required)
                     ]
                   : [
-                      (v) => this.validations.mail(v, 'Invalid recipient email address'),
+                      (v) => this.validations.mail(v, labels.InvalidEmailAddress),
                       (v) =>
-                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                        this.validations.maxLength(
+                          v,
+                          64,
+                          labels.getMaxLengthMessage('Email address')
+                        )
                     ]
                 : []
             "
@@ -70,11 +80,14 @@
           <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.cc"
+            :persistent-hint="false"
+            :hint="''"
             :rules="
               showForm
                 ? [
-                    (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
-                    (v) => validations.mail(v, 'Invalid  email address')
+                    (v) =>
+                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address')),
+                    (v) => validations.mail(v, labels.InvalidEmailAddress)
                   ]
                 : []
             "
@@ -89,11 +102,14 @@
             class="k-textfield mt-2"
             v-model.trim="formValues.bcc"
             :readonly="!showForm"
+            :persistent-hint="false"
+            :hint="''"
             :rules="
               showForm
                 ? [
-                    (v) => validations.maxLength(v, 255, 'It must be maximum 55 characters'),
-                    (v) => validations.mail(v, 'Invalid  email address')
+                    (v) =>
+                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address')),
+                    (v) => validations.mail(v, labels.InvalidEmailAddress)
                   ]
                 : []
             "
@@ -107,17 +123,27 @@
             placeholder="Suspicious Email"
             class="k-textfield mt-2"
             v-model.trim="formValues.subject"
+            :persistent-hint="formValues.isSendInformationEmail"
+            :hint="formValues.isSendInformationEmail ? '*Required' : ''"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
                   ? [
                       (v) =>
-                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters'),
-                      (v) => this.validations.required(v, 'Required')
+                        this.validations.maxLength(
+                          v,
+                          64,
+                          labels.getMaxLengthMessage('Email subject')
+                        ),
+                      (v) => this.validations.required(v, labels.Required)
                     ]
                   : [
                       (v) =>
-                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                        this.validations.maxLength(
+                          v,
+                          64,
+                          labels.getMaxLengthMessage('Email subject')
+                        )
                     ]
                 : []
             "
@@ -134,18 +160,28 @@
             dense
             no-resize
             class="mt-2"
+            :persistent-hint="formValues.isSendInformationEmail"
+            :hint="formValues.isSendInformationEmail ? '*Required' : ''"
             v-model.trim="formValues.content"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
                   ? [
                       (v) =>
-                        this.validations.maxLength(v, 255, 'It must between 1 - 1000 characters'),
-                      (v) => this.validations.required(v, 'Required')
+                        this.validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Message', 256)
+                        ),
+                      (v) => this.validations.required(v, labels.Required)
                     ]
                   : [
                       (v) =>
-                        this.validations.maxLength(v, 255, 'It must between 1 - 255 characters')
+                        this.validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Message', 256)
+                        )
                     ]
                 : []
             "
@@ -167,7 +203,7 @@
 import { mail, maxLength, required } from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'EmailSettings',
   components: {
@@ -210,6 +246,7 @@ export default {
   },
   data() {
     return {
+      labels,
       formValues: {
         to: '',
         cc: '',
@@ -304,7 +341,7 @@ export default {
   }
 
   &__header {
-    font-size: 24px;
+    font-size: 24px !important;
     line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;

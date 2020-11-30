@@ -23,7 +23,7 @@
         rounded
       >
         <v-icon left>mdi-download</v-icon>
-        Save and Download
+        {{ labels.SaveAndDownload }}
       </v-btn>
       <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
         DOWNLOAD History
