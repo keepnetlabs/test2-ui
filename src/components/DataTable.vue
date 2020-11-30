@@ -618,6 +618,7 @@
                       class="btn-hover"
                       icon
                       v-on="on"
+                      :disabled="rowActions[0].disabled"
                     >
                       <v-icon :class="rowActions[0].className">{{ rowActions[0].icon }}</v-icon>
                     </v-btn>

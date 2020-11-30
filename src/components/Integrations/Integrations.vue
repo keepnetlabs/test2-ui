@@ -55,11 +55,19 @@
       :isServerSide="false"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      :download-button="tableOptions.downloadButton"
+      v-if="checkPermissions('analysis-engines/search', 'POST')"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn @click="handleEdit(scope.row)" class="btn-hover" icon v-on="on">
+            <v-btn
+              @click="handleEdit(scope.row)"
+              class="btn-hover"
+              icon
+              v-on="on"
+              :disabled="tableOptions.rowActions[0].disabled"
+            >
               <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
             </v-btn>
           </template>
@@ -72,7 +80,7 @@
             </v-btn>
           </template>
           <v-list class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions">
-            <v-list-item class="sub-menu-el">
+            <v-list-item class="sub-menu-el" :disabled="tableOptions.rowActions[1].disabled">
               <v-list-item-title
                 @click="
                   scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
@@ -86,7 +94,7 @@
                 <span>{{ scope.row.status === 'Active' ? 'Inactive' : 'Active' }}</span>
               </v-list-item-title>
             </v-list-item>
-            <v-list-item class="sub-menu-el">
+            <v-list-item class="sub-menu-el" :disabled="tableOptions.rowActions[2].disabled">
               <v-list-item-title @click="handleActionDelete(scope.row)">
                 <v-icon class="pr-3">mdi-delete</v-icon>
                 <span>Delete</span>
@@ -116,6 +124,7 @@ import {
   PROPERTY_STORE,
   LABEL_STORE
 } from '@/model/constants/commonConstants'
+import { checkPermission } from '../../utils/functions'
 
 export default {
   name: 'Integrations',
@@ -193,19 +202,26 @@ export default {
           {
             name: 'Edit',
             icon: 'mdi-pencil',
-            action: 'handleEdit'
+            action: 'handleEdit',
+            disabled: !this.checkPermissions('analysis-engines/{resourceId}', 'PUT')
           },
           {
             name: 'Disable',
             icon: 'mdi-minus-circle-outline',
-            action: 'disable'
+            action: 'disable',
+            disabled: !this.checkPermissions('analysis-engines/{resourceId}/disable', 'PUT')
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'deleteAction'
+            action: 'deleteAction',
+            disabled: !this.checkPermissions('analysis-engines/{resourceId}', 'DELETE')
           }
         ],
+        downloadButton: {
+          show: true,
+          disabled: !this.checkPermissions('analysis-engines/search/export', 'POST')
+        },
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -221,7 +237,8 @@ export default {
         addButton: {
           show: true,
           action: 'addAction',
-          tooltip: 'Add an integration'
+          tooltip: 'Add an integration',
+          disabled: !this.checkPermissions('analysis-engines', 'POST')
         }
       },
       modalStatus: false,
@@ -244,6 +261,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()
@@ -346,22 +366,26 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      getIntegrationList(this.bodyData)
-        .then((response) => {
-          const {
-            data: { data, status }
-          } = response
-          this.tableData = data.results || []
-          /*
-          this.bodyData.pageNumber = data.pageNumber
-          this.bodyData.pageSize = data.pageSize
-          this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-           */
-        })
-        .catch((error) => {
-          this.tableData = []
-        })
-        .finally(() => (this.loading = false))
+      if (this.checkPermissions('analysis-engines/search', 'POST')) {
+        getIntegrationList(this.bodyData)
+          .then((response) => {
+            const {
+              data: { data, status }
+            } = response
+            this.tableData = data.results || []
+            /*
+                  this.bodyData.pageNumber = data.pageNumber
+                  this.bodyData.pageSize = data.pageSize
+                  this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
+                   */
+          })
+          .catch((error) => {
+            this.tableData = []
+          })
+          .finally(() => (this.loading = false))
+      } else {
+        this.$router.push('/')
+      }
     },
     handleActionDelete(row) {
       this.selectedIntegration = row
