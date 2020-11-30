@@ -45,7 +45,6 @@ import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { searchNotifiedMail } from '@/api/incidentResponder'
 import { getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import Badge from '@/components/Badge'
-
 export default {
   name: 'RecentlyReportedIncidents',
   components: {

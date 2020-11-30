@@ -50,7 +50,7 @@
             v-model.trim="formValues.roleResourceIdList"
             hint="*Required"
             persistent-hint
-            item-text="roleName"
+            item-text="name"
             item-value="resourceId"
             :rules="[(v) => validations.required(v, 'Required')]"
           />
@@ -80,6 +80,7 @@ import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputPhone from '@/components/Common/Inputs/InputPhone'
+import { getSystemUsersRole } from '../../api/systemUsers'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -112,8 +113,6 @@ export default {
         phoneNumber: '',
         statusName: '',
         roleResourceIdList: [],
-        isTwoStep: false,
-        isLdap: false,
         statusId: 1
       },
       maxLen: 17,
@@ -255,14 +254,14 @@ export default {
     let _this = this
     let allRoles = []
     let availableRoles = []
-    getUserRoles(payload).then((response) => {
-      allRoles = response.data.data.results
+    getSystemUsersRole(payload).then((response) => {
+      allRoles = response.data.data
       availableRoles = []
       if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-        availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
+        availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
       } else if (this.$store.state.auth.userRoleName === 'Reseller') {
         availableRoles = allRoles.filter(
-          (item) => item.roleName === 'Reseller' || item.roleName === 'CompanyAdmin'
+          (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
         )
       } else if (this.$store.state.auth.userRoleName === 'Root') {
         availableRoles = allRoles
@@ -290,26 +289,26 @@ export default {
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {
-            return item.roleName.replace(/\s/g, '') === roles
+            return item.name === roles
           }).resourceId
         if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-          availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
+          availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
           if (roles === 'Reseller') {
-            availableRoles = allRoles.filter((item) => item.roleName === 'Reseller')
+            availableRoles = allRoles.filter((item) => item.name === 'Reseller')
           } else if (roles === 'Root') {
-            availableRoles = allRoles.filter((item) => item.roleName === 'Root')
+            availableRoles = allRoles.filter((item) => item.name === 'Root')
           }
         } else if (this.$store.state.auth.userRoleName === 'Reseller') {
           availableRoles = allRoles.filter(
-            (item) => item.roleName === 'Reseller' || item.roleName === 'CompanyAdmin'
+            (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
           )
           if (roles === 'Root') {
-            availableRoles = allRoles.filter((item) => item.roleName === 'Root')
+            availableRoles = allRoles.filter((item) => item.name === 'Root')
           }
         }
         this.roleItems = availableRoles.map((item) => {
           let data = {
-            roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+            name: item.name,
             resourceId: item.resourceId
           }
           return data
@@ -317,7 +316,7 @@ export default {
       } else {
         this.roleItems = availableRoles.map((item) => {
           let data = {
-            roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+            name: item.name,
             resourceId: item.resourceId
           }
           return data

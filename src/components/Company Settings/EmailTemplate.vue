@@ -215,7 +215,6 @@
 <script>
 import AppModal from '@/components/AppModal'
 import GrapesWebPageModal from '@/components/GrapesJs/WebPage/GrapesWebPageModal'
-
 export default {
   name: 'EmailTemplate',
   components: {

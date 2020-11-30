@@ -79,7 +79,6 @@
 import AppModal from '@/components/AppModal'
 import LdapInfoForm from '@/components/Company Settings/LdapInfoForm'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-
 export default {
   name: 'NewLdapIntegration',
   components: {

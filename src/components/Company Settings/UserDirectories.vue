@@ -36,7 +36,6 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import DataTable from '@/components/DataTable'
 import NewLdapIntegration from '@/components/Company Settings/NewLdapIntegration'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-
 export default {
   name: 'UserDirectories',
   components: {

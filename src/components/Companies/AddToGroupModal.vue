@@ -12,7 +12,7 @@
       <v-form ref="refFormAddToGroup" lazy-validation>
         <Datatable
           v-show="showTable"
-          :isDownloadable="false"
+          :download-button="{ show: false, disabled: false }"
           :columns="tableOptions.columns"
           :countRow="5"
           :empty="tableOptions.iEmpty"

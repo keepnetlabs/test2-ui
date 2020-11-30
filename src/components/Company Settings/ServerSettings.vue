@@ -49,7 +49,6 @@
 <script>
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-
 export default {
   name: 'ServerSettings',
   components: {

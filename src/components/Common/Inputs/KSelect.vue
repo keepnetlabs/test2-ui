@@ -18,6 +18,9 @@
     <template v-slot:item="props" v-if="slots.item">
       <slot name="item" v-bind="props" />
     </template>
+    <template v-slot:append v-if="slots.append">
+      <slot name="append" />
+    </template>
   </component>
 </template>
 

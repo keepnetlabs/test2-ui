@@ -488,7 +488,7 @@
             <div id="single-post-body" class="preview-body">
               <k-shadow-frame
                 :id="`sframe${post.communityPostResourceId}`"
-                v-bind:content="emailData.body"
+                v-bind:content="emailData.visibleBody"
               />
             </div>
             <div
@@ -911,6 +911,7 @@ import {
   deleteCommunityPost,
   getComments,
   getCommunityPost,
+  getCommunityPostPreview,
   likePost,
   shareAPost,
   updateComments
@@ -1370,7 +1371,7 @@ export default {
       if (bool) {
         this.getComments(this.post.communityPostResourceId)
         //getSelectedEmailPreview('4pDtxLYSG0mb')
-        getCommunityPost(this.post.communityPostResourceId).then((response) => {
+        getCommunityPostPreview(this.post.communityPostResourceId).then((response) => {
           const comId = this.post.communityPostResourceId
           this.postDetails = response.data.data
           this.emailData = response.data.data.communityPostEmail

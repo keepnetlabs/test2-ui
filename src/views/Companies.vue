@@ -24,7 +24,6 @@
 import CompanyList from '@/components/Companies/CompanyList'
 import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
 import CompanyGroupDetails from '@/components/CompanyGroups/CompanyGroupDetails'
-
 export default {
   name: 'Companies',
   props: {},
@@ -35,6 +34,7 @@ export default {
     }
   },
   updated() {
+    console.log('iam in')
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }

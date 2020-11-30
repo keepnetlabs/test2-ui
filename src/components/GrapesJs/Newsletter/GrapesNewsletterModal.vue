@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="form">
+  <div style="margin-bottom: 70px !important;">
+    <!--<div class="form">
       <div class="input-header">Upload Email</div>
       <div class="input-sub">.eml or .msg files only.</div>
       <div class="upload-wrapper">
@@ -26,24 +26,14 @@
         ></v-text-field>
         <v-btn @click="cloneUrlButtonCLick">Clone Url</v-btn>
       </div>
-    </div>
-    <div class="grapes-container-modal mt-5">
+    </div>-->
+    <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
       </div>
       <div id="gjsNewsletterModal"></div>
       <div id="blocksModal"></div>
     </div>
-    <iframe
-      id="inlineframe"
-      :src="cloneUrlPage"
-      frameborder="0"
-      scrolling="auto"
-      width="500"
-      height="500"
-      marginwidth="5"
-      marginheight="5"
-    ></iframe>
   </div>
 </template>
 
@@ -72,10 +62,16 @@ import exportGrapes from 'grapesjs-plugin-export'
 import { uploadEmlOrMsg } from '../../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import { setGrapesjsStyle } from './assets/css/grapesStyle'
 
 export default {
   name: 'GrapesNewsletterModal',
-  components: { KFileUpload },
+  //components: { KFileUpload },
+  props: {
+    htmlData: {
+      required: false
+    }
+  },
   data() {
     return {
       cloneUrl: null,
@@ -91,38 +87,49 @@ export default {
     }
   },
   mounted() {
-    this.editor = GrapesNewsletterModal.init({
-      container: '#gjsNewsletterModal',
-      fromElement: 1,
-      storageManager: { type: 0 },
-      plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', exportGrapes],
-      pluginsOpts: {
-        'gjs-preset-newsletter': {
-          modalTitleImport: 'Import Template',
-          importPlaceholder: 'Template Here',
-          inlineCss: true
-        }
-      }
+    this.setGrapesEditor()
+    window.addEventListener('popstate', function (event) {
+      // Log the state data to the console
+      console.log(event.state)
     })
-    let blockManager = this.editor.BlockManager
-    blockManager.add('exampleComponent', exampleComponent)
-    blockManager.add('exampleComponent2', exampleComponent2)
-    blockManager.add('to', to)
-    blockManager.add('toName', toName)
-    blockManager.add('subject', subject)
-    blockManager.add('macroFrom', macroForm)
-    blockManager.add('macroAttachment', macroAttachment)
-    blockManager.add('from', mergedFrom)
-    blockManager.add('fromName', fromName)
-    blockManager.add('customMacroAttachment', customMacroAttachment)
-    blockManager.add('trainingUrl', trainingUrl)
-    blockManager.add('phishingUrl', phishingUrl)
-    blockManager.add('macroUrl', macroUrl)
-    let pn = this.editor.Panels
-    pn.getButton('options', 'sw-visibility').set('active', 0)
-    //pn.getButton('options', 'gjs-open-import-template').set('active', 1)
   },
   methods: {
+    setGrapesEditor() {
+      this.editor = GrapesNewsletterModal.init({
+        container: '#gjsNewsletterModal',
+        fromElement: 1,
+        storageManager: { type: 0 },
+        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', exportGrapes],
+        pluginsOpts: {
+          'gjs-preset-newsletter': {
+            modalTitleImport: 'Import Template',
+            importPlaceholder: 'Template Here',
+            inlineCss: true,
+            categoryLabel: 'Basic'
+          }
+        }
+      })
+      let blockManager = this.editor.BlockManager
+      blockManager.add('exampleComponent', exampleComponent)
+      blockManager.add('exampleComponent2', exampleComponent2)
+      blockManager.add('to', to)
+      blockManager.add('toName', toName)
+      blockManager.add('subject', subject)
+      blockManager.add('macroFrom', macroForm)
+      blockManager.add('macroAttachment', macroAttachment)
+      blockManager.add('from', mergedFrom)
+      blockManager.add('fromName', fromName)
+      blockManager.add('customMacroAttachment', customMacroAttachment)
+      blockManager.add('trainingUrl', trainingUrl)
+      blockManager.add('phishingUrl', phishingUrl)
+      blockManager.add('macroUrl', macroUrl)
+      let pn = this.editor.Panels
+      pn.getButton('options', 'sw-visibility').set('active', 0)
+      if (!!this.htmlData) {
+        this.getGrapesWebModalDraw(this.htmlData)
+      }
+      //pn.getButton('options', 'gjs-open-import-template').set('active', 1)
+    },
     uploadFile(e) {
       this.msgEmlFile = e
       uploadEmlOrMsg(this.msgEmlFile)
@@ -136,13 +143,18 @@ export default {
           })
         })
     },
-    getGrapesWebModalDraw(htmlBody) {
-      const domComponents = this.editor.DomComponents
-      domComponents.clear()
-      this.editor.setComponents(`${htmlBody}`)
-    },
     cloneUrlButtonCLick() {
       this.cloneUrlPage = this.cloneUrl
+    },
+
+    getGrapesWebModalDraw(html) {
+      const domComponents = this.editor.DomComponents
+      domComponents.clear()
+      this.editor.setComponents(html)
+    },
+    getGrapesEditorContent() {
+      let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
+      return htmlContent
     }
   }
 }

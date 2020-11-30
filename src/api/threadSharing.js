@@ -112,6 +112,14 @@ export function getCommunityPost(id) {
   return testRequest.get(`community-posts/${id}`, { loading: true })
 }
 
+export function parseEmail(payload) {
+  return testRequest.post(`community-posts/parse-email-url`, payload)
+}
+
+export function getCommunityPostPreview(id) {
+  return testRequest.get(`community-posts/${id}/preview`, { loading: true })
+}
+
 export function getMyLastPosts() {
   return testRequest.get(`community-posts/my-last-posts`)
 }

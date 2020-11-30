@@ -1,6 +1,5 @@
 <script>
 import { Pie } from 'vue-chartjs'
-
 export default {
   name: 'Pie',
   extends: Pie,

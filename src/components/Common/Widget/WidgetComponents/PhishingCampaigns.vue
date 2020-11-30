@@ -14,7 +14,8 @@
 <script>
 import PhishingCampaignsPieChart from '@/components/Dashboard/PhishingCampaignsPieChart'
 import { mapActions, mapState } from 'vuex'
-
+import AuthenticationService from '@/services/authentication'
+import AuthenticationStatus from '@/model/constants/authenticationStatus'
 export default {
   name: 'PhishingCampaigns',
   components: {

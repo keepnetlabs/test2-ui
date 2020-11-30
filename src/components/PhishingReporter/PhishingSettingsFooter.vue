@@ -35,7 +35,6 @@
 <script>
 import ReporterVersionModal from '@/components/PhishingReporter/Settings/ReporterVersionModal'
 import VersionHistoryModal from './Settings/VersionHistoryModal'
-
 export default {
   name: 'PhishingSettingsFooter',
   components: {

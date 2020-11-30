@@ -9,8 +9,9 @@
 </template>
 
 <script>
+import CompanyList from '@/components/Companies/CompanyList'
+import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
 import CompanyGroupDetails from '@/components/CompanyGroups/CompanyGroupDetails'
-
 export default {
   name: 'CompanyGroupDetails',
   props: {},

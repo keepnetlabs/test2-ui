@@ -17,7 +17,6 @@ import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import Bubble from '@/components/Common/Charts/Bubble'
-
 export default {
   name: 'IncidentClusters',
   components: {

@@ -7,6 +7,7 @@
     @changeStatus="closeOverlay"
     size="maximum"
     class-name="matching-modal"
+    maxHeightSize="665"
   >
     <template v-slot:app-dialog-body>
       <v-card light>

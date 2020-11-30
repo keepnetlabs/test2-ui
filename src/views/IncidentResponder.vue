@@ -357,6 +357,7 @@
                     @changeStatus="showMatchingModal = false"
                     size="maximum"
                     class-name="matching-modal"
+                    maxHeightSize="665"
                   >
                     <template v-slot:app-dialog-body>
                       <v-card light>
@@ -602,7 +603,7 @@
 </template>
 <script>
 import { getRoiSettings, updateNotifiedEmail, updateRoiSettings } from '../api/incidentResponder'
-import { getDataTableFieldLabel } from '../utils/functions'
+import { checkPermission, getDataTableFieldLabel } from '../utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
@@ -1500,6 +1501,7 @@ export default {
         })
     },
     callForGetTopRules() {
+      checkPermission('ir/dashboard/summary', 'GET')
       this.topRulesLoading = true
       getTopRules()
         .then((response) => {

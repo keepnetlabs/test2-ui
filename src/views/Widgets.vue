@@ -77,7 +77,6 @@ import { getWidgets, postWidgets } from '@/api/widgets'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
-
 export default {
   name: 'Widgets',
   components: {

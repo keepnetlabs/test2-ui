@@ -5,7 +5,7 @@
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
-      v-if="options && isDownloadable && isWantToDownload"
+      v-if="options && downloadButton.show && isWantToDownload"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -58,7 +58,7 @@
           @closeCreateMode="$emit('closeCreateMode')"
           :options="extendedViewOptions"
           :container-style="extendedViewStyle"
-          @handleEdit="$emit('handleEdit', $event)"
+          @handleEdit="handleExtendedViewEdit"
           :disable-transition="disableExtendedViewTransition"
           @closeEditPopup="closeEditPopup"
           :changeFooterPosition="changeFooterPosition"
@@ -171,11 +171,15 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on }">
                   <v-btn
-                    class="btn-add mr-1"
                     icon
+                    :class="[
+                      'btn-add mr-1',
+                      addButton && addButton.disabled && 'btn-add--disabled'
+                    ]"
                     style="order: 3;"
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
+                    :disabled="addButton && addButton['disabled']"
                   >
                     <v-icon @click="addButtonFunction(addButton.action)">mdi-plus</v-icon>
                   </v-btn>
@@ -185,7 +189,7 @@
                 }}</span>
               </v-tooltip>
             </slot>
-            <v-menu bottom left offset-y v-if="isDownloadable">
+            <v-menu bottom left offset-y v-if="downloadButton.show">
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -194,6 +198,7 @@
                       icon
                       style="order: 4;"
                       v-bind="attrs"
+                      :disabled="downloadButton.disabled"
                       v-on="{ ...tooltip, ...menu }"
                     >
                       <v-icon>mdi-download</v-icon>
@@ -639,6 +644,7 @@
                           ? handleEdit(scope.row, scope.$index)
                           : rowAct(rowActions[0].action, scope.row)
                       "
+                      :disabled="rowActions[0]['disabled']"
                       class="btn-hover mr-1"
                       icon
                       v-on="on"
@@ -655,7 +661,8 @@
                         scope.row.status === 'Cancelled' ||
                         scope.row.status === 'Expired' ||
                         scope.row.status === 'Finished' ||
-                        scope.row.status === 'NoMatch'
+                        scope.row.status === 'NoMatch' ||
+                        rowActions[1]['disabled']
                       "
                       @click.native="rowAct(rowActions[1].action, scope.row)"
                       class="btn-hover"
@@ -683,7 +690,13 @@
             <slot name="empty-table-inline">
               <h2>{{ empty.message }}</h2>
               <p>{{ empty.subMes }}</p>
-              <v-btn @click="onEmptyBtnClicked" class="empty-btn" v-if="empty.btn">
+              <v-btn
+                :disabled="empty['disabled']"
+                @click="onEmptyBtnClicked"
+                class="empty-btn"
+                :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
+                v-if="empty.btn"
+              >
                 <!-- empty action -->
                 <v-icon class="mr-2">{{ empty.icon }}</v-icon>
                 {{ empty.btn }}
@@ -814,8 +827,15 @@ export default {
       type: Array,
       required: true
     },
+    activeCluster: {
+      type: String
+    },
     extendedViewLoading: {
       type: Boolean
+    },
+    serverSideEvents: {
+      type: Object,
+      default: () => ({ search: false, sort: false, pagination: false })
     },
     changeFooterPosition: {
       type: Boolean,
@@ -967,9 +987,12 @@ export default {
       type: Boolean,
       default: true
     },
-    isDownloadable: {
-      type: Boolean,
-      default: true
+    downloadButton: {
+      type: Object,
+      default: () => ({
+        show: true,
+        disabled: false
+      })
     },
     settingsPopupStyle: {
       type: Object
@@ -1001,7 +1024,11 @@ export default {
       return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
-      return this.tableData.length === 0 && 'table-header-disable'
+      if (this.serverSideEvents.search) {
+        return this.tableData.length === 0 && !this.search && 'table-header-disable'
+      } else {
+        return this.tableData.length === 0 && 'table-header-disable'
+      }
     },
     getSelectionCheckboxDisabledValue() {
       return this.showfilteredData ? !this.filteredData.length : false
@@ -1017,7 +1044,7 @@ export default {
       initialData: [],
       dataLength: 0,
       isSelectedAll: false,
-      selectedCluster: '',
+      selectedCluster: this.activeCluster,
       tableData: [],
       selectedRows: [],
       rowCount: 10,
@@ -1058,7 +1085,7 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-      this.totalLength = table.length
+      this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
@@ -1090,11 +1117,6 @@ export default {
     },
     tableData(data) {
       this.calculateAllSelected()
-      if (this.isSelectedAll) {
-        for (let item of data) {
-          this.$refs.elTableRef.toggleRowSelection(item, true)
-        }
-      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
@@ -1139,7 +1161,7 @@ export default {
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
-      this.totalLength = this.table.length
+      this.totalLength = this.getTotalLength(this.table)
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
@@ -1167,21 +1189,29 @@ export default {
     window.addEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    handleExtendedViewEdit(val) {
+      this.$emit('handleEdit', val)
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
+    },
+
     calculateAllSelected() {
-      const dataRef = this.showfilteredData
-        ? this.filteredData
-        : this.groupable
-        ? [...this.tableData, ...this.clusteredItems]
-        : this.tableData
+      let dataRef = this.showfilteredData ? this.filteredData : this.tableData
       const renderedTotalLength = this.getTotalLength(this.tableData)
       this.renderedTotalLength = renderedTotalLength
       const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
+      if (this.groupable && comparedValueLength >= this.getAllItems(dataRef, []).length) {
+        dataRef = this.getAllItems(this.tableData, [], false, false)
+      }
       const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find(
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
-      if (selectedItems.length) {
+      if (this.isSelectedAll && this.multipleSelection.length === this.totalLength) {
+        this.selectionCheckbox = true
+        this.selectionRowCheckboxDeterminate = false
+      } else if (selectedItems.length) {
         if (selectedItems.length === comparedValueLength) {
           this.selectionCheckbox = true
           this.selectionRowCheckboxDeterminate = false
@@ -1263,14 +1293,17 @@ export default {
      * @param arr --> for example tableData
      * @param retArr --> returned value
      */
-    getAllItems(arr = [], retArr = []) {
+    getAllItems(arr = [], retArr = [], addToClusterItems = true, deleteFromClusteredItems = false) {
       for (let item of arr) {
         if (item.children) {
-          this.getAllItems(item.children, retArr)
+          this.getAllItems(item.children, retArr, addToClusterItems, deleteFromClusteredItems)
         }
 
-        if (item.isChild) {
+        if (item.isChild && addToClusterItems) {
           this.addItemToClusteredItems(item)
+        }
+        if (deleteFromClusteredItems) {
+          this.deleteItemFromClusteredItems(item)
         }
         retArr.push(item)
       }
@@ -1410,6 +1443,14 @@ export default {
         this.clusteredItems.push(item)
       }
     },
+    deleteItemFromClusteredItems(item = {}) {
+      const index = this.clusteredItems.findIndex(
+        (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(item)
+      )
+      if (index > -1) {
+        this.clusteredItems.splice(index, 1)
+      }
+    },
     calculateLength(children) {
       return children.reduce((acc, item) => {
         if (item.children) {
@@ -1469,7 +1510,7 @@ export default {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
       const span =
-        cell.querySelector('span') ||
+        cell.querySelector('span:last-child') ||
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
@@ -1480,7 +1521,6 @@ export default {
           spanWidth += Number(padding)
         }
       }
-
       if (spanWidth > widthOfParent) {
         this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]
@@ -1504,7 +1544,7 @@ export default {
     },
     sortChangedEvent(sortProps) {
       this.sortProps = sortProps
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.sort) {
         this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.showfilteredData && this.filteredData && this.filteredData.length) {
@@ -1621,7 +1661,8 @@ export default {
     },
 
     paginationChangedEvent(paginationProps) {
-      if (this.isServerSide) this.$emit('paginationChangedEvent', paginationProps)
+      if (this.isServerSide && this.serverSideEvents.pagination)
+        this.$emit('paginationChangedEvent', paginationProps)
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -1633,29 +1674,31 @@ export default {
     },
 
     searchChangedEvent(debounceTime = 500) {
-      if (this.isServerSide) {
-        const filterItems = this.columns
-          .filter((column) => column.isFilterable)
-          .reduce((acc, filterItem) => {
-            acc.push({
-              FieldName: filterItem.property,
-              Operator: filterItem.filterType === 'number' ? '=' : 'Contains',
-              Value: this.$refs.searchInput.value
-            })
-            return acc
-          }, [])
-        const bodyDataFilter = {
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: filterItems
-              }
-            ]
+      if (this.isServerSide && this.serverSideEvents.search) {
+        this.debounce(() => {
+          const filterItems = this.columns
+            .filter((column) => column.filterableType)
+            .reduce((acc, filterItem) => {
+              acc.push({
+                FieldName: filterItem.property,
+                Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
+                Value: this.search
+              })
+              return acc
+            }, [])
+          const bodyDataFilter = {
+            filter: {
+              Condition: 'AND',
+              FilterGroups: [
+                {
+                  Condition: 'AND',
+                  FilterItems: filterItems
+                }
+              ]
+            }
           }
-        }
-        this.$emit('searchChangedEvent', bodyDataFilter)
+          this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+        }, 500)
       } else {
         this.debounce(() => {
           const searchValue = this.search
@@ -1846,7 +1889,7 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.pagination) {
         this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
       } else {
         if (this.currentPage === 1) {
@@ -1870,7 +1913,7 @@ export default {
     },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
-      if (this.isServerSide) {
+      if (this.isServerSide && this.serverSideEvents.pagination) {
         this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
       } else {
         this.tableData = this.initialData.slice(
@@ -1925,11 +1968,7 @@ export default {
         if (this.selectionCheckbox) {
           if (this.selectionRowCheckboxDeterminate) {
             const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            const selectedItems = dataRef.filter((item) => {
-              return this.multipleSelection.find(
-                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-              )
-            })
+            const selectedItems = this.getAllItems(dataRef, [], false, true)
             for (let item of selectedItems) {
               this.$refs.elTableRef.toggleRowSelection(item, false)
             }
@@ -1939,12 +1978,17 @@ export default {
             this.$refs.elTableRef.toggleAllSelection()
           }
         } else {
-          const selectedItems = this.multipleSelection.filter((item) => {
-            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            return dataRef.find(
-              (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-            )
-          })
+          const selectedItems = this.getAllItems(
+            this.multipleSelection.filter((item) => {
+              const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+              return dataRef.find(
+                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+              )
+            }),
+            [],
+            false,
+            true
+          )
 
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {

@@ -123,7 +123,6 @@ import {
   generateDiagnosticTool,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
-
 export default {
   name: 'DownloadAddInModal',
   props: {
@@ -148,6 +147,7 @@ export default {
       downloadOutlookAddIn(transactionId)
         .then((response) => {
           this.outlookSpinnerStatus = false
+          this.clearOutlookAddInTimeout()
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -155,13 +155,14 @@ export default {
           link.click()
         })
         .catch((error) => {
-          if (error.response.status === 404) {
+          if (error.response.status === 404 && error.response.statusText === 'Not Found') {
             this.outlookSpinnerStatus = true
-            setTimeout(() => {
+            this.downloadOutlookAddInTimeout = setTimeout(() => {
               this.callForDownloadOutlookAddIn(transactionId)
             }, 7500)
           } else {
             this.outlookSpinnerStatus = false
+            this.clearOutlookAddInTimeout()
           }
         })
     },
@@ -175,6 +176,7 @@ export default {
       downloadDiagnosticTool(id)
         .then((response) => {
           this.diagnosticToolSpinnerStatus = false
+          this.clearDiagnosticToolTimeout()
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
@@ -182,21 +184,36 @@ export default {
           link.click()
         })
         .catch((error) => {
-          if (error.response.status === 404) {
+          if (error.response.status === 404 && error.response.statusText === 'Not Found') {
             this.diagnosticToolSpinnerStatus = true
-            setTimeout(() => {
+            this.diagnosticToolAddInTimeout = setTimeout(() => {
               this.callForDownloadDiagnosticTool(id)
             }, 7500)
           } else {
             this.diagnosticToolSpinnerStatus = false
+            this.clearDiagnosticToolTimeout()
           }
         })
+    },
+    clearDiagnosticToolTimeout() {
+      if (this.diagnosticToolAddInTimeout) {
+        clearTimeout(this.diagnosticToolAddInTimeout)
+        this.diagnosticToolAddInTimeout = null
+      }
+    },
+    clearOutlookAddInTimeout() {
+      if (this.downloadOutlookAddInTimeout) {
+        clearTimeout(this.downloadOutlookAddInTimeout)
+        this.downloadOutlookAddInTimeout = null
+      }
     }
   },
   data() {
     return {
       outlookSpinnerStatus: false,
-      diagnosticToolSpinnerStatus: false
+      diagnosticToolSpinnerStatus: false,
+      downloadOutlookAddInTimeout: null,
+      diagnosticToolAddInTimeout: null
     }
   }
 }

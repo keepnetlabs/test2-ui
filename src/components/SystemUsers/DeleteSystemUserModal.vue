@@ -17,7 +17,6 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-
 export default {
   name: 'DeleteSystemUserModal',
   components: {

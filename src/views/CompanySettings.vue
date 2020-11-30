@@ -4,7 +4,10 @@
       <v-card class="company-settings__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane label="SMTP Settings" name="first">
-            <s-m-t-p-settings v-if="tab === 'first'" ref="refSmtpSettings"
+            <s-m-t-p-settings
+              :PERMISSIONS="PERMISSIONS['SMTP_SETTINGS_PERMISSIONS']"
+              v-if="tab === 'first'"
+              ref="refSmtpSettings"
           /></el-tab-pane>
           <el-tab-pane label="Notification Templates" name="second">
             <notification-templates v-if="tab === 'second'" ref="refNotificationTemplates"
@@ -22,7 +25,8 @@
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import CustomApi from '@/components/Company Settings/CustomApi'
-
+import PERMISSIONS from '@/permissions'
+import { getPermissionsOfAllItems } from '@/utils/functions'
 export default {
   name: 'CompanySettings',
   components: {
@@ -36,13 +40,29 @@ export default {
       tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
+      },
+      PERMISSIONS: {
+        SMTP_SETTINGS_PERMISSIONS: {},
+        NOTIFICATION_TEMPLATES_PERMISSIONS: {},
+        REST_API_PERMISSIONS: {}
       }
     }
   },
   methods: {
     changeTabStatus(status) {
       this.tab = status
+    },
+    getPermissions() {
+      const { SMTP_SETTINGS_PERMISSIONS } = PERMISSIONS
+      this.$set(
+        this.PERMISSIONS,
+        'SMTP_SETTINGS_PERMISSIONS',
+        getPermissionsOfAllItems(SMTP_SETTINGS_PERMISSIONS)
+      )
     }
+  },
+  created() {
+    this.getPermissions()
   },
   beforeRouteLeave(to, from, next) {
     const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs
@@ -99,7 +119,7 @@ export default {
     color: rgba(0, 0, 0, 0.87) !important;
   }
   &__container {
-    padding: 0px 16px 24px 16px !important;
+    padding: 0 16px 24px 16px !important;
     width: 100%;
     .v-window__container {
       margin-top: 24px;

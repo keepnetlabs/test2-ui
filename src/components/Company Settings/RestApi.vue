@@ -33,7 +33,6 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import DataTable from '@/components/DataTable'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import NewRestApiConfiguration from '@/components/Company Settings/NewRestApiConfiguration'
-
 export default {
   name: 'RestApi',
   components: {

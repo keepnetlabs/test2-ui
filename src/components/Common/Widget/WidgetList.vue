@@ -72,7 +72,6 @@
 
 <script>
 import DataTableTooltip from '@/components/DataTableComponents/DataTableTooltip'
-
 export default {
   name: 'WidgetList',
   components: {

@@ -6,7 +6,6 @@
 
 <script>
 import CompanyInformation from '@/components/Dashboard/CompanyInformation'
-
 export default {
   name: 'CompanyInformationWidget',
   components: {

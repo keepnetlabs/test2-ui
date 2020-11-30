@@ -7,6 +7,7 @@
     :close-on-content-click="false"
     class="filter__container"
     v-if="filterableType"
+    max-height="260px"
     v-model="menu"
   >
     <template v-slot:activator="{ on }">
@@ -101,6 +102,7 @@
           v-for="item in searchInItems"
           v-model="filterChecked"
           :key="item.value"
+          color="#2196f3"
           :value="item.value"
           :label="item.text"
         >
@@ -303,12 +305,15 @@ export default {
   &__body-container {
     background-color: white;
     padding: 20px 20px 0 20px;
+    position: relative;
   }
   &__footer {
     display: flex;
     margin-right: -13px;
     margin-top: -10px !important;
     justify-content: flex-end;
+    position: sticky;
+    bottom: 0;
 
     &-button {
       font-family: 'Open Sans', sans-serif !important;

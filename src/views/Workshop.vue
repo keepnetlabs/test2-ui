@@ -4,11 +4,10 @@
       <v-card class="workshop__container-card">
         <v-form ref="form1" lazy-validation>
           <v-row>
-            <v-col cols="5"><InputPhone v-model="formData.inputFirstName" /></v-col>
+            <v-col cols="5"><InputFirstName v-model="formData.inputFirstName" /></v-col>
           </v-row>
           <v-row>
             <v-col>
-              <p>{{ formData.inputFirstName }}</p>
               <v-btn rounded color="primary" @click="submit">
                 SAVE
               </v-btn>
@@ -21,12 +20,11 @@
 </template>
 
 <script>
-import InputPhone from '@/components/Common/Inputs/InputPhone'
-
+import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 export default {
   name: 'Workshop',
   props: {},
-  components: { InputPhone },
+  components: { InputFirstName },
   data() {
     return {
       formData: {
@@ -38,7 +36,6 @@ export default {
   methods: {
     submit() {
       this.$refs.form1.validate()
-      alert(this.$refs.form1.validate())
     }
   }
 }

@@ -56,6 +56,10 @@ export function getTargetUserCustomFieldsByCompanyId() {
   return testRequest.get(`/custom-fields/company`)
 }
 
+export function bulkUpdateOfCustomFields(payload) {
+  return testRequest.post('/custom-fields/bulk-update', payload)
+}
+
 export function createTargetUserCustomField(payload) {
   return testRequest.post(`/custom-fields`, payload)
 }

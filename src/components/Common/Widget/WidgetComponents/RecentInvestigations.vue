@@ -60,7 +60,6 @@ import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { getRunningInvestigations } from '@/api/incidentResponder'
-
 export default {
   name: 'RecentInvestigations',
   components: {

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { GridItem, GridLayout } from 'vue-grid-layout'
+import { GridLayout, GridItem } from 'vue-grid-layout'
 
 export default {
   name: 'KSmartGrid',
