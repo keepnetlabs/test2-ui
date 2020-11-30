@@ -478,13 +478,18 @@
             :columns="emails.columns"
             :countRow="5"
             :extended-view-loading="extendedViewLoading"
+            :clusterItems="[{ name: 'Subject' }]"
+            active-cluster="Subject"
             :changeFooterPosition="true"
+            @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
+            hideParentRowActions
             :pageSizes="emails.pageSizes"
             :selectable="true"
             :filterable="true"
             :options="true"
+            @clusterChanged="clusterChanged"
             :rowActions="emails.rowActions"
             :addUsers="emails.addUsers"
             :empty="emails.iEmpty"
@@ -494,6 +499,7 @@
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
+            @handleListBulleted="handleListBulletedClick"
             @handleInvestigate="handleReportedEmailInvestigate"
             @handleDetails="irDetailsOnClick"
             @onEditClick="onEditClick"
@@ -951,7 +957,7 @@ export default {
           property: PROPERTY_STORE.SUBJECT,
           align: 'left',
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: 'left',
+          fixed: false,
           sortable: true,
           show: true,
           type: 'text',
@@ -1185,6 +1191,24 @@ export default {
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: {
+      isClustered: true,
+      pageNumber: 1,
+      pageSize: 500000,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    lazyLoadRequestBody: {
+      isClustered: false,
       pageNumber: 1,
       pageSize: 500000,
       orderBy: 'createTime',
@@ -1289,8 +1313,59 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    clusterChanged() {
+      this.requestBodyReportedEmails.isClustered = true
+      this.callForSearchNotifiedMail()
+    },
+    getManipulatedChildData(data, isChild = false) {
+      data.forEach((item) => {
+        if (isChild) {
+          item.isChild = true
+        }
+        if (item.children) {
+          this.getManipulatedChildData(item.children, true)
+        }
+      })
+      return data
+    },
+    handleClusterLoad({ tree, treeNode, resolve, callback }) {
+      const copyOfRequestBody = JSON.parse(JSON.stringify(this.lazyLoadRequestBody))
+      copyOfRequestBody.filter.FilterGroups[0].FilterItems.push({
+        FieldName: 'Subject',
+        Operator: 'Contains',
+        Value: tree.subject
+      })
+      searchNotifiedMail(copyOfRequestBody).then((response) => {
+        const {
+          data: {
+            data: { results }
+          }
+        } = response
+
+        const data = this.getManipulatedChildData(results, true)
+        tree['children'] = data
+        treeNode['children'] = data
+
+        resolve(data)
+        callback()
+      })
+    },
+
+    handleListBulletedClick() {
+      this.requestBodyReportedEmails.isClustered = false
+      this.callForSearchNotifiedMail()
+    },
     extendedViewDisableChanger() {
       return JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView)
+    },
+    handleSearchChange(bodyData = {}, columnFilterActive = false) {
+      this.emails.isColumnFilterActive = columnFilterActive
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = [
+        ...bodyData.filter.FilterGroups[0].FilterItems
+      ]
+      console.log('this.requestBodyReportedEmails.filter', this.requestBodyReportedEmails.filter)
+      this.emails.isColumnFilterActive = columnFilterActive
+      this.callForSearchNotifiedMail()
     },
     closeMatchingModal() {
       this.showMatchingModal = false
@@ -1527,17 +1602,25 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results },
-              status
+              data: { results }
             }
           } = response
-          const tableData = results
+          const tableData = this.getManipulatedTableData(results || [])
           this.reportedEmailsData = tableData || []
         })
         .catch(() => {
           this.reportedEmailsData = []
         })
         .finally(() => (this.reportedEmailsLoading = false))
+    },
+    getManipulatedTableData(data, isChild = false) {
+      if (this.requestBodyReportedEmails.isClustered) {
+        return data.map((item) => {
+          return { subject: item.subject, hasChildren: true, resourceId: Math.random().toString() }
+        })
+      }
+
+      return data
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
