@@ -40,7 +40,7 @@
       </template>
       <template v-slot:overlay-footer>
         <v-btn @click="closeOverlay" class="add-in-configuration__footer-btn-cancel" rounded>
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="add-in-configuration__footer__right-col">
           <v-btn
@@ -79,6 +79,8 @@
 import AppModal from '@/components/AppModal'
 import LdapInfoForm from '@/components/Company Settings/LdapInfoForm'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'NewLdapIntegration',
   components: {
@@ -93,7 +95,8 @@ export default {
   },
   data() {
     return {
-      step: 1
+      step: 1,
+      labels
     }
   },
   methods: {

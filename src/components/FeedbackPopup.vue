@@ -32,7 +32,9 @@
         </v-form>
       </div>
       <div class="feedback-button">
-        <v-btn class="feedback-button--cancel" text v-on:click="onCancelClicked">CANCEL</v-btn>
+        <v-btn class="feedback-button--cancel" text v-on:click="onCancelClicked">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn class="feedback-button--success" text v-on:click="onFeedbackSend">SEND</v-btn>
       </div>
     </v-card>
@@ -40,14 +42,15 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import { sendFeedback } from '../api/dashboard'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {mapActions} from 'vuex'
+import {sendFeedback} from '../api/dashboard'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'FeedbackPopup',
   data() {
     return {
+      labels,
       feedbackMessage: null
     }
   },

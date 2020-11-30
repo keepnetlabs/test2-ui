@@ -126,7 +126,7 @@
     </template>
     <template v-slot:overlay-footer>
       <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
-        CANCEL
+        {{ labels.Cancel }}
       </v-btn>
       <v-btn
         class="add-user-overlay__footer-btn-save white--text"
@@ -141,17 +141,19 @@
 </template>
 
 <script>
-import { required, mail, maxLength } from '@/utils/validations'
-import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {mail, maxLength, required} from '@/utils/validations'
+import {createTargetUser, getTargetGroups, updateTargetUser} from '@/api/targetUsers'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import { scrollToComponent } from '@/utils/functions'
+import {scrollToComponent} from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'AddUserModal',
   components: {
@@ -184,6 +186,7 @@ export default {
   },
   data() {
     return {
+      labels,
       formValues: {
         firstName: '',
         lastName: '',

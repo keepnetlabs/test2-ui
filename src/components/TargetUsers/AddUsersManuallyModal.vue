@@ -60,7 +60,7 @@
               class="add-users-manually__footer-btn-cancel"
               rounded
             >
-              CANCEL
+              {{ labels.Cancel }}
             </v-btn>
             <v-btn
               @click="handleImportAllUsers"
@@ -79,7 +79,9 @@
 
 <script>
 import DataTable from '../../components/DataTable'
-import { getStoreValue } from '../../model/constants/commonConstants'
+import {getStoreValue} from '../../model/constants/commonConstants'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'AddUsersManuallyModal',
   components: {
@@ -93,6 +95,7 @@ export default {
   },
   data() {
     return {
+      labels,
       tableOptions: {
         columns: [
           {

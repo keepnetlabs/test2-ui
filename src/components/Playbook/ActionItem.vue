@@ -105,8 +105,12 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="delete-user__footer">
-          <v-btn @click="closeEngineModal" color="#f56c6c" class="delete-user__footer-button" text
-            >CANCEL</v-btn
+          <v-btn
+            @click="closeEngineModal"
+            color="#f56c6c"
+            class="delete-user__footer-button"
+            text
+            >{{ labels.Cancel }}</v-btn
           >
           <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmEngineModalFucn"
             >CONFIRM</v-btn
@@ -304,17 +308,14 @@
 </template>
 
 <script>
-import { getAnalysisEngine, getTargetUsers } from '../../api/playbook'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {getAnalysisEngine} from '../../api/playbook'
 import AppDialog from '../AppDialog'
 import Investigate from './Investigate'
-import { required } from '../../utils/validations'
-import {
-  getTargetGroups,
-  getTargetGroupsByName,
-  getTargetUsersByEmail
-} from '../../api/targetUsers'
+import {required} from '../../utils/validations'
+import {getTargetGroups, getTargetGroupsByName, getTargetUsersByEmail} from '../../api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   components: { KSelect, AppDialog, Investigate },
 
@@ -344,6 +345,7 @@ export default {
   },
   data() {
     return {
+      labels,
       searchEnginesData: null,
       searchEnginesModelInput: null,
       timerId: null,

@@ -84,8 +84,12 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openPasswordChange = false"
-            >CANCEL</v-btn
+          <v-btn
+            text
+            color="#f56c6c"
+            class="k-dialog__button"
+            @click="openPasswordChange = false"
+            >{{ labels.Cancel }}</v-btn
           >
           <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword"
             >CONFIRM</v-btn
@@ -601,7 +605,7 @@
   </v-app>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
 import SessionExpired from '../components/SessionExpired'
@@ -616,9 +620,10 @@ import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import AppDialog from '../components/AppDialog'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import { updatePassword } from '../api/auth'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import {updatePassword} from '../api/auth'
+import {COMMON_CONSTANTS} from '../model/constants/commonConstants'
 import Breadcrumb from '@/components/Breadcrumb'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'Main',
@@ -637,6 +642,7 @@ export default {
   },
   data() {
     return {
+      labels,
       switchDialogStatus: false,
       showNewPassword: false,
       currentPassword: null,

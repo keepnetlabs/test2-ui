@@ -90,7 +90,7 @@
           rounded
           color="error"
           @click="closeOverlay"
-          >CANCEL</v-btn
+          >{{ labels.Cancel }}</v-btn
         >
       </div>
       <div>
@@ -134,10 +134,11 @@
 import AppModal from '../AppModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '../SmallComponents/FormGroup'
-import { uploadEmlOrMsg } from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { uploadExcelOrCsvForTargetUsers } from '../../api/targetUsers'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import {uploadExcelOrCsvForTargetUsers} from '../../api/targetUsers'
 import MapTable from '../TargetUsers/subcomponents/MapTable'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'TargetUserImportFromAFile',
   components: { AppModal, KFileUpload, FormGroup, MapTable },
@@ -165,6 +166,7 @@ export default {
   },
   data() {
     return {
+      labels,
       excelFile: null,
       activeStep: 1,
       step: 1,

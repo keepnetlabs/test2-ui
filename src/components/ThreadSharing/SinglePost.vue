@@ -82,9 +82,9 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openShareModal = false"
-            >CANCEL</v-btn
-          >
+          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openShareModal = false">{{
+            labels.Cancel
+          }}</v-btn>
           <v-btn text color="#2196f3" class="k-dialog__button" @click="shareIncident">Send</v-btn>
         </div>
       </template>
@@ -901,10 +901,9 @@
 <script>
 import VClamp from 'vue-clamp'
 import NewInvestigation from '../Investigation/NewInvestigation'
-import { mapGetters } from 'vuex'
-import vueCustomElement from 'vue-custom-element'
 import KShadowFrame from '../KShadowFrame'
 import AppDialog from '../AppDialog'
+import labels from '@/model/constants/labels'
 import {
   createComments,
   deleteComments,
@@ -916,20 +915,13 @@ import {
   shareAPost,
   updateComments
 } from '../../api/threadSharing'
-import PreviewHeader from './PreviewHeader'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getNotifiedEmail } from '../../api/notifiedEmail'
-import {
-  copyToClipboard,
-  incidenPostReviewElementBind,
-  isOwner,
-  isPostedByMe,
-  reviewElementBind
-} from '../../utils/functions'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import {incidenPostReviewElementBind, isOwner, isPostedByMe} from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1079,6 +1071,7 @@ export default {
     }
   },
   data: () => ({
+    labels,
     openShareModal: false,
     shareEmail: [],
     shareEmailRules: {

@@ -423,7 +423,9 @@
         </div>
       </v-card>
       <div class="footer-actions">
-        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
+        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn v-if="step === 1" class="create-btn" text color="#2196f3" @click="onContinue"
           >NEXT
         </v-btn>
@@ -443,8 +445,9 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   components: { KSelect },
@@ -454,6 +457,7 @@ export default {
     }
   },
   data: () => ({
+    labels,
     step: 1,
     header: {
       allHeader: true,

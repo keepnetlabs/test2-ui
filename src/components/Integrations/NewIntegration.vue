@@ -25,7 +25,7 @@
             class="new-integration__confirm-modal__btn-cancel"
             @click="cancelClickOnConfirmModal"
           >
-            CANCEL
+            {{ labels.Cancel }}
           </button>
         </div>
       </v-card>
@@ -364,7 +364,7 @@
           rounded
           @click="$emit('closeOverlay', false, false)"
         >
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
           <v-btn
@@ -383,19 +383,21 @@
 
 <script>
 import {
-  getIntegrationTypes,
-  getFileTypes,
   createIntegration,
+  getFileTypes,
   getIntegrationDetails,
-  updateIntegration,
-  testAnalysis
+  getIntegrationTypes,
+  testAnalysis,
+  updateIntegration
 } from '@/api/integrations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import { scrollToComponent } from '@/utils/functions'
+import {scrollToComponent} from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'NewIntegration',
   components: {
@@ -415,6 +417,7 @@ export default {
   },
   data() {
     return {
+      labels,
       loadingState: [],
       formValues: {
         description: null,

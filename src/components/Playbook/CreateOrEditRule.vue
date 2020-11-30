@@ -177,8 +177,13 @@
     <!-- TODO: Convert footer block to common component -->
     <div class="wizard__footer">
       <div class="text-left">
-        <v-btn class="playbook-rule-form__button" outlined rounded color="error" @click="cancelForm"
-          >CANCEL</v-btn
+        <v-btn
+          class="playbook-rule-form__button"
+          outlined
+          rounded
+          color="error"
+          @click="cancelForm"
+          >{{ labels.Cancel }}</v-btn
         >
       </div>
 
@@ -223,11 +228,12 @@
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { maxLength, required } from '../../utils/validations'
-import { createPlaybook, getPlaybook, updatePlaybook } from '../../api/playbook'
-import { scrollToComponent } from '@/utils/functions'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import {maxLength, required} from '../../utils/validations'
+import {createPlaybook, getPlaybook, updatePlaybook} from '../../api/playbook'
+import {scrollToComponent} from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'CreateOrEditRule',
@@ -240,6 +246,7 @@ export default {
   },
   data() {
     return {
+      labels,
       actionData: {},
       actionList: [{ id: 0 }],
       isValid: true,

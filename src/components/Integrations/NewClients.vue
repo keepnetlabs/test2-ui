@@ -88,7 +88,7 @@
       </v-card>
       <div class="new-client__footer">
         <v-btn class="new-client__footer-btn-cancel" rounded @click="closeOverlay">
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="new-client__footer__right-col">
           <v-btn class="new-client__footer-btn-save" color="#2196f3" rounded @click="submit">
@@ -101,8 +101,9 @@
 </template>
 
 <script>
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { createClient, updateClient } from '../../api/clients'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import {createClient, updateClient} from '../../api/clients'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'NewClients',
@@ -117,6 +118,7 @@ export default {
   },
   data() {
     return {
+      labels,
       formValues: {
         clientName: '',
         generateApiKey: '',

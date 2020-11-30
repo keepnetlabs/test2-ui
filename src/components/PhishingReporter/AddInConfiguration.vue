@@ -96,7 +96,7 @@
       </template>
       <template v-slot:overlay-footer>
         <v-btn @click="closeOverlay" class="add-in-configuration__footer-btn-cancel" rounded>
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="add-in-configuration__footer__right-col">
           <v-btn
@@ -143,9 +143,11 @@ import {
   generateDiagnosticTool,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import DiagnosticTool from './Settings/DiagnosticTool'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'AddInConfiguration',
   components: {
@@ -163,6 +165,7 @@ export default {
   },
   data() {
     return {
+      labels,
       step: 1,
       addingSettings: {},
       emailSettings: {},

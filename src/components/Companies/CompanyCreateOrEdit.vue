@@ -40,13 +40,13 @@
               <v-form ref="refStep1Form" lazy-validation>
                 <v-list-item class="mt-6">
                   <v-list-item-content>
-                    <label class="bottom-margin">Company Name</label>
+                    <label class="bottom-margin"></label>
                     <InputCompany v-model.trim="formData.Name" />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">Description</label>
+                    <label class="bottom-margin">{{ labels.Description }}</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Describe the company briefly
                     </v-list-item-title>
@@ -65,7 +65,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label class="bottom-margin">Industry</label>
+                    <label class="bottom-margin">{{ labels.Industry }}</label>
                     <k-select
                       type="autocomplete"
                       :items="industries"
@@ -481,7 +481,7 @@
           rounded
           color="error"
           @click="$emit('cancelForm')"
-          >CANCEL</v-btn
+          >{{ labels.Cancel }}</v-btn
         >
       </div>
 
@@ -523,14 +523,15 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
+import {createCompany, getCompanyGroups, searchCompanies, updateCompany} from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeIdList } from '@/api/common'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import {scrollToComponent} from '@/utils/functions'
+import {getLookupListByTypeIdList} from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -542,6 +543,7 @@ export default {
   components: { KSelect, InputCompany, InputUrl, KFileUpload },
   data() {
     return {
+      labels,
       stepLock: false,
       totalStep: 4,
       activeStep: 1,

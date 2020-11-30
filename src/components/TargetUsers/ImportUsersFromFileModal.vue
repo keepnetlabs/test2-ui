@@ -88,7 +88,7 @@
     </template>
     <template v-slot:overlay-footer>
       <v-btn @click="closeOverlay" class="import-users-file__footer-btn-cancel" rounded>
-        CANCEL
+        {{ labels.Cancel }}
       </v-btn>
       <div class="import-users-file__right-col">
         <v-btn
@@ -126,6 +126,8 @@
 import AppModal from '../AppModal'
 import Mapper from '../Mapper'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'ImportUsersFromFileModal',
   components: {
@@ -135,6 +137,7 @@ export default {
   },
   data() {
     return {
+      labels,
       step: 1,
       formValues: {
         sheet: '',

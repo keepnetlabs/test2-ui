@@ -59,7 +59,7 @@
           @click="changeNewUserGroupStatus(false)"
           color="#f56c6c"
           text
-          >CANCEL</v-btn
+          >{{ labels.Cancel }}</v-btn
         >
         <v-btn class="new-user-group__button mr-n4" @click="handleSave" color="#2196f3" text
           >SAVE</v-btn
@@ -71,12 +71,14 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { required, maxLength } from '@/utils/validations'
+import {maxLength, required} from '@/utils/validations'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'CreateNewUserGroupModal',
   data() {
     return {
+      labels,
       groupName: '',
       priority: 'Medium',
       validations: {

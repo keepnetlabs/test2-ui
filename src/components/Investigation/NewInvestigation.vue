@@ -268,7 +268,9 @@
     </template>
     <template v-slot:overlay-footer>
       <div class="new-investigation-footer">
-        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
+        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked"
           >START INVESTIGATION</v-btn
         >
@@ -278,15 +280,13 @@
 </template>
 <script>
 import AppModal from '../AppModal'
-import {
-  getTargetGroups,
-  getTargetGroupsByName,
-  getTargetUsersByEmail
-} from '../../api/targetUsers'
-import { getInvestigationScanTypes } from '@/api/investigations'
+import {getTargetGroups, getTargetGroupsByName, getTargetUsersByEmail} from '../../api/targetUsers'
+import {getInvestigationScanTypes} from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { scrollToComponent } from '@/utils/functions'
+import {scrollToComponent} from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   components: {
     KSelect,
@@ -342,6 +342,7 @@ export default {
 
   data() {
     return {
+      labels,
       timeout: null,
       defaultUserGroupItems: [],
       searchTargetUsersSpecificValue: '',

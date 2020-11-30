@@ -185,9 +185,9 @@
         </template>
         <template v-slot:app-dialog-footer>
           <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-            <v-btn text color="#f56c6c" class="k-dialog__button" @click="openInviteModal = false"
-              >CANCEL</v-btn
-            >
+            <v-btn text color="#f56c6c" class="k-dialog__button" @click="openInviteModal = false">{{
+              labels.Cancel
+            }}</v-btn>
             <v-btn text color="#2196f3" class="k-dialog__button" @click="inviteMember"
               >Invite All</v-btn
             >
@@ -474,7 +474,7 @@
   </div>
 </template>
 <script>
-import { mapState, mapGetters } from 'vuex'
+import {mapGetters, mapState} from 'vuex'
 import {
   deleteCommunity,
   getCommunityDetails,
@@ -486,16 +486,19 @@ import {
   removeFromCommunities
 } from '../../api/threadSharing'
 import AppDialog from '../AppDialog'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { isOwner } from '../../utils/functions'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
+import {isOwner} from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import CommunitiesCardLoading from '../SkeletonLoading/CommunitiesCardLoading'
 import PostCardLoading from '../SkeletonLoading/PostCardLoading'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   data() {
     return {
+      labels,
       yourPostsLoading: true,
       topPostsLoading: true,
       postsLoading: true,

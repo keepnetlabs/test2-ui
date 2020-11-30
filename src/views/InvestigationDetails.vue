@@ -30,7 +30,7 @@
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
                 <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToDelete = false"
-                  >CANCEL
+                  >{{ labels.Cancel }}
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
@@ -150,7 +150,7 @@
                   color="#f56c6c"
                   @click="isWantToWarnAndDelete = false"
                 >
-                  CANCEL
+                  {{ labels.Cancel }}
                 </v-btn>
               </div>
               <div class="d-flex flex-row flex-end">
@@ -884,18 +884,20 @@
 <script>
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import moment from 'moment'
-import { getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
+import {getStoreValue, PROPERTY_STORE} from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
+import {exportInvestigationEmailList, exportInvestigationUserList} from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
-import { getDataTableFieldLabel } from '../utils/functions'
-import { required, trim } from '@/utils/validations'
+import {getDataTableFieldLabel} from '../utils/functions'
+import {required, trim} from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
 import ThreeRowLoading from '../components/SkeletonLoading/ThreeRowLoading'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import labels from '@/model/constants/labels'
+
 export default {
   components: {
     AppDialogFooter,
@@ -908,6 +910,7 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    labels,
     isColumnFilterActive: false,
     isColumnFilterActiveTargetUsers: false,
     loading: true,

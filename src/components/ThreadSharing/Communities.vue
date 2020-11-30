@@ -164,7 +164,7 @@
               text
               color="#f56c6c"
               @click="isCancelRequestModal = false"
-              >CANCEL
+              >{{ labels.Cancel }}
             </v-btn>
           </div>
           <div class="d-flex flex-row flex-end">
@@ -493,7 +493,7 @@
                   <div class="ts-header-btn-1">
                     <div class="request-btns flex-grow-1">
                       <v-btn class="refuse-btn" block rounded medium @click="refuseRequest(item)">
-                        CANCEL
+                        {{ labels.Cancel }}
                       </v-btn>
                       <v-btn class="accept-btn" block rounded medium @click="acceptRequest(item)">
                         JOIN
@@ -610,14 +610,14 @@ import {
   refuseInvitation,
   removeFromCommunities
 } from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
-import { isOwnerOrMember } from '../../utils/functions'
+import {isOwner, isOwnerOrMember} from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
-import { isOwner } from '../../utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   components: {
@@ -628,6 +628,7 @@ export default {
     AppDialog
   },
   data: () => ({
+    labels,
     industryList: [],
     industryValue: [],
     privacyList: [

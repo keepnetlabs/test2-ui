@@ -58,7 +58,7 @@
     </template>
     <template v-slot:overlay-footer>
       <v-btn class="new-integration__footer-btn-cancel" @click="closeOverlay" rounded>
-        CANCEL
+        {{ labels.Cancel }}
       </v-btn>
       <div class="new-integration__footer__right-col">
         <v-btn
@@ -78,6 +78,8 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'NewCustomApi',
   components: {
@@ -93,6 +95,7 @@ export default {
   },
   data() {
     return {
+      labels,
       formValues: {
         clientName: '',
         authSecret: '',

@@ -15,7 +15,7 @@
               text
               color="#f56c6c"
               @click="showAppointANewOwnerModal = false"
-              >CANCEL
+              >{{ labels.Cancel }}
             </v-btn>
           </div>
           <div class="d-flex flex-row flex-end">
@@ -46,7 +46,7 @@
               text
               color="#f56c6c"
               @click="showRemoveFromCommunityModal = false"
-              >CANCEL
+              >{{ labels.Cancel }}
             </v-btn>
           </div>
           <div class="d-flex flex-row flex-end">
@@ -358,9 +358,9 @@ import {
   refuseCommunityMembershipRequest,
   removeFromCommunity
 } from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {COMMON_CONSTANTS} from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
-import { isOwnerOrMember } from '../../utils/functions'
+import labels from '@/model/constants/labels'
 
 export default {
   components: {
@@ -368,6 +368,7 @@ export default {
     Pie
   },
   data: () => ({
+    labels,
     membersLoading: true,
     appointUserName: null,
     appointNewOwnerId: null,

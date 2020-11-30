@@ -40,7 +40,7 @@
           @click="changeDownloadModalStatus"
           color="#f56c6c"
           text
-          >CANCEL</v-btn
+          >{{ labels.Cancel }}</v-btn
         >
         <v-btn
           class="mr-n4 download-modal__button"
@@ -57,6 +57,8 @@
 
 <script>
 import AppDialog from '../AppDialog'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'DownloadModal',
   components: {
@@ -74,6 +76,7 @@ export default {
   },
   data() {
     return {
+      labels,
       downloadType: [false, false, false]
     }
   },
