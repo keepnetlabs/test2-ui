@@ -3,7 +3,7 @@
     :offset-y="true"
     bottom
     min-width="260px"
-    :max-width="filteredSelectValueDate === 'between' ? '410px' : '260px'"
+    :max-width="filteredSelectValueDate === 'between' ? '450px' : '260px'"
     :close-on-content-click="false"
     class="filter__container"
     v-if="filterableType"
