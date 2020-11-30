@@ -58,7 +58,6 @@
         <v-select
           :items="dateFilterItems"
           dense
-          @click="handleDateClick"
           height="40"
           outlined
           required
@@ -67,21 +66,19 @@
           @change="changeDateSelect"
           placeholder="Select an option"
         ></v-select>
-        <el-date-picker
+        <InputDate
           :key="column.property + 'a'"
-          v-show="filteredSelectValueDate !== 'between'"
+          v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
           ref="refPicker"
-          popper-class="filter__date-picker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
         />
-        <el-date-picker
+        <InputDate
           :key="column.property"
-          v-show="filteredSelectValueDate === 'between'"
+          v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateValue"
           ref="refPicker2"
-          popper-class="filter__date-picker"
           type="datetimerange"
           style="margin-bottom: 14px;"
         />
@@ -127,8 +124,11 @@
 </template>
 
 <script>
+import InputDate from '@/components/Common/Inputs/InputDate'
+
 export default {
   name: 'DataTableFilter',
+  components: { InputDate },
   props: {
     column: {
       type: Object
@@ -197,13 +197,11 @@ export default {
     changeDateSelect() {
       this.filteredDateValue =
         this.filteredSelectValueDate !== 'between'
-          ? Date.now()
-          : [this.$moment(Date.now()).subtract(1, 'months').format('x'), Date.now()]
-    },
-    handleDateClick() {
-      const { refPicker, refPicker2 } = this.$refs
-      refPicker.pickerVisible = false
-      refPicker2.pickerVisible = false
+          ? this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+          : [
+              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
+              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+            ]
     },
     clearFilter() {
       this.menu = false
@@ -236,19 +234,19 @@ export default {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
-              Value: this.$moment(this.filteredDateValue[0]).format('YYYY-MM-DD HH:mm:ss'),
+              Value: this.filteredDateValue[0],
               FieldName: this.fieldName,
               Operator: '>='
             },
             {
-              value: this.$moment(this.filteredDateValue[1]).format('YYYY-MM-DD HH:mm:ss'),
+              value: this.filteredDateValue[1],
               FieldName: this.fieldName,
               Operator: '<='
             }
           ])
         } else {
           this.$emit('handleFilterColumn', {
-            Value: this.$moment(this.filteredDateValue).format('YYYY-MM-DD HH:mm:ss'),
+            Value: this.filteredDateValue,
             FieldName: this.fieldName,
             Operator: this.filteredSelectValueDate
           })

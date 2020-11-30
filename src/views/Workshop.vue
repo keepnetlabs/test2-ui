@@ -9,7 +9,7 @@
           <v-row>
             <v-col>
               <v-btn rounded color="primary" @click="submit">
-                SAVE
+                {{ labels.Save }}
               </v-btn>
             </v-col>
           </v-row>
@@ -21,6 +21,7 @@
 
 <script>
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
+
 export default {
   name: 'Workshop',
   props: {},

@@ -70,7 +70,7 @@
           color="#2196f3"
           rounded
         >
-          SAVE CHANGES
+          {{ labels.Save }}
         </v-btn>
       </div>
     </v-form>
@@ -81,6 +81,7 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+
 export default {
   name: 'WhiteLabeling',
   components: {

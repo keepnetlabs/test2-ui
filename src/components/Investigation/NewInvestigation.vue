@@ -167,20 +167,13 @@
                 <label class="edit-labels">Email Date Range</label>
                 <label class="edit-sub-labels">Select range of emails’ sending date</label>
                 <div class="date-row" :class="[!isDateValid && 'date-picker-container']">
-                  <el-date-picker
+                  <InputDate
                     v-model="date"
                     type="datetimerange"
-                    range-separator="To"
-                    format="yyyy-MM-dd HH:mm:ss"
                     ref="refPicker"
-                    start-placeholder="Start date"
-                    end-placeholder="End date"
-                    value-format="yyyy-MM-dd HH:mm:ss"
                     :picker-options="pickerOptions"
                     :rules="[]"
-                  >
-                  </el-date-picker>
-
+                  />
                   <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
                     <transition appear name="bounce">
                       <div class="v-messages theme--light error--text" role="alert">
@@ -268,7 +261,9 @@
     </template>
     <template v-slot:overlay-footer>
       <div class="new-investigation-footer">
-        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">CANCEL</v-btn>
+        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked"
           >START INVESTIGATION</v-btn
         >
@@ -278,20 +273,20 @@
 </template>
 <script>
 import AppModal from '../AppModal'
-import {
-  getTargetGroups,
-  getTargetGroupsByName,
-  getTargetUsersByEmail
-} from '../../api/targetUsers'
-import { getInvestigationScanTypes } from '@/api/investigations'
+import {getTargetGroups, getTargetGroupsByName, getTargetUsersByEmail} from '../../api/targetUsers'
+import {getInvestigationScanTypes} from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { scrollToComponent } from '@/utils/functions'
+import {scrollToComponent} from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+import InputDate from '@/components/Common/Inputs/InputDate'
+
 export default {
   components: {
     KSelect,
     AppModalBodyHeader,
-    AppModal
+    AppModal,
+    InputDate
   },
   watch: {
     date(val) {
@@ -342,6 +337,7 @@ export default {
 
   data() {
     return {
+      labels,
       timeout: null,
       defaultUserGroupItems: [],
       searchTargetUsersSpecificValue: '',

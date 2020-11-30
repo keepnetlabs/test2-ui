@@ -107,7 +107,7 @@
             rounded
             color="error"
             @click="cancelO365"
-            >CANCEL</v-btn
+            >{{ labels.Cancel }}</v-btn
           >
         </div>
         <div>
@@ -118,7 +118,7 @@
             @click="submit"
             :disabled="saveButtonDisabled"
           >
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>
@@ -189,12 +189,12 @@
             rounded
             color="error"
             @click="statusGsuite = false"
-            >CANCEL</v-btn
+            >{{ labels.Cancel }}</v-btn
           >
         </div>
         <div>
           <v-btn class="playbook-rule-form__button white--text" rounded color="#2196f3">
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>
@@ -309,6 +309,8 @@ import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'MailConfiguration',
   components: {
@@ -326,6 +328,7 @@ export default {
     }
   },
   data: () => ({
+    labels,
     delaySaveFunction: false,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,

@@ -16,7 +16,7 @@
       </template>
       <template v-slot:overlay-footer>
         <v-btn class="new-integration__footer-btn-cancel" rounded @click="closeGrapesJs()">
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
           <v-btn
@@ -25,7 +25,7 @@
             rounded
             @click="saveGrapesJs()"
           >
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>
@@ -1842,27 +1842,25 @@ import PreviewHeader from './PreviewHeader'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import VClamp from 'vue-clamp'
 import {
-  getSelectedEmailPreview,
-  searchNotifiedMail,
-  uploadEmlOrMsg,
-  listThreatCategories,
   createCommunityPost,
-  updateCommunityPost,
   getCommunityPost,
-  parseEmail
+  getSelectedEmailPreview,
+  listThreatCategories,
+  parseEmail,
+  searchNotifiedMail,
+  updateCommunityPost,
+  uploadEmlOrMsg
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
+import labels from '@/model/constants/labels'
 import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
-import {
-  incidenPostReviewElementBind,
-  scrollToComponent,
-  setIncidentVisibleBody
-} from '../../utils/functions'
+import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -2058,6 +2056,7 @@ export default {
     }
   },
   data: () => ({
+    labels,
     visibleBodyForPreview: null,
     termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
     acceptCheckbox: false,

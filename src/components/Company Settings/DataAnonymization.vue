@@ -50,7 +50,7 @@
             rounded
             style="margin-top: 3px;"
           >
-            SAVE CHANGES
+            {{ labels.Save }}
           </v-btn>
         </div>
       </div>
@@ -60,6 +60,7 @@
 
 <script>
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+
 export default {
   name: 'DataAnonymization',
   components: {
