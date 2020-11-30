@@ -12,7 +12,7 @@
         }"
       >
         <div class="card-header">
-          <span class="head">Investigations</span>
+          <span class="head">{{ labels.Investigations }}</span>
           <v-icon
             v-if="editMode"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
@@ -37,7 +37,7 @@
                 }}
               </span>
 
-              <span class="body-row__text">auto</span>
+              <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
             </div>
             <div class="body-row" style="margin-left: 81px;">
               <span class="body-row__number"
@@ -49,7 +49,7 @@
                 }}
               </span>
 
-              <span class="body-row__text">manual</span>
+              <span class="body-row__text">{{ labels.Manual.toLowerCase() }}</span>
             </div>
           </div>
           <div class="card-status mt-7">Incident(s) resolved</div>
@@ -79,6 +79,7 @@
 <script>
 import CardLoading from '@/components/SkeletonLoading/CardLoading'
 import { mapGetters } from 'vuex'
+import labels from '@/model/constants/labels'
 export default {
   name: 'InvestigationsIrHeader',
   components: {
@@ -91,7 +92,8 @@ export default {
   },
   data() {
     return {
-      isLoading: true
+      isLoading: true,
+      labels
     }
   },
   computed: {

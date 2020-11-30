@@ -12,7 +12,7 @@
         }"
       >
         <div class="card-header">
-          <span class="head">Phishing Reporter</span>
+          <span class="head">{{ labels.PhishingReporter }}</span>
           <router-link to="/phishing-reporter">
             <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
@@ -47,11 +47,11 @@
             }}
             user(s) are
           </div>
-          <div class="card-status">Currently Online</div>
+          <div class="card-status">{{ labels.CurrentlyOnline }}</div>
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">
-            No add-ins installed
+            {{ labels.NoAddInInstalled }}
           </div>
           <v-btn
             class="btn-action btn-playbook btn-playbook__no-data"
@@ -60,7 +60,7 @@
             style="box-shadow: none !important; margin-top: 16px;"
             @click="emptyPhishingButtonClick"
           >
-            Install Now
+            {{ labels.InstallNow }}
           </v-btn>
         </div>
         <div
@@ -78,6 +78,7 @@
 <script>
 import CardLoading from '@/components/SkeletonLoading/CardLoading'
 import { mapGetters } from 'vuex'
+import labels from '@/model/constants/labels'
 export default {
   name: 'PhishingReporterIrHeader',
   components: {
@@ -86,12 +87,14 @@ export default {
   props: {
     editMode: {
       type: Boolean,
-      default: false
+      default: false,
+      labels
     }
   },
   data() {
     return {
-      isLoading: true
+      isLoading: true,
+      labels
     }
   },
   computed: {
