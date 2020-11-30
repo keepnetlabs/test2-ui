@@ -809,6 +809,13 @@ export function checkPermission(permission, type) {
   return permissions.includes(`${permission}|${type}`)
 }
 
+export function checkPermissionMultiple(permissionsList, contain = true) {
+  let token = JSON.parse(localStorage.getItem('auth-token')).token
+  let tokenData = jwt_decode(token)
+  let permissions = tokenData.Permission
+  return permissionsList.map((item) => permissions.includes(item)).includes(contain)
+}
+
 export function getPermissionsOfAllItems(PERMISSIONS = {}) {
   const COPY_OF_PERMISSIONS = { ...PERMISSIONS }
   const permissions = Object.keys(COPY_OF_PERMISSIONS)

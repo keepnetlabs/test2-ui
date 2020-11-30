@@ -291,7 +291,24 @@
           </div>
         </div>
 
-        <router-link to="/" class="menu-link-default">
+        <router-link
+          to="/"
+          class="menu-link-default"
+          v-if="
+            checkPermissionMultiple([
+              'dashboard/widgets|GET',
+              'dashboard/widgets|POST',
+              'community-posts/top-posts|GET',
+              'notified-emails/search|POST',
+              'dashboard/summary|GET',
+              'dashboard/reported-email-trends|POST',
+              'ir/dashboard/summary|GET',
+              'ir/dashboard/top-rules|GET',
+              'ir/dashboard/running-investigations|GET',
+              'community-posts/search|POST'
+            ])
+          "
+        >
           <v-list-item class="menu-list-item">
             <v-list-item-icon>
               <v-icon>mdi-home</v-icon>
@@ -303,6 +320,16 @@
           to="/threat-sharing"
           class="menu-link-default"
           :class="[routerName === 'Community' && 'active-link']"
+          v-if="
+            !checkPermissionMultiple(
+              [
+                'communities/search/all|POST',
+                'communities/search/my|POST',
+                'community-posts/search|POST'
+              ],
+              false
+            )
+          "
         >
           <v-list-item class="menu-list-item">
             <v-list-item-icon>
@@ -337,7 +364,12 @@
               <v-list-item-title>Company</v-list-item-title>
             </v-list-item-content>
           </template>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="
+              checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST'])
+            "
+          >
             <v-list-item-content class="menu-item-content">
               <router-link to="/target-users" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
@@ -348,7 +380,10 @@
           </v-list-item>
           <v-list-item
             style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="this.$store.state.auth.userRoleName !== 'CompanyAdmin'"
+            v-if="
+              this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
+              checkPermissionMultiple(['company-groups|POST', 'companies/search|POST'])
+            "
           >
             <v-list-item-content class="menu-item-content">
               <router-link
@@ -362,7 +397,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link to="/company-settings" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
@@ -371,7 +409,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['system-users/search|POST'])"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link to="/system-users" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
@@ -403,13 +444,35 @@
               routerName === 'Mail Configurations' ||
               routerName === 'Investigation Details'
           }"
+          v-if="
+            checkPermissionMultiple([
+              'ir/dashboard/running-investigations|GET',
+              'companies/roi-settings|GET',
+              'ir/dashboard/top-rules|GET',
+              'notified-emails/search|POST',
+              'investigations/search|POST',
+              'analysis-engines/search|POST',
+              'playbooks/search|POST',
+              'mail-configurations/search|POST'
+            ])
+          "
         >
           <template v-slot:activator>
             <v-list-item-content class="menu-list-item">
               <v-list-item-title>Incident Responder</v-list-item-title>
             </v-list-item-content>
           </template>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="
+              checkPermissionMultiple([
+                'ir/dashboard/running-investigations|GET',
+                'companies/roi-settings|GET',
+                'ir/dashboard/top-rules|GET',
+                'notified-emails/search|POST'
+              ])
+            "
+          >
             <v-list-item-content class="menu-item-content">
               <router-link
                 to="/incident-responder"
@@ -422,7 +485,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['investigations/search|POST'])"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link
                 to="/investigations"
@@ -435,7 +501,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link to="/integrations" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
@@ -444,7 +513,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['playbooks/search|POST'])"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link to="/playbook" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
@@ -453,7 +525,10 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
+          >
             <v-list-item-content class="menu-item-content">
               <router-link to="/mailConfiguration" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
@@ -463,7 +538,11 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
-        <router-link to="/phishing-reporter" class="menu-link-default">
+        <router-link
+          to="/phishing-reporter"
+          class="menu-link-default"
+          v-if="checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])"
+        >
           <v-list-item class="menu-list-item">
             <v-list-item-icon>
               <v-icon>mdi-account-voice</v-icon>
@@ -623,6 +702,7 @@ import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecke
 import { updatePassword } from '../api/auth'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import Breadcrumb from '@/components/Breadcrumb'
+import { checkPermission, checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
 
 export default {
@@ -1098,6 +1178,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    checkPermissionMultiple(data, contain) {
+      return checkPermissionMultiple(data, contain)
+    },
     removeTooltip() {
       this.$refs.accountTooltip.isActive = false
     },
