@@ -828,6 +828,10 @@ export default {
       type: Array,
       required: true
     },
+    hideParentRowActions: {
+      type: Boolean,
+      default: false
+    },
     activeCluster: {
       type: String
     },
@@ -1114,6 +1118,9 @@ export default {
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
         }
+        if (!this.hideParentRowActions) {
+          this.handleParentRowActions()
+        }
       }
     },
     tableData(data) {
@@ -1391,6 +1398,13 @@ export default {
       })
       this.isWantToEditRow = true
     },
+    handleParentRowActions() {
+      const objStyle = document.createElement('style')
+      objStyle.innerHTML =
+        '.el-table__row.el-table__row--level-0 .actions-container button {visibility:hidden}'
+      const ref = document.querySelector('script')
+      ref.parentNode.insertBefore(objStyle, ref)
+    },
     /**
      * This functions removes visibility of the right actions columns.
      */
@@ -1510,11 +1524,16 @@ export default {
     hasOverflowTooltip(row, column, cell) {
       const parentRect = cell.getBoundingClientRect()
       const widthOfParent = parentRect.width
-      const span =
+      let span =
         cell.querySelector('span:last-child') ||
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
+
+      if ([...span.classList].some((item) => item === 'cell')) {
+        span = span.querySelector('div')
+      }
+
       let spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
       const padding = getComputedStyle(cell).paddingLeft.slice(0, -2)
       if (![...cell.classList].some((item) => item === 'el-table-column--selection')) {
