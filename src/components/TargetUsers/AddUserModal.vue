@@ -65,7 +65,7 @@
               'add-user-overlay__picker'
             ]"
           >
-            <el-date-picker
+            <InputDate
               v-model.trim="customFieldsModels[item.resourceId]"
               popper-class="filter__date-picker"
               :key="item.name"
@@ -152,6 +152,7 @@ import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputDate from '@/components/Common/Inputs/InputDate'
 import labels from '@/model/constants/labels'
 
 export default {
@@ -163,7 +164,8 @@ export default {
     AppModal,
     KSelect,
     InputFirstName,
-    InputLastName
+    InputLastName,
+    InputDate
   },
   props: {
     status: {
