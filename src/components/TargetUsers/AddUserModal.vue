@@ -65,7 +65,7 @@
               'add-user-overlay__picker'
             ]"
           >
-            <el-date-picker
+            <InputDate
               v-model.trim="customFieldsModels[item.resourceId]"
               popper-class="filter__date-picker"
               :key="item.name"
@@ -141,17 +141,19 @@
 </template>
 
 <script>
-import { required, mail, maxLength } from '@/utils/validations'
-import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import {mail, maxLength, required} from '@/utils/validations'
+import {createTargetUser, getTargetGroups, updateTargetUser} from '@/api/targetUsers'
+import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import { scrollToComponent } from '@/utils/functions'
+import {scrollToComponent} from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputDate from '@/components/Common/Inputs/InputDate'
+
 export default {
   name: 'AddUserModal',
   components: {
@@ -161,7 +163,8 @@ export default {
     AppModal,
     KSelect,
     InputFirstName,
-    InputLastName
+    InputLastName,
+    InputDate
   },
   props: {
     status: {
