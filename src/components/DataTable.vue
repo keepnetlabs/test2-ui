@@ -1532,12 +1532,16 @@ export default {
         cell.querySelector('.datatable-chart__empty') ||
         cell.querySelector('.datatable-progress') ||
         cell.querySelector('div')
-
       if ([...span.classList].some((item) => item === 'cell')) {
         span = span.querySelector('div')
       }
-
-      let spanWidth = span.getBoundingClientRect().width + 20 + this.cellPadding
+      let aggregation = 20
+      if (window.safari || navigator.vendor.match(/apple/i)) {
+        if ([...cell.parentNode.classList].some((item) => item === 'el-table__row--level-1')) {
+          aggregation = 0
+        }
+      }
+      let spanWidth = span.getBoundingClientRect().width + aggregation + this.cellPadding
       const padding = getComputedStyle(cell).paddingLeft.slice(0, -2)
       if (![...cell.classList].some((item) => item === 'el-table-column--selection')) {
         if (padding) {
