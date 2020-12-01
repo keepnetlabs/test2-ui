@@ -64,16 +64,12 @@
           </v-radio-group>
         </form-group>
         <form-group>
-          <el-date-picker
+          <InputDate
             v-model="formValues.date"
             type="datetime"
-            placeholder="11.08.2020 13:08 AM"
-            format="yyyy-MM-dd HH:mm:ss"
-            value-format="yyyy-MM-dd HH:mm:ss"
             class="send-welcome-email__date-picker"
-          >
-          </el-date-picker
-        ></form-group>
+          />
+        </form-group>
       </v-form>
     </template>
     <template v-slot:app-dialog-footer>
@@ -102,13 +98,15 @@ import AppDialog from '@/components/AppDialog'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import InputDate from '@/components/Common/Inputs/InputDate'
 
 export default {
   name: 'SendWelcomeEmailToNewUserModal',
   components: {
     KSelect,
     AppDialog,
-    FormGroup
+    FormGroup,
+    InputDate
   },
   props: {
     status: {

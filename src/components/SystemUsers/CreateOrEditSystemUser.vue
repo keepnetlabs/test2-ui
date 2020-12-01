@@ -27,38 +27,7 @@
           <InputEmail v-model.trim="formValues.email" />
         </form-group>
         <form-group title="Phone Number" class-name="mb-6">
-          <vue-tel-input
-            v-model="formValues.phoneNumber"
-            validCharactersOnly
-            defaultCountry="GB"
-            :inputOptions="{
-              showDialCode: true
-            }"
-            :maxLen="maxLen"
-            mode="international"
-            :class="['k-tel-input', !isPhoneNumberValid && 'phone-number-invalid']"
-            ref="refTelInput"
-            @blur="handleTelBlur"
-            @input="handleTelChange"
-          />
-          <div class="v-text-field__details checkbox-error" v-if="!isPhoneNumberValid">
-            <transition appear name="bounce">
-              <div class="v-messages theme--light error--text" role="alert">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message" style="padding-left: 10px;">
-                    {{ getErrorText }}
-                  </div>
-                </div>
-              </div>
-            </transition>
-          </div>
-          <div class="v-messages theme--light" v-else>
-            <div class="v-messages__wrapper">
-              <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
-                *Required
-              </div>
-            </div>
-          </div>
+          <InputPhone v-model.trim="formValues.phoneNumber" />
         </form-group>
         <form-group title="Status">
           <k-select
@@ -81,7 +50,7 @@
             v-model.trim="formValues.roleResourceIdList"
             hint="*Required"
             persistent-hint
-            item-text="roleName"
+            item-text="name"
             item-value="resourceId"
             :rules="[(v) => validations.required(v, 'Required')]"
           />
@@ -106,11 +75,12 @@ import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcome
 import { createSystemUser, getUserRoles, updateSystemUser } from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
-import { VueTelInput } from 'vue-tel-input'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
+import InputPhone from '@/components/Common/Inputs/InputPhone'
+import { getSystemUsersRole } from '../../api/systemUsers'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -122,8 +92,8 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     SendWelcomeEmailToNewUserModal,
-    VueTelInput,
-    KSelect
+    KSelect,
+    InputPhone
   },
   props: {
     status: {
@@ -143,8 +113,6 @@ export default {
         phoneNumber: '',
         statusName: '',
         roleResourceIdList: [],
-        isTwoStep: false,
-        isLdap: false,
         statusId: 1
       },
       maxLen: 17,
@@ -166,12 +134,6 @@ export default {
     getTitle() {
       return this.selectedRow ? 'Edit System User' : 'New System User'
     },
-    getErrorText() {
-      if (this.formValues.phoneNumber) {
-        return 'Invalid Phone Number'
-      }
-      return 'Required'
-    },
     getBodyTitle() {
       return this.selectedRow ? 'Edit System User' : 'Create New System User'
     }
@@ -186,11 +148,8 @@ export default {
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
-    handleTelBlur() {
-      this.validatePhoneNumber()
-    },
+
     submit() {
-      this.validatePhoneNumber()
       if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
@@ -245,37 +204,9 @@ export default {
         })
         this.$emit('closeOverlayWithUpdate')
       })
-    },
-    validatePhoneNumber() {
-      this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
-    },
-    updatePhoneNumber() {
-      this.validatePhoneNumber()
-      this.$refs.refTelInput.$forceUpdate()
     }
   },
-  watch: {
-    'formValues.phoneNumber'(newVal, oldVal) {
-      if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
-        this.formValues.phoneNumber = oldVal
-        this.$refs.refTelInput.phone = oldVal
-        this.updatePhoneNumber()
-      } else if (
-        //CHINA BUG
-        newVal.length === 17 &&
-        this.$refs.refTelInput.phoneObject.regionCode === 'CN' &&
-        newVal[4] !== '1'
-      ) {
-        const val = newVal.substring(0, 16)
-        this.formValues.phoneNumber = val
-        this.$refs.refTelInput.phone = val
-        this.updatePhoneNumber()
-      }
-      this.$nextTick(() => {
-        this.updatePhoneNumber()
-      })
-    }
-  },
+  watch: {},
   mounted() {
     this.$nextTick(() => {
       this.$refs.refForm.resetValidation()
@@ -323,14 +254,14 @@ export default {
     let _this = this
     let allRoles = []
     let availableRoles = []
-    getUserRoles(payload).then((response) => {
-      allRoles = response.data.data.results
+    getSystemUsersRole(payload).then((response) => {
+      allRoles = response.data.data
       availableRoles = []
       if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-        availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
+        availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
       } else if (this.$store.state.auth.userRoleName === 'Reseller') {
         availableRoles = allRoles.filter(
-          (item) => item.roleName === 'Reseller' || item.roleName === 'CompanyAdmin'
+          (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
         )
       } else if (this.$store.state.auth.userRoleName === 'Root') {
         availableRoles = allRoles
@@ -358,26 +289,26 @@ export default {
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {
-            return item.roleName.replace(/\s/g, '') === roles
+            return item.name === roles
           }).resourceId
         if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-          availableRoles = allRoles.filter((item) => item.roleName === 'CompanyAdmin')
+          availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
           if (roles === 'Reseller') {
-            availableRoles = allRoles.filter((item) => item.roleName === 'Reseller')
+            availableRoles = allRoles.filter((item) => item.name === 'Reseller')
           } else if (roles === 'Root') {
-            availableRoles = allRoles.filter((item) => item.roleName === 'Root')
+            availableRoles = allRoles.filter((item) => item.name === 'Root')
           }
         } else if (this.$store.state.auth.userRoleName === 'Reseller') {
           availableRoles = allRoles.filter(
-            (item) => item.roleName === 'Reseller' || item.roleName === 'CompanyAdmin'
+            (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
           )
           if (roles === 'Root') {
-            availableRoles = allRoles.filter((item) => item.roleName === 'Root')
+            availableRoles = allRoles.filter((item) => item.name === 'Root')
           }
         }
         this.roleItems = availableRoles.map((item) => {
           let data = {
-            roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+            name: item.name,
             resourceId: item.resourceId
           }
           return data
@@ -385,7 +316,7 @@ export default {
       } else {
         this.roleItems = availableRoles.map((item) => {
           let data = {
-            roleName: item.roleName.replace(/([A-Z]+)/g, ' $1').replace(/([A-Z][a-z])/g, ' $1'),
+            name: item.name,
             resourceId: item.resourceId
           }
           return data

@@ -59,7 +59,7 @@
       @syncUser="handleSyncUser"
       @deleteAction="handleDelete"
       ref="refPeopleTable"
-      :isDownloadable="false"
+      :download-button="{ show: false, disabled: false }"
       @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
       @columnFilterChanged="columnFilterChanged"

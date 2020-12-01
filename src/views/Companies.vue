@@ -34,6 +34,7 @@ export default {
     }
   },
   updated() {
+    console.log('iam in')
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }

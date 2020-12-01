@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <v-card class="pa-2" style="height: 100%; overflow: hidden; border-radius: 20px;">
-      <v-list-item>
+  <div class="switch-account">
+    <v-card style="height: 100%; overflow: hidden; border-radius: 20px;">
+      <v-list-item class="switch-account__header">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">mdi-swap-horizontal</v-icon>
         </div>
@@ -12,9 +12,52 @@
           >
         </v-list-item-content>
       </v-list-item>
-      <div>
+      <div class="switch-account__content">
         <PostCardLoading :loading="companyLoading" v-if="companyLoading"> </PostCardLoading>
-        <v-container fluid v-if="!companyLoading">
+        <div v-if="!companyLoading">
+          <div class="switch-account__content--current-user mb-6">
+            <div class="switch-account__content--current-user__section-header">
+              You are now:
+            </div>
+            <div class="d-flex">
+              <div class="switch-account__content--current-user__logo">
+                <img v-if="!!getLogoImage" :src="getLogoImage" />
+              </div>
+              <div class="switch-account__content--current-user__details">
+                <span class="switch-account__content--current-user__details--companyName">{{
+                  getSelectedCompanyName
+                }}</span>
+                <span class="switch-account__content--current-user__details--role">{{
+                  getRolename
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="switch-account__content--current-user" v-if="!companyLoading">
+          <div class="switch-account__content--current-user__section-header">
+            Switch to
+          </div>
+          <treeselect
+            v-if="!companyLoading"
+            :multiple="false"
+            :flat="false"
+            placeholder="Select company to manage"
+            :options="orderedAccounts"
+            v-model="value"
+            value-format="object"
+          >
+            <label slot="option-label" slot-scope="{ node }">
+              <img
+                :src="node.raw.logoUrl || require('../assets/img/no-logo.png')"
+                alt=""
+                style="width: 32px; height: 32px;"
+              />
+              <span>{{ node.label }}</span>
+            </label>
+          </treeselect>
+        </div>
+        <!--<v-container fluid v-if="!companyLoading">
           <v-data-iterator
             :items="orderedAccounts"
             :search="search"
@@ -80,21 +123,42 @@
               </v-row>
             </template>
           </v-data-iterator>
-        </v-container>
+        </v-container>-->
+      </div>
+      <div class="switch-account__footer">
+        <v-btn
+          color="#f56c6c"
+          class="delete-user__footer-button"
+          @click="setSwitchDialog(false)"
+          text
+          >{{ labels.Cancel }}</v-btn
+        >
+        <v-btn
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="onClickSelectedAccount(value)"
+          >{{ labels.Confirm }}</v-btn
+        >
       </div>
     </v-card>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { getCompanyList } from '../api/company'
 import PostCardLoading from './SkeletonLoading/PostCardLoading'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'SwitchAccount',
   data() {
     return {
+      labels,
+      value: null,
       keys: ['name'],
       itemsPerPageOptions: [4, 8, 12],
       itemsPerPage: 4,
@@ -105,7 +169,8 @@ export default {
     }
   },
   components: {
-    PostCardLoading
+    PostCardLoading,
+    Treeselect
   },
   created() {
     this.$store.watch((state) => {
@@ -117,7 +182,8 @@ export default {
   methods: {
     ...mapActions({
       selectCompany: 'dashboard/selectCompany',
-      setDialogBar: 'dashboard/setSwitchDialog'
+      setDialogBar: 'dashboard/setSwitchDialog',
+      setSwitchDialog: 'dashboard/setSwitchDialog'
     }),
     sort(items, value) {
       return value
@@ -127,7 +193,40 @@ export default {
     getCompanyData() {
       this.companyLoading = true
       getCompanyList()
-        .then((response) => (this.orderedAccounts = response.data.data))
+        .then((response) => {
+          let accounts = response.data.data
+          function removeEmptyArrays(data) {
+            for (var key in data) {
+              var item = data[key]
+              // see if this item is an array
+              if (Array.isArray(item)) {
+                // see if the array is empty
+                if (item.length == 0) {
+                  // remove this item from the parent object
+                  delete data[key]
+                } else {
+                  removeEmptyArrays(item)
+                }
+                // if this item is an object, then recurse into it
+                // to remove empty arrays in it too
+              } else if (typeof item == 'object') {
+                removeEmptyArrays(item)
+              }
+            }
+            return data
+          }
+          const swaps = { name: 'label', resourceId: 'id' }
+          const pattern = new RegExp(
+            Object.keys(swaps)
+              .map((e) => `(?:"(${e})":)`)
+              .join('|'),
+            'g'
+          )
+          const result = JSON.parse(
+            JSON.stringify(accounts).replace(pattern, (m) => `"${swaps[m.slice(1, -2)]}":`)
+          )
+          this.orderedAccounts = removeEmptyArrays(result)
+        })
         .finally(() => {
           this.companyLoading = false
         })
@@ -140,8 +239,8 @@ export default {
       localStorage.setItem('selectedCompanyRequestId', account.resourceId)
       localStorage.setItem('selectedCompanyName', account.name)
     },
-    onClickSelectedAccount(account) {
-      this.getSelectedCompanyDetails(account)
+    onClickSelectedAccount({ label, id }) {
+      this.getSelectedCompanyDetails({ name: label, resourceId: id })
       this.setDialogBar(false)
       this.search = ''
     }
@@ -155,6 +254,45 @@ export default {
     ...mapState({
       currentCompany: (state) => state.dashboard.selectedCompany
     }),
+    switchDialog: {
+      get() {
+        return this.isSwitchDialogOpen
+      },
+      set(newValue) {
+        this.setSwitchDialog(newValue)
+      }
+    },
+    getLogoImage() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
+      let image =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
+
+    getSelectedCompanyName() {
+      if (this.$store.state.auth.companyName == undefined) {
+        return ''
+      }
+      console.log(this.$store.state.auth.selectedCompanyName)
+      return this.$store.state.auth.selectedCompanyName
+    },
+
+    getFirstName() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
+      return this.$store.state.auth.user.firstName
+    },
+    getRolename() {
+      if (this.$store.state.auth.userRoleName == undefined) {
+        return ''
+      }
+      return this.$store.state.auth.userRoleName
+    },
     isLoading: {
       get() {
         return this.isLoadingFromStore
@@ -295,6 +433,70 @@ export default {
 .v-dialog {
   .search-field {
     height: 40px;
+  }
+}
+
+.switch-account {
+  .v-card {
+    overflow: visible !important;
+  }
+  &__header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 24px;
+    .v-list-item__content {
+      padding: 0 !important;
+    }
+  }
+  &__content {
+    padding: 24px;
+    &--current-user {
+      &__section-header {
+        font-size: 18px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: #383b41;
+        margin-bottom: 8px;
+      }
+      &__logo {
+        img {
+          width: 32px;
+          height: 32px;
+          border: solid 0.5px #dcdcdc;
+        }
+        margin-right: 8px;
+      }
+      &__details {
+        display: flex;
+        flex-flow: column;
+        &--companyName {
+          font-size: 16px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1;
+          letter-spacing: normal;
+          color: #383b41;
+        }
+        &--role {
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: #383b41;
+        }
+      }
+    }
+  }
+  &__footer {
+    border-top: 1px solid #e0e0e0;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: flex-end;
   }
 }
 </style>

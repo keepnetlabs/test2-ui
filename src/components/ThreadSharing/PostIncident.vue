@@ -1,21 +1,22 @@
 <template>
   <div class="incident-wrapper">
     <app-modal
-      :status="showWebPageGrapes"
-      v-if="showWebPageGrapes"
+      :status="showNewsletterPageGrapes"
+      v-if="showNewsletterPageGrapes"
       icon-name="mdi-check"
       title="Edit Post Email"
       z-index="999999"
+      :show-header="false"
     >
       <template v-slot:overlay-body>
-        <GrapesWebPageModal
+        <GrapesNewsletterModal
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
-        ></GrapesWebPageModal>
+        ></GrapesNewsletterModal>
       </template>
       <template v-slot:overlay-footer>
         <v-btn class="new-integration__footer-btn-cancel" rounded @click="closeGrapesJs()">
-          CANCEL
+          {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
           <v-btn
@@ -24,7 +25,7 @@
             rounded
             @click="saveGrapesJs()"
           >
-            SAVE
+            {{ labels.Save }}
           </v-btn>
         </div>
       </template>
@@ -1841,27 +1842,25 @@ import PreviewHeader from './PreviewHeader'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import VClamp from 'vue-clamp'
 import {
-  getSelectedEmailPreview,
-  searchNotifiedMail,
-  uploadEmlOrMsg,
-  listThreatCategories,
   createCommunityPost,
-  updateCommunityPost,
   getCommunityPost,
-  parseEmail
+  getSelectedEmailPreview,
+  listThreatCategories,
+  parseEmail,
+  searchNotifiedMail,
+  updateCommunityPost,
+  uploadEmlOrMsg
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import KShadowFrame from '../KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
-import GrapesWebPageModal from '../GrapesJs/WebPage/GrapesWebPageModal'
-import {
-  incidenPostReviewElementBind,
-  scrollToComponent,
-  setIncidentVisibleBody
-} from '../../utils/functions'
+import labels from '@/model/constants/labels'
+import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
+import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1984,7 +1983,7 @@ export default {
     KFileUpload,
     VClamp,
     PreviewHeader,
-    GrapesWebPageModal,
+    GrapesNewsletterModal,
     AppModal,
     PreviewHeaderForSinglePost,
     AttachmentsPreview
@@ -2057,11 +2056,12 @@ export default {
     }
   },
   data: () => ({
+    labels,
     visibleBodyForPreview: null,
     termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
     acceptCheckbox: false,
     editHtmlData: null,
-    showWebPageGrapes: false,
+    showNewsletterPageGrapes: false,
     value: 'wFlYRDMW946M',
     items2: [
       {
@@ -2284,7 +2284,6 @@ export default {
           .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
         if (els && els.length) {
           for (let i = 0, l = els.length; i < l; i++) {
-            debugger
             let el = els[i]
             el.style.pointerEvents = 'auto'
             el.style.cursor = 'pointer'
@@ -2309,7 +2308,7 @@ export default {
       this.isCheckboxChecked = this.acceptCheckbox
     },
     closeGrapesJs() {
-      this.showWebPageGrapes = false
+      this.showNewsletterPageGrapes = false
     },
     saveGrapesJs() {
       let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
@@ -2318,7 +2317,7 @@ export default {
         let urls = response.data.data.map((item) => {
           return { ...item, isFlagged: false, isHidden: false }
         })
-        this.showWebPageGrapes = false
+        this.showNewsletterPageGrapes = false
         this.uploadRespond.urls = urls
         this.uploadRespond.editableBody = editedHtml
         this.uploadRespond.visibleBodyForPreview = editedHtml
@@ -2327,7 +2326,7 @@ export default {
     },
     editHtmlTemplate() {
       this.editHtmlData = this.uploadRespond.editableBody || this.uploadRespond.initialBody
-      this.showWebPageGrapes = true
+      this.showNewsletterPageGrapes = true
     },
     querySelections(val) {
       let _this = this

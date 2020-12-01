@@ -45,22 +45,32 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :countRow="5"
+      :groupable="true"
       :empty="tableOptions.iEmpty"
       :filterable="true"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
       :refName="'companyList'"
+      :clusterItems="[{ name: 'Company Name' }]"
+      @clusterChanged="clusterChanged"
       row-key="companyName"
       :rowActions="tableOptions.rowActions"
+      active-cluster="Company Name"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
       @cellClick="handleCompanyNameClick"
       @downloadEvent="handleTableDownload"
+      :is-server-side="false"
       @addButton="addButton"
+      @handleListBulleted="handleListBulletedClick"
       @onEmptyBtnClicked="addButton"
       @editAction="editAction"
+      @searchChangedEvent="handleSearchChange"
       @AddGroupToModal="handleAddGroupToModal"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
     >
       <template v-slot:datatable-custom-column="{ scope }">
@@ -98,6 +108,7 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
+import { getLookupListByTypeIdList } from '@/api/common'
 
 export default {
   name: 'CompanyList',
@@ -115,6 +126,7 @@ export default {
     tableData: [],
     tableHeight: 0,
     extendTop: 0,
+    isClustered: true,
     editModal: false,
     isShowDeleteModal: false,
     isShowExtended: false,
@@ -135,6 +147,7 @@ export default {
           sortable: true,
           show: true,
           type: 'slot',
+          filterableType: 'text',
           width: 180
         },
         {
@@ -142,10 +155,11 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
-
           sortable: true,
           show: true,
           type: 'text',
+          filterableType: 'select',
+          filterableItems: [],
           width: 150
         },
         {
@@ -153,10 +167,11 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
-
           sortable: true,
           show: true,
           type: 'text',
+          filterableType: 'select',
+          filterableItems: [],
           width: 150
         },
         {
@@ -174,7 +189,6 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
-
           sortable: true,
           show: true,
           type: 'text',
@@ -188,11 +202,13 @@ export default {
           fixed: false,
           sortable: true,
           show: true,
+          filterableType: 'date',
           type: 'text',
           width: 180
         }
       ],
       pageSizes: [5, 10, 25],
+      isColumnFilterActive: false,
       selectEvent: {
         clipboard: true,
         edit: false,
@@ -243,7 +259,12 @@ export default {
           {
             Condition: 'AND',
             FilterItems: [],
-            FilterGroups: []
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: []
+              }
+            ]
           }
         ]
       }
@@ -254,25 +275,75 @@ export default {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
     }
   },
+  created() {
+    this.getLookUpDatas()
+  },
   mounted() {
     this.getTableData()
   },
   methods: {
+    handleSearchChange(bodyData = {}, columnFilterActive = false) {
+      this.payload.filter.FilterGroups[0].FilterItems = [
+        ...bodyData.filter.FilterGroups[0].FilterItems
+      ]
+
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.getTableData()
+    },
+    getLookUpDatas() {
+      getLookupListByTypeIdList({ typeidlist: [2, 3] }).then((response) => {
+        const res = response.data.data
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          res
+            .filter((item) => item.genericCodeTypeId === 2)
+            .map((item) => ({ text: item.name, value: item.name }))
+        )
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          res
+            .filter((item) => item.genericCodeTypeId === 3)
+            .map((item) => ({ text: item.name, value: item.name }))
+        )
+      })
+    },
     getTableData(payload) {
-      const _payload = { ...this.payload, ...payload }
+      const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-              ? response.data.data.results
+              ? this.getManipulatedTableData(response.data.data.results)
               : []
         })
-        .catch((error) => {
+        .catch(() => {
           this.tableData = []
         })
         .finally(() => (this.loading = false))
     },
+    getManipulatedTableData(data, isChild = false) {
+      data.forEach((item) => {
+        if (isChild) {
+          item.isChild = true
+        }
+        if (item.children) {
+          this.getManipulatedTableData(item.children, true)
+        }
+      })
+      return data
+    },
+    clusterChanged() {
+      this.isClustered = true
+      this.getTableData()
+    },
+    handleListBulletedClick() {
+      this.isClustered = false
+      this.getTableData()
+    },
+    handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
@@ -402,6 +473,53 @@ export default {
     },
     changeGroupModalStatus(status) {
       this.showCreateNewGroupWithCompany = status
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName =
+            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+        const { FieldName, Value } = filter
+        if (FieldName === 'Result' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
+      }
+
+      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.getTableData()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.tableOptions.isColumnFilterActive =
+        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.getTableData()
     }
   }
 }

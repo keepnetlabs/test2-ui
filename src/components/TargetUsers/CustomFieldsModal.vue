@@ -19,9 +19,9 @@
         <template v-slot:app-dialog-body> This custom field will be deleted ! </template>
         <template v-slot:app-dialog-footer>
           <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-            <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false"
-              >CANCEL</v-btn
-            >
+            <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false">{{
+              labels.Cancel
+            }}</v-btn>
             <v-btn class="users__button" text color="#2196f3" @click="deleteCustomField">
               DELETE</v-btn
             >
@@ -85,7 +85,11 @@
           :list="unActiveCustomFields"
           handle=".handle"
         >
-          <v-list-item :key="item.name" v-for="item in unActiveCustomFields">
+          <v-list-item
+            :key="item.name"
+            v-for="item in unActiveCustomFields"
+            style="max-width: 650px;"
+          >
             <v-list-item-content>
               <table-field
                 isDeleteable
@@ -99,7 +103,7 @@
     </template>
     <template v-slot:overlay-footer>
       <v-btn @click="closeOverlay" class="new-integration__footer-btn-cancel" rounded>
-        CANCEL
+        {{ labels.Cancel }}
       </v-btn>
       <div class="new-integration__footer__right-col">
         <v-btn
@@ -108,7 +112,7 @@
           color="#2196f3"
           rounded
         >
-          SAVE
+          {{ labels.Save }}
         </v-btn>
       </div>
     </template>
@@ -121,12 +125,13 @@ import AppDialog from '../AppDialog'
 import TableField from './subcomponents/TableField'
 import Draggable from 'vuedraggable'
 import {
-  getTargetUserCustomFieldsByCompanyId,
+  bulkUpdateOfCustomFields,
   createTargetUserCustomField,
-  bulkUpdateOfCustomFields
+  getTargetUserCustomFieldsByCompanyId
 } from '@/api/targetUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import CustomFieldsLoading from '@/components/SkeletonLoading/CustomFieldsLoading'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'CustomFieldsModal',
@@ -149,6 +154,7 @@ export default {
   },
   data() {
     return {
+      labels,
       customFields: [],
       selectedItem: null,
       loading: true,

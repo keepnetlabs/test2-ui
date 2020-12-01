@@ -39,7 +39,7 @@
             dense
             text
             v-if="editMode"
-            >CANCEL
+            >{{ labels.Cancel }}
           </v-btn>
           <v-btn
             @click="saveEditedOnes()"
@@ -48,7 +48,7 @@
             text
             v-if="editMode"
             :disabled="isSaveButtonDisabled"
-            >SAVE
+            >{{ labels.Save }}
           </v-btn>
         </div>
       </div>
@@ -586,11 +586,13 @@ import Badge from './Badge'
 import {
   getBtnPriorityColor,
   getBtnStatusColor,
-  getTextColor,
-  getDataTableFieldLabel
+  getDataTableFieldLabel,
+  getTextColor
 } from '../utils/functions'
 import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'ExtendedView',
   components: {
@@ -675,6 +677,7 @@ export default {
     //copyofEditedRows  --> kopyalanan değeri
     //titleKey --> Headerda gösterilecek key
     return {
+      labels,
       copyOfEditedRows: [],
       editMode: false,
       multipleEditModels: [],

@@ -42,6 +42,7 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
+        v-if="checkPermissions('system-users/search', 'POST')"
       />
     </div>
   </div>
@@ -53,6 +54,7 @@ import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 import { getSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
+import { checkPermission } from '../../utils/functions'
 export default {
   name: 'People',
   components: {
@@ -175,7 +177,8 @@ export default {
           {
             name: 'Edit',
             icon: 'mdi-pencil',
-            action: 'editAction'
+            action: 'editAction',
+            disabled: !this.checkPermissions('system-users/{resourceId}', 'PUT')
           }
         ],
         empty: {
@@ -186,7 +189,8 @@ export default {
         addButton: {
           show: true,
           action: 'handleAddNewSystemUsers',
-          tooltip: 'Add a New System User'
+          tooltip: 'Add a New System User',
+          disabled: !this.checkPermissions('system-users', 'POST')
         }
       },
       requestBody: {
@@ -212,6 +216,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
@@ -225,15 +232,19 @@ export default {
     },
     callForListSystemUsers() {
       this.loading = true
-      getSystemUsers(this.requestBody)
-        .then((response) => {
-          const { data } = response.data
-          this.tableData = data.results || []
-        })
-        .catch(() => {
-          this.tableData = []
-        })
-        .finally(() => (this.loading = false))
+      if (this.checkPermissions('system-users/search', 'POST')) {
+        getSystemUsers(this.requestBody)
+          .then((response) => {
+            const { data } = response.data
+            this.tableData = data.results || []
+          })
+          .catch(() => {
+            this.tableData = []
+          })
+          .finally(() => (this.loading = false))
+      } else {
+        this.$router.push('/')
+      }
     },
     deleteMultipleItems(selections) {},
     columnFilterChanged(filter) {

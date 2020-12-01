@@ -4,20 +4,24 @@ import VueTour from 'vue-tour'
 import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
+import VueTelInputVuetify from 'vue-tel-input-vuetify/lib/plugin.js'
 import vuetify from './plugins/vuetify'
 import 'vue-tour/dist/vue-tour.css'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
-import { SmartWidget } from 'vue-smart-widget'
-import { SmartWidgetGrid } from 'vue-smart-widget'
+import { SmartWidget, SmartWidgetGrid } from 'vue-smart-widget'
 import VueMask, { VueMaskDirective } from 'v-mask'
 import * as Sentry from '@sentry/browser'
 import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
-import { VSelect, VAutocomplete, VCombobox } from 'vuetify/lib'
+import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
+
+Vue.use(VueTelInputVuetify, {
+  vuetify
+})
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
-//dynamic kullanımda bindingi gelmiyordu
+//dynamic kullanımda bindingi gelmiyodu
 Vue.component('VSelect', VSelect)
 Vue.component('VAutocomplete', VAutocomplete)
 Vue.component('VCombobox', VCombobox)

@@ -53,7 +53,7 @@
     </template>
     <template v-slot:overlay-footer>
       <v-btn class="new-integration__footer-btn-cancel" @click="closeOverlay" rounded>
-        CANCEL
+        {{ labels.Cancel }}
       </v-btn>
       <div class="new-integration__footer__right-col">
         <v-btn
@@ -62,7 +62,7 @@
           rounded
           @click="submit"
         >
-          SAVE
+          {{ labels.Save }}
         </v-btn>
       </div>
     </template>
@@ -76,6 +76,7 @@ import PhoneNumber from '@/components/SmallComponents/PhoneNumber'
 import { maxLength, minLength } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'NewSmsSettings',
@@ -94,6 +95,7 @@ export default {
   },
   data() {
     return {
+      labels,
       providerItems: [],
       formValues: {
         provider: '',

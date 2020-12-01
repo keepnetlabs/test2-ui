@@ -16,7 +16,7 @@
               text
               color="#f56c6c"
               @click="isWantToDelete = false"
-              >CANCEL
+              >{{ labels.Cancel }}
             </v-btn>
           </div>
           <div class="d-flex flex-row flex-end">
@@ -64,7 +64,8 @@ import {
   getStoreValue,
   PROPERTY_STORE
 } from '../../model/constants/commonConstants'
-import { getClientList, exportClientList, deleteClient } from '../../api/clients'
+import { deleteClient, exportClientList, getClientList } from '../../api/clients'
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'Clients',
@@ -75,6 +76,7 @@ export default {
   },
   data() {
     return {
+      labels,
       isWantToDelete: false,
       clientId: null,
       tableOptions: {

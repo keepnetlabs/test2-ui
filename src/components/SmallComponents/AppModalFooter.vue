@@ -1,19 +1,24 @@
 <template>
   <div class="app-modal-footer">
     <v-btn class="app-modal-footer__btn-cancel" @click="closeOverlay" rounded>
-      CANCEL
+      {{ labels.Cancel }}
     </v-btn>
     <div class="app-modal-footer__right-col">
       <v-btn class="app-modal-footer__btn-save" color="#2196f3" rounded @click="submit">
-        SAVE
+        {{ labels.Save }}
       </v-btn>
     </div>
   </div>
 </template>
 
 <script>
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'AppModalFooter',
+  data() {
+    return { labels }
+  },
   methods: {
     closeOverlay() {
       this.$emit('closeOverlay')

@@ -8,7 +8,7 @@
     class="k-overlay"
     :class="className"
   >
-    <v-card light class="k-overlay__container">
+    <v-card light class="k-overlay__container" :class="{ 'p-0': !showHeader }">
       <v-form lazy-validation ref="refForm">
         <slot name="overlay-header" v-if="showHeader">
           <v-list-item class="k-overlay__list-item k-overlay__header">
@@ -24,10 +24,10 @@
         <div class="k-overlay__footer" v-if="showFooter">
           <slot name="overlay-footer">
             <v-btn class="k-overlay__btn-cancel" rounded @click="closeOverlay">
-              CANCEL
+              {{ labels.Cancel }}
             </v-btn>
             <v-btn class="k-overlay__btn-save white--text" color="#2196f3" rounded @click="submit">
-              SAVE
+              {{ labels.Save }}
             </v-btn>
           </slot>
         </div>
@@ -50,6 +50,8 @@ overlay-body
 overlay-footer
 
  */
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'AppModal',
   props: {
@@ -77,6 +79,9 @@ export default {
       type: Boolean,
       default: true
     }
+  },
+  data() {
+    return { labels }
   },
   methods: {
     closeOverlay() {

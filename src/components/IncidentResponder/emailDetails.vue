@@ -253,7 +253,7 @@
                   :empty="iEmpty"
                   :selectEvent="selectEvent"
                   :sizeable="true"
-                  :isDownloadable="false"
+                  :download-button="{ show: false, disabled: false }"
                 />
               </div>
             </template>
