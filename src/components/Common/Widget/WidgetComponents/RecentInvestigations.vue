@@ -3,7 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
-          title="Recent Investigations"
+          :title="getTitle"
           :link="{ href: '/investigations', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
@@ -60,6 +60,7 @@ import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { getRunningInvestigations } from '@/api/incidentResponder'
+import labels from '@/model/constants/labels'
 export default {
   name: 'RecentInvestigations',
   components: {
@@ -74,14 +75,19 @@ export default {
       type: Boolean
     }
   },
+  computed: {
+    getTitle() {
+      return labels.RecentInvestigations
+    }
+  },
 
   data() {
     return {
       isLoading: true,
       columns: [
         {
-          property: 'name',
-          label: 'Investigation Name',
+          property: labels.Name.toLowerCase(),
+          label: labels.InvestigationName,
           thStyle: {
             width: '60%'
           },
@@ -90,8 +96,8 @@ export default {
           }
         },
         {
-          property: 'progress',
-          label: 'Progress',
+          property: labels.Progress.toLowerCase(),
+          label: labels.Progress,
           thStyle: {
             textAlign: 'center'
           }

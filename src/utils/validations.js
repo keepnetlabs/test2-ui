@@ -23,7 +23,7 @@ export function mail(value, message) {
   return !value || /\S+@\S+\.\S+/gi.test(value) || message
 }
 
-export function ip(value, message = 'Invalid ip address') {
+export function ip(value, message = 'Invalid IP address') {
   value = getValue(value)
   return (
     /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
@@ -53,7 +53,7 @@ export function phone(value, message) {
   return /^\+[1-9]\d{10,14}$/gi.test(value) || message
 }
 
-export function email(value, message) {
+export function email(value, message = 'Invalid email address') {
   value = getValue(value)
   return (
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gi.test(
