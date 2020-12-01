@@ -8,7 +8,7 @@
             <v-divider />
             <v-stepper-step :complete="activeStep > 2" step="2">Conditions</v-stepper-step>
             <v-divider />
-            <v-stepper-step step="3">Actions</v-stepper-step>
+            <v-stepper-step step="3">{{ labels.Actions }}</v-stepper-step>
           </v-stepper-header>
 
           <v-stepper-items>
@@ -17,10 +17,10 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="v-card-form-title">
-                    Rule Information
+                    {{ labels.RuleInformation }}
                   </v-list-item-title>
                   <v-list-item-title class="v-card-sub-header">
-                    Enter rule information
+                    {{ labels.EnterRuleInformation }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -28,9 +28,9 @@
               <v-form ref="refStep1Form" lazy-validation>
                 <v-list-item class="mt-6" style="margin-bottom: 17px;">
                   <v-list-item-content>
-                    <label class="bottom-margin">Rule Name</label>
+                    <label class="bottom-margin">{{ labels.RuleName }}</label>
                     <v-text-field
-                      placeholder="Enter a name for the rule"
+                      placeholder="Enter rule name"
                       outlined
                       dense
                       hint="*Required"
@@ -38,29 +38,37 @@
                       autocomplete="off"
                       v-model.trim="name"
                       :rules="[
-                        (v) => validations.required(v, 'Required'),
-                        (v) => validations.maxLength(v, 150, 'Max 150 characters')
+                        (v) => validations.required(v, labels.Required),
+                        (v) =>
+                          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.RuleName))
                       ]"
                     ></v-text-field>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item class="margin-top">
                   <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">Description</label>
+                    <label class="bottom-margin">{{ labels.Description }}</label>
                     <v-textarea
-                      placeholder="Describe the rule"
+                      placeholder="Enter description"
                       outlined
                       dense
                       no-resize
                       v-model.trim="description"
-                      :rules="[(v) => validations.maxLength(v, 1000, 'Max 1000 characters')]"
+                      :rules="[
+                        (v) =>
+                          validations.maxLength(
+                            v,
+                            1000,
+                            labels.getMaxLengthMessage(labels.Description, 1000)
+                          )
+                      ]"
                       autocomplete="disabled"
                     />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item class="margin-top">
                   <v-list-item-content>
-                    <label>Priority</label>
+                    <label>{{ labels.Priority }}</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Rules with higher priority override lower priority rules
                     </v-list-item-title>
@@ -82,9 +90,9 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label>Tags</label>
+                    <label>{{ labels.Tags }}</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Define tags for the rule
+                      {{ labels.DefineTags }}
                     </v-list-item-title>
                     <k-select
                       type="combobox"
@@ -124,7 +132,7 @@
             <v-stepper-content step="2">
               <v-list-item-content>
                 <v-list-item-title class="v-card-form-title">
-                  Conditions
+                  {{ labels.Conditions }}
                 </v-list-item-title>
                 <v-list-item-title class="v-card-sub-header">
                   Define conditions to filter reported emails and take actions
@@ -152,7 +160,7 @@
             <v-stepper-content step="3">
               <v-list-item-content>
                 <v-list-item-title class="v-card-form-title">
-                  Actions
+                  {{ labels.Actions }}
                 </v-list-item-title>
                 <v-list-item-title class="v-card-sub-header">
                   Define action for instances that match the conditions
@@ -228,9 +236,9 @@
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { maxLength, required } from '../../utils/validations'
-import { createPlaybook, getPlaybook, updatePlaybook } from '../../api/playbook'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { maxLength, required } from '@/utils/validations'
+import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
 import { scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'

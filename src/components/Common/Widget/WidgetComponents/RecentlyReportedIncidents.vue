@@ -4,7 +4,7 @@
       <v-btn style="display: none;" />
       <widget-container>
         <widget-header
-          title="Recently Reported Incidents"
+          :title="getTitle"
           :link="{ href: '/incident-responder', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
@@ -45,6 +45,8 @@ import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { searchNotifiedMail } from '@/api/incidentResponder'
 import { getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import Badge from '@/components/Badge'
+import labels from '@/model/constants/labels'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'RecentlyReportedIncidents',
   components: {
@@ -66,8 +68,8 @@ export default {
       isLoading: true,
       columns: [
         {
-          property: 'subject',
-          label: 'Subject',
+          property: PROPERTY_STORE.SUBJECT,
+          label: labels.Subject,
           thStyle: {
             width: '60%'
           },
@@ -76,8 +78,8 @@ export default {
           }
         },
         {
-          property: 'result',
-          label: 'Result',
+          property: PROPERTY_STORE.RESULT,
+          label: labels.Result,
           thStyle: {
             textAlign: 'center'
           },
@@ -88,12 +90,17 @@ export default {
       ],
       tableData: [],
       empty: {
-        message: "There isn't any reported incidents, yet"
+        message: labels.EmptyRecentlyReportedIncidents
       }
     }
   },
   created() {
     this.callForRecentlyReportedIncidents()
+  },
+  computed: {
+    getTitle() {
+      return labels.RecentlyReportedIncidents
+    }
   },
   methods: {
     callForRecentlyReportedIncidents() {

@@ -91,13 +91,15 @@
                     ? 'mdi-minus-circle-outline'
                     : 'mdi-check-circle-outline'
                 }}</v-icon>
-                <span>{{ scope.row.status === 'Active' ? 'Inactive' : 'Active' }}</span>
+                <span>{{
+                  scope.row.status === labels.Active ? labels.InActive : labels.Active
+                }}</span>
               </v-list-item-title>
             </v-list-item>
             <v-list-item class="sub-menu-el" :disabled="tableOptions.rowActions[2].disabled">
               <v-list-item-title @click="handleActionDelete(scope.row)">
                 <v-icon class="pr-3">mdi-delete</v-icon>
-                <span>Delete</span>
+                <span>{{ labels.Delete }}</span>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -124,7 +126,9 @@ import {
   PROPERTY_STORE,
   LABEL_STORE
 } from '@/model/constants/commonConstants'
-import { checkPermission } from '../../utils/functions'
+import { checkPermission } from '@/utils/functions'
+
+import labels from '@/model/constants/labels'
 
 export default {
   name: 'Integrations',
@@ -137,6 +141,7 @@ export default {
     return {
       loading: true,
       integrationId: null,
+      labels,
       tableData: [],
       showDeleteModal: false,
       selectedIntegration: {},
@@ -147,7 +152,7 @@ export default {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
-            label: 'Integration Name',
+            label: labels.IntegrationName,
             sortable: true,
             show: true,
             type: 'text',
@@ -200,19 +205,19 @@ export default {
         ],
         rowActions: [
           {
-            name: 'Edit',
+            name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
             disabled: !this.checkPermissions('analysis-engines/{resourceId}', 'PUT')
           },
           {
-            name: 'Disable',
+            name: labels.Disable,
             icon: 'mdi-minus-circle-outline',
             action: 'disable',
             disabled: !this.checkPermissions('analysis-engines/{resourceId}/disable', 'PUT')
           },
           {
-            name: 'Delete',
+            name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
             disabled: !this.checkPermissions('analysis-engines/{resourceId}', 'DELETE')
@@ -231,7 +236,7 @@ export default {
         pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,
-          btn: 'ADD AN INTEGRATION',
+          btn: labels.AddAnIntegration,
           icon: 'mdi-account-plus'
         },
         addButton: {
@@ -286,14 +291,14 @@ export default {
     },
     handleDelete(row) {
       deleteIntegration(row.resourceId)
-        .then((response) => {
+        .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Integration has been deleted'
           })
           this.getDatatableList()
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Integration can not be deleted'
@@ -306,14 +311,14 @@ export default {
     },
     handleDisable(row) {
       disableIntegration(row.resourceId)
-        .then((response) => {
+        .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Integration has been disabled'
           })
           this.getDatatableList()
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Integration can not be disabled'
@@ -322,14 +327,14 @@ export default {
     },
     handleEnable(row) {
       enableIntegration(row.resourceId)
-        .then((response) => {
+        .then(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             message: 'Integration has been enabled'
           })
           this.getDatatableList()
         })
-        .catch((error) => {
+        .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'Integration can not be enabled'
@@ -379,7 +384,7 @@ export default {
                   this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
                    */
           })
-          .catch((error) => {
+          .catch(() => {
             this.tableData = []
           })
           .finally(() => (this.loading = false))

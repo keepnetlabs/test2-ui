@@ -3,7 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
-          title="Recently Posted Threats"
+          :title="getTitle"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
@@ -51,6 +51,8 @@ import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { getIncidentList } from '@/api/threadSharing'
+import labels from '@/model/constants/labels'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'RecentlyPostedThreats',
   components: {
@@ -71,8 +73,8 @@ export default {
       isLoading: true,
       columns: [
         {
-          property: 'title',
-          label: 'Post Title',
+          property: PROPERTY_STORE.TITLE,
+          label: LABEL_STORE.POSTTITLE,
           thStyle: {
             width: '60%'
           },
@@ -81,18 +83,23 @@ export default {
           }
         },
         {
-          property: 'communityName',
-          label: 'Community'
+          property: PROPERTY_STORE.COMMUNITYNAME,
+          label: labels.Community
         }
       ],
       tableData: [],
       empty: {
-        message: "There isn't any recently posted threats, yet"
+        message: labels.EmptyRecentlyPostedThreats
       }
     }
   },
   created() {
     this.callForRecentlyPostedThreats()
+  },
+  computed: {
+    getTitle() {
+      return labels.RecentlyPostedThreats
+    }
   },
   methods: {
     callForRecentlyPostedThreats() {
