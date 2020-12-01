@@ -45,6 +45,7 @@
             placeholder="Select company to manage"
             :options="orderedAccounts"
             v-model="value"
+            value-format="object"
           >
             <label slot="option-label" slot-scope="{ node }">
               <img
@@ -238,11 +239,8 @@ export default {
       localStorage.setItem('selectedCompanyRequestId', account.resourceId)
       localStorage.setItem('selectedCompanyName', account.name)
     },
-    onClickSelectedAccount(account) {
-      let company = this.orderedAccounts.find((item) => item.id === account)
-      company.resourceId = company.id
-      company.name = company.label
-      this.getSelectedCompanyDetails(company)
+    onClickSelectedAccount({ label, id }) {
+      this.getSelectedCompanyDetails({ name: label, resourceId: id })
       this.setDialogBar(false)
       this.search = ''
     }

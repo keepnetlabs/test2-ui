@@ -1059,6 +1059,15 @@
 }
 .el-table__empty-block{
   border-top: 1px solid rgb(158, 158, 158);
+  .el-table__empty-text{
+    color: #383b41;
+  }
+.empty-table .empty-inline p {
+  margin-top: 8px;
+    font-size: 16px;
+    letter-spacing: normal;
+  line-height: 16px;
+  }
 }
 .btn-all-selection{
   margin-left:16px;

@@ -680,6 +680,16 @@
                 </v-tooltip>
               </template>
             </el-table-column>
+            <template v-slot:empty>
+              <div class="empty-table">
+                <div class="empty-inline">
+                  <slot name="empty-table-inline">
+                    <h2>Sorry, that search and filter criteria has no results.</h2>
+                    <p>Please try adjusting your search or filter</p>
+                  </slot>
+                </div>
+              </div>
+            </template>
           </el-table>
           <div v-else>
             <div class="empty-table">
@@ -771,6 +781,7 @@
     </v-card>
   </div>
 </template>
+
 <script>
 import Vue from 'vue'
 import DataTableText from './DataTableComponents/DataTableText'
