@@ -14,9 +14,9 @@
       <app-dialog
         :status="isWantToStopInvestigation"
         icon="mdi-alert"
-        title="Stop Ongoing Investigation"
-        subtitle="Do you want to stop this investigation?"
-        body="Once you stopped, you cannot resume this investigation."
+        :title="labels.StopOngoingInvestigation"
+        :subtitle="labels.DoYouWantToStopInvestigation"
+        :body="labels.OnceYouStoppedInvestigation"
       >
         <template v-slot:app-dialog-footer>
           <app-dialog-footer
@@ -66,7 +66,7 @@
                 scope.row && scope.row.matchingPlaybooks && scope.row.matchingPlaybooks.length === 0
               "
             >
-              {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+              {{ scope.row.source === labels.Auto ? 'Auto Analysis' : scope.row.source }}
             </span>
             <span
               :key="item.resourceId"
@@ -110,6 +110,7 @@ import { getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import labels from '@/model/constants/labels'
 export default {
   components: {
     AppDialogFooter,
@@ -134,6 +135,7 @@ export default {
     isWantToAddNewCommunity: false,
     isWantToStopInvestigation: false,
     init: true,
+    labels,
     investigationListDataLength: 0,
     columns: [
       // Should be defined to show the table
@@ -233,24 +235,24 @@ export default {
     pageSizes: [5, 10, 25],
     rowActions: [
       {
-        name: 'Details',
+        name: labels.Details,
         icon: 'mdi-text-box-multiple',
         action: 'investigationDetails'
       },
       {
-        name: 'Stop Action',
+        name: labels.StopAction,
         icon: 'mdi-stop',
         action: 'stopInvestigationFunc'
       }
     ],
     addUsers: {
       show: true,
-      tooltip: 'Start an Investigation',
+      tooltip: labels.StartAnInvestigation,
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'No investigations started',
-      btn: 'START A NEW INVESTIGATION',
+      message: labels.NoInvestigationStarted,
+      btn: labels.StartNewInvestigation,
       icon: 'mdi-plus'
     },
     selectEvent: {
@@ -261,7 +263,7 @@ export default {
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4'],
-      labels: ['Completed User Count', 'Not Started User Count '],
+      labels: [labels.CompletedUserCount, labels.NotStartedUserCount],
       showTooltipLine: true
     },
     isColumnFilterActive: false,

@@ -476,7 +476,10 @@
                 <div v-if="col.type === 'popup'">
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
                 </div>
-                <div v-if="col.type === 'slot' || col.type === 'analysisSource'">
+                <div
+                  v-if="col.type === 'slot' || col.type === 'analysisSource'"
+                  class="data-table__custom-column"
+                >
                   <slot name="datatable-custom-column" :scope="scope" :col="col"></slot>
                 </div>
               </template>

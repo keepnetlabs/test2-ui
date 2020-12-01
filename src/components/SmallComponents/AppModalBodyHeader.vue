@@ -43,7 +43,7 @@ export default {
     margin-top: 0 !important;
   }
   &__title {
-    font-size: 24px;
+    font-size: 24px !important;
     font-weight: normal;
     line-height: 1.29 !important;
     letter-spacing: normal;
@@ -51,7 +51,7 @@ export default {
     opacity: 0.9;
   }
   &__sub-title {
-    font-size: 14px;
+    font-size: 14px !important;
     font-weight: normal;
     line-height: 1.5 !important;
     letter-spacing: normal;

@@ -10,23 +10,24 @@
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-list-item class="edit-name-area 0 pa-0 investigation-name">
               <v-list-item-content class>
-                <label class="pb-2 edit-labels">Investigation Name</label>
+                <label class="pb-2 edit-labels">{{ labels.InvestigationName }}</label>
                 <v-text-field
-                  placeholder="Manual Investigation - 09.09.2019  16:25"
+                  placeholder="Enter an investigation name"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model.trim="investgationName"
-                  :rules="[investigationNameRules.required, investigationNameRules.empty]"
-                  required
+                  :rules="[
+                    investigationNameRules.required,
+                    investigationNameRules.empty,
+                    investigationNameRules.maxLength
+                  ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
               <v-list-item-content class>
-                <label class="edit-labels">Target Users</label>
-                <label class="edit-sub-labels"
-                  >Select departments, groups or users to investigate</label
-                >
+                <label class="edit-labels">{{ labels.TargetUsers }}</label>
+                <label class="edit-sub-labels">{{ labels.InvestigateSubLabel }}</label>
                 <div class="target-users-select__radio-group">
                   <v-radio-group
                     v-model="targetUserType"
@@ -86,7 +87,7 @@
                     type="combobox"
                     :items="specificUserItems"
                     v-if="targetUserType === 'SpecificUsers'"
-                    placeholder="Enter user email Addresses"
+                    placeholder="Select specific users"
                     item-text="email"
                     item-value="email"
                     :search-input.sync="searchTargetUsersSpecificValue"
@@ -109,7 +110,7 @@
             </v-list-item>
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class="filter-container">
-                <label class="edit-labels">Search Criteria</label>
+                <label class="edit-labels">{{ labels.SearchCriteria }}</label>
                 <label class="edit-sub-labels"
                   >Define criteria for the investigation. Emails that match any of the criteria will
                   be found</label
@@ -140,7 +141,8 @@
                       class="edit-name-textfield edit-select standard-height"
                       :rules="[
                         list.option && generalRules[list.option].required,
-                        list.option && generalRules[list.option].format
+                        list.option && generalRules[list.option].format,
+                        list.option && generalRules[list.option].maxLength
                       ]"
                       v-model.trim="list.text"
                       required
@@ -273,14 +275,18 @@
 </template>
 <script>
 import AppModal from '../AppModal'
-import {getTargetGroups, getTargetGroupsByName, getTargetUsersByEmail} from '../../api/targetUsers'
-import {getInvestigationScanTypes} from '@/api/investigations'
+import {
+  getTargetGroups,
+  getTargetGroupsByName,
+  getTargetUsersByEmail
+} from '../../api/targetUsers'
+import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import {scrollToComponent} from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
-
+import * as Validations from '@/utils/validations'
 export default {
   components: {
     KSelect,
@@ -382,20 +388,20 @@ export default {
       },
       searchTargetUsersGroupsValue: '',
       placeholders: {
-        ip: '1.1.1.1',
-        from: 'Email address',
-        to: 'Email address',
-        cc: 'Email address  ',
-        bcc: 'Email address',
-        subject: 'Enter a keyword',
-        from_name: 'Full name (case sensitive)',
-        url: 'https://www.yourdomain.com',
+        ip: 'Enter an ip address ',
+        from: 'Enter an email address',
+        to: 'Enter an email address',
+        cc: 'Enter an email address',
+        bcc: 'Enter an email address',
+        subject: 'Enter a subject',
+        from_name: 'Enter a from name',
+        url: 'Enter a domain name',
         keyword: 'Enter a keyword',
-        size: '1024 bytes',
-        name: 'file.jpg (case sensitive)',
-        sha512: '3c1cc475fc16e68f41943421301c61c4f7f655…',
-        md5: '3c1cc475fc16e68f41943421301c61c4f7f655…',
-        extension: 'JPG'
+        size: 'Enter size',
+        name: 'Enter a file name(case sensitive)',
+        sha512: 'Enter a sha512 key',
+        md5: 'Enter a md5 key',
+        extension: 'Enter an file extension'
       },
       scanTypes: [],
       checkboxError: false,
@@ -453,95 +459,96 @@ export default {
       menu1: '',
       menu2: '',
       investigationNameRules: {
-        required: (v) =>
-          (v && v.length <= 150) || 'Investigation Name must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Investigation Name cannot start with space'
+        required: (v) => Validations.required(v),
+        empty: (v) => Validations.startsWithSpace(v),
+        maxLength: (v) =>
+          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.InvestigationName, 64))
       },
       generalRules: {
         ip: {
-          required: (v) => {
-            return (v && v.length <= 255) || 'IP must between 1 - 255 characters'
-          },
-          format: (v) => {
-            return (
-              /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
-                v
-              ) || 'Invalid ip'
-            )
-          }
+          required: (v) => Validations.required(v),
+          format: (v) => Validations.ip(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
         },
         from: {
-          required: (v) => (v && v.length <= 255) || 'From must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
+          required: (v) => Validations.required(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
+          format: (v) => Validations.email(v)
         },
         to: {
-          required: (v) => (v && v.length <= 255) || 'To must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
+          required: (v) => Validations.required(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
+          format: (v) => Validations.email(v)
         },
         cc: {
-          required: (v) => (v && v.length <= 255) || 'CC must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
+          required: (v) => Validations.required(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
+          format: (v) => (v) => Validations.email(v)
         },
         bcc: {
-          required: (v) => (v && v.length <= 255) || 'BCC must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid email address'
+          required: (v) => Validations.required(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
+          format: (v) => (v) => Validations.email(v)
         },
         subject: {
-          required: (v) => (v && v.length <= 255) || 'Required',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
+          required: (v) => Validations.required(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject)),
+          format: (v) => Validations.startsWithSpace(v) // string kontrolü
         },
         from_name: {
-          required: (v) => (v && v.length <= 1000) || 'Required',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
+          required: (v) => Validations.required(v),
+          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Sender name')),
+          format: (v) => Validations.startsWithSpace(v) // string kontrolü
         },
         url: {
-          required: (v) => (v && v.length <= 1000) || 'URL must between 1 - 1000 characters',
-          format: (v) =>
-            /(ftp:\/\/|http:\/\/|https:\/\/|mailto:)(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
-              v
-            ) || 'invalid url'
+          required: (v) => Validations.required(v),
+          maxLength: (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage('URL', 2000)),
+          format: (v) => Validations.url(v)
         },
         keyword: {
-          required: (v) => (v && v.length <= 255) || 'Required',
-          format: (v) => {
-            return (v && !v.startsWith(' ')) || 'Cannot start with space'
-          } // format ekle
+          required: (v) => Validations.required(v),
+          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Keyword')),
+          format: (v) => Validations.startsWithSpace(v) // format ekle
         },
         size: {
-          required: (v) => (v && v.length <= 255) || 'File size in bytes',
-          format: (v) => /^\d+$/gi.test(v) || 'Numbers only'
+          required: (v) => Validations.required(v),
+          format: (v) => /^\d+$/gi.test(v) || 'Numbers only',
+          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Size'))
         },
         name: {
-          required: (v) => (v && v.length <= 255) || 'Required',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => Validations.required(v),
+          format: (v) => Validations.startsWithSpace(v),
+          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Name'))
         },
         sha512: {
-          required: (v) => (v && v.length <= 512) || 'SHA512 must between 1 - 512 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => Validations.required(v),
+          format: (v) => Validations.startsWithSpace(v),
+          maxLength: (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage('SHA512', 512))
         },
         md5: {
-          required: (v) => (v && v.length <= 128) || 'MD5 must between 1 - 128 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => Validations.required(v),
+          format: (v) => Validations.startsWithSpace(v),
+          maxLength: (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage('MD5', 128))
         },
         extension: {
-          required: (v) => (v && v.length <= 10) || 'Extension must between 1 - 10 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
+          required: (v) => Validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
+          format: (v) => Validations.startsWithSpace(v),
+          maxLength: (v) =>
+            Validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
         }
       },
       filterSelectRules: {
-        required: (v) => !!v || 'Filter Select required',
-        format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
-      },
-      descriptionRules: {
-        required: (v) =>
-          (!!v && v.length <= 150) || 'Description required and must between 5-150 characters.',
-        regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        required: (v) => Validations.required(v),
+        format: (v) => Validations.startsWithSpace(v)
       },
       targetUsers: {
-        required: (v) => (!!v && v.length > 0) || 'Required'
+        required: (v) => Validations.required(v)
       },
       checkboxRule: {
         required: (v) => this.sources.find((item) => item.value)

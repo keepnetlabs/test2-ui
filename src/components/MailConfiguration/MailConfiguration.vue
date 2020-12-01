@@ -16,11 +16,14 @@
           />
           <form-group title="Name" has-hint>
             <v-text-field
-              placeholder="O365 Mail Configuration"
+              placeholder="Enter name"
               outlined
               dense
               v-model.trim="formValues.name"
-              :rules="[(v) => validations.required(v, 'Required')]"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+              ]"
               hint="*Required"
               persistent-hint
               id="name"
@@ -33,7 +36,11 @@
               outlined
               dense
               v-model.trim="formValues.applicationId"
-              :rules="[(v) => validations.required(v, 'Required')]"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) =>
+                  validations.maxLength(v, 64, labels.getMaxLengthMessage('Application ID', 64))
+              ]"
               hint="*Required"
               persistent-hint
               id="appClientId"
@@ -43,13 +50,17 @@
           </form-group>
           <form-group title="Application Secret" has-hint>
             <v-text-field
-              placeholder="Enter Application Secret"
+              placeholder="Enter an application secret"
               outlined
               dense
               v-model.trim="formValues.applicationSecret"
               hint="*Required"
               persistent-hint
-              :rules="[(v) => validations.required(v, 'Required')]"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) =>
+                  validations.maxLength(v, 64, labels.getMaxLengthMessage('Application secret', 64))
+              ]"
               id="applicationSecret"
               autocomplete="disabled"
               height="40"
@@ -57,11 +68,14 @@
           </form-group>
           <form-group title="Directory (tenant) ID" has-hint>
             <v-text-field
-              placeholder="Enter Directory ID"
+              placeholder="Enter a directory ID"
               outlined
               dense
               v-model.trim="formValues.directoryId"
-              :rules="[(v) => validations.required(v, 'Required')]"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Directory ID', 64))
+              ]"
               hint="*Required"
               persistent-hint
               id="directoryId"
@@ -71,15 +85,16 @@
           </form-group>
           <form-group title="Test Email Address" has-hint>
             <v-text-field
-              placeholder="user@company.com"
+              placeholder="Enter an email address"
               outlined
               dense
               hint="*Required"
               persistent-hint
               v-model.trim="formValues.email"
               :rules="[
-                (v) => validations.required(v, 'Required'),
-                (v) => validations.mail(v, 'Invalid  email address')
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.mail(v, labels.InvalidEmailAddress),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
               ]"
               id="emailAddress"
               height="40"
@@ -304,7 +319,7 @@ import {
   getMailConfigurationList,
   updateO365
 } from '@/api/mailConfiguration'
-import { mail, required } from '@/utils/validations'
+import * as validations from '@/utils/validations'
 import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { scrollToComponent } from '@/utils/functions'
@@ -461,10 +476,7 @@ export default {
       ]
     },
     addUsersItems: ['O365'],
-    validations: {
-      required,
-      mail
-    }
+    validations: validations
   }),
   methods: {
     testConnectionValues(isSuccess, isSave) {

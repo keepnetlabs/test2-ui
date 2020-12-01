@@ -14,15 +14,15 @@
           <v-form ref="form" lazy-validation>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">Average hours saved per reported email</label>
+                <label class="roi-modal__label">{{ labels.RoiSummarySavedTimeLabel }}</label>
                 <v-text-field
-                  placeholder="Saved Time"
+                  placeholder="Enter saved time"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHour"
                   v-mask="'###'"
                   :rules="[
-                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.required(v, labels.Required),
                     (v) => validations.startsWith(v, 'Cannot start with 0', 0)
                   ]"
                 ></v-text-field>
@@ -30,15 +30,15 @@
             </v-list-item>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">Average total cost per hour</label>
+                <label class="roi-modal__label">{{ labels.RoiSummaryHourlyLabel }}</label>
                 <v-text-field
-                  placeholder="Hourly Rate"
+                  placeholder="Enter hourly rate"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
                   v-model="baseManHourCost"
                   v-mask="'###'"
                   :rules="[
-                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.required(v, labels.Required),
                     (v) => validations.startsWith(v, 'Cannot start with 0', 0)
                   ]"
                 ></v-text-field>
@@ -55,8 +55,12 @@
               text
               >{{ labels.Cancel }}</v-btn
             >
-            <v-btn class="mr-n2 download-modal__button" @click="submitRoiModal" color="#2196f3" text
-              >Save</v-btn
+            <v-btn
+              class="mr-n2 download-modal__button"
+              @click="submitRoiModal"
+              color="#2196f3"
+              text
+              >{{ labels.Save }}</v-btn
             >
           </div>
         </template>
@@ -110,7 +114,7 @@
                   }}
                   user(s) are
                 </div>
-                <div class="card-status">Currently Online</div>
+                <div class="card-status">{{ labels.CurrentlyOnline }}</div>
               </div>
               <div class="columns-row__body" v-else>
                 <div class="card-footer no-data-text">
@@ -123,7 +127,7 @@
                   style="box-shadow: none !important; margin-top: 16px;"
                   @click="emptyPhishingButtonClick"
                 >
-                  Install Now
+                  {{ labels.InstallNow }}
                 </v-btn>
               </div>
               <div
@@ -149,7 +153,7 @@
               }"
             >
               <div class="card-header">
-                <span class="head">Incident Analysis</span>
+                <span class="head">{{ labels.IncidentAnalysis }}</span>
               </div>
               <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
                 <div class="card-body">
@@ -172,10 +176,10 @@
                   }}
                   reported email(s)
                 </div>
-                <div class="card-status">Found harmful</div>
+                <div class="card-status">{{ labels.FoundHarmful }}</div>
               </div>
               <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">No emails analysed</div>
+                <div class="card-footer no-data-text">{{ labels.NoEmailAnalysed }}</div>
                 <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
                   @click="emptyNotifiedEmailButtonClick">
             Start Now
@@ -221,7 +225,7 @@
                       }}
                     </span>
 
-                    <span class="body-row__text">auto</span>
+                    <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
                   </div>
                   <div class="body-row" style="margin-left: 81px;">
                     <span class="body-row__number"
@@ -233,13 +237,13 @@
                       }}
                     </span>
 
-                    <span class="body-row__text">manual</span>
+                    <span class="body-row__text">{{ labels.Manual.toLowerCase() }}</span>
                   </div>
                 </div>
-                <div class="card-status mt-7">Incident(s) resolved</div>
+                <div class="card-status mt-7">{{ labels.IncidentsResolved }}</div>
               </div>
               <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">No investigation started</div>
+                <div class="card-footer no-data-text">{{ labels.NoInvestigationStarted }}</div>
                 <v-btn
                   class="btn-action btn-playbook btn-playbook__no-data"
                   rounded
@@ -247,7 +251,7 @@
                   style="box-shadow: none !important; margin-top: 16px;"
                   @click="emptyInvestigationButtonClick"
                 >
-                  Start Now
+                  {{ labels.StartNow }}
                 </v-btn>
               </div>
               <div
@@ -272,7 +276,7 @@
               }"
             >
               <div class="card-header">
-                <span class="head">ROI Summary</span>
+                <span class="head">{{ labels.RoiSummary }}</span>
                 <v-icon color="#fff" @click="isShowRoi = true">mdi-cog</v-icon>
               </div>
               <div class="card-body d-flex roi-summary__body-container">
@@ -288,10 +292,10 @@
                     ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
                   </span>
 
-                  <span class="body-row__text" style="margin-left: 2px;">Money</span>
+                  <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
                 </div>
               </div>
-              <div class="card-status">Saved</div>
+              <div class="card-status">{{ labels.Saved }}</div>
               <div class="bg-image">
                 <img src="../assets/img/ic-insert-chart.svg" />
               </div>
@@ -304,8 +308,8 @@
           <v-card>
             <div class="header">
               <div class="title">
-                <h2>Top Rules</h2>
-                <p>Most triggered Playbook rules</p>
+                <h2>{{ labels.TopRules }}</h2>
+                <p>{{ labels.MostTriggeredPlaybookRules }}</p>
               </div>
               <div class="action">
                 <v-btn
@@ -314,7 +318,7 @@
                   rounded
                   @click="$router.push('/playbook')"
                 >
-                  Playbook
+                  {{ labels.Playbook }}
                   <v-icon class="pl-2">mdi-arrow-right</v-icon>
                 </v-btn>
               </div>
@@ -343,10 +347,11 @@
               >
                 <template v-slot:datatable-column-popup="{ scope, col }">
                   <span v-if="scope.row[col.property] === 0">
-                    No Match
+                    {{ labels.NoMatchEmptyText }}
                   </span>
                   <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Match(es)
+                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }}
+                    {{ labels.Matches }}
                   </span>
                   <app-dialog
                     :status="scope.row.resourceId === selectedMatch.resourceId"
@@ -392,7 +397,7 @@
                           text
                           color="#2196f3"
                           @click="closeMatchingModal"
-                          >CLOSE
+                          >{{ labels.Close.toUpperCase() }}
                         </v-btn>
                       </div>
                     </template>
@@ -416,8 +421,8 @@
           <v-card>
             <div class="header">
               <div class="title">
-                <h2>Recent Investigations</h2>
-                <p>Most recent investigations</p>
+                <h2>{{ labels.RecentInvestigations }}</h2>
+                <p>{{ labels.MostRecentInvestigations }}</p>
               </div>
               <div class="action">
                 <v-btn
@@ -427,7 +432,7 @@
                   rounded
                   @click.native="$router.push('/investigations')"
                 >
-                  Investigations
+                  {{ labels.Investigations }}
                   <v-icon class="pl-2">mdi-arrow-right</v-icon>
                 </v-btn>
               </div>
@@ -462,9 +467,9 @@
         <v-card>
           <div class="header">
             <div class="title">
-              <h2>Reported Emails</h2>
+              <h2>{{ labels.ReportedEmails }}</h2>
               <p class="mb-10">
-                Summary of emails reported for analysis
+                {{ labels.SummaryOfReportedEmails }}
               </p>
             </div>
           </div>
@@ -531,9 +536,7 @@
               <template v-if="scope.column.property === 'status'">
                 <template v-if="scope.row.status === 'BeingAnalyzed'">
                   <span class="analysis-link">
-                    <div>
-                      In Analysis...
-                    </div>
+                    <div>{{ labels.InAnalysis }}...</div>
                     <div>
                       <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
                     </div>
@@ -713,8 +716,8 @@ export default {
         }
       ],
       iEmpty: {
-        message: 'No rules configured',
-        btn: 'CREATE NEW RULE',
+        message: labels.NoRulesConfigured,
+        btn: labels.CreateNewRule,
         icon: 'mdi-plus'
       },
       addUsers: {
@@ -734,7 +737,7 @@ export default {
           property: 'name',
           align: 'left',
           editable: false,
-          label: 'Investigation Name',
+          label: labels.InvestigationName,
           fixed: false,
           sortable: false,
           show: true,
@@ -775,8 +778,8 @@ export default {
         popUp: false
       },
       iEmpty: {
-        message: 'No investigations',
-        btn: 'START A NEW INVESTIGATION',
+        message: labels.NoInvestigation,
+        btn: labels.StartNewInvestigation,
         icon: 'mdi-plus'
       },
       selectEvent: {},
@@ -828,7 +831,7 @@ export default {
         popUp: false
       },
       iEmpty: {
-        message: "There isn't any matching Incidents, yet",
+        message: labels.EmptyMatchingIncidents,
         btn: '',
         icon: 'mdi-plus'
       },
@@ -917,8 +920,8 @@ export default {
                 items: [
                   'Open',
                   'Closed',
-                  { text: 'In Progress', value: 'InProgress' },
-                  { text: 'False Positive', value: 'FalsePositive' }
+                  { text: labels.InProgress, value: 'InProgress' },
+                  { text: labels.FalsePositive, value: 'FalsePositive' }
                 ]
               }
             },
@@ -1035,7 +1038,7 @@ export default {
               }
             },
             props: {
-              items: ['Phishing', 'Malicious', { text: 'Non Malicious', value: 'NonMalicious' }]
+              items: ['Phishing', 'Malicious', { text: labels.NonMalicious, value: 'NonMalicious' }]
             }
           },
           props: {
@@ -1059,11 +1062,11 @@ export default {
           fullWidth: true,
           filterableType: 'select',
           filterableItems: [
-            { text: 'In Analysis', value: 'BeingAnalyzed' },
-            'Open',
-            'Closed',
-            { text: 'In Progress', value: 'InProgress' },
-            { text: 'False Positive', value: 'FalsePositive' }
+            { text: labels.InAnalysis, value: 'BeingAnalyzed' },
+            labels.Open,
+            labels.Closed,
+            { text: labels.InProgress, value: 'InProgress' },
+            { text: labels.FalsePositive, value: 'FalsePositive' }
           ],
           editOptions: {
             component: 'select',
@@ -1124,23 +1127,23 @@ export default {
       pageSizes: [5, 10, 25],
       rowActions: [
         {
-          name: 'Edit',
+          name: labels.Edit,
           icon: 'mdi-pencil',
           action: 'edit',
           isNotShow: true
         },
         {
-          name: 'Preview Email',
+          name: labels.PreviewEmail,
           icon: 'mdi-eye',
           action: 'irPreview'
         },
         {
-          name: 'Details',
+          name: labels.Details,
           icon: 'mdi-text-box-multiple',
           action: 'handleDetails'
         },
         {
-          name: 'Investigate',
+          name: labels.Investigate,
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
         }
@@ -1150,10 +1153,9 @@ export default {
         popUp: false
       },
       iEmpty: {
-        message: "There isn't any reported mail, yet",
-        subMes:
-          'Emails that are reported by your users via Phishing Reporter add-in analysed and listed here',
-        btn: 'PHISHING REPORTER SETTINGS',
+        message: labels.EmptyReportedEmailText,
+        subMes: labels.EmptyReportedEmailSubText,
+        btn: labels.PhishingReporterSettings,
         icon: 'mdi-arrow-right'
       },
       selectEvent: {
@@ -1334,9 +1336,12 @@ export default {
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {
       const copyOfRequestBody = JSON.parse(JSON.stringify(this.lazyLoadRequestBody))
+      copyOfRequestBody.filter.FilterGroups[0].FilterItems = [
+        ...this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+      ]
       copyOfRequestBody.filter.FilterGroups[0].FilterItems.push({
         FieldName: 'Subject',
-        Operator: 'Contains',
+        Operator: '=',
         Value: tree.subject
       })
       searchNotifiedMail(copyOfRequestBody).then((response) => {
@@ -2436,5 +2441,8 @@ export default {
     -ms-flex-negative: 0;
     flex-shrink: 0;
   }
+}
+.el-table .el-table__row--level-1 .data-table__custom-column {
+  margin: 0 -8px;
 }
 </style>

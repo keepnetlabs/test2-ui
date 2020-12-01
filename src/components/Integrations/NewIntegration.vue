@@ -46,7 +46,7 @@
             <v-text-field
               id="integration-name"
               v-model.trim="formValues.name"
-              :rules="[nameValidation.required]"
+              :rules="[nameValidation.required, nameValidation.empty, nameValidation.maxLength]"
               dense
               hint="*Required"
               persistent-hint
@@ -59,10 +59,10 @@
             <v-text-field
               id="description"
               v-model.trim="formValues.description"
+              :rules="[descriptionValidation.empty, descriptionValidation.maxLength]"
               dense
               outlined
               placeholder="Enter description"
-              required
             ></v-text-field>
           </form-group>
           <form-group title="Integration Type" has-hint>
@@ -84,7 +84,7 @@
             <v-text-field
               id="api-url"
               v-model.trim="formValues.apiUrl"
-              :rules="[apiUrlRules.required, apiUrlRules.format]"
+              :rules="[apiUrlRules.required, apiUrlRules.format, apiUrlRules.maxLength]"
               hint="*Required"
               persistent-hint
               dense
@@ -112,7 +112,7 @@
                   <v-text-field
                     v-model.trim="item.value"
                     :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
-                    :rules="[apiKeyRules.required]"
+                    :rules="[apiKeyRules.required, apiKeyRules.format, apiKeyRules.maxLength]"
                     class="new-integration__textfield new-integration__api-key__textfield mt-2"
                     dense
                     height="40"
@@ -397,7 +397,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
-
+import * as Validations from '@/utils/validations'
 export default {
   name: 'NewIntegration',
   components: {
@@ -444,27 +444,29 @@ export default {
       isTestConnectionDisabled: true,
       showConfirmModal: false,
       nameValidation: {
-        required: (v) => (v && v.length <= 150) || 'Integration Name must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Integration Name cannot start with space'
+        required: (v) => Validations.required(v),
+        maxLength: (v) =>
+          Validations.maxLength(v, 64, labels.getMaxLengthMessage('Integration name')),
+        empty: (v) => Validations.startsWithSpace(v)
       },
       descriptionValidation: {
-        required: (v) => (v && v.length <= 150) || 'Description must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        maxLength: (v) =>
+          Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
+        empty: (v) => Validations.startsWithSpace(v)
       },
       integrationTypeRules: {
-        required: (v) => !!v || 'Integration Select required',
-        format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
+        required: (v) => Validations.required(v),
+        format: (v) => Validations.startsWithSpace(v)
       },
       apiUrlRules: {
-        required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
-        format: (v) =>
-          /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
-            v
-          ) || 'Invalid Url'
+        required: (v) => Validations.required(v),
+        format: (v) => Validations.url(v),
+        maxLength: (v) => Validations.maxLength(v, 1000, labels.getMaxLengthMessage('URL', 1000))
       },
       apiKeyRules: {
-        required: (v) => (v && v.length <= 150) || 'Api key must between 1-150 characters',
-        format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
+        required: (v) => Validations.required(v),
+        format: (v) => Validations.startsWithSpace(v),
+        maxLength: (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage('Api key', 256))
       }
     }
   },

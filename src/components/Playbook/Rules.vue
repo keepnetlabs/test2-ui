@@ -19,7 +19,7 @@
     <app-dialog
       :status="showMatchingModal"
       icon="mdi-email"
-      title="Matching Incidents"
+      :title="labels.MatchingIncidents"
       v-if="getMatchingModalRenderStatus"
       :subtitle="getSelectedMatchingIncidentsSubtitle"
       @changeStatus="toggleMatchingModal"
@@ -55,7 +55,7 @@
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
           <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="toggleMatchingModal"
-            >CLOSE
+            >{{ labels.Close.toUpperCase() }}
           </v-btn>
         </div>
       </template>
@@ -90,10 +90,10 @@
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
-          No Match
+          {{ labels.NoMatchEmptyText }}
         </span>
         <span v-else @click="matchingPopupClick(scope.row)" :class="getMatchingPlaybookPermission">
-          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} Match(es)
+          {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }} {{ labels.Matches }}
         </span>
       </template>
     </datatable>
@@ -132,6 +132,7 @@ import AppDialog from '../AppDialog'
 import { exportPlaybookRules, deletePlaybookRule } from '@/api/playbook'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import labels from '@/model/constants/labels'
 export default {
   name: 'Rules',
   components: {
@@ -153,6 +154,7 @@ export default {
   data() {
     return {
       tableData: [],
+      labels,
       loading: false,
       matchingPlaybookData: [],
       showRuleModal: false,

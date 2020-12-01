@@ -115,7 +115,8 @@
           placeholder="Enter IP or a regular expression"
           :rules="[
             (v) => validations.required(v, 'Required'),
-            (v) => validations.startsWithSpace(v, 'Cannot start with space')
+            (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+            (v) => validations.ip(v, 'Invalid ip address')
           ]"
           md=""
           sm="10"
@@ -203,6 +204,8 @@ import QueryBuilderRule from 'vue-query-builder/src/components/QueryBuilderRule'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
+import labels from '@/model/constants/labels'
+import * as Validations from '@/utils/validations'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -224,19 +227,26 @@ export default {
       switch (this.query && this.query.format) {
         case 'Email':
           return [
-            (v) => this.validations.required(v, 'Required'),
-            (v) => this.validations.mail(v, 'Invalid email address'),
-            (v) => this.validations.maxLength(v, 250, 'Invalid email address')
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.mail(v, labels.InvalidEmailAddress),
+            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Email'))
           ]
         case 'Domain':
           return [
-            (v) => this.validations.required(v, 'Required'),
-            (v) => this.validations.domain(v, 'Invalid domain name')
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.domain(v, 'Invalid domain name'),
+            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
           ]
         case 'Regex':
-          return [(v) => this.validations.required(v, 'Required')]
+          return [
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Regex'))
+          ]
         case 'Group':
-          return [(v) => this.validations.required(v, 'Required')]
+          return [
+            (v) => this.validations.required(v, labels.Required),
+            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
+          ]
         default:
           break
       }
@@ -244,13 +254,13 @@ export default {
     getPlaceholder() {
       switch (this.query && this.query.format) {
         case 'Email':
-          return 'Enter email address'
+          return 'Enter an email address'
         case 'Domain':
-          return 'Enter domain address'
+          return 'Enter a domain address'
         case 'Regex':
-          return 'Enter regular expression'
+          return 'Enter a regular expression'
         case 'Group':
-          return 'Enter group name'
+          return 'Enter a group name'
       }
     },
     getSenderIpRules() {
@@ -260,24 +270,35 @@ export default {
       ]
     },
     getSubjectRules() {
-      return [(v) => this.validations.required(v, 'Required')]
+      return [
+        (v) => this.validations.required(v, labels.Required),
+        (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Subject', 64))
+      ]
     },
     getKeywordRules() {
-      return [(v) => this.validations.required(v, 'Required')]
+      return [
+        (v) => this.validations.required(v, labels.Required),
+        (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Keyword', 64))
+      ]
     },
     getAttachmentNameRules() {
-      return [(v) => this.validations.required(v, 'Required')]
+      return [
+        (v) => this.validations.required(v, labels.Required),
+        (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('AttachmentName', 64))
+      ]
     },
     getAttachmentExtensionRules() {
       return [
-        (v) => this.validations.required(v, 'Required'),
-        (v) => this.validations.extension(v, 'Invalid extension Type')
+        (v) => this.validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
+        (v) => this.validations.extension(v, 'Invalid extension'),
+        (v) => this.validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
       ]
     },
     getAttachmentHashRules() {
       return [
-        (v) => this.validations.required(v, 'Required'),
-        (v) => this.validations.maxLength(v, 512, 'Max 512 characters')
+        (v) => this.validations.required(v, labels.Required),
+        (v) =>
+          this.validations.maxLength(v, 512, labels.getMaxLengthMessage('Attachment hash', 512))
       ]
     },
     handleOperandChange(value) {
