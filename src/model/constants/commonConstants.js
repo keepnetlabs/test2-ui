@@ -77,7 +77,8 @@ export const LABEL_STORE = {
   USERCOUNT: 'Users',
   JOBTITLE: 'Job Title',
   SERVERADDRESS: 'SMTP Address',
-  USERNAME: 'User Name'
+  USERNAME: 'User Name',
+  NO_DATA: 'No Data'
 }
 
 export const PROPERTY_STORE = {
