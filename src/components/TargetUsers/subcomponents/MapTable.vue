@@ -1,29 +1,34 @@
 <template>
   <div class="target-users-map">
-    <table class="table">
-      <tr class="target-users-map__header">
-        <th v-for="(header, index) in mapTableData && mapTableData.headers" :key="index">
-          {{ header.name }}
-          <v-select
-            :items="customFields"
-            outlined
-            class="input-select standard-height mt-4 target-users-map__header-select"
-            placeholder="- None Selected -"
-            item-text="name"
-            @change="setSelectDisableItems"
-            v-model="header.selectedValue"
-            hide-details
-          />
-        </th>
-      </tr>
-      <tr
-        class="target-users-map__body"
-        v-for="(item, index) in mapTableData && mapTableData.tableData"
-        :key="index"
-      >
-        <td v-for="excel in item" :key="excel">{{ excel }}</td>
-      </tr>
-    </table>
+    <v-form ref="refMapTableForm">
+      <table class="table">
+        <tr class="target-users-map__header">
+          <th v-for="(header, index) in mapTableData && mapTableData.headers" :key="index">
+            {{ header.name }}
+            <v-select
+              :items="mapTableData.columns"
+              outlined
+              class="input-select standard-height mt-4 target-users-map__header-select"
+              placeholder="- None Selected -"
+              item-text="name"
+              @change="setSelectDisableItems"
+              v-model="mapTableData.headers[index].selectedValue"
+              hide-details
+              return-object
+              :rules="[(v) => !!v || 'Required']"
+            >
+            </v-select>
+          </th>
+        </tr>
+        <tr
+          class="target-users-map__body"
+          v-for="(item, index) in mapTableData && mapTableData.tableData"
+          :key="index"
+        >
+          <td v-for="excel in item" :key="excel">{{ excel }}</td>
+        </tr>
+      </table>
+    </v-form>
   </div>
 </template>
 
@@ -31,8 +36,8 @@
 export default {
   name: 'MapTable',
   computed: {
-    customFields() {
-      return !this.mapTableData ? [] : this.mapTableData.customFields
+    columns() {
+      return !this.mapTableData ? [] : this.mapTableData.columns
     }
   },
   data() {
@@ -43,7 +48,15 @@ export default {
   props: { mapTableData: { required: true } },
   methods: {
     setSelectDisableItems(item) {
-      this.mapTableData.customFields.find((i) => i.name === item).disabled = true
+      item.disabled = true
+      let _this = this
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        let isDisabled = _this.mapTableData.headers.find((x) => {
+          return x.selectedValue && x.selectedValue.name === i.name
+        })
+        let obj = { ...i, disabled: isDisabled }
+        return obj
+      })
     },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {
@@ -55,6 +68,12 @@ export default {
         return dataObject
       })
       return data
+    },
+    getMapTableDataValidation() {
+      return this.$refs.refMapTableForm.validate()
+    },
+    getMapTableData() {
+      return this.mapTableData
     }
   }
 }

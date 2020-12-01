@@ -79,6 +79,7 @@ export const LABEL_STORE = {
   JOBTITLE: 'Job Title',
   SERVERADDRESS: 'SMTP Address',
   USERNAME: 'User Name',
+  NO_DATA: 'No Data',
   THREATS: 'Actual Threats',
   RELIABILITY: 'Reliability',
   RULENAME: 'Rule Name'
