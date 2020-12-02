@@ -677,7 +677,7 @@ export function reviewElementBind(els, url) {
       if (url.isHidden) {
         url.isFlagged = false
         el.innerHTML = url.urlHtml || url.name || url.url
-        el.innerHTML = 'hidden by owner'
+        el.innerHTML = 'Hidden by Owner'
         el.style.backgroundColor = '#757575'
         el.style.color = '#ffffff'
         el.style.position = 'relative'
@@ -717,7 +717,7 @@ export function reviewElementBind(els, url) {
       let hiddenEl = hiddenEls[i]
       hiddenEl.setAttribute('target', '_blank')
       if (url.isHidden) {
-        hiddenEl.innerHTML = 'hidden by owner'
+        hiddenEl.innerHTML = 'Hidden by Owner'
         hiddenEl.setAttribute('href', '#')
       }
       if (url.isFlagged) {
@@ -733,10 +733,15 @@ export function reviewElementBind(els, url) {
 
 export function incidenPostReviewElementBind(url, id, rootId, isReview) {
   let els
-  if (url.url === 'Hidden by Owner') {
+  if (url.url === 'Hidden by Owner' || url.isHidden) {
     els = document
       .getElementById(rootId || 'last-preview-body-shadow-root')
       .shadowRoot.querySelectorAll('[data-post-item-hidden]')
+    if (!els.length) {
+      els = document
+        .getElementById(rootId || 'last-preview-body-shadow-root')
+        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+    }
   } else {
     els = document
       .getElementById(rootId || 'last-preview-body-shadow-root')
@@ -752,6 +757,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
         el.style.backgroundColor = '#757575'
         el.style.color = '#ffffff'
         el.style.position = 'relative'
+        el.innerHTML = 'Hidden by Owner'
       } else if (!!url && !!url.name) {
         el.innerHTML = url.name
         el.setAttribute('href', url.url)
@@ -788,7 +794,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
       let hiddenEl = hiddenEls[i]
       hiddenEl.setAttribute('target', '_blank')
       if (url.isHidden) {
-        hiddenEl.innerHTML = 'hidden by owner'
+        hiddenEl.innerHTML = 'Hidden by Owner'
         hiddenEl.setAttribute('href', '#')
       }
       if (url.isFlagged) {

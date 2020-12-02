@@ -380,7 +380,7 @@
             style="padding-left: 0 !important; margin-left: -5px;"
             v-if="
               this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
-              checkPermissionMultiple(['company-groups|POST', 'companies/search|POST'])
+              checkPermissionMultiple(['company-groups|GET', 'companies/search|POST'])
             "
           >
             <v-list-item-content class="menu-item-content">

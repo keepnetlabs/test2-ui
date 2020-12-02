@@ -11,11 +11,11 @@
         {{ att.name }}
       </div>
       <div v-on="on" v-if="att.isHidden" class="file-name max-char pl-2">
-        hidden by owner
+        Hidden by Owner
       </div>
     </template>
     <span
-      >{{ !att.isHidden ? att.name : 'hidden by owner'
+      >{{ !att.isHidden ? att.name : 'Hidden by Owner'
       }}{{ att.isFlagged ? ' has been reported as a malicious file' : '' }}</span
     >
   </v-tooltip>

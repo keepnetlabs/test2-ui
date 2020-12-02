@@ -40,8 +40,21 @@
                     }}
                   </p>
                   <div class="d-flex mt-8">
-                    <v-btn @click="downloadExampleFile()" class="download-excel" rounded>
+                    <v-btn
+                      @click="downloadExampleFile()"
+                      class="download-excel"
+                      rounded
+                      :disabled="excelLoading"
+                    >
                       <v-icon class="close-icon">mdi-download</v-icon> Download Example Sheet
+                      <v-icon
+                        class="ml-2 loading-spin"
+                        color="#2196f3"
+                        left
+                        medium
+                        v-if="excelLoading"
+                        >mdi-rotate-left
+                      </v-icon>
                     </v-btn>
                   </div>
                 </v-list-item-content>
@@ -228,6 +241,7 @@ export default {
   },
   data() {
     return {
+      excelLoading: false,
       mappindgId: null,
       excelInfo: null,
       onUploadProgress: null,
@@ -440,6 +454,7 @@ export default {
     },
     downloadExampleFile() {
       let payload = { exportType: 'Excel' }
+      this.excelLoading = true
       downloadExampleTargetUserFile(payload)
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -449,7 +464,9 @@ export default {
           document.body.appendChild(link)
           link.click()
         })
-        .finally((response) => {})
+        .finally((response) => {
+          this.excelLoading = false
+        })
     },
     getMapTableData(data) {
       return this.$refs.refMapTable.getMapTableData()
