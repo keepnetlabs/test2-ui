@@ -124,13 +124,15 @@ export default {
               itemTypes.add(result)
               return { x: timeStampOfDate, y: emailCount, result }
             })
+
             let maxEmailCountLeft = maxEmailCount % 10
-            maxEmailCount -= maxEmailCountLeft
+            let remanining = 10 - maxEmailCountLeft
+            maxEmailCount += remanining
             this.chartOptions = {
               // Look at this bit
               plugins: {
                 datalabels: {
-                  formatter: function (value) {
+                  formatter: function () {
                     return ''
                   },
                   color: '#575757'
