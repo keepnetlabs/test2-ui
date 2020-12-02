@@ -6,7 +6,6 @@ import router from './router/index'
 import store from './store/index'
 import VueTelInputVuetify from 'vue-tel-input-vuetify/lib/plugin.js'
 import vuetify from './plugins/vuetify'
-import 'vue-tour/dist/vue-tour.css'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
 import { SmartWidget, SmartWidgetGrid } from 'vue-smart-widget'
@@ -15,6 +14,8 @@ import * as Sentry from '@sentry/browser'
 import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
+
+require('vue-tour/dist/vue-tour.css')
 
 Vue.use(VueTelInputVuetify, {
   vuetify
