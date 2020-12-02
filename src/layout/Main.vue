@@ -100,8 +100,6 @@
     <v-dialog v-model="feedbackdialog" :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
-    <v-overlay :z-index="15" :value="isTourActive"></v-overlay>
-    <tour-widget></tour-widget>
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate />
@@ -681,6 +679,7 @@
       </v-container>
       <app-footer />
     </v-content>
+    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: true }" />
   </v-app>
 </template>
 <script>
@@ -704,6 +703,7 @@ import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import Breadcrumb from '@/components/Breadcrumb'
 import { checkPermission, checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
+import tour from '@/store/modules/tour'
 
 export default {
   name: 'Main',
@@ -714,7 +714,6 @@ export default {
     SessionExpired,
     SwitchAccount,
     offline,
-    TourWidget,
     AppSnackbar,
     AppDialog,
     PasswordChecker,
@@ -755,15 +754,6 @@ export default {
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
       },
-
-      tour: {
-        isActive: false,
-        one: { active: false },
-        two: { active: false },
-        three: { active: false },
-        four: { active: false },
-        five: { active: false }
-      },
       drawer: null,
       mini: null,
       dialog: true,
@@ -773,7 +763,7 @@ export default {
           text: 'Tour',
           icon: 'mdi-reminder',
           url: '',
-          disabled: true
+          disabled: false
         },
         {
           text: 'Documentation',
@@ -973,6 +963,39 @@ export default {
           disabled: true,
           exact: false,
           href: '/analysis-details'
+        }
+      ],
+      tourSteps: [
+        {
+          target: '#onur', // We're using document.querySelector() under the hood
+          header: {
+            title: 'Get Started'
+          },
+          content: `Discover Widgets`
+        },
+        {
+          target: '#IncidentClusters',
+          content: 'Incident clusters widget'
+        },
+        {
+          target: '#PhishingReporterIrHeader111',
+          content: 'Yet another widget'
+        },
+        {
+          target: '#TopRules',
+          content: 'Yet another widget'
+        },
+        {
+          target: '#InvestigationsIrHeader',
+          content: 'Yet another widget'
+        },
+        {
+          target: '#Reporters',
+          content: 'Yet another widget'
+        },
+        {
+          target: '#RecentInvestigations',
+          content: 'Yet another widget'
         }
       ]
     }
@@ -1222,7 +1245,6 @@ export default {
           .catch((error) => {})
       }
     },
-
     getCommunityName() {
       this.communityId = localStorage.getItem('communityResourceIdForRedirect')
       this.communityName = localStorage.getItem('communityName')
@@ -1243,6 +1265,9 @@ export default {
       const { text } = item
       const domElem = document.createElement('a')
       switch (text) {
+        case 'Tour':
+          this.tourSafeStarter('tourDashboard')
+          break
         case 'Feedback':
           this.feedbackdialog = true
           break
@@ -1270,6 +1295,12 @@ export default {
       notificationSeen: 'dashboard/notificationSeen',
       changeSessionExpiredStatus: 'common/changeSessionExpiredStatus'
     }),
+    tourSafeStarter(tourName) {
+      const arr = []
+      this.tourSteps.forEach((x) => document.querySelector(x.target) && arr.push(x))
+      this.tourSteps = arr
+      this.$tours[tourName].start()
+    },
     changeDropdownItem(item) {
       switch (item) {
         case 'logout':
