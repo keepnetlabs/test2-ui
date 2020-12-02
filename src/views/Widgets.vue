@@ -17,7 +17,7 @@
         />
       </template>
     </app-modal>
-    <div class="k-widget__header">
+    <div class="k-widget__header" id="onur">
       <available-widgets
         @handleEdit="changeWidgetStatus"
         :edit-mode="editMode"
@@ -47,6 +47,7 @@
         :simple="true"
       >
         <component
+          :id="item.key"
           :is="getComponent(item.key)"
           :resizable="false"
           :editMode="editMode"
