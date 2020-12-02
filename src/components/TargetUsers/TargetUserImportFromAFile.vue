@@ -13,6 +13,8 @@
             <v-stepper-step :complete="activeStep > 1" step="1">Upload File</v-stepper-step>
             <v-divider />
             <v-stepper-step :complete="activeStep > 2" step="2">Map Fields</v-stepper-step>
+            <v-divider />
+            <v-stepper-step :complete="activeStep > 3" step="3">Validate</v-stepper-step>
           </v-stepper-header>
 
           <v-stepper-items>
@@ -25,14 +27,23 @@
               <v-list-item>
                 <v-list-item-content>
                   <k-file-upload
-                    @inputFile="onFileChanged"
-                    hint="Only XLS or CSV files. Max. file size 30MB"
+                    ref="refFileUpload"
                     :extensions="['.xlsx', '.xls', '.csv']"
                     :is-stand-alone="true"
+                    @inputFile="onFileChanged"
+                    hint="Only XLS or CSV files. Max. file size 30MB"
+                    :on-upload-progress="onUploadProgress"
                   />
-                  <p class="target-user-import-file__total-excel-score">
-                    This xls file contains 81 rows and 8 columns
+                  <p class="target-user-import-file__total-excel-score" v-if="excelInfo">
+                    {{
+                      `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
+                    }}
                   </p>
+                  <div class="d-flex mt-8">
+                    <v-btn @click="downloadExampleFile()" class="download-excel" rounded>
+                      <v-icon class="close-icon">mdi-download</v-icon> Download Example Sheet
+                    </v-btn>
+                  </div>
                 </v-list-item-content>
               </v-list-item>
             </v-stepper-content>
@@ -77,6 +88,43 @@
                       @get-map-table-data="getMapTableData" /></v-list-item-content
                 ></v-list-item>
               </v-form>
+            </v-stepper-content>
+            <!-- STEP 3 -->
+            <v-stepper-content step="3">
+              <div class="stepper__title">Validate Information</div>
+              <div class="stepper__subtitle">
+                Select users to import or import all listed users. Invalid entries will not be
+                imported.
+              </div>
+              <data-table
+                :loading="loading"
+                :is-column-filter-active="tableOptions.isColumnFilterActive"
+                :table="tableData"
+                id="validate-data-table"
+                ref="refValideateList"
+                :empty="tableOptions.empty"
+                :refName="'validateList'"
+                :columns="tableOptions.columns"
+                :countRow="5"
+                :selectable="true"
+                :filterable="true"
+                :options="true"
+                :sizeable="true"
+                :pageSizes="tableOptions.pageSizes"
+                :select-event="tableOptions.selectEvent"
+                :row-actions="tableOptions.rowActions"
+                :addButton="tableOptions.addButton"
+                @downloadEvent="exportIntegrationList"
+                @sortChangedEvent="sortChangedEvent($event)"
+                @paginationChangedEvent="paginationChangedEvent($event)"
+                @searchChangedEvent="searchChangedEvent($event)"
+                :dataLength="tableData && tableData.totalNumberOfRecords"
+                :requestParams="bodyData"
+                :isServerSide="true"
+                @columnFilterChanged="columnFilterChanged"
+                @columnFilterCleared="columnFilterCleared"
+                :server-side-events="{ search: true, sort: false, pagination: false }"
+              ></data-table>
             </v-stepper-content>
           </v-stepper-items>
         </v-stepper>
@@ -134,14 +182,28 @@
 import AppModal from '../AppModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '../SmallComponents/FormGroup'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { uploadExcelOrCsvForTargetUsers } from '../../api/targetUsers'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  LABEL_STORE,
+  PROPERTY_STORE
+} from '../../model/constants/commonConstants'
+import {
+  createMapping,
+  createTargetUserCustomField,
+  downloadExampleTargetUserFile,
+  getTargetUserCustomFieldsByCompanyId,
+  getUploadedFileData,
+  searchTmp,
+  uploadExcelOrCsvForTargetUsers
+} from '../../api/targetUsers'
 import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
+import DataTable from '../DataTable'
 
 export default {
   name: 'TargetUserImportFromAFile',
-  components: { AppModal, KFileUpload, FormGroup, MapTable },
+  components: { AppModal, KFileUpload, FormGroup, MapTable, DataTable },
   props: {
     status: {
       type: Boolean
@@ -166,6 +228,11 @@ export default {
   },
   data() {
     return {
+      mappindgId: null,
+      excelInfo: null,
+      onUploadProgress: null,
+      unActiveCustomFields: null,
+      copyOfCustomFields: null,
       labels,
       excelFile: null,
       activeStep: 1,
@@ -173,139 +240,345 @@ export default {
       groups: ['All Users'],
       formData: { groups: 'All Users', file: null },
       stepLock: null,
-      totalStep: 2,
+      totalStep: 3,
       mappingData: {
-        customFields: [
-          { name: 'First Name', disabled: false },
-          { name: 'Last Name', disabled: false },
-          { name: 'Email', disabled: false },
-          { name: 'Department', disabled: false },
-          { name: 'Job Title', disabled: false },
-          { name: 'Company', disabled: false },
-          { name: 'City', disabled: false },
-          { name: 'Big Numeros', disabled: false },
-          { name: 'Phone', disabled: false }
-        ],
-        headers: [
-          { name: 'First Name', disabled: false },
-          { name: 'Last Name', disabled: false },
-          { name: 'Email', disabled: false },
-          { name: 'Department', disabled: false },
-          { name: 'Job Title', disabled: false },
-          { name: 'Company', disabled: false },
-          { name: 'City', disabled: false },
-          { name: 'Big Numeros', disabled: false },
-          { name: 'Phone', disabled: false }
-        ],
-        tableData: [
+        columns: [],
+        headers: [],
+        tableData: []
+      },
+      tableData: [],
+      tableOptions: {
+        isColumnFilterActive: false,
+        columns: [
           {
-            firstName: 'First Name',
-            lastName: 'Last Name',
-            email: 'Email',
-            department: 'Department',
-            jobTitle: 'Job Title',
-            company: 'Company',
-            city: 'City'
+            property: PROPERTY_STORE.NAME,
+            align: 'left',
+            editable: false,
+            label: 'Integration Name',
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: 'left',
+            width: 250,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Name'
           },
           {
-            firstName: 'First Name22',
-            lastName: 'Last Name22',
-            email: 'Email22',
-            department: 'Department22',
-            jobTitle: 'Job Title22',
-            company: 'Company22',
-            city: 'City'
+            property: PROPERTY_STORE.DESCRIPTION,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.DESCRIPTION),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 350,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Description'
           },
           {
-            firstName: 'First Name2233',
-            lastName: 'Last Name2233',
-            email: 'Email2233',
-            department: 'Department2233',
-            jobTitle: 'Job Title2233',
-            company: 'Company2233',
-            city: 'City'
+            property: PROPERTY_STORE.STATUS,
+            align: 'center',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'status',
+            width: 160,
+            hasTooltip: true,
+            filterableType: 'select',
+            filterableCustomFieldName: 'Status',
+            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 185,
+            filterableType: 'date',
+            filterableCustomFieldName: 'createTime'
+            //minWidth: 80
           }
-        ]
+        ],
+        downloadButton: {
+          show: true
+        },
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
+        pageSizes: [5, 10, 25],
+        empty: {
+          message: LABEL_STORE.NO_DATA
+        }
+      },
+      bodyData: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
   methods: {
+    getDatatableList() {
+      searchTmp(this.bodyData, this.excelInfo.resourceId)
+        .then((response) => {
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+          const {
+            data: { data, status }
+          } = response
+          this.tableData = data.results || []
+        })
+        .catch((error) => {
+          this.tableData = []
+        })
+        .finally(() => (this.loading = false))
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        const { FieldName, Value } = filter
+        if (FieldName === 'Status' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
+      }
+
+      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.getDatatableList()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getDatatableList()
+
+      this.tableOptions.isColumnFilterActive =
+        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    paginationChangedEvent({ pageSize, pageNumber }) {
+      this.bodyData = {
+        ...this.bodyData,
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.getDatatableList()
+    },
+    searchChangedEvent({ filter }) {
+      this.bodyData = { ...this.bodyData, filter }
+      this.getDatatableList()
+    },
+    sortChangedEvent({ prop, order }) {
+      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.getDatatableList()
+    },
+    exportIntegrationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
+        }
+        exportReportedEmails(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `integrations.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch((error) => {})
+      })
+    },
+    downloadExampleFile() {
+      let payload = { exportType: 'Excel' }
+      downloadExampleTargetUserFile(payload)
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', 'target_user_sample_file.xlsx') //or any other extension
+          document.body.appendChild(link)
+          link.click()
+        })
+        .finally((response) => {})
+    },
     getMapTableData(data) {
-      this.$refs.refMapTable.exportMapTableData()
+      return this.$refs.refMapTable.getMapTableData()
     },
     closeOverlay() {
       this.$emit('closeOverlay')
     },
     onFileChanged(file) {
       this.formData.file = file
-      uploadExcelOrCsvForTargetUsers(file)
-        .then((response) => {})
+      uploadExcelOrCsvForTargetUsers(file, (e) => {
+        this.onUploadProgress = e
+      })
+        .then((response) => {
+          this.excelInfo = response.data.data
+        })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting details of uploaded file'
+            icon: 'mdi-alert-circle'
           })
         })
-        .finally((response) => {
-          this.mappingData.tableData = [
-            {
-              firstName: 'First Name',
-              lastName: 'Last Name',
-              email: 'Email',
-              department: 'Department',
-              jobTitle: 'Job Title',
-              company: 'Company',
-              city: 'City',
-              bigNumeros: 'Big_Numeros',
-              Country: 'Country'
-            },
-            {
-              firstName: 'First Name22',
-              lastName: 'Last Name22',
-              email: 'Email22',
-              department: 'Department22',
-              jobTitle: 'Job Title22',
-              company: 'Company22',
-              city: 'City',
-              bigNumeros: 'Big_Numeros',
-              Country: 'Country'
-            },
-            {
-              firstName: 'First Name2233',
-              lastName: 'Last Name2233',
-              email: 'Email2233',
-              department: 'Department2233',
-              jobTitle: 'Job Title2233',
-              company: 'Company2233',
-              city: 'City',
-              bigNumeros: 'Big_Numeros',
-              Country: 'Country'
+    },
+    getUploadedExcelData() {
+      getUploadedFileData(this.excelInfo.transactionId)
+        .then((response) => {
+          this.mappingData.tableData = response.data.data.data
+          this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
+            let aItem = {
+              name: item,
+              selectedValue: null
             }
-          ]
+            return aItem
+          })
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
         })
     },
     submit() {},
+    createMapFields() {
+      let fieldMappingData = this.getMapTableData().headers.map((item) => {
+        let val = {
+          excelColumnName: item.name,
+          fieldName: (item.selectedValue && item.selectedValue.dbName) || item.selectedValue.name
+        }
+        return val
+      })
+      let payload = {
+        transactionId: this.excelInfo.transactionId,
+        fieldMappings: fieldMappingData
+      }
+
+      createMapping(payload)
+        .then((response) => {
+          this.mappindgId = response.data.data.resourceId
+          this.getDatatableList()
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
+    },
     nextStep() {
       let isFormValid = true
       if (this.activeStep === 1) {
         isFormValid = !!this.formData.file
       } else if (this.activeStep === 2) {
-        isFormValid = this.$refs.refMapForm.validate()
+        isFormValid =
+          this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
       }
       if (isFormValid) {
-        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        if (this.activeStep === 1) {
+          this.getUploadedExcelData()
+        } else if (this.activeStep === 2) {
+          this.createMapFields()
+        } else {
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        }
       }
       return isFormValid
     },
     prevStep() {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
-    save() {}
+    save() {},
+    callForGetTargetUserCustomFieldsByCompanyId() {
+      let _this = this
+      this.loading = true
+      getTargetUserCustomFieldsByCompanyId()
+        .then((response) => {
+          /*const { data } = response
+          _this.customFields = data.data.filter((item) => {
+            return item.isActive
+          })
+          _this.unActiveCustomFields = data.data.filter((item) => {
+            return !item.isActive
+          })
+          //this.sortCustomFields(this.customFields)
+          this.sortCustomFields(this.unActiveCustomFields)
+          this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))*/
+          _this.mappingData.columns = _this.columns.map((item) => {
+            return { name: item.label, disabled: false, selectedValue: null, dbName: item.dbName }
+          })
+        })
+        .finally(() => (this.loading = false))
+    },
+    sortCustomFields(data = []) {
+      const sortProp = 'sortOrder'
+      data.sort((a, b) => {
+        if (a[sortProp] > b[sortProp]) {
+          return 1
+        } else if (a[sortProp] === b[sortProp]) {
+          return 0
+        }
+        return -1
+      })
+    }
   },
   created() {
-    this.mappingData.customFields = this.columns.map((item) => {
-      return { name: item.label, disabled: false }
-    })
+    this.callForGetTargetUserCustomFieldsByCompanyId()
   }
 }
 </script>
@@ -325,6 +598,32 @@ export default {
       }
     }
   }
+  .download-excel {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #00bcd4;
+    box-shadow: none;
+    padding: 0 !important;
+    background-color: white !important;
+    i {
+      font-size: 20px;
+      margin-top: 4px;
+    }
+    &:hover,
+    &:focus,
+    &:focus-within {
+      outline: 0 !important;
+    }
+    &:before {
+      outline: 0 !important;
+      background-color: white !important;
+    }
+  }
 
   &__total-excel-score {
     font-size: 14px;
@@ -333,8 +632,8 @@ export default {
     font-style: normal;
     line-height: 1.29;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
     margin-top: 16px;
+    color: #2196f3;
   }
   .stepper {
     &__title {

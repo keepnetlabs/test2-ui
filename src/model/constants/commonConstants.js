@@ -63,6 +63,7 @@ export const LABEL_STORE = {
   IPADDRESS: 'Ip Address',
   TYPE: 'Type',
   URL: 'URL',
+  POSTTITLE: 'Post Title',
   USERS: 'Users',
   SMTPADDRESS: 'SMTP Address',
   AVAILABLEFOR: 'Available For',
@@ -77,7 +78,11 @@ export const LABEL_STORE = {
   USERCOUNT: 'Users',
   JOBTITLE: 'Job Title',
   SERVERADDRESS: 'SMTP Address',
-  USERNAME: 'User Name'
+  USERNAME: 'User Name',
+  NO_DATA: 'No Data',
+  THREATS: 'Actual Threats',
+  RELIABILITY: 'Reliability',
+  RULENAME: 'Rule Name'
 }
 
 export const PROPERTY_STORE = {
@@ -91,6 +96,10 @@ export const PROPERTY_STORE = {
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
   LASTNAME: 'lastName',
+  RELIABILITY: 'reliability',
+  THREATS: 'threats',
+  MATCHCOUNT: 'matchCount',
+  RULENAME: 'ruleName',
   EMAIL: 'email',
   DEPARTMENT: 'department',
   TITLE: 'title',
@@ -99,10 +108,13 @@ export const PROPERTY_STORE = {
   INTEGRATIONNAME: 'integrationName',
   COMPANY: 'company',
   SUBJECT: 'subject',
+  POSTTITLE: 'postTitle',
+  COMMUNITYNAME: 'communityName',
   ATTACHMENTCOUNT: 'attachmentCount',
   REPORTEDBY: 'reportedBy',
   RESULT: 'result',
   HOSTNAME: 'hostName',
+  COMMENTCOUNT: 'commentCount',
   LASTSEEN: 'lastSeen',
   ADDINVERSION: 'addInVersion',
   DELIVERY: 'delivery',

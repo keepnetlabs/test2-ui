@@ -51,12 +51,13 @@
           <div class="other-settings__api-settings-container">
             <label class="mt-n2">Site URL</label>
             <v-text-field
-              placeholder="https://dashboard.abc.com/"
+              placeholder="Enter a site url"
               outlined
               dense
+              v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--1"
               v-model.trim="formValues.apiUrl"
-              :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+              :rules="showForm ? [(v) => validations.required(v, labels.Required)] : []"
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -64,12 +65,13 @@
           <div class="other-settings__api-settings-container mt-n3">
             <label class="other-settings__list-item-header mt-n2">Api Key</label>
             <v-text-field
-              placeholder="Api Key"
+              placeholder="Enter an api key"
               outlined
               dense
+              v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--2"
               v-model.trim="formValues.apiKey"
-              :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+              :rules="showForm ? [(v) => validations.required(v, labels.Required)] : []"
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -77,12 +79,13 @@
           <div class="other-settings__api-settings-container">
             <label class="other-settings__list-item-header mt-n5">Company ID</label>
             <v-text-field
-              placeholder="Company ID"
+              placeholder="Enter a Company ID"
               outlined
               dense
+              v-bind="getHintValues"
               class="mt-n1 ml-6"
               v-model="formValues.companyKey"
-              :rules="showForm ? [(v) => validations.required(v, 'Required')] : []"
+              :rules="showForm ? [(v) => validations.required(v, labels.Required)] : []"
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -110,7 +113,7 @@
               <div class="site-url__container mt-n4">
                 <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
                 <v-text-field
-                  placeholder="www.bc.com"
+                  placeholder="Enter enterprise vault url"
                   outlined
                   :disabled="enterpriseVaultDisabled"
                   dense
@@ -138,7 +141,7 @@
 <script>
 import { required } from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'OtherSettings',
   components: { PhishingSettingsFooter },
@@ -191,6 +194,7 @@ export default {
   },
   data() {
     return {
+      labels,
       formValues: {
         isEnableProxy: false,
         apiUrl: '',
@@ -203,6 +207,11 @@ export default {
       validations: {
         required
       }
+    }
+  },
+  computed: {
+    getHintValues() {
+      return this.showForm && { persistentHint: true, hint: '*Required' }
     }
   },
   methods: {
@@ -304,7 +313,7 @@ export default {
   }
 
   &__title {
-    font-size: 24px;
+    font-size: 24px !important;
     line-height: 1.29 !important;
     opacity: 0.9;
     letter-spacing: normal;

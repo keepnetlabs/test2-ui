@@ -89,7 +89,7 @@ export default {
   },
   created() {
     const badges = this.scope.row[this.col.property]
-    if (badges.length) {
+    if (badges && badges.length) {
       this.getBadges()
     }
   },
@@ -102,6 +102,7 @@ export default {
       const badges = this.scope.row[this.col.property]
       const width = this.scope.column.width
       if (
+        badges &&
         badges.length &&
         (width !== this.width || JSON.stringify(badges) !== JSON.stringify(this.badges))
       ) {

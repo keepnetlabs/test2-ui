@@ -68,13 +68,31 @@ export function updateTargetUserCustomField(payload) {
   return testRequest.put(`/custom-fields/${payload.resourceId}`, payload)
 }
 
-export function uploadExcelOrCsvForTargetUsers(file) {
+export function uploadExcelOrCsvForTargetUsers(file, onUploadProgress) {
   const formData = new FormData()
   formData.append('File', file)
-  return testRequest.post(`/`, formData, {
+  return testRequest.post(`/target-users/upload`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    loading: true
+    loading: true,
+    onUploadProgress
   })
+}
+
+export function downloadExampleTargetUserFile(payload) {
+  return testRequest.post(`/target-users/example-file`, payload, {
+    responseType: 'blob'
+  })
+}
+
+export function getUploadedFileData(id) {
+  return testRequest.get(`/target-users/upload/${id}`)
+}
+
+export function createMapping(payload) {
+  return testRequest.post(`/target-users/create-mapping`, payload)
+}
+export function searchTmp(payload, id) {
+  return testRequest.post(`/target-users/${id}/search`, payload)
 }

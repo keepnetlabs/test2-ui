@@ -4,7 +4,7 @@
       <widget-container>
         <widget-header
           :editMode="editMode"
-          title="Reporters"
+          :title="getTitle"
           @deleteWidget="$emit('deleteWidget')"
           :link="{ href: '/phishing-reporter', text: 'All' }"
         />
@@ -52,6 +52,8 @@ import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import { getTextColor } from '@/utils/functions'
+import labels from '@/model/constants/labels'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {
   name: 'Reporters',
   components: {
@@ -71,8 +73,8 @@ export default {
       isLoading: true,
       columns: [
         {
-          property: 'userName',
-          label: 'User Name',
+          property: PROPERTY_STORE.USERNAME,
+          label: LABEL_STORE.USERNAME,
           thStyle: {
             width: '40%'
           },
@@ -81,8 +83,8 @@ export default {
           }
         },
         {
-          property: 'threats',
-          label: 'Actual Threats',
+          property: PROPERTY_STORE.THREATS,
+          label: LABEL_STORE.THREATS,
           subItem: 'email',
           thStyle: {
             width: '25%'
@@ -92,8 +94,8 @@ export default {
           }
         },
         {
-          property: 'reliability',
-          label: 'Reliability',
+          property: PROPERTY_STORE.RELIABILITY,
+          label: LABEL_STORE.RELIABILITY,
           thStyle: {
             textAlign: 'center'
           },
@@ -106,6 +108,11 @@ export default {
       empty: {
         message: "There isn't any reporters, yet"
       }
+    }
+  },
+  computed: {
+    getTitle() {
+      return labels.Reporters
     }
   },
   methods: {

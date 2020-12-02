@@ -3,7 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
-          title="Reported Email Trends"
+          :title="getTitle"
           :link="{ href: '/incident-responder', text: 'Incident Responder' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
@@ -41,6 +41,7 @@ import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import Line from '@/components/Common/Charts/Line'
 import { getNotifiedEmailsTrend } from '@/api/dashboard'
 import { getDataTableFieldLabel } from '@/utils/functions'
+import labels from '@/model/constants/labels'
 export default {
   name: 'ReportedEmailTrends',
   components: {
@@ -84,6 +85,11 @@ export default {
   },
   created() {
     this.callForGetNotifiedEmails()
+  },
+  computed: {
+    getTitle() {
+      return labels.ReportedEmailTrends
+    }
   },
   methods: {
     onEmptyBtnClicked() {},

@@ -169,7 +169,7 @@ export default {
   }
 
   &__title {
-    font-size: 24px;
+    font-size: 24px !important;
     line-height: 1.29 !important;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
