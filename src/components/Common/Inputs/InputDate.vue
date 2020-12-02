@@ -1,5 +1,5 @@
 <script>
-import {DatePicker} from 'element-ui'
+import { DatePicker } from 'element-ui'
 
 export default {
   name: 'InputDate',
