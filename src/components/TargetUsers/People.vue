@@ -170,7 +170,8 @@ export default {
           show: true,
           type: 'priority',
           width: 150,
-          fullWidth: true
+          fullWidth: true,
+          dbName: 'priority'
         },
         {
           property: PROPERTY_STORE.STATUS,
@@ -183,7 +184,8 @@ export default {
           width: 150,
           isEditable: true,
           hasTooltip: true,
-          fullWidth: true
+          fullWidth: true,
+          dbName: 'status'
         },
         {
           property: 'createTime',
@@ -194,7 +196,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 180
+          width: 180,
+          dbName: 'createTime'
         }
       ],
       columns: [],
@@ -209,7 +212,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          filterableType: 'text'
+          filterableType: 'text',
+          dbName: 'firstName'
         },
         {
           property: PROPERTY_STORE.LASTNAME,
@@ -220,7 +224,8 @@ export default {
           show: true,
           type: 'text',
           width: 150,
-          filterableType: 'text'
+          filterableType: 'text',
+          dbName: 'lastName'
         },
         {
           property: PROPERTY_STORE.EMAIL,
@@ -231,7 +236,8 @@ export default {
           show: true,
           type: 'text',
           width: 275,
-          filterableType: 'text'
+          filterableType: 'text',
+          dbName: 'email'
         },
         {
           property: PROPERTY_STORE.DEPARTMENT,
@@ -242,7 +248,8 @@ export default {
           show: true,
           type: 'text',
           width: 150,
-          filterableType: 'text'
+          filterableType: 'text',
+          dbName: 'department'
         }
       ],
       pageSizes: [5, 10, 25],

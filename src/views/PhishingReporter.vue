@@ -26,7 +26,7 @@
                     {{ getAddOnStatus }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    User(s) have the add-in
+                    {{ labels.User }}(s) have the add-in
                   </p>
                 </div>
               </div>
@@ -46,7 +46,7 @@
                     {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    User(s) Online
+                    {{ labels.User }}(s) {{ labels.Online }}
                   </p>
                 </div>
               </div>
@@ -74,7 +74,7 @@
                     {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    User(s) Offline
+                    {{ labels.User }}(s) {{ labels.Offline }}
                   </p>
                 </div>
               </div>
@@ -94,7 +94,7 @@
                     v{{ (phishingReportSummary && phishingReportSummary['addInVersion']) || 0 }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    Latest Release
+                    {{ labels.Latest }} {{ labels.Release }}
                   </p>
                 </div>
               </div>
@@ -123,13 +123,13 @@
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card class="phishing-reporter__card">
             <el-tabs v-model="tab" @tab-click="handleTabClick">
-              <el-tab-pane label="Users" name="first"
+              <el-tab-pane :label="labels.Users" name="first"
                 ><users
                   ref="refUsers"
                   @callForPhishingReporterSummary="getPhishingReportSummary()"
                   v-if="tab === 'first'"
               /></el-tab-pane>
-              <el-tab-pane label="Settings" name="second">
+              <el-tab-pane :label="labels.Settings" name="second">
                 <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
                 <component
                   v-show="!isLoading"
@@ -154,6 +154,7 @@ import { getPhishingReporter, getPhishingReportSummary } from '@/api/phishingRep
 import PhishingReporterTopBar from '../components/SkeletonLoading/PhishingReporterTopBar'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import InvestigationDetailsTopBarLoading from '@/components/SkeletonLoading/InvestigationDetailsTopBarLoading'
+import labels from '@/model/constants/labels'
 export default {
   name: 'PhishingReporter',
   components: {
@@ -168,6 +169,7 @@ export default {
     return {
       loading: true,
       tab: 'first',
+      labels,
       isHeaderLoading: true,
       phishingReportSummary: null,
       tabComponent: {
@@ -199,9 +201,6 @@ export default {
       }
     },
     changeTabStatus(status) {
-      /*
-      this.$router.replace({ ...this.$route, hash: status === 0 ? '#users' : '#settings' })
-      */
       this.tab = status
     },
     handleListItemClick(date) {
@@ -212,7 +211,6 @@ export default {
       this.loading = true
       this.isHeaderLoading = true
       const dateObj = this.getDates()
-      console.log('dateObj', dateObj)
       getPhishingReportSummary({
         startDate: dateObj.startDate,
         endDate: dateObj.endDate

@@ -12,7 +12,7 @@
       v-if="downloadAddInModalStatus"
       @handleClose="downloadAddInModalStatus = false"
     />
-    <el-tabs v-model="tab" v-if="!inModal || applicationType === 'Outlook'" :value="tab">
+    <el-tabs id="settings-el-tabs" v-model="tab" v-if="!inModal || applicationType === 'Outlook'">
       <el-tab-pane
         label="Add-in Settings"
         name="first"
@@ -105,6 +105,30 @@ export default {
     applicationType: {
       type: String,
       default: COMMON_CONSTANTS.OUTLOOK
+    }
+  },
+  watch: {
+    formData() {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          if (this.tab !== 'first') {
+            let transformValue
+            switch (this.tab) {
+              case 'second':
+                transformValue = 'translateX(130px)'
+                break
+              case 'third':
+                transformValue = 'translateX(253px)'
+                break
+              default:
+                transformValue = 'translateX(379px)'
+            }
+            document
+              .querySelector('#settings-el-tabs')
+              .querySelector('.el-tabs__active-bar').style.transform = transformValue
+          }
+        }, 100)
+      })
     }
   },
   components: {

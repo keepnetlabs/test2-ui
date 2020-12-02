@@ -1,7 +1,7 @@
 <template>
   <widget-container>
     <widget-header
-      title="Incident Clusters"
+      :title="getTitle"
       :link="{ href: '/incident-responder', text: 'Incident Responder' }"
       :edit-mode="editMode"
       @deleteWidget="$emit('deleteWidget')"
@@ -17,6 +17,7 @@ import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import Bubble from '@/components/Common/Charts/Bubble'
+import labels from '@/model/constants/labels'
 export default {
   name: 'IncidentClusters',
   components: {
@@ -28,6 +29,11 @@ export default {
   props: {
     editMode: {
       type: Boolean
+    }
+  },
+  computed: {
+    getTitle() {
+      return labels.IncidentClusters
     }
   },
   data() {

@@ -3,7 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container v-resize="onResize">
         <widget-header
-          title="Top Posts"
+          :title="getTitle"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"
           @deleteWidget="$emit('deleteWidget')"
@@ -52,6 +52,8 @@ import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { getMyTopPosts } from '@/api/threadSharing'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 export default {
   name: 'TopPosts',
   components: {
@@ -66,15 +68,19 @@ export default {
       type: Boolean
     }
   },
-
+  computed: {
+    getTitle() {
+      return 'Top Posts'
+    }
+  },
   data() {
     return {
       isLoading: true,
       columns: [
         {
-          property: 'postTitle',
-          label: 'Post Title',
-          subItem: 'communityName',
+          property: PROPERTY_STORE.POSTTITLE,
+          label: LABEL_STORE.POSTTITLE,
+          subItem: PROPERTY_STORE.COMMUNITYNAME,
           thStyle: {
             width: '70%'
           },
@@ -83,13 +89,13 @@ export default {
           }
         },
         {
-          property: 'commentCount',
-          label: 'Engagement'
+          property: PROPERTY_STORE.COMMENTCOUNT,
+          label: labels.Engagement
         }
       ],
       tableData: [],
       empty: {
-        message: "There isn't any top posts"
+        message: labels.EmptyTopPostWidget
       }
     }
   },
@@ -111,7 +117,7 @@ export default {
           this.isLoading = false
         })
     },
-    onResize(e) {
+    onResize() {
       const listContainer = document.querySelector('.top-posts-widget')
       if (listContainer) {
         const { width: listWidth } = listContainer && listContainer.getBoundingClientRect()

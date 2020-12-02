@@ -12,7 +12,7 @@
         }"
       >
         <div class="card-header">
-          <span class="head">ROI Summary</span>
+          <span class="head">{{ labels.RoiSummary }}</span>
           <v-icon
             v-if="editMode"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
@@ -35,10 +35,10 @@
               ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
             </span>
 
-            <span class="body-row__text" style="margin-left: 2px;">Money</span>
+            <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
           </div>
         </div>
-        <div class="card-status">Saved</div>
+        <div class="card-status">{{ labels.Saved }}</div>
         <div class="bg-image">
           <img src="../../../../assets/img/ic-insert-chart.svg" alt="icon" />
         </div>
@@ -49,6 +49,7 @@
 
 <script>
 import CardLoading from '@/components/SkeletonLoading/CardLoading'
+import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 export default {
   name: 'RoiSummaryIrHeader',
@@ -118,7 +119,8 @@ export default {
   },
   data() {
     return {
-      isLoading: true
+      isLoading: true,
+      labels
     }
   },
 

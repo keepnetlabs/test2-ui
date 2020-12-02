@@ -12,7 +12,7 @@
         }"
       >
         <div class="card-header">
-          <span class="head">Incident Analysis</span>
+          <span class="head">{{ labels.IncidentAnalysis }}</span>
           <v-icon
             v-if="editMode"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
@@ -43,10 +43,10 @@
             }}
             reported email(s)
           </div>
-          <div class="card-status">Found harmful</div>
+          <div class="card-status">{{ labels.FoundHarmful }}</div>
         </div>
         <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text">No emails analysed</div>
+          <div class="card-footer no-data-text">{{ labels.NoEmailAnalysed }}</div>
           <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
             @click="emptyNotifiedEmailButtonClick">
       Start Now
@@ -63,6 +63,7 @@
 <script>
 import CardLoading from '@/components/SkeletonLoading/CardLoading'
 import { mapGetters } from 'vuex'
+import labels from '@/model/constants/labels'
 export default {
   name: 'IncidentAnalysisIrHeader',
   components: {
@@ -71,12 +72,14 @@ export default {
   props: {
     editMode: {
       type: Boolean,
-      default: false
+      default: false,
+      labels
     }
   },
   data() {
     return {
-      isLoading: true
+      isLoading: true,
+      labels
     }
   },
   computed: {

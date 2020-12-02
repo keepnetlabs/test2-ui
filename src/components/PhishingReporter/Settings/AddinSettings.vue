@@ -18,10 +18,10 @@
     >
       <v-list-item-content>
         <v-list-item-title class="add-in-settings__title">
-          Add-in Settings
+          {{ labels.AddIn }} {{ labels.Settings }}
         </v-list-item-title>
         <v-list-item-subtitle class="add-in-settings__subtitle mb-6">
-          General add-in settings
+          {{ labels.General }} add-in {{ labels.Settings }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-content>
@@ -31,27 +31,27 @@
           target="_blank"
           v-if="showHeaderLink"
         >
-          Installation and configuration guide
+          {{ labels.Installation }} {{ labels.And }} {{ labels.Configuration }} {{ labels.Guide }}
         </a>
       </v-list-item-content>
     </v-list-item>
     <v-form class="add-in-settings__form" lazy-validation ref="refForm" v-model="isValid">
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
-          <label class="add-in-settings__label">Add-in Name</label>
+          <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Name }}</label>
           <v-text-field
             :rules="
               showForm
                 ? [
-                    (v) => validations.maxLength(v, 50, 'Add-in Name must between 1-50 characters'),
-                    (v) => validations.required(v, 'Required')
+                    (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Add-in name')),
+                    (v) => validations.required(v, labels.Required)
                   ]
                 : []
             "
             class="k-textfield mt-2"
             dense
             outlined
-            placeholder="Suspicious E-Mail Reporter"
+            placeholder="Enter an add-in name"
             :readonly="!showForm"
             v-model.trim="formValues.addInName"
           ></v-text-field>
@@ -60,13 +60,13 @@
 
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
-          <label class="add-in-settings__label">Brand Name</label>
+          <label class="add-in-settings__label">{{ labels.Brand }} {{ labels.Name }}</label>
           <v-text-field
             :rules="
               showForm
                 ? [
-                    (v) => validations.maxLength(v, 50, 'Brand Name must between 1-50 characters'),
-                    (v) => validations.required(v, 'Required')
+                    (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand name')),
+                    (v) => validations.required(v, labels.Required)
                   ]
                 : []
             "
@@ -74,7 +74,7 @@
             dense
             id="company-text"
             outlined
-            placeholder="Company Name"
+            placeholder="Enter a Company Name"
             :readonly="!showForm"
             v-model.trim="formValues.brandName"
           ></v-text-field>
@@ -83,7 +83,7 @@
 
       <v-list-item class="px-0 add-in-settings__list-item add-in-settings__file-upload">
         <v-list-item-content>
-          <label class="add-in-settings__label">Add-in Logo</label>
+          <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Logo }}</label>
           <div class="add-in-settings__subtitle mb-2">
             Recommended size is 60x60px
           </div>
@@ -96,7 +96,7 @@
         </v-list-item-content>
       </v-list-item>
       <v-list-item
-        v-if="this.formValues.file"
+        v-if="formValues.file"
         class="px-0 add-in-settings__list-item add-in-settings__logo-container"
       >
         <v-list-item-content>
@@ -110,9 +110,11 @@
 
       <v-list-item class="px-0 add-in-settings__list-item add-in-settings__body-container mt-6">
         <v-list-item-content>
-          <label class="add-in-settings__label">Dialog Box Settings</label>
+          <label class="add-in-settings__label">{{ labels.DialogBox }} {{ labels.Settings }}</label>
           <div class="add-in-settings__body-item mt-4">
-            <label class="add-in-settings__list-item-header">Dialog Box Heading</label>
+            <label class="add-in-settings__list-item-header"
+              >{{ labels.DialogBox }} {{ labels.Heading }}</label
+            >
             <v-text-field
               :rules="
                 showForm
@@ -120,10 +122,10 @@
                       (v) =>
                         validations.maxLength(
                           v,
-                          150,
-                          'Alertbox Heading must between 1-150 characters'
+                          64,
+                          labels.getMaxLengthMessage('Dialog box heading')
                         ),
-                      (v) => validations.required(v, 'Required')
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -132,7 +134,7 @@
               dense
               id="alertbox-text"
               outlined
-              placeholder="Phishing Reporter"
+              placeholder="Enter a dialog box name"
               required
               v-model.trim="formValues.msgBoxTitle"
             ></v-text-field>
@@ -146,8 +148,8 @@
                       (v) =>
                         validations.maxLength(
                           v,
-                          150,
-                          'Alertbox yes text must between 1-150 characters'
+                          64,
+                          labels.getMaxLengthMessage('Confirm button label')
                         ),
                       (v) => validations.required(v, 'Required')
                     ]
@@ -157,7 +159,7 @@
               class="k-textfield"
               dense
               outlined
-              placeholder="Yes"
+              placeholder="Enter confirm button label"
               required
               v-model.trim="formValues.msgBoxBtnYesText"
             ></v-text-field>
@@ -169,12 +171,8 @@
                 showForm
                   ? [
                       (v) =>
-                        validations.maxLength(
-                          v,
-                          150,
-                          'No button label must between 1-150 characters'
-                        ),
-                      (v) => validations.required(v, 'Required')
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('No button label')),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -182,7 +180,7 @@
               class="k-textfield"
               dense
               outlined
-              placeholder="No"
+              placeholder="Enter a no button label"
               required
               v-model.trim="formValues.msgBoxBtnNoText"
             ></v-text-field>
@@ -196,10 +194,10 @@
                       (v) =>
                         validations.maxLength(
                           v,
-                          150,
-                          'Cancel button label must between 1-150 characters'
+                          64,
+                          labels.getMaxLengthMessage('Cancel button label')
                         ),
-                      (v) => validations.required(v, 'Required')
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -207,7 +205,7 @@
               class="k-textfield"
               dense
               outlined
-              placeholder="Cancel"
+              placeholder="Enter cancel button label"
               required
               v-model.trim="formValues.msgBoxBtnCancelText"
             ></v-text-field>
@@ -221,10 +219,10 @@
                       (v) =>
                         validations.maxLength(
                           v,
-                          150,
-                          'Okay button label must between 1-150 characters'
+                          64,
+                          labels.getMaxLengthMessage('Okay button label')
                         ),
-                      (v) => validations.required(v, 'Required')
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -232,7 +230,7 @@
               class="k-textfield"
               dense
               outlined
-              placeholder="Okay"
+              placeholder="Enter okay button label"
               required
               v-model.trim="formValues.msgBoxBtnOkText"
             ></v-text-field>
@@ -242,7 +240,7 @@
               >Instant Report Message</label
             >
             <v-textarea
-              placeholder="Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails."
+              placeholder="Enter instant report message"
               outlined
               dense
               rows="2"
@@ -252,8 +250,13 @@
               :rules="
                 showForm
                   ? [
-                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
-                      (v) => validations.required(v, 'Required')
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Instant report message', 256)
+                        ),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -265,7 +268,7 @@
               >Connection error message</label
             >
             <v-textarea
-              placeholder="Phishing Reporter add-in cannot connect to server. Please inform related department."
+              placeholder="Enter a connection error message"
               outlined
               dense
               rows="2"
@@ -275,8 +278,13 @@
               :rules="
                 showForm
                   ? [
-                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
-                      (v) => validations.required(v, 'Required')
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Connection error message', 256)
+                        ),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -288,7 +296,7 @@
               >Sending error message</label
             >
             <v-textarea
-              placeholder="Reported email cannot be sent to related department. Please try again later."
+              placeholder="Enter sending error message"
               outlined
               dense
               rows="2"
@@ -298,8 +306,13 @@
               :rules="
                 showForm
                   ? [
-                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
-                      (v) => validations.required(v, 'Required')
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Sending error message', 256)
+                        ),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -311,7 +324,7 @@
               >No email selected message</label
             >
             <v-textarea
-              placeholder="To report an email you must first select the email and then click the report button."
+              placeholder="Enter a no email selected message"
               outlined
               dense
               rows="2"
@@ -321,8 +334,13 @@
               :rules="
                 showForm
                   ? [
-                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
-                      (v) => validations.required(v, 'Required')
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('No email selected message', 256)
+                        ),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -334,7 +352,7 @@
               >Bad format email message</label
             >
             <v-textarea
-              placeholder="Your selection is not a valid email message"
+              placeholder="Enter a bad format email message"
               outlined
               dense
               rows="2"
@@ -344,8 +362,13 @@
               :rules="
                 showForm
                   ? [
-                      (v) => validations.maxLength(v, 1000, 'It must maximum 1000 characters'),
-                      (v) => validations.required(v, 'Required')
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Bad format email message', 256)
+                        ),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -361,7 +384,7 @@
               :readonly="!showForm"
             ></v-checkbox>
             <v-textarea
-              placeholder="Do you want to report this email to system administrator?"
+              placeholder="Enter a confirmation message when reporting email"
               outlined
               dense
               rows="2"
@@ -376,13 +399,13 @@
           <div class="add-in-settings__body-item">
             <v-checkbox
               color="#2196f3"
-              label="Show confirmation messsage to delete email"
+              label="Show confirmation message to delete email"
               class="k-checkbox add-in-settings__list-item-checkbox"
               v-model="formValues.isDeleteEmailBeforeAnalysis"
               :readonly="!showForm"
             ></v-checkbox>
             <v-textarea
-              placeholder="Do you wish to delete the original email from your inbox?"
+              placeholder="Enter a confirmation message to delete email"
               outlined
               dense
               rows="2"
@@ -408,15 +431,15 @@
               showForm
                 ? [
                     (v) =>
-                      validations.maxLength(v, 50, 'Warning Label must between 1-150 characters'),
-                    (v) => validations.required(v, 'Required')
+                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Warning label')),
+                    (v) => validations.required(v, labels.Required)
                   ]
                 : []
             "
             class="k-textfield mt-2"
             dense
             outlined
-            placeholder="Suspicious E-Mail"
+            placeholder="Enter a warning label"
             required
             :readonly="!showForm"
             v-model.trim="formValues.warningLabel"
@@ -442,6 +465,7 @@ import imageToBlob from 'image-to-blob'
 import ReporterVersionModal from './ReporterVersionModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
+import labels from '@/model/constants/labels'
 export default {
   name: 'AddinSettings',
   components: { KFileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
@@ -479,6 +503,7 @@ export default {
     return {
       isValid: false,
       files: [],
+      labels,
       formValues: {
         addInName: '',
         brandName: '',
@@ -512,9 +537,13 @@ export default {
     getAnalysisConfirmationMessageRules() {
       const validations = []
       if (this.formValues.isConfirmationBeforeAnalysis) {
-        validations.push((v) => this.validations.required(v, 'Required'))
+        validations.push((v) => this.validations.required(v, this.labels.Required))
         validations.push((v) =>
-          this.validations.maxLength(v, 1000, 'It must between 1-1000 characters')
+          this.validations.maxLength(
+            v,
+            256,
+            this.labels.getMaxLengthMessage('Confirmation message', 256)
+          )
         )
       }
       return validations
@@ -735,7 +764,7 @@ export default {
     }
 
     &__title {
-      font-size: 24px;
+      font-size: 24px !important;
       line-height: 1.29 !important;
       letter-spacing: normal;
       color: rgba(0, 0, 0, 0.87) !important;

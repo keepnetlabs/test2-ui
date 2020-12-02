@@ -10,7 +10,7 @@
         />
         <widget-header
           :editMode="editMode"
-          title="Top Rules"
+          :title="getTitle"
           @deleteWidget="$emit('deleteWidget')"
           :link="{ href: '/playbook', text: 'Playbook' }"
         />
@@ -49,6 +49,8 @@ import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetLoading from '@/components/SkeletonLoading/WidgetLoading'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
+import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 export default {
   name: 'TopRules',
   components: {
@@ -64,6 +66,11 @@ export default {
       type: Boolean
     }
   },
+  computed: {
+    getTitle() {
+      return labels.TopRules
+    }
+  },
 
   data() {
     return {
@@ -74,8 +81,8 @@ export default {
       selectedMatch: null,
       columns: [
         {
-          property: 'ruleName',
-          label: 'Rule Name',
+          property: PROPERTY_STORE.RULENAME,
+          label: LABEL_STORE.RULENAME,
           thStyle: {
             width: '60%'
           },
@@ -84,16 +91,16 @@ export default {
           }
         },
         {
-          property: 'matchCount',
+          property: PROPERTY_STORE.MATCHCOUNT,
           align: 'left',
-          label: 'Matching Incidents',
-          emptyText: 'No Match',
+          label: labels.MatchingIncidents,
+          emptyText: labels.NoMatchEmptyText,
           thStyle: { textAlign: 'center' },
           tdStyle: { textAlign: 'center' }
         }
       ],
       empty: {
-        message: "There isn't any top rules"
+        message: labels.EmptyTopRulesWidget
       }
     }
   },
@@ -104,21 +111,12 @@ export default {
     callForTopRules() {
       getTopRules()
         .then((response) => {
-          this.isLoading = false
           const {
-            data: { data, status }
+            data: { data }
           } = response
           this.tableData = data || []
         })
-        .catch((error) => {
-          /*
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the top rules!'
-          })
-          */
-          this.isLoading = false
-        })
+        .finally(() => (this.isLoading = false))
     },
     handleRuleNameClick({ resourceId = '' }) {
       this.$emit('handleSelectPlaybookId', { resourceId, callback: this.callForTopRules })
