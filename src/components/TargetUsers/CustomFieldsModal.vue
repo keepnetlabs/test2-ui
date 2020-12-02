@@ -76,7 +76,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item-title class="k-form-group__title mb-2"
-          >Unactive Custom fields</v-list-item-title
+          >Inactive Custom fields</v-list-item-title
         >
         <draggable
           @change="handleChangeOfList"
@@ -301,6 +301,9 @@ export default {
           this.callForGetTargetUserCustomFieldsByCompanyId()
         })
         .catch(() => (this.loading = false))
+        .finally(() => {
+          this.closeOverlay()
+        })
     },
     handleDeleteTableField(item) {
       this.isWantToDelete = true

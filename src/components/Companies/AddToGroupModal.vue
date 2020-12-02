@@ -58,9 +58,9 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import {getCompanyGroups, updateCompanyGroup} from '../../api/company'
+import { getCompanyGroups, updateCompanyGroup } from '../../api/company'
 import Datatable from '../../components/DataTable'
-import {COMMON_CONSTANTS} from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 export default {
