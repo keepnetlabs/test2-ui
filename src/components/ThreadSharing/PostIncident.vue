@@ -277,7 +277,7 @@
                   <div id="last-preview-body-preview" class="preview-body">
                     <k-shadow-frame
                       id="incident-preview-1"
-                      :content="uploadRespond.editableBody || uploadRespond.initialBody"
+                      :content="uploadRespond.visibleBody || uploadRespond.initialBody"
                     />
                   </div>
                   <div
@@ -1174,7 +1174,7 @@
                   <div class="threat-sharing-content">
                     <div class="ts-header">
                       <div id="last-preview-title" class="ts-title">
-                        <span v-if="uploadRespond.subject">{{ uploadRespond.subject }}</span>
+                        <span v-if="uploadRespond.subject">{{ uploadRespond.Title }}</span>
                         <span v-else>Post Title</span>
                       </div>
                       <div class="flex-grow-1"></div>
@@ -1486,7 +1486,7 @@
                                 {{
                                   !uploadRespond.isSubjectHidden
                                     ? uploadRespond.subject
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1511,7 +1511,7 @@
                                 {{
                                   !uploadRespond.isFromHidden
                                     ? uploadRespond.from
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1533,7 +1533,7 @@
                                 {{
                                   !uploadRespond.isToHidden
                                     ? uploadRespond.to.toString()
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1559,7 +1559,7 @@
                                 {{
                                   !uploadRespond.isCcHidden
                                     ? uploadRespond.cc.toString()
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1588,7 +1588,7 @@
                                 {{
                                   !uploadRespond.isBccHidden
                                     ? uploadRespond.bcc.toString()
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1670,7 +1670,7 @@
                                     v-if="att.isHidden"
                                     class="file-name max-char single-post__details__section-header--sub"
                                   >
-                                    hidden by owner
+                                    Hidden by Owner
                                   </div>
                                 </div>
                               </div>
@@ -2294,6 +2294,8 @@ export default {
             el.style.color = '#ffffff'
             el.style.position = 'relative'
             el.style.pointerEvents = 'none'
+            el.url = 'Hidden by Owner'
+            el.setAttribute('href', '#')
           }
         }
       }
@@ -2439,7 +2441,7 @@ export default {
           let hiddenEl = hiddenEls[i]
           hiddenEl.setAttribute('target', '_blank')
           if (url.isHidden) {
-            hiddenEl.innerHTML = 'hidden by owner'
+            hiddenEl.innerHTML = 'Hidden by Owner'
             //hiddenEl.setAttribute('href', '#')
           } else if (!!url && !!url.urlHtml) {
             hiddenEl.innerHTML = url.urlHtml
@@ -2475,7 +2477,7 @@ export default {
         })
         if (id === 'incident-preview-1' || id === 'last-preview-body-shadow-root-review') {
           for (let url of this.uploadRespond.urls) {
-            incidenPostReviewElementBind(url, null, id)
+            incidenPostReviewElementBind(url, null, id, true)
           }
         } else {
           for (let url of this.uploadRespond.urls) {

@@ -838,7 +838,7 @@
                     <div class="detail-part-item__col--major">
                       <div class="detail-part-item__text">
                         <span class="detail-part-item__hide-overflow pl-0">
-                          {{ !att.isHidden ? att.name : 'hidden by owner' }}
+                          {{ !att.isHidden ? att.name : 'Hidden by Owner' }}
                         </span>
                       </div>
                     </div>

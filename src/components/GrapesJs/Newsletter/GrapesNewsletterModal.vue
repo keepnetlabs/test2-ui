@@ -107,7 +107,8 @@ export default {
             inlineCss: true,
             categoryLabel: 'Basic'
           }
-        }
+        },
+        noticeOnUnload: false
       })
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)

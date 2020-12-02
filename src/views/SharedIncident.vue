@@ -292,7 +292,7 @@
                         v-if="!att.IsShow"
                         class="file-name max-char"
                       >
-                        hidden by owner
+                        Hidden by Owner
                       </div>
                     </div>
                   </div>
@@ -384,7 +384,7 @@
                   :id="'detail-subject-' + el.Id"
                 >
                   <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                    >Subject: hidden by owner</span
+                    >Subject: Hidden by Owner</span
                   >
                   <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                     <template v-slot:activator="{ on }">
@@ -432,7 +432,7 @@
                     :id="'detail-from-' + el.Id"
                   >
                     <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                      >From: hidden by owner</span
+                      >From: Hidden by Owner</span
                     >
                     <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                       <template v-slot:activator="{ on }">
@@ -476,7 +476,7 @@
                     :id="'detail-to-' + el.Id"
                   >
                     <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                      >To: hidden by owner</span
+                      >To: Hidden by Owner</span
                     >
                     <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                       <template v-slot:activator="{ on }">
@@ -520,7 +520,7 @@
                     :id="'detail-cc-' + el.Id"
                   >
                     <span :class="[el.IsMalicious ? 'malicious-style' : '']"
-                      >CC: hidden by owner</span
+                      >CC: Hidden by Owner</span
                     >
                     <v-tooltip v-if="el.IsMalicious" bottom opacity="1">
                       <template v-slot:activator="{ on }">
@@ -575,7 +575,7 @@
                         <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
                       </div>
                       <div v-if="att.IsShow" class="file-name max-char pl-2">{{ att.Name }}</div>
-                      <div v-if="!att.IsShow" class="file-name max-char pl-2">hidden by owner</div>
+                      <div v-if="!att.IsShow" class="file-name max-char pl-2">Hidden by Owner</div>
                     </div>
                   </div>
                 </div>
@@ -679,7 +679,7 @@ export default {
               for (var i = 0, l = els.length; i < l; i++) {
                 var el = els[i]
                 if (!a.IsShow) {
-                  el.innerHTML = 'hidden by owner'
+                  el.innerHTML = 'Hidden by Owner'
                   el.setAttribute('href', '#')
                 }
                 if (a.IsMalicious) {
