@@ -347,7 +347,7 @@
           </div>
         </div>
         <div
-          class="table-container"
+          :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
           id="table-container"
           ref="tableContainer"
           v-if="(tableData && tableData.length) || isColumnFilterActive"
@@ -1074,6 +1074,7 @@ export default {
       timeout: null,
       selectionCheckbox: false,
       selectionAll: false,
+      dynamicStyleRef: null,
       search: '',
       downloadModalTitle: '',
       isSettingsOpened: false,
@@ -1104,6 +1105,10 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
+      this.multipleSelection = []
+      if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
+        this.$refs.elTableRef.clearSelection()
+      }
       this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
@@ -1131,9 +1136,6 @@ export default {
 
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
-        }
-        if (!this.hideParentRowActions) {
-          this.handleParentRowActions()
         }
       }
     },
@@ -1209,6 +1211,11 @@ export default {
     }
 
     window.addEventListener('resize', this.renderFixedItems)
+  },
+  beforeDestroy() {
+    if (this.dynamicStyleRef && this.dynamicStyleRef.remove) {
+      this.dynamicStyleRef.remove()
+    }
   },
   methods: {
     handleExtendedViewEdit(val) {
@@ -1406,18 +1413,14 @@ export default {
       this.extendedViewStyle = {
         top: `${48}px`
       }
-      this.$emit('onEditClick', {
-        selected: this.multipleSelection,
-        isEditPopupOpen: true
-      })
-      this.isWantToEditRow = true
-    },
-    handleParentRowActions() {
-      const objStyle = document.createElement('style')
-      objStyle.innerHTML =
-        '.el-table__row.el-table__row--level-0 .actions-container button {visibility:hidden}'
-      const ref = document.querySelector('script')
-      ref.parentNode.insertBefore(objStyle, ref)
+      const selections = this.multipleSelection.filter((item) => !item.isParent)
+      if (selections.length) {
+        this.$emit('onEditClick', {
+          selected: selections,
+          isEditPopupOpen: true
+        })
+        this.isWantToEditRow = true
+      }
     },
     /**
      * This functions removes visibility of the right actions columns.

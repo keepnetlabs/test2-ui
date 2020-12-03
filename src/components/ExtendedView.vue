@@ -290,10 +290,11 @@
                   v-bind="col.editOptions.props"
                   row-height="20"
                 ></v-textarea>
-                <k-select
+                <v-select
                   class="edit-select"
                   dense
                   outlined
+                  :menu-props="{ offsetY: true }"
                   v-bind="col.editOptions.props"
                   :disabled="
                     col.editOptions.getDisabledValue

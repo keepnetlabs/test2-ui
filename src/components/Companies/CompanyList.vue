@@ -298,14 +298,14 @@ export default {
           'filterableItems',
           res
             .filter((item) => item.genericCodeTypeId === 2)
-            .map((item) => ({ text: item.name, value: item.name }))
+            .map((item) => ({ text: item.name, value: item.resourceId }))
         )
         this.$set(
           this.tableOptions.columns[2],
           'filterableItems',
           res
             .filter((item) => item.genericCodeTypeId === 3)
-            .map((item) => ({ text: item.name, value: item.name }))
+            .map((item) => ({ text: item.name, value: item.resourceId }))
         )
       })
     },

@@ -1483,7 +1483,7 @@ export default {
       }
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
-      if (isEditPopupOpen) {
+      if (isEditPopupOpen && selections.length) {
         this.extendedViewLoading = true
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
@@ -1625,7 +1625,12 @@ export default {
     getManipulatedTableData(data, isChild = false) {
       if (this.requestBodyReportedEmails.isClustered) {
         return data.map((item) => {
-          return { subject: item.subject, hasChildren: true, resourceId: Math.random().toString() }
+          return {
+            subject: item.subject,
+            hasChildren: true,
+            resourceId: Math.random().toString(),
+            isParent: true
+          }
         })
       }
 
