@@ -353,18 +353,26 @@ export default {
   },
   methods: {
     getDatatableList() {
-      searchTmp(this.bodyData, this.excelInfo.resourceId)
+      searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
-          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          const {
-            data: { data, status }
-          } = response
-          this.tableData = data.results || []
+          if (!response.data.data.items.results.length) {
+            setTimeout(() => {
+              this.getDatatableList()
+            }, 10000)
+          } else {
+            this.activeStep =
+              this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+            const {
+              data: { data, status }
+            } = response.data.data.items.results
+            this.tableData = data || []
+            this.loading = false
+          }
         })
         .catch((error) => {
           this.tableData = []
+          this.loading = false
         })
-        .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true

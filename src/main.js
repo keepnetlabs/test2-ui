@@ -31,10 +31,7 @@ Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
-console.log('APP_CONFIG', APP_CONFIG)
 if (APP_CONFIG.VUE_APP_IS_CLOUD) {
-  console.log(APP_CONFIG.VUE_APP_IS_CLOUD)
-
   Sentry.init({
     dsn: 'https://d33f2fcc4295420588d442dfde43d2c5@o466336.ingest.sentry.io/5480520',
     integrations: [

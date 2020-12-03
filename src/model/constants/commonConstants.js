@@ -82,7 +82,8 @@ export const LABEL_STORE = {
   NO_DATA: 'No Data',
   THREATS: 'Actual Threats',
   RELIABILITY: 'Reliability',
-  RULENAME: 'Rule Name'
+  RULENAME: 'Rule Name',
+  UPLOADED_SUCCESSFULLY: 'Uploaded successfully'
 }
 
 export const PROPERTY_STORE = {

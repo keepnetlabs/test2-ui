@@ -931,7 +931,6 @@ export default {
             return returnObj
           })
           let colObj = []
-          console.log('urlTableColumns', urlTableColumns)
           urlTableColumns.forEach((item) => {
             colObj.push({
               property: item,

@@ -277,7 +277,6 @@ export default {
       if (this.$store.state.auth.companyName == undefined) {
         return ''
       }
-      console.log(this.$store.state.auth.selectedCompanyName)
       return this.$store.state.auth.selectedCompanyName
     },
 
