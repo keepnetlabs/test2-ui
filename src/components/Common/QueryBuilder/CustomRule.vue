@@ -160,7 +160,7 @@
         <v-col v-if="query.operand === 'AttachmentExtension'">
           <v-text-field
             v-model.trim="query.value"
-            placeholder="Enter file extension"
+            placeholder="Enter file extension (tar.gz) without the starting dot"
             outlined
             :rules="getAttachmentExtensionRules()"
             autocomplete="disabled"
