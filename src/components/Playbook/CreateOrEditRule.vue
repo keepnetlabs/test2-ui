@@ -380,9 +380,7 @@ export default {
             'Keyword',
             { text: 'Attachment name', value: 'AttachmentName' },
             { text: 'Attachment hash', value: 'AttachmentHash' },
-            { text: 'Attachment extension', value: 'AttachmentExtension' },
-            'Custom syntax',
-            'Analysis result'
+            { text: 'Attachment extension', value: 'AttachmentExtension' }
           ],
           operandsFrom: ['Email', 'Domain', 'Regex'],
           operandsTo: ['Email', 'Domain', 'Regex'],
