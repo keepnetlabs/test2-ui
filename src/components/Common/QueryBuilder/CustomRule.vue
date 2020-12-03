@@ -11,7 +11,6 @@
           outlined
           min-width-type="small"
           nudge-width="20"
-          hide-details
           @input="handleOperandChange"
         />
       </v-col>
@@ -28,7 +27,6 @@
           v-model="query.operator"
           :items="rule.operators"
           outlined
-          hide-details
           item-value="value"
           min-width-type="small"
           item-text="text"
@@ -41,147 +39,150 @@
           :items="rule.operandsSenderIP"
           outlined
           min-width-type="small"
-          hide-details
         />
       </v-col>
-      <v-col md="2" v-if="query.operand === 'From'">
-        <!-- List of "From" operands-->
-        <k-select
-          min-width-type="small"
-          v-model.trim="query.format"
-          :items="rule.operandsFrom"
-          outlined
-          hide-details
-        />
-      </v-col>
-      <v-col md="2" v-if="query.operand === 'To'">
-        <!-- List of "From" operands-->
-        <k-select
-          min-width-type="small"
-          v-model.trim="query.format"
-          :items="rule.operandsTo"
-          outlined
-          hide-details
-        />
-      </v-col>
-      <v-col md="2" v-if="query.operand === 'CC'">
-        <!-- List of "From" operands-->
-        <k-select
-          min-width-type="small"
-          v-model.trim="query.format"
-          :items="rule.operandsCC"
-          outlined
-          hide-details
-        />
-      </v-col>
-      <v-col md="2" v-if="query.operand === 'Analysis result'">
-        <!-- List of "Analysis result" operands-->
-        <k-select
-          min-width-type="small"
-          v-model="query.value"
-          :items="rule.operandsAnalysisResult"
-          outlined
-        />
-      </v-col>
+      <template v-if="isOperatorExists">
+        <v-col md="2" v-if="query.operand === 'From'">
+          <!-- List of "From" operands-->
+          <k-select
+            min-width-type="small"
+            v-model.trim="query.format"
+            :items="rule.operandsFrom"
+            outlined
+            hide-details
+          />
+        </v-col>
+
+        <v-col md="2" v-if="query.operand === 'To'">
+          <!-- List of "From" operands-->
+          <k-select
+            min-width-type="small"
+            v-model.trim="query.format"
+            :items="rule.operandsTo"
+            outlined
+            hide-details
+          />
+        </v-col>
+        <v-col md="2" v-if="query.operand === 'CC'">
+          <!-- List of "From" operands-->
+          <k-select
+            min-width-type="small"
+            v-model.trim="query.format"
+            :items="rule.operandsCC"
+            outlined
+            hide-details
+          />
+        </v-col>
+        <v-col md="2" v-if="query.operand === 'Analysis result'">
+          <!-- List of "Analysis result" operands-->
+          <k-select
+            min-width-type="small"
+            v-model="query.value"
+            :items="rule.operandsAnalysisResult"
+            outlined
+          />
+        </v-col>
+        <v-col
+          v-if="
+            rule.type === 'conditions' &&
+            query.operand !== 'Analysis result' &&
+            query.operand !== 'SenderIp' &&
+            query.operand !== 'Subject' &&
+            query.operand !== 'Keyword' &&
+            query.operand !== 'AttachmentName' &&
+            query.operand !== 'AttachmentExtension' &&
+            query.operand !== 'AttachmentHash'
+          "
+          md=""
+          sm="10"
+        >
+          <!-- Condition text input-->
+          <v-text-field
+            v-model.trim="query.value"
+            :placeholder="getPlaceholder()"
+            outlined
+            :rules="getRules()"
+            autocomplete="disabled"
+            md=""
+            sm="10"
+          />
+        </v-col>
+        <v-col v-if="query.operand === 'SenderIp'">
+          <!-- Condition text input-->
+          <InputIpAddress
+            v-model.trim="query.value"
+            placeholder="Enter IP or a regular expression"
+            :rules="[
+              (v) => validations.required(v, 'Required'),
+              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
+              (v) => validations.ip(v, 'Invalid ip address')
+            ]"
+            md=""
+            sm="10"
+          />
+        </v-col>
+        <v-col v-if="query.operand === 'Subject'">
+          <!-- Condition text input-->
+          <v-text-field
+            v-model.trim="query.value"
+            placeholder="Enter subject or a regular expression"
+            outlined
+            :rules="getSubjectRules()"
+            autocomplete="disabled"
+            md=""
+            sm="10"
+          />
+        </v-col>
+        <v-col v-if="query.operand === 'Keyword'">
+          <!-- Condition text input-->
+          <v-text-field
+            v-model.trim="query.value"
+            placeholder="Enter keywords or a regular expression to search in email body"
+            outlined
+            :rules="getKeywordRules()"
+            autocomplete="disabled"
+            md=""
+            sm="10"
+          />
+        </v-col>
+        <v-col v-if="query.operand === 'AttachmentName'">
+          <!-- Condition text input-->
+          <v-text-field
+            v-model.trim="query.value"
+            placeholder="Enter file name or a regular expression"
+            outlined
+            :rules="getAttachmentNameRules()"
+            autocomplete="disabled"
+            md=""
+            sm="10"
+          />
+        </v-col>
+        <v-col v-if="query.operand === 'AttachmentExtension'">
+          <v-text-field
+            v-model.trim="query.value"
+            placeholder="Enter file extension"
+            outlined
+            :rules="getAttachmentExtensionRules()"
+            autocomplete="disabled"
+            md=""
+            sm="10"
+          />
+        </v-col>
+        <v-col v-if="query.operand === 'AttachmentHash'">
+          <v-text-field
+            v-model.trim="query.value"
+            placeholder="Enter SHA512 or MD5 hash"
+            outlined
+            :rules="getAttachmentHashRules()"
+            autocomplete="disabled"
+            md=""
+            sm="10"
+          />
+        </v-col>
+      </template>
+
       <v-col
-        v-if="
-          rule.type === 'conditions' &&
-          query.operand !== 'Analysis result' &&
-          query.operand !== 'SenderIp' &&
-          query.operand !== 'Subject' &&
-          query.operand !== 'Keyword' &&
-          query.operand !== 'AttachmentName' &&
-          query.operand !== 'AttachmentExtension' &&
-          query.operand !== 'AttachmentHash'
-        "
-        md=""
-        sm="10"
-      >
-        <!-- Condition text input-->
-        <v-text-field
-          v-model.trim="query.value"
-          :placeholder="getPlaceholder()"
-          outlined
-          :rules="getRules()"
-          autocomplete="disabled"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col v-if="query.operand === 'SenderIp'">
-        <!-- Condition text input-->
-        <InputIpAddress
-          v-model.trim="query.value"
-          placeholder="Enter IP or a regular expression"
-          :rules="[
-            (v) => validations.required(v, 'Required'),
-            (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-            (v) => validations.ip(v, 'Invalid ip address')
-          ]"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col v-if="query.operand === 'Subject'">
-        <!-- Condition text input-->
-        <v-text-field
-          v-model.trim="query.value"
-          placeholder="Enter subject or a regular expression"
-          outlined
-          :rules="getSubjectRules()"
-          autocomplete="disabled"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col v-if="query.operand === 'Keyword'">
-        <!-- Condition text input-->
-        <v-text-field
-          v-model.trim="query.value"
-          placeholder="Enter keywords or a regular expression to search in email body"
-          outlined
-          :rules="getKeywordRules()"
-          autocomplete="disabled"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col v-if="query.operand === 'AttachmentName'">
-        <!-- Condition text input-->
-        <v-text-field
-          v-model.trim="query.value"
-          placeholder="Enter file name or a regular expression"
-          outlined
-          :rules="getAttachmentNameRules()"
-          autocomplete="disabled"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col v-if="query.operand === 'AttachmentExtension'">
-        <v-text-field
-          v-model.trim="query.value"
-          placeholder="Enter file extension"
-          outlined
-          :rules="getAttachmentExtensionRules()"
-          autocomplete="disabled"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col v-if="query.operand === 'AttachmentHash'">
-        <v-text-field
-          v-model.trim="query.value"
-          placeholder="Enter SHA512 or MD5 hash"
-          outlined
-          :rules="getAttachmentHashRules()"
-          autocomplete="disabled"
-          md=""
-          sm="10"
-        />
-      </v-col>
-      <v-col
-        :md="query.operand === 'Analysis result' ? '6' : 'auto'"
+        :md="query.operand === 'Analysis result' ? '6' : !isOperatorExists ? '8' : 'auto'"
         sm="2"
         class="text-right"
         style="
@@ -205,7 +206,6 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
-import * as Validations from '@/utils/validations'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -216,6 +216,26 @@ export default {
     return {
       validations: validations,
       attachId: null
+    }
+  },
+  watch: {
+    'query.operator'(newVal = '', oldVal = '') {
+      if (newVal === 'Exists' || newVal === 'DoesNotExist') {
+        this.query.format = ''
+        this.query.value = ''
+      }
+      if (
+        (oldVal === 'Exists' || oldVal === 'DoesNotExist') &&
+        newVal !== 'Exists' &&
+        newVal !== 'DoesNotExists'
+      ) {
+        this.query.format = 'Email'
+      }
+    }
+  },
+  computed: {
+    isOperatorExists() {
+      return this.query.operator !== 'Exists' && this.query.operator !== 'DoesNotExist'
     }
   },
   methods: {
