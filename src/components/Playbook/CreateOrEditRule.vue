@@ -385,8 +385,8 @@ export default {
             'Analysis result'
           ],
           operandsFrom: ['Email', 'Domain', 'Regex'],
-          operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
-          operandsCC: ['Email', 'Group', 'Domain', 'Regex'],
+          operandsTo: ['Email', 'Domain', 'Regex'],
+          operandsCC: ['Email', 'Domain', 'Regex'],
           operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
           operandsSenderIP: [
             { text: 'is equal to', value: 'Equal' },
