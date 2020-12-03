@@ -486,10 +486,10 @@
             :clusterItems="[{ name: 'Subject' }]"
             active-cluster="Subject"
             :changeFooterPosition="true"
+            lazy
             @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
-            hideParentRowActions
             :pageSizes="emails.pageSizes"
             :selectable="true"
             :filterable="true"
@@ -1350,7 +1350,7 @@ export default {
             data: { results }
           }
         } = response
-
+        results.splice(0, 1)
         const data = this.getManipulatedChildData(results, true)
         tree['children'] = data
         treeNode['children'] = data
@@ -1626,10 +1626,8 @@ export default {
       if (this.requestBodyReportedEmails.isClustered) {
         return data.map((item) => {
           return {
-            subject: item.subject,
-            hasChildren: true,
-            resourceId: Math.random().toString(),
-            isParent: true
+            ...item,
+            hasChildren: true
           }
         })
       }

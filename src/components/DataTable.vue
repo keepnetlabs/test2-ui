@@ -365,6 +365,7 @@
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
             @select="handleSelect"
+            @expand-change="handleExpandedRowChange"
             @sort-change="sortChangedEvent"
             :empty-text="empty.message"
             @select-all="handleSelectAll"
@@ -842,6 +843,9 @@ export default {
       type: Array,
       required: true
     },
+    lazy: {
+      type: Boolean
+    },
     hideParentRowActions: {
       type: Boolean,
       default: false
@@ -1076,6 +1080,7 @@ export default {
       selectionAll: false,
       dynamicStyleRef: null,
       search: '',
+      expandedRows: [],
       downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToEditRow: false,
@@ -1141,11 +1146,17 @@ export default {
     },
     tableData(data) {
       this.calculateAllSelected()
+      if (this.groupable && !this.lazy) {
+        this.calculateExpandedRows()
+      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
     filteredData() {
       this.calculateAllSelected()
+      if (this.groupable && !this.lazy) {
+        this.calculateExpandedRows()
+      }
     },
     firstColFixed(val) {
       if (!val) {
@@ -1223,7 +1234,25 @@ export default {
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
     },
-
+    handleExpandedRowChange(row, isExpanded) {
+      let expandedRow = this.expandedRows.find(
+        (item) => JSON.stringify(item.data) === JSON.stringify(row)
+      )
+      if (expandedRow) {
+        expandedRow.isExpanded = isExpanded
+      } else {
+        this.expandedRows.push({ data: row, isExpanded })
+      }
+    },
+    calculateExpandedRows() {
+      this.$nextTick(() => {
+        for (const item of this.expandedRows) {
+          if (this.$refs && this.$refs.elTableRef) {
+            this.$refs.elTableRef.toggleRowExpansion(item.data, item.isExpanded)
+          }
+        }
+      })
+    },
     calculateAllSelected() {
       let dataRef = this.showfilteredData ? this.filteredData : this.tableData
       const renderedTotalLength = this.getTotalLength(this.tableData)
