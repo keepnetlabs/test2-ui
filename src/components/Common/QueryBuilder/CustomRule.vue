@@ -19,6 +19,7 @@
         v-if="
           typeof rule.operators !== 'undefined' &&
           query.operand !== 'SenderIp' &&
+          query.operand !== 'AttachmentHash' &&
           rule.operators.length > 1
         "
       >
@@ -30,6 +31,15 @@
           item-value="value"
           min-width-type="small"
           item-text="text"
+        />
+      </v-col>
+      <v-col md="2" v-if="query.operand === 'AttachmentHash'">
+        <!-- List of "From" operands-->
+        <k-select
+          v-model.trim="query.operator"
+          :items="rule.operandsAttachmentHash"
+          outlined
+          min-width-type="small"
         />
       </v-col>
       <v-col md="2" v-if="query.operand === 'SenderIp'">
@@ -230,6 +240,13 @@ export default {
         newVal !== 'DoesNotExists'
       ) {
         this.query.format = 'Email'
+      }
+    },
+    'query.operand'(newVal = '', oldVal = '') {
+      if (newVal === 'AttachmentHash') {
+        if (this.query.operator !== 'Equal' || this.query.operator !== 'IsNotEqual') {
+          this.query.operator = 'Equal'
+        }
       }
     }
   },

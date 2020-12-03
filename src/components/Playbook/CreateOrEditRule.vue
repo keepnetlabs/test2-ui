@@ -394,6 +394,10 @@ export default {
             { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
           ],
+          operandsAttachmentHash: [
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' }
+          ],
           operators: [
             { text: 'contains', value: 'Contains' },
             { text: 'does not contain', value: 'DoesNotContain' },
