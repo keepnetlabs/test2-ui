@@ -1085,3 +1085,7 @@
 
 
 }
+
+.hide-parent-row-actions{
+  .el-table__row.el-table__row--level-0 .actions-container button {visibility:hidden}
+}
