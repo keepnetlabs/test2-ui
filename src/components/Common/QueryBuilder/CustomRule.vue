@@ -244,31 +244,42 @@ export default {
       return document.querySelector(item)
     },
     getRules() {
-      switch (this.query && this.query.format) {
-        case 'Email':
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.mail(v, labels.InvalidEmailAddress),
-            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Email'))
-          ]
-        case 'Domain':
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.domain(v, 'Invalid domain name'),
-            (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
-          ]
-        case 'Regex':
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Regex'))
-          ]
-        case 'Group':
-          return [
-            (v) => this.validations.required(v, labels.Required),
-            (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
-          ]
-        default:
-          break
+      if (this.query) {
+        const { format, operator } = this.query
+        switch (format) {
+          case 'Email':
+            const emailValidationArray = [
+              (v) => this.validations.required(v, labels.Required),
+              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Email'))
+            ]
+            if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+              emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
+            }
+            return emailValidationArray
+          case 'Domain':
+            const domainValidationArray = [
+              (v) => this.validations.required(v, labels.Required),
+              (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Domain', 256))
+            ]
+            if (operator !== 'Contains' && operator !== 'DoesNotContain') {
+              domainValidationArray.push((v) =>
+                this.validations.domain(v, labels.InvalidDomainName)
+              )
+            }
+            return domainValidationArray
+          case 'Regex':
+            return [
+              (v) => this.validations.required(v, labels.Required),
+              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Regex'))
+            ]
+          case 'Group':
+            return [
+              (v) => this.validations.required(v, labels.Required),
+              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Group'))
+            ]
+          default:
+            break
+        }
       }
     },
     getPlaceholder() {
