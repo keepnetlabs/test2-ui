@@ -111,10 +111,10 @@
             v-model.trim="query.value"
             :placeholder="getPlaceholder()"
             outlined
+            persistent-hint
+            hint="*Required"
             :rules="getRules()"
             autocomplete="disabled"
-            md=""
-            sm="10"
           />
         </v-col>
         <v-col v-if="query.operand === 'SenderIp'">
@@ -137,6 +137,8 @@
             v-model.trim="query.value"
             placeholder="Enter subject or a regular expression"
             outlined
+            persistent-hint
+            hint="*Required"
             :rules="getSubjectRules()"
             autocomplete="disabled"
             md=""
@@ -149,6 +151,8 @@
             v-model.trim="query.value"
             placeholder="Enter keywords or a regular expression to search in email body"
             outlined
+            persistent-hint
+            hint="*Required"
             :rules="getKeywordRules()"
             autocomplete="disabled"
             md=""
@@ -161,6 +165,8 @@
             v-model.trim="query.value"
             placeholder="Enter file name or a regular expression"
             outlined
+            persistent-hint
+            hint="*Required"
             :rules="getAttachmentNameRules()"
             autocomplete="disabled"
             md=""
@@ -172,10 +178,10 @@
             v-model.trim="query.value"
             placeholder="Enter file extension (tar.gz) without the starting dot"
             outlined
+            persistent-hint
+            hint="*Required"
             :rules="getAttachmentExtensionRules()"
             autocomplete="disabled"
-            md=""
-            sm="10"
           />
         </v-col>
         <v-col v-if="query.operand === 'AttachmentHash'">
@@ -185,8 +191,8 @@
             outlined
             :rules="getAttachmentHashRules()"
             autocomplete="disabled"
-            md=""
-            sm="10"
+            persistent-hint
+            hint="*Required"
           />
         </v-col>
       </template>

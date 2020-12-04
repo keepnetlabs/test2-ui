@@ -71,6 +71,7 @@
       @AddGroupToModal="handleAddGroupToModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      v-bind="bindPropsIsSafari"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
     >
       <template v-slot:datatable-custom-column="{ scope }">
@@ -109,6 +110,7 @@ import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
+import { handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 
 export default {
   name: 'CompanyList',
@@ -126,6 +128,7 @@ export default {
     tableData: [],
     tableHeight: 0,
     extendTop: 0,
+    bindPropsIsSafari: {},
     isClustered: true,
     editModal: false,
     isShowDeleteModal: false,
@@ -277,6 +280,11 @@ export default {
   },
   created() {
     this.getLookUpDatas()
+    if (handleIsSafari()) {
+      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
+        return setSafariClusterFix(obj, 'companyName')
+      }
+    }
   },
   mounted() {
     this.getTableData()
