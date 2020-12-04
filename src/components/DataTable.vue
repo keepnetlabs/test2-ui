@@ -860,6 +860,9 @@ export default {
       type: Object,
       default: () => ({ search: false, sort: false, pagination: false })
     },
+    handleSetCellClass: {
+      type: Function
+    },
     changeFooterPosition: {
       type: Boolean,
       default: false
@@ -1525,6 +1528,9 @@ export default {
       return this.calculateLength(data)
     },
     setCellClass(obj) {
+      if (this.handleSetCellClass) {
+        return this.handleSetCellClass(obj)
+      }
       /*
       const classNames = this.setClassName(obj)
       return classNames
@@ -1661,10 +1667,14 @@ export default {
           }
         })
       } else {
+        const collator = new Intl.Collator('tr')
+
         sortData = data.sort(function (a, b) {
           if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
             const aProp = String(a[sortProps.prop])
             const bProp = String(b[sortProps.prop])
+            const ans1 = aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
+            const ans2 = collator.compare(bProp.toLowerCase(), aProp.toLowerCase())
             if (aProp === bProp) {
               return 0
             }
@@ -1679,31 +1689,32 @@ export default {
             else if (sortProps.order === 'ascending') {
               if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+                collator.compare(aProp.charAt(0), bProp.charAt(0).toUpperCase()) === 0
               ) {
                 return -1
               } else if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+                collator.compare(bProp.charAt(0), aProp.charAt(0).toUpperCase()) === 0
               ) {
                 return 1
               }
-              return aProp.toLowerCase() < bProp.toLowerCase() ? -1 : 1
+              return collator.compare(aProp.toLowerCase(), bProp.toLowerCase())
             }
             // if descending, highest sorts first
             else {
               if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+                collator.compare(aProp.charAt(0), bProp.charAt(0).toUpperCase()) === 0
               ) {
                 return 1
               } else if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+                collator.compare(bProp.charAt(0), aProp.charAt(0).toUpperCase()) === 0
               ) {
                 return -1
               }
-              return aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
+              //aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
+              return collator.compare(bProp.toLowerCase(), aProp.toLowerCase())
             }
           } else {
             if (a[sortProps.prop] === b[sortProps.prop]) {
