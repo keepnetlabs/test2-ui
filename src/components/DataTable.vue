@@ -1673,8 +1673,6 @@ export default {
           if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
             const aProp = String(a[sortProps.prop])
             const bProp = String(b[sortProps.prop])
-            const ans1 = aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
-            const ans2 = collator.compare(bProp.toLowerCase(), aProp.toLowerCase())
             if (aProp === bProp) {
               return 0
             }
