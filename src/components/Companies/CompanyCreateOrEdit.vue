@@ -40,7 +40,7 @@
               <v-form ref="refStep1Form" lazy-validation>
                 <v-list-item class="mt-6">
                   <v-list-item-content>
-                    <label class="bottom-margin"></label>
+                    <label class="bottom-margin">{{ labels.CompanyName }}</label>
                     <InputCompany v-model.trim="formData.Name" />
                   </v-list-item-content>
                 </v-list-item>
@@ -101,7 +101,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">Address</label>
+                    <label class="bottom-margin">{{ labels.Address }}</label>
 
                     <v-textarea
                       placeholder="Enter company address"
@@ -115,7 +115,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label class="bottom-margin">Website URL</label>
+                    <label class="bottom-margin">{{ labels.WebsiteUrl }}</label>
                     <InputUrl
                       :persistent-hint="false"
                       hint=""
@@ -130,7 +130,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label class="bottom-margin">Company Logo</label>
+                    <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
                     <k-file-upload
                       @inputFile="onFileChanged"
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
@@ -181,7 +181,7 @@
               <v-form ref="refStep2Form" lazy-validation>
                 <v-list-item class="mt-6">
                   <v-list-item-content class="mb-2">
-                    <label class="bottom-margin">Licence Type</label>
+                    <label class="bottom-margin">{{ labels.LicenceType }}</label>
                     <k-select
                       :items="licenceTypes"
                       v-model="formData.LicenseTypeResourceId"
@@ -199,7 +199,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="mb-2">
-                    <label class="bottom-margin">Expiry Period</label>
+                    <label class="bottom-margin">{{ labels.ExpiryPeriod }}</label>
                     <k-select
                       :items="expiryPeriods"
                       v-model="formData.LicensePeriodTypeResourceId"
@@ -255,7 +255,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content>
-                    <label>Number of users</label>
+                    <label>{{ labels.NumberOfUsers }}</label>
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Number of end-users who will recieve emails and will be tracked
                     </v-list-item-title>
