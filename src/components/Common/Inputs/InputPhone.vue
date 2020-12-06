@@ -66,6 +66,7 @@ export default {
   methods: {
     validPhone() {
       onur.status = this.phoneObject.isValid
+      this.$forceUpdate()
     }
   },
   watch: {
@@ -76,18 +77,11 @@ export default {
 }
 </script>
 <style lang="scss">
-/*
 .vue-tel-input-vuetify {
   & > div:first-child {
-    .v-input__slot {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-      fieldset {
-        border-right: none !important;
-      }
-    }
+    margin-right: 4px;
   }
-  & > div:last-child {
+  /* & > div:last-child {
     .v-input__slot {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
@@ -95,6 +89,6 @@ export default {
         border-left: none !important;
       }
     }
-  }
-}*/
+  }*/
+}
 </style>
