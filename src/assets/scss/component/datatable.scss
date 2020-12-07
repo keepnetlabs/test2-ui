@@ -199,7 +199,7 @@
           color: #212121;
           font-family: "Open Sans", sans-serif !important;
           font-size: 12px;
-          white-space: nowrap !important;
+          white-space: pre;
           width: 100%;
           @media not all and (min-resolution:.001dpcm) {
             @supports (-webkit-appearance:none) {
