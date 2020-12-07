@@ -65,6 +65,12 @@ export function getBtnStatusColor(type) {
       return '#00bcd4'
     case 'stopped':
       return '#f56c6c'
+    case 'error':
+      return '#f56c6c'
+    case 'exist':
+      return '#2196f3'
+    case 'new':
+      return '#43a047'
     default:
       return '#00bcd4'
   }
@@ -92,6 +98,12 @@ export function getBtnPriorityColor(type) {
       return '#f56c6c'
     case 'n/a':
       return '#00bcd4'
+    case 'error':
+      return '#f56c6c'
+    case 'exist':
+      return '#2196f3'
+    case 'new':
+      return '#43a047'
     default:
       break
   }
@@ -809,17 +821,27 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
 }
 
 export function checkPermission(permission, type) {
-  let token = JSON.parse(localStorage.getItem('auth-token')).token
-  let tokenData = jwt_decode(token)
-  let permissions = tokenData.Permission
-  return permissions.includes(`${permission}|${type}`)
+  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
+  if (isTokenExist) {
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    let permissions = tokenData.Permission
+    return permissions.includes(`${permission}|${type}`)
+  } else {
+    return true
+  }
 }
 
 export function checkPermissionMultiple(permissionsList, contain = true) {
-  let token = JSON.parse(localStorage.getItem('auth-token')).token
-  let tokenData = jwt_decode(token)
-  let permissions = tokenData.Permission
-  return permissionsList.map((item) => permissions.includes(item)).includes(contain)
+  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
+  if (isTokenExist) {
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    let permissions = tokenData.Permission
+    return permissionsList.map((item) => permissions.includes(item)).includes(contain)
+  } else {
+    return true
+  }
 }
 
 export function getPermissionsOfAllItems(PERMISSIONS = {}) {

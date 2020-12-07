@@ -189,7 +189,7 @@
                 }}</span>
               </v-tooltip>
             </slot>
-            <v-menu bottom left offset-y v-if="downloadButton.show">
+            <v-menu bottom left offset-y v-if="downloadButton && downloadButton.show">
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -240,6 +240,7 @@
             </v-tooltip>
           </div>
         </div>
+        <slot name="table-notification"></slot>
         <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
@@ -1229,6 +1230,9 @@ export default {
     }
   },
   methods: {
+    getSelectedMultipleValues() {
+      return this.multipleSelection
+    },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val)
       this.multipleSelection = []
@@ -2239,7 +2243,27 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.dataTableText-validation-error {
+  font-size: 9px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #f56c6c;
+  position: absolute;
+  top: 4px;
+}
+.dataTableText-main-error {
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  color: #f56c6c;
+}
+</style>
 <!--
   DataTable COMPONENT
   - Element UI's Table component used

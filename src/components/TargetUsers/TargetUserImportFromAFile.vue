@@ -1,200 +1,319 @@
 <template>
-  <app-modal
-    :status="status"
-    @closeOverlay="closeOverlay"
-    :icon-name="'mdi-microsoft-excel'"
-    :title="'Import Users From a File'"
-    className="target-user-import-file"
-  >
-    <template v-slot:overlay-body>
-      <v-col>
-        <v-stepper light v-model="activeStep" class="wizard">
-          <v-stepper-header class="wizard__header">
-            <v-stepper-step :complete="activeStep > 1" step="1">Upload File</v-stepper-step>
-            <v-divider />
-            <v-stepper-step :complete="activeStep > 2" step="2">Map Fields</v-stepper-step>
-            <v-divider />
-            <v-stepper-step :complete="activeStep > 3" step="3">Validate</v-stepper-step>
-          </v-stepper-header>
+  <div>
+    <app-dialog
+      :status="closeTargetUserImport"
+      @changeStatus="closeTargetUserImport = false"
+      icon="mdi-exit-to-app"
+      :title="'Title'"
+      :subtitle="'Subtitle'"
+      :body="'Are you sure?'"
+    >
+      <template v-slot:app-dialog-footer>
+        <app-dialog-footer
+          @handleClose="closeTargetUserImport = false"
+          @handleConfirm="closeOverlay"
+          actionButtonText="LEAVE"
+        />
+      </template>
+    </app-dialog>
+    <app-modal
+      :status="status"
+      @closeOverlay="closeOverlay"
+      :icon-name="'mdi-microsoft-excel'"
+      :title="'Import Users From a File'"
+      className="target-user-import-file"
+    >
+      <template v-slot:overlay-body>
+        <v-col>
+          <v-stepper light v-model="activeStep" class="wizard">
+            <v-stepper-header class="wizard__header">
+              <v-stepper-step :complete="activeStep > 1" step="1">Upload File</v-stepper-step>
+              <v-divider />
+              <v-stepper-step :complete="activeStep > 2" step="2">Map Fields</v-stepper-step>
+              <v-divider />
+              <v-stepper-step :complete="activeStep > 3" step="3">Validate</v-stepper-step>
+            </v-stepper-header>
 
-          <v-stepper-items>
-            <!-- STEP 1 -->
-            <v-stepper-content step="1">
-              <div class="stepper__title">Upload File</div>
-              <div class="stepper__subtitle">
-                Select and upload an XLS or CSV file with user list
-              </div>
-              <v-list-item>
-                <v-list-item-content>
-                  <k-file-upload
-                    ref="refFileUpload"
-                    :extensions="['.xlsx', '.xls', '.csv']"
-                    :is-stand-alone="true"
-                    @inputFile="onFileChanged"
-                    hint="Only XLS or CSV files. Max. file size 30MB"
-                    :on-upload-progress="onUploadProgress"
-                  />
-                  <p class="target-user-import-file__total-excel-score" v-if="excelInfo">
-                    {{
-                      `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
-                    }}
-                  </p>
-                  <div class="d-flex mt-8">
-                    <v-btn
-                      @click="downloadExampleFile()"
-                      class="download-excel"
-                      rounded
-                      :disabled="excelLoading"
-                    >
-                      <v-icon class="close-icon">mdi-download</v-icon> Download Example Sheet
-                      <v-icon
-                        class="ml-2 loading-spin"
-                        color="#2196f3"
-                        left
-                        medium
-                        v-if="excelLoading"
-                        >mdi-rotate-left
-                      </v-icon>
-                    </v-btn>
-                  </div>
-                </v-list-item-content>
-              </v-list-item>
-            </v-stepper-content>
-            <!-- STEP 2 -->
-            <v-stepper-content step="2">
-              <div class="stepper__title">Map Fields</div>
-              <div class="stepper__subtitle">
-                Match field names from your file to the system fields to import users information
-                correctly
-              </div>
-              <v-form ref="refMapForm" lazy-validation>
-                <v-list-item class="mt-6">
-                  <v-list-item-content class="mb-2 target-user-import-file__list-item">
-                    <label class="bottom-margin">Select Group</label>
-                    <v-select
-                      :items="groups"
-                      v-model="formData.groups"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
-                      placeholder="Select an option"
-                      :rules="[(v) => !!v || 'Required']"
-                      :disabled="stepLock"
-                      persistent-hint
-                      hide-details
-                    ></v-select>
+            <v-stepper-items>
+              <!-- STEP 1 -->
+              <v-stepper-content step="1">
+                <div class="stepper__title">Upload File</div>
+                <div class="stepper__subtitle">
+                  Select and upload an XLS or CSV file with user list
+                </div>
+                <v-list-item>
+                  <v-list-item-content>
+                    <k-file-upload
+                      ref="refFileUpload"
+                      :extensions="['.xlsx', '.xls', '.csv']"
+                      :is-stand-alone="true"
+                      @inputFile="onFileChanged"
+                      hint="Only XLS or CSV files. Max. file size 30MB"
+                      :on-upload-progress="onUploadProgress"
+                    />
+                    <p class="target-user-import-file__total-excel-score" v-if="excelInfo">
+                      {{
+                        `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
+                      }}
+                    </p>
+                    <div class="d-flex mt-8">
+                      <v-btn
+                        @click="downloadExampleFile()"
+                        class="download-excel"
+                        rounded
+                        :disabled="excelLoading"
+                      >
+                        <v-icon class="close-icon">mdi-download</v-icon> Download Example Sheet
+                        <v-icon
+                          class="ml-2 loading-spin"
+                          color="#2196f3"
+                          left
+                          medium
+                          v-if="excelLoading"
+                          >mdi-rotate-left
+                        </v-icon>
+                      </v-btn>
+                    </div>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item class="mt-6">
-                  <v-list-item-content class="target-user-import-file__list-item">
-                    <form-group
-                      title="Mapping"
-                      subTitle="Match field names with column header from your sheet to map information"
-                    >
-                    </form-group> </v-list-item-content
-                ></v-list-item>
-                <v-list-item class="target-user-import-file__list-item table-box-shadow">
-                  <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
-                    <MapTable
-                      ref="refMapTable"
-                      :mapTableData="mappingData"
-                      @get-map-table-data="getMapTableData" /></v-list-item-content
-                ></v-list-item>
-              </v-form>
-            </v-stepper-content>
-            <!-- STEP 3 -->
-            <v-stepper-content step="3">
-              <div class="stepper__title">Validate Information</div>
-              <div class="stepper__subtitle">
-                Select users to import or import all listed users. Invalid entries will not be
-                imported.
-              </div>
-              <data-table
-                :loading="loading"
-                :is-column-filter-active="tableOptions.isColumnFilterActive"
-                :table="tableData"
-                id="validate-data-table"
-                ref="refValideateList"
-                :empty="tableOptions.empty"
-                :refName="'validateList'"
-                :columns="tableOptions.columns"
-                :countRow="5"
-                :selectable="true"
-                :filterable="true"
-                :options="true"
-                :sizeable="true"
-                :pageSizes="tableOptions.pageSizes"
-                :select-event="tableOptions.selectEvent"
-                :row-actions="tableOptions.rowActions"
-                :addButton="tableOptions.addButton"
-                @downloadEvent="exportIntegrationList"
-                @sortChangedEvent="sortChangedEvent($event)"
-                @paginationChangedEvent="paginationChangedEvent($event)"
-                @searchChangedEvent="searchChangedEvent($event)"
-                :dataLength="tableData && tableData.totalNumberOfRecords"
-                :requestParams="bodyData"
-                :isServerSide="true"
-                @columnFilterChanged="columnFilterChanged"
-                @columnFilterCleared="columnFilterCleared"
-                :server-side-events="{ search: true, sort: false, pagination: false }"
-              ></data-table>
-            </v-stepper-content>
-          </v-stepper-items>
-        </v-stepper>
-      </v-col>
-    </template>
-    <template v-slot:overlay-footer>
-      <div class="text-left">
-        <v-btn
-          class="playbook-rule-form__button"
-          outlined
-          rounded
-          color="error"
-          @click="closeOverlay"
-          >{{ labels.Cancel }}</v-btn
-        >
-      </div>
-      <div>
-        <v-btn
-          v-if="canPrev"
-          class="playbook-rule-form__button mr-4"
-          outlined
-          rounded
-          color="cyan"
-          @click="prevStep"
-        >
-          {{ labels.Back }}
-        </v-btn>
+              </v-stepper-content>
+              <!-- STEP 2 -->
+              <v-stepper-content step="2">
+                <div class="stepper__title">Map Fields</div>
+                <div class="stepper__subtitle">
+                  Match field names from your file to the system fields to import users information
+                  correctly
+                </div>
+                <v-form ref="refMapForm" lazy-validation>
+                  <v-list-item class="mt-6">
+                    <v-list-item-content class="mb-2 target-user-import-file__list-item">
+                      <label class="bottom-margin">Select Group</label>
+                      <v-select
+                        :items="groups"
+                        v-model="formData.groups"
+                        item-text="name"
+                        item-value="resourceId"
+                        outlined
+                        placeholder="- All Users -"
+                        :rules="[(v) => !!v || 'Required']"
+                        :disabled="stepLock"
+                        multiple
+                        persistent-hint
+                        hide-details
+                      >
+                        <template v-slot:selection="data" v-if="groups.length > 0">
+                          <v-chip
+                            :key="JSON.stringify(data.item)"
+                            v-bind="data.attrs"
+                            :input-value="data.selected"
+                            small
+                          >
+                            {{ data.item.name }}
+                            <v-icon
+                              right
+                              @click="data.parent.selectItem(data.item)"
+                              style="font-size: 18px;"
+                              >mdi-close-circle</v-icon
+                            >
+                          </v-chip>
+                        </template>
+                      </v-select>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item class="mt-6">
+                    <v-list-item-content class="target-user-import-file__list-item">
+                      <form-group
+                        title="Mapping"
+                        subTitle="Match field names with column header from your sheet to map information"
+                      >
+                      </form-group> </v-list-item-content
+                  ></v-list-item>
+                  <v-list-item class="target-user-import-file__list-item table-box-shadow">
+                    <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
+                      <MapTable
+                        ref="refMapTable"
+                        :mapTableData="mappingData"
+                        @get-map-table-data="getMapTableData" /></v-list-item-content
+                  ></v-list-item>
+                </v-form>
+              </v-stepper-content>
+              <!-- STEP 3 -->
+              <v-stepper-content step="3">
+                <div class="stepper__title">Validate Information</div>
+                <div class="stepper__subtitle">
+                  Select users to import or import all listed users. Invalid entries will not be
+                  imported.
+                </div>
+                <data-table
+                  v-if="mappingStatus && showDatatable"
+                  :loading="loading"
+                  :is-column-filter-active="tableOptions.isColumnFilterActive"
+                  :table="tableData"
+                  id="validate-data-table"
+                  ref="refValideateList"
+                  :empty="tableOptions.empty"
+                  :refName="'validateList'"
+                  :columns="tableOptions.columns"
+                  :countRow="5"
+                  :selectable="true"
+                  :filterable="true"
+                  :options="true"
+                  :sizeable="true"
+                  :pageSizes="tableOptions.pageSizes"
+                  :select-event="tableOptions.selectEvent"
+                  :row-actions="tableOptions.rowActions"
+                  :addButton="tableOptions.addButton"
+                  @downloadEvent="exportIntegrationList"
+                  @sortChangedEvent="sortChangedEvent($event)"
+                  @paginationChangedEvent="paginationChangedEvent($event)"
+                  @searchChangedEvent="searchChangedEvent($event)"
+                  :dataLength="tableData && tableData.totalNumberOfRecords"
+                  :requestParams="bodyData"
+                  :isServerSide="true"
+                  @columnFilterChanged="columnFilterChanged"
+                  @columnFilterCleared="columnFilterCleared"
+                  :server-side-events="{ search: false, sort: false, pagination: false }"
+                  :downloadButton="{
+                    show: false
+                  }"
+                >
+                  <template v-slot:table-notification>
+                    <div class="target-user-import-file__header-detail">
+                      <v-btn
+                        class="target-user-import-file__button target-user-import-file__button--table-notification"
+                        outlined
+                        rounded
+                        @click="isShowInvalid = !isShowInvalid"
+                      >
+                        {{ setTableOption() }}
+                      </v-btn>
+                    </div>
+                  </template>
+                </data-table>
+                <div
+                  v-else-if="mappingStatus && !showDatatable"
+                  class="target-user-import-file__progression"
+                >
+                  <div class="target-user-import-file__progression--text">
+                    Please wait while we are processing the file
+                  </div>
+                  <div class="target-user-import-file__progression--progress">
+                    <div>{{ setProgressValue }}%</div>
+                    <div>
+                      <v-progress-linear :value="setProgressValue"></v-progress-linear>
+                    </div>
+                    <div>
+                      {{
+                        mappingStatus.newUserCount +
+                        mappingStatus.existingUserCount +
+                        mappingStatus.invalidUserCount +
+                        '/' +
+                        mappingStatus.totalRowCount
+                      }}
+                      users processed
+                    </div>
+                  </div>
+                </div>
+              </v-stepper-content>
+            </v-stepper-items>
+          </v-stepper>
+        </v-col>
+      </template>
+      <template v-slot:overlay-footer>
+        <div class="text-left">
+          <v-btn
+            class="target-user-import-file__button"
+            outlined
+            rounded
+            color="error"
+            @click="cancelButtonClick"
+            >{{ labels.Cancel }}</v-btn
+          >
+        </div>
+        <div>
+          <v-btn
+            v-if="canPrev"
+            class="target-user-import-file__button mr-4"
+            outlined
+            rounded
+            color="cyan"
+            @click="prevStep"
+          >
+            {{ labels.Back }}
+          </v-btn>
 
-        <v-btn
-          v-if="canNext"
-          class="playbook-rule-form__button"
-          style="color: white;"
-          rounded
-          color="#2196f3"
-          @click="nextStep"
-        >
-          {{ labels.Next }}
-        </v-btn>
+          <v-btn
+            v-if="canNext"
+            class="target-user-import-file__button"
+            style="color: white;"
+            rounded
+            color="#2196f3"
+            @click="nextStep"
+          >
+            {{ labels.Next }}
+          </v-btn>
 
-        <v-btn
-          v-if="!canNext"
-          class="playbook-rule-form__button white--text"
-          rounded
-          color="#2196f3"
-          @click="save"
-        >
-          {{ labels.Save }}
-        </v-btn>
-      </div>
-    </template>
-  </app-modal>
+          <v-btn
+            v-if="!canNext"
+            class="target-user-import-file__button target-user-import-file__button--import-selected"
+            rounded
+            color="#2196f3"
+            @click="save(labels.ImportSelected)"
+            :disabled="!showDatatable"
+          >
+            {{ labels.ImportSelected }}
+          </v-btn>
+          <v-btn
+            v-if="!canNext"
+            class="target-user-import-file__button target-user-import-file__button--import-all"
+            rounded
+            color="#2196f3"
+            @click="save(labels.ImportAll)"
+            :disabled="!showDatatable"
+          >
+            {{ labels.ImportAll }}
+          </v-btn>
+          <v-menu v-if="!canNext" offset-y transition="scale-transition" :disabled="!showDatatable">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                icon
+                color="white"
+                v-on="on"
+                class="target-user-import-file__button--menu"
+                :disabled="!showDatatable"
+              >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <div>
+              <v-list dense flat class="notification-wrapper__v-list">
+                <v-list-item-group color="primary">
+                  <v-list-item @click="save('onlyImportNewUsers')">
+                    <v-list-item-content>
+                      <v-list-item-title> Only Import New Users</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="save('onlyUpdateExistingUsers')">
+                    <v-list-item-content>
+                      <v-list-item-title>Only Update Existing Users</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
+            </div>
+          </v-menu>
+        </div>
+      </template>
+    </app-modal>
+  </div>
 </template>
 
 <script>
 import AppModal from '../AppModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '../SmallComponents/FormGroup'
+import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
@@ -205,8 +324,11 @@ import {
   createMapping,
   createTargetUserCustomField,
   downloadExampleTargetUserFile,
+  getMappingStatus,
+  getTargetGroups,
   getTargetUserCustomFieldsByCompanyId,
   getUploadedFileData,
+  importTmpUsers,
   searchTmp,
   uploadExcelOrCsvForTargetUsers
 } from '../../api/targetUsers'
@@ -216,7 +338,7 @@ import DataTable from '../DataTable'
 
 export default {
   name: 'TargetUserImportFromAFile',
-  components: { AppModal, KFileUpload, FormGroup, MapTable, DataTable },
+  components: { AppModal, KFileUpload, FormGroup, MapTable, DataTable, AppDialog, AppDialogFooter },
   props: {
     status: {
       type: Boolean
@@ -232,6 +354,13 @@ export default {
     }
   },
   computed: {
+    setProgressValue() {
+      let users =
+        this.mappingStatus.newUserCount +
+        this.mappingStatus.existingUserCount +
+        this.mappingStatus.invalidUserCount
+      return (users * 100) / this.mappingStatus.totalRowCount
+    },
     canNext() {
       return this.activeStep < this.totalStep
     },
@@ -241,6 +370,11 @@ export default {
   },
   data() {
     return {
+      isShowInvalid: false,
+      showDatatable: false,
+      mappingStatus: null,
+      isExcelUploaded: false,
+      closeTargetUserImport: false,
       excelLoading: false,
       mappindgId: null,
       excelInfo: null,
@@ -252,7 +386,7 @@ export default {
       activeStep: 1,
       step: 1,
       groups: ['All Users'],
-      formData: { groups: 'All Users', file: null },
+      formData: { groups: [], file: null },
       stepLock: null,
       totalStep: 3,
       mappingData: {
@@ -265,47 +399,87 @@ export default {
         isColumnFilterActive: false,
         columns: [
           {
-            property: PROPERTY_STORE.NAME,
+            property: PROPERTY_STORE.FIRSTNAME,
             align: 'left',
             editable: false,
-            label: 'Integration Name',
+            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
+            fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            fixed: 'left',
-            width: 250,
             filterableType: 'text',
-            filterableCustomFieldName: 'Name'
+            dbName: 'FirstName',
+            emptyText: 'No Data'
           },
           {
-            property: PROPERTY_STORE.DESCRIPTION,
+            property: PROPERTY_STORE.LASTNAME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.DESCRIPTION),
+            label: getStoreValue(PROPERTY_STORE.LASTNAME),
             sortable: true,
             show: true,
             type: 'text',
-            width: 350,
+            width: 150,
             filterableType: 'text',
-            filterableCustomFieldName: 'Description'
+            dbName: 'LastName',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 275,
+            filterableType: 'text',
+            dbName: 'Email',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.DEPARTMENT,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.DEPARTMENT),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: 'text',
+            dbName: 'Department',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.PRIORITY,
+            align: 'center',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PRIORITY),
+            sortable: true,
+            show: true,
+            type: 'priority',
+            width: 150,
+            fullWidth: true,
+            dbName: 'Priority',
+            emptyText: 'No Data'
           },
           {
             property: PROPERTY_STORE.STATUS,
             align: 'center',
-            editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
             type: 'status',
-            width: 160,
+            width: 150,
+            isEditable: true,
             hasTooltip: true,
-            filterableType: 'select',
-            filterableCustomFieldName: 'Status',
-            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
+            fullWidth: true,
+            dbName: 'Status',
+            emptyText: 'No Data'
           },
           {
-            property: PROPERTY_STORE.CREATETIME,
+            property: 'createTime',
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
@@ -313,15 +487,11 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185,
-            filterableType: 'date',
-            filterableCustomFieldName: 'createTime'
-            //minWidth: 80
+            width: 180,
+            dbName: 'CreateTime',
+            emptyText: 'No Data'
           }
         ],
-        downloadButton: {
-          show: true
-        },
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -342,7 +512,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             }
@@ -352,22 +522,84 @@ export default {
     }
   },
   methods: {
+    setTableOption() {
+      let val = this.isShowInvalid
+        ? `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
+        : `SHOW ALL ${this.mappingStatus.totalRowCount}`
+      return val
+    },
+    onlyImportNewUsers() {},
+    onlyUpdateExistingUsers() {},
+    getMappingStatus() {
+      getMappingStatus(this.mappindgId)
+        .then((response) => {
+          this.mappingStatus = response.data.data
+          if (this.mappingStatus.status !== 'Finished' && this.isExcelUploaded) {
+            setTimeout(() => {
+              this.getMappingStatus()
+            }, 1000)
+          } else {
+            this.getDatatableList()
+          }
+        })
+        .catch((response) => {})
+    },
+    getTargetUsers() {
+      getTargetGroups().then((response) => {
+        this.groups = response.data.data
+      })
+    },
+    cancelButtonClick() {
+      if (this.isExcelUploaded) {
+        this.closeTargetUserImport = true
+      } else {
+        this.closeOverlay()
+      }
+    },
     getDatatableList() {
+      let _this = this
       searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
-          if (!response.data.data.items.results.length) {
-            setTimeout(() => {
-              this.getDatatableList()
-            }, 10000)
+          let data = ({ data, status } = response.data.data.items.results)
+          if (data.length) {
+            let customFields = data[0].customFields.map((item) => {
+              let itemObj = {
+                property: item.name,
+                align: 'left',
+                editable: false,
+                label: item.name,
+                fixed: false,
+                sortable: true,
+                show: true,
+                type: 'text',
+                filterableType: 'text',
+                dbName: 'item.name',
+                width: 250,
+                emptyText: 'No Data'
+              }
+              return itemObj
+            })
+            data = data.map((item) => {
+              let fieldObj = item.customFields.map((i) => {
+                return { [i.name]: i.value }
+              })
+              fieldObj.map((iItem) => {
+                for (let key in iItem) {
+                  if (iItem.hasOwnProperty(key)) {
+                    item[key] = iItem[key]
+                  }
+                }
+              })
+              return item
+            })
+            _this.tableData = data || []
+            _this.tableOptions.columns.push(...customFields)
           } else {
-            this.activeStep =
-              this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-            const {
-              data: { data, status }
-            } = response.data.data.items.results
-            this.tableData = data || []
-            this.loading = false
+            _this.tableData = data || []
           }
+
+          _this.loading = false
+          _this.showDatatable = true
         })
         .catch((error) => {
           this.tableData = []
@@ -489,6 +721,7 @@ export default {
       })
         .then((response) => {
           this.excelInfo = response.data.data
+          this.isExcelUploaded = true
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -510,6 +743,7 @@ export default {
             return aItem
           })
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+          this.resetDisabledValuesFromColumns()
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -518,6 +752,11 @@ export default {
             icon: 'mdi-alert-circle'
           })
         })
+    },
+    resetDisabledValuesFromColumns() {
+      setTimeout(() => {
+        return this.$refs.refMapTable.setSelectDisableItemsToFalse()
+      }, 200)
     },
     submit() {},
     createMapFields() {
@@ -535,8 +774,10 @@ export default {
 
       createMapping(payload)
         .then((response) => {
+          this.showDatatable = false
           this.mappindgId = response.data.data.resourceId
-          this.getDatatableList()
+          this.getMappingStatus()
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
         })
         .catch((error) => {
           this.$store.dispatch('common/createSnackBar', {
@@ -567,8 +808,45 @@ export default {
     },
     prevStep() {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
+      if (this.activeStep === 3) {
+        this.resetDisabledValuesFromColumns()
+      }
     },
-    save() {},
+    save(label) {
+      switch (label) {
+        case labels.ImportSelected:
+          let selectedValues = this.$refs.refValideateList
+            .getSelectedMultipleValues()
+            .map((item) => item.resourceId)
+          if (!selectedValues.length) return false
+          let payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
+          importTmpUsers(payload, this.excelInfo.transactionId)
+            .then((response) => {
+              this.closeOverlay()
+              this.$store.dispatch('common/createSnackBar', {
+                message: `Users have been imported!`,
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: 'mdi-information'
+              })
+            })
+            .catch((error) => {
+              this.$store.dispatch('common/createSnackBar', {
+                message: error.data.message,
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                icon: 'mdi-alert-circle'
+              })
+            })
+          break
+        case labels.ImportAll:
+          break
+        case 'onlyImportNewUsers':
+          break
+        case 'onlyUpdateExistingUsers':
+          break
+        default:
+          return ''
+      }
+    },
     callForGetTargetUserCustomFieldsByCompanyId() {
       let _this = this
       this.loading = true
@@ -604,12 +882,107 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.getTargetUsers()
   }
 }
 </script>
 
 <style lang="scss">
 .target-user-import-file {
+  &__header-detail {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #2196f3;
+    background-color: #fafafa !important;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+  }
+  &__button {
+    &--table-notification {
+      font-size: 14px !important;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal !important;
+      color: #2196f3 !important;
+      border-radius: 18px;
+      border: solid 1px #2196f3;
+    }
+    &--import-selected {
+      border-radius: 18px;
+      border: solid 1px #2196f3;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      background-color: white !important;
+      background: white !important;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal !important;
+      color: #2196f3 !important;
+      box-shadow: none !important;
+      margin-right: 8px;
+    }
+    &--import-all {
+      border-radius: 18px;
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+      background-color: var(--primary);
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal;
+      text-align: right;
+      color: white !important;
+      margin-right: 4px;
+    }
+    &--menu {
+      background: #2196f3;
+    }
+  }
+  &__progression {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 340px;
+    flex-flow: column;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+      0 1px 1px -1px rgba(204, 204, 204, 0.12);
+    &--text {
+      font-size: 24px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: #383b41;
+      margin-bottom: 44px;
+    }
+    &--progress {
+      font-size: 10px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.9;
+      letter-spacing: normal;
+      text-align: center;
+      color: #383b41;
+      display: flex;
+      flex-flow: column;
+      .v-progress-linear {
+        width: 167px;
+      }
+    }
+  }
   .wizard {
     .target-user-import-file__list-item {
       max-width: 100% !important;
