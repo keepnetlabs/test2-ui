@@ -5,6 +5,7 @@ import login from './modules/login'
 import permission from './modules/permissions'
 import auth from './modules/auth'
 import dashboard from './modules/dashboard'
+import tour from './modules/tour'
 import investigations from './modules/investigations'
 import playbook from './modules/playbook'
 import rightColumn from './modules/rightColumn'
@@ -17,6 +18,7 @@ let store = new Vuex.Store({
     login,
     auth,
     dashboard,
+    tour,
     investigations,
     playbook,
     rightColumn
