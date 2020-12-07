@@ -7,6 +7,7 @@
     :title="getTitle"
     icon-name="mdi-account-outline"
     class-name="create-edit-system-user"
+    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <send-welcome-email-to-new-user-modal
@@ -106,6 +107,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       formValues: {
         firstName: '',
         lastName: '',
@@ -151,6 +153,7 @@ export default {
 
     submit() {
       if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
+        this.saveDisable = true
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
           const formData = {
@@ -186,24 +189,30 @@ export default {
       this.toggleWelcomeEmailModal()
     },
     callForCreateSystemUser(payload) {
-      createSystemUser(payload).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'System user has been created',
-          icon: 'mdi-check-circle',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+      createSystemUser(payload)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'System user has been created',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+          this.saveDisable = false
+          this.$emit('closeOverlayWithUpdate')
         })
-        this.$emit('closeOverlayWithUpdate')
-      })
+        .catch(() => (this.saveDisable = false))
     },
     callForUpdateSystemUser(payload) {
-      updateSystemUser(payload).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'System user has been updated',
-          icon: 'mdi-check-circle',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+      updateSystemUser(payload)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'System user has been updated',
+            icon: 'mdi-check-circle',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+          this.saveDisable = false
+          this.$emit('closeOverlayWithUpdate')
         })
-        this.$emit('closeOverlayWithUpdate')
-      })
+        .catch(() => (this.saveDisable = false))
     }
   },
   watch: {},
