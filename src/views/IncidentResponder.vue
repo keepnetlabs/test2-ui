@@ -1366,9 +1366,14 @@ export default {
         const data = this.getManipulatedChildData(results, true)
         tree['children'] = data
         treeNode['children'] = data
-
-        resolve(data)
-        callback()
+        treeNode.loaded = true
+        treeNode.lazy = false
+        treeNode.loading = false
+        treeNode.expanded = true
+        setTimeout(() => {
+          resolve(data)
+        }, 500)
+        callback(data)
       })
     },
 

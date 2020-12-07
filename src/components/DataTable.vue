@@ -1306,7 +1306,11 @@ export default {
     /**
      *This function must use calls when lazy load used
      */
-    callbackOfLazyLoad() {
+    callbackOfLazyLoad(rows = []) {
+      for (let row of rows) {
+        this.addItemToClusteredItems(row)
+        this.$refs.elTableRef.toggleRowSelection(row, true)
+      }
       this.totalLength = this.getTotalLength(this.initialData)
       this.calculateAllSelected()
     },
@@ -1476,6 +1480,9 @@ export default {
 
         for (let item of selection) {
           this.selectChildren(item, selection)
+          if (this.groupable) {
+            this.handleToggleOrLazyWhenCheckboxSelected(item)
+          }
         }
 
         this.multipleSelection = selection
@@ -1492,6 +1499,7 @@ export default {
             this.selectChildren(child, selection)
           }
           this.$refs.elTableRef.toggleRowSelection(child, true)
+          this.handleToggleOrLazyWhenCheckboxSelected(child)
           this.addItemToClusteredItems(child)
           if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
             selection.push(child)
@@ -1909,6 +1917,10 @@ export default {
     },
     handleSelect(selection, row) {
       if (this.groupable) {
+        this.handleToggleOrLazyWhenCheckboxSelected(
+          row,
+          !!selection.find((item) => JSON.stringify(item) === JSON.stringify(row))
+        )
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
             for (let child of row.children) {
@@ -1916,6 +1928,7 @@ export default {
                 this.selectChildrenByRowCheckbox(child.children, selection)
               }
               this.$refs.elTableRef.toggleRowSelection(child, true)
+              this.handleToggleOrLazyWhenCheckboxSelected(child)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
                 this.addItemToClusteredItems(child)
                 selection.push(child)
@@ -1958,6 +1971,14 @@ export default {
           this.isWantToEditRow = false
         }
         this.$emit('handleSelectionChange', selection)
+      }
+    },
+    handleToggleOrLazyWhenCheckboxSelected(row = {}, selection = true) {
+      const { hasChildren, children = [] } = row
+      if (hasChildren && !children.length) {
+        this.$refs.elTableRef.store.loadOrToggle(row)
+      } else if (children.length) {
+        this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
     },
     changeDownloadModalStatus(status) {
@@ -2127,7 +2148,7 @@ export default {
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },
-    handleCopy(selections) {
+    Copy(selections) {
       let headerKeys = this.columns.reduce((acc, item) => {
         acc.push(item.property)
         return acc
