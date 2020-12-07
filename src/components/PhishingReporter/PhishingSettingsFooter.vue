@@ -13,7 +13,13 @@
       v-if="reporterVersionModalStatus"
     />
     <div class="add-in-settings__footer mr-2" :class="className">
-      <v-btn @click="submit" class="white--text btn-util btn-save-changes" color="#2196f3" rounded>
+      <v-btn
+        @click="submit"
+        class="white--text btn-util btn-save-changes"
+        color="#2196f3"
+        rounded
+        :disabled="saveDisable"
+      >
         {{ labels.Save }} CHANGES
       </v-btn>
       <v-btn
@@ -21,6 +27,7 @@
         class="white--text btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
+        :disabled="saveDisable"
       >
         <v-icon left>mdi-download</v-icon>
         {{ labels.SaveAndDownload }}
@@ -54,6 +61,10 @@ export default {
   props: {
     className: {
       type: String
+    },
+    saveDisable: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

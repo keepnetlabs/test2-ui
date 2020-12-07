@@ -26,6 +26,7 @@
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
+          :saveDisable="saveDisable"
       /></el-tab-pane>
       <el-tab-pane
         label="Email Settings"
@@ -39,6 +40,7 @@
           :show-footer="!inModal"
           :showHeaderLink="!inModal"
           :showForm="!inModal"
+          :saveDisable="saveDisable"
         />
       </el-tab-pane>
       <el-tab-pane
@@ -53,6 +55,7 @@
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
+          :saveDisable="saveDisable"
         />
       </el-tab-pane>
       <el-tab-pane
@@ -67,6 +70,7 @@
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
+          :saveDisable="saveDisable"
         />
       </el-tab-pane>
     </el-tabs>
@@ -78,6 +82,7 @@
         :show-footer="!inModal"
         :show-header-link="!inModal"
         :showForm="!inModal"
+        :saveDisable="saveDisable"
       />
     </div>
   </div>
@@ -140,6 +145,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       tab: 'first',
       spinnerStatus: false,
       downloadAddInModalStatus: false
@@ -153,6 +159,7 @@ export default {
       this.$store.dispatch('common/activateLoader', value)
     },
     callForCreatePhishingReporter(updatedValues) {
+      this.saveDisable = true
       const addinSettings =
         this.$refs.refAddinSettings && this.$refs.refAddinSettings.getFormValues()
       const emailSettings =
@@ -195,6 +202,7 @@ export default {
             icon: 'mdi-check-circle',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
           })
+          this.saveDisable = false
           this.$emit('getPhishingReport')
           if (updatedValues.isAddIn) {
             this.activateLoader(-1)
@@ -202,6 +210,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.saveDisable = false
           this.$store.dispatch('common/createSnackBar', {
             message: 'Phishing Reporter can not be saved',
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR

@@ -133,6 +133,7 @@
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
         class-name="mt-4"
+        :saveDisable="saveDisable"
       />
     </v-form>
   </v-container>
@@ -169,6 +170,10 @@ export default {
     showForm: {
       type: Boolean,
       default: true
+    },
+    saveDisable: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
