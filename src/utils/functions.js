@@ -669,6 +669,15 @@ export function scrollToComponent(el) {
   }
 }
 
+export function setSafariClusterFix(obj = {}, param = '') {
+  if (obj.column.property === param) {
+    return 'safari-cluster-icon-fix'
+  }
+}
+export function handleIsSafari() {
+  return window.safari || navigator.vendor.match(/apple/i)
+}
+
 export function reviewElementBind(els, url) {
   if (els && els.length) {
     for (let i = 0, l = els.length; i < l; i++) {

@@ -380,19 +380,21 @@ export default {
             'Keyword',
             { text: 'Attachment name', value: 'AttachmentName' },
             { text: 'Attachment hash', value: 'AttachmentHash' },
-            { text: 'Attachment extension', value: 'AttachmentExtension' },
-            'Custom syntax',
-            'Analysis result'
+            { text: 'Attachment extension', value: 'AttachmentExtension' }
           ],
           operandsFrom: ['Email', 'Domain', 'Regex'],
-          operandsTo: ['Email', 'Group', 'Domain', 'Regex'],
-          operandsCC: ['Email', 'Group', 'Domain', 'Regex'],
+          operandsTo: ['Email', 'Domain', 'Regex'],
+          operandsCC: ['Email', 'Domain', 'Regex'],
           operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
           operandsSenderIP: [
             { text: 'is equal to', value: 'Equal' },
             { text: 'is not equal to', value: 'IsNotEqual' },
             { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
+          ],
+          operandsAttachmentHash: [
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' }
           ],
           operators: [
             { text: 'contains', value: 'Contains' },
