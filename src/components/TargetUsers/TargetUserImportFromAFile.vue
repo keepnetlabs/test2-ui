@@ -183,6 +183,7 @@
           rounded
           color="#2196f3"
           @click="save"
+          :disabled="saveDisable"
         >
           {{ labels.Save }}
         </v-btn>
@@ -241,6 +242,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       excelLoading: false,
       mappindgId: null,
       excelInfo: null,
