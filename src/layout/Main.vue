@@ -679,7 +679,7 @@
       </v-container>
       <app-footer />
     </v-content>
-    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: true }" />
+    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: false }" />
   </v-app>
 </template>
 <script>
@@ -688,7 +688,6 @@ import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
 import SessionExpired from '../components/SessionExpired'
 import SwitchAccount from '../components/SwitchAccount'
-import TourWidget from '../components/TourWidget'
 import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
@@ -701,9 +700,8 @@ import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecke
 import { updatePassword } from '../api/auth'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import Breadcrumb from '@/components/Breadcrumb'
-import { checkPermission, checkPermissionMultiple } from '../utils/functions'
+import { checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
-import tour from '@/store/modules/tour'
 
 export default {
   name: 'Main',
