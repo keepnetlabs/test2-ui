@@ -96,3 +96,13 @@ export function createMapping(payload) {
 export function searchTmp(payload, id) {
   return testRequest.post(`/target-users/${id}/search`, payload)
 }
+
+export function searchTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.post(`/target-groups/${id}/users`, payload)
+}
+
+export function exportTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.post(`/target-groups/${id}/users/export`, payload, {
+    responseType: 'blob'
+  })
+}

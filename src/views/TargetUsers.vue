@@ -26,6 +26,14 @@ export default {
       tab: 'first'
     }
   },
+  created() {
+    const {
+      $route: { params }
+    } = this
+    if (params && params.tab) {
+      this.tab = params.tab
+    }
+  },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
     if (refs && refs.refPeople) {
