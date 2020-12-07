@@ -148,7 +148,6 @@
         text
         @click="onCreateClicked"
         >{{ resourceId ? 'Update' : 'Create' }}
-        {{ saveDisable }}
       </v-btn>
     </div>
   </div>
