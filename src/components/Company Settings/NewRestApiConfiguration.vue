@@ -7,6 +7,7 @@
     :title="'New Rest API Configuration'"
     icon-name="mdi-domain"
     class-name="new-rest-api-configuration"
+    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <app-modal-body-header title="Rest API Configuration" sub-title="Set new API" />
@@ -141,6 +142,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       formValues: {
         url: '',
         authKey: '',
@@ -174,7 +176,12 @@ export default {
     handleCopyToClipboardOfAuthSecret() {
       navigator.clipboard.writeText(this.formValues.authSecret)
     },
-    submit() {}
+    submit() {
+      this.saveDisable = true
+      setTimeout(() => {
+        this.saveDisable = false
+      }, 5000)
+    }
   },
   created() {
     this.formValues.companyId = localStorage.getItem('companyId')
