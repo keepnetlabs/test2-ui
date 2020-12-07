@@ -7,6 +7,7 @@
     :title="'New SMTP Setting'"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
+    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <app-modal-body-header
@@ -211,6 +212,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       formValues: {
         name: '',
         serviceProvider: '',
@@ -237,6 +239,7 @@ export default {
     submit() {
       const refForm = this.$refs.refForm
       if (refForm.validate()) {
+        this.saveDisable = true
         const {
           name,
           serverAddress,
@@ -274,6 +277,7 @@ export default {
         }
       } else {
         return this.$nextTick(() => {
+          this.saveDisable = false
           const el = refForm.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
@@ -287,6 +291,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
+          this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
         .catch(() => {
@@ -294,6 +299,7 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'New SMTP settings can not be created'
           })
+          this.saveDisable = false
         })
     },
     callForUpdateSmtpSettings(payload = {}) {
@@ -304,6 +310,7 @@ export default {
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
+          this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
         .catch(() => {
@@ -311,6 +318,7 @@ export default {
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
             message: 'New SMTP settings can not be updated'
           })
+          this.saveDisable = false
         })
     },
     handleChangeServiceProvider(item = '') {
