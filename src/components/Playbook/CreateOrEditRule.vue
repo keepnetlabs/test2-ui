@@ -224,6 +224,7 @@
           rounded
           color="#2196f3"
           @click="handleSave"
+          :disabled="saveDisable"
         >
           {{ labels.Save }}
         </v-btn>
@@ -254,6 +255,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       actionData: {},
       actionList: [{ id: 0 }],
@@ -436,6 +438,7 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     handleSave() {
+      this.saveDisable = true
       if (this.playbookId) {
         this.callForUpdatePlaybook()
       } else {
@@ -506,9 +509,12 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
+            this.saveDisable = false
             this.$emit('closeFormWithUpdate')
           })
-          .catch((error) => {})
+          .catch((error) => {
+            this.saveDisable = false
+          })
       } else {
         return this.$nextTick(() => {
           const el = ref.$refs.refForm.$el.querySelector('.error--text')
@@ -581,9 +587,12 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
+            this.saveDisable = false
             this.$emit('closeFormWithUpdate')
           })
-          .catch((error) => {})
+          .catch((error) => {
+            this.saveDisable = false
+          })
       } else {
         return this.$nextTick(() => {
           const el = ref.$refs.refForm.$el.querySelector('.error--text')
