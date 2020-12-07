@@ -29,6 +29,7 @@ export const labels = {
   Open: 'Open',
   Matches: 'Match(es)',
   IpAddress: 'Ip Address',
+  InvalidDomainName: 'Invalid domain name',
   EmailAddress: 'Email Address',
   StopOngoingInvestigation: 'Stop Ongoing Investigation',
   DoYouWantToStopInvestigation: 'Do you want to stop this investigation?',
@@ -140,7 +141,8 @@ export const labels = {
   ExpiryPeriod: 'Expiry Period',
   NumberOfUsers: 'Number of users',
   ImportSelected: 'IMPORT SELECTED',
-  ImportAll: 'IMPORT ALL'
+  ImportAll: 'IMPORT ALL',
+  StartInvestigation: 'START INVESTIGATION'
 }
 
 export default labels

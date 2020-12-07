@@ -511,6 +511,7 @@
             @handleEdit="handleEdit"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
+            v-bind="bindPropsIsSafari"
             :extendedViewDisableChanger="extendedViewDisableChanger"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
@@ -620,7 +621,12 @@ import {
   updateNotifiedEmail,
   updateRoiSettings
 } from '../api/incidentResponder'
-import { checkPermission, getDataTableFieldLabel } from '../utils/functions'
+import {
+  checkPermission,
+  getDataTableFieldLabel,
+  handleIsSafari,
+  setSafariClusterFix
+} from '../utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
@@ -651,6 +657,7 @@ export default {
     investigationsLoading: true,
     investigationsData: [],
     reportedEmailsData: [],
+    bindPropsIsSafari: {},
     reportedEmailsLoading: true,
     incidentLoading: true,
     showPlaybookModal: false,
@@ -1310,6 +1317,11 @@ export default {
   },
   created() {
     this.initMethods()
+    if (handleIsSafari()) {
+      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
+        return setSafariClusterFix(obj, 'subject')
+      }
+    }
     window.addEventListener('resize', this.addQuery)
   },
   beforeDestroy() {
@@ -1354,9 +1366,14 @@ export default {
         const data = this.getManipulatedChildData(results, true)
         tree['children'] = data
         treeNode['children'] = data
-
-        resolve(data)
-        callback()
+        treeNode.loaded = true
+        treeNode.lazy = false
+        treeNode.loading = false
+        treeNode.expanded = true
+        setTimeout(() => {
+          resolve(data)
+        }, 500)
+        callback(data)
       })
     },
 

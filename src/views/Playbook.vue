@@ -16,7 +16,7 @@
 
 <script>
 import Rules from '../components/Playbook/Rules'
-import { checkPermission, getPermissionsOfAllItems } from '@/utils/functions'
+import { getPermissionsOfAllItems } from '@/utils/functions'
 import PERMISSIONS from '@/permissions'
 export default {
   name: 'Playbook',

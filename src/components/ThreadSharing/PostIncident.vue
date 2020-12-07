@@ -1829,6 +1829,7 @@
               text
               color="#2196f3"
               @click="onFinish"
+              :disabled="saveDisable"
               >Post
             </v-btn>
           </div>
@@ -2056,6 +2057,7 @@ export default {
     }
   },
   data: () => ({
+    saveDisable: false,
     labels,
     visibleBodyForPreview: null,
     termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
@@ -2722,6 +2724,7 @@ export default {
         })
       }
       if (this.editItem) {
+        this.saveDisable = true
         const payload = {
           CommunityResourceId: this.$route.params.id || this.editItem.communityResourceId,
           Title: this.uploadRespond.Title,
@@ -2765,6 +2768,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Post has been updated'
             })
+            this.saveDisable = false
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
@@ -2775,8 +2779,10 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message: 'Error when updated a community post'
             })
+            this.saveDisable = false
           })
       } else {
+        this.saveDisable = true
         const payload = {
           CommunityResourceId: this.$route.params.id,
           Title: this.uploadRespond.Title,
@@ -2819,6 +2825,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Post has been created'
             })
+            this.saveDisable = false
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
@@ -2829,6 +2836,7 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message: 'Error when creating a new community post'
             })
+            this.saveDisable = false
           })
       }
     },
