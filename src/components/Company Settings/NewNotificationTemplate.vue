@@ -7,6 +7,7 @@
     :title="'New Notification Template'"
     icon-name="mdi-email"
     class-name="new-smtp-setting"
+    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <app-modal-body-header
@@ -99,6 +100,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       formValues: {
         name: '',
         category: '',
@@ -117,7 +119,12 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
-    submit() {}
+    submit() {
+      this.saveDisable = true
+      setTimeout(() => {
+        this.saveDisable = false
+      }, 5000)
+    }
   }
 }
 </script>

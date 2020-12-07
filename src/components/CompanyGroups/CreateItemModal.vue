@@ -77,6 +77,7 @@
           class="delete-user__footer-button"
           style="padding: 0;"
           text
+          :disabled="saveDisable"
           >{{ labels.Save }}</v-btn
         >
       </div>
@@ -119,6 +120,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       search: null,
       groupName: '',
@@ -193,6 +195,7 @@ export default {
     },
     save() {
       if (this.$refs.refCreateGroupForm.validate()) {
+        this.saveDisable = true
         let resourceIDs = []
         !!this.selectedCompanies &&
           Object.entries(this.selectedCompanies).forEach((x) => {
@@ -211,6 +214,7 @@ export default {
               this.$emit('companyGroupCreated', response.data.resourceId)
               this.changeStatus(false)
             }
+            this.saveDisable = false
           })
         } else {
           updateCompanyGroup(this.selectedRow.resourceId, payload).then((response) => {
@@ -224,6 +228,7 @@ export default {
               this.$emit('companyGroupCreated', response.data.resourceId)
               this.changeStatus(false)
             }
+            this.saveDisable = false
           })
         }
       }

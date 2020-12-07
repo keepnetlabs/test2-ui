@@ -679,7 +679,7 @@
       </v-container>
       <app-footer />
     </v-content>
-    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: true }" />
+    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: false }" />
   </v-app>
 </template>
 <script>

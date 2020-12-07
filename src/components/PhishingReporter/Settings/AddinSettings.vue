@@ -451,6 +451,7 @@
         @submitWithDownload="submit($event, true)"
         v-if="showFooter"
         className="mt-3"
+        :saveDisable="saveDisable"
       />
     </v-form>
   </v-container>
@@ -495,6 +496,10 @@ export default {
       default: true
     },
     spinnerStatus: {
+      type: Boolean,
+      default: false
+    },
+    saveDisable: {
       type: Boolean,
       default: false
     }

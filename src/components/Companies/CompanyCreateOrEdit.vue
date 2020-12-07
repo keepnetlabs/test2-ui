@@ -510,6 +510,7 @@
           rounded
           color="#2196f3"
           @click="handleSave"
+          :disabled="saveDisable"
         >
           {{ labels.Save }}
         </v-btn>
@@ -540,6 +541,7 @@ export default {
   components: { KSelect, InputCompany, InputUrl, KFileUpload, InputDate },
   data() {
     return {
+      saveDisable: false,
       labels,
       stepLock: false,
       totalStep: 4,
@@ -654,6 +656,7 @@ export default {
     },
     handleSave() {
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
+        this.saveDisable = true
         !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 9999) : null
         if (this.edit) {
           updateCompany(this.selectedExtend.resourceId, this.formData)
@@ -665,9 +668,11 @@ export default {
                   icon: 'mdi-check-circle-outline'
                 })
               }
+              this.saveDisable = false
               this.cancelForm()
             })
             .catch((error) => {
+              this.saveDisable = false
               this.$store.dispatch('common/createSnackBar', {
                 message: 'Company can not be updated',
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -684,9 +689,11 @@ export default {
                   icon: 'mdi-check-circle-outline'
                 })
               }
+              this.saveDisable = false
               this.cancelForm()
             })
             .catch((error) => {
+              this.saveDisable = false
               this.$store.dispatch('common/createSnackBar', {
                 message: 'Company can not be created',
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,

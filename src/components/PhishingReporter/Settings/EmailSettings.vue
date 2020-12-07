@@ -194,6 +194,7 @@
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
         class-name="mt-3"
+        :saveDisable="saveDisable"
       />
     </v-form>
   </v-container>
@@ -242,6 +243,10 @@ export default {
     formData: {
       type: Object,
       default: null
+    },
+    saveDisable: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

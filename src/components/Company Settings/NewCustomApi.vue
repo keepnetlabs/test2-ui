@@ -6,6 +6,7 @@
     :title="'New Client'"
     icon-name="mdi-plus"
     class-name="new-smtp-setting"
+    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <app-modal-body-header
@@ -66,6 +67,7 @@
           color="#2196f3"
           rounded
           @click="submit"
+          :disabled="saveDisable"
         >
           {{ labels.Save }}
         </v-btn>
@@ -95,6 +97,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       formValues: {
         clientName: '',
@@ -105,9 +108,15 @@ export default {
   },
   methods: {
     closeOverlay() {
+      this.saveDisable = false
       this.$emit('closeOverlay')
     },
-    submit() {}
+    submit() {
+      this.saveDisable = false
+      setTimeout(() => {
+        this.saveDisable = false
+      }, 5000)
+    }
   }
 }
 </script>
