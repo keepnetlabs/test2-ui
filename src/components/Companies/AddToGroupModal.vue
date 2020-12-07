@@ -45,7 +45,7 @@
         >
         <v-btn
           @click="confirm"
-          :disabled="selectedArray && selectedArray.length === 0"
+          :disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
           color="#2196f3"
           class="delete-user__footer-button"
           text
@@ -79,6 +79,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       selectedArray: [],
       showTable: false,
@@ -147,11 +148,13 @@ export default {
     changeStatus(value) {
       this.$emit('changeStatus', value)
       if (value === false) {
+        this.saveDisable = false
         this.showTable = false
       }
     },
     confirm() {
       if (this.selectedArray && this.selectedArray.length > 0) {
+        this.saveDisable = true
         const companyIdArray = this.companyIdArray
         this.selectedArray.forEach((x) => {
           const payload = {
@@ -167,6 +170,7 @@ export default {
                   icon: 'mdi-check-circle-outline'
                 })
               }
+              this.saveDisable = false
             })
             .catch((error) => {
               if (response.data && response.data.message) {
@@ -176,6 +180,7 @@ export default {
                   icon: 'mdi-check-circle-outline'
                 })
               }
+              this.saveDisable = false
             })
         })
         this.changeStatus(false)
