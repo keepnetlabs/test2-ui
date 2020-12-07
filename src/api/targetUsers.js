@@ -93,6 +93,15 @@ export function getUploadedFileData(id) {
 export function createMapping(payload) {
   return testRequest.post(`/target-users/create-mapping`, payload)
 }
+
 export function searchTmp(payload, id) {
   return testRequest.post(`/target-users/${id}/search`, payload)
+}
+
+export function getMappingStatus(id) {
+  return testRequest.get(`target-users/mapping-job/${id}`)
+}
+
+export function importTmpUsers(payload, id) {
+  return testRequest.post(`/target-users/${id}/import`, payload, { loading: true })
 }

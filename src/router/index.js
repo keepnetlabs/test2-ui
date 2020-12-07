@@ -520,7 +520,6 @@ router.beforeEach((to, from, next) => {
         storeRef.dispatch('common/changeDownloadModalStatus', false)
         next(false)
       } else {
-        //console.log(storeRef.state.auth.permissions)
         next()
       }
     } else {

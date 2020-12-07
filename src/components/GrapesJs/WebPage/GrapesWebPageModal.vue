@@ -54,7 +54,6 @@ export default {
     this.setGrapesEditor()
     window.addEventListener('popstate', function (event) {
       // Log the state data to the console
-      console.log(event.state)
     })
   },
   methods: {
