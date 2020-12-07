@@ -5,6 +5,7 @@
     :icon-name="getIcon"
     :title="getTitle"
     className="add-user-overlay"
+    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <v-form ref="refForm">
@@ -133,6 +134,7 @@
         color="#2196f3"
         rounded
         @click="submit"
+        :disabled="saveDisable"
       >
         {{ labels.Save }}
       </v-btn>
@@ -188,6 +190,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       formValues: {
         firstName: '',
@@ -225,6 +228,7 @@ export default {
       )
     },
     submit() {
+      this.saveDisable = true
       const keys = Object.keys(this.isPickersValidated)
       let isPickersValid = true
 
@@ -243,6 +247,7 @@ export default {
           const el = this.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
+        this.saveDisable = false
       } else {
         if (this.editData) {
           this.callForUpdateTargetUser()
@@ -289,12 +294,14 @@ export default {
             message: data.message,
             color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
           })
+          this.saveDisable = false
         } else {
           this.$store.dispatch('common/createSnackBar', {
             message: '1 user added to Users List ',
             icon: 'mdi-check-circle',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
           })
+          this.saveDisable = false
           this.$emit('closeAddUserModalWithUpdate')
         }
       })
@@ -340,16 +347,19 @@ export default {
     callForUpdateTargetUser() {
       const payload = this.getCustomFieldsPayload()
       delete payload.status
-      updateTargetUser(payload).then((response) => {
-        if (response.data && response.data.message) {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-        }
-        this.$emit('closeAddUserModalWithUpdate')
-      })
+      updateTargetUser(payload)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: response.data.message,
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+          }
+          this.saveDisable = false
+          this.$emit('closeAddUserModalWithUpdate')
+        })
+        .catch(() => (this.saveDisable = false))
     },
     callForTargetGroups() {
       getTargetGroups().then(() => {
