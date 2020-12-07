@@ -77,7 +77,7 @@
         <InputDate
           :key="column.property"
           v-if="filteredSelectValueDate === 'between'"
-          v-model="filteredDateValue"
+          v-model="filteredDateRangeValue"
           ref="refPicker2"
           type="datetimerange"
           style="margin-bottom: 14px;"
@@ -155,7 +155,11 @@ export default {
       filteredSelectValue: 'Contains',
       filteredSelectValueNum: '=',
       filteredSelectValueDate: '<=',
-      filteredDateValue: null,
+      filteredDateValue: this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+      filteredDateRangeValue: [
+        this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
+        this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+      ],
       filterValue: '',
       filterChecked: [],
       textFilterItems: [
@@ -181,9 +185,7 @@ export default {
       convertedFilterableItems: []
     }
   },
-  mounted() {
-    this.changeDateSelect()
-  },
+  mounted() {},
   created() {
     if (this.filterableType === 'select') {
       this.filterableItems.forEach((x) => {
@@ -194,15 +196,7 @@ export default {
     }
   },
   methods: {
-    changeDateSelect() {
-      this.filteredDateValue =
-        this.filteredSelectValueDate !== 'between'
-          ? this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
-          : [
-              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
-              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
-            ]
-    },
+    changeDateSelect() {},
     clearFilter() {
       this.menu = false
       this.isFilterActive = false
@@ -234,12 +228,12 @@ export default {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
-              Value: this.filteredDateValue[0],
+              Value: this.filteredDateRangeValue[0],
               FieldName: this.fieldName,
               Operator: '>='
             },
             {
-              value: this.filteredDateValue[1],
+              value: this.filteredDateRangeValue[1],
               FieldName: this.fieldName,
               Operator: '<='
             }

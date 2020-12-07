@@ -1,4 +1,10 @@
 export const labels = {
+  getMaxLengthMessage(val = '', length = 64) {
+    return `${val} cannot exceed ${length} characters`
+  },
+  getMinLengthMessage(val = '', length = 3) {
+    return `${val} must have at least ${length} characters`
+  },
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   Save: 'SAVE',
@@ -15,6 +21,7 @@ export const labels = {
   WebsiteUrl: 'Website URL',
   FirstName: 'First Name',
   LastName: 'Last Name',
+  CompanyName: 'Company Name',
   CompanyGroup: 'Company Group',
   Closed: 'Closed',
   User: 'User',
@@ -64,6 +71,7 @@ export const labels = {
   Community: 'Community',
   AddAnIntegration: 'ADD AN INTEGRATION',
   Logo: 'Logo',
+  CompanyLogo: 'Company Logo',
   Close: 'Close',
   RuleName: 'Rule Name',
   MostRecentInvestigations: 'Most recent investigations',
@@ -129,12 +137,9 @@ export const labels = {
   NotStartedUserCount: 'Not Started User Count',
   IntegrationName: 'Integration Name',
   Disable: 'Disable',
-  getMaxLengthMessage(val = '', length = 64) {
-    return `${val} cannot exceed ${length} characters`
-  },
-  getMinLengthMessage(val = '', length = 3) {
-    return `${val} must have at least ${length} characters`
-  }
+  LicenceType: 'Licence Type',
+  ExpiryPeriod: 'Expiry Period',
+  NumberOfUsers: 'Number of users'
 }
 
 export default labels
