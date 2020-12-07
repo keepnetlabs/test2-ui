@@ -138,7 +138,8 @@ export const labels = {
   Disable: 'Disable',
   LicenceType: 'Licence Type',
   ExpiryPeriod: 'Expiry Period',
-  NumberOfUsers: 'Number of users'
+  NumberOfUsers: 'Number of users',
+  StartInvestigation: 'START INVESTIGATION'
 }
 
 export default labels

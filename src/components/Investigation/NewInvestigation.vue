@@ -266,8 +266,13 @@
         <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
           labels.Cancel
         }}</v-btn>
-        <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked"
-          >START INVESTIGATION</v-btn
+        <v-btn
+          :disabled="saveDisabled"
+          class="create-btn"
+          text
+          color="#2196f3"
+          @click="onCreateClicked"
+          >{{ labels.StartInvestigation }}</v-btn
         >
       </div>
     </template>
@@ -343,6 +348,7 @@ export default {
 
   data() {
     return {
+      saveDisabled: false,
       labels,
       timeout: null,
       defaultUserGroupItems: [],
@@ -629,6 +635,7 @@ export default {
         this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
+        this.saveDisabled = true
         let isCheckboxEmpty = this.scanTypes.length === 0
         if (isCheckboxEmpty) {
           this.checkboxError = true
@@ -954,13 +961,17 @@ export default {
         // post request with body data
         this.$store
           .dispatch('investigations/createInvestigation', newInvestigationObj)
-          .catch(() => {})
+          .catch(() => {
+            this.saveDisabled = false
+          })
           .then((resp) => {
+            this.saveDisabled = false
             this.$emit('closeWithRoute', resp)
             this.$emit('closeAdd', true)
           })
       } else {
         return this.$nextTick(() => {
+          this.saveDisabled = false
           const el = this.$refs.form.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
