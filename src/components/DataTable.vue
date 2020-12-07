@@ -347,7 +347,7 @@
           </div>
         </div>
         <div
-          class="table-container"
+          :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
           id="table-container"
           ref="tableContainer"
           v-if="(tableData && tableData.length) || isColumnFilterActive"
@@ -365,6 +365,7 @@
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
             @select="handleSelect"
+            @expand-change="handleExpandedRowChange"
             @sort-change="sortChangedEvent"
             :empty-text="empty.message"
             @select-all="handleSelectAll"
@@ -842,6 +843,9 @@ export default {
       type: Array,
       required: true
     },
+    lazy: {
+      type: Boolean
+    },
     hideParentRowActions: {
       type: Boolean,
       default: false
@@ -1074,7 +1078,9 @@ export default {
       timeout: null,
       selectionCheckbox: false,
       selectionAll: false,
+      dynamicStyleRef: null,
       search: '',
+      expandedRows: [],
       downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToEditRow: false,
@@ -1104,6 +1110,10 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
+      this.multipleSelection = []
+      if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
+        this.$refs.elTableRef.clearSelection()
+      }
       this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
@@ -1132,18 +1142,21 @@ export default {
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
         }
-        if (!this.hideParentRowActions) {
-          this.handleParentRowActions()
-        }
       }
     },
     tableData(data) {
       this.calculateAllSelected()
+      if (this.groupable && !this.lazy) {
+        this.calculateExpandedRows()
+      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
     filteredData() {
       this.calculateAllSelected()
+      if (this.groupable && !this.lazy) {
+        this.calculateExpandedRows()
+      }
     },
     firstColFixed(val) {
       if (!val) {
@@ -1210,13 +1223,36 @@ export default {
 
     window.addEventListener('resize', this.renderFixedItems)
   },
+  beforeDestroy() {
+    if (this.dynamicStyleRef && this.dynamicStyleRef.remove) {
+      this.dynamicStyleRef.remove()
+    }
+  },
   methods: {
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
     },
-
+    handleExpandedRowChange(row, isExpanded) {
+      let expandedRow = this.expandedRows.find(
+        (item) => JSON.stringify(item.data) === JSON.stringify(row)
+      )
+      if (expandedRow) {
+        expandedRow.isExpanded = isExpanded
+      } else {
+        this.expandedRows.push({ data: row, isExpanded })
+      }
+    },
+    calculateExpandedRows() {
+      this.$nextTick(() => {
+        for (const item of this.expandedRows) {
+          if (this.$refs && this.$refs.elTableRef) {
+            this.$refs.elTableRef.toggleRowExpansion(item.data, item.isExpanded)
+          }
+        }
+      })
+    },
     calculateAllSelected() {
       let dataRef = this.showfilteredData ? this.filteredData : this.tableData
       const renderedTotalLength = this.getTotalLength(this.tableData)
@@ -1406,18 +1442,14 @@ export default {
       this.extendedViewStyle = {
         top: `${48}px`
       }
-      this.$emit('onEditClick', {
-        selected: this.multipleSelection,
-        isEditPopupOpen: true
-      })
-      this.isWantToEditRow = true
-    },
-    handleParentRowActions() {
-      const objStyle = document.createElement('style')
-      objStyle.innerHTML =
-        '.el-table__row.el-table__row--level-0 .actions-container button {visibility:hidden}'
-      const ref = document.querySelector('script')
-      ref.parentNode.insertBefore(objStyle, ref)
+      const selections = this.multipleSelection.filter((item) => !item.isParent)
+      if (selections.length) {
+        this.$emit('onEditClick', {
+          selected: selections,
+          isEditPopupOpen: true
+        })
+        this.isWantToEditRow = true
+      }
     },
     /**
      * This functions removes visibility of the right actions columns.

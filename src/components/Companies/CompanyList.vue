@@ -60,7 +60,7 @@
       active-cluster="Company Name"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
-      @cellClick="handleCompanyNameClick"
+      @cellClick="handleCellClick"
       @downloadEvent="handleTableDownload"
       :is-server-side="false"
       @addButton="addButton"
@@ -74,7 +74,11 @@
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span class="datatable-link" v-if="scope.row.companyName">
+        <span
+          class="datatable-link"
+          v-if="scope.row.companyName"
+          @click="handleCompanyNameClick(scope.row)"
+        >
           {{ scope.row.companyName }}
         </span>
       </template>
@@ -96,13 +100,9 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '../../api/company'
+import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
@@ -290,6 +290,11 @@ export default {
       this.tableOptions.isColumnFilterActive = columnFilterActive
       this.getTableData()
     },
+    handleCellClick({ column, event }) {
+      if (column.property === 'companyName') {
+        this.extendTop = event.offsetTop
+      }
+    },
     getLookUpDatas() {
       getLookupListByTypeIdList({ typeidlist: [2, 3] }).then((response) => {
         const res = response.data.data
@@ -298,14 +303,14 @@ export default {
           'filterableItems',
           res
             .filter((item) => item.genericCodeTypeId === 2)
-            .map((item) => ({ text: item.name, value: item.name }))
+            .map((item) => ({ text: item.name, value: item.resourceId }))
         )
         this.$set(
           this.tableOptions.columns[2],
           'filterableItems',
           res
             .filter((item) => item.genericCodeTypeId === 3)
-            .map((item) => ({ text: item.name, value: item.name }))
+            .map((item) => ({ text: item.name, value: item.resourceId }))
         )
       })
     },
@@ -375,27 +380,24 @@ export default {
     changeCreateOrEditModalStatus(status) {
       this.isShowCreateOrEditModal = status
     },
-    handleCompanyNameClick({ row, column, event }) {
-      if (column.property === 'companyName') {
-        this.$refs.extend.clickClose()
-        this.selectedRow = row
-        this.selectedExtend = {}
-        this.isShowExtended = true
-        this.tableHeight = this.$refs.refDataList.$el.clientHeight
-        this.extendTop = event.offsetTop
-        getCompanyByID(row.companyResourceId, false)
-          .then((response) => {
-            this.selectedExtend = response.data.data
+    handleCompanyNameClick(row) {
+      this.$refs.extend.clickClose()
+      this.selectedRow = row
+      this.selectedExtend = {}
+      this.isShowExtended = true
+      this.tableHeight = this.$refs.refDataList.$el.clientHeight
+      getCompanyByID(row.companyResourceId, false)
+        .then((response) => {
+          this.selectedExtend = response.data.data
+        })
+        .catch((error) => {
+          this.isShowExtended = false
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
           })
-          .catch((error) => {
-            this.isShowExtended = false
-            this.$store.dispatch('common/createSnackBar', {
-              message: error.data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
-          })
-      }
+        })
     },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -404,6 +406,7 @@ export default {
           pageSize: downloadTypes.pageSize,
           orderBy: this.payload.orderBy,
           ascending: this.payload.ascending,
+          isClustered: this.isClustered,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.payload.filter

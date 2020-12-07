@@ -486,10 +486,10 @@
             :clusterItems="[{ name: 'Subject' }]"
             active-cluster="Subject"
             :changeFooterPosition="true"
+            lazy
             @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
-            hideParentRowActions
             :pageSizes="emails.pageSizes"
             :selectable="true"
             :filterable="true"
@@ -1350,7 +1350,7 @@ export default {
             data: { results }
           }
         } = response
-
+        results.splice(0, 1)
         const data = this.getManipulatedChildData(results, true)
         tree['children'] = data
         treeNode['children'] = data
@@ -1482,7 +1482,7 @@ export default {
       }
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
-      if (isEditPopupOpen) {
+      if (isEditPopupOpen && selections.length) {
         this.extendedViewLoading = true
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
@@ -1624,7 +1624,10 @@ export default {
     getManipulatedTableData(data, isChild = false) {
       if (this.requestBodyReportedEmails.isClustered) {
         return data.map((item) => {
-          return { subject: item.subject, hasChildren: true, resourceId: Math.random().toString() }
+          return {
+            ...item,
+            hasChildren: true
+          }
         })
       }
 
