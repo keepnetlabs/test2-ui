@@ -1771,7 +1771,8 @@ export default {
             .filter((column) => column.filterableType)
             .reduce((acc, filterItem) => {
               acc.push({
-                FieldName: filterItem.property,
+                FieldName:
+                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
                 Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
                 Value: this.search
               })
