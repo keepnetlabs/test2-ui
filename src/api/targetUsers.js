@@ -101,6 +101,10 @@ export function searchTargetGroupUsers(id = '', payload = {}) {
   return testRequest.post(`/target-groups/${id}/users`, payload)
 }
 
+export function createTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.put(`/target-groups/${id}/users`, payload)
+}
+
 export function exportTargetGroupUsers(id = '', payload = {}) {
   return testRequest.post(`/target-groups/${id}/users/export`, payload, {
     responseType: 'blob'

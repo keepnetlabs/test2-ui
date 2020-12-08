@@ -14,8 +14,11 @@
     selectable
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
+    @addAction="handleAddAction"
     @downloadEvent="exportTargetGroupsUserList"
     @handleEditTargetUsers="handleEditTargetUsers"
+    @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
+    @handleSelectionChange="handleSelectionChange"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
   />
@@ -41,11 +44,25 @@ export default {
     loading: {
       type: Boolean
     },
+    hasRowActions: {
+      type: Boolean,
+      default: true
+    },
+    hasAddButton: {
+      type: Boolean,
+      default: true
+    },
     tableData: {
       type: Array
     }
   },
-  emits: ['handleSelectedRow', 'callForSearchTargetGroupUsers'],
+  emits: [
+    'handleAddAction',
+    'handleEditTargetUser',
+    'callForSearchTargetGroupUsers',
+    'handleAddToAnExistingGroup',
+    'handleSelectionChange'
+  ],
   data() {
     return {
       axiosPayload: {
@@ -168,7 +185,7 @@ export default {
       ],
       tableOptions: {
         addButton: {
-          show: true,
+          show: this.hasAddButton,
           action: 'addAction',
           tooltip: 'Add Users'
         },
@@ -179,24 +196,7 @@ export default {
           icon: 'mdi-plus'
         },
         isColumnFilterActive: false,
-        rowActions: [
-          {
-            name: 'Edit this row',
-            icon: 'mdi-pencil',
-            action: 'handleEditTargetUsers',
-            isNotShow: true
-          },
-          {
-            name: 'Add to an existing group',
-            icon: 'mdi-account-multiple-plus',
-            action: 'addToAnExistingGroup'
-          },
-          {
-            name: 'Remove from group',
-            icon: 'mdi-minus-circle',
-            action: 'removeToGroup'
-          }
-        ],
+        rowActions: this.getRowActions(),
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -207,8 +207,19 @@ export default {
     }
   },
   watch: {
-    customFields(newVal) {
-      const columnsOfCustomFields = newVal.map((field) => {
+    customFields(ü) {
+      this.addCustomFieldColumns()
+    }
+  },
+
+  created() {
+    if (this.customFields.length) {
+      this.addCustomFieldColumns()
+    }
+  },
+  methods: {
+    addCustomFieldColumns() {
+      const columnsOfCustomFields = this.customFields.map((field) => {
         return {
           property: field.name,
           type: 'text',
@@ -225,10 +236,7 @@ export default {
         ...columnsOfCustomFields,
         ...this.lastColumns
       ]
-    }
-  },
-
-  methods: {
+    },
     callForSearchTargetGroupUsers() {
       this.$emit('callForSearchTargetGroupUsers', this.resourceId, this.axiosPayload)
     },
@@ -275,9 +283,41 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
-    handleEditTargetUsers(selectedRow = {}) {
-      this.$emit('handleSelectedRow', selectedRow)
+    getRowActions() {
+      return this.hasRowActions
+        ? [
+            {
+              name: 'Edit this row',
+              icon: 'mdi-pencil',
+              action: 'handleEditTargetUsers',
+              isNotShow: true
+            },
+            {
+              name: 'Add to an existing group',
+              icon: 'mdi-account-multiple-plus',
+              action: 'handleAddToAnExistingGroup'
+            },
+            {
+              name: 'Remove from group',
+              icon: 'mdi-minus-circle',
+              action: 'removeToGroup'
+            }
+          ]
+        : []
     },
+    handleEditTargetUsers(selectedRow = {}) {
+      this.$emit('handleEditTargetUser', selectedRow)
+    },
+    handleAddAction() {
+      this.$emit('handleAddAction')
+    },
+    handleAddToAnExistingGroup(selectedRow = {}) {
+      this.$emit('handleAddToAnExistingGroup', selectedRow)
+    },
+    handleSelectionChange(selection = []) {
+      this.$emit('handleSelectionChange', selection)
+    },
+
     exportTargetGroupsUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {

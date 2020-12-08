@@ -2,21 +2,37 @@
   <div class="target-users-group-users">
     <div class="target-users-group-users__container">
       <EditUserModal
+        v-if="showEditUserModal"
+        :editData="selectedRow"
+        :custom-fields="customFields"
         :status="showEditUserModal"
         @closeAddUserModal="toggleEditUserModal"
         @closeAddUserModalWithUpdate="closeEditUserModalWithUpdate"
-        :editData="selectedRow"
+      />
+      <AddToAnExistingGroupModal
+        v-if="showAddToAnExistingGroupModal"
+        :selected-rows="getSelectedRow"
+        :status="showAddToAnExistingGroupModal"
+        @closeOverlay="toggleShowAddToAnExistingGroupModal"
+      />
+      <TargetGroupUsersAddUsersModal
+        v-if="showAddUsersModal"
         :custom-fields="customFields"
-        v-if="showEditUserModal"
+        :table-data="tableData"
+        :status="showAddUsersModal"
+        :group-name="getGroupName"
+        @closeOverlay="toggleAddUserModal"
       />
       <TargetGroupUsersTable
         ref="refTable"
+        :custom-fields="customFields"
         :loading="loading"
-        :tableData="tableData"
-        :customFields="customFields"
-        :resourceId="resourceId"
-        @handleSelectedRow="handleSelectedRow"
+        :resource-id="resourceId"
+        :table-data="tableData"
         @callForSearchTargetGroupUsers="callForSearchTargetGroupUsers"
+        @handleAddAction="toggleAddUserModal"
+        @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
+        @handleEditTargetUser="handleEditTargetUser"
       />
     </div>
   </div>
@@ -26,20 +42,37 @@
 import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGroupUsersTable'
 import { getTargetUserCustomFieldsByCompanyId, searchTargetGroupUsers } from '@/api/targetUsers'
 import AddUserModal from '../AddUserModal'
+import AddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
+import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 export default {
   name: 'TargetGroupUsers',
   components: {
+    TargetGroupUsersAddUsersModal,
+    AddToAnExistingGroupModal,
     TargetGroupUsersTable,
     EditUserModal: AddUserModal
   },
   data() {
     return {
+      customFields: [],
+      loading: false,
       tableData: [],
       resourceId: null,
       showEditUserModal: false,
-      customFields: [],
       selectedRow: null,
-      loading: false
+      showAddToAnExistingGroupModal: false,
+      showAddUsersModal: false
+    }
+  },
+  computed: {
+    getSelectedRow() {
+      if (this.selectedRow.constructor.name === 'Array') {
+        return this.selectedRow
+      }
+      return [this.selectedRow]
+    },
+    getGroupName() {
+      return this.$route.params.label
     }
   },
   created() {
@@ -110,11 +143,23 @@ export default {
     },
     handleSelectedRow(row = {}) {
       this.selectedRow = row
+    },
+    handleEditTargetUser(row = {}) {
+      this.handleSelectedRow(row)
       this.toggleEditUserModal()
     },
-
+    handleAddToAnExistingGroup(row = {}) {
+      this.handleSelectedRow(row)
+      this.toggleShowAddToAnExistingGroupModal()
+    },
+    toggleAddUserModal() {
+      this.showAddUsersModal = !this.showAddUsersModal
+    },
     toggleEditUserModal() {
       this.showEditUserModal = !this.showEditUserModal
+    },
+    toggleShowAddToAnExistingGroupModal() {
+      this.showAddToAnExistingGroupModal = !this.showAddToAnExistingGroupModal
     }
   }
 }
