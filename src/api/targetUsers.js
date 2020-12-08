@@ -110,6 +110,7 @@ export function exportTargetGroupUsers(id = '', payload = {}) {
   return testRequest.post(`/target-groups/${id}/users/export`, payload, {
     responseType: 'blob'
   })
+}
 export function getMappingStatus(id) {
   return testRequest.get(`target-users/mapping-job/${id}`)
 }

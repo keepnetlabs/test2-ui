@@ -43,7 +43,12 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { getStoreValue, LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  LABEL_STORE,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import { createTargetGroupUsers, searchTargetGroups } from '@/api/targetUsers'
 export default {
   name: 'AddToAnExistingGroupModal',
@@ -52,7 +57,7 @@ export default {
     AppDialog,
     DataTable
   },
-  emits: ['closeOverlay'],
+  emits: ['closeOverlay', 'closeOverlayWithUpdate'],
   props: {
     status: {
       type: Boolean
@@ -133,7 +138,7 @@ export default {
       return !this.selectedTargetGroups.length
     },
     getTitle() {
-      return 'Add User(s) To User Groups'
+      return `Add ${this.selectedRows.length} User(s) To User Groups`
     }
   },
   created() {
@@ -197,10 +202,23 @@ export default {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleConfirm() {
-      console.log('this.selectedRows', this.selectedRows)
-      this.selectedTargetGroups.forEach((item) => {
-        //createTargetGroupUsers()
-      })
+      const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)
+      const promises = this.selectedTargetGroups.reduce((acc, group) => {
+        const payload = { targetUserResourceIds: selectedRowsResourceIds }
+        acc.push(createTargetGroupUsers(group.resourceId, payload))
+        return acc
+      }, [])
+      Promise.all(promises)
+        .then(() => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Target user(s) has been added to target group(s)',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+        })
+        .finally(() => {
+          this.$emit('closeOverlayWithUpdate')
+        })
     },
     handleSelectionChange(selection = []) {
       this.selectedTargetGroups = selection

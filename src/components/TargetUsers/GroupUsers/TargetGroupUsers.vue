@@ -9,28 +9,27 @@
         @closeAddUserModal="toggleEditUserModal"
         @closeAddUserModalWithUpdate="closeEditUserModalWithUpdate"
       />
-      <AddToAnExistingGroupModal
+      <TargetGroupUsersAddToAnExistingGroupModal
         v-if="showAddToAnExistingGroupModal"
         :selected-rows="getSelectedRow"
         :status="showAddToAnExistingGroupModal"
         @closeOverlay="toggleShowAddToAnExistingGroupModal"
+        @closeOverlayWithUpdate="closeAddToAnExistingGroupModalWithUpdate"
       />
       <TargetGroupUsersAddUsersModal
         v-if="showAddUsersModal"
-        :custom-fields="customFields"
-        :table-data="tableData"
         :status="showAddUsersModal"
         :group-name="getGroupName"
+        :resource-id="resourceId"
         @closeOverlay="toggleAddUserModal"
+        @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
       />
       <TargetGroupUsersTable
         ref="refTable"
-        :custom-fields="customFields"
-        :loading="loading"
         :resource-id="resourceId"
-        :table-data="tableData"
-        @callForSearchTargetGroupUsers="callForSearchTargetGroupUsers"
+        has-selection-slot
         @handleAddAction="toggleAddUserModal"
+        @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
         @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
         @handleEditTargetUser="handleEditTargetUser"
       />
@@ -40,23 +39,21 @@
 
 <script>
 import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGroupUsersTable'
-import { getTargetUserCustomFieldsByCompanyId, searchTargetGroupUsers } from '@/api/targetUsers'
+import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import AddUserModal from '../AddUserModal'
-import AddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
+import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 export default {
   name: 'TargetGroupUsers',
   components: {
     TargetGroupUsersAddUsersModal,
-    AddToAnExistingGroupModal,
+    TargetGroupUsersAddToAnExistingGroupModal,
     TargetGroupUsersTable,
     EditUserModal: AddUserModal
   },
   data() {
     return {
       customFields: [],
-      loading: false,
-      tableData: [],
       resourceId: null,
       showEditUserModal: false,
       selectedRow: null,
@@ -93,50 +90,37 @@ export default {
   },
   methods: {
     callForGetTargetUserCustomFieldsByCompanyId() {
-      this.loading = true
-      getTargetUserCustomFieldsByCompanyId()
-        .then((response) => {
-          const { data } = response
-          this.customFields = data.data.filter((item) => {
-            return item.isActive
-          })
-          const sortProp = 'sortOrder'
-          this.customFields.sort((a, b) => {
-            if (a[sortProp] > b[sortProp]) {
-              return 1
-            } else if (a[sortProp] === b[sortProp]) {
-              return 0
-            }
-            return -1
-          })
+      getTargetUserCustomFieldsByCompanyId().then((response) => {
+        const { data } = response
+        this.customFields = data.data.filter((item) => {
+          return item.isActive
         })
-        .finally(() =>
-          this.callForSearchTargetGroupUsers(this.resourceId, this.$refs.refTable.axiosPayload)
-        )
+        const sortProp = 'sortOrder'
+        this.customFields.sort((a, b) => {
+          if (a[sortProp] > b[sortProp]) {
+            return 1
+          } else if (a[sortProp] === b[sortProp]) {
+            return 0
+          }
+          return -1
+        })
+      })
     },
-    callForSearchTargetGroupUsers(id = this.resourceId, axiosPayload) {
-      this.loading = true
-      searchTargetGroupUsers(id, axiosPayload)
-        .then((response) => {
-          const { data: { data: { results = [] } } = {} } = response
-          this.tableData = results.map((item) => {
-            const { customFieldValues } = item
-            for (let { name, value } of customFieldValues) {
-              item[name] = value
-            }
-            return item
-          })
-        })
-        .catch(() => {
-          this.handleRouteBackToTargetUsers()
-        })
-        .finally(() => {
-          this.loading = false
-        })
+    closeAddOverlayWithUpdate() {
+      this.toggleAddUserModal()
+      this.$refs.refTable.callForSearchTargetGroupUsers()
     },
     closeEditUserModalWithUpdate() {
       this.toggleEditUserModal()
       this.$refs.refTable.callForSearchTargetGroupUsers()
+    },
+    closeAddToAnExistingGroupModalWithUpdate() {
+      this.toggleShowAddToAnExistingGroupModal()
+      this.$refs.refTable.callForSearchTargetGroupUsers()
+    },
+    handleAddUsersSelectionClick(selection = []) {
+      this.selectedRow = selection
+      this.toggleShowAddToAnExistingGroupModal()
     },
     handleRouteBackToTargetUsers() {
       this.$router.push({ name: 'Target Users', params: { tab: 'second' } })

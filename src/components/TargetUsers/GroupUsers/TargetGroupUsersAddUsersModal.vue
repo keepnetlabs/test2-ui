@@ -13,10 +13,11 @@
         sub-title="Select Users and add them to your group"
       />
       <TargetGroupUsersTable
-        :custom-fields="customFields"
-        :table-data="tableData"
         :has-row-actions="false"
         :has-add-button="false"
+        :i-empty="iEmpty"
+        :resource-id="resourceId"
+        exclude-group-users
         @handleSelectionChange="handleSelectionChange"
       />
     </template>
@@ -27,6 +28,8 @@
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGroupUsersTable'
+import { createTargetGroupUsers } from '@/api/targetUsers'
+import labels from '@/model/constants/labels'
 export default {
   name: 'TargetGroupUsersAddUsersModal',
   components: { TargetGroupUsersTable, AppModalBodyHeader, AppModal },
@@ -37,6 +40,9 @@ export default {
     tableData: {
       type: Array
     },
+    resourceId: {
+      type: String
+    },
     status: {
       type: Boolean
     },
@@ -45,10 +51,13 @@ export default {
       required: true
     }
   },
-  emits: ['closeOverlay'],
+  emits: ['closeOverlay', 'closeOverlayWithUpdate'],
   data() {
     return {
-      selections: []
+      selectedUsers: [],
+      iEmpty: {
+        message: labels.NoUsersToAdd
+      }
     }
   },
   computed: {
@@ -61,10 +70,15 @@ export default {
       this.$emit('closeOverlay')
     },
     submit() {
-      console.log('this.selections', this.selections)
+      console.log('this.selections', this.selectedUsers)
+      createTargetGroupUsers(this.resourceId, {
+        targetUserResourceIds: this.selectedUsers.map((user) => user.resourceId)
+      }).then(() => {
+        this.$emit('closeOverlayWithUpdate')
+      })
     },
-    handleSelectionChange(selections = []) {
-      this.selections = selections
+    handleSelectionChange(selectedUsers = []) {
+      this.selectedUsers = selectedUsers
     }
   }
 }

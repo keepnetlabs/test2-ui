@@ -52,6 +52,7 @@ export const labels = {
   AddIn: 'Add-in',
   ReportedEmailTrends: 'Reported Email Trends',
   General: 'General',
+  NoUsersToAdd: 'No users to add',
   Brand: 'Brand',
   Reporters: 'Reporters',
   TopRules: 'Top Rules',

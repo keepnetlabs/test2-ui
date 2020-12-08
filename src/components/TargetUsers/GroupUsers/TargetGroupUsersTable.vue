@@ -16,33 +16,60 @@
     :select-event="tableOptions.selectEvent"
     @addAction="handleAddAction"
     @downloadEvent="exportTargetGroupsUserList"
+    @onEmptyBtnClicked="handleAddAction"
     @handleEditTargetUsers="handleEditTargetUsers"
     @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
     @handleSelectionChange="handleSelectionChange"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
-  />
+  >
+    <template #selection-all-slot v-if="hasSelectionSlot">
+      <v-tooltip bottom opacity="1">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            class="btn-selected-hover mr-1"
+            icon
+            v-on="on"
+            @click="handleAddUsersSelectionClick"
+          >
+            <v-icon class="selection-icons" color="white">mdi-account-plus</v-icon>
+          </v-btn>
+        </template>
+        <span class="tooltip-span">Add Users</span>
+      </v-tooltip>
+    </template>
+  </DataTable>
 </template>
 
 <script>
 import DataTable from '@/components/DataTable'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { exportTargetGroupUsers } from '@/api/targetUsers'
+import {
+  exportTargetGroupUsers,
+  getTargetUserCustomFieldsByCompanyId,
+  searchTargetGroupUsers
+} from '@/api/targetUsers'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
     DataTable
   },
   props: {
+    iEmpty: {
+      type: Object,
+      default: () => ({
+        message: labels.NoTargetGroupUserAdded,
+        btn: 'Add Users',
+        icon: 'mdi-plus'
+      })
+    },
+    excludeGroupUsers: {
+      type: Boolean,
+      default: false
+    },
     resourceId: {
       type: String
-    },
-    customFields: {
-      type: Array
-    },
-    loading: {
-      type: Boolean
     },
     hasRowActions: {
       type: Boolean,
@@ -52,16 +79,17 @@ export default {
       type: Boolean,
       default: true
     },
-    tableData: {
-      type: Array
+    hasSelectionSlot: {
+      type: Boolean,
+      default: false
     }
   },
   emits: [
     'handleAddAction',
     'handleEditTargetUser',
-    'callForSearchTargetGroupUsers',
     'handleAddToAnExistingGroup',
-    'handleSelectionChange'
+    'handleSelectionChange',
+    'handleAddUsersSelectionClick'
   ],
   data() {
     return {
@@ -80,7 +108,7 @@ export default {
             }
           ]
         },
-        excludeGroupUsers: false
+        excludeGroupUsers: this.excludeGroupUsers
       },
       defaultColumns: [
         // Should be defined to show the table
@@ -183,6 +211,7 @@ export default {
           dbName: 'createTime'
         }
       ],
+      loading: false,
       tableOptions: {
         addButton: {
           show: this.hasAddButton,
@@ -190,11 +219,7 @@ export default {
           tooltip: 'Add Users'
         },
         columns: [],
-        iEmpty: {
-          message: labels.NoTargetGroupUserAdded,
-          btn: 'Add Users',
-          icon: 'mdi-plus'
-        },
+        iEmpty: this.iEmpty,
         isColumnFilterActive: false,
         rowActions: this.getRowActions(),
         selectEvent: {
@@ -203,7 +228,10 @@ export default {
           delete: false,
           download: false
         }
-      }
+      },
+      tableData: [],
+      customFields: [],
+      selections: []
     }
   },
   watch: {
@@ -213,10 +241,11 @@ export default {
   },
 
   created() {
-    if (this.customFields.length) {
-      this.addCustomFieldColumns()
+    if (this.resourceId) {
+      this.callForGetTargetUserCustomFieldsByCompanyId()
     }
   },
+
   methods: {
     addCustomFieldColumns() {
       const columnsOfCustomFields = this.customFields.map((field) => {
@@ -237,9 +266,48 @@ export default {
         ...this.lastColumns
       ]
     },
-    callForSearchTargetGroupUsers() {
-      this.$emit('callForSearchTargetGroupUsers', this.resourceId, this.axiosPayload)
+    callForGetTargetUserCustomFieldsByCompanyId() {
+      this.loading = true
+      getTargetUserCustomFieldsByCompanyId()
+        .then((response) => {
+          const { data } = response
+          this.customFields = data.data.filter((item) => {
+            return item.isActive
+          })
+          const sortProp = 'sortOrder'
+          this.customFields.sort((a, b) => {
+            if (a[sortProp] > b[sortProp]) {
+              return 1
+            } else if (a[sortProp] === b[sortProp]) {
+              return 0
+            }
+            return -1
+          })
+          this.addCustomFieldColumns()
+        })
+        .finally(() => this.callForSearchTargetGroupUsers())
     },
+    callForSearchTargetGroupUsers(id = this.resourceId) {
+      this.loading = true
+      searchTargetGroupUsers(id, this.axiosPayload)
+        .then((response) => {
+          const { data: { data: { results = [] } } = {} } = response
+          this.tableData = results.map((item) => {
+            const { customFieldValues } = item
+            for (let { name, value } of customFieldValues) {
+              item[name] = value
+            }
+            return item
+          })
+        })
+        .catch(() => {
+          this.$emit('handleRouteBackToTargetUsers')
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       let items = []
@@ -305,6 +373,9 @@ export default {
           ]
         : []
     },
+    handleAddUsersSelectionClick() {
+      this.$emit('handleAddUsersSelectionClick', this.selections)
+    },
     handleEditTargetUsers(selectedRow = {}) {
       this.$emit('handleEditTargetUser', selectedRow)
     },
@@ -315,6 +386,7 @@ export default {
       this.$emit('handleAddToAnExistingGroup', selectedRow)
     },
     handleSelectionChange(selection = []) {
+      this.selections = selection
       this.$emit('handleSelectionChange', selection)
     },
 

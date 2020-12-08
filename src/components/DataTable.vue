@@ -301,6 +301,7 @@
               </template>
               <span class="tooltip-span">Delete selected rows</span>
             </v-tooltip>
+            <slot name="selection-all-slot" />
             <v-tooltip
               bottom
               opacity="1"
