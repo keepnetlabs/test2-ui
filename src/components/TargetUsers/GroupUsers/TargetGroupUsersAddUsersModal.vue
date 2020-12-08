@@ -30,6 +30,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGroupUsersTable'
 import { createTargetGroupUsers } from '@/api/targetUsers'
 import labels from '@/model/constants/labels'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'TargetGroupUsersAddUsersModal',
   components: { TargetGroupUsersTable, AppModalBodyHeader, AppModal },
@@ -74,6 +75,11 @@ export default {
       createTargetGroupUsers(this.resourceId, {
         targetUserResourceIds: this.selectedUsers.map((user) => user.resourceId)
       }).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: `${this.selectedUsers.length} target users(s) added`,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
         this.$emit('closeOverlayWithUpdate')
       })
     },

@@ -276,12 +276,7 @@ export default {
           this.$store.dispatch('common/createSnackBar', {
             message: `New group named ${group.name} has been created`,
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-information',
-            action: {
-              link: '/',
-              label: 'VIEW',
-              linkType: 'text'
-            }
+            icon: 'mdi-information'
           })
           this.callForTargetGroups()
         })

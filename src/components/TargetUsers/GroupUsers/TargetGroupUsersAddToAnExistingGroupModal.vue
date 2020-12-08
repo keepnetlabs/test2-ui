@@ -211,7 +211,7 @@ export default {
       Promise.all(promises)
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
-            message: 'Target user(s) has been added to target group(s)',
+            message: `${selectedRowsResourceIds.length} target user(s) has been added to target group(s)`,
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })
