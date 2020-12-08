@@ -1,7 +1,7 @@
 <template>
   <div class="target-users-group-users">
     <div class="target-users-group-users__container">
-      <EditUserModal
+      <TargetUserEditUserModal
         v-if="showEditUserModal"
         :editData="selectedRow"
         :custom-fields="customFields"
@@ -24,6 +24,15 @@
         @closeOverlay="toggleAddUserModal"
         @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
       />
+      <TargetGroupsUsersRemoveFromGroups
+        v-if="showRemoveUserModal"
+        :status="showRemoveUserModal"
+        :selected-rows="getSelectedRow"
+        :group-name="getGroupName"
+        :resource-id="resourceId"
+        @closeDialog="toggleShowRemoveUserModal"
+        @handleRemoveUsers="handleRemoveUsers"
+      />
       <TargetGroupUsersTable
         ref="refTable"
         :resource-id="resourceId"
@@ -32,6 +41,9 @@
         @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
         @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
         @handleEditTargetUser="handleEditTargetUser"
+        @handleRemoveToGroup="handleRemoveToGroup"
+        @handleRemoveUsersSelectionClick="handleRemoveUsersSelectionClick"
+        @handleRouteBackToTargetUsers="handleRouteBackToTargetUsers"
       />
     </div>
   </div>
@@ -43,13 +55,15 @@ import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import AddUserModal from '../AddUserModal'
 import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
+import TargetGroupsUsersRemoveFromGroups from '@/components/TargetUsers/GroupUsers/TargetGroupsUsersRemoveFromGroups'
 export default {
   name: 'TargetGroupUsers',
   components: {
+    TargetGroupsUsersRemoveFromGroups,
     TargetGroupUsersAddUsersModal,
     TargetGroupUsersAddToAnExistingGroupModal,
     TargetGroupUsersTable,
-    EditUserModal: AddUserModal
+    TargetUserEditUserModal: AddUserModal
   },
   data() {
     return {
@@ -58,7 +72,8 @@ export default {
       showEditUserModal: false,
       selectedRow: null,
       showAddToAnExistingGroupModal: false,
-      showAddUsersModal: false
+      showAddUsersModal: false,
+      showRemoveUserModal: false
     }
   },
   computed: {
@@ -106,26 +121,37 @@ export default {
         })
       })
     },
+    callForSearchTargetGroupUsers() {
+      this.$refs.refTable.callForSearchTargetGroupUsers()
+    },
     closeAddOverlayWithUpdate() {
       this.toggleAddUserModal()
-      this.$refs.refTable.callForSearchTargetGroupUsers()
+      this.callForSearchTargetGroupUsers()
     },
     closeEditUserModalWithUpdate() {
       this.toggleEditUserModal()
-      this.$refs.refTable.callForSearchTargetGroupUsers()
+      this.callForSearchTargetGroupUsers()
     },
     closeAddToAnExistingGroupModalWithUpdate() {
       this.toggleShowAddToAnExistingGroupModal()
-      this.$refs.refTable.callForSearchTargetGroupUsers()
+      this.callForSearchTargetGroupUsers()
     },
     handleAddUsersSelectionClick(selection = []) {
       this.selectedRow = selection
       this.toggleShowAddToAnExistingGroupModal()
     },
+    handleRemoveUsersSelectionClick(selection = []) {
+      this.selectedRow = selection
+      this.toggleShowRemoveUserModal()
+    },
+    handleRemoveToGroup(selection = []) {
+      this.handleSelectedRow(selection)
+      this.toggleShowRemoveUserModal()
+    },
     handleRouteBackToTargetUsers() {
       this.$router.push({ name: 'Target Users', params: { tab: 'second' } })
     },
-    handleSelectedRow(row = {}) {
+    handleSelectedRow(row = []) {
       this.selectedRow = row
     },
     handleEditTargetUser(row = {}) {
@@ -136,11 +162,18 @@ export default {
       this.handleSelectedRow(row)
       this.toggleShowAddToAnExistingGroupModal()
     },
+    handleRemoveUsers() {
+      this.toggleShowRemoveUserModal()
+      this.callForSearchTargetGroupUsers()
+    },
     toggleAddUserModal() {
       this.showAddUsersModal = !this.showAddUsersModal
     },
     toggleEditUserModal() {
       this.showEditUserModal = !this.showEditUserModal
+    },
+    toggleShowRemoveUserModal() {
+      this.showRemoveUserModal = !this.showRemoveUserModal
     },
     toggleShowAddToAnExistingGroupModal() {
       this.showAddToAnExistingGroupModal = !this.showAddToAnExistingGroupModal

@@ -20,6 +20,7 @@
     @handleEditTargetUsers="handleEditTargetUsers"
     @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
     @handleSelectionChange="handleSelectionChange"
+    @handleRemoveToGroup="handleRemoveToGroup"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
   >
@@ -36,6 +37,19 @@
           </v-btn>
         </template>
         <span class="tooltip-span">Add Users</span>
+      </v-tooltip>
+      <v-tooltip bottom opacity="1">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            class="btn-selected-hover mr-1"
+            icon
+            v-on="on"
+            @click="handleRemoveUsersSelectionClick"
+          >
+            <v-icon class="selection-icons" color="white">mdi-minus-circle</v-icon>
+          </v-btn>
+        </template>
+        <span class="tooltip-span">Remove Users</span>
       </v-tooltip>
     </template>
   </DataTable>
@@ -89,7 +103,10 @@ export default {
     'handleEditTargetUser',
     'handleAddToAnExistingGroup',
     'handleSelectionChange',
-    'handleAddUsersSelectionClick'
+    'handleAddUsersSelectionClick',
+    'handleRemoveToGroup',
+    'handleRemoveUsersSelectionClick',
+    'handleRouteBackToTargetUsers'
   ],
   data() {
     return {
@@ -195,7 +212,10 @@ export default {
           fullWidth: true,
           dbName: 'status',
           filterableType: 'select',
-          filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
+          filterableItems: [
+            { text: labels.Active, value: 1 },
+            { text: labels.InActive, value: 0 }
+          ]
         },
         {
           property: 'createTime',
@@ -300,8 +320,10 @@ export default {
             return item
           })
         })
-        .catch(() => {
-          this.$emit('handleRouteBackToTargetUsers')
+        .catch((err) => {
+          if (err.response.status === 404) {
+            this.$emit('handleRouteBackToTargetUsers')
+          }
         })
         .finally(() => {
           this.loading = false
@@ -368,7 +390,7 @@ export default {
             {
               name: 'Remove from group',
               icon: 'mdi-minus-circle',
-              action: 'removeToGroup'
+              action: 'handleRemoveToGroup'
             }
           ]
         : []
@@ -385,11 +407,16 @@ export default {
     handleAddToAnExistingGroup(selectedRow = {}) {
       this.$emit('handleAddToAnExistingGroup', selectedRow)
     },
+    handleRemoveUsersSelectionClick() {
+      this.$emit('handleRemoveUsersSelectionClick', this.selections)
+    },
     handleSelectionChange(selection = []) {
       this.selections = selection
       this.$emit('handleSelectionChange', selection)
     },
-
+    handleRemoveToGroup(selectedRow = {}) {
+      this.$emit('handleRemoveToGroup', selectedRow)
+    },
     exportTargetGroupsUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
