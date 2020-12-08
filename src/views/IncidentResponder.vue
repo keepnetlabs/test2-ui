@@ -1389,7 +1389,6 @@ export default {
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = [
         ...bodyData.filter.FilterGroups[0].FilterItems
       ]
-      console.log('this.requestBodyReportedEmails.filter', this.requestBodyReportedEmails.filter)
       this.emails.isColumnFilterActive = columnFilterActive
       this.callForSearchNotifiedMail()
     },

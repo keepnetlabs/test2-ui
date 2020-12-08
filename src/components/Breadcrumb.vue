@@ -45,7 +45,6 @@ export default {
         parent = resolved.route.meta.parentName
       }
       //this.breadcrumb.unshift(this.baseName)
-      //console.log('breadcrumb', this.breadcrumb)
     }
   }
 }

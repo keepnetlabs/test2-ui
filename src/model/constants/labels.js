@@ -150,6 +150,8 @@ export const labels = {
   LicenceType: 'Licence Type',
   ExpiryPeriod: 'Expiry Period',
   NumberOfUsers: 'Number of users',
+  ImportSelected: 'IMPORT SELECTED',
+  ImportAll: 'IMPORT ALL',
   StartInvestigation: 'START INVESTIGATION'
 }
 

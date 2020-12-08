@@ -20,7 +20,7 @@
           <div class="k-file-uploads__item-details--filesize">
             <span>{{ file.size | formatSize }}</span>
             <span
-              v-if="isStandAlone && file.progress"
+              v-if="isStandAlone && file.progress && uploadProgress < 100"
               class="k-file-uploads__item-details--progress-value"
               >{{ uploadProgress }}%</span
             >
@@ -29,7 +29,12 @@
             v-if="isStandAlone && file.progress"
             class="k-file-uploads__item-details--fileprogress"
           >
-            <v-progress-linear :value="uploadProgress" />
+            <v-progress-linear :value="uploadProgress" v-if="uploadProgress < 100" />
+            <span
+              v-if="isStandAlone && file.progress && uploadProgress === 100"
+              class="k-file-uploads__item-details--progress-value"
+              >{{ constant.UPLOADED_SUCCESSFULLY }}</span
+            >
           </div>
         </div>
         <div v-if="isStandAlone" class="k-file-uploads__item-actions">
@@ -98,6 +103,7 @@
 <script>
 import FileUpload from 'vue-upload-component'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { LABEL_STORE } from '@/model/constants/commonConstants'
 
 export default {
   name: 'KFileUpload',
@@ -133,7 +139,8 @@ export default {
   data() {
     return {
       files: [],
-      uploadProgress: 0
+      uploadProgress: 0,
+      constant: LABEL_STORE
     }
   },
   computed: {
