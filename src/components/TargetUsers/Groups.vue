@@ -60,6 +60,11 @@
           <span class="tooltip-span">{{ 'Add Group' }}</span>
         </v-tooltip>
       </template>
+      <template v-slot:datatable-custom-column="{ scope, col }">
+        <span @click="handleGroupNameClick(scope.row)" class="popup-link">
+          {{ scope.row[col.property] }}
+        </span>
+      </template>
     </datatable>
   </div>
 </template>
@@ -109,9 +114,7 @@ export default {
             fixed: 'left',
             sortable: true,
             show: true,
-            type: 'text',
-            href: '/target-groups',
-            hrefKey: 'resourceId',
+            type: 'slot',
             width: 240,
             isEditable: true,
             filterableType: 'text',
@@ -256,6 +259,12 @@ export default {
   },
   methods: {
     handleSyncWithLDAP(row) {},
+    handleGroupNameClick(row) {
+      this.$router.push({
+        name: 'Target Group Users',
+        params: { id: row.resourceId, label: row.name }
+      })
+    },
     handleMultipleDelete(selection) {
       this.selectedRow = selection
       this.changeDeleteGroupModalStatus(true)
@@ -267,12 +276,7 @@ export default {
           this.$store.dispatch('common/createSnackBar', {
             message: `New group named ${group.name} has been created`,
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-information',
-            action: {
-              link: '/',
-              label: 'VIEW',
-              linkType: 'text'
-            }
+            icon: 'mdi-information'
           })
           this.callForTargetGroups()
         })

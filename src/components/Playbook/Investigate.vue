@@ -405,6 +405,7 @@ export default {
     },
     investigationDuration(val) {},
     investigateData(val) {
+      console.log('investigateData', val)
       /*
       let date = new Date()
       switch (val) {
@@ -435,6 +436,11 @@ export default {
       }
 
        */
+    },
+    'investigateData.targetUsers'(newVal) {
+      if (newVal[0] === '') {
+        newVal.splice(0, 1)
+      }
     },
     searchUserGroup(val) {
       if (val && val.length >= 3) {

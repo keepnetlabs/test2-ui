@@ -90,6 +90,7 @@ export default {
       default: false
     }
   },
+  emits: ['closeOverlay', 'submit'],
   data() {
     return { labels }
   },

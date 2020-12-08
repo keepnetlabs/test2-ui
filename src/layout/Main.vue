@@ -347,6 +347,7 @@
               routerName === 'Companies' ||
               routerName === 'Company Settings' ||
               routerName === 'Company Group Details' ||
+              routerName === 'Target Group Users' ||
               routerName === 'System Users',
             'un-selected-list-item':
               routerName !== 'Company' ||
@@ -354,6 +355,7 @@
               routerName === 'Companies' ||
               routerName === 'Company Settings' ||
               routerName === 'System Users' ||
+              routerName === 'Target Group Users' ||
               routerName === 'Company Group Details'
           }"
         >
@@ -369,7 +371,11 @@
             "
           >
             <v-list-item-content class="menu-item-content">
-              <router-link to="/target-users" class="menu-link-default">
+              <router-link
+                to="/target-users"
+                class="menu-link-default"
+                :class="[routerName === 'Target Group Users' && 'active-link']"
+              >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Target Users</span>
                 </v-list-item-title>
@@ -584,6 +590,9 @@
             </h1>
             <h1 v-else-if="routerName === 'Company Group Details'">
               {{ companyGroupName || $route.params.name }}
+            </h1>
+            <h1 v-else-if="routerName === 'Target Group Users'">
+              {{ $route.params.label }}
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>

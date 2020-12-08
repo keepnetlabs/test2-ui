@@ -224,7 +224,7 @@
               </template>
               <span class="tooltip-span">Print Options</span>
             </v-tooltip>
-            <v-tooltip bottom opacity="1" v-once>
+            <v-tooltip v-if="isSettingsPopup" v-once bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn
                   @click="isSettingsOpened = true"
@@ -301,6 +301,7 @@
               </template>
               <span class="tooltip-span">Delete selected rows</span>
             </v-tooltip>
+            <slot name="selection-all-slot" />
             <v-tooltip
               bottom
               opacity="1"
@@ -880,6 +881,10 @@ export default {
       default() {
         return {}
       }
+    },
+    isSettingsPopup: {
+      type: Boolean,
+      default: true
     },
     disableExtendedViewTransition: {
       type: Boolean,
@@ -2152,7 +2157,7 @@ export default {
       // emit to parent with name --- this.$emit(name)
       // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },
-    Copy(selections) {
+    handleCopy(selections) {
       let headerKeys = this.columns.reduce((acc, item) => {
         acc.push(item.property)
         return acc
