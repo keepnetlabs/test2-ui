@@ -112,6 +112,12 @@ export function exportTargetGroupUsers(id = '', payload = {}) {
   })
 }
 
+export function exportTargetUsers(payload = {}) {
+  return testRequest.post('/target-users/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export function deleteTargetGroupUsers(id = '', payload = {}) {
   return testRequest.delete(`/target-groups/${id}/users`, { data: payload })
 }
