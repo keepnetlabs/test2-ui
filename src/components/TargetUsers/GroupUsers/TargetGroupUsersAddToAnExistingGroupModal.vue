@@ -138,7 +138,9 @@ export default {
       return !this.selectedTargetGroups.length
     },
     getTitle() {
-      return `Add ${this.selectedRows.length} User(s) To User Groups`
+      let text = 'User'
+      text += this.selectedRows.length > 1 ? 's' : ''
+      return `Add ${this.selectedRows.length} ${text} To User Groups`
     }
   },
   created() {
@@ -150,7 +152,6 @@ export default {
       searchTargetGroups(this.axiosPayload)
         .then((response) => {
           let data = response.data.data
-          console.log(data)
           this.tableData = data.results.length ? data.results : []
         })
         .finally(() => (this.loading = false))
@@ -211,7 +212,7 @@ export default {
       Promise.all(promises)
         .then(() => {
           this.$store.dispatch('common/createSnackBar', {
-            message: `${selectedRowsResourceIds.length} target user(s) has been added to target group(s)`,
+            message: `${selectedRowsResourceIds.length} target user(s) has been added to ${this.selectedTargetGroups.length} target group(s)`,
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
             icon: 'mdi-check-circle'
           })

@@ -30,6 +30,7 @@ export default {
       default: false
     }
   },
+  emits: ['handleClose', 'handleConfirm'],
   data() {
     return { labels }
   },

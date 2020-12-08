@@ -3,7 +3,7 @@
     :status="status"
     icon="mdi-delete"
     title="Delete System User?"
-    subtitle="The system user will  deleted permanently"
+    subtitle="The system user will deleted permanently"
   >
     <template v-slot:app-dialog-body>
       {{ getSystemUserName }} will be deleted and removed from system users.

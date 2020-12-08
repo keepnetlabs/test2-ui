@@ -1,8 +1,9 @@
 <template>
   <AppModal
-    :status="status"
     v-if="status"
+    :status="status"
     :title="getTitle"
+    :save-disable="saveDisable"
     icon-name="mdi-account-plus"
     @closeOverlay="closeOverlay"
     @submit="submit"
@@ -56,6 +57,7 @@ export default {
   data() {
     return {
       selectedUsers: [],
+      saveDisable: false,
       iEmpty: {
         message: labels.NoUsersToAdd
       }
@@ -71,15 +73,19 @@ export default {
       this.$emit('closeOverlay')
     },
     submit() {
-      console.log('this.selections', this.selectedUsers)
+      this.saveDisable = true
       createTargetGroupUsers(this.resourceId, {
         targetUserResourceIds: this.selectedUsers.map((user) => user.resourceId)
       }).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: `${this.selectedUsers.length} target users(s) added`,
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
-        })
+        this.$store
+          .dispatch('common/createSnackBar', {
+            message: `${this.selectedUsers.length} target users(s) added to “${this.groupName}”`,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-check-circle'
+          })
+          .finally(() => {
+            this.saveDisable = false
+          })
         this.$emit('closeOverlayWithUpdate')
       })
     },

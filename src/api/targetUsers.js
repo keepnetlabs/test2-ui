@@ -111,6 +111,11 @@ export function exportTargetGroupUsers(id = '', payload = {}) {
     responseType: 'blob'
   })
 }
+
+export function deleteTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.delete(`/target-groups/${id}/users`, { data: payload })
+}
+
 export function getMappingStatus(id) {
   return testRequest.get(`target-users/mapping-job/${id}`)
 }

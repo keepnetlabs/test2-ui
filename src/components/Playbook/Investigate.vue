@@ -405,7 +405,6 @@ export default {
     },
     investigationDuration(val) {},
     investigateData(val) {
-      console.log('investigateData', val)
       /*
       let date = new Date()
       switch (val) {
