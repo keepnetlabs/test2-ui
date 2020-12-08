@@ -286,9 +286,7 @@ export default {
       }
     }
   },
-  mounted() {
-    this.getTableData()
-  },
+  mounted() {},
   methods: {
     handleSearchChange(bodyData = {}, columnFilterActive = false) {
       this.payload.filter.FilterGroups[0].FilterItems = [
@@ -304,23 +302,25 @@ export default {
       }
     },
     getLookUpDatas() {
-      getLookupListByTypeIdList({ typeidlist: [2, 3] }).then((response) => {
-        const res = response.data.data
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          res
-            .filter((item) => item.genericCodeTypeId === 2)
-            .map((item) => ({ text: item.name, value: item.resourceId }))
-        )
-        this.$set(
-          this.tableOptions.columns[2],
-          'filterableItems',
-          res
-            .filter((item) => item.genericCodeTypeId === 3)
-            .map((item) => ({ text: item.name, value: item.resourceId }))
-        )
-      })
+      getLookupListByTypeIdList({ typeidlist: [2, 3] })
+        .then((response) => {
+          const res = response.data.data
+          this.$set(
+            this.tableOptions.columns[1],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 2)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+          this.$set(
+            this.tableOptions.columns[2],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 3)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+        })
+        .finally(() => this.getTableData())
     },
     getTableData(payload) {
       const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
