@@ -23,3 +23,7 @@ export function updateSmtpSettings(payload) {
 export function exportSmtpSettings(payload) {
   return testRequest.post(`${URL}/search/export`, payload, { responseType: 'blob' })
 }
+
+export function searchAvailableFor(payload = {}) {
+  return testRequest.post('/available-for/search', payload)
+}

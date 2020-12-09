@@ -214,7 +214,7 @@ html {
   color: #474747;
 }
 .vue-treeselect {
-  height: 40px;
+  min-height: 40px;
   &__single-value{
     line-height: 38px;
     color: #383b41;
@@ -223,7 +223,7 @@ html {
   &__control {
     border-radius: 8px !important;
     border: solid 1px rgba(0, 0, 0, 0.16) !important;
-    height: 40px;
+    min-height: 40px;
     .vue-treeselect__placeholder{
       font-size: 13px;
       font-weight: normal;
