@@ -47,6 +47,11 @@
       &__multi-value{
       &-item{
         border-radius: 12px;
+        @media not all and (min-resolution:.001dpcm) {
+          @supports (-webkit-appearance:none) {
+            border-width: 0;
+          }
+        }
         padding: 5px;
         background: #e0e0e0;
       }
@@ -67,7 +72,7 @@
           border-left: none;
           background-color: #757575;
           border-radius: 50%;
-          color: #e0e0e0;
+          color: #e0e0e0 !important;
           height: 16px;
           > svg {
             width: auto;
