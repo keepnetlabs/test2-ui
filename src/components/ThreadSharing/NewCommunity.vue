@@ -191,7 +191,7 @@ export default {
       isCheckboxChecked: false,
       nameRules: {
         required: (v) =>
-          (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
+          (v && v.length >= 5 && v.length <= 64) || 'Community Name must between 5-64 characters',
         regex: (v) =>
           /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
@@ -204,8 +204,7 @@ export default {
       },
       descriptionRules: {
         required: (v) =>
-          (!!v && v.length >= 5 && v.length <= 300) ||
-          'Description is required and must be between 5-300 characters.',
+          (!!v && v.length >= 5 && v.length <= 300) || 'Description cannot exceed 300 characters',
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       categoryRules: {

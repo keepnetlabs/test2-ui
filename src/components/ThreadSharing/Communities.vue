@@ -1078,6 +1078,7 @@ export default {
       }
     },
     updateCommunities() {
+      this.isCommunity = false
       switch (this.selectedTab) {
         case 'tab-0':
           this.getMyCommunitiesListData()
@@ -1124,6 +1125,7 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     subTabSelected(name) {
+      this.isCommunity = false
       if (name == 'Your Communities') {
         this.selectedTab = 'tab-0'
         this.getMyCommunitiesListData()
