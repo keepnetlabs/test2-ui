@@ -16,6 +16,10 @@ export function deleteSystemUser(resourceId = '') {
   return testRequest.delete(`/system-users/${resourceId}`)
 }
 
+export function sendInformationEmail(resourceId = '') {
+  return testRequest.post(`/system-users/${resourceId}/send-information-email`)
+}
+
 export function getUserRoles(payload) {
   return testRequest.post(`/roles/search`, payload, { loading: true })
 }

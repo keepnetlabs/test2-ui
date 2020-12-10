@@ -58,7 +58,7 @@
         </form-group>
         <form-group v-if="selectedRow">
           <v-btn
-            @click="callForSendInformationEmail"
+            @click="callForSendInformationEmail(selectedRow.resourceId)"
             color="#2196f3"
             rounded
             class="white--text btn-util"
@@ -78,7 +78,12 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { mail, maxLength, required } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
-import { createSystemUser, getUserRoles, updateSystemUser } from '@/api/systemUsers'
+import {
+  createSystemUser,
+  getUserRoles,
+  sendInformationEmail,
+  updateSystemUser
+} from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
@@ -86,7 +91,7 @@ import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputPhone from '@/components/Common/Inputs/InputPhone'
-import { getSystemUsersRole } from '../../api/systemUsers'
+import { getSystemUsersRole } from '@/api/systemUsers'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -146,7 +151,15 @@ export default {
     }
   },
   methods: {
-    callForSendInformationEmail(resourceId = '') {},
+    callForSendInformationEmail(resourceId = '') {
+      sendInformationEmail(resourceId).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'Information email has been sent',
+          icon: 'mdi-check-circle',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+        })
+      })
+    },
     closeOverlay() {
       this.$emit('closeOverlay')
     },
@@ -205,6 +218,7 @@ export default {
             icon: 'mdi-check-circle',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
           })
+
           this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
@@ -300,6 +314,7 @@ export default {
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
+        this.formValues.phoneNumber = phoneNumber
         /*
         this.$nextTick(() => {
           this.formValues.phoneNumber = this.$refs.refTelInput.phoneObject.number.international
