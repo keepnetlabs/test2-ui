@@ -347,6 +347,7 @@
               routerName === 'Companies' ||
               routerName === 'Company Settings' ||
               routerName === 'Company Group Details' ||
+              routerName === 'Target Group Users' ||
               routerName === 'System Users',
             'un-selected-list-item':
               routerName !== 'Company' ||
@@ -354,6 +355,7 @@
               routerName === 'Companies' ||
               routerName === 'Company Settings' ||
               routerName === 'System Users' ||
+              routerName === 'Target Group Users' ||
               routerName === 'Company Group Details'
           }"
         >
@@ -369,7 +371,11 @@
             "
           >
             <v-list-item-content class="menu-item-content">
-              <router-link to="/target-users" class="menu-link-default">
+              <router-link
+                to="/target-users"
+                class="menu-link-default"
+                :class="[routerName === 'Target Group Users' && 'active-link']"
+              >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Target Users</span>
                 </v-list-item-title>
@@ -380,7 +386,7 @@
             style="padding-left: 0 !important; margin-left: -5px;"
             v-if="
               this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
-              checkPermissionMultiple(['company-groups|POST', 'companies/search|POST'])
+              checkPermissionMultiple(['company-groups|GET', 'companies/search|POST'])
             "
           >
             <v-list-item-content class="menu-item-content">
@@ -585,6 +591,9 @@
             <h1 v-else-if="routerName === 'Company Group Details'">
               {{ companyGroupName || $route.params.name }}
             </h1>
+            <h1 v-else-if="routerName === 'Target Group Users'">
+              {{ $route.params.label }}
+            </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
@@ -679,7 +688,7 @@
       </v-container>
       <app-footer />
     </v-content>
-    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: true }" />
+    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: false }" />
   </v-app>
 </template>
 <script>
@@ -1116,7 +1125,6 @@ export default {
       if (this.$store.state.auth.companyName == undefined) {
         return ''
       }
-      console.log(this.$store.state.auth.selectedCompanyName)
       return this.$store.state.auth.selectedCompanyName
     },
     getRolename() {

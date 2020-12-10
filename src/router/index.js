@@ -27,7 +27,7 @@ import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
 import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
-
+import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
 Vue.use(Router)
 
 const router = new Router({
@@ -134,7 +134,6 @@ const router = new Router({
           component: TargetUsers,
           beforeEnter: (to, from, next) => {
             //checkPermission()
-
             next()
           },
           beforeRouteUpdate: (to, from, next) => {
@@ -146,6 +145,17 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Company'
           }
+        },
+        {
+          path: '/target-users/:id',
+          name: 'Target Group Users',
+          component: TargetGroupUsers,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Company'
+          },
+          props: true,
+          params: true
         },
         {
           path: '/companies',
@@ -520,7 +530,6 @@ router.beforeEach((to, from, next) => {
         storeRef.dispatch('common/changeDownloadModalStatus', false)
         next(false)
       } else {
-        //console.log(storeRef.state.auth.permissions)
         next()
       }
     } else {

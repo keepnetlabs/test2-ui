@@ -189,7 +189,7 @@
                 }}</span>
               </v-tooltip>
             </slot>
-            <v-menu bottom left offset-y v-if="downloadButton.show">
+            <v-menu bottom left offset-y v-if="downloadButton && downloadButton.show">
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -224,7 +224,7 @@
               </template>
               <span class="tooltip-span">Print Options</span>
             </v-tooltip>
-            <v-tooltip bottom opacity="1" v-once>
+            <v-tooltip v-if="isSettingsPopup" v-once bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn
                   @click="isSettingsOpened = true"
@@ -240,6 +240,7 @@
             </v-tooltip>
           </div>
         </div>
+        <slot name="table-notification"></slot>
         <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
@@ -300,6 +301,7 @@
               </template>
               <span class="tooltip-span">Delete selected rows</span>
             </v-tooltip>
+            <slot name="selection-all-slot" />
             <v-tooltip
               bottom
               opacity="1"
@@ -347,7 +349,7 @@
           </div>
         </div>
         <div
-          class="table-container"
+          :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
           id="table-container"
           ref="tableContainer"
           v-if="(tableData && tableData.length) || isColumnFilterActive"
@@ -365,6 +367,7 @@
             @cell-mouse-leave="cellLeave"
             @selection-change="handleSelectionChange"
             @select="handleSelect"
+            @expand-change="handleExpandedRowChange"
             @sort-change="sortChangedEvent"
             :empty-text="empty.message"
             @select-all="handleSelectAll"
@@ -640,44 +643,46 @@
               v-if="rowActions && rowActions.length === 2"
             >
               <template slot-scope="scope">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      @click.native="
-                        rowActions[0].action === 'edit'
-                          ? handleEdit(scope.row, scope.$index)
-                          : rowAct(rowActions[0].action, scope.row)
-                      "
-                      :disabled="rowActions[0]['disabled']"
-                      class="btn-hover mr-1"
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon>{{ rowActions[0].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[0].name }}</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :disabled="
-                        scope.row.status === 'Cancelled' ||
-                        scope.row.status === 'Expired' ||
-                        scope.row.status === 'Finished' ||
-                        scope.row.status === 'NoMatch' ||
-                        rowActions[1]['disabled']
-                      "
-                      @click.native="rowAct(rowActions[1].action, scope.row)"
-                      class="btn-hover"
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon>{{ rowActions[1].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[1].name }}</span>
-                </v-tooltip>
+                <slot name="datatable-row-actions" :scope="scope">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        @click.native="
+                          rowActions[0].action === 'edit'
+                            ? handleEdit(scope.row, scope.$index)
+                            : rowAct(rowActions[0].action, scope.row)
+                        "
+                        :disabled="rowActions[0]['disabled']"
+                        class="btn-hover mr-1"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        :disabled="
+                          scope.row.status === 'Cancelled' ||
+                          scope.row.status === 'Expired' ||
+                          scope.row.status === 'Finished' ||
+                          scope.row.status === 'NoMatch' ||
+                          rowActions[1]['disabled']
+                        "
+                        @click.native="rowAct(rowActions[1].action, scope.row)"
+                        class="btn-hover"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[1].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[1].name }}</span>
+                  </v-tooltip>
+                </slot>
               </template>
             </el-table-column>
             <template v-slot:empty>
@@ -842,6 +847,9 @@ export default {
       type: Array,
       required: true
     },
+    lazy: {
+      type: Boolean
+    },
     hideParentRowActions: {
       type: Boolean,
       default: false
@@ -855,6 +863,9 @@ export default {
     serverSideEvents: {
       type: Object,
       default: () => ({ search: false, sort: false, pagination: false })
+    },
+    handleSetCellClass: {
+      type: Function
     },
     changeFooterPosition: {
       type: Boolean,
@@ -872,6 +883,10 @@ export default {
       default() {
         return {}
       }
+    },
+    isSettingsPopup: {
+      type: Boolean,
+      default: true
     },
     disableExtendedViewTransition: {
       type: Boolean,
@@ -1059,6 +1074,7 @@ export default {
       renderedColumns: [],
       filteredDataLength: 0,
       showfilteredData: false,
+      selectCheckboxesLazy: false,
       sortProps: null,
       initialData: [],
       dataLength: 0,
@@ -1074,7 +1090,9 @@ export default {
       timeout: null,
       selectionCheckbox: false,
       selectionAll: false,
+      dynamicStyleRef: null,
       search: '',
+      expandedRows: [],
       downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToEditRow: false,
@@ -1104,6 +1122,10 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
+      this.multipleSelection = []
+      if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
+        this.$refs.elTableRef.clearSelection()
+      }
       this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
@@ -1132,18 +1154,21 @@ export default {
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
         }
-        if (!this.hideParentRowActions) {
-          this.handleParentRowActions()
-        }
       }
     },
     tableData(data) {
       this.calculateAllSelected()
+      if (this.groupable && !this.lazy) {
+        this.calculateExpandedRows()
+      }
       if (!this.tableData || this.tableData.length === 0) return []
       else return data
     },
     filteredData() {
       this.calculateAllSelected()
+      if (this.groupable && !this.lazy) {
+        this.calculateExpandedRows()
+      }
     },
     firstColFixed(val) {
       if (!val) {
@@ -1210,13 +1235,39 @@ export default {
 
     window.addEventListener('resize', this.renderFixedItems)
   },
+  beforeDestroy() {
+    if (this.dynamicStyleRef && this.dynamicStyleRef.remove) {
+      this.dynamicStyleRef.remove()
+    }
+  },
   methods: {
+    getSelectedMultipleValues() {
+      return this.multipleSelection
+    },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
     },
-
+    handleExpandedRowChange(row, isExpanded) {
+      let expandedRow = this.expandedRows.find(
+        (item) => JSON.stringify(item.data) === JSON.stringify(row)
+      )
+      if (expandedRow) {
+        expandedRow.isExpanded = isExpanded
+      } else {
+        this.expandedRows.push({ data: row, isExpanded })
+      }
+    },
+    calculateExpandedRows() {
+      this.$nextTick(() => {
+        for (const item of this.expandedRows) {
+          if (this.$refs && this.$refs.elTableRef) {
+            this.$refs.elTableRef.toggleRowExpansion(item.data, item.isExpanded)
+          }
+        }
+      })
+    },
     calculateAllSelected() {
       let dataRef = this.showfilteredData ? this.filteredData : this.tableData
       const renderedTotalLength = this.getTotalLength(this.tableData)
@@ -1267,7 +1318,15 @@ export default {
     /**
      *This function must use calls when lazy load used
      */
-    callbackOfLazyLoad() {
+    callbackOfLazyLoad(rows = []) {
+      for (let row of rows) {
+        this.addItemToClusteredItems(row)
+        if (this.selectCheckboxesLazy || this.selectionCheckbox) {
+          this.$refs.elTableRef.toggleRowSelection(row, true)
+        }
+        //
+      }
+      this.selectCheckboxesLazy = false
       this.totalLength = this.getTotalLength(this.initialData)
       this.calculateAllSelected()
     },
@@ -1406,18 +1465,14 @@ export default {
       this.extendedViewStyle = {
         top: `${48}px`
       }
-      this.$emit('onEditClick', {
-        selected: this.multipleSelection,
-        isEditPopupOpen: true
-      })
-      this.isWantToEditRow = true
-    },
-    handleParentRowActions() {
-      const objStyle = document.createElement('style')
-      objStyle.innerHTML =
-        '.el-table__row.el-table__row--level-0 .actions-container button {visibility:hidden}'
-      const ref = document.querySelector('script')
-      ref.parentNode.insertBefore(objStyle, ref)
+      const selections = this.multipleSelection.filter((item) => !item.isParent)
+      if (selections.length) {
+        this.$emit('onEditClick', {
+          selected: selections,
+          isEditPopupOpen: true
+        })
+        this.isWantToEditRow = true
+      }
     },
     /**
      * This functions removes visibility of the right actions columns.
@@ -1441,6 +1496,9 @@ export default {
 
         for (let item of selection) {
           this.selectChildren(item, selection)
+          if (this.groupable) {
+            this.handleToggleOrLazyWhenCheckboxSelected(item)
+          }
         }
 
         this.multipleSelection = selection
@@ -1457,6 +1515,7 @@ export default {
             this.selectChildren(child, selection)
           }
           this.$refs.elTableRef.toggleRowSelection(child, true)
+          this.handleToggleOrLazyWhenCheckboxSelected(child)
           this.addItemToClusteredItems(child)
           if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
             selection.push(child)
@@ -1493,6 +1552,9 @@ export default {
       return this.calculateLength(data)
     },
     setCellClass(obj) {
+      if (this.handleSetCellClass) {
+        return this.handleSetCellClass(obj)
+      }
       /*
       const classNames = this.setClassName(obj)
       return classNames
@@ -1629,6 +1691,8 @@ export default {
           }
         })
       } else {
+        const collator = new Intl.Collator('tr')
+
         sortData = data.sort(function (a, b) {
           if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
             const aProp = String(a[sortProps.prop])
@@ -1647,31 +1711,32 @@ export default {
             else if (sortProps.order === 'ascending') {
               if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+                collator.compare(aProp.charAt(0), bProp.charAt(0).toUpperCase()) === 0
               ) {
                 return -1
               } else if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+                collator.compare(bProp.charAt(0), aProp.charAt(0).toUpperCase()) === 0
               ) {
                 return 1
               }
-              return aProp.toLowerCase() < bProp.toLowerCase() ? -1 : 1
+              return collator.compare(aProp.toLowerCase(), bProp.toLowerCase())
             }
             // if descending, highest sorts first
             else {
               if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                aProp.charAt(0) === bProp.charAt(0).toUpperCase()
+                collator.compare(aProp.charAt(0), bProp.charAt(0).toUpperCase()) === 0
               ) {
                 return 1
               } else if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
-                bProp.charAt(0) === aProp.charAt(0).toUpperCase()
+                collator.compare(bProp.charAt(0), aProp.charAt(0).toUpperCase()) === 0
               ) {
                 return -1
               }
-              return aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
+              //aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
+              return collator.compare(bProp.toLowerCase(), aProp.toLowerCase())
             }
           } else {
             if (a[sortProps.prop] === b[sortProps.prop]) {
@@ -1718,7 +1783,8 @@ export default {
             .filter((column) => column.filterableType)
             .reduce((acc, filterItem) => {
               acc.push({
-                FieldName: filterItem.property,
+                FieldName:
+                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
                 Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
                 Value: this.search
               })
@@ -1868,6 +1934,10 @@ export default {
     },
     handleSelect(selection, row) {
       if (this.groupable) {
+        this.handleToggleOrLazyWhenCheckboxSelected(
+          row,
+          !!selection.find((item) => JSON.stringify(item) === JSON.stringify(row))
+        )
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
             for (let child of row.children) {
@@ -1875,6 +1945,7 @@ export default {
                 this.selectChildrenByRowCheckbox(child.children, selection)
               }
               this.$refs.elTableRef.toggleRowSelection(child, true)
+              this.handleToggleOrLazyWhenCheckboxSelected(child)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
                 this.addItemToClusteredItems(child)
                 selection.push(child)
@@ -1917,6 +1988,15 @@ export default {
           this.isWantToEditRow = false
         }
         this.$emit('handleSelectionChange', selection)
+      }
+    },
+    handleToggleOrLazyWhenCheckboxSelected(row = {}, selection = true) {
+      const { hasChildren, children = [] } = row
+      if (hasChildren && !children.length) {
+        this.$refs.elTableRef.store.loadOrToggle(row)
+        this.selectCheckboxesLazy = true
+      } else if (children.length) {
+        this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
     },
     changeDownloadModalStatus(status) {
@@ -2207,7 +2287,27 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.dataTableText-validation-error {
+  font-size: 9px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #f56c6c;
+  position: absolute;
+  top: 4px;
+}
+.dataTableText-main-error {
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  color: #f56c6c;
+}
+</style>
 <!--
   DataTable COMPONENT
   - Element UI's Table component used

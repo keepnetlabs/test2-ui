@@ -1,4 +1,10 @@
 export const labels = {
+  getMaxLengthMessage(val = '', length = 64) {
+    return `${val} cannot exceed ${length} characters`
+  },
+  getMinLengthMessage(val = '', length = 3) {
+    return `${val} must have at least ${length} characters`
+  },
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   Save: 'SAVE',
@@ -6,15 +12,25 @@ export const labels = {
   Next: 'NEXT',
   Prev: 'PREV',
   Back: 'BACK',
+  Email: 'Email Address',
   Name: 'Name',
   Description: 'Description',
+  Low: 'Low',
+  High: 'High',
+  VeryHigh: 'Very High',
+  VeryLow: 'Very Low',
   Industry: 'Industry',
   Result: 'Result',
+  Medium: 'Medium',
   Country: 'Country',
+  UserName: 'User Name',
+  Department: 'Department',
+  CreateTime: 'Date Created',
   Address: 'Address',
   WebsiteUrl: 'Website URL',
   FirstName: 'First Name',
   LastName: 'Last Name',
+  CompanyName: 'Company Name',
   CompanyGroup: 'Company Group',
   Closed: 'Closed',
   User: 'User',
@@ -22,6 +38,7 @@ export const labels = {
   Open: 'Open',
   Matches: 'Match(es)',
   IpAddress: 'Ip Address',
+  InvalidDomainName: 'Invalid domain name',
   EmailAddress: 'Email Address',
   StopOngoingInvestigation: 'Stop Ongoing Investigation',
   DoYouWantToStopInvestigation: 'Do you want to stop this investigation?',
@@ -35,6 +52,7 @@ export const labels = {
   AddIn: 'Add-in',
   ReportedEmailTrends: 'Reported Email Trends',
   General: 'General',
+  NoUsersToAdd: 'No users to add',
   Brand: 'Brand',
   Reporters: 'Reporters',
   TopRules: 'Top Rules',
@@ -63,6 +81,7 @@ export const labels = {
   Community: 'Community',
   AddAnIntegration: 'ADD AN INTEGRATION',
   Logo: 'Logo',
+  CompanyLogo: 'Company Logo',
   Close: 'Close',
   RuleName: 'Rule Name',
   MostRecentInvestigations: 'Most recent investigations',
@@ -93,6 +112,7 @@ export const labels = {
   InstallNow: 'Install Now',
   NoAddInInstalled: 'No add-ins installed',
   Required: 'Required',
+  NoTargetGroupUserAdded: 'There is no user in this group',
   AlertBox: 'Alertbox',
   CurrentlyOnline: 'Currently Online',
   Subject: 'Subject',
@@ -128,12 +148,12 @@ export const labels = {
   NotStartedUserCount: 'Not Started User Count',
   IntegrationName: 'Integration Name',
   Disable: 'Disable',
-  getMaxLengthMessage(val = '', length = 64) {
-    return `${val} cannot exceed ${length} characters`
-  },
-  getMinLengthMessage(val = '', length = 3) {
-    return `${val} must have at least ${length} characters`
-  }
+  LicenceType: 'Licence Type',
+  ExpiryPeriod: 'Expiry Period',
+  NumberOfUsers: 'Number of users',
+  ImportSelected: 'IMPORT SELECTED',
+  ImportAll: 'IMPORT ALL',
+  StartInvestigation: 'START INVESTIGATION'
 }
 
 export default labels

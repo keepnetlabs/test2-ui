@@ -93,6 +93,44 @@ export function getUploadedFileData(id) {
 export function createMapping(payload) {
   return testRequest.post(`/target-users/create-mapping`, payload)
 }
+
 export function searchTmp(payload, id) {
   return testRequest.post(`/target-users/${id}/search`, payload)
+}
+
+export function searchTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.post(`/target-groups/${id}/users`, payload)
+}
+
+export function createTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.put(`/target-groups/${id}/users`, payload)
+}
+
+export function exportTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.post(`/target-groups/${id}/users/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
+export function exportTargetUsers(payload = {}) {
+  return testRequest.post('/target-users/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+export function exportTargetGroups(payload = {}) {
+  return testRequest.post('/target-groups/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
+export function deleteTargetGroupUsers(id = '', payload = {}) {
+  return testRequest.delete(`/target-groups/${id}/users`, { data: payload })
+}
+
+export function getMappingStatus(id) {
+  return testRequest.get(`target-users/mapping-job/${id}`)
+}
+
+export function importTmpUsers(payload, id) {
+  return testRequest.post(`/target-users/${id}/import`, payload, { loading: true })
 }

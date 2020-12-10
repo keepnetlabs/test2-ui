@@ -219,7 +219,7 @@
       v-if="deleteDialog"
       icon="mdi-delete"
       title="Delete Mail Configuration?"
-      subtitle="The O365 mail configuration will  deleted permanently"
+      subtitle="The O365 mail configuration will deleted permanently"
     >
       <template v-slot:app-dialog-body>
         {{ deleteDialogName }} will be deleted and removed from all integrations.

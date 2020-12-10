@@ -112,6 +112,7 @@ import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 export default {
+  name: 'Investigations',
   components: {
     AppDialogFooter,
     Datatable,

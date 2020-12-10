@@ -26,7 +26,13 @@
             <v-btn class="k-overlay__btn-cancel" rounded @click="closeOverlay">
               {{ labels.Cancel }}
             </v-btn>
-            <v-btn class="k-overlay__btn-save white--text" color="#2196f3" rounded @click="submit">
+            <v-btn
+              class="k-overlay__btn-save white--text"
+              color="#2196f3"
+              rounded
+              @click="submit"
+              :disabled="saveDisable"
+            >
               {{ labels.Save }}
             </v-btn>
           </slot>
@@ -78,8 +84,13 @@ export default {
     showHeader: {
       type: Boolean,
       default: true
+    },
+    saveDisable: {
+      type: Boolean,
+      default: false
     }
   },
+  emits: ['closeOverlay', 'submit'],
   data() {
     return { labels }
   },

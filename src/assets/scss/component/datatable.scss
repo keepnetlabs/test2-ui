@@ -199,12 +199,15 @@
           color: #212121;
           font-family: "Open Sans", sans-serif !important;
           font-size: 12px;
-          white-space: nowrap !important;
+          white-space: pre;
           width: 100%;
           @media not all and (min-resolution:.001dpcm) {
             @supports (-webkit-appearance:none) {
               display: grid;
               grid-auto-flow: column;
+            }
+            .el-table__expand-icon{
+              grid-column-start: 2;
             }
           }
           @media not all and (min-resolution:.001dpcm) {
@@ -781,12 +784,7 @@
       float: right !important;
       margin-top: 2px;
       transform: rotate(-90deg);
-      @media not all and (min-resolution:.001dpcm) {
-        @supports (-webkit-appearance:none) {
-          position:absolute;
-          right:-6px ;
-        }
-      }
+      margin-right: 0;
       .el-icon-arrow-right:before {
         font-weight: 900;
         font-size: 15px;
@@ -811,12 +809,13 @@
     }
     .el-table [class*="el-table__row--level"] .el-table__expand-icon--expanded{
       transform: rotate(90deg) !important;
-      margin-right: 6px;
+      margin-right: 3px;
       @media not all and (min-resolution:.001dpcm) {
         @supports (-webkit-appearance:none) {
-          right:-6px ;
+          margin-right: 0;
         }
       }
+
     }
 
     .cluster {
@@ -1084,4 +1083,14 @@
  }
 
 
+}
+
+.hide-parent-row-actions{
+  .el-table__row.el-table__row--level-0 .actions-container button {visibility:hidden}
+}
+
+.safari-cluster-icon-fix{
+  .cell{
+    grid-template-columns:1fr;
+  }
 }

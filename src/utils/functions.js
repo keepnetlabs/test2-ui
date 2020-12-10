@@ -65,6 +65,12 @@ export function getBtnStatusColor(type) {
       return '#00bcd4'
     case 'stopped':
       return '#f56c6c'
+    case 'error':
+      return '#f56c6c'
+    case 'exist':
+      return '#2196f3'
+    case 'new':
+      return '#43a047'
     default:
       return '#00bcd4'
   }
@@ -92,6 +98,12 @@ export function getBtnPriorityColor(type) {
       return '#f56c6c'
     case 'n/a':
       return '#00bcd4'
+    case 'error':
+      return '#f56c6c'
+    case 'exist':
+      return '#2196f3'
+    case 'new':
+      return '#43a047'
     default:
       break
   }
@@ -669,6 +681,15 @@ export function scrollToComponent(el) {
   }
 }
 
+export function setSafariClusterFix(obj = {}, param = '') {
+  if (obj.column.property === param) {
+    return 'safari-cluster-icon-fix'
+  }
+}
+export function handleIsSafari() {
+  return window.safari || navigator.vendor.match(/apple/i)
+}
+
 export function reviewElementBind(els, url) {
   if (els && els.length) {
     for (let i = 0, l = els.length; i < l; i++) {
@@ -677,7 +698,7 @@ export function reviewElementBind(els, url) {
       if (url.isHidden) {
         url.isFlagged = false
         el.innerHTML = url.urlHtml || url.name || url.url
-        el.innerHTML = 'hidden by owner'
+        el.innerHTML = 'Hidden by Owner'
         el.style.backgroundColor = '#757575'
         el.style.color = '#ffffff'
         el.style.position = 'relative'
@@ -717,7 +738,7 @@ export function reviewElementBind(els, url) {
       let hiddenEl = hiddenEls[i]
       hiddenEl.setAttribute('target', '_blank')
       if (url.isHidden) {
-        hiddenEl.innerHTML = 'hidden by owner'
+        hiddenEl.innerHTML = 'Hidden by Owner'
         hiddenEl.setAttribute('href', '#')
       }
       if (url.isFlagged) {
@@ -733,10 +754,15 @@ export function reviewElementBind(els, url) {
 
 export function incidenPostReviewElementBind(url, id, rootId, isReview) {
   let els
-  if (url.url === 'Hidden by Owner') {
+  if (url.url === 'Hidden by Owner' || url.isHidden) {
     els = document
       .getElementById(rootId || 'last-preview-body-shadow-root')
       .shadowRoot.querySelectorAll('[data-post-item-hidden]')
+    if (!els.length) {
+      els = document
+        .getElementById(rootId || 'last-preview-body-shadow-root')
+        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+    }
   } else {
     els = document
       .getElementById(rootId || 'last-preview-body-shadow-root')
@@ -752,6 +778,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
         el.style.backgroundColor = '#757575'
         el.style.color = '#ffffff'
         el.style.position = 'relative'
+        el.innerHTML = 'Hidden by Owner'
       } else if (!!url && !!url.name) {
         el.innerHTML = url.name
         el.setAttribute('href', url.url)
@@ -788,7 +815,7 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
       let hiddenEl = hiddenEls[i]
       hiddenEl.setAttribute('target', '_blank')
       if (url.isHidden) {
-        hiddenEl.innerHTML = 'hidden by owner'
+        hiddenEl.innerHTML = 'Hidden by Owner'
         hiddenEl.setAttribute('href', '#')
       }
       if (url.isFlagged) {
@@ -803,17 +830,27 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
 }
 
 export function checkPermission(permission, type) {
-  let token = JSON.parse(localStorage.getItem('auth-token')).token
-  let tokenData = jwt_decode(token)
-  let permissions = tokenData.Permission
-  return permissions.includes(`${permission}|${type}`)
+  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
+  if (isTokenExist) {
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    let permissions = tokenData.Permission
+    return permissions.includes(`${permission}|${type}`)
+  } else {
+    return true
+  }
 }
 
 export function checkPermissionMultiple(permissionsList, contain = true) {
-  let token = JSON.parse(localStorage.getItem('auth-token')).token
-  let tokenData = jwt_decode(token)
-  let permissions = tokenData.Permission
-  return permissionsList.map((item) => permissions.includes(item)).includes(contain)
+  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
+  if (isTokenExist) {
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    let permissions = tokenData.Permission
+    return permissionsList.map((item) => permissions.includes(item)).includes(contain)
+  } else {
+    return true
+  }
 }
 
 export function getPermissionsOfAllItems(PERMISSIONS = {}) {

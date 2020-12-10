@@ -1,3 +1,5 @@
+import labels from '@/model/constants/labels'
+
 export const COMMON_CONSTANTS = {
   DISABLELOADER: -1,
   ENABLELOADER: 1,
@@ -6,7 +8,18 @@ export const COMMON_CONSTANTS = {
   UPPERCASE: 'uppercase',
   LOWERCASE: 'lowercase',
   OUTLOOK: 'Outlook',
-  DIAGNOSTIC: 'DiagnosticTool'
+  DIAGNOSTIC: 'DiagnosticTool',
+  PRIORITY_ITEMS: [
+    { text: labels.VeryLow, value: 'VeryLow' },
+    labels.Low,
+    labels.Medium,
+    labels.High,
+    { text: labels.VeryHigh, value: 'VeryHigh' }
+  ],
+  STATUS_ITEMS: [
+    { text: labels.Active, value: 1 },
+    { text: labels.InActive, value: 0 }
+  ]
 }
 
 export const LABEL_STORE = {
@@ -82,7 +95,8 @@ export const LABEL_STORE = {
   NO_DATA: 'No Data',
   THREATS: 'Actual Threats',
   RELIABILITY: 'Reliability',
-  RULENAME: 'Rule Name'
+  RULENAME: 'Rule Name',
+  UPLOADED_SUCCESSFULLY: 'Uploaded successfully'
 }
 
 export const PROPERTY_STORE = {

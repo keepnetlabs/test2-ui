@@ -29,7 +29,7 @@
           'malicious-style-hidden': uploadRespond.isSubjectHidden
         }"
       >
-        Subject: Hidden by owner<v-tooltip v-if="uploadRespond.isSubjectFlagged" bottom opacity="1">
+        Subject: Hidden by Owner<v-tooltip v-if="uploadRespond.isSubjectFlagged" bottom opacity="1">
           <template v-slot:activator="{ on }">
             <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
           </template>
@@ -67,7 +67,7 @@
             'malicious-style-hidden': uploadRespond.isFromHidden
           }"
         >
-          From: Hidden by owner
+          From: Hidden by Owner
           <v-tooltip v-if="uploadRespond.isFromFlagged" bottom opacity="1">
             <template v-slot:activator="{ on }">
               <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
@@ -105,7 +105,7 @@
             'malicious-style-hidden': uploadRespond.isToHidden
           }"
         >
-          To: Hidden by owner<v-tooltip v-if="uploadRespond.isToFlagged" bottom opacity="1">
+          To: Hidden by Owner<v-tooltip v-if="uploadRespond.isToFlagged" bottom opacity="1">
             <template v-slot:activator="{ on }">
               <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
             </template>
@@ -142,7 +142,7 @@
             'malicious-style-hidden': uploadRespond.isCcHidden
           }"
         >
-          CC: Hidden by owner<v-tooltip v-if="uploadRespond.isCcFlagged" bottom opacity="1">
+          CC: Hidden by Owner<v-tooltip v-if="uploadRespond.isCcFlagged" bottom opacity="1">
             <template v-slot:activator="{ on }">
               <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
             </template>
@@ -179,7 +179,7 @@
             'malicious-style-hidden': uploadRespond.isBccHidden
           }"
         >
-          BCC: Hidden by owner<v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
+          BCC: Hidden by Owner<v-tooltip v-if="uploadRespond.isBccFlagged" bottom opacity="1">
             <template v-slot:activator="{ on }">
               <v-icon color="#f56c6c" v-on="on" class="ml-2 malicious-icon">mdi-alert</v-icon>
             </template>

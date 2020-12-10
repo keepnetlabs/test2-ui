@@ -12,6 +12,7 @@
         <GrapesNewsletterModal
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
+          v-if="showNewsletterPageGrapes"
         ></GrapesNewsletterModal>
       </template>
       <template v-slot:overlay-footer>
@@ -277,7 +278,7 @@
                   <div id="last-preview-body-preview" class="preview-body">
                     <k-shadow-frame
                       id="incident-preview-1"
-                      :content="uploadRespond.editableBody || uploadRespond.initialBody"
+                      :content="uploadRespond.visibleBody || uploadRespond.initialBody"
                     />
                   </div>
                   <div
@@ -1174,7 +1175,7 @@
                   <div class="threat-sharing-content">
                     <div class="ts-header">
                       <div id="last-preview-title" class="ts-title">
-                        <span v-if="uploadRespond.subject">{{ uploadRespond.subject }}</span>
+                        <span v-if="uploadRespond.subject">{{ uploadRespond.Title }}</span>
                         <span v-else>Post Title</span>
                       </div>
                       <div class="flex-grow-1"></div>
@@ -1486,7 +1487,7 @@
                                 {{
                                   !uploadRespond.isSubjectHidden
                                     ? uploadRespond.subject
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1511,7 +1512,7 @@
                                 {{
                                   !uploadRespond.isFromHidden
                                     ? uploadRespond.from
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1533,7 +1534,7 @@
                                 {{
                                   !uploadRespond.isToHidden
                                     ? uploadRespond.to.toString()
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1559,7 +1560,7 @@
                                 {{
                                   !uploadRespond.isCcHidden
                                     ? uploadRespond.cc.toString()
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1588,7 +1589,7 @@
                                 {{
                                   !uploadRespond.isBccHidden
                                     ? uploadRespond.bcc.toString()
-                                    : 'hidden by owner'
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1670,7 +1671,7 @@
                                     v-if="att.isHidden"
                                     class="file-name max-char single-post__details__section-header--sub"
                                   >
-                                    hidden by owner
+                                    Hidden by Owner
                                   </div>
                                 </div>
                               </div>
@@ -1829,6 +1830,7 @@
               text
               color="#2196f3"
               @click="onFinish"
+              :disabled="saveDisable"
               >Post
             </v-btn>
           </div>
@@ -2056,6 +2058,7 @@ export default {
     }
   },
   data: () => ({
+    saveDisable: false,
     labels,
     visibleBodyForPreview: null,
     termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
@@ -2294,6 +2297,8 @@ export default {
             el.style.color = '#ffffff'
             el.style.position = 'relative'
             el.style.pointerEvents = 'none'
+            el.url = 'Hidden by Owner'
+            el.setAttribute('href', '#')
           }
         }
       }
@@ -2309,6 +2314,9 @@ export default {
     },
     closeGrapesJs() {
       this.showNewsletterPageGrapes = false
+      setTimeout(() => {
+        document.querySelector('html').style.overflowY = 'hidden'
+      }, 250)
     },
     saveGrapesJs() {
       let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
@@ -2317,6 +2325,7 @@ export default {
         let urls = response.data.data.map((item) => {
           return { ...item, isFlagged: false, isHidden: false }
         })
+        document.querySelector('html').style.overflowY = 'hidden'
         this.showNewsletterPageGrapes = false
         this.uploadRespond.urls = urls
         this.uploadRespond.editableBody = editedHtml
@@ -2439,7 +2448,7 @@ export default {
           let hiddenEl = hiddenEls[i]
           hiddenEl.setAttribute('target', '_blank')
           if (url.isHidden) {
-            hiddenEl.innerHTML = 'hidden by owner'
+            hiddenEl.innerHTML = 'Hidden by Owner'
             //hiddenEl.setAttribute('href', '#')
           } else if (!!url && !!url.urlHtml) {
             hiddenEl.innerHTML = url.urlHtml
@@ -2475,7 +2484,7 @@ export default {
         })
         if (id === 'incident-preview-1' || id === 'last-preview-body-shadow-root-review') {
           for (let url of this.uploadRespond.urls) {
-            incidenPostReviewElementBind(url, null, id)
+            incidenPostReviewElementBind(url, null, id, true)
           }
         } else {
           for (let url of this.uploadRespond.urls) {
@@ -2720,6 +2729,7 @@ export default {
         })
       }
       if (this.editItem) {
+        this.saveDisable = true
         const payload = {
           CommunityResourceId: this.$route.params.id || this.editItem.communityResourceId,
           Title: this.uploadRespond.Title,
@@ -2763,6 +2773,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Post has been updated'
             })
+            this.saveDisable = false
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
@@ -2773,8 +2784,10 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message: 'Error when updated a community post'
             })
+            this.saveDisable = false
           })
       } else {
+        this.saveDisable = true
         const payload = {
           CommunityResourceId: this.$route.params.id,
           Title: this.uploadRespond.Title,
@@ -2817,6 +2830,7 @@ export default {
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               message: 'Post has been created'
             })
+            this.saveDisable = false
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
@@ -2827,6 +2841,7 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message: 'Error when creating a new community post'
             })
+            this.saveDisable = false
           })
       }
     },

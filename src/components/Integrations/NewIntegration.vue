@@ -372,6 +372,7 @@
             color="#2196f3"
             rounded
             @click="submit"
+            :disabled="saveDisable"
           >
             {{ labels.Save }}
           </v-btn>
@@ -417,6 +418,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       loadingState: [],
       formValues: {
@@ -499,6 +501,7 @@ export default {
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then((response) => {
+            this.saveDisable = false
             this.closeOverlay()
             this.showConfirmModal = false
             this.$store.dispatch('common/createSnackBar', {
@@ -513,10 +516,12 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message: 'Integration can not be updated'
             })
+            this.saveDisable = false
           })
       } else {
         createIntegration(data)
           .then((response) => {
+            this.saveDisable = false
             this.closeOverlay()
             this.showConfirmModal = false
             this.$store.dispatch('common/createSnackBar', {
@@ -531,6 +536,7 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               message: 'Integration can not be created'
             })
+            this.saveDisable = false
           })
       }
     },
@@ -541,6 +547,7 @@ export default {
       const refForm = this.$refs.form
       const isValidForm = refForm.validate()
       if (isValidForm) {
+        this.saveDisable = true
         this.testConnection(true)
       } else {
         return this.$nextTick(() => {
@@ -696,8 +703,10 @@ export default {
             } else {
               this.formValues.apiKeys[i].status = 'success'
             }
+            this.saveDisable = false
           })
           .catch((error) => {
+            this.saveDisable = false
             this.formValues.apiKeys[i].status = 'failed'
             if (error.response.data.Message === 'Internal server error') {
               this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'

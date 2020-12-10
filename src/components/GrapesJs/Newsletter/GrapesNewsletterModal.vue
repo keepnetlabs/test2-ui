@@ -90,7 +90,6 @@ export default {
     this.setGrapesEditor()
     window.addEventListener('popstate', function (event) {
       // Log the state data to the console
-      console.log(event.state)
     })
   },
   methods: {
@@ -107,7 +106,8 @@ export default {
             inlineCss: true,
             categoryLabel: 'Basic'
           }
-        }
+        },
+        noticeOnUnload: false
       })
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)

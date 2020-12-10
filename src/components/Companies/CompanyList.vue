@@ -60,7 +60,7 @@
       active-cluster="Company Name"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
-      @cellClick="handleCompanyNameClick"
+      @cellClick="handleCellClick"
       @downloadEvent="handleTableDownload"
       :is-server-side="false"
       @addButton="addButton"
@@ -71,10 +71,15 @@
       @AddGroupToModal="handleAddGroupToModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      v-bind="bindPropsIsSafari"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span class="datatable-link" v-if="scope.row.companyName">
+        <span
+          class="datatable-link"
+          v-if="scope.row.companyName"
+          @click="handleCompanyNameClick(scope.row)"
+        >
           {{ scope.row.companyName }}
         </span>
       </template>
@@ -96,19 +101,16 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '../../api/company'
+import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
+import { handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 
 export default {
   name: 'CompanyList',
@@ -126,6 +128,7 @@ export default {
     tableData: [],
     tableHeight: 0,
     extendTop: 0,
+    bindPropsIsSafari: {},
     isClustered: true,
     editModal: false,
     isShowDeleteModal: false,
@@ -277,10 +280,13 @@ export default {
   },
   created() {
     this.getLookUpDatas()
+    if (handleIsSafari()) {
+      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
+        return setSafariClusterFix(obj, 'companyName')
+      }
+    }
   },
-  mounted() {
-    this.getTableData()
-  },
+  mounted() {},
   methods: {
     handleSearchChange(bodyData = {}, columnFilterActive = false) {
       this.payload.filter.FilterGroups[0].FilterItems = [
@@ -290,24 +296,31 @@ export default {
       this.tableOptions.isColumnFilterActive = columnFilterActive
       this.getTableData()
     },
+    handleCellClick({ column, event }) {
+      if (column.property === 'companyName') {
+        this.extendTop = event.offsetTop
+      }
+    },
     getLookUpDatas() {
-      getLookupListByTypeIdList({ typeidlist: [2, 3] }).then((response) => {
-        const res = response.data.data
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          res
-            .filter((item) => item.genericCodeTypeId === 2)
-            .map((item) => ({ text: item.name, value: item.name }))
-        )
-        this.$set(
-          this.tableOptions.columns[2],
-          'filterableItems',
-          res
-            .filter((item) => item.genericCodeTypeId === 3)
-            .map((item) => ({ text: item.name, value: item.name }))
-        )
-      })
+      getLookupListByTypeIdList({ typeidlist: [2, 3] })
+        .then((response) => {
+          const res = response.data.data
+          this.$set(
+            this.tableOptions.columns[1],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 2)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+          this.$set(
+            this.tableOptions.columns[2],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 3)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+        })
+        .finally(() => this.getTableData())
     },
     getTableData(payload) {
       const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
@@ -375,27 +388,24 @@ export default {
     changeCreateOrEditModalStatus(status) {
       this.isShowCreateOrEditModal = status
     },
-    handleCompanyNameClick({ row, column, event }) {
-      if (column.property === 'companyName') {
-        this.$refs.extend.clickClose()
-        this.selectedRow = row
-        this.selectedExtend = {}
-        this.isShowExtended = true
-        this.tableHeight = this.$refs.refDataList.$el.clientHeight
-        this.extendTop = event.offsetTop
-        getCompanyByID(row.companyResourceId, false)
-          .then((response) => {
-            this.selectedExtend = response.data.data
+    handleCompanyNameClick(row) {
+      this.$refs.extend.clickClose()
+      this.selectedRow = row
+      this.selectedExtend = {}
+      this.isShowExtended = true
+      this.tableHeight = this.$refs.refDataList.$el.clientHeight
+      getCompanyByID(row.companyResourceId, false)
+        .then((response) => {
+          this.selectedExtend = response.data.data
+        })
+        .catch((error) => {
+          this.isShowExtended = false
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
           })
-          .catch((error) => {
-            this.isShowExtended = false
-            this.$store.dispatch('common/createSnackBar', {
-              message: error.data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              icon: 'mdi-alert-circle'
-            })
-          })
-      }
+        })
     },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -404,6 +414,7 @@ export default {
           pageSize: downloadTypes.pageSize,
           orderBy: this.payload.orderBy,
           ascending: this.payload.ascending,
+          isClustered: this.isClustered,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.payload.filter

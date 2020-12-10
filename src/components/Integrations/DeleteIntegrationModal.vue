@@ -4,7 +4,7 @@
     icon="mdi-delete"
     title="Delete Integration?"
     @changeStatus="closeModal"
-    subtitle="The integration will  deleted permanently"
+    subtitle="The integration will deleted permanently"
   >
     <template v-slot:app-dialog-body>
       {{ getIntegrationName }} will be deleted and removed from all integrations.

@@ -2,36 +2,36 @@
   <div class="new-community-container">
     <app-dialog
       :status="isWantToAccept"
-      icon="mdi-account-plus"
-      title="Accept all requests?"
-      subtitle=""
       body="You are changing the privacy settings for community from private to public. All member requests will be accepted?"
+      icon="mdi-account-plus"
+      subtitle=""
+      title="Accept all requests?"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <v-btn
-            text
-            color="#f56c6c"
             class="k-dialog__button"
+            color="#f56c6c"
+            text
             @click=";(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
-            >{{ labels.Cancel }}</v-btn
-          >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="isWantToAccept = false"
-            >Accept All</v-btn
-          >
+            >{{ labels.Cancel }}
+          </v-btn>
+          <v-btn class="k-dialog__button" color="#2196f3" text @click="isWantToAccept = false"
+            >Accept All
+          </v-btn>
         </div>
       </template>
     </app-dialog>
     <div class="new-community-inner">
-      <v-card flat light class="pa-0" style="width: 600px;">
+      <v-card class="pa-0" flat light style="width: 600px;">
         <v-list-item class="pl-0 pr-0 new-community-inner__title-section">
           <div class="v-btn v-cart-icon-wrapper">
-            <v-icon medium left color="blue" class="ml-2">mdi-send</v-icon>
+            <v-icon class="ml-2" color="blue" left medium>mdi-send</v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
             <v-list-item-title class="v-card-headline"
-              >{{ resourceId ? 'Edit' : 'Create New' }} Community</v-list-item-title
-            >
+              >{{ resourceId ? 'Edit' : 'Create New' }} Community
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-form ref="form" v-model="valid" lazy-validation>
@@ -39,11 +39,11 @@
             <v-list-item-content class="pt-0 pb-0">
               <label class="pb-3 edit-labels">Community Name</label>
               <v-text-field
-                placeholder="Community Name"
-                outlined
-                class="edit-name-textfield"
                 v-model.trim="name"
                 :rules="[nameRules.required, nameRules.empty]"
+                class="edit-name-textfield"
+                outlined
+                placeholder="Community Name"
                 required
               >
               </v-text-field>
@@ -56,14 +56,14 @@
                 >Describe the community’s goals and rules. (Max. 300 characters)</label
               >
               <v-textarea
-                name="description"
-                outlined
                 v-model.trim="description"
                 :rules="[descriptionRules.required, descriptionRules.empty]"
-                required
                 class="edit-description"
-                placeholder="Description"
+                name="description"
                 no-resize
+                outlined
+                placeholder="Description"
+                required
               ></v-textarea>
             </v-list-item-content>
           </v-list-item>
@@ -72,16 +72,16 @@
               <label class="edit-labels">Industry</label>
               <label class="edit-sub-labels">Select an industry category</label>
               <k-select
-                type="autocomplete"
-                :items="categories"
-                return-object
-                item-text="name"
-                placeholder="Select the industry category"
-                outlined
-                class="edit-select"
                 v-model.trim="selectedCategory"
+                :items="categories"
                 :rules="[categoryRule]"
+                class="edit-select"
+                item-text="name"
+                outlined
+                placeholder="Select the industry category"
                 required
+                return-object
+                type="autocomplete"
               ></k-select>
             </v-list-item-content>
           </v-list-item>
@@ -91,9 +91,9 @@
               <label class="edit-sub-labels pb-0">Select a privacy option</label>
               <div class="new-community__radio-group">
                 <v-radio-group v-model="privacystatusid" :mandatory="false" row>
-                  <v-radio value="1" label="Public" color="primary"></v-radio>
-                  <v-radio value="2" label="Private" color="primary"></v-radio>
-                  <v-radio value="3" label="Hidden" color="primary"></v-radio>
+                  <v-radio color="primary" label="Public" value="1"></v-radio>
+                  <v-radio color="primary" label="Private" value="2"></v-radio>
+                  <v-radio color="primary" label="Hidden" value="3"></v-radio>
                 </v-radio-group>
                 <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
                   >Anyone can find the community and see posted threats</label
@@ -112,10 +112,10 @@
               <div class="d-flex" style="margin-bottom: 8px;">
                 <v-checkbox
                   id="accept-terms-and-conditions-post-incident"
-                  class="k-checkbox accept-terms-and-conditions-checkbox"
-                  color="#2196f3"
                   v-model="acceptCheckbox"
                   :rules="[checkboxRule.required]"
+                  class="k-checkbox accept-terms-and-conditions-checkbox"
+                  color="#2196f3"
                   @change="checkCheckboxValidation()"
                 />
                 <div class="d-flex accept-terms-and-conditions-label-group">
@@ -124,9 +124,9 @@
                   </label>
                   <a
                     :href="termsAndConditionsUrl"
-                    @click="(event) => event.stopPropagation()"
                     class="mr-1"
                     target="_blank"
+                    @click="(event) => event.stopPropagation()"
                     >terms and conditions</a
                   >
                   <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
@@ -138,12 +138,17 @@
       </v-card>
     </div>
     <div class="footer-actions">
-      <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
-        labels.Cancel
-      }}</v-btn>
-      <v-btn class="create-btn" text color="#2196f3" @click="onCreateClicked">{{
-        resourceId ? 'Update' : 'Create'
-      }}</v-btn>
+      <v-btn class="cancel-btn" color="#f56c6c" text @click="onCancelClicked"
+        >{{ labels.Cancel }}
+      </v-btn>
+      <v-btn
+        :disabled="saveDisable"
+        class="create-btn"
+        color="#2196f3"
+        text
+        @click="onCreateClicked"
+        >{{ resourceId ? 'Update' : 'Create' }}
+      </v-btn>
     </div>
   </div>
 </template>
@@ -170,6 +175,7 @@ export default {
   },
   data() {
     return {
+      saveDisable: false,
       labels,
       termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
       isWantToAccept: false,
@@ -185,7 +191,7 @@ export default {
       isCheckboxChecked: false,
       nameRules: {
         required: (v) =>
-          (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
+          (v && v.length >= 5 && v.length <= 64) || 'Community Name must between 5-64 characters',
         regex: (v) =>
           /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
@@ -198,8 +204,7 @@ export default {
       },
       descriptionRules: {
         required: (v) =>
-          (!!v && v.length >= 5 && v.length <= 300) ||
-          'Description is required and must be between 5-300 characters.',
+          (!!v && v.length >= 5 && v.length <= 300) || 'Description cannot exceed 300 characters',
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       categoryRules: {
@@ -241,6 +246,7 @@ export default {
       this.$emit('closeAdd')
     },
     onCreateClicked() {
+      this.saveDisable = true
       const refThis = this
       if (this.$refs.form.validate()) {
         const payload = {
@@ -257,6 +263,7 @@ export default {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 message: 'Community have been updated'
               })
+              this.saveDisable = false
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
@@ -264,6 +271,7 @@ export default {
               this.$router.push(`/community/${this.resourceId}`)
             })
             .catch((error) => {
+              this.saveDisable = false
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 message: 'Community can not be updated'
@@ -277,12 +285,14 @@ export default {
                 message: 'New community has been created'
               })
               //refThis.$emit('closeAdd')
+              this.saveDisable = false
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
               this.$router.push(`/community/${response.data.data.resourceId}`)
             })
             .catch((error) => {
+              this.saveDisable = false
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 message: 'New community can not be created'
@@ -290,6 +300,7 @@ export default {
             })
         }
       } else {
+        this.saveDisable = false
         const el = this.$refs.form.$el
         scrollToComponent(el)
       }
@@ -340,11 +351,13 @@ export default {
     overflow: visible;
     padding-left: 10px;
   }
+
   .k-checkbox .v-messages {
     position: absolute;
     bottom: 0;
     width: 100%;
   }
+
   .k-checkbox {
     &__checkbox-text {
       position: absolute;
@@ -360,6 +373,7 @@ export default {
       cursor: pointer;
     }
   }
+
   .v-text-field__slot input,
   textarea,
   .v-select__slot input {
@@ -371,6 +385,7 @@ export default {
     letter-spacing: normal !important;
     color: rgba(0, 0, 0, 0.72) !important;
   }
+
   .v-radio .v-label {
     font-size: 14px !important;
     font-weight: normal !important;
@@ -380,10 +395,12 @@ export default {
     letter-spacing: normal !important;
     color: rgba(0, 0, 0, 0.87) !important;
   }
+
   .new-community {
     &__radio-group {
       .v-input--radio-group {
         margin-top: 0;
+
         .v-messages {
           display: none !important;
         }
@@ -398,6 +415,7 @@ export default {
     position: relative;
     display: flex;
     overflow: visible;
+
     &__title-section {
       padding-left: 10px !important;
     }

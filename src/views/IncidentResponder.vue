@@ -486,10 +486,10 @@
             :clusterItems="[{ name: 'Subject' }]"
             active-cluster="Subject"
             :changeFooterPosition="true"
+            lazy
             @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
-            hideParentRowActions
             :pageSizes="emails.pageSizes"
             :selectable="true"
             :filterable="true"
@@ -511,6 +511,7 @@
             @handleEdit="handleEdit"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
+            v-bind="bindPropsIsSafari"
             :extendedViewDisableChanger="extendedViewDisableChanger"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
@@ -620,7 +621,12 @@ import {
   updateNotifiedEmail,
   updateRoiSettings
 } from '../api/incidentResponder'
-import { checkPermission, getDataTableFieldLabel } from '../utils/functions'
+import {
+  checkPermission,
+  getDataTableFieldLabel,
+  handleIsSafari,
+  setSafariClusterFix
+} from '../utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
@@ -651,6 +657,7 @@ export default {
     investigationsLoading: true,
     investigationsData: [],
     reportedEmailsData: [],
+    bindPropsIsSafari: {},
     reportedEmailsLoading: true,
     incidentLoading: true,
     showPlaybookModal: false,
@@ -1310,6 +1317,11 @@ export default {
   },
   created() {
     this.initMethods()
+    if (handleIsSafari()) {
+      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
+        return setSafariClusterFix(obj, 'subject')
+      }
+    }
     window.addEventListener('resize', this.addQuery)
   },
   beforeDestroy() {
@@ -1350,13 +1362,18 @@ export default {
             data: { results }
           }
         } = response
-
+        results.splice(0, 1)
         const data = this.getManipulatedChildData(results, true)
         tree['children'] = data
         treeNode['children'] = data
-
-        resolve(data)
-        callback()
+        treeNode.loaded = true
+        treeNode.lazy = false
+        treeNode.loading = false
+        treeNode.expanded = true
+        setTimeout(() => {
+          resolve(data)
+        }, 500)
+        callback(data)
       })
     },
 
@@ -1372,7 +1389,6 @@ export default {
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = [
         ...bodyData.filter.FilterGroups[0].FilterItems
       ]
-      console.log('this.requestBodyReportedEmails.filter', this.requestBodyReportedEmails.filter)
       this.emails.isColumnFilterActive = columnFilterActive
       this.callForSearchNotifiedMail()
     },
@@ -1483,7 +1499,7 @@ export default {
       }
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
-      if (isEditPopupOpen) {
+      if (isEditPopupOpen && selections.length) {
         this.extendedViewLoading = true
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
@@ -1625,7 +1641,10 @@ export default {
     getManipulatedTableData(data, isChild = false) {
       if (this.requestBodyReportedEmails.isClustered) {
         return data.map((item) => {
-          return { subject: item.subject, hasChildren: true, resourceId: Math.random().toString() }
+          return {
+            ...item,
+            hasChildren: true
+          }
         })
       }
 

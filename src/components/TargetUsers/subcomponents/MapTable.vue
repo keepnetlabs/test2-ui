@@ -3,7 +3,10 @@
     <v-form ref="refMapTableForm">
       <table class="table">
         <tr class="target-users-map__header">
-          <th v-for="(header, index) in mapTableData && mapTableData.headers" :key="index">
+          <th
+            v-for="(header, index) in mapTableData && mapTableData.headers"
+            :key="`${header.name + index} `"
+          >
             {{ header.name }}
             <v-select
               :items="mapTableData.columns"
@@ -23,9 +26,9 @@
         <tr
           class="target-users-map__body"
           v-for="(item, index) in mapTableData && mapTableData.tableData"
-          :key="index"
+          :key="`${item + index + 1} `"
         >
-          <td v-for="excel in item" :key="excel">{{ excel }}</td>
+          <td v-for="excel in item" :key="`${excel + index + 2} `">{{ excel }}</td>
         </tr>
       </table>
     </v-form>
@@ -47,6 +50,12 @@ export default {
   },
   props: { mapTableData: { required: true } },
   methods: {
+    setSelectDisableItemsToFalse(item) {
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        let item = { ...i, disabled: false }
+        return item
+      })
+    },
     setSelectDisableItems(item) {
       item.disabled = true
       let _this = this
