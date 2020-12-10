@@ -643,44 +643,46 @@
               v-if="rowActions && rowActions.length === 2"
             >
               <template slot-scope="scope">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      @click.native="
-                        rowActions[0].action === 'edit'
-                          ? handleEdit(scope.row, scope.$index)
-                          : rowAct(rowActions[0].action, scope.row)
-                      "
-                      :disabled="rowActions[0]['disabled']"
-                      class="btn-hover mr-1"
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon>{{ rowActions[0].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[0].name }}</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :disabled="
-                        scope.row.status === 'Cancelled' ||
-                        scope.row.status === 'Expired' ||
-                        scope.row.status === 'Finished' ||
-                        scope.row.status === 'NoMatch' ||
-                        rowActions[1]['disabled']
-                      "
-                      @click.native="rowAct(rowActions[1].action, scope.row)"
-                      class="btn-hover"
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon>{{ rowActions[1].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[1].name }}</span>
-                </v-tooltip>
+                <slot name="datatable-row-actions" :scope="scope">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        @click.native="
+                          rowActions[0].action === 'edit'
+                            ? handleEdit(scope.row, scope.$index)
+                            : rowAct(rowActions[0].action, scope.row)
+                        "
+                        :disabled="rowActions[0]['disabled']"
+                        class="btn-hover mr-1"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        :disabled="
+                          scope.row.status === 'Cancelled' ||
+                          scope.row.status === 'Expired' ||
+                          scope.row.status === 'Finished' ||
+                          scope.row.status === 'NoMatch' ||
+                          rowActions[1]['disabled']
+                        "
+                        @click.native="rowAct(rowActions[1].action, scope.row)"
+                        class="btn-hover"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[1].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[1].name }}</span>
+                  </v-tooltip>
+                </slot>
               </template>
             </el-table-column>
             <template v-slot:empty>

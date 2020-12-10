@@ -11,7 +11,7 @@
   >
     <template v-slot:overlay-body>
       <send-welcome-email-to-new-user-modal
-        v-if="showWelcomeEmailModal"
+        v-if="false"
         :status="showWelcomeEmailModal"
         @closeOverlay="toggleWelcomeEmailModal"
         @sendEmail="handleSendEmail"
@@ -27,7 +27,7 @@
         <form-group title="Email Address" has-hint>
           <InputEmail v-model.trim="formValues.email" />
         </form-group>
-        <form-group title="Phone Number" class-name="mb-6">
+        <form-group title="Phone Number" class-name="mb-3">
           <InputPhone v-model.trim="formValues.phoneNumber" />
         </form-group>
         <form-group title="Status">
@@ -56,8 +56,13 @@
             :rules="[(v) => validations.required(v, 'Required')]"
           />
         </form-group>
-        <form-group v-if="false">
-          <v-btn color="#2196f3" rounded class="white--text btn-util">
+        <form-group v-if="selectedRow">
+          <v-btn
+            @click="callForSendInformationEmail(selectedRow.resourceId)"
+            color="#2196f3"
+            rounded
+            class="white--text btn-util"
+          >
             <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
             Send Information Email
           </v-btn></form-group
@@ -73,7 +78,12 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { mail, maxLength, required } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
-import { createSystemUser, getUserRoles, updateSystemUser } from '@/api/systemUsers'
+import {
+  createSystemUser,
+  getUserRoles,
+  sendInformationEmail,
+  updateSystemUser
+} from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
@@ -81,7 +91,7 @@ import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputPhone from '@/components/Common/Inputs/InputPhone'
-import { getSystemUsersRole } from '../../api/systemUsers'
+import { getSystemUsersRole } from '@/api/systemUsers'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -141,12 +151,24 @@ export default {
     }
   },
   methods: {
+    callForSendInformationEmail(resourceId = '') {
+      sendInformationEmail(resourceId).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'Information email has been sent',
+          icon: 'mdi-check-circle',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+        })
+      })
+    },
     closeOverlay() {
       this.$emit('closeOverlay')
     },
+    /*
     handleTelChange(val) {
       this.$refs.refTelInput.phone = val
     },
+
+     */
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
@@ -196,6 +218,7 @@ export default {
             icon: 'mdi-check-circle',
             color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
           })
+
           this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
@@ -291,10 +314,13 @@ export default {
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
-        this.formValues.phoneNumber = phoneNumber.split(' ').join('')
+        this.formValues.phoneNumber = phoneNumber
+        /*
         this.$nextTick(() => {
           this.formValues.phoneNumber = this.$refs.refTelInput.phoneObject.number.international
         })
+
+         */
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {

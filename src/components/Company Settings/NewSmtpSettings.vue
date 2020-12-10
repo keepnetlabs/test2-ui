@@ -277,7 +277,7 @@ export default {
       showPassword: false,
       searchAvailableForPayload: {
         pageNumber: 1,
-        pageSize: 100,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false
       },
@@ -316,7 +316,7 @@ export default {
     },
     submit() {
       const refForm = this.$refs.refForm
-      this.validateAvailableFor()
+      this.validateAvailableFor(this.formValues.availableForRequests)
       if (refForm.validate() && this.isAvailableForValid) {
         this.saveDisable = true
         const {
@@ -392,7 +392,7 @@ export default {
         })
     },
     callForSearchAvailableFor() {
-      searchAvailableFor(this.searchAvailableForPayload).then((response) => {
+      return searchAvailableFor(this.searchAvailableForPayload).then((response) => {
         const { data: { data = {} } = {} } = response
         const { companies = {}, groups = {} } = data
         this.$set(this.treeSelectOptions, 3, {
@@ -475,7 +475,6 @@ export default {
             } = {}
           } = {}
         } = response
-
         this.formValues.availableForRequests = availableForList.map((item) => {
           let { resourceId: id, typeName } = item
           let label
@@ -559,10 +558,11 @@ export default {
     }
   },
   created() {
-    if (this.isEdit && this.resourceId) {
-      this.callForGetSmtpSettings()
-    }
-    this.callForSearchAvailableFor()
+    this.callForSearchAvailableFor().finally(() => {
+      if (this.isEdit && this.resourceId) {
+        this.callForGetSmtpSettings()
+      }
+    })
     getLookupListByTypeId(12).then((response) => {
       const { data: { data = [] } = {} } = response
       this.serviceProviderItems = data

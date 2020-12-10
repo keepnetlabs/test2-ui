@@ -2,6 +2,7 @@
   <app-dialog
     size="big"
     :status="status"
+    v-if="status"
     icon="mdi-email"
     :title="'Send Welcome Email To New User'"
     subtitle="Send membership and login information"
@@ -99,14 +100,15 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputDate from '@/components/Common/Inputs/InputDate'
-
+import InputEmail from '@/components/Common/Inputs/InputEmail'
 export default {
   name: 'SendWelcomeEmailToNewUserModal',
   components: {
     KSelect,
     AppDialog,
     FormGroup,
-    InputDate
+    InputDate,
+    InputEmail
   },
   props: {
     status: {
@@ -125,10 +127,7 @@ export default {
         chooseTime: 'SendImmediately',
         date: ''
       },
-      smtpItems: [],
-      validations: {
-        mail
-      }
+      smtpItems: []
     }
   },
   methods: {
