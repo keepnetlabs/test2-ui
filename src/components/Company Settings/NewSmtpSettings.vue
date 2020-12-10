@@ -317,7 +317,6 @@ export default {
     submit() {
       const refForm = this.$refs.refForm
       this.validateAvailableFor(this.formValues.availableForRequests)
-      debugger
       if (refForm.validate() && this.isAvailableForValid) {
         this.saveDisable = true
         const {
@@ -476,7 +475,6 @@ export default {
             } = {}
           } = {}
         } = response
-        console.log(response)
         this.formValues.availableForRequests = availableForList.map((item) => {
           let { resourceId: id, typeName } = item
           let label
