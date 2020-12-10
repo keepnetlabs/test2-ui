@@ -12,6 +12,10 @@ export function updateSystemUser(payload) {
   return testRequest.put(`/system-users/${payload.resourceId}`, payload)
 }
 
+export function deleteSystemUser(resourceId = '') {
+  return testRequest.delete(`/system-users/${resourceId}`)
+}
+
 export function getUserRoles(payload) {
   return testRequest.post(`/roles/search`, payload, { loading: true })
 }

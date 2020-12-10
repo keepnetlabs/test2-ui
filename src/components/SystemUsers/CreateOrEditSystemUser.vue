@@ -11,7 +11,7 @@
   >
     <template v-slot:overlay-body>
       <send-welcome-email-to-new-user-modal
-        v-if="showWelcomeEmailModal"
+        v-if="false"
         :status="showWelcomeEmailModal"
         @closeOverlay="toggleWelcomeEmailModal"
         @sendEmail="handleSendEmail"
@@ -27,7 +27,7 @@
         <form-group title="Email Address" has-hint>
           <InputEmail v-model.trim="formValues.email" />
         </form-group>
-        <form-group title="Phone Number" class-name="mb-6">
+        <form-group title="Phone Number" class-name="mb-3">
           <InputPhone v-model.trim="formValues.phoneNumber" />
         </form-group>
         <form-group title="Status">
@@ -56,8 +56,13 @@
             :rules="[(v) => validations.required(v, 'Required')]"
           />
         </form-group>
-        <form-group v-if="false">
-          <v-btn color="#2196f3" rounded class="white--text btn-util">
+        <form-group v-if="selectedRow">
+          <v-btn
+            @click="callForSendInformationEmail"
+            color="#2196f3"
+            rounded
+            class="white--text btn-util"
+          >
             <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
             Send Information Email
           </v-btn></form-group
@@ -141,12 +146,16 @@ export default {
     }
   },
   methods: {
+    callForSendInformationEmail(resourceId = '') {},
     closeOverlay() {
       this.$emit('closeOverlay')
     },
+    /*
     handleTelChange(val) {
       this.$refs.refTelInput.phone = val
     },
+
+     */
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
@@ -291,10 +300,12 @@ export default {
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
-        this.formValues.phoneNumber = phoneNumber.split(' ').join('')
+        /*
         this.$nextTick(() => {
           this.formValues.phoneNumber = this.$refs.refTelInput.phoneObject.number.international
         })
+
+         */
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {
