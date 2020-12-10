@@ -102,6 +102,46 @@
             label="Has SMTP Relay"
           />
         </form-group>
+        <form-group
+          title="Make Available For"
+          sub-title="Companies that will see this setting in their libraries"
+          has-hint
+        >
+          <Treeselect
+            :class="['k-treeselect', { 'k-treeselect--error': !isAvailableForValid }]"
+            v-model="formValues.availableForRequests"
+            :options="treeSelectOptions"
+            placeholder="Enter make an available for"
+            value-format="object"
+            clear-on-select
+            disable-branch-nodes
+            multiple
+            search-nexted
+            show-count
+            @close="validateAvailableFor"
+          />
+          <div
+            v-if="isAvailableForValidated && !isAvailableForValid"
+            class="v-text-field__details checkbox-error"
+          >
+            <transition appear name="bounce">
+              <div class="v-messages theme--light error--text" role="alert">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message" style="padding-left: 10px;">
+                    Required
+                  </div>
+                </div>
+              </div>
+            </transition>
+          </div>
+          <div v-else class="v-messages theme--light" role="alert">
+            <div class="v-messages__wrapper">
+              <div class="v-messages__message" style="padding-left: 10px; font-size: 9px;">
+                *Required
+              </div>
+            </div>
+          </div>
+        </form-group>
         <form-group title="Reply to">
           <InputEmail
             placeholder="Enter Reply to"
@@ -111,7 +151,6 @@
             :rules="[
               (v) => validations.startsWithSpace(v, 'Cannot start with space'),
               (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
               (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
             ]"
           />
@@ -125,7 +164,6 @@
             :rules="[
               (v) => validations.startsWithSpace(v, 'Cannot start with space'),
               (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
               (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
             ]"
           />
@@ -139,7 +177,6 @@
             :rules="[
               (v) => validations.startsWithSpace(v, 'Cannot start with space'),
               (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
               (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
             ]"
           />
@@ -153,7 +190,6 @@
             :rules="[
               (v) => validations.startsWithSpace(v, 'Cannot start with space'),
               (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.minLength(v, 8, 'Minimum 8 characters'),
               (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
             ]"
           />
@@ -181,12 +217,17 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeId } from '@/api/common'
-import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
+import {
+  createSMTPSettings,
+  getSmtpSettings,
+  searchAvailableFor,
+  updateSmtpSettings
+} from '@/api/smtpSettings'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
-
+import Treeselect from '@riophae/vue-treeselect'
 export default {
   name: 'NewSmtpSettings',
   components: {
@@ -195,7 +236,8 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     InputUrl,
-    InputEmail
+    InputEmail,
+    Treeselect
   },
   props: {
     status: {
@@ -212,9 +254,12 @@ export default {
   },
   data() {
     return {
+      isAvailableForValidated: false,
+      isAvailableForValid: true,
       saveDisable: false,
       formValues: {
         name: '',
+        availableForRequests: [],
         serviceProvider: '',
         serverAddress: '',
         serverPort: '',
@@ -230,15 +275,49 @@ export default {
         customHeader: ''
       },
       showPassword: false,
+      searchAvailableForPayload: {
+        pageNumber: 1,
+        pageSize: 100,
+        orderBy: 'CreateTime',
+        ascending: false
+      },
       serviceProviderItems: [],
-      companyItems: [],
+      treeSelectOptions: [
+        {
+          id: 'MyCompanyOnly',
+          label: 'My company only',
+          type: 'MyCompanyOnly',
+          resourceId: null
+        },
+        {
+          id: 'AllCompanies',
+          label: 'All companies',
+          type: 'AllCompanies',
+          resourceId: null
+        },
+        {
+          id: 'Group',
+          label: 'Company Groups',
+          children: []
+        },
+        {
+          id: 'Company',
+          label: 'Companies',
+          children: []
+        }
+      ],
       validations: validations
     }
   },
   methods: {
+    validateAvailableFor(value = {}) {
+      this.isAvailableForValidated = true
+      this.isAvailableForValid = !!value.length
+    },
     submit() {
       const refForm = this.$refs.refForm
-      if (refForm.validate()) {
+      this.validateAvailableFor()
+      if (refForm.validate() && this.isAvailableForValid) {
         this.saveDisable = true
         const {
           name,
@@ -253,10 +332,19 @@ export default {
           errorTo,
           cC,
           bCC,
-          customHeader
+          customHeader,
+          availableForRequests
         } = this.formValues
+
         const payload = {
           name,
+          availableForRequests: availableForRequests.map((item) => {
+            let { resourceId, type, id } = item
+            return {
+              resourceId: resourceId ? resourceId : id,
+              type
+            }
+          }),
           serverAddress,
           serverPort,
           userName,
@@ -270,6 +358,7 @@ export default {
           bCC,
           customHeader
         }
+
         if (this.isEdit) {
           this.callForUpdateSmtpSettings(payload)
         } else {
@@ -301,6 +390,29 @@ export default {
           })
           this.saveDisable = false
         })
+    },
+    callForSearchAvailableFor() {
+      searchAvailableFor(this.searchAvailableForPayload).then((response) => {
+        const { data: { data = {} } = {} } = response
+        const { companies = {}, groups = {} } = data
+        this.$set(this.treeSelectOptions, 3, {
+          ...this.treeSelectOptions[3],
+          children: companies.results.map((item) => {
+            return {
+              id: item['companyResourceId'],
+              label: item.companyName,
+              resourceId: item['companyResourceId'],
+              type: 'Company'
+            }
+          })
+        })
+        this.$set(this.treeSelectOptions, 2, {
+          ...this.treeSelectOptions[2],
+          children: groups.results.map((item) => {
+            return { id: item.resourceId, label: item.name, type: 'Group' }
+          })
+        })
+      })
     },
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
@@ -358,10 +470,30 @@ export default {
               serverPort,
               useAuthentication,
               useSSL,
-              userName
+              userName,
+              availableForList
             } = {}
           } = {}
         } = response
+
+        this.formValues.availableForRequests = availableForList.map((item) => {
+          let { resourceId: id, typeName } = item
+          let label
+          let resourceId = id
+          if (typeName === 'MyCompanyOnly') {
+            label = 'My company only'
+            resourceId = null
+          } else if (typeName === 'AllCompanies') {
+            label = 'All companies'
+            resourceId = null
+          }
+          return {
+            id,
+            type: typeName,
+            resourceId,
+            label
+          }
+        })
         this.formValues.cC = cc
         this.formValues.bCC = bcc
         this.formValues.customHeader = customHeader
@@ -377,12 +509,60 @@ export default {
         this.formValues.userName = userName
         this.formValues.serviceProvider = `${serverAddress}:${serverPort}`
       })
+    },
+    setTreeSelectOptions(isDisabled = false) {
+      this.$set(this.treeSelectOptions, 2, {
+        ...this.treeSelectOptions[2],
+        children: this.treeSelectOptions[2].children.map((item) => {
+          return {
+            ...item,
+            isDisabled
+          }
+        })
+      })
+      this.$set(this.treeSelectOptions, 3, {
+        ...this.treeSelectOptions[3],
+        children: this.treeSelectOptions[3].children.map((item) => {
+          return { ...item, isDisabled }
+        })
+      })
+    }
+  },
+  watch: {
+    'formValues.availableForRequests'(newVal, oldVal) {
+      if (newVal) {
+        if (newVal.some((item) => item.type === 'MyCompanyOnly')) {
+          if (
+            oldVal &&
+            oldVal.some((item) => item.type === 'MyCompanyOnly') &&
+            newVal.some((item) => item.type === 'AllCompanies')
+          ) {
+            this.formValues.availableForRequests = [this.treeSelectOptions[1]]
+          } else if (newVal.length > 1) {
+            this.$nextTick(() => {
+              this.formValues.availableForRequests = [this.treeSelectOptions[0]]
+            })
+          }
+          this.setTreeSelectOptions(true)
+        } else if (newVal.some((item) => item.type === 'AllCompanies')) {
+          if (newVal.length > 1) {
+            this.$nextTick(() => {
+              this.formValues.availableForRequests = [this.treeSelectOptions[1]]
+            })
+          }
+          this.setTreeSelectOptions(true)
+        } else {
+          this.setTreeSelectOptions(false)
+        }
+        this.validateAvailableFor(newVal)
+      }
     }
   },
   created() {
     if (this.isEdit && this.resourceId) {
       this.callForGetSmtpSettings()
     }
+    this.callForSearchAvailableFor()
     getLookupListByTypeId(12).then((response) => {
       const { data: { data = [] } = {} } = response
       this.serviceProviderItems = data
@@ -402,6 +582,12 @@ export default {
       flex-basis: 15%;
       margin-left: 16px;
     }
+  }
+}
+[data-id='AllCompanies'],
+[data-id='MyCompanyOnly'] {
+  .vue-treeselect__checkbox-container {
+    display: none;
   }
 }
 </style>
