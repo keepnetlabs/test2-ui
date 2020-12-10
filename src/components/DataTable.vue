@@ -1072,6 +1072,7 @@ export default {
       renderedColumns: [],
       filteredDataLength: 0,
       showfilteredData: false,
+      selectCheckboxesLazy: false,
       sortProps: null,
       initialData: [],
       dataLength: 0,
@@ -1318,8 +1319,12 @@ export default {
     callbackOfLazyLoad(rows = []) {
       for (let row of rows) {
         this.addItemToClusteredItems(row)
-        this.$refs.elTableRef.toggleRowSelection(row, true)
+        if (this.selectCheckboxesLazy || this.selectionCheckbox) {
+          this.$refs.elTableRef.toggleRowSelection(row, true)
+        }
+        //
       }
+      this.selectCheckboxesLazy = false
       this.totalLength = this.getTotalLength(this.initialData)
       this.calculateAllSelected()
     },
@@ -1987,6 +1992,7 @@ export default {
       const { hasChildren, children = [] } = row
       if (hasChildren && !children.length) {
         this.$refs.elTableRef.store.loadOrToggle(row)
+        this.selectCheckboxesLazy = true
       } else if (children.length) {
         this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
