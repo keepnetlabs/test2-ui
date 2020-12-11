@@ -73,6 +73,7 @@
       @columnFilterCleared="columnFilterCleared"
       v-bind="bindPropsIsSafari"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+      @refreshAction="getTableData"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span

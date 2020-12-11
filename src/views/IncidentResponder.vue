@@ -385,6 +385,7 @@
                               :rowActions="[]"
                               :cell-padding="15"
                               :empty="matchingInvestigation.iEmpty"
+                              @refreshAction="matchingPopupClick(selectedMatch)"
                             />
                           </v-list-item-content>
                         </v-list-item>
@@ -456,8 +457,8 @@
                 :selectEvent="recentInv.selectEvent"
                 :border="false"
                 :showHeader="false"
-                @onEmptyBtnClicked="onEmptyBtnClicked"
                 class="no-sub-border-datatable"
+                @onEmptyBtnClicked="onEmptyBtnClicked"
               />
             </div>
           </v-card>
@@ -476,6 +477,8 @@
           <datatable
             :loading="reportedEmailsLoading"
             :is-column-filter-active="emails.isColumnFilterActive"
+            v-bind="bindPropsIsSafari"
+            :extendedViewDisableChanger="extendedViewDisableChanger"
             :table="reportedEmailsData"
             :refName="'reportedEmails'"
             ref="refReportedEmails"
@@ -511,8 +514,7 @@
             @handleEdit="handleEdit"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
-            v-bind="bindPropsIsSafari"
-            :extendedViewDisableChanger="extendedViewDisableChanger"
+            @refreshAction="callForSearchNotifiedMail"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">

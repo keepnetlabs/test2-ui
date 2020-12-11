@@ -189,6 +189,14 @@
                 }}</span>
               </v-tooltip>
             </slot>
+            <v-tooltip bottom opacity="1">
+              <template v-slot:activator="{ on }">
+                <v-btn icon style="order: 4;" v-on="on" :disabled="refreshButtonDisabled">
+                  <v-icon @click="handleRefresh">mdi-refresh</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">{{ 'Refresh' }}</span>
+            </v-tooltip>
             <v-menu bottom left offset-y v-if="downloadButton && downloadButton.show">
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
@@ -196,7 +204,7 @@
                     <v-btn
                       class="btn-hover mr-1"
                       icon
-                      style="order: 4;"
+                      style="order: 5;"
                       v-bind="attrs"
                       :disabled="downloadButton.disabled"
                       v-on="{ ...tooltip, ...menu }"
@@ -977,6 +985,10 @@ export default {
       type: Boolean,
       required: false
     },
+    refreshButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
     rowActions: {
       type: Array,
       required: false
@@ -1391,6 +1403,9 @@ export default {
       return retArr
     },
 
+    handleRefresh() {
+      this.$emit('refreshAction')
+    },
     /**
      * This function for rendering overflowed actions bug. This is element io bug and solved with this function
      */

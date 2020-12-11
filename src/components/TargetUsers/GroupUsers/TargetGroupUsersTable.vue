@@ -1,6 +1,7 @@
 <template>
   <DataTable
     id="target-users-group-users-data-table"
+    selectable
     :refName="'groupsTable'"
     :loading="loading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -11,7 +12,6 @@
     :filterable="true"
     :options="true"
     :add-button="tableOptions.addButton"
-    selectable
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
     @addAction="handleAddAction"
@@ -23,6 +23,7 @@
     @handleRemoveToGroup="handleRemoveToGroup"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
+    @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
   >
     <template #selection-all-slot v-if="hasSelectionSlot">
       <v-tooltip bottom opacity="1">

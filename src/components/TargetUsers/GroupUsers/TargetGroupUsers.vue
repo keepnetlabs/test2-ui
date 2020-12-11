@@ -35,8 +35,8 @@
       />
       <TargetGroupUsersTable
         ref="refTable"
-        :resource-id="resourceId"
         has-selection-slot
+        :resource-id="resourceId"
         @handleAddAction="toggleAddUserModal"
         @handleAddUsersSelectionClick="handleAddUsersSelectionClick"
         @handleAddToAnExistingGroup="handleAddToAnExistingGroup"

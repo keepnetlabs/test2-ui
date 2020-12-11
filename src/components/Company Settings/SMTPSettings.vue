@@ -45,6 +45,7 @@
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
+        @refreshAction="callForSearchSmtpSettings"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>

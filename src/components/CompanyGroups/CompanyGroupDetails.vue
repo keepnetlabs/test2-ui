@@ -61,6 +61,7 @@
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+      @refreshAction="getTableData"
     />
   </div>
 </template>
