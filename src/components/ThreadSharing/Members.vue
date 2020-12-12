@@ -109,7 +109,7 @@
                     v-for="(member, ind) of props.items"
                     :key="ind"
                     multiple
-                    class="mb-4 mt-4"
+                    class="mb-4 mt-4 pl-1 pr-1"
                   >
                     <v-expansion-panel class="threat-sharing-content">
                       <div class="ts-header">
@@ -257,7 +257,7 @@
               <v-skeleton-loader :loading="membersLoading" type="article, actions">
                 <v-expansion-panels
                   v-if="props.items && props.items.length > 0"
-                  class="mb-4 mt-4"
+                  class="mb-4 mt-4 pl-1 pr-1"
                   multiple
                   readonly
                 >
