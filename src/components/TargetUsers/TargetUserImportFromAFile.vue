@@ -4,9 +4,9 @@
       :status="closeTargetUserImport"
       @changeStatus="closeTargetUserImport = false"
       icon="mdi-exit-to-app"
-      :title="'Title'"
+      :title="'Are you sure you want to cancel?'"
       :subtitle="'Subtitle'"
-      :body="'Are you sure?'"
+      :body="''"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -131,6 +131,7 @@
                   <v-list-item class="target-user-import-file__list-item table-box-shadow">
                     <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
                       <MapTable
+                        v-if="activeStep === 2"
                         ref="refMapTable"
                         :mapTableData="mappingData"
                         @get-map-table-data="getMapTableData" /></v-list-item-content
@@ -150,7 +151,7 @@
                   :is-column-filter-active="tableOptions.isColumnFilterActive"
                   :table="tableData"
                   id="validate-data-table"
-                  ref="refValideateList"
+                  ref="refValidateList"
                   :empty="tableOptions.empty"
                   :refName="'validateList'"
                   :columns="tableOptions.columns"
@@ -183,7 +184,7 @@
                         class="target-user-import-file__button target-user-import-file__button--table-notification"
                         outlined
                         rounded
-                        @click="isShowInvalid = !isShowInvalid"
+                        @click="filterStatusChange()"
                       >
                         {{ setTableOption() }}
                       </v-btn>
@@ -259,7 +260,7 @@
             rounded
             color="#2196f3"
             @click="save(labels.ImportSelected)"
-            :disabled="!showDatatable"
+            :disabled="!showDatatable || !tableData.length"
           >
             {{ labels.ImportSelected }}
           </v-btn>
@@ -269,11 +270,16 @@
             rounded
             color="#2196f3"
             @click="save(labels.ImportAll)"
-            :disabled="!showDatatable"
+            :disabled="!showDatatable || !tableData.length"
           >
             {{ labels.ImportAll }}
           </v-btn>
-          <v-menu v-if="!canNext" offset-y transition="scale-transition" :disabled="!showDatatable">
+          <v-menu
+            v-if="!canNext"
+            offset-y
+            transition="scale-transition"
+            :disabled="!showDatatable || !tableData.length"
+          >
             <template v-slot:activator="{ on }">
               <v-btn
                 icon
@@ -370,6 +376,7 @@ export default {
   },
   data() {
     return {
+      responsNumbers: false,
       isShowInvalid: false,
       showDatatable: false,
       mappingStatus: null,
@@ -464,18 +471,83 @@ export default {
             emptyText: 'No Data'
           },
           {
-            property: PROPERTY_STORE.STATUS,
-            align: 'center',
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            property: 'createTime',
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'status',
+            type: 'text',
+            width: 180,
+            dbName: 'CreateTime',
+            emptyText: 'No Data'
+          }
+        ],
+        backupColumns: [
+          {
+            property: PROPERTY_STORE.FIRSTNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            dbName: 'FirstName',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.LASTNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.LASTNAME),
+            sortable: true,
+            show: true,
+            type: 'text',
             width: 150,
-            isEditable: true,
-            hasTooltip: true,
+            filterableType: 'text',
+            dbName: 'LastName',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 275,
+            filterableType: 'text',
+            dbName: 'Email',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.DEPARTMENT,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.DEPARTMENT),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: 'text',
+            dbName: 'Department',
+            emptyText: 'No Data'
+          },
+          {
+            property: PROPERTY_STORE.PRIORITY,
+            align: 'center',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.PRIORITY),
+            sortable: true,
+            show: true,
+            type: 'priority',
+            width: 150,
             fullWidth: true,
-            dbName: 'Status',
+            dbName: 'Priority',
             emptyText: 'No Data'
           },
           {
@@ -513,7 +585,39 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [],
+              FilterItems: [
+                {
+                  FieldName: 'FirstName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'LastName',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'Email',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'Department',
+                  Operator: 'Contains',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'Status',
+                  Operator: 'Include',
+                  Value: 'New,Exists,Error'
+                }
+              ],
               FilterGroups: []
             }
           ]
@@ -522,8 +626,33 @@ export default {
     }
   },
   methods: {
+    getLabelCount(label, data) {
+      switch (label) {
+        case labels.ImportSelected:
+          let selectedValues = this.$refs.refValidateList
+            .getSelectedMultipleValues()
+            .map((item) => item.resourceId)
+          return selectedValues.length
+          break
+        case labels.ImportAll:
+          return this.tableData.length
+        case 'onlyImportNewUsers':
+          return this.responsNumbers.newUserCount
+        case 'onlyUpdateExistingUsers':
+          return this.responsNumbers.existingUserCount
+        default:
+          return ''
+      }
+    },
+    filterStatusChange() {
+      this.isShowInvalid = !this.isShowInvalid
+      this.bodyData.filter.FilterGroups[1]['FilterItems'].find(
+        (item) => item.FieldName === 'Status'
+      ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+      this.getDatatableList()
+    },
     setTableOption() {
-      let val = this.isShowInvalid
+      let val = !this.isShowInvalid
         ? `ONLY SHOW INVALID (${this.mappingStatus.invalidUserCount})`
         : `SHOW ALL ${this.mappingStatus.totalRowCount}`
       return val
@@ -531,13 +660,21 @@ export default {
     onlyImportNewUsers() {},
     onlyUpdateExistingUsers() {},
     getMappingStatus() {
+      let _this = this
       getMappingStatus(this.mappindgId)
         .then((response) => {
-          this.mappingStatus = response.data.data
-          if (this.mappingStatus.status !== 'Finished' && this.isExcelUploaded) {
+          _this.mappingStatus = response.data.data
+          if (_this.mappingStatus.status === 'FinishedWithError' && _this.isExcelUploaded) {
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'Something went wrong',
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+              icon: 'mdi-alert-circle'
+            })
+            this.getDatatableList()
+          } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
             setTimeout(() => {
               this.getMappingStatus()
-            }, 1000)
+            }, 2500)
           } else {
             this.getDatatableList()
           }
@@ -560,6 +697,8 @@ export default {
       let _this = this
       searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
+          this.responsNumbers = response.data.data
+          _this.tableOptions.columns = JSON.parse(JSON.stringify(_this.tableOptions.backupColumns))
           let data = ({ data, status } = response.data.data.items.results)
           if (data.length) {
             let customFields = data[0].customFields.map((item) => {
@@ -569,10 +708,9 @@ export default {
                 editable: false,
                 label: item.name,
                 fixed: false,
-                sortable: true,
+                sortable: false,
                 show: true,
                 type: 'text',
-                filterableType: 'text',
                 dbName: 'item.name',
                 width: 250,
                 emptyText: 'No Data'
@@ -594,6 +732,21 @@ export default {
             })
             _this.tableData = data || []
             _this.tableOptions.columns.push(...customFields)
+            _this.tableOptions.columns.push({
+              property: PROPERTY_STORE.STATUS,
+              align: 'center',
+              label: getStoreValue(PROPERTY_STORE.STATUS),
+              fixed: false,
+              sortable: true,
+              show: true,
+              type: 'status',
+              width: 150,
+              isEditable: true,
+              hasTooltip: true,
+              fullWidth: true,
+              dbName: 'Status',
+              emptyText: 'No Data'
+            })
           } else {
             _this.tableData = data || []
           }
@@ -769,7 +922,8 @@ export default {
       })
       let payload = {
         transactionId: this.excelInfo.transactionId,
-        fieldMappings: fieldMappingData
+        fieldMappings: fieldMappingData,
+        targetGroupResourceIds: this.formData.groups
       }
 
       createMapping(payload)
@@ -809,43 +963,50 @@ export default {
     prevStep() {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
       if (this.activeStep === 3) {
+        this.tableData = []
         this.resetDisabledValuesFromColumns()
+      }
+      if (this.activeStep === 2) {
       }
     },
     save(label) {
+      let payload
       switch (label) {
         case labels.ImportSelected:
-          let selectedValues = this.$refs.refValideateList
+          let selectedValues = this.$refs.refValidateList
             .getSelectedMultipleValues()
             .map((item) => item.resourceId)
           if (!selectedValues.length) return false
-          let payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
-          importTmpUsers(payload, this.excelInfo.transactionId)
-            .then((response) => {
-              this.closeOverlay()
-              this.$store.dispatch('common/createSnackBar', {
-                message: `Users have been imported!`,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: 'mdi-information'
-              })
-            })
-            .catch((error) => {
-              this.$store.dispatch('common/createSnackBar', {
-                message: error.data.message,
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                icon: 'mdi-alert-circle'
-              })
-            })
+          payload = { ImportType: 'ImportSelected', SelectedResourceIds: selectedValues }
           break
         case labels.ImportAll:
+          payload = { ImportType: 'ImportAll' }
           break
         case 'onlyImportNewUsers':
+          payload = { ImportType: 'OnlyNew' }
           break
         case 'onlyUpdateExistingUsers':
+          payload = { ImportType: 'OnlyUpdateExisting' }
           break
         default:
           return ''
       }
+      importTmpUsers(payload, this.excelInfo.transactionId)
+        .then((response) => {
+          this.closeOverlay()
+          this.$store.dispatch('common/createSnackBar', {
+            message: `${this.getLabelCount(label)} Import process has been started`,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            icon: 'mdi-information'
+          })
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: error.data.message,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       let _this = this

@@ -57,7 +57,7 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
@@ -190,13 +190,7 @@ export default {
           width: 150,
           fullWidth: true,
           filterableType: 'select',
-          filterableItems: [
-            { text: labels.VeryLow, value: 'VeryLow' },
-            labels.Low,
-            labels.Medium,
-            labels.High,
-            { text: labels.VeryHigh, value: 'Very High' }
-          ]
+          filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS
         },
         {
           property: PROPERTY_STORE.STATUS,
@@ -212,10 +206,7 @@ export default {
           fullWidth: true,
           dbName: 'status',
           filterableType: 'select',
-          filterableItems: [
-            { text: labels.Active, value: 1 },
-            { text: labels.InActive, value: 0 }
-          ]
+          filterableItems: COMMON_CONSTANTS.STATUS_ITEMS
         },
         {
           property: 'createTime',

@@ -643,44 +643,46 @@
               v-if="rowActions && rowActions.length === 2"
             >
               <template slot-scope="scope">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      @click.native="
-                        rowActions[0].action === 'edit'
-                          ? handleEdit(scope.row, scope.$index)
-                          : rowAct(rowActions[0].action, scope.row)
-                      "
-                      :disabled="rowActions[0]['disabled']"
-                      class="btn-hover mr-1"
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon>{{ rowActions[0].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[0].name }}</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :disabled="
-                        scope.row.status === 'Cancelled' ||
-                        scope.row.status === 'Expired' ||
-                        scope.row.status === 'Finished' ||
-                        scope.row.status === 'NoMatch' ||
-                        rowActions[1]['disabled']
-                      "
-                      @click.native="rowAct(rowActions[1].action, scope.row)"
-                      class="btn-hover"
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon>{{ rowActions[1].icon }}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ rowActions[1].name }}</span>
-                </v-tooltip>
+                <slot name="datatable-row-actions" :scope="scope">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        @click.native="
+                          rowActions[0].action === 'edit'
+                            ? handleEdit(scope.row, scope.$index)
+                            : rowAct(rowActions[0].action, scope.row)
+                        "
+                        :disabled="rowActions[0]['disabled']"
+                        class="btn-hover mr-1"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        :disabled="
+                          scope.row.status === 'Cancelled' ||
+                          scope.row.status === 'Expired' ||
+                          scope.row.status === 'Finished' ||
+                          scope.row.status === 'NoMatch' ||
+                          rowActions[1]['disabled']
+                        "
+                        @click.native="rowAct(rowActions[1].action, scope.row)"
+                        class="btn-hover"
+                        icon
+                        v-on="on"
+                      >
+                        <v-icon>{{ rowActions[1].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[1].name }}</span>
+                  </v-tooltip>
+                </slot>
               </template>
             </el-table-column>
             <template v-slot:empty>
@@ -1072,6 +1074,7 @@ export default {
       renderedColumns: [],
       filteredDataLength: 0,
       showfilteredData: false,
+      selectCheckboxesLazy: false,
       sortProps: null,
       initialData: [],
       dataLength: 0,
@@ -1318,8 +1321,12 @@ export default {
     callbackOfLazyLoad(rows = []) {
       for (let row of rows) {
         this.addItemToClusteredItems(row)
-        this.$refs.elTableRef.toggleRowSelection(row, true)
+        if (this.selectCheckboxesLazy || this.selectionCheckbox) {
+          this.$refs.elTableRef.toggleRowSelection(row, true)
+        }
+        //
       }
+      this.selectCheckboxesLazy = false
       this.totalLength = this.getTotalLength(this.initialData)
       this.calculateAllSelected()
     },
@@ -1776,7 +1783,8 @@ export default {
             .filter((column) => column.filterableType)
             .reduce((acc, filterItem) => {
               acc.push({
-                FieldName: filterItem.property,
+                FieldName:
+                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
                 Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
                 Value: this.search
               })
@@ -1986,6 +1994,7 @@ export default {
       const { hasChildren, children = [] } = row
       if (hasChildren && !children.length) {
         this.$refs.elTableRef.store.loadOrToggle(row)
+        this.selectCheckboxesLazy = true
       } else if (children.length) {
         this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
