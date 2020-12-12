@@ -57,6 +57,7 @@
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
       v-if="checkPermissions('analysis-engines/search', 'POST')"
+      @refreshAction="getDatatableList"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>

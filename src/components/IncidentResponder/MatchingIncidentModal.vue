@@ -14,8 +14,9 @@
         <v-list-item class="matching-modal__list-item">
           <v-list-item-content>
             <data-table
-              :refName="'matchingInvestigation'"
               ref="refMatchingInvestigation"
+              id="matching-incident-data-table"
+              :refName="'matchingInvestigation'"
               :table="tableData"
               :columns="columns"
               :countRow="5"
@@ -24,12 +25,12 @@
               :showHeader="true"
               :defaultSort="'subject'"
               :selectable="false"
-              id="matching-incident-data-table"
               :filterable="true"
               :options="true"
               :rowActions="[]"
               :cell-padding="15"
               :empty="empty"
+              @refreshAction="callForMatchingIncident"
             />
           </v-list-item-content>
         </v-list-item>

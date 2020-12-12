@@ -174,37 +174,14 @@
       <v-col md="6">
         <div class="select-sources d-flex">
           <v-checkbox
-            class="v-input--checkbox"
-            v-model="investigateData.scanTypes"
-            label="Outlook Desktop"
-            value="Outlook"
+            v-for="(item, index) in sources"
+            :key="index"
+            v-model="scanTypes"
+            class="v-input--checkbox mr-4"
             color="#2196f3"
-            v-if="scanTypes.includes('Outlook')"
-          />
-          <v-checkbox
-            class="v-input--checkbox ml-3"
-            v-model="investigateData.scanTypes"
-            label="Office 365"
-            value="O365"
-            color="#2196f3"
-            v-if="scanTypes.includes('O365')"
-          />
-          <v-checkbox
-            class="v-input--checkbox ml-3"
-            v-model="investigateData.scanTypes"
-            label="GSuite"
-            value="GSuite"
-            color="#2196f3"
-            v-if="scanTypes.includes('GSuite')"
-          />
-          <v-checkbox
-            class="v-input--checkbox ml-3"
-            v-model="investigateData.scanTypes"
-            label="Exchange"
-            value="Exchange"
-            color="#2196f3"
-            v-if="scanTypes.includes('Exchange')"
-          />
+            :label="item['mailConfigurationName']"
+            :value="item"
+          ></v-checkbox>
         </div>
       </v-col>
     </v-row>
@@ -307,7 +284,9 @@ export default {
       default: () => {
         return {
           isCreatedByAnalyzer: false,
-          scanTypes: ['Outlook'],
+          scanTypes: [
+            { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
+          ],
           filters: [],
           expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
             .toISOString()
@@ -441,6 +420,12 @@ export default {
         newVal.splice(0, 1)
       }
     },
+    scanTypes(newVal, oldVal) {
+      this.investigateData.scanTypes = newVal.map((item) => {
+        const { type, mailConfigurationResourceId } = item
+        return { type, mailConfigurationResourceId }
+      })
+    },
     searchUserGroup(val) {
       if (val && val.length >= 3) {
         this.debounce(() => {
@@ -490,6 +475,7 @@ export default {
       defaultUserGroupItems: [],
       timeout: null,
       targetUserType: 'AllUsers',
+      sources: [],
       validations: {
         required
       },
@@ -550,7 +536,16 @@ export default {
       this.defaultUserGroupItems = response.data.data
     })
     getInvestigationScanTypes().then((response) => {
-      this.scanTypes = response.data.data
+      const {
+        data: { data }
+      } = response
+      this.sources = data.map((item) => {
+        if (item.type.toLowerCase() === 'outlook') {
+          item['mailConfigurationName'] = 'Outlook'
+        }
+        return item
+      })
+      this.scanTypes = JSON.parse(JSON.stringify(this.investigateData.scanTypes))
     })
     this.callForGetTargetUsersItems(
       {
@@ -562,7 +557,8 @@ export default {
       },
       true
     )
-  }
+  },
+  updated() {}
 }
 </script>
 

@@ -47,6 +47,7 @@
                 :rowActions="[]"
                 :cell-padding="15"
                 :empty="matchingInvestigationPlaybookRules.iEmpty"
+                @refreshAction="matchingPopupClick(selectedMatch, false)"
               />
             </v-list-item-content>
           </v-list-item>
@@ -87,6 +88,7 @@
       @editAction="handleEdit"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @refreshAction="callForSearchPlaybook"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -403,11 +405,14 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    matchingPopupClick(match) {
+    matchingPopupClick(match, toggleModal = true) {
       if (this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission) {
         this.selectedMatch = match
         this.isMatchingTableLoading = true
-        this.toggleMatchingModal()
+        if (toggleModal) {
+          this.toggleMatchingModal()
+        }
+
         const payload = {
           pageNumber: 1,
           pageSize: 50000,
