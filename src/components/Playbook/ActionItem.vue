@@ -462,7 +462,9 @@ export default {
       },
       playbookActionInvestigationAnalyzeData: {
         isCreatedByAnalyzer: true,
-        scanTypes: ['Outlook'],
+        scanTypes: [
+          { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
+        ],
         filters: [],
         expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
           .toISOString()
@@ -497,7 +499,7 @@ export default {
       this.getSelectedIntegrations()
     },
     validateIntegrations(v) {
-      return this.getSelectedIntegrations() || 'Required'
+      return !!this.getSelectedIntegrations() || 'Required'
     },
     openEngineModalFunc() {
       this.initialAnalysisEngines = JSON.parse(JSON.stringify(this.analysisEngines))
@@ -715,7 +717,9 @@ export default {
       if (value.val === 'investigate') {
         this.playbookActionInvestigations[index] = {
           isCreatedByAnalyzer: false,
-          scanTypes: ['Outlook'],
+          scanTypes: [
+            { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
+          ],
           filters: [],
           expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
             .toISOString()
@@ -764,7 +768,9 @@ export default {
       if (nextAvailableAction.val === 'investigate') {
         this.playbookActionInvestigations[this.actions.length] = {
           isCreatedByAnalyzer: false,
-          scanTypes: ['Outlook'],
+          scanTypes: [
+            { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
+          ],
           filters: [],
           expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
             .toISOString()
@@ -841,7 +847,9 @@ export default {
       if (actionVal === 'analyze') {
         this.playbookActionInvestigationAnalyzeData = {
           isCreatedByAnalyzer: true,
-          scanTypes: ['Outlook'],
+          scanTypes: [
+            { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
+          ],
           filters: [],
           expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
             .toISOString()

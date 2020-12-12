@@ -1051,7 +1051,7 @@ export default {
             (item) => item.targetUser
           )
         }
-        debugger
+
         this.scanTypes = _this.investigationDetailsData.scanConfigurationDetails.map((item) => {
           if (item.type.toLowerCase() == 'outlook') {
             item['mailConfigurationName'] = 'Outlook'

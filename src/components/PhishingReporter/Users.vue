@@ -269,11 +269,11 @@ export default {
 
               const timezonedLastSeen = `${timezonedDate.getFullYear()}-${this.getDateValue(
                 timezonedDate.getMonth() + 1
-              )}-${this.getDateValue(timezonedDate.getDate())}
-              ${this.getDateValue(timezonedDate.getHours())}:${this.getDateValue(
-                timezonedDate.getMinutes()
-              )}:${this.getDateValue(timezonedDate.getSeconds())}
-              `
+              )}-${this.getDateValue(timezonedDate.getDate())} ${this.getDateValue(
+                timezonedDate.getHours()
+              )}:${this.getDateValue(timezonedDate.getMinutes())}:${this.getDateValue(
+                timezonedDate.getSeconds()
+              )}`
               const newItem = { ...item, lastSeen: timezonedLastSeen }
               return newItem
             }) || []
