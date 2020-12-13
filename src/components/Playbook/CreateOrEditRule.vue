@@ -774,6 +774,15 @@ export default {
             logicalOperator: data.condition.operator.toUpperCase(),
             children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
           }
+
+          data.playbookActionInvestigations.forEach((item) => {
+            item.scanTypes = item.scanConfigurationDetails.map((scan) => {
+              if (scan.type.toLowerCase() === 'outlook') {
+                scan['mailConfigurationName'] = 'Outlook'
+              }
+              return scan
+            })
+          })
           this.playbookAction = data.playbookAction
           this.playbookActionAnalyzers = data.playbookActionAnalyzers
           this.editedNotifications = data.playbookActionNotifications

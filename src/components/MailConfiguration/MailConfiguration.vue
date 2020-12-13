@@ -254,6 +254,7 @@
         @downloadEvent="exportMailConfigurationList"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
+        @refreshAction="getTableData"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">

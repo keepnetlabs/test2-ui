@@ -44,6 +44,7 @@
       @onEmptyBtnClicked="showNewUserGroupModal = true"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @refreshAction="callForTargetGroups"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">

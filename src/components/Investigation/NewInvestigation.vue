@@ -35,9 +35,9 @@
                     @change="handleTargetUserTypeChange"
                     row
                   >
-                    <v-radio value="AllUsers" label="All Users" color="primary"></v-radio>
-                    <v-radio value="Groups" label="User Groups" color="primary"></v-radio>
-                    <v-radio value="SpecificUsers" label="Specific Users" color="primary"></v-radio>
+                    <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
+                    <v-radio value="Groups" label="User Groups" color="#2196f3"></v-radio>
+                    <v-radio value="SpecificUsers" label="Specific Users" color="#2196f3"></v-radio>
                   </v-radio-group>
                 </div>
                 <div class="target-users-select__input-area">
@@ -198,13 +198,14 @@
                 >
                 <div class="select-sources flex">
                   <v-checkbox
+                    v-for="(item, index) in sources"
+                    :key="index"
                     class="v-input--checkbox"
                     v-model="scanTypes"
-                    :label="item"
+                    :label="item['mailConfigurationName']"
                     :value="item"
-                    v-for="(item, index) in sources"
                     @change="checkCheckboxValidation()"
-                    :key="index"
+                    color="#2196f3"
                   ></v-checkbox>
                   <div
                     class="v-text-field__details checkbox-error checkbox-error__position"
@@ -493,7 +494,7 @@ export default {
           required: (v) => Validations.required(v),
           maxLength: (v) =>
             Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => (v) => Validations.email(v)
+          format: (v) => Validations.email(v)
         },
         bcc: {
           required: (v) => Validations.required(v),
@@ -557,7 +558,7 @@ export default {
         required: (v) => Validations.required(v)
       },
       checkboxRule: {
-        required: (v) => this.sources.find((item) => item.value)
+        required: (v) => this.sources.find((item) => item.type)
       }
     }
   },
@@ -635,7 +636,6 @@ export default {
         this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
-        this.saveDisable = true
         let isCheckboxEmpty = this.scanTypes.length === 0
         if (isCheckboxEmpty) {
           this.checkboxError = true
@@ -955,9 +955,12 @@ export default {
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
           action: this.selectedAction,
-          scanTypes: this.scanTypes
+          scanTypes: this.scanTypes.map((item) => {
+            const { type, mailConfigurationResourceId } = item
+            return { type, mailConfigurationResourceId }
+          })
         }
-
+        this.saveDisable = true
         // post request with body data
         this.$store
           .dispatch('investigations/createInvestigation', newInvestigationObj)
@@ -1049,10 +1052,12 @@ export default {
           )
         }
 
-        this.scanTypes = _this.investigationDetailsData.scanTypes.reduce((acc, item) => {
-          acc.push(item.scanType)
-          return acc
-        }, [])
+        this.scanTypes = _this.investigationDetailsData.scanConfigurationDetails.map((item) => {
+          if (item.type.toLowerCase() == 'outlook') {
+            item['mailConfigurationName'] = 'Outlook'
+          }
+          return item
+        })
         const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
@@ -1098,7 +1103,15 @@ export default {
       this.defaultUserGroupItems = response.data.data
     })
     getInvestigationScanTypes().then((response) => {
-      this.sources = response.data.data
+      const {
+        data: { data }
+      } = response
+      this.sources = data.map((item) => {
+        if (item.type.toLowerCase() === 'outlook') {
+          item['mailConfigurationName'] = 'Outlook'
+        }
+        return item
+      })
       this.checkIsEdit()
     })
     this.checkIsEdit()
