@@ -97,7 +97,7 @@
         </div>
       </template>
     </app-dialog>
-    <v-dialog v-model="feedbackdialog" :width="600">
+    <v-dialog v-model="feedbackdialog" v-if="feedbackdialog" persistent :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
@@ -436,6 +436,7 @@
               routerName === 'Investigations' ||
               routerName === 'Integrations' ||
               routerName === 'Playbook' ||
+              routerName === 'Audit' ||
               routerName === 'Mail Configurations' ||
               routerName === 'Analysis Details' ||
               routerName === 'Investigation Details',
@@ -444,6 +445,7 @@
               routerName === 'Investigations' ||
               routerName === 'Integrations' ||
               routerName === 'Playbook' ||
+              routerName === 'Audit' ||
               routerName === 'Analysis Details' ||
               routerName === 'Mail Configurations' ||
               routerName === 'Investigation Details'
@@ -525,6 +527,18 @@
               <router-link to="/playbook" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Playbook</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['audit-logs|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/audit" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Audit Log</span>
                 </v-list-item-title>
               </router-link>
             </v-list-item-content>
