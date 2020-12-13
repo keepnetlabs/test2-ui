@@ -75,11 +75,11 @@ export function notificationSeen(payload) {
 }
 
 export function sendFeedback(payload) {
-  return request.post('user/feedback', payload)
+  return request.post('feedback', payload)
 }
 
-export function getNotifications() {
-  return request.get('user/notifications')
+export function getNotifications(payload) {
+  return request.post('/system-users/notification-setting', payload)
 }
 
 export function getPermissions() {
@@ -95,4 +95,8 @@ export function getPermissions() {
 
 export function getNotifiedEmailsTrend(payload) {
   return testRequest.post('/dashboard/reported-email-trends', payload)
+}
+
+export function getAuditLogs(payload) {
+  return testRequest.post('/audit-logs', payload)
 }

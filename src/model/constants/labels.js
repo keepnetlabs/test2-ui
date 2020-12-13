@@ -153,7 +153,9 @@ export const labels = {
   NumberOfUsers: 'Number of users',
   ImportSelected: 'IMPORT SELECTED',
   ImportAll: 'IMPORT ALL',
-  StartInvestigation: 'START INVESTIGATION'
+  StartInvestigation: 'START INVESTIGATION',
+  CancelImport: 'CANCEL IMPORT',
+  KeepEditing: 'KEEP EDITING'
 }
 
 export default labels
