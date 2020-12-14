@@ -19,6 +19,7 @@ import InvestigationDetailsComponent from '../views/InvestigationDetails.vue'
 import PhishingReporter from '../views/PhishingReporter'
 import Integrations from '../views/Integrations'
 import Playbook from '../views/Playbook'
+import Audit from '../views/Audit'
 import MailConfiguration from '../components/MailConfiguration/MailConfiguration'
 import store from '../store'
 import Companies from '@/views/Companies'
@@ -349,6 +350,21 @@ const router = new Router({
           path: '/playbook',
           name: 'Playbook',
           component: Playbook,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          }
+        },
+        {
+          path: '/audit',
+          name: 'Audit',
+          component: Audit,
           beforeEnter: (to, from, next) => {
             //checkPermission()
 

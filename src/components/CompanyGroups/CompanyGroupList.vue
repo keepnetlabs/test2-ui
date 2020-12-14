@@ -38,6 +38,7 @@
       @onEmptyBtnClicked="addButton"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @refreshAction="getTableData"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">

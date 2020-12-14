@@ -15,35 +15,36 @@
     />
 
     <datatable
+      ref="refGroupsTable"
+      :refName="'groupsTable'"
+      id="target-users-group-data-table"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
+      titleKey="name"
       :columns="tableOptions.columns"
       :countRow="5"
       :empty="tableOptions.iEmpty"
       :filterable="true"
-      id="target-users-group-data-table"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
-      :refName="'groupsTable'"
       :rowActions="tableOptions.rowActions"
       :extended-view-options="tableOptions.extendedViewOptions"
       :disableExtendedViewTransition="true"
       :extendedViewValue="extendedViewValue"
       :extendedViewLoading="extendedViewLoading"
       :selectEvent="tableOptions.selectEvent"
-      @handleMultipleDelete="handleMultipleDelete"
-      :is-downloadable="false"
       :selectable="true"
-      ref="refGroupsTable"
+      @downloadEvent="exportTargetGroupsList"
+      @handleMultipleDelete="handleMultipleDelete"
       @syncWithLDAP="handleSyncWithLDAP"
       @handleEdit="handleEdit"
       @onEditClick="onEditClick"
       @delete="handleDelete"
       @onEmptyBtnClicked="showNewUserGroupModal = true"
-      titleKey="name"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @refreshAction="callForTargetGroups"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -75,7 +76,9 @@ import {
   createTargetGroup,
   updateTargetGroup,
   deleteTargetGroup,
-  searchTargetGroups
+  searchTargetGroups,
+  exportTargetUsers,
+  exportTargetGroups
 } from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DeleteGroupModal from './DeleteGroupModal'
@@ -134,6 +137,8 @@ export default {
             show: true,
             type: 'priority',
             isEditable: true,
+            filterableType: 'select',
+            filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
             editOptions: {
               component: 'select',
               props: {
@@ -156,6 +161,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            filterableType: 'date',
             isEditable: true,
             width: 300
           }
@@ -241,7 +247,7 @@ export default {
       extendedViewValue: [],
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 50000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -327,6 +333,26 @@ export default {
     handleDelete(selectedRow) {
       this.changeDeleteGroupModalStatus(true)
       this.selectedRow = selectedRow
+    },
+    exportTargetGroupsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.tableCredientials.filter
+        }
+        exportTargetGroups(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `target-groups.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen) {

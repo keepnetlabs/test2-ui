@@ -36,13 +36,14 @@
       :columns="tableOptions.columns"
     />
     <datatable
+      ref="refPeopleTable"
+      id="target-users-people-data-table"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :countRow="5"
-      id="target-users-people-data-table"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
@@ -52,19 +53,20 @@
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       :settingsPopupStyle="{ top: '-15px' }"
+      :download-button="{ show: true, disabled: false }"
       :setClassName="setCellClassName"
       @addToGroup="handleAddToGroup"
       @createGroupWithUser="handleCreateGroupWithUser"
       @submenuItemClick="handleSubMenuItemClick"
       @syncUser="handleSyncUser"
       @deleteAction="handleDelete"
-      ref="refPeopleTable"
-      :download-button="{ show: false, disabled: false }"
       @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @handleMultipleDelete="handleMultipleDelete"
+      @downloadEvent="exportTargetUserList"
+      @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -101,6 +103,7 @@ import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
 import {
   deleteTargetUser,
+  exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
   getTargetUsers
 } from '@/api/targetUsers'
@@ -125,7 +128,7 @@ export default {
   data: () => ({
     tableCredientials: {
       pageNumber: 1,
-      pageSize: 500,
+      pageSize: 50000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -171,6 +174,8 @@ export default {
           type: 'priority',
           width: 150,
           fullWidth: true,
+          filterableType: 'select',
+          filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
           dbName: 'Priority'
         },
         {
@@ -185,10 +190,12 @@ export default {
           isEditable: true,
           hasTooltip: true,
           fullWidth: true,
+          filterableType: 'select',
+          filterableItems: COMMON_CONSTANTS.STATUS_ITEMS,
           dbName: 'Status'
         },
         {
-          property: 'createTime',
+          property: PROPERTY_STORE.CREATETIME,
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
@@ -253,6 +260,9 @@ export default {
         }
       ],
       pageSizes: [5, 10, 25],
+      downloadButton: {
+        show: true
+      },
       selectEvent: {
         clipboard: true,
         edit: false,
@@ -515,6 +525,26 @@ export default {
 
       this.tableOptions.isColumnFilterActive =
         this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    exportTargetUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.tableCredientials.filter
+        }
+        exportTargetUsers(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `target-users.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
     }
   },
   created() {

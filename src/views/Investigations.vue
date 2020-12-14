@@ -59,6 +59,7 @@
           @onEmptyBtnClicked="isWantToAddNewCommunity = true"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
+          @refreshAction="getInvestigationList"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -438,6 +439,13 @@ export default {
         .finally(() => {
           this.refreshDatatable()
         })
+    },
+    getInvestigationList() {
+      this.loading = true
+      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+        this.loading = false
+        this.tableData.data = this.tableData.data || []
+      })
     }
   },
   computed: {
@@ -465,12 +473,8 @@ export default {
         }
       }
     })
-    this.loading = true
-    const _this = this
-    this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-      this.loading = false
-      this.tableData.data = _this.tableData.data || []
-    })
+
+    this.getInvestigationList()
 
     if (this.$route.query.openPopup) {
       this.isWantToAddNewCommunity = true

@@ -12,6 +12,7 @@
         <GrapesNewsletterModal
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
+          v-if="showNewsletterPageGrapes"
         ></GrapesNewsletterModal>
       </template>
       <template v-slot:overlay-footer>
@@ -2313,6 +2314,9 @@ export default {
     },
     closeGrapesJs() {
       this.showNewsletterPageGrapes = false
+      setTimeout(() => {
+        document.querySelector('html').style.overflowY = 'hidden'
+      }, 250)
     },
     saveGrapesJs() {
       let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
@@ -2321,6 +2325,7 @@ export default {
         let urls = response.data.data.map((item) => {
           return { ...item, isFlagged: false, isHidden: false }
         })
+        document.querySelector('html').style.overflowY = 'hidden'
         this.showNewsletterPageGrapes = false
         this.uploadRespond.urls = urls
         this.uploadRespond.editableBody = editedHtml

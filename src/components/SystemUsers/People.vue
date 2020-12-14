@@ -18,6 +18,7 @@
       />
 
       <data-table
+        v-if="checkPermissions('system-users/search', 'POST')"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
@@ -37,22 +38,23 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
+        @deleteAction="handleDelete"
         @editAction="handleEdit"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        v-if="checkPermissions('system-users/search', 'POST')"
+        @refreshAction="callForListSystemUsers"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
-import { getSystemUsers } from '@/api/systemUsers'
+import { deleteSystemUser, getSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 import { checkPermission } from '../../utils/functions'
 export default {
@@ -179,6 +181,11 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             disabled: !this.checkPermissions('system-users/{resourceId}', 'PUT')
+          },
+          {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'deleteAction'
           }
         ],
         empty: {
@@ -304,7 +311,17 @@ export default {
       this.selectedDeleteRow = row
       this.toggleShowDeleteSystemUserModal()
     },
-    callForDeleteUser(row) {}
+    callForDeleteUser({ resourceId = '' } = {}) {
+      deleteSystemUser(resourceId).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'System user has been deleted',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+        this.toggleShowDeleteSystemUserModal()
+        this.callForListSystemUsers()
+      })
+    }
   },
   created() {
     this.callForListSystemUsers()

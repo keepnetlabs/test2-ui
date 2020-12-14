@@ -42,12 +42,42 @@
         :sizeable="true"
         :resizable="true"
         @onEmptyBtnClicked="toggleSmtpModalStatus"
-        @deleteAction="handleDeleteAction"
-        @editAction="handleEditAction"
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-      />
+        @refreshAction="callForSearchSmtpSettings"
+      >
+        <template #datatable-row-actions="{scope}">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                @click.native="handleEditAction(scope.row)"
+                :disabled="getDisabledStatusOfEdit(scope.row)"
+                class="btn-hover mr-1"
+                icon
+                v-on="on"
+              >
+                <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ tableOptions.rowActions[0].name }}</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :disabled="getDisabledStatusOfDelete(scope.row)"
+                @click.native="handleDeleteAction(scope.row)"
+                class="btn-hover"
+                icon
+                v-on="on"
+              >
+                <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ tableOptions.rowActions[1].name }}</span>
+          </v-tooltip>
+        </template>
+      </data-table>
     </div>
   </div>
 </template>
@@ -206,6 +236,12 @@ export default {
         this.isEdit = false
       }
       this.newSmtpModalStatus = !this.newSmtpModalStatus
+    },
+    getDisabledStatusOfEdit({ isOwner } = {}) {
+      return this.tableOptions.rowActions[0].disabled || !isOwner
+    },
+    getDisabledStatusOfDelete({ isOwner } = {}) {
+      return this.tableOptions.rowActions[1].disabled || !isOwner
     },
     exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const { EXPORT } = this.PERMISSIONS

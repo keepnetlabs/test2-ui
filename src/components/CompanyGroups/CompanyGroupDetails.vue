@@ -62,6 +62,7 @@
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+      @refreshAction="getTableData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
     />

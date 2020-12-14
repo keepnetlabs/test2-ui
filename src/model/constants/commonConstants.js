@@ -1,3 +1,5 @@
+import labels from '@/model/constants/labels'
+
 export const COMMON_CONSTANTS = {
   DISABLELOADER: -1,
   ENABLELOADER: 1,
@@ -6,7 +8,18 @@ export const COMMON_CONSTANTS = {
   UPPERCASE: 'uppercase',
   LOWERCASE: 'lowercase',
   OUTLOOK: 'Outlook',
-  DIAGNOSTIC: 'DiagnosticTool'
+  DIAGNOSTIC: 'DiagnosticTool',
+  PRIORITY_ITEMS: [
+    { text: labels.VeryLow, value: 'VeryLow' },
+    labels.Low,
+    labels.Medium,
+    labels.High,
+    { text: labels.VeryHigh, value: 'VeryHigh' }
+  ],
+  STATUS_ITEMS: [
+    { text: labels.Active, value: 1 },
+    { text: labels.InActive, value: 0 }
+  ]
 }
 
 export const LABEL_STORE = {
@@ -56,6 +69,7 @@ export const LABEL_STORE = {
   NO_TARGET_USER_ADDED: 'No target users added',
   NO_IP_ADDRESS_DEFINED: 'You do not have any IP Addresses, yet',
   NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification template, yet',
+  NO_AUDIT: 'There is no audit log',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
@@ -83,7 +97,16 @@ export const LABEL_STORE = {
   THREATS: 'Actual Threats',
   RELIABILITY: 'Reliability',
   RULENAME: 'Rule Name',
-  UPLOADED_SUCCESSFULLY: 'Uploaded successfully'
+  UPLOADED_SUCCESSFULLY: 'Uploaded successfully',
+  LOGID: 'Log ID',
+  LOGDATE: 'Log Date',
+  ENTITYID: 'Entity ID',
+  ENTITYNAME: 'Entity Name',
+  OPERATIOM: 'Operation',
+  OLDVALUE: 'Old Value',
+  NEWVALUE: 'New Value',
+  IP: 'IP',
+  BROSWERUSERAGENT: 'Browser User Agent'
 }
 
 export const PROPERTY_STORE = {
@@ -153,7 +176,17 @@ export const PROPERTY_STORE = {
   USERCOUNT: 'userCount',
   TYPENAME: 'typeName',
   JOBTITLE: 'jobTitle',
-  PLATFORM: 'platform'
+  PLATFORM: 'platform',
+  LOGID: 'logId',
+  LOGDATE: 'logDate',
+  ENTITYID: 'entityResourceId',
+  ENTITYNAME: 'entityName',
+  OPERATIOM: 'operation',
+  OLDVALUE: 'old Value',
+  NEWVALUE: 'new Value',
+  IP: 'ip',
+  BROSWERUSERAGENT: 'browserUserAgent',
+  USERID: 'userId'
 }
 
 export function getStoreValue(key, type) {
