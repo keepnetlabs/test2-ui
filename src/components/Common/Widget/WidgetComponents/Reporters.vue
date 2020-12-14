@@ -10,7 +10,7 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:threats="{ row, value }">
+            <template v-slot:reporterEmail="{ row, value }">
               <span
                 class="k-widget-list__item"
                 v-if="value"
@@ -18,13 +18,15 @@
               >
                 {{ value }}
               </span>
-              <div
-                class="k-widget-list__sub-item"
-                v-if="row['email']"
-                style="color: #474747; opacity: 0.64;"
+            </template>
+            <template v-slot:reliabilityPoint="{ row, value }">
+              <span
+                class="k-widget-list__item"
+                v-if="value"
+                style="color: #212121 !important; opacity: 0.7;"
               >
-                {{ row['email'] }}
-              </div>
+                {{ value }}
+              </span>
             </template>
             <template v-slot:reliability="{ value }">
               <div
@@ -54,6 +56,7 @@ import WidgetList from '@/components/Common/Widget/WidgetList'
 import { getTextColor } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getReporters } from '@/api/phishingReporter'
 export default {
   name: 'Reporters',
   components: {
@@ -70,10 +73,10 @@ export default {
   },
   data() {
     return {
-      isLoading: true,
+      isLoading: false,
       columns: [
         {
-          property: PROPERTY_STORE.USERNAME,
+          property: PROPERTY_STORE.REPORTEREMAIL,
           label: LABEL_STORE.USERNAME,
           thStyle: {
             width: '40%'
@@ -83,14 +86,15 @@ export default {
           }
         },
         {
-          property: PROPERTY_STORE.THREATS,
-          label: LABEL_STORE.THREATS,
-          subItem: 'email',
+          property: PROPERTY_STORE.RELIABILITYPOINT,
+          label: LABEL_STORE.RELIABILITYPOINT,
           thStyle: {
-            width: '25%'
+            textAlign: 'center',
+            width: '20%'
           },
           tdStyle: {
-            width: '25%'
+            textAlign: 'center',
+            width: '20%'
           }
         },
         {
@@ -115,47 +119,25 @@ export default {
       return labels.Reporters
     }
   },
+  created() {
+    this.callForGetReporters()
+  },
   methods: {
+    callForGetReporters() {
+      this.isLoading = true
+      getReporters()
+        .then((response) => {
+          const {
+            data: { data = [] }
+          } = response
+          console.log('data', data)
+          this.tableData = data
+        })
+        .finally(() => (this.isLoading = false))
+    },
     getTextColor(value) {
       return getTextColor(value)
     }
-  },
-  created() {
-    setTimeout(() => {
-      this.tableData = [
-        {
-          userName: 'Dwight Schrute',
-          threats: '97%',
-          email: '277/286 emails',
-          reliability: 'Very High'
-        },
-        {
-          userName: 'Oscar Martinez',
-          threats: '83%',
-          email: '99/120 emails',
-          reliability: 'High'
-        },
-        {
-          userName: 'Ryan Howard',
-          threats: '61%',
-          email: '61/100 emails',
-          reliability: 'Medium'
-        },
-        {
-          userName: 'Creed Bratton',
-          threats: '75%',
-          email: '3/4 emails',
-          reliability: 'Low'
-        },
-        {
-          userName: 'Andy Bernard',
-          threats: '30%',
-          email: '90/300 emails',
-          reliability: 'Very Low'
-        }
-      ]
-      this.isLoading = false
-    }, 200)
   }
 }
 </script>
