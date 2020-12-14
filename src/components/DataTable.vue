@@ -363,6 +363,8 @@
           v-if="(tableData && tableData.length) || isColumnFilterActive"
         >
           <el-table
+            v-if="!allHidden"
+            :key="tableKey"
             :border="border"
             :cell-class-name="setCellClass"
             :data="showfilteredData ? filteredData : tableData"
@@ -387,7 +389,6 @@
             ref="elTableRef"
             :row-key="rowKey"
             style="width: 100%;"
-            v-if="!allHidden"
           >
             <el-table-column
               align="center"
@@ -1120,6 +1121,7 @@ export default {
         csv: false,
         pdf: false
       },
+      tableKey: `table-key${Math.random().toString().substring(0, 8)}`,
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
@@ -1165,6 +1167,11 @@ export default {
 
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
+        }
+      }
+      if (this.groupable && this.lazy) {
+        if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef) {
+          this.tableKey = `table-key${Math.random().toString().substring(0, 8)}`
         }
       }
     },
