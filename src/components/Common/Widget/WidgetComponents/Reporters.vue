@@ -130,7 +130,6 @@ export default {
           const {
             data: { data = [] }
           } = response
-          console.log('data', data)
           this.tableData = data
         })
         .finally(() => (this.isLoading = false))
