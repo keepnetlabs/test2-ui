@@ -482,13 +482,16 @@
                   </template>
                 </v-combobox>
 
-                <k-select
+                <v-select
                   class="edit-select"
                   dense
                   outlined
+                  :menu-props="{ offsetY: true }"
                   v-bind="col.editOptions.props"
                   :readonly="!multipleEditDisables[col.property]"
-                  :placeholder="!multipleEditDisables[col.property] && 'Multiple Values'"
+                  :placeholder="
+                    !multipleEditDisables[col.property] ? 'Multiple Values' : 'Select item'
+                  "
                   :class="[multipleValues(col.property) && 'multiple-values-input']"
                   v-if="
                     multipleValues(col.property) &&
@@ -513,7 +516,7 @@
                       EDIT
                     </v-btn>
                   </template>
-                </k-select>
+                </v-select>
               </div>
             </div>
             <slot name="body" v-if="editMode"> </slot>
@@ -597,7 +600,6 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'ExtendedView',
   components: {
-    KSelect,
     ExtendedViewLoading,
     Badge
   },

@@ -240,6 +240,12 @@
         .cell > div {
           text-overflow: ellipsis;
           overflow: hidden;
+          @-moz-document url-prefix() {
+            &:before{
+              content: '';
+              display: none !important;
+            }
+          }
           &:before{
             content: '';
             display: block;
@@ -250,6 +256,12 @@
             @supports (-webkit-appearance:none) {
               text-overflow: ellipsis;
               overflow: hidden;
+            }
+          }
+          @-moz-document url-prefix() {
+            &:before{
+              content: '';
+              display: none !important;
             }
           }
           &:before{

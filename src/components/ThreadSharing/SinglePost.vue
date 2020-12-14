@@ -554,7 +554,7 @@
                   outlined
                   v-model.trim="addCommentValue"
                   validate-on-blur
-                  :rules="[rules.required]"
+                  :rules="[rules.required, rules.maxLength, rules.minLength]"
                 />
                 <v-btn
                   :id="'single-post-send-comment' + post.communityPostResourceId"
@@ -940,7 +940,7 @@ import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
-
+import * as Validations from '@/utils/validations'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1156,8 +1156,9 @@ export default {
     showAllTags: false,
     seeComments: false,
     rules: {
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
+      required: (v) => Validations.required(v),
+      maxLength: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
+      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen'

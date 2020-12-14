@@ -320,6 +320,7 @@
               <v-form onSubmit="return false;" v-model="valid" ref="titleInput">
                 <v-text-field
                   id="post-title-text-field"
+                  placeholder="Enter Title"
                   @mouseover.native="hover = true"
                   label="Title"
                   outlined
@@ -327,7 +328,6 @@
                   class="title-field filter-field pt-4"
                   v-model.trim="uploadRespond.Title"
                   solo
-                  requied
                   validate-on-blur
                   :rules="[titleRule.default, titleRule.regex, titleRule.required, titleRule.empty]"
                 ></v-text-field>
@@ -340,6 +340,7 @@
                   id="post-description-textarea"
                   @mouseover.native="hover = true"
                   outlined
+                  placeholder="Enter Description"
                   dense
                   auto-grow
                   class="comment-input"
@@ -362,6 +363,9 @@
                   :items="categories"
                   item-value="resourceId"
                   item-text="name"
+                  placeholder="Select the category"
+                  chips
+                  deletable-chips
                   requied
                   solo
                   multiple
@@ -449,6 +453,7 @@
                   @mouseover.native="hover = true"
                   outlined
                   dense
+                  placeholder="Enter discovery and detection"
                   auto-grow
                   class="comment-input"
                   rows="5"
@@ -1862,7 +1867,7 @@ import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
 import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
-
+import * as Validations from '@/utils/validations'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -2164,29 +2169,24 @@ export default {
     validScope: false,
     autocomplete: [(v) => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
     title: [(v) => !!v || 'Title is required'],
-    category: [(v) => (!!v && v.length >= 1) || 'Category is required'],
+    category: [(v) => (!!v && v.length >= 1) || 'Required'],
     titleRule: {
-      default: (v) => !!v || 'Title is required',
-      required: (v) =>
-        (!!v && v.length >= 4 && v.length <= 80) ||
-        'Title must be between 4 and 80 characters long',
+      required: (v) => Validations.required(v),
+      default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
     },
     descRule: {
-      default: (v) => !!v || 'Description is required',
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) ||
-        'Description must be between 5 and 300 characters long',
+      default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
+      required: (v) => Validations.required(v),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => {
         if (!v) return true
-
-        return (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        return (v && !v.startsWith(' ')) || 'Cannot start with space'
       }
     },
 
@@ -2196,10 +2196,9 @@ export default {
       }
     },
     explanationRules: {
-      default: (v) => !!v || 'Discovery and Detection is required',
+      default: (v) => Validations.required(v),
       required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) ||
-        'Explanation should be between 5 - 300 characters long',
+        Validations.maxLength(v, 300, labels.getMaxLengthMessage('Discovery and detection', 300)),
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
     scopeRules: {
@@ -2870,8 +2869,6 @@ export default {
       if (
         this.uploadRespond &&
         this.uploadRespond.Title &&
-        this.uploadRespond.Title.length >= 4 &&
-        this.uploadRespond.Title.length <= 80 &&
         this.regexChar(this.uploadRespond.Title) &&
         this.uploadRespond.CategoryResourceIdArray &&
         this.uploadRespond.CategoryResourceIdArray &&

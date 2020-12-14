@@ -426,11 +426,10 @@ export default {
           let data = response.data.data.results.map((item, index) => {
             const { customFieldValues } = item
             for (let { name, value } of customFieldValues) {
-              item[name] = value
+              item[name] = value !== null && value !== undefined ? value : ''
             }
             return item
           })
-
           this.tableData = data
         })
         .catch(() => {
