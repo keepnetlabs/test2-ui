@@ -2,8 +2,8 @@
   <v-menu
     :offset-y="true"
     bottom
-    min-width="260px"
-    :max-width="filteredSelectValueDate === 'between' ? '450px' : '260px'"
+    :min-width="getWidth"
+    :max-width="getWidth"
     :close-on-content-click="false"
     class="filter__container"
     v-if="filterableType"
@@ -256,6 +256,9 @@ export default {
     }
   },
   computed: {
+    getWidth() {
+      return this.filteredSelectValueDate === 'between' ? '450px' : '260px'
+    },
     searchInItems: function () {
       return this.filterValue.length > 0
         ? this.convertedFilterableItems.filter((item) => {
