@@ -20,8 +20,11 @@ export function deleteCompanyGroup(id) {
 export function getCompanyByID(id, loading = true) {
   return testRequest.get(`/companies/${id}`, { loading: loading })
 }
+export function searchCompanyGroups(payload) {
+  return testRequest.post(`/company-groups/search`, payload)
+}
 export function getCompanyGroups() {
-  return testRequest.get(`/company-groups`)
+  return testRequest.get(`/company-groups/search`)
 }
 export function getCompanyGroupsById(id) {
   return testRequest.get(`/company-groups/${id}`)

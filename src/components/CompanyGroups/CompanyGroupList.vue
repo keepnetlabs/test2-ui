@@ -15,6 +15,7 @@
     />
 
     <datatable
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
       ref="refGroupDataList"
@@ -35,6 +36,8 @@
       @delete="handleTableItemDelete"
       @editAction="editAction"
       @onEmptyBtnClicked="addButton"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
@@ -50,11 +53,11 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { deleteCompanyGroup, getCompanyGroups } from '../../api/company'
+import { deleteCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+
 export default {
   name: 'CompanyGroupList',
   components: {
@@ -72,6 +75,7 @@ export default {
       selectedExtend: {},
       selectedRow: null,
       tableOptions: {
+        isColumnFilterActive: false,
         columns: [
           {
             property: 'name',
@@ -82,7 +86,8 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 250
+            width: 250,
+            filterableType: 'text'
           },
           {
             property: 'companyCount',
@@ -95,14 +100,15 @@ export default {
             width: 150
           },
           {
-            property: 'addedTime',
+            property: 'createTime',
             align: 'left',
             editable: false,
             label: 'Date Created',
             sortable: true,
             show: true,
             type: 'text',
-            width: 190
+            width: 190,
+            filterableType: 'date'
           }
         ],
         pageSizes: [5, 10, 25],
@@ -137,15 +143,14 @@ export default {
         ]
       },
       payload: {
-        pageNumber: 1,
         pageSize: 3000,
         orderBy: 'createTime',
-        ascending: true,
+        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             }
@@ -158,16 +163,11 @@ export default {
     this.getTableData()
   },
   methods: {
-    getTableData(payload) {
-      const _payload = { ...this.payload, ...payload }
+    getTableData() {
       this.loading = true
-      getCompanyGroups()
+      searchCompanyGroups(this.payload)
         .then((response) => {
-          this.tableData =
-            response.data.data.hasOwnProperty('companyGroups') &&
-            response.data.data.companyGroups.length > 0
-              ? response.data.data.companyGroups
-              : []
+          this.tableData = response.data.data.results.length > 0 ? response.data.data.results : []
         })
         .catch((error) => {
           this.tableData = []
@@ -226,6 +226,49 @@ export default {
         name: 'Company Group Details',
         params: { groupId: selectedRow.resourceId }
       })
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.getTableData()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getTableData()
+
+      this.tableOptions.isColumnFilterActive =
+        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     }
   }
 }
