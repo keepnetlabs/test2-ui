@@ -193,8 +193,25 @@
                       :disabled="stepLock"
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
+                      @input="handleLicenseTypeChange"
                       persistent-hint
                     ></k-select>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-content class="mb-6 company-checkbox__container">
+                    <v-checkbox
+                      v-for="item in allModuleLicences"
+                      :key="item.resourceId"
+                      v-model="formData.LicenseModuleResourceIdArray"
+                      :disabled="stepLock"
+                      :value="item.resourceId"
+                      class="k-checkbox"
+                      color="#2196f3"
+                      :ripple="false"
+                      :label="item.name"
+                      hide-details
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -523,7 +540,6 @@
 import * as validations from '@/utils/validations'
 import {
   createCompany,
-  getCompanyGroups,
   searchCompanies,
   searchCompanyGroups,
   updateCompany
@@ -553,6 +569,7 @@ export default {
       stepLock: false,
       totalStep: 4,
       activeStep: 1,
+      allModuleLicences: [],
       formData: {
         File: null,
         logoURL: null,
@@ -563,6 +580,7 @@ export default {
         Address: '',
         WebsiteUrl: '',
         LicenseTypeResourceId: '',
+        LicenseTypeName: '',
         LicensePeriodTypeResourceId: '',
         LicenseStartDate: '',
         LicenseEndDate: '',
@@ -575,6 +593,7 @@ export default {
         IsReleaseNotesVisible: false,
         ReleaseNotesUrl: '',
         CompanyGroupResourceIdArray: [],
+        LicenseModuleResourceIdArray: [],
         statusId: '1'
       },
       LicenseDates: [],
@@ -636,6 +655,8 @@ export default {
       this.formData.LicenseStartDate = this.selectedExtend.licenseStartDate
       this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
       this.formData.IsNumberOfUsersLimited = this.selectedExtend.isNumberOfUsersLimited
+      this.formData.LicenseModuleResourceIdArray = this.selectedExtend.licenseModules
+      this.formData.licenseTypeName = this.selectedExtend.licenseTypeName
       this.formData.NumberOfUsers = this.selectedExtend.isNumberOfUsersLimited
         ? this.selectedExtend.numberOfUsers
         : ''
@@ -668,6 +689,21 @@ export default {
         this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
         this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
         this.licenceTypes = responses[1].data.data.licenses
+        this.allModuleLicences = responses[1].data.data.allLicenseModules
+        if (this.edit) {
+          const license = this.licenceTypes.find(
+            (licence) => licence.name === this.formData.licenseTypeName
+          )
+          if (license.name !== 'Custom') {
+            this.formData.LicenseModuleResourceIdArray = license.licenseModules.reduce(
+              (acc, item) => {
+                acc.push(item.resourceId)
+                return acc
+              },
+              []
+            )
+          }
+        }
       })
     },
     getCompanyGroups() {
@@ -682,6 +718,10 @@ export default {
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
         this.saveDisable = true
         !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 9999) : null
+        this.formData.LicenseTypeName = this.licenceTypes.find((item) => {
+          return item.resourceId === this.formData.LicenseTypeResourceId
+        }).name
+
         if (this.edit) {
           updateCompany(this.selectedExtend.resourceId, this.formData)
             .then((response) => {
@@ -726,6 +766,14 @@ export default {
             })
         }
       }
+    },
+    handleLicenseTypeChange(resourceId = '') {
+      const selectedLicenceType = this.licenceTypes.find((item) => item.resourceId === resourceId)
+      const licenceModules = selectedLicenceType.licenseModules.reduce((acc, item) => {
+        acc.push(item.resourceId)
+        return acc
+      }, [])
+      this.formData.LicenseModuleResourceIdArray = licenceModules
     },
     nextStep() {
       let isFormValid = true
@@ -843,6 +891,34 @@ export default {
     }
   },
   watch: {
+    'formData.LicenseModuleResourceIdArray'(newVal) {
+      if (newVal.length) {
+        const findedLicense = this.licenceTypes.find((license) => {
+          const { licenseModules = [] } = license
+          if (licenseModules && licenseModules.length && licenseModules.length === newVal.length) {
+            return newVal.every((resourceId) => {
+              return licenseModules.some((item) => {
+                return item.resourceId === resourceId
+              })
+            })
+          }
+        })
+        let selectedLicenceTypeResourceId
+        if (!findedLicense) {
+          const customLicense = this.licenceTypes.find((item) => item.name === 'Custom')
+          if (customLicense) {
+            selectedLicenceTypeResourceId = customLicense.resourceId
+          }
+        } else {
+          selectedLicenceTypeResourceId = findedLicense.resourceId
+        }
+        if (selectedLicenceTypeResourceId) {
+          this.$nextTick(() => {
+            this.formData.LicenseTypeResourceId = selectedLicenceTypeResourceId
+          })
+        }
+      }
+    },
     isActive(value) {
       this.formData.statusId = value ? 1 : 0
     },
@@ -1128,6 +1204,14 @@ export default {
         }
       }
     }
+  }
+}
+.company-checkbox__container {
+  .k-checkbox:nth-child(n) {
+    min-width: 200px;
+  }
+  .k-checkbox:nth-child(2n) {
+    margin-left: 120px;
   }
 }
 </style>

@@ -37,6 +37,7 @@
       ref="refUsersList"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @refreshAction="callForPhishingReporterUser"
     />
   </div>
 </template>
