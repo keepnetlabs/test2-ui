@@ -769,6 +769,7 @@
                 v-show="showEmails"
                 @columnFilterChanged="columnFilterChanged"
                 @columnFilterCleared="columnFilterCleared"
+                @refreshAction="refreshDatatable"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template
@@ -837,6 +838,7 @@
                 @downloadEvent="exportTargetUsers"
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
+                @refreshAction="refreshDatatable"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">

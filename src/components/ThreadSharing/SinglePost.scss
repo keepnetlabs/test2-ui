@@ -850,6 +850,7 @@
       .user-wrapper {
         display: block;
         max-width: 100%;
+        background: inherit !important;
 
         .username,
         .company-name {
@@ -859,6 +860,15 @@
           font-style: normal;
           line-height: normal;
           letter-spacing: normal;
+        }
+        .company-date{
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(56, 59, 65, 0.72);
         }
       }
 

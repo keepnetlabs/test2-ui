@@ -9,3 +9,7 @@ export function getLookupListByTypeId(id) {
 export function getLookupListByTypeIdList(obj) {
   return testRequest.post(`lookups`, obj)
 }
+
+export function getLicences() {
+  return testRequest.get('/lookups/licenses')
+}

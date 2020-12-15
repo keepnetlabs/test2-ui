@@ -17,6 +17,9 @@ export function getPhishingReporterImg() {
     responseType: 'blob'
   })
 }
+export function getReporters() {
+  return testRequest.get('/dashboard/reporters')
+}
 
 export function deletePhishingReporterUser(id) {
   return testRequest.delete(`/phishing-reporter-users/${id}`)

@@ -3,17 +3,25 @@
     <app-dialog
       :status="closeTargetUserImport"
       @changeStatus="closeTargetUserImport = false"
-      icon="mdi-exit-to-app"
-      :title="'Are you sure you want to cancel?'"
-      :subtitle="'Subtitle'"
-      :body="''"
+      icon="mdi-close-circle"
+      :title="'Cancel user import?'"
+      :subtitle="'Operation will be abondened'"
+      :body="'You will lose all progress and users will not be imported'"
     >
       <template v-slot:app-dialog-footer>
-        <app-dialog-footer
-          @handleClose="closeTargetUserImport = false"
-          @handleConfirm="closeOverlay"
-          actionButtonText="LEAVE"
-        />
+        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
+          <v-btn
+            text
+            color="#2196f3"
+            class="k-dialog__button"
+            @click="closeTargetUserImport = false"
+          >
+            {{ labels.KeepEditing }}
+          </v-btn>
+          <v-btn text color="#f56c6c" class="k-dialog__button mr-4" @click="closeOverlay">
+            {{ labels.CancelImport }}
+          </v-btn>
+        </div>
       </template>
     </app-dialog>
     <app-modal
@@ -319,7 +327,6 @@ import AppModal from '../AppModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '../SmallComponents/FormGroup'
 import AppDialog from '../AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
@@ -344,7 +351,7 @@ import DataTable from '../DataTable'
 
 export default {
   name: 'TargetUserImportFromAFile',
-  components: { AppModal, KFileUpload, FormGroup, MapTable, DataTable, AppDialog, AppDialogFooter },
+  components: { AppModal, KFileUpload, FormGroup, MapTable, DataTable, AppDialog },
   props: {
     status: {
       type: Boolean

@@ -60,7 +60,7 @@ export default {
       changeFeedbackPopup: 'dashboard/changeFeedbackPopup'
     }),
     onFeedbackSend() {
-      let payload = { Message: this.feedbackMessage }
+      let payload = { Text: this.feedbackMessage }
       if (this.$refs.feedbackForm.validate()) {
         sendFeedback(payload)
           .then((response) => {

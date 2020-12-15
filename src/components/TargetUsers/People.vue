@@ -66,6 +66,7 @@
       @columnFilterCleared="columnFilterCleared"
       @handleMultipleDelete="handleMultipleDelete"
       @downloadEvent="exportTargetUserList"
+      @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -102,7 +103,6 @@ import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
 import {
   deleteTargetUser,
-  exportTargetGroupUsers,
   exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
   getTargetUsers
@@ -115,7 +115,6 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
-import labels from '@/model/constants/labels'
 export default {
   name: 'People',
   components: {
@@ -427,11 +426,10 @@ export default {
           let data = response.data.data.results.map((item, index) => {
             const { customFieldValues } = item
             for (let { name, value } of customFieldValues) {
-              item[name] = value
+              item[name] = value !== null && value !== undefined ? value : ''
             }
             return item
           })
-
           this.tableData = data
         })
         .catch(() => {

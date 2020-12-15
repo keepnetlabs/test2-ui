@@ -38,6 +38,7 @@
     />
 
     <datatable
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
       ref="refDataList"
@@ -61,6 +62,9 @@
       @editAction="editAction"
       @AddGroupToModal="handleAddGroupToModal"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
+      @refreshAction="getTableData"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
     />
   </div>
 </template>
@@ -68,6 +72,7 @@
 <script>
 import Datatable from '../../components/DataTable'
 import { getCompanyByID, searchGroupCompanies, updateCompanyGroup } from '@/api/company'
+import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
@@ -106,6 +111,7 @@ export default {
     selectedExtend: {},
     selectedRow: {},
     tableOptions: {
+      isColumnFilterActive: false,
       columns: [
         {
           property: PROPERTY_STORE.COMPANYNAME,
@@ -116,29 +122,34 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          minWidth: 180
+          minWidth: 180,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.INDUSTRYNAME,
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
-
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 150,
+          filterableCustomFieldName: 'IndustryResourceId',
+          filterableType: 'select',
+          filterableItems: []
         },
         {
           property: PROPERTY_STORE.LICENSETYPENAME,
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
-
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 150,
+          filterableCustomFieldName: 'LicenseTypeResourceId',
+          filterableType: 'select',
+          filterableItems: []
         },
         {
           property: PROPERTY_STORE.NUMBEROFUSERS,
@@ -155,11 +166,11 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
-
           sortable: true,
           show: true,
           type: 'text',
-          width: 180
+          width: 180,
+          filterableType: 'text'
         },
         {
           property: 'createTime',
@@ -170,7 +181,8 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 180
+          width: 180,
+          filterableType: 'date'
         }
       ],
       pageSizes: [5, 10, 25],
@@ -228,7 +240,9 @@ export default {
           }
         ]
       }
-    }
+    },
+    industries: null,
+    licenceTypes: null
   }),
   watch: {
     isShowCreateOrEditModal() {
@@ -236,7 +250,9 @@ export default {
     }
   },
   created() {
-    this.getTableData()
+    this.getIndustries().then(() => {
+      this.getLicenceTypes().then(() => this.getTableData())
+    })
   },
   methods: {
     getTableData() {
@@ -367,6 +383,63 @@ export default {
       setTimeout(() => {
         window.location.reload()
       }, 500)
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.getTableData()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getTableData()
+
+      this.tableOptions.isColumnFilterActive =
+        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    async getIndustries() {
+      await getLookupListByTypeId(2).then((response) => {
+        this.tableOptions.columns[1].filterableItems = response.data.data.map((x) => {
+          return { text: x.name, value: x.resourceId }
+        })
+      })
+    },
+    async getLicenceTypes() {
+      await getLookupListByTypeId(3).then((response) => {
+        this.tableOptions.columns[2].filterableItems = response.data.data.map((x) => {
+          return { text: x.name, value: x.resourceId }
+        })
+      })
     }
   }
 }

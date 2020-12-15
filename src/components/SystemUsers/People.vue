@@ -44,6 +44,7 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
+        @refreshAction="callForListSystemUsers"
       />
     </div>
   </div>

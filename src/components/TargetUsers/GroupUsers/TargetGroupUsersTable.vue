@@ -1,6 +1,7 @@
 <template>
   <DataTable
     id="target-users-group-users-data-table"
+    selectable
     :refName="'groupsTable'"
     :loading="loading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -11,7 +12,6 @@
     :filterable="true"
     :options="true"
     :add-button="tableOptions.addButton"
-    selectable
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
     @addAction="handleAddAction"
@@ -23,6 +23,7 @@
     @handleRemoveToGroup="handleRemoveToGroup"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
+    @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
   >
     <template #selection-all-slot v-if="hasSelectionSlot">
       <v-tooltip bottom opacity="1">
@@ -187,7 +188,7 @@ export default {
           sortable: true,
           show: true,
           type: 'priority',
-          width: 150,
+          width: 180,
           fullWidth: true,
           filterableType: 'select',
           filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS
@@ -200,7 +201,7 @@ export default {
           sortable: true,
           show: true,
           type: 'status',
-          width: 150,
+          width: 180,
           isEditable: true,
           hasTooltip: true,
           fullWidth: true,
@@ -213,7 +214,7 @@ export default {
           align: 'left',
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
-          fixed: false,
+          fixed: !this.hasRowActions && 'right',
           sortable: true,
           show: true,
           type: 'text',

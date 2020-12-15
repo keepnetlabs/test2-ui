@@ -71,75 +71,86 @@
     <app-dialog
       @changeStatus="openNotificationModal = false"
       :status="openNotificationModal"
+      v-if="openNotificationModal"
       icon="mdi-bell"
       title="Community Notification Settings"
     >
       <template v-slot:app-dialog-body>
-        <!--<v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Notifications
+        <div v-if="notificationLoading">
+          <v-skeleton-loader :loading="notificationLoading" type="article, list-item"
+            ><slot name="skeleton-content"></slot
+          ></v-skeleton-loader>
+        </div>
+        <div v-else>
+          <v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
+            <div class="communities-wrapper__community-notification-row">
+              <div class="community-notification__text">
+                Notifications
+              </div>
+              <div>
+                <v-switch
+                  id="general-notif-switch"
+                  v-model="notifications.isNotifications"
+                  color="#2196f3"
+                  hide-details
+                  class="community-notification-switch mt-0"
+                  @change="setAllNotification"
+                />
+              </div>
             </div>
-            <div>
-              <v-switch
-                id="general-notif-switch"
-                v-model="notifications.isNotifications"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-              />
+          </v-list-item>
+          <v-list-item class="pa-0">
+            <div class="communities-wrapper__community-notification-row">
+              <div class="community-notification__text">
+                Dashboard notifications
+              </div>
+              <div>
+                <v-switch
+                  id="dashboard-notif-switch"
+                  v-model="notifications.isDashboardEnabled"
+                  color="#2196f3"
+                  hide-details
+                  class="community-notification-switch mt-0"
+                  @change="checkAllNotificationsAreSelected"
+                />
+              </div>
             </div>
-          </div>
-        </v-list-item>
-        <v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Dashboard notifications
+          </v-list-item>
+          <v-list-item class="pa-0">
+            <div class="communities-wrapper__community-notification-row">
+              <div class="community-notification__text">
+                Email notifications
+              </div>
+              <div>
+                <v-switch
+                  id="email-notif-switch"
+                  v-model="notifications.isEmailEnabled"
+                  color="#2196f3"
+                  hide-details
+                  class="community-notification-switch mt-0"
+                  @change="checkAllNotificationsAreSelected"
+                />
+              </div>
             </div>
-            <div>
-              <v-switch
-                id="dashboard-notif-switch"
-                v-model="notifications.isDashboard"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-              />
+          </v-list-item>
+          <v-list-item class="pa-0">
+            <div class="communities-wrapper__community-notification-row">
+              <div class="community-notification__text">
+                SMS notifications
+              </div>
+              <div>
+                <v-switch
+                  id="whatsapp-notif-switch"
+                  v-model="notifications.isSMSEnabled"
+                  color="#2196f3"
+                  hide-details
+                  class="community-notification-switch mt-0"
+                  @change="checkAllNotificationsAreSelected"
+                />
+              </div>
             </div>
-          </div>
-        </v-list-item>-->
-        <v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              Email notifications
-            </div>
-            <div>
-              <v-switch
-                id="email-notif-switch"
-                v-model="notifications.isEmail"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-              />
-            </div>
-          </div>
-        </v-list-item>
-        <!--
-        <v-list-item class="pa-0">
-          <div class="communities-wrapper__community-notification-row">
-            <div class="community-notification__text">
-              SMS notifications
-            </div>
-            <div>
-              <v-switch
-                id="whatsapp-notif-switch"
-                v-model="notifications.isSms"
-                color="#2196f3"
-                hide-details
-                class="community-notification-switch mt-0"
-              />
-            </div>
-          </div>
-        </v-list-item>-->
+          </v-list-item>
+        </div>
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -408,7 +419,7 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item
-                            @click="openNotificationModal = true"
+                            @click="setNotificationModal(item.communityResourceId)"
                             v-if="isOwnerOrMember(item)"
                           >
                             <v-list-item-icon>
@@ -608,7 +619,8 @@ import {
   joinCommunity,
   listBusinessCategories,
   refuseInvitation,
-  removeFromCommunities
+  removeFromCommunities,
+  updateNotifications
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
@@ -618,6 +630,7 @@ import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
+import { getNotifications } from '../../api/dashboard'
 
 export default {
   components: {
@@ -628,6 +641,8 @@ export default {
     AppDialog
   },
   data: () => ({
+    temporaryResourceId: null,
+    notificationLoading: false,
     labels,
     industryList: [],
     industryValue: [],
@@ -642,9 +657,9 @@ export default {
     isCancelRequestModal: false,
     notifications: {
       isNotifications: false,
-      isDashboard: false,
-      isEmail: false,
-      isSms: false
+      isSMSEnabled: false,
+      isEmailEnabled: false,
+      isDashboardEnabled: false
     },
     openNotificationModal: false,
     showNeedPermissionModal: false,
@@ -717,6 +732,53 @@ export default {
     this.selectedTab = 'tab-1'
   },
   methods: {
+    setNotificationModal(communityResourceId) {
+      this.temporaryResourceId = communityResourceId
+      this.getNotifications()
+      this.openNotificationModal = true
+    },
+    setAllNotification(val) {
+      this.notifications = {
+        isNotifications: val,
+        isSMSEnabled: val,
+        isEmailEnabled: val,
+        isDashboardEnabled: val
+      }
+    },
+    checkAllNotificationsAreSelected() {
+      this.notifications.isNotifications =
+        this.notifications.isSMSEnabled &&
+        this.notifications.isEmailEnabled &&
+        this.notifications.isDashboardEnabled
+    },
+    getNotifications() {
+      this.notificationLoading = true
+      let payload = {
+        EntityResourceId: this.temporaryResourceId,
+        TypeId: 1
+      }
+      getNotifications(payload)
+        .then((response) => {
+          this.notifications = {
+            isNotifications:
+              response.data.data.isSMSEnabled &&
+              response.data.data.isEmailEnabled &&
+              response.data.data.isDashboardEnabled,
+            isSMSEnabled: response.data.data.isSMSEnabled,
+            isEmailEnabled: response.data.data.isEmailEnabled,
+            isDashboardEnabled: response.data.data.isDashboardEnabled
+          }
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+        })
+        .finally(() => {
+          this.notificationLoading = false
+        })
+    },
     getIndustryList() {
       listBusinessCategories().then((response) => {
         this.industryList = response.data.data
@@ -729,7 +791,27 @@ export default {
       return community.membershipStatusId == 2 || community.membershipStatusId == 1
     },
     saveNotificationSetting() {
-      this.openNotificationModal = false
+      let payload = {
+        EntityResourceId: this.temporaryResourceId,
+        TypeId: 1,
+        IsSMSEnabled: this.notifications.isSMSEnabled,
+        IsEmailEnabled: this.notifications.isEmailEnabled,
+        IsDashboardEnabled: this.notifications.isDashboardEnabled
+      }
+      updateNotifications(payload)
+        .then((response) => {
+          this.$store.dispatch('common/createSnackBar', {
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+            message: response.data.message || 'Notifications has been saved'
+          })
+          this.openNotificationModal = false
+        })
+        .catch((error) => {
+          this.$store.dispatch('common/createSnackBar', {
+            message: response.data.message,
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
+        })
     },
     cancelRequest(item) {
       cancelRequest(item.membershipResourceId).then(() => {

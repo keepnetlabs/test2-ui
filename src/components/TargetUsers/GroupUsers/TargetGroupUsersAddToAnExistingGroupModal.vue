@@ -27,6 +27,7 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @handleSelectionChange="handleSelectionChange"
+        @refreshAction="callForTargetGroups"
       />
     </template>
     <template #app-dialog-footer>

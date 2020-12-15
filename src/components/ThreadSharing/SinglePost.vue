@@ -554,13 +554,16 @@
                   outlined
                   v-model.trim="addCommentValue"
                   validate-on-blur
-                  :rules="[rules.required]"
+                  :rules="[rules.required, rules.maxLength, rules.minLength]"
                 />
                 <v-btn
                   :id="'single-post-send-comment' + post.communityPostResourceId"
                   @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
                   class="send-btn"
                   type="button"
+                  :disabled="
+                    checkPermissions('community-posts/{communityPostResourceId}/comments', 'POST')
+                  "
                 >
                   <v-icon>mdi-send</v-icon>
                   SEND
@@ -579,16 +582,25 @@
                         <b class="username">{{ com.commenterFullName }}</b>
                         from
                         <b class="company-name">{{ com.commenterCompanyName }}</b>
+                        <p class="company-date mb-0">{{ com.commentTime }}</p>
                         <p class="the-comment">{{ com.comment }}</p>
                       </div>
                       <div
                         style="width: 20%; text-align: right;"
-                        v-if="canDeleteOrEditComment(com, post)"
+                        v-if="canDeleteOrEditComment('update') || canDeleteOrEditComment('delete')"
                       >
-                        <button @click="editRelativeComment(com)" class="pr-4">
+                        <button
+                          v-if="canDeleteOrEditComment('update')"
+                          @click="editRelativeComment(com)"
+                          class="pr-4"
+                        >
                           <v-icon class="close-icon">mdi-pencil</v-icon>
                         </button>
-                        <button @click="deleteComment(com)" icon>
+                        <button
+                          v-if="canDeleteOrEditComment('delete')"
+                          @click="deleteComment(com)"
+                          icon
+                        >
                           <v-icon class="close-icon">mdi-delete</v-icon>
                         </button>
                       </div>
@@ -918,12 +930,17 @@ import {
   updateComments
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { incidenPostReviewElementBind, isOwner, isPostedByMe } from '../../utils/functions'
+import {
+  checkPermission,
+  incidenPostReviewElementBind,
+  isOwner,
+  isPostedByMe
+} from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
-
+import * as Validations from '@/utils/validations'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1139,8 +1156,9 @@ export default {
     showAllTags: false,
     seeComments: false,
     rules: {
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
+      required: (v) => Validations.required(v),
+      maxLength: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
+      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen'
@@ -1168,6 +1186,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     getAttachmentLength(hasAttachment, categories) {
       if (hasAttachment) {
         return categories.length - 1
@@ -1490,11 +1511,12 @@ export default {
     canEdit(post) {
       return isOwner(post.myMembershipStatusId) || isPostedByMe(post.isPostedByMe)
     },
-    canDeleteOrEditComment(comment, post) {
-      return (
-        comment.commenterFullName == localStorage.getItem('userName') ||
-        isPostedByMe(post.isPostedByMe)
-      )
+    canDeleteOrEditComment(type) {
+      if (type === 'update') {
+        return this.checkPermissions('community-posts/comments/{resourceId}', 'PUT')
+      } else {
+        return this.checkPermissions('community-posts/comments/{resourceId}', 'DELETE')
+      }
     }
   }
 }
