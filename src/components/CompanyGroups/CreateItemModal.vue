@@ -205,7 +205,7 @@ export default {
 
         if (!this.isEdit || this.forCompany) {
           createCompanyGroups(payload).then((response) => {
-            if (response.data && response.data.code === 'RESOURCE_CREATED') {
+            if (response.status === 201) {
               this.$store.dispatch('common/createSnackBar', {
                 message: 'Company group has been created',
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,

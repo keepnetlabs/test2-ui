@@ -5,7 +5,7 @@
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
         </div>
-        <v-list-item-content class="pt-0 pb-0">
+        <v-list-item-content class="pt-0 pb-0 mb-0">
           <v-list-item-title class="">{{ edit ? 'Edit' : 'New' }} Company</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
@@ -28,7 +28,7 @@
             <!-- STEP 1 -->
             <v-stepper-content step="1">
               <v-list-item>
-                <v-list-item-content>
+                <v-list-item-content class="mb-0">
                   <v-list-item-title class="v-card-form-title">
                     Company Information
                   </v-list-item-title>
@@ -163,7 +163,7 @@
             <!-- STEP 2 -->
             <v-stepper-content step="2">
               <v-list-item>
-                <v-list-item-content>
+                <v-list-item-content class="mb-0">
                   <v-list-item-title class="v-card-form-title">
                     License Information
                   </v-list-item-title>
@@ -302,7 +302,7 @@
             <!-- STEP 3 -->
             <v-stepper-content step="3">
               <v-list-item>
-                <v-list-item-content>
+                <v-list-item-content class="mb-0">
                   <v-list-item-title class="v-card-form-title">
                     Groups that this company belongs to
                   </v-list-item-title>
@@ -325,6 +325,7 @@
                       item-value="resourceId"
                       multiple
                       small-chips
+                      deletable-chips
                       outlined
                       placeholder="Select company groups (optional)"
                     ></k-select>
@@ -335,7 +336,7 @@
             <!-- STEP 4 -->
             <v-stepper-content step="4">
               <v-list-item>
-                <v-list-item-content>
+                <v-list-item-content class="mb-0">
                   <v-list-item-title class="v-card-form-title">
                     Content Management
                   </v-list-item-title>
@@ -520,11 +521,17 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import { createCompany, getCompanyGroups, searchCompanies, updateCompany } from '../../api/company'
+import {
+  createCompany,
+  getCompanyGroups,
+  searchCompanies,
+  searchCompanyGroups,
+  updateCompany
+} from '../../api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeIdList } from '@/api/common'
+import { getLicences, getLookupListByTypeIdList } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
@@ -585,7 +592,22 @@ export default {
           return date < new Date() - 3600 * 1000 * 24
         }
       },
-      validations: validations
+      validations: validations,
+      companyGroupPayload: {
+        pageSize: 3000,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
     }
   },
   computed: {
@@ -634,23 +656,25 @@ export default {
   },
   methods: {
     getLookupContents() {
-      getLookupListByTypeIdList({ typeidlist: [1, 2, 3, 4, 5, 6, 7] })
-        .then((response) => {
-          const res = response.data.data
-          this.countries = res.filter((item) => item.genericCodeTypeId === 1)
-          this.industries = res.filter((item) => item.genericCodeTypeId === 2)
-          this.licenceTypes = res.filter((item) => item.genericCodeTypeId === 3)
-          this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
-          this.notificationTemplates = res.filter((item) => item.genericCodeTypeId === 5)
-          this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
-          this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
-        })
-        .catch(() => {})
+      Promise.all([
+        getLookupListByTypeIdList({ typeidlist: [1, 2, 4, 5, 6, 7] }),
+        getLicences()
+      ]).then((responses) => {
+        const res = responses[0].data.data
+        this.countries = res.filter((item) => item.genericCodeTypeId === 1)
+        this.industries = res.filter((item) => item.genericCodeTypeId === 2)
+        this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
+        this.notificationTemplates = res.filter((item) => item.genericCodeTypeId === 5)
+        this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
+        this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
+        this.licenceTypes = responses[1].data.data.licenses
+      })
     },
     getCompanyGroups() {
-      getCompanyGroups()
+      searchCompanyGroups(this.companyGroupPayload)
         .then((response) => {
-          this.companyGroupList = response.data.data.companyGroups
+          const { data: { data = [] } = [] } = response
+          this.companyGroupList = data.results
         })
         .catch((error) => {})
     },
