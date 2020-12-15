@@ -434,7 +434,6 @@ export default {
           'Cc',
           { value: 'SenderIp', text: 'Sender Ip' },
           'Subject',
-          'Keyword',
           'Url',
           { text: 'Attachment Name', value: 'AttachmentName' },
           { text: 'Attachment Extension', value: 'AttachmentExtension' },

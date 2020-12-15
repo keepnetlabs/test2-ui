@@ -360,7 +360,7 @@ export default {
       getPhishingReporter()
         .then((response) => {
           const { data } = response
-          if (data.code === 'RESOURCE_RETRIEVED') {
+          if (response.status === 200) {
             this.tabComponent = {
               name: Settings,
               ref: 'refSettings',
