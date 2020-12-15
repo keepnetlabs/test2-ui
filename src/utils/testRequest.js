@@ -51,11 +51,7 @@ testService.interceptors.response.use(
     //store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
-    } else if (
-      error.response.status === 401 ||
-      error.response.Code === '401_UNAUTHORIZED' ||
-      error.response.status === 306
-    ) {
+    } else if (error.response.status === 401 || error.response.status === 306) {
       AuthenticationService.removeToken()
       store.dispatch('common/changeSessionExpiredStatus', true)
       //router.push('/login')
@@ -77,14 +73,9 @@ testService.interceptors.response.use(
     if (
       AuthenticationService.getToken() == null ||
       error.response.status === 401 ||
-      error.response.Code === '401_UNAUTHORIZED' ||
       error.response.status === 306
     ) {
-      if (
-        error.response.status === 401 ||
-        error.response.status === '401_UNAUTHORIZED' ||
-        error.response.Code === '401_UNAUTHORIZED'
-      ) {
+      if (error.response.status === 401 || error.response.status === '401_UNAUTHORIZED') {
         AuthenticationService.removeToken()
         store.dispatch('common/changeSessionExpiredStatus', true)
       } else {
