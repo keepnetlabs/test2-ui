@@ -689,7 +689,6 @@ export default {
         this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
         this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
         this.licenceTypes = responses[1].data.data.licenses
-        console.log('responses[1].data.data.licenses', responses[1].data.data.licenses)
         this.allModuleLicences = responses[1].data.data.allLicenseModules
         if (this.edit) {
           const license = this.licenceTypes.find(
