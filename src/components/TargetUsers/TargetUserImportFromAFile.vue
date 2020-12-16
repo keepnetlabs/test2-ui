@@ -9,19 +9,12 @@
       :body="'You will lose all progress and users will not be imported'"
     >
       <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#2196f3"
-            class="k-dialog__button"
-            @click="closeTargetUserImport = false"
-          >
-            {{ labels.KeepEditing }}
-          </v-btn>
-          <v-btn text color="#f56c6c" class="k-dialog__button mr-4" @click="closeOverlay">
-            {{ labels.CancelImport }}
-          </v-btn>
-        </div>
+        <app-dialog-footer
+          :cancel-button-text="labels.KeepEditing"
+          :action-button-text="labels.CancelImport"
+          @handleClose="closeTargetUserImport = false"
+          @handleConfirm="closeOverlay"
+        />
       </template>
     </app-dialog>
     <app-modal
@@ -348,10 +341,11 @@ import {
 import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
   name: 'TargetUserImportFromAFile',
-  components: { AppModal, KFileUpload, FormGroup, MapTable, DataTable, AppDialog },
+  components: { AppDialogFooter, AppModal, KFileUpload, FormGroup, MapTable, DataTable, AppDialog },
   props: {
     status: {
       type: Boolean

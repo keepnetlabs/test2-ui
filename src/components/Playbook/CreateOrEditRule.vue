@@ -172,6 +172,7 @@
                   :playbookId="playbookId"
                   :actionData.sync="actionData"
                   :editedActions="playbookAction"
+                  :has-keyword="hasKeyword"
                   :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
                   :editedNotifications="editedNotifications"
                   :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
@@ -419,10 +420,10 @@ export default {
             }
           }
         ]
-      }
+      },
+      hasKeyword: false
     }
   },
-  mounted() {},
   computed: {
     canNext() {
       return this.activeStep < this.totalStep
@@ -431,7 +432,27 @@ export default {
       return this.activeStep > 1
     }
   },
+  watch: {
+    activeStep(newVal) {
+      if (newVal === 3) {
+        this.hasKeyword = this.query.children.some((item) => {
+          return this.findHasKeyword(item.query.children)
+        })
+      }
+    }
+  },
   methods: {
+    findHasKeyword(arr, retArr = []) {
+      if (arr.children) {
+        this.findHasKeyword(arr)
+      }
+      arr.forEach((item) => {
+        if (item.query.operand === 'Keyword') {
+          retArr.push(true)
+        }
+      })
+      return !!retArr.length
+    },
     handleTagItemChange(value) {
       value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },

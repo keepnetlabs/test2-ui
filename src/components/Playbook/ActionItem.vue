@@ -326,6 +326,7 @@ export default {
   name: 'ActionItem',
   props: {
     id: Number,
+    hasKeyword: Boolean,
     actionData: Object,
     resourceId: String,
     editedActions: Object,
@@ -434,6 +435,7 @@ export default {
           'Cc',
           { value: 'SenderIp', text: 'Sender Ip' },
           'Subject',
+          'Keyword',
           'Url',
           { text: 'Attachment Name', value: 'AttachmentName' },
           { text: 'Attachment Extension', value: 'AttachmentExtension' },
@@ -936,6 +938,18 @@ export default {
     this.getAnalysisEngine()
   },
   watch: {
+    hasKeyword(val) {
+      const isKeywordInArray = this.act.investigateFilters[5] === 'Keyword'
+      if (val) {
+        if (!isKeywordInArray) {
+          this.act.investigateFilters.splice(5, 0, 'Keyword')
+        }
+      } else {
+        if (isKeywordInArray) {
+          this.act.investigateFilters.splice(5, 1)
+        }
+      }
+    },
     search(val) {
       const value = val.find((item) => {
         return item
