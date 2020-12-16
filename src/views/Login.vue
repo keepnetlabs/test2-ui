@@ -71,7 +71,7 @@
                             name="email"
                             ref="email"
                             v-model.trim="email"
-                            :rules="[rules.required, rules.email, rules.max]"
+                            :rules="[rules.required, rules.email, rules.max, rules.controlEmail]"
                             class="username-field"
                             required
                             label="Username"
@@ -388,7 +388,7 @@ import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecke
 import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
-
+import * as Validations from '@/utils/validations'
 export default {
   name: 'Login',
   components: { VueRecaptcha, PasswordChecker, InputEmail },
@@ -415,13 +415,11 @@ export default {
       show2: false,
       show3: false,
       rules: {
-        email: (value) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || 'Invalid e-mail.'
-        },
+        email: (v) => Validations.email(v),
+        controlEmail: (v) => Validations.controlEmailLength(v, labels.InvalidEmailAddress),
         min: (v) => v.length >= 8 || 'Minimum 8 characters',
-        max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
-        required: (value) => !!value || 'Required.',
+        max: (v) => v.length < 254 || 'Email address cannot exceed 320 characters',
+        required: (value) => !!value || 'Required',
         minPassword: (value) => {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return (

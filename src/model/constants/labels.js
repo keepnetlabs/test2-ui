@@ -7,6 +7,7 @@ export const labels = {
   },
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
+  CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',
   Delete: 'Delete',
   Next: 'NEXT',

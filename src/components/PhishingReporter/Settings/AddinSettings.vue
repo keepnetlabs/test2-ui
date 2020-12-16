@@ -467,6 +467,7 @@ import ReporterVersionModal from './ReporterVersionModal'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import labels from '@/model/constants/labels'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'AddinSettings',
   components: { KFileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
@@ -570,6 +571,8 @@ export default {
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
+        const el = this.$refs.refForm.$el.querySelector('.error--text')
+        scrollToComponent(el)
         return false
       }
     },
