@@ -209,6 +209,7 @@ import * as validations from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'EmailSettings',
   components: {
@@ -273,6 +274,8 @@ export default {
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
+        const el = this.$refs.refForm.$el.querySelector('.error--text')
+        scrollToComponent(el)
         return false
       }
     },

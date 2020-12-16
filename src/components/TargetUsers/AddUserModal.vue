@@ -20,19 +20,7 @@
           <InputLastName v-model.trim="formValues.lastName" id="lastName" />
         </form-group>
         <form-group has-hint title="Email">
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
-            v-model.trim="formValues.email"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v, 'Required'),
-              (v) => validations.mail(v, 'Invalid email address')
-            ]"
-            id="email"
-          />
+          <InputEmail v-model.trim="formValues.email" />
         </form-group>
         <form-group title="Department">
           <InputDepartment v-model.trim="formValues.department" />
@@ -156,10 +144,12 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import labels from '@/model/constants/labels'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
 
 export default {
   name: 'AddUserModal',
   components: {
+    InputEmail,
     FormGroup,
     AppModalBodyHeader,
     InputDepartment,
@@ -228,7 +218,6 @@ export default {
       )
     },
     submit() {
-      this.saveDisable = true
       const keys = Object.keys(this.isPickersValidated)
       let isPickersValid = true
 
@@ -247,7 +236,6 @@ export default {
           const el = this.$el.querySelector('.error--text')
           scrollToComponent(el)
         })
-        this.saveDisable = false
       } else {
         if (this.editData) {
           this.callForUpdateTargetUser()
@@ -287,24 +275,26 @@ export default {
     },
     callForCreateTargetUser() {
       const payload = this.getCustomFieldsPayload()
-
-      createTargetUser(payload).then(({ data }) => {
-        if (data.status === 'FAILED') {
-          this.$store.dispatch('common/createSnackBar', {
-            message: data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-          })
-          this.saveDisable = false
-        } else {
-          this.$store.dispatch('common/createSnackBar', {
-            message: '1 user added to Users List ',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-          this.saveDisable = false
-          this.$emit('closeAddUserModalWithUpdate')
-        }
-      })
+      this.saveDisable = true
+      createTargetUser(payload)
+        .then(({ data }) => {
+          if (data.status === 'FAILED') {
+            this.$store.dispatch('common/createSnackBar', {
+              message: data.message,
+              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
+            })
+            this.saveDisable = false
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: '1 user added to Users List ',
+              icon: 'mdi-check-circle',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+            })
+            this.saveDisable = false
+            this.$emit('closeAddUserModalWithUpdate')
+          }
+        })
+        .finally(() => (this.saveDisable = false))
     },
     getCustomFieldsPayload() {
       const keys = Object.keys(this.customFieldsModels)
@@ -345,6 +335,7 @@ export default {
       return value
     },
     callForUpdateTargetUser() {
+      this.saveDisable = true
       const payload = this.getCustomFieldsPayload()
       delete payload.status
       updateTargetUser(payload)

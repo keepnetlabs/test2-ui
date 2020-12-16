@@ -143,6 +143,7 @@
 import { required } from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import labels from '@/model/constants/labels'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'OtherSettings',
   components: { PhishingSettingsFooter },
@@ -225,6 +226,8 @@ export default {
         this.$emit('updateForm', { ...this.formValues, isAddIn })
         return this.formValues
       } else {
+        const el = this.$refs.refForm.$el.querySelector('.error--text')
+        scrollToComponent(el)
         return false
       }
     },
