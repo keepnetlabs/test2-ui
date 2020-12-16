@@ -50,23 +50,25 @@
               showForm
                 ? formValues.isSendInformationEmail
                   ? [
-                      (v) => this.validations.mail(v, labels.InvalidEmailAddress),
+                      (v) => validations.mail(v, labels.InvalidEmailAddress),
                       (v) =>
-                        this.validations.maxLength(
+                        validations.maxLength(
                           v,
-                          64,
-                          labels.getMaxLengthMessage('Email address')
+                          320,
+                          labels.getMaxLengthMessage(labels.Email, 320)
                         ),
-                      (v) => this.validations.required(v, labels.Required)
+                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : [
-                      (v) => this.validations.mail(v, labels.InvalidEmailAddress),
+                      (v) => validations.mail(v, labels.InvalidEmailAddress),
                       (v) =>
-                        this.validations.maxLength(
+                        validations.maxLength(
                           v,
-                          64,
-                          labels.getMaxLengthMessage('Email address')
-                        )
+                          320,
+                          labels.getMaxLengthMessage(labels.Email, 320)
+                        ),
+                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
                     ]
                 : []
             "
@@ -86,8 +88,9 @@
               showForm
                 ? [
                     (v) =>
-                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address')),
-                    (v) => validations.mail(v, labels.InvalidEmailAddress)
+                      validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                    (v) => validations.mail(v, labels.InvalidEmailAddress),
+                    (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
                   ]
                 : []
             "
@@ -108,8 +111,9 @@
               showForm
                 ? [
                     (v) =>
-                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address')),
-                    (v) => validations.mail(v, labels.InvalidEmailAddress)
+                      validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                    (v) => validations.mail(v, labels.InvalidEmailAddress),
+                    (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
                   ]
                 : []
             "
@@ -201,7 +205,7 @@
 </template>
 
 <script>
-import { mail, maxLength, required } from '@/utils/validations'
+import * as validations from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
@@ -260,11 +264,7 @@ export default {
         content: '',
         isSendInformationEmail: null
       },
-      validations: {
-        maxLength,
-        mail,
-        required
-      }
+      validations: validations
     }
   },
   methods: {

@@ -1,6 +1,8 @@
 <script>
 import { VTextField } from 'vuetify/lib'
+import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'InputEmail',
@@ -24,14 +26,28 @@ export default {
     autocomplete: {
       default: 'off'
     },
+    required: {
+      type: Boolean,
+      default: true
+    },
     rules: {
-      default: () => [
-        (v) => Validations.required(v, 'Required'),
-        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
-        (v) => Validations.email(v, 'Invalid email address'),
-        (v) => Validations.minLength(v, 8, 'Minimum 8 characters'),
-        (v) => Validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
-      ]
+      default: () => COMMON_CONSTANTS.DEFAULT_EMAIL_RULES
+    }
+  },
+  created() {
+    //That means this object pointer has somewhere in the memory
+    if (this.rules === COMMON_CONSTANTS.DEFAULT_EMAIL_RULES) {
+      if (this.required) {
+        this.rules.splice(
+          2,
+          0,
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.minLength(v, 8, labels.getMinLengthMessage(labels.Email, 8))
+        )
+      } else {
+        this.persistentHint = false
+        this.hint = null
+      }
     }
   }
 }
