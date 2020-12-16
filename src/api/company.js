@@ -67,3 +67,11 @@ export function getCompanyList() {
 export function getCompanyListForThreatSharing() {
   return testRequest.get('/companies/community-companies')
 }
+
+export function searchEmailTemplate(payload = {}) {
+  return testRequest.post('/companies/email-templates/search', payload)
+}
+
+export function getCategories() {
+  return testRequest.get('/lookups/10')
+}

@@ -12,6 +12,8 @@
         <app-dialog-footer
           :cancel-button-text="labels.KeepEditing"
           :action-button-text="labels.CancelImport"
+          cancel-button-color="#2196f3"
+          action-button-color="#f56c6c"
           @handleClose="closeTargetUserImport = false"
           @handleConfirm="closeOverlay"
         />

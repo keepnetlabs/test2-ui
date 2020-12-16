@@ -132,6 +132,7 @@ export const PROPERTY_STORE = {
   USERNAME: 'userName',
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
+  CATEGORYNAME: 'categoryName',
   LASTNAME: 'lastName',
   RELIABILITY: 'reliability',
   THREATS: 'threats',

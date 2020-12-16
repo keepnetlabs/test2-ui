@@ -12,27 +12,26 @@
     <div class="notification-templates__container">
       <data-table
         ref="refNotificationList"
+        id="company-settings-notification-templates-data-table"
         :columns="tableOptions.columns"
         :countRow="5"
-        :table="tableOptions.tableData"
+        :table="tableData"
         :empty="tableOptions.empty"
-        id="company-settings-notification-templates-data-table"
+        :loading="loading"
         :filterable="true"
         :row-key="'name'"
-        :clusterItems="[{ name: 'Email Address' }]"
-        :groupable="true"
         :is-downloadable="false"
-        @clusterChanged="clusterChanged"
         :options="true"
-        @handleListBulleted="handleListBulleted"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
-        @handleClusterLazyLoad="handleClusterLoad"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
+        @refreshAction="callForSearchEmailTemplate"
       />
     </div>
   </div>
@@ -41,9 +40,11 @@
 <script>
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DeleteNotificationTemplateModal from '@/components/Company Settings/DeleteNotificationTemplateModal'
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate'
+import { getCategories, searchEmailTemplate } from '@/api/company'
+import labels from '@/model/constants/labels'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -54,63 +55,67 @@ export default {
   },
   data() {
     return {
+      categories: [],
+      loading: false,
+      tableData: [],
       tableOptions: {
-        tableData: [],
         columns: [
           {
-            property: PROPERTY_STORE.EMAIL,
+            property: PROPERTY_STORE.NAME,
             align: 'left',
-            label: 'Email',
+            label: labels.TemplateName,
             fixed: 'left',
             sortable: true,
             show: true,
             type: 'text',
             width: 280,
-            isEditable: true
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.NAME,
+            property: PROPERTY_STORE.CATEGORYNAME,
             align: 'left',
-            label: 'Company Name',
+            label: labels.Category,
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
-            isEditable: true
+            width: 180,
+            filterableType: 'select',
+            filterableItems: []
           },
           {
-            property: 'createDate',
+            property: PROPERTY_STORE.SUBJECT,
             align: 'left',
-            label: 'Date Created',
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 250,
-            isEditable: true
-          },
-          {
-            property: PROPERTY_STORE.DESCRIPTION,
-            align: 'left',
-            label: 'Description',
+            label: labels.EmailSubject,
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
             width: 250,
-            isEditable: true
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.STATUS,
-            align: 'center',
-            label: 'Status',
+            property: PROPERTY_STORE.COMPANYNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 230,
+            filterableType: 'text'
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: 'left',
+            label: labels.CreateTime,
             fixed: false,
             sortable: true,
             show: true,
-            type: 'badge',
-            width: 200,
-            isEditable: true
+            type: 'text',
+            width: 250,
+            isEditable: true,
+            filterableType: 'date'
           }
         ],
         addButton: {
@@ -119,6 +124,7 @@ export default {
           tooltip: 'Add a Notification Template'
         },
         pageSizes: [5, 10, 25],
+        isColumnFilterActive: false,
         empty: {
           message: LABEL_STORE.NO_NOTIFICATION_TEMPLATE_DEFINED,
           subMes: 'Create a new user directory integration',
@@ -140,147 +146,103 @@ export default {
       },
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
-      listData: [
-        {
-          id: 3,
-          name: '1',
-          email: 'gurkan@keepnetlabs.com',
-          status: 'Active',
-          createDate: '2020-10-30 15:10:44',
-          description: 'Description'
-        },
-        {
-          id: 33,
-          name: '1.1',
-          email: 'gurkan@keepnetlabs.com',
-          status: 'Inactive',
-          createDate: '2020-10-18 15:10:44',
-          description: 'Description'
-        },
-        {
-          id: 33,
-          name: '1.2',
-          email: 'gurkan@keepnetlabs.com',
-          status: 'Active',
-          createDate: '2020-10-08 19:10:22',
-          description: 'Description'
-        },
-        {
-          id: 34,
-          name: '2',
-          email: 'ozan@keepnetlabs.com',
-          description: 'Description Description',
-          status: 'Active',
-          createDate: '2020-10-03 10:58:12'
-        },
-        {
-          id: 40,
-          name: '2.1',
-          email: 'ozan@keepnetlabs.com',
-          description: 'Description Description',
-          createDate: '2020-10-01 10:58:59',
-          status: 'Active'
-        },
-        {
-          id: 55,
-          name: '3',
-          email: 'ali@keepnetlabs.com',
-          description: 'Description Description',
-          createDate: '2020-10-01 10:51:59',
-          status: 'Active'
+      axiosPayload: {
+        pageNumber: 1,
+        pageSize: 50000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
         }
-      ],
-      clusterData: [
-        {
-          id: 3,
-          name: '1',
-          email: 'gurkan@keepnetlabs.com',
-          status: 'Active',
-          createDate: '2020-10-30 15:10:44',
-          description: 'Description',
-          hasChildren: true
-        },
-        {
-          id: 34,
-          name: '2',
-          email: 'ozan@keepnetlabs.com',
-          description: 'Description Description',
-          status: 'Active',
-          createDate: '2020-10-03 10:58:12',
-          hasChildren: true
-        },
-        {
-          id: 55,
-          name: '3',
-          email: 'ali@keepnetlabs.com',
-          description: 'Description Description',
-          createDate: '2020-10-01 10:51:59',
-          status: 'Active'
-        }
-      ]
+      }
     }
   },
   methods: {
-    handleClusterLoad({ tree, treeNode, resolve, callback }) {
-      if (tree.id === 3) {
-        setTimeout(() => {
-          const data = [
-            {
-              id: 33,
-              name: '1.1',
-              email: 'gurkan@keepnetlabs.com',
-              status: 'Inactive',
-              createDate: '2020-10-18 15:10:44',
-              description: 'Description',
-              isChild: true
-            },
-            {
-              id: 33,
-              name: '1.2',
-              email: 'gurkan@keepnetlabs.com',
-              status: 'Active',
-              createDate: '2020-10-08 19:10:22',
-              description: 'Description',
-              isChild: true
-            }
-          ]
-          tree['children'] = data
-          treeNode['children'] = data
-          resolve(data)
-          callback()
-        }, 1000)
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
       } else {
-        setTimeout(() => {
-          const data = [
-            {
-              id: 40,
-              name: '2.1',
-              email: 'ozan@keepnetlabs.com',
-              description: 'Description Description',
-              createDate: '2020-10-01 10:58:59',
-              status: 'Active',
-              isChild: true
-            }
-          ]
-          tree['children'] = data
-          treeNode['children'] = data
-          resolve(data)
-          callback()
-        }, 1000)
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
       }
+
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForDatas()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForDatas()
+
+      this.tableOptions.isColumnFilterActive =
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     toggleNewNotificationTemplate() {
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
     },
-    handleListBulleted() {
-      this.tableOptions.tableData = this.listData
+    callForSearchEmailTemplate() {
+      return searchEmailTemplate(this.axiosPayload)
     },
-    clusterChanged() {
-      this.tableOptions.tableData = this.clusterData
+    callForCategories() {
+      return getCategories()
+    },
+    callForDatas() {
+      this.loading = true
+      Promise.all([this.callForCategories(), this.callForSearchEmailTemplate()])
+        .then((response) => {
+          const [categories, emailTemplates] = response
+          const {
+            data: { data: templateData }
+          } = emailTemplates
+          const {
+            data: { data: categoriesData }
+          } = categories
+
+          this.tableData = templateData.results
+          this.categories = categoriesData.map((category) => {
+            return { text: category.name, value: category.resourceId }
+          })
+          this.$set(this.tableOptions.columns, 1, {
+            ...this.tableOptions.columns[1],
+            filterableItems: this.categories
+          })
+        })
+        .finally(() => (this.loading = false))
     }
   },
   created() {
-    this.tableOptions.tableData = this.listData
+    this.callForDatas()
   }
 }
 </script>

@@ -1,11 +1,17 @@
 <template>
   <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-    <v-btn text color="#f56c6c" class="k-dialog__button mr-4" @click="closeButtonClick">
+    <v-btn
+      type="but"
+      text
+      :color="cancelButtonColor"
+      class="k-dialog__button mr-4"
+      @click="closeButtonClick"
+    >
       {{ cancelButtonText }}
     </v-btn>
     <v-btn
       text
-      color="#2196f3"
+      :color="actionButtonColor"
       class="k-dialog__button"
       @click="confirmButtonClick"
       :disabled="confirmButtonDisabled"
@@ -25,9 +31,17 @@ export default {
       type: String,
       default: labels.Confirm
     },
+    actionButtonColor: {
+      type: String,
+      default: '#2196f3'
+    },
     cancelButtonText: {
       type: String,
       default: labels.Cancel
+    },
+    cancelButtonColor: {
+      type: String,
+      default: '#f56c6c'
     },
     confirmButtonDisabled: {
       type: Boolean,
