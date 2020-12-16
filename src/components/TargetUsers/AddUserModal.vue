@@ -350,7 +350,7 @@ export default {
           this.saveDisable = false
           this.$emit('closeAddUserModalWithUpdate')
         })
-        .catch(() => (this.saveDisable = false))
+        .finally(() => (this.saveDisable = false))
     },
     callForTargetGroups() {
       getTargetGroups().then(() => {
