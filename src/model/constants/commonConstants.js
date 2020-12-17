@@ -276,3 +276,15 @@ export const GrapesS3Options = {
   bucketName: '<AWS S3 Bucket Name>',
   prefix: '<Folder Name in s3 bucket.>'
 }
+
+export const COMMON_PROPS = {
+  AVAILABLEFOR: {
+    placeholder: 'Enter make an available for',
+    valueFormat: 'object',
+    clearOnSelect: true,
+    disableBranchNodes: true,
+    multiple: true,
+    searchNexted: true,
+    showCount: true
+  }
+}

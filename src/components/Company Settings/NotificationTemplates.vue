@@ -5,8 +5,11 @@
       sub-title="Manage notification email templates"
     />
     <new-notification-template
+      v-if="newNotificationTemplateStatus"
+      :id="selectedItemResourceId"
       :status="newNotificationTemplateStatus"
       @closeOverlay="toggleNewNotificationTemplate"
+      @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
     />
     <delete-notification-template-modal :status="showDeleteNotificationTemplateModal" />
     <div class="notification-templates__container">
@@ -27,11 +30,13 @@
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
+        :select-event="tableOptions.selectEvent"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
+        @handleEdit="handleEdit"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
-        @refreshAction="callForSearchEmailTemplate"
+        @refreshAction="callForDatas"
       />
     </div>
   </div>
@@ -142,10 +147,18 @@ export default {
             icon: 'mdi-delete',
             action: 'deleteAction'
           }
-        ]
+        ],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        }
       },
+
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
+      selectedItemResourceId: null,
       axiosPayload: {
         pageNumber: 1,
         pageSize: 50000,
@@ -165,6 +178,10 @@ export default {
     }
   },
   methods: {
+    closeNotificationTemplateWithUpdate() {
+      this.callForDatas()
+      this.toggleNewNotificationTemplate()
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       let items = []
@@ -239,6 +256,10 @@ export default {
           })
         })
         .finally(() => (this.loading = false))
+    },
+    handleEdit(row) {
+      this.selectedItemResourceId = row.resourceId
+      this.toggleNewNotificationTemplate()
     }
   },
   created() {

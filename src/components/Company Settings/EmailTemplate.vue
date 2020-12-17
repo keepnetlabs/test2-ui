@@ -10,240 +10,190 @@
       @closeOverlay="toggleShowGrapesModal"
     >
       <template v-slot:overlay-body>
-        <GrapesWebPageModal ref="grapesJsPostIncident" :htmlData="htmlData"></GrapesWebPageModal>
+        <GrapesWebPageModal ref="grapesJsPostIncident" :htmlData="template"></GrapesWebPageModal>
       </template>
     </app-modal>
-    <v-tabs
-      active-class="pr-tab-active"
-      background-color="transparent"
-      color="basil"
-      class="k-tabs"
-      v-model="tab"
-      show-arrows
+    <div class="email-template__item">
+      <label>Subject</label>
+      <v-text-field
+        placeholder="Enter subject"
+        outlined
+        dense
+        hint="*Required"
+        persistent-hint
+        :value="subject"
+        :rules="[
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320))
+        ]"
+        @input="$emit('update:subject', $event)"
+      ></v-text-field>
+    </div>
+    <div class="email-template__item">
+      <label>From Name</label>
+      <v-text-field
+        placeholder="Enter sender name"
+        outlined
+        dense
+        hint="*Required"
+        persistent-hint
+        :value="fromName"
+        :rules="[
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
+        ]"
+        @input="$emit('update:fromName', $event)"
+      ></v-text-field>
+    </div>
+    <div class="email-template__item">
+      <label>From Email</label>
+      <InputEmail :value="fromAddress" @input="$emit('update:fromAddress', $event)" />
+    </div>
+    <v-divider class="email-template__divider mb-6" />
+    <v-btn rounded color="#2196f3" class="email-template-preview__button" @click="editHtmlTemplate">
+      <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
     >
-      <v-tab
-        :key="tab"
-        @click="changeTabStatus(index)"
-        class="k-tab"
-        v-for="(tab, index) in getRenderedTabItems"
-      >
-        {{ tab }}
-      </v-tab>
-      <v-menu v-if="getTabCountStatus" bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            text
-            class="align-self-center"
-            style="border-left: 1px solid #e0e0e0;"
-            v-bind="attrs"
-            v-on="on"
+    <div class="email-template-preview">
+      <div v-if="template" v-html="template" ref="refPreview" />
+      <table style="width: 600px; margin: 0 auto;" v-else ref="refPreview">
+        <tbody>
+          <tr
+            style="
+              font-size: 24px;
+              line-height: 1.29;
+              letter-spacing: normal;
+              color: rgba(0, 0, 0, 0.87);
+              opacity: 0.7;
+              max-width: 200px;
+              min-height: 72px;
+              display: flex;
+              justify-content: center;
+              border-radius: 4px;
+              margin: 0 auto 30px auto;
+              vertical-align: middle;
+              background-color: #e0e0e0;
+              align-items: center;
+            "
           >
-            {{ getMoreLanguageCount }}
-            <v-icon right>mdi-menu-down</v-icon>
-          </v-btn>
-        </template>
-
-        <v-list class="grey lighten-3">
-          <v-list-item v-for="item in getMoreLanguages" :key="item" @click="addTabItem(item)">
-            {{ item }}
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <div class="new-integration__api-key__footer-left-side" @click="addLanguage">
-        <v-icon color="#2196f3" style="cursor: pointer !important;">mdi-plus-circle-outline</v-icon>
-        <div class="ml-2 new-integration__api-key__text">ADD LANGUAGE</div>
-      </div>
-    </v-tabs>
-    <v-tabs-items v-model="tab">
-      <v-tab-item :key="item" v-for="item in getRenderedTabItems">
-        <div style="display: none;">{{ item }}</div>
-        <div class="email-template__item">
-          <label>Subject</label>
-          <v-text-field
-            placeholder="Enter subject"
-            outlined
-            dense
-            v-model.trim="formValues.subject"
-          ></v-text-field>
-        </div>
-        <div class="email-template__item">
-          <label>From Name</label>
-          <v-text-field
-            placeholder="Enter sender name"
-            outlined
-            dense
-            v-model.trim="formValues.fromName"
-          ></v-text-field>
-        </div>
-        <div class="email-template__item">
-          <label>From Email</label>
-          <v-text-field
-            placeholder="Enter email address"
-            outlined
-            dense
-            v-model.trim="formValues.email"
-          ></v-text-field>
-        </div>
-        <v-divider class="email-template__divider mb-6" />
-        <v-btn
-          rounded
-          color="#2196f3"
-          class="email-template-preview__button"
-          @click="editHtmlTemplate"
-        >
-          <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
-        >
-        <div class="email-template-preview">
-          <div v-if="htmlData" v-html="htmlData" ref="refPreview" />
-          <table style="width: 600px; margin: 0 auto;" v-else ref="refPreview">
-            <tbody>
-              <tr
-                style="
-                  font-size: 24px;
-                  line-height: 1.29;
-                  letter-spacing: normal;
-                  color: rgba(0, 0, 0, 0.87);
-                  opacity: 0.7;
-                  max-width: 200px;
-                  min-height: 72px;
-                  display: flex;
-                  justify-content: center;
-                  border-radius: 4px;
-                  margin: 0 auto 30px auto;
-                  vertical-align: middle;
-                  background-color: #e0e0e0;
-                  align-items: center;
-                "
-              >
-                <td>
-                  <p style="margin: 0;">Logo Here</p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p :style="getHeaderStyle()">
-                    Let’s design an email template
-                  </p>
-                </td>
-              </tr>
-              <tr :style="[{ marginTop: '16px' }]">
-                <td>
-                  <p :style="getSubHeaderStyle()">
-                    To design an email template, first click the Edit button to enter design mode
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p :style="getPStyle()">
-                    Once there choose the layout, use blocks, text, images and other features you
-                    need to design a responsive email, really fast.
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p :style="getPStyle()">
-                    Give your content a style by changing fonts, colors, borders and other
-                    properties.
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p :style="getPStyle()">
-                    Use shortcodes to define user names, email addresses, URLs, training pieces,
-                    dates and many more properties
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p :style="getPStyle()">
-                    Upload files as attachments to track who downloads and runs suspicious files
-                  </p>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <hr
-                    style="margin: 8px auto 16px auto; max-width: 600px; border: 1px solid #b3d4fc;"
-                  />
-                </td>
-              </tr>
-              <tr :style="{ marginTop: '16px', justifyContent: 'center' }">
-                <td style="text-align: center;">
-                  <img src="../../assets/img/iconfinder-facebook-834722.svg" alt="facebook-icon" />
-                  <img
-                    src="../../assets/img/iconfinder-twitter-834708.svg"
-                    alt="twitter-icon"
-                    style="margin-left: 48px;"
-                  />
-                  <img
-                    src="../../assets/img/iconfinder-instagram-2-834717.svg"
-                    style="margin-left: 48px;"
-                    alt="instagram-icon"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <hr
-                    style="
-                      margin: 14px auto 14px auto;
-                      max-width: 600px;
-                      border: 1px solid #b3d4fc;
-                    "
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <p :style="{ ...getPStyle(), textAlign: 'center', marginBottom: '0' }">
-                    This email is sent by {User_Name} from {Company_Name} on {Date_Sent}
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </v-tab-item>
-    </v-tabs-items>
+            <td>
+              <p style="margin: 0;">Logo Here</p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p :style="getHeaderStyle()">
+                Let’s design an email template
+              </p>
+            </td>
+          </tr>
+          <tr :style="[{ marginTop: '16px' }]">
+            <td>
+              <p :style="getSubHeaderStyle()">
+                To design an email template, first click the Edit button to enter design mode
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p :style="getPStyle()">
+                Once there choose the layout, use blocks, text, images and other features you need
+                to design a responsive email, really fast.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p :style="getPStyle()">
+                Give your content a style by changing fonts, colors, borders and other properties.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p :style="getPStyle()">
+                Use shortcodes to define user names, email addresses, URLs, training pieces, dates
+                and many more properties
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p :style="getPStyle()">
+                Upload files as attachments to track who downloads and runs suspicious files
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <hr
+                style="margin: 8px auto 16px auto; max-width: 600px; border: 1px solid #b3d4fc;"
+              />
+            </td>
+          </tr>
+          <tr :style="{ marginTop: '16px', justifyContent: 'center' }">
+            <td style="text-align: center;">
+              <img src="../../assets/img/iconfinder-facebook-834722.svg" alt="facebook-icon" />
+              <img
+                src="../../assets/img/iconfinder-twitter-834708.svg"
+                alt="twitter-icon"
+                style="margin-left: 48px; height: 32px;"
+              />
+              <img
+                src="../../assets/img/iconfinder-instagram-2-834717.svg"
+                style="margin-left: 48px; height: 32px;"
+                alt="instagram-icon"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <hr
+                style="margin: 14px auto 14px auto; max-width: 600px; border: 1px solid #b3d4fc;"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p :style="{ ...getPStyle(), textAlign: 'center', marginBottom: '0' }">
+                This email is sent by {User_Name} from {Company_Name} on {Date_Sent}
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </v-card>
 </template>
 
 <script>
 import AppModal from '@/components/AppModal'
 import GrapesWebPageModal from '@/components/GrapesJs/WebPage/GrapesWebPageModal'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
+import labels from '@/model/constants/labels'
+import * as Validations from '@/utils/validations'
 export default {
   name: 'EmailTemplate',
   components: {
     AppModal,
-    GrapesWebPageModal
+    GrapesWebPageModal,
+    InputEmail
   },
+  props: ['fromAddress', 'fromName', 'subject', 'template'],
   data() {
     return {
-      tabItems: ['English', 'Turkish', 'German', 'Arabic', 'Sweden'],
-      tab: 0,
+      labels,
       showGrapesModal: false,
-      formValues: {
-        subject: '',
-        fromName: '',
-        email: ''
-      },
-      htmlData: null
+      Validations
     }
   },
   methods: {
     changeTabStatus(index) {
       this.tab = index
     },
-    addTabItem(item) {},
-    addLanguage() {
-      this.tabItems.push('randomLang')
-    },
     editHtmlTemplate() {
-      this.htmlData = this.$refs.refPreview[0].outerHTML
+      this.$emit('update:template', this.$refs.refPreview.outerHTML)
       this.toggleShowGrapesModal()
     },
     getPStyle() {
@@ -283,23 +233,8 @@ export default {
       this.showGrapesModal = !this.showGrapesModal
     },
     saveGrapeJs() {
-      this.htmlData = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())
       this.toggleShowGrapesModal()
-    }
-  },
-  computed: {
-    getTabCountStatus() {
-      return this.tabItems.length > 3
-    },
-    getMoreLanguageCount() {
-      return `+${this.tabItems.length - 3}`
-    },
-    getMoreLanguages() {
-      return this.tabItems.slice(3, this.tabItems.length)
-    },
-    getRenderedTabItems() {
-      const renderedMaxItemLength = this.tabItems.length > 3 ? 3 : this.tabItems.length
-      return this.tabItems.slice(0, renderedMaxItemLength)
     }
   }
 }
@@ -316,14 +251,13 @@ export default {
     box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
       0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     border-radius: 0 !important;
-    padding-left: 24px;
-    padding-top: 10px;
+    padding: 24px 24px 16px 24px;
   }
   &__item {
     display: flex;
     align-items: center;
     &:not(:first-child) {
-      margin-top: -12px;
+      margin-top: -2px;
     }
     &:last-child {
       border-bottom: 1px solid #b3d4fc;
@@ -334,8 +268,8 @@ export default {
       font-weight: normal;
       line-height: normal;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      margin-top: -20px;
+      color: #383b41 !important;
+      margin-top: -23px;
     }
   }
   &__divider {
@@ -376,7 +310,7 @@ export default {
         color: #ffffff;
       }
       position: absolute;
-      right: 0;
+      right: 24px;
     }
     &__body {
       max-width: 550px;

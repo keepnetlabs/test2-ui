@@ -14,6 +14,7 @@ export const labels = {
   Prev: 'PREV',
   Back: 'BACK',
   Email: 'Email Address',
+  FromName: 'From Name',
   Name: 'Name',
   Description: 'Description',
   Low: 'Low',

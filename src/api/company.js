@@ -72,6 +72,18 @@ export function searchEmailTemplate(payload = {}) {
   return testRequest.post('/companies/email-templates/search', payload)
 }
 
+export function createEmailTemplate(payload = {}) {
+  return testRequest.post('/companies/email-templates', payload)
+}
+
+export function getEmailTemplate(resourceId = '') {
+  return testRequest.get(`/companies/email-templates/${resourceId}`)
+}
+
+export function updateEmailTemplate(resourceId = '', payload = {}) {
+  return testRequest.put(`/companies/email-templates/${resourceId}`, payload)
+}
+
 export function getCategories() {
   return testRequest.get('/lookups/10')
 }
