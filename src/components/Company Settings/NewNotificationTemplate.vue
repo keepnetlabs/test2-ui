@@ -4,7 +4,7 @@
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="'New Notification Template'"
+    :title="labels.NewNotificationTemplate"
     icon-name="mdi-email"
     class-name="new-smtp-setting"
     :saveDisable="saveDisable"

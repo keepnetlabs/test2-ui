@@ -1,21 +1,15 @@
 <template>
   <form-group
-    title="Make Available For"
-    sub-title="Companies that will see this setting in their libraries"
+    :title="labels.MakeAvailableFor"
+    :sub-title="labels.MakeAvailableForSubtitle"
     has-hint
   >
     <Treeselect
+      v-bind="isAvailableForProps"
       :class="['k-treeselect', { 'k-treeselect--error': !isAvailableForValid }]"
       :value="value"
       @input="handleInputChange"
       :options="treeSelectOptions"
-      placeholder="Enter make an available for"
-      value-format="object"
-      clear-on-select
-      disable-branch-nodes
-      multiple
-      search-nexted
-      show-count
       @close="validateAvailableFor"
     />
     <div
@@ -46,6 +40,8 @@
 import Treeselect from '@riophae/vue-treeselect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { searchAvailableFor } from '@/api/smtpSettings'
+import labels from '@/model/constants/labels'
+import { COMMON_PROPS } from '@/model/constants/commonConstants'
 export default {
   name: 'MakeAvailableFor.vue',
   components: {
@@ -57,6 +53,8 @@ export default {
   },
   data() {
     return {
+      labels,
+      isAvailableForProps: COMMON_PROPS.AVAILABLEFOR,
       isAvailableForValid: true,
       isAvailableForValidated: false,
       searchAvailableForPayload: {

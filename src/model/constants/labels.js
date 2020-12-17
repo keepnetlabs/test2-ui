@@ -160,7 +160,18 @@ export const labels = {
   ImportAll: 'IMPORT ALL',
   StartInvestigation: 'START INVESTIGATION',
   CancelImport: 'CANCEL IMPORT',
-  KeepEditing: 'KEEP EDITING'
+  KeepEditing: 'KEEP EDITING',
+  NotificationTemplate: 'Notification Template',
+  MakeAvailableFor: 'Make Available For',
+  MakeAvailableForSubtitle: 'Use this setting to make the item avaliable for companies and groups.',
+  MakeAvailableForPlaceholder: 'Search companies and groups',
+  DeleteNotificationTemplateBody:
+    'This notification template will be deleted. All data will be lost.',
+  NewNotificationTemplate: 'New Notification Template',
+  NewSMTPSetting: 'New SMTP Setting',
+  CancelUserImport: 'Cancel user import?',
+  CancelUserImportSubtitle: 'Operation will be abondened',
+  CancelUserImportBody: 'You will lose all progress and users will not be imported'
 }
 
 export default labels

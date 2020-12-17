@@ -4,7 +4,7 @@
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="'New SMTP Setting'"
+    :title="labels.NewSMTPSetting"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
     :saveDisable="saveDisable"
@@ -23,7 +23,7 @@
             v-model.trim="formValues.name"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
         <form-group title="Service Provider" has-hint>
@@ -69,7 +69,7 @@
             v-model.trim="formValues.userName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
         <form-group title="Password" has-hint>
@@ -84,7 +84,7 @@
             :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
         <form-group>
@@ -168,7 +168,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'NewSmtpSettings',
   components: {
@@ -195,6 +195,7 @@ export default {
   },
   data() {
     return {
+      labels,
       saveDisable: false,
       formValues: {
         name: '',

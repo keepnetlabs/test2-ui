@@ -279,7 +279,7 @@ export const GrapesS3Options = {
 
 export const COMMON_PROPS = {
   AVAILABLEFOR: {
-    placeholder: 'Enter make an available for',
+    placeholder: labels.MakeAvailableForPlaceholder,
     valueFormat: 'object',
     clearOnSelect: true,
     disableBranchNodes: true,

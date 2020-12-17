@@ -4,7 +4,7 @@
       :status="showGrapesModal"
       v-if="showGrapesModal"
       icon-name="mdi-check"
-      title="Notification Template"
+      :title="labels.NotificationTemplate"
       z-index="999999"
       @submit="saveGrapeJs"
       @closeOverlay="toggleShowGrapesModal"

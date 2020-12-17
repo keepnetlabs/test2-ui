@@ -4,9 +4,9 @@
       :status="closeTargetUserImport"
       @changeStatus="closeTargetUserImport = false"
       icon="mdi-close-circle"
-      :title="'Cancel user import?'"
-      :subtitle="'Operation will be abondened'"
-      :body="'You will lose all progress and users will not be imported'"
+      :title="labels.CancelUserImport"
+      :subtitle="labels.CancelUserImportSubtitle"
+      :body="labels.CancelUserImportBody"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
