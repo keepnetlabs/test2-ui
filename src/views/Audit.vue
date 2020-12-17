@@ -22,6 +22,7 @@
           :dataLength="tableData && tableData.totalNumberOfRecords"
           :requestParams="bodyData"
           :isServerSide="false"
+          @refreshAction="getDatatableList"
         ></data-table>
       </div>
     </div>

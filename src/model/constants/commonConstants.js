@@ -1,4 +1,5 @@
 import labels from '@/model/constants/labels'
+import * as Validations from '@/utils/validations'
 
 export const COMMON_CONSTANTS = {
   DISABLELOADER: -1,
@@ -19,6 +20,17 @@ export const COMMON_CONSTANTS = {
   STATUS_ITEMS: [
     { text: labels.Active, value: 1 },
     { text: labels.InActive, value: 0 }
+  ],
+  DEFAULT_EMAIL_RULES: [
+    (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+    (v) => Validations.email(v, labels.InvalidEmailAddress),
+    (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+    (v) => {
+      if (Validations.email(v)) {
+        return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+      }
+      return false
+    }
   ]
 }
 

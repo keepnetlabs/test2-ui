@@ -62,6 +62,14 @@ export function email(value, message = 'Invalid email address') {
     : true
 }
 
+export function controlEmailLength(value, message = '') {
+  value = getValue(value)
+  const [leftSide = '', rightSide = ''] = value.split('@')
+  if (leftSide.length > 64 || rightSide.length > 256) {
+    return message && message
+  }
+  return true
+}
 export function extension(value, message) {
   value = getValue(value)
   return !value.startsWith('.') || message

@@ -264,13 +264,14 @@
     </template>
     <template v-slot:overlay-footer>
       <div class="new-investigation-footer">
-        <v-btn class="cancel-btn" text color="#f56c6c" @click="onCancelClicked">{{
+        <v-btn class="k-overlay__btn-cancel" rounded @click="onCancelClicked">{{
           labels.Cancel
         }}</v-btn>
         <v-btn
           :disabled="saveDisable"
-          class="create-btn"
-          text
+          class="k-overlay__btn-save white--text"
+          style="width: auto;"
+          rounded
           color="#2196f3"
           @click="onCreateClicked"
           >{{ labels.StartInvestigation }}</v-btn

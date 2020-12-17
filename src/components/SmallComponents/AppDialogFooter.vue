@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex download-buttons flex-row flex-wrap justify-end">
     <v-btn text color="#f56c6c" class="k-dialog__button mr-4" @click="closeButtonClick">
-      {{ labels.Cancel }}
+      {{ cancelButtonText }}
     </v-btn>
     <v-btn
       text
@@ -24,6 +24,10 @@ export default {
     actionButtonText: {
       type: String,
       default: labels.Confirm
+    },
+    cancelButtonText: {
+      type: String,
+      default: labels.Cancel
     },
     confirmButtonDisabled: {
       type: Boolean,

@@ -148,11 +148,7 @@
             v-model.trim="formValues.replyTo"
             :hint="null"
             :persistent-hint="false"
-            :rules="[
-              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-              (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
-            ]"
+            :required="false"
           />
         </form-group>
         <form-group title="Error to">
@@ -161,11 +157,7 @@
             v-model.trim="formValues.errorTo"
             :hint="null"
             :persistent-hint="false"
-            :rules="[
-              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-              (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
-            ]"
+            :required="false"
           />
         </form-group>
         <form-group title="CC">
@@ -174,11 +166,7 @@
             v-model.trim="formValues.cC"
             :hint="null"
             :persistent-hint="false"
-            :rules="[
-              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-              (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
-            ]"
+            :required="false"
           />
         </form-group>
         <form-group title="BCC">
@@ -187,11 +175,7 @@
             v-model.trim="formValues.bCC"
             :hint="null"
             :persistent-hint="false"
-            :rules="[
-              (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-              (v) => validations.email(v, 'Invalid email address'),
-              (v) => validations.maxLength(v, 254, 'Email address cannot exceed 254 characters')
-            ]"
+            :required="false"
           />
         </form-group>
         <form-group title="Custom Header">
