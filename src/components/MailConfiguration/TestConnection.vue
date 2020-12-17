@@ -136,6 +136,9 @@ export default {
         this.checkUpdateCategory !== 'loading' &&
         this.checkDeleteEmail !== 'loading' &&
         this.checkInboxAccess !== 'loading'
+      if (isLoading) {
+        this.$emit('loading')
+      }
       return !isLoading
     },
     isAllSuccess() {

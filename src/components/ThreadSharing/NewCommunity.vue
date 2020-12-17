@@ -246,9 +246,9 @@ export default {
       this.$emit('closeAdd')
     },
     onCreateClicked() {
-      this.saveDisable = true
       const refThis = this
       if (this.$refs.form.validate()) {
+        this.saveDisable = true
         const payload = {
           name: this.name,
           description: this.description,
@@ -263,20 +263,19 @@ export default {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 message: 'Community have been updated'
               })
-              this.saveDisable = false
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
               this.$router.push(`/community/${this.resourceId}`)
             })
-            .catch((error) => {
-              this.saveDisable = false
+            .catch(() => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 message: 'Community can not be updated'
               })
             })
+            .finally(() => (this.saveDisable = false))
         } else {
           createCommunity(payload)
             .then((response) => {
@@ -284,20 +283,19 @@ export default {
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
                 message: 'New community has been created'
               })
-              //refThis.$emit('closeAdd')
-              this.saveDisable = false
+
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
               this.$router.push(`/community/${response.data.data.resourceId}`)
             })
-            .catch((error) => {
-              this.saveDisable = false
+            .catch(() => {
               this.$store.dispatch('common/createSnackBar', {
                 color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                 message: 'New community can not be created'
               })
             })
+            .finally(() => (this.saveDisable = false))
         }
       } else {
         this.saveDisable = false

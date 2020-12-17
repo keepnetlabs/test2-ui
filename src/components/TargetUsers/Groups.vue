@@ -1,8 +1,9 @@
 <template>
   <div class="target-users-groups">
     <create-new-user-group-modal
-      :status="showNewUserGroupModal"
       v-if="showNewUserGroupModal"
+      :status="showNewUserGroupModal"
+      :is-create-button-disabled="isCreateButtonDisabled"
       @changeNewUserGroupStatus="changeNewUserGroupStatus"
       @handleSave="callForCreateNewUserGroup"
     />
@@ -99,6 +100,7 @@ export default {
   },
   data() {
     return {
+      isCreateButtonDisabled: false,
       loading: true,
       tableData: [],
       extendedViewLoading: true,
@@ -276,6 +278,7 @@ export default {
       this.changeDeleteGroupModalStatus(true)
     },
     callForCreateNewUserGroup(group) {
+      this.isCreateButtonDisabled = true
       createTargetGroup(group)
         .then(() => {
           this.changeNewUserGroupStatus(false)
@@ -289,6 +292,7 @@ export default {
         .catch(() => {
           //this.showNewUserGroupModal = false
         })
+        .finally(() => (this.isCreateButtonDisabled = false))
     },
     changeNewUserGroupStatus(status) {
       this.showNewUserGroupModal = status
