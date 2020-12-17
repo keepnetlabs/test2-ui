@@ -132,6 +132,7 @@ export const PROPERTY_STORE = {
   USERNAME: 'userName',
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
+  CATEGORYNAME: 'categoryName',
   LASTNAME: 'lastName',
   RELIABILITY: 'reliability',
   THREATS: 'threats',
@@ -274,4 +275,16 @@ export const GrapesS3Options = {
   sessionToken: '<AWS Sessions Token>',
   bucketName: '<AWS S3 Bucket Name>',
   prefix: '<Folder Name in s3 bucket.>'
+}
+
+export const COMMON_PROPS = {
+  AVAILABLEFOR: {
+    placeholder: labels.MakeAvailableForPlaceholder,
+    valueFormat: 'object',
+    clearOnSelect: true,
+    disableBranchNodes: true,
+    multiple: true,
+    searchNexted: true,
+    showCount: true
+  }
 }

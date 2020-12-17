@@ -67,3 +67,27 @@ export function getCompanyList() {
 export function getCompanyListForThreatSharing() {
   return testRequest.get('/companies/community-companies')
 }
+
+export function searchEmailTemplate(payload = {}) {
+  return testRequest.post('/companies/email-templates/search', payload)
+}
+
+export function createEmailTemplate(payload = {}) {
+  return testRequest.post('/companies/email-templates', payload)
+}
+
+export function getEmailTemplate(resourceId = '') {
+  return testRequest.get(`/companies/email-templates/${resourceId}`)
+}
+
+export function updateEmailTemplate(resourceId = '', payload = {}) {
+  return testRequest.put(`/companies/email-templates/${resourceId}`, payload)
+}
+
+export function deleteEmailTemplate(resourceId = '') {
+  return testRequest.delete(`/companies/email-templates/${resourceId}`)
+}
+
+export function getCategories() {
+  return testRequest.get('/lookups/10')
+}
