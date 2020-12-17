@@ -96,8 +96,8 @@ export default {
       type: Boolean,
       default: false
     },
-    id: {
-      type: String
+    selectedItem: {
+      type: Object
     }
   },
   data() {
@@ -149,20 +149,23 @@ export default {
   },
   created() {
     this.callForDatas()
-    getEmailTemplate(this.id).then((response) => {
-      const {
-        data: { data }
-      } = response
-      for (let [key, value] of Object.entries(data)) {
-        if (key === 'availableForList') {
-          this.formValues[
-            'availableForRequests'
-          ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
-          continue
+    if (this.selectedItem && this.selectedItem.resourceId) {
+      getEmailTemplate(this.selectedItem.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        for (let [key, value] of Object.entries(data)) {
+          if (key === 'availableForList') {
+            this.formValues[
+              'availableForRequests'
+            ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
+
+            continue
+          }
+          this.formValues[key] = value
         }
-        this.formValues[key] = value
-      }
-    })
+      })
+    }
   },
   mounted() {
     this.$nextTick(() => {
@@ -209,8 +212,8 @@ export default {
             }
           })
         }
-        if (this.id) {
-          updateEmailTemplate(this.id, payload)
+        if (this.selectedItem && this.selectedItem.resourceId) {
+          updateEmailTemplate(this.selectedItem.resourceId, payload)
             .then((response) => {
               this.$store.dispatch('common/createSnackBar', {
                 message: response.data.message,

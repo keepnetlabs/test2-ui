@@ -88,7 +88,8 @@ export default {
           label: 'Companies',
           children: []
         }
-      ]
+      ],
+      treeSelectionStatus: false
     }
   },
   created() {
@@ -106,14 +107,20 @@ export default {
               id: item['companyResourceId'],
               label: item.companyName,
               resourceId: item['companyResourceId'],
-              type: 'Company'
+              type: 'Company',
+              isDisabled: this.treeSelectionStatus
             }
           })
         })
         this.$set(this.treeSelectOptions, 2, {
           ...this.treeSelectOptions[2],
           children: groups.results.map((item) => {
-            return { id: item.resourceId, label: item.name, type: 'Group' }
+            return {
+              id: item.resourceId,
+              label: item.name,
+              type: 'Group',
+              isDisabled: this.treeSelectionStatus
+            }
           })
         })
       })
@@ -121,6 +128,7 @@ export default {
     handleInputChange(newVal) {
       let oldVal = this.value
       let emittedVal = newVal
+
       if (newVal) {
         if (newVal.some((item) => item.type === 'MyCompanyOnly')) {
           if (
@@ -132,14 +140,17 @@ export default {
           } else if (newVal.length > 1) {
             emittedVal = [this.treeSelectOptions[0]]
           }
-          this.setTreeSelectOptions(true)
+          this.treeSelectionStatus = true
+          this.setTreeSelectOptions(this.treeSelectionStatus)
         } else if (newVal.some((item) => item.type === 'AllCompanies')) {
           if (newVal.length > 1) {
             emittedVal = [this.treeSelectOptions[1]]
           }
-          this.setTreeSelectOptions(true)
+          this.treeSelectionStatus = true
+          this.setTreeSelectOptions(this.treeSelectionStatus)
         } else {
-          this.setTreeSelectOptions(false)
+          this.treeSelectionStatus = false
+          this.setTreeSelectOptions(this.treeSelectionStatus)
         }
         this.$emit('input', emittedVal)
         this.validateAvailableFor(newVal)

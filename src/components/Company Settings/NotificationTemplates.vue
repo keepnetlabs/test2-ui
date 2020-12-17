@@ -6,12 +6,18 @@
     />
     <new-notification-template
       v-if="newNotificationTemplateStatus"
-      :id="selectedItemResourceId"
+      :selectedItem="selectedItem"
       :status="newNotificationTemplateStatus"
       @closeOverlay="toggleNewNotificationTemplate"
       @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
     />
-    <delete-notification-template-modal :status="showDeleteNotificationTemplateModal" />
+    <delete-notification-template-modal
+      v-if="showDeleteNotificationTemplateModal"
+      :selectedItem="selectedItem"
+      :status="showDeleteNotificationTemplateModal"
+      @handleDelete="handleDeleteNotificationTemplate"
+      @closeDialog="toggleDeleteNotificationTemplate"
+    />
     <div class="notification-templates__container">
       <data-table
         ref="refNotificationList"
@@ -34,10 +40,40 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
-        @handleEdit="handleEdit"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
         @refreshAction="callForDatas"
-      />
+      >
+        <template #datatable-row-actions="{scope}">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                @click.native="handleEdit(scope.row)"
+                :disabled="getDisabledStatusOfEdit(scope.row)"
+                class="btn-hover mr-1"
+                icon
+                v-on="on"
+              >
+                <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ tableOptions.rowActions[0].name }}</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :disabled="getDisabledStatusOfDelete(scope.row)"
+                @click.native="handleDelete(scope.row)"
+                class="btn-hover"
+                icon
+                v-on="on"
+              >
+                <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ tableOptions.rowActions[1].name }}</span>
+          </v-tooltip>
+        </template>
+      </data-table>
     </div>
   </div>
 </template>
@@ -45,10 +81,15 @@
 <script>
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import { getStoreValue, LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  LABEL_STORE,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import DeleteNotificationTemplateModal from '@/components/Company Settings/DeleteNotificationTemplateModal'
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate'
-import { getCategories, searchEmailTemplate } from '@/api/company'
+import { deleteEmailTemplate, getCategories, searchEmailTemplate } from '@/api/company'
 import labels from '@/model/constants/labels'
 export default {
   name: 'NotificationTemplates',
@@ -145,7 +186,7 @@ export default {
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'deleteAction'
+            action: 'handleDelete'
           }
         ],
         selectEvent: {
@@ -158,7 +199,7 @@ export default {
 
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
-      selectedItemResourceId: null,
+      selectedItem: null,
       axiosPayload: {
         pageNumber: 1,
         pageSize: 50000,
@@ -225,9 +266,40 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
+    getDisabledStatusOfEdit(row) {
+      return !row.isOwner
+    },
+    getDisabledStatusOfDelete(row) {
+      return !row.isOwner
+    },
+    handleDelete(row) {
+      this.selectedItem = row
+      this.toggleDeleteNotificationTemplate()
+    },
+    handleDeleteNotificationTemplate(resourceId) {
+      deleteEmailTemplate(resourceId).then((response) => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: response.data.message,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
+        this.toggleDeleteNotificationTemplate()
+        this.callForDatas()
+      })
+    },
+    toggleDeleteNotificationTemplate() {
+      if (this.showDeleteNotificationTemplateModal) {
+        this.selectedItem = null
+      }
+      this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
+    },
     toggleNewNotificationTemplate() {
+      if (this.newNotificationTemplateStatus) {
+        this.selectedItem = null
+      }
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
     },
+
     callForSearchEmailTemplate() {
       return searchEmailTemplate(this.axiosPayload)
     },
@@ -258,7 +330,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     handleEdit(row) {
-      this.selectedItemResourceId = row.resourceId
+      this.selectedItem = row
       this.toggleNewNotificationTemplate()
     }
   },

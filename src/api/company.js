@@ -84,6 +84,10 @@ export function updateEmailTemplate(resourceId = '', payload = {}) {
   return testRequest.put(`/companies/email-templates/${resourceId}`, payload)
 }
 
+export function deleteEmailTemplate(resourceId = '') {
+  return testRequest.delete(`/companies/email-templates/${resourceId}`)
+}
+
 export function getCategories() {
   return testRequest.get('/lookups/10')
 }

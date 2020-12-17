@@ -3,7 +3,7 @@
     :status="status"
     icon="mdi-alert"
     title="Delete Notification Template?"
-    subtitle="Licence Expire"
+    subtitle="Notification Template"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
@@ -30,7 +30,7 @@ export default {
     AppDialog
   },
   props: {
-    selectedNotification: {
+    selectedItem: {
       type: Object
     },
     status: {
@@ -42,9 +42,11 @@ export default {
   },
   methods: {
     handleDelete() {
-      this.$emit('handleDelete', this.selectedNotification)
+      this.$emit('handleDelete', this.selectedItem.resourceId)
     },
-    handleCloseDialog() {}
+    handleCloseDialog() {
+      this.$emit('closeDialog')
+    }
   }
 }
 </script>
