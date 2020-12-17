@@ -198,10 +198,10 @@ export default {
         }
       } else {
         this.$forceUpdate()
-        setTimeout(() => {
+        this.$nextTick(() => {
           const el = this.$refs.refForm.$el.querySelector('.error--text')
           scrollToComponent(el)
-        }, 100)
+        })
       }
     },
     toggleWelcomeEmailModal() {

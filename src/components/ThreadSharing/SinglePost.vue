@@ -562,7 +562,7 @@
                   class="send-btn"
                   type="button"
                   :disabled="
-                    checkPermissions('community-posts/{communityPostResourceId}/comments', 'POST')
+                    !checkPermissions('community-posts/{communityPostResourceId}/comments', 'POST')
                   "
                 >
                   <v-icon>mdi-send</v-icon>

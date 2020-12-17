@@ -104,18 +104,10 @@
         </div>
       </template>
       <template v-slot:app-dialog-footer>
-        <div class="delete-user__footer">
-          <v-btn
-            @click="closeEngineModal"
-            color="#f56c6c"
-            class="delete-user__footer-button"
-            text
-            >{{ labels.Cancel }}</v-btn
-          >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmEngineModalFucn">{{
-            labels.Confirm
-          }}</v-btn>
-        </div>
+        <app-dialog-footer
+          @handleClose="closeEngineModal"
+          @handleConfirm="confirmEngineModalFucn"
+        />
       </template>
     </app-dialog>
     <v-form ref="refForm" v-model="isFormValid" lazy-validation>
@@ -319,9 +311,10 @@ import {
 } from '../../api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
-  components: { KSelect, AppDialog, Investigate },
+  components: { AppDialogFooter, KSelect, AppDialog, Investigate },
 
   name: 'ActionItem',
   props: {

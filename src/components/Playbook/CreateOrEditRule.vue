@@ -461,7 +461,6 @@ export default {
       this.idCounter = this.idCounter + 1
     },
     handleSave() {
-      this.saveDisable = true
       if (this.playbookId) {
         this.callForUpdatePlaybook()
       } else {
@@ -525,19 +524,17 @@ export default {
       }
 
       if (ref.$refs.refForm.validate()) {
+        this.saveDisable = true
         createPlaybook(payload)
-          .then((response) => {
+          .then(() => {
             this.$store.dispatch('common/createSnackBar', {
               message: 'Playbook has been created',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
-            this.saveDisable = false
             this.$emit('closeFormWithUpdate')
           })
-          .catch((error) => {
-            this.saveDisable = false
-          })
+          .finally(() => (this.saveDisable = false))
       } else {
         return this.$nextTick(() => {
           const el = ref.$refs.refForm.$el.querySelector('.error--text')
@@ -603,19 +600,17 @@ export default {
       }
 
       if (ref.$refs.refForm.validate()) {
+        this.saveDisable = true
         updatePlaybook(payload)
-          .then((response) => {
+          .then(() => {
             this.$store.dispatch('common/createSnackBar', {
               message: 'Playbook has been updated',
               color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
               icon: 'mdi-check-circle'
             })
-            this.saveDisable = false
             this.$emit('closeFormWithUpdate')
           })
-          .catch((error) => {
-            this.saveDisable = false
-          })
+          .finally(() => (this.saveDisable = false))
       } else {
         return this.$nextTick(() => {
           const el = ref.$refs.refForm.$el.querySelector('.error--text')

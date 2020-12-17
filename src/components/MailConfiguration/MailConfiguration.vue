@@ -109,6 +109,7 @@
                 :isEdit="editData"
                 ref="testConnection"
                 @testConnectionValues="testConnectionValues"
+                @loading="saveButtonDisabled = false"
               />
             </v-list-item-content>
           </v-list-item>
@@ -483,7 +484,6 @@ export default {
     testConnectionValues(isSuccess, isSave) {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
-        this.saveButtonDisabled = false
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             this.submit()
@@ -573,23 +573,32 @@ export default {
     },
     submit() {
       if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
+        this.saveButtonDisabled = true
         if (this.editData) {
           let editData = this.formValues
           updateO365(editData, this.editData.resourceId).then(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'O365 mail configuration has been updated'
-            })
+            this.$store
+              .dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                message: 'O365 mail configuration has been updated'
+              })
+              .finally(() => {
+                this.saveButtonDisabled = false
+              })
             this.status = false
             this.editData = null
             this.getTableData()
           })
         } else {
           createO365(this.formValues).then(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'O365 mail configuration has been created'
-            })
+            this.$store
+              .dispatch('common/createSnackBar', {
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                message: 'O365 mail configuration has been created'
+              })
+              .finally(() => {
+                this.saveButtonDisabled = false
+              })
             this.status = false
             this.editData = null
             this.getTableData()

@@ -338,7 +338,7 @@ export default {
       this.$refs.refTextField.lazyValue = renderedValue
     },
     callForGetSmtpSettings() {
-      getSmtpSettings(this.resourceId).then((response) => {
+      return getSmtpSettings(this.resourceId).then((response) => {
         const {
           data: {
             data: {
@@ -377,17 +377,31 @@ export default {
         this.formValues.userName = userName
         this.formValues.serviceProvider = `${serverAddress}:${serverPort}`
       })
+    },
+    callForServiceProviderItems() {
+      getLookupListByTypeId(12).then((response) => {
+        const { data: { data = [] } = {} } = response
+        this.serviceProviderItems = data
+        if (this.isEdit && this.resourceId) {
+          if (
+            !this.serviceProviderItems.find((item) => item.code === this.formValues.serviceProvider)
+          ) {
+            this.formValues.serviceProvider = this.serviceProviderItems.find(
+              (item) => item.name === 'Custom'
+            )
+          }
+        }
+      })
     }
   },
   created() {
     if (this.isEdit && this.resourceId) {
-      this.callForGetSmtpSettings()
+      this.callForGetSmtpSettings().finally(() => {
+        this.callForServiceProviderItems()
+      })
+    } else {
+      this.callForServiceProviderItems()
     }
-
-    getLookupListByTypeId(12).then((response) => {
-      const { data: { data = [] } = {} } = response
-      this.serviceProviderItems = data
-    })
   }
 }
 </script>

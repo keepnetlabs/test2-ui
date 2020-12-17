@@ -238,8 +238,10 @@ export default {
             })
         }
       } else {
-        const el = refForm.$el.querySelector('.error--text')
-        scrollToComponent(el)
+        this.$nextTick(() => {
+          const el = refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     }
   }

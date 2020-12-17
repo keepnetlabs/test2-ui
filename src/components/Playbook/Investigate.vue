@@ -172,7 +172,7 @@
         </v-list-item>
       </v-col>
       <v-col md="6">
-        <div class="select-sources d-flex">
+        <div class="select-sources d-flex" style="flex-wrap: wrap;">
           <v-checkbox
             v-for="(item, index) in sources"
             :key="index"
