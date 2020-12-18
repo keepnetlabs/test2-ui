@@ -4,10 +4,18 @@
       <v-card class="companies__container-card">
         <template v-if="!$route.params.groupId && $route.name === 'Companies'">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Companies" name="first">
+            <el-tab-pane
+              label="Companies"
+              name="first"
+              v-if="checkPermissions('companies/search', 'POST')"
+            >
               <company-list v-if="tab === 'first'"
             /></el-tab-pane>
-            <el-tab-pane label="Company Groups" name="second">
+            <el-tab-pane
+              label="Company Groups"
+              name="second"
+              v-if="checkPermissions('company-groups/search', 'POST')"
+            >
               <company-group-list v-if="tab === 'second'"
             /></el-tab-pane>
           </el-tabs>
@@ -24,6 +32,7 @@
 import CompanyList from '@/components/Companies/CompanyList'
 import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
 import CompanyGroupDetails from '@/components/CompanyGroups/CompanyGroupDetails'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'Companies',
   props: {},
@@ -33,12 +42,24 @@ export default {
       tab: 'first'
     }
   },
+  created() {
+    if (!this.checkPermissions('companies/search', 'POST')) {
+      this.tab = 'second'
+    }
+  },
   updated() {
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }
+
+    if (!this.checkPermissions('companies/search', 'POST')) {
+      this.tab = 'second'
+    }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     changeTabStatus(status) {
       this.tab = status
     }

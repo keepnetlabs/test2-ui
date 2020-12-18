@@ -78,6 +78,7 @@ import { getWidgets, postWidgets } from '@/api/widgets'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'Widgets',
   components: {
@@ -669,35 +670,40 @@ export default {
         .catch(() => {
           return []
         })
+    },
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
     }
   },
   created() {
-    this.callForGetWidgets()
-      .then((response) => {
-        if (response.settings.length) {
-          this.layout = response.settings.reduce((acc, item) => {
-            const widget = { ...this.allWidgets[item.key], ...item }
-            this.removeAvailableWidget(item)
-            acc.push(widget)
-            return acc
-          }, [])
+    if (this.checkPermissions('dashboard/widgets', 'GET')) {
+      this.callForGetWidgets()
+        .then((response) => {
+          if (response.settings.length) {
+            this.layout = response.settings.reduce((acc, item) => {
+              const widget = { ...this.allWidgets[item.key], ...item }
+              this.removeAvailableWidget(item)
+              acc.push(widget)
+              return acc
+            }, [])
 
-          this.newItemY = this.layout.reduce((acc, item) => {
-            return (acc += item.h)
-          }, 0)
+            this.newItemY = this.layout.reduce((acc, item) => {
+              return (acc += item.h)
+            }, 0)
+            setTimeout(() => {
+              this.handleDeleteShadows()
+              this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+            }, 20)
+          }
+        })
+        .catch(() => {
+          this.layout = this.getDefaultLayoutObject()
           setTimeout(() => {
             this.handleDeleteShadows()
             this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
           }, 20)
-        }
-      })
-      .catch(() => {
-        this.layout = this.getDefaultLayoutObject()
-        setTimeout(() => {
-          this.handleDeleteShadows()
-          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
-        }, 20)
-      })
+        })
+    }
   },
   mounted() {},
   watch: {

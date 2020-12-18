@@ -538,6 +538,7 @@
                           class="btn-hover"
                           icon
                           v-on="on"
+                          :disabled="rowActions[0].disabled"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -553,6 +554,7 @@
                           class="btn-hover"
                           icon
                           v-on="on"
+                          :disabled="rowActions[0].disabled"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -569,7 +571,12 @@
                     :return-value="isRowActionsMenuOpen[scope.$index]"
                   >
                     <template v-slot:activator="{ on }">
-                      <v-btn class="btn-hover ml-1" icon v-on="on">
+                      <v-btn
+                        class="btn-hover ml-1"
+                        icon
+                        v-on="on"
+                        :disabled="rowActions[1].disabled"
+                      >
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
                           >mdi-dots-vertical
                         </v-icon>

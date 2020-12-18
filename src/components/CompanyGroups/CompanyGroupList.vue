@@ -58,6 +58,7 @@ import { deleteCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
+import { checkPermission } from '@/utils/functions'
 
 export default {
   name: 'CompanyGroupList',
@@ -127,19 +128,22 @@ export default {
         addButton: {
           show: true,
           action: 'addButton',
-          tooltip: 'Add Company Group'
+          tooltip: 'Add Company Group',
+          disabled: !this.checkPermissions('company-groups', 'POST')
         },
         rowActions: [
           {
             name: 'Edit this row',
             icon: 'mdi-pencil',
             action: 'editAction',
-            isNotShow: true
+            isNotShow: true,
+            disabled: !this.checkPermissions('company-groups/{resourceId}', 'PUT')
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'delete'
+            action: 'delete',
+            disabled: !this.checkPermissions('company-groups/{resourceId}', 'DELETE')
           }
         ]
       },
@@ -164,6 +168,9 @@ export default {
     this.getTableData()
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     getTableData() {
       this.loading = true
       searchCompanyGroups(this.payload)
