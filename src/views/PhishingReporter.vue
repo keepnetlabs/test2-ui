@@ -1,6 +1,9 @@
 <template>
   <div class="phishing-reporter__header" id="phishing-reporter">
-    <div class="phishing-reporter__header-container">
+    <div
+      class="phishing-reporter__header-container"
+      v-if="checkPermissions('phishing-reporter/summary', 'GET')"
+    >
       <div class="phishing-reporter__stats">
         <div
           class="phishing-reporter__header-left-column"
@@ -123,13 +126,17 @@
         <v-col class="pl-0 phishing-reporter__tab-container" cols="12">
           <v-card class="phishing-reporter__card">
             <el-tabs v-model="tab" @tab-click="handleTabClick">
-              <el-tab-pane :label="labels.Users" name="first"
-                ><users
-                  ref="refUsers"
-                  @callForPhishingReporterSummary="getPhishingReportSummary()"
-                  v-if="tab === 'first'"
+              <el-tab-pane
+                :label="labels.Users"
+                name="first"
+                v-if="checkPermissions('phishing-reporter/search', 'POST')"
+                ><users ref="refUsers" @callForPhishingReporterSummary="getPhishingReportSummary()"
               /></el-tab-pane>
-              <el-tab-pane :label="labels.Settings" name="second">
+              <el-tab-pane
+                :label="labels.Settings"
+                name="second"
+                v-if="checkPermissions('phishing-reporter', 'GET')"
+              >
                 <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
                 <component
                   v-show="!isLoading"
@@ -155,6 +162,7 @@ import PhishingReporterTopBar from '../components/SkeletonLoading/PhishingReport
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import InvestigationDetailsTopBarLoading from '@/components/SkeletonLoading/InvestigationDetailsTopBarLoading'
 import labels from '@/model/constants/labels'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'PhishingReporter',
   components: {
@@ -195,6 +203,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     handleTabClick({ label = '' }) {
       if (label === 'Settings') {
         this.getPhishingReport()

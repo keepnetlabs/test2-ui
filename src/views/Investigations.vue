@@ -112,6 +112,7 @@ import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'Investigations',
   components: {
@@ -239,18 +240,21 @@ export default {
       {
         name: labels.Details,
         icon: 'mdi-text-box-multiple',
-        action: 'investigationDetails'
+        action: 'investigationDetails',
+        disabled: !checkPermission('investigations/{resourceId}', 'GET')
       },
       {
         name: labels.StopAction,
         icon: 'mdi-stop',
-        action: 'stopInvestigationFunc'
+        action: 'stopInvestigationFunc',
+        disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT')
       }
     ],
     addUsers: {
       show: true,
       tooltip: labels.StartAnInvestigation,
-      action: 'createCommunityFromMobileInfo'
+      action: 'createCommunityFromMobileInfo',
+      disabled: !checkPermission('investigations', 'POST')
     },
     iEmpty: {
       message: labels.NoInvestigationStarted,
@@ -287,6 +291,9 @@ export default {
     }
   }),
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
       this.showPlaybookModal = true
@@ -462,6 +469,9 @@ export default {
   },
   mounted() {
     // triggered to relevant action at investigations.js
+    if (!this.checkPermissions('investigations/search', 'POST')) {
+      this.$router.push('/incident-responder')
+    }
     if (this.$route.params && this.$route.params.selectedEmail) {
       this.isWantToAddNewCommunity = true
     }
