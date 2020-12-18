@@ -126,6 +126,7 @@
                   <div style="margin-top: 40px;">
                     <datatable
                       ref="refRelayTable"
+                      :loading="isLoading"
                       :table="relayTable.data"
                       :refName="'relayTable'"
                       :columns="relayTable.columns"
@@ -138,6 +139,7 @@
                       :selectEvent="selectEvent"
                       :sizeable="true"
                       :isDownloadable="true"
+                      @refreshAction="getPostDetails"
                     />
                   </div>
                 </v-card>
@@ -146,6 +148,7 @@
                   <div class="email-details__datatable-container">
                     <datatable
                       ref="refHeadersTable"
+                      :loading="isLoading"
                       :table="headersTable.data"
                       :refName="'headersTable'"
                       :columns="headersTable.columns"
@@ -159,6 +162,7 @@
                       :selectEvent="selectEvent"
                       :sizeable="true"
                       :isDownloadable="true"
+                      @refreshAction="getPostDetails"
                     />
                   </div>
                 </v-card>
@@ -241,6 +245,7 @@
                 <datatable
                   id="urlAnalysisTable"
                   ref="refUrlAnalysisTable"
+                  :loading="isLoading"
                   :table="tableData"
                   :refName="'urlAnalysisTable'"
                   :columns="columns"
@@ -254,6 +259,7 @@
                   :selectEvent="selectEvent"
                   :sizeable="true"
                   :download-button="{ show: false, disabled: false }"
+                  @refreshAction="getPostDetails"
                 />
               </div>
             </template>
@@ -372,6 +378,7 @@
                     <div class="attachments-table">
                       <datatable
                         ref="refAttachmentsTable"
+                        :loading="isLoading"
                         :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
                         :countRow="5"
@@ -379,6 +386,7 @@
                         :pageSizes="pageSizes"
                         :options="false"
                         :empty="attachmentTableOptions.iEmpty"
+                        @refreshAction="getPostDetails"
                       >
                         <template v-slot:datatable-custom-column="{ scope }">
                           <span @click="showPopupModal = true" style="cursor: pointer;">
@@ -903,6 +911,7 @@ export default {
         })
     },
     getPostDetails() {
+      this.isLoading = true
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
