@@ -14,6 +14,7 @@
     <delete-notification-template-modal
       v-if="showDeleteNotificationTemplateModal"
       :selectedItem="selectedItem"
+      :isDeleteButtonDisabled="isDeleteButtonDisabled"
       :status="showDeleteNotificationTemplateModal"
       @handleDelete="handleDeleteNotificationTemplate"
       @closeDialog="toggleDeleteNotificationTemplate"
@@ -196,7 +197,7 @@ export default {
           download: false
         }
       },
-
+      isDeleteButtonDisabled: false,
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
       selectedItem: null,
@@ -277,15 +278,13 @@ export default {
       this.toggleDeleteNotificationTemplate()
     },
     handleDeleteNotificationTemplate(resourceId) {
-      deleteEmailTemplate(resourceId).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: response.data.message,
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
+      this.isDeleteButtonDisabled = true
+      deleteEmailTemplate(resourceId)
+        .then(() => {
+          this.toggleDeleteNotificationTemplate()
+          this.callForDatas()
         })
-        this.toggleDeleteNotificationTemplate()
-        this.callForDatas()
-      })
+        .finally(() => (this.isDeleteButtonDisabled = false))
     },
     toggleDeleteNotificationTemplate() {
       if (this.showDeleteNotificationTemplateModal) {

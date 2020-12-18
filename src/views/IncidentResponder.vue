@@ -1605,11 +1605,6 @@ export default {
           this.topRules.table = data || []
         })
         .catch((error) => {
-          /* this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the top rules!'
-          })
-          */
           this.topRules.table = []
         })
         .finally(() => (this.topRulesLoading = false))
@@ -1657,13 +1652,6 @@ export default {
         .then((response) => {
           const tableData = response.data.data
           this.matchingInvestigationData = tableData.results
-        })
-        .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  errorState: true,
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when getting the notified emails!'
-                })*/
         })
         .finally(() => (this.isMatchingInvestigationLoading = false))
     },

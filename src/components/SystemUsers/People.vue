@@ -313,11 +313,6 @@ export default {
     },
     callForDeleteUser({ resourceId = '' } = {}) {
       deleteSystemUser(resourceId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'System user has been deleted',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
-        })
         this.toggleShowDeleteSystemUserModal()
         this.callForListSystemUsers()
       })

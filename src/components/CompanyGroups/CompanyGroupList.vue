@@ -1,6 +1,7 @@
 <template>
   <div class="company-list">
     <delete-modal
+      v-if="isShowDeleteModal"
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
       @changeModalStatus="changeDeleteModalStatus"
@@ -180,24 +181,11 @@ export default {
       this.changeDeleteModalStatus(true)
     },
     deleteConfirmedItem(selectedItem) {
-      deleteCompanyGroup(selectedItem.resourceId)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Company group has been deleted',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.getTableData()
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Company group can not be deleted',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+      deleteCompanyGroup(selectedItem.resourceId).then((response) => {
+        if (response.data && response.data.message) {
+          this.getTableData()
+        }
+      })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status

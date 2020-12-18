@@ -213,12 +213,6 @@ export default {
     callForCreateSystemUser(payload) {
       createSystemUser(payload)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'System user has been created',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-
           this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
@@ -227,11 +221,6 @@ export default {
     callForUpdateSystemUser(payload) {
       updateSystemUser(payload)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'System user has been updated',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
           this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })

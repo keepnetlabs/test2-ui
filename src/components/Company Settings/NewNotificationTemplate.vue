@@ -77,7 +77,6 @@ import {
 } from '@/api/company'
 import { searchSmtpSettings } from '@/api/smtpSettings'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
@@ -214,23 +213,13 @@ export default {
         }
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
-            .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                message: response.data.message,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: 'mdi-check-circle'
-              })
+            .then(() => {
               this.$emit('closeOverlayWithUpdate')
             })
             .finally(() => (this.saveDisable = false))
         } else {
           createEmailTemplate(payload)
-            .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                message: response.data.message,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                icon: 'mdi-check-circle'
-              })
+            .then(() => {
               this.$emit('closeOverlayWithUpdate')
             })
             .finally(() => {

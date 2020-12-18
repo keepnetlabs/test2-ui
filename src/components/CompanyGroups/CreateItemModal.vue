@@ -148,10 +148,6 @@ export default {
       }
     }
   },
-  computed: {},
-  mounted() {
-    //this.getDefaultCompanies()
-  },
   beforeUpdate() {
     this.selectedCompanies = this.selectedRow
     this.editHandler()
@@ -206,30 +202,16 @@ export default {
         if (!this.isEdit || this.forCompany) {
           createCompanyGroups(payload)
             .then((response) => {
-              if (response.status === 201) {
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'Company group has been created',
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  icon: 'mdi-check-circle-outline'
-                })
-                this.$emit('companyGroupCreated', response.data.resourceId)
-                this.changeStatus(false)
-              }
+              this.$emit('companyGroupCreated', response.data.resourceId)
+              this.changeStatus(false)
             })
             .finally(() => (this.saveDisable = false))
         } else {
           updateCompanyGroup(this.selectedRow.resourceId, payload)
             .then((response) => {
-              if (response.data && response.data.code === 'RESOURCE_UPDATED') {
-                localStorage.setItem('companyGroupName', this.groupName)
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'Company group has been updated',
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  icon: 'mdi-check-circle-outline'
-                })
-                this.$emit('companyGroupCreated', response.data.resourceId)
-                this.changeStatus(false)
-              }
+              localStorage.setItem('companyGroupName', this.groupName)
+              this.$emit('companyGroupCreated', response.data.resourceId)
+              this.changeStatus(false)
             })
             .finally(() => (this.saveDisable = false))
         }

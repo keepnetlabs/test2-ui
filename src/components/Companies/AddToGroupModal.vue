@@ -197,7 +197,7 @@ export default {
               : []
           )
         })
-        .catch((error) => {
+        .catch(() => {
           this.$refs.refTableAddToGroup.loadWithDataArray([])
         })
     },
