@@ -3,10 +3,19 @@
     <v-layout wrap class="target-users__container">
       <v-card class="target-users__container-card">
         <el-tabs v-model="tab">
-          <el-tab-pane label="People" name="first"
+          <el-tab-pane
+            label="People"
+            name="first"
+            v-if="checkPermissions('target-users/search', 'POST')"
             ><people ref="refPeople" v-if="tab === 'first'"
           /></el-tab-pane>
-          <el-tab-pane label="Group" name="second"> <groups v-if="tab === 'second'" /></el-tab-pane>
+          <el-tab-pane
+            label="Group"
+            name="second"
+            v-if="checkPermissions('target-groups/search', 'POST')"
+          >
+            <groups v-if="tab === 'second'"
+          /></el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -16,6 +25,7 @@
 import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
 import SmartGroups from '../components/TargetUsers/SmartGroups'
+import { checkPermission } from '@/utils/functions'
 export default {
   components: {
     People,
@@ -32,6 +42,9 @@ export default {
     } = this
     if (params && params.tab) {
       this.tab = params.tab
+    }
+    if (!this.checkPermissions('target-users/search', 'POST')) {
+      this.tab = 'second'
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -60,6 +73,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     changeTabStatus(status) {
       this.tab = status
     }

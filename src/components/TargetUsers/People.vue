@@ -73,7 +73,12 @@
           <template v-slot:activator="{ on: menu }">
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                <v-btn
+                  :disabled="!checkPermissions('target-users/search', 'POST')"
+                  class="btn-add mr-1"
+                  icon
+                  v-on="{ ...tooltip, ...menu }"
+                >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </template>
@@ -115,6 +120,7 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'People',
   components: {
@@ -283,12 +289,14 @@ export default {
           name: 'Edit this row',
           icon: 'mdi-pencil',
           action: 'editTargetUsers',
-          isNotShow: true
+          isNotShow: true,
+          disabled: !checkPermission('system-users/{resourceId}', 'PUT')
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
-          action: 'deleteAction'
+          action: 'deleteAction',
+          disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
         }
       ]
     },
@@ -296,6 +304,9 @@ export default {
     addUsersItems: ['Add users manually', 'Import from a file']
   }),
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     closeImportModal() {
       this.isWantToImportFile = false
     },

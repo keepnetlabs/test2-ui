@@ -27,7 +27,12 @@
             no-resize
             required
             class="feedback-popup__text-area-text"
-            :rules="[(v) => !!v || 'Required']"
+            :rules="[
+              (v) => !!v || 'Required',
+              (v) =>
+                (!!v && v.length >= 5 && v.length <= 1000) ||
+                'Minimum 5 characters - Maximum 1000 character'
+            ]"
           ></v-textarea>
         </v-form>
       </div>

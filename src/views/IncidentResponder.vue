@@ -65,7 +65,7 @@
         v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
       />
-      <div class="columns-row">
+      <div class="columns-row" v-if="checkPermissions('ir/dashboard/summary', 'GET')">
         <CardLoading
           :loading="incidentLoading"
           class="dashboard-cards__skeleton-loading"
@@ -296,7 +296,7 @@
         </CardLoading>
       </div>
       <div class="double-table">
-        <div class="column">
+        <div class="column" v-if="checkPermissions('ir/dashboard/top-rules', 'GET')">
           <v-card>
             <div class="header">
               <div class="title">
@@ -410,7 +410,7 @@
             </div>
           </v-card>
         </div>
-        <div class="column">
+        <div class="column" v-if="checkPermissions('ir/dashboard/running-investigations', 'GET')">
           <v-card>
             <div class="header">
               <div class="title">
@@ -456,7 +456,7 @@
           </v-card>
         </div>
       </div>
-      <div class="table-row">
+      <div class="table-row" v-if="checkPermissions('notified-emails/search', 'POST')">
         <v-card>
           <div class="header">
             <div class="title">
@@ -1328,6 +1328,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     clusterChanged() {
       this.requestBodyReportedEmails.isClustered = true
       this.callForSearchNotifiedMail()
@@ -1577,54 +1580,59 @@ export default {
       this.isWantToAddNewInvestigation = false
     },
     callForGetRunningInvestigations() {
-      this.investigationsLoading = true
-      getRunningInvestigations()
-        .then((response) => {
-          const {
-            data: { data, status }
-          } = response
-          this.investigationListData = data
-          this.investigationsData = data || []
-        })
-        .catch((error) => {
-          this.investigationsData = []
-        })
-        .finally(() => {
-          this.investigationsLoading = false
-        })
+      if (this.checkPermissions('ir/dashboard/running-investigations', 'GET')) {
+        this.investigationsLoading = true
+        getRunningInvestigations()
+          .then((response) => {
+            const {
+              data: { data, status }
+            } = response
+            this.investigationListData = data
+            this.investigationsData = data || []
+          })
+          .catch((error) => {
+            this.investigationsData = []
+          })
+          .finally(() => {
+            this.investigationsLoading = false
+          })
+      }
     },
     callForGetTopRules() {
-      checkPermission('ir/dashboard/summary', 'GET')
-      this.topRulesLoading = true
-      getTopRules()
-        .then((response) => {
-          const {
-            data: { data, status }
-          } = response
+      if (this.checkPermissions('ir/dashboard/top-rules', 'GET')) {
+        this.topRulesLoading = true
+        getTopRules()
+          .then((response) => {
+            const {
+              data: { data, status }
+            } = response
 
-          this.topRules.table = data || []
-        })
-        .catch((error) => {
-          this.topRules.table = []
-        })
-        .finally(() => (this.topRulesLoading = false))
+            this.topRules.table = data || []
+          })
+          .catch((error) => {
+            this.topRules.table = []
+          })
+          .finally(() => (this.topRulesLoading = false))
+      }
     },
     callForSearchNotifiedMail() {
-      this.reportedEmailsLoading = true
-      searchNotifiedMail(this.requestBodyReportedEmails)
-        .then((response) => {
-          const {
-            data: {
-              data: { results }
-            }
-          } = response
-          const tableData = this.getManipulatedTableData(results || [])
-          this.reportedEmailsData = tableData || []
-        })
-        .catch(() => {
-          this.reportedEmailsData = []
-        })
-        .finally(() => (this.reportedEmailsLoading = false))
+      if (this.checkPermissions('notified-emails/search', 'POST')) {
+        this.reportedEmailsLoading = true
+        searchNotifiedMail(this.requestBodyReportedEmails)
+          .then((response) => {
+            const {
+              data: {
+                data: { results }
+              }
+            } = response
+            const tableData = this.getManipulatedTableData(results || [])
+            this.reportedEmailsData = tableData || []
+          })
+          .catch(() => {
+            this.reportedEmailsData = []
+          })
+          .finally(() => (this.reportedEmailsLoading = false))
+      }
     },
     getManipulatedTableData(data, isChild = false) {
       if (this.requestBodyReportedEmails.isClustered) {

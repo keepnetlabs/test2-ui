@@ -121,6 +121,7 @@
                   rounded
                   medium
                   color="blue"
+                  :disabled="!checkPermissions('community-posts/{resourceId}', 'GET')"
                   >COLLAPSE
                 </v-btn>
                 <v-btn
@@ -134,6 +135,7 @@
                   rounded
                   medium
                   color="blue"
+                  :disabled="!checkPermissions('community-posts/{resourceId}', 'GET')"
                   >DETAILS
                 </v-btn>
               </template>
@@ -158,7 +160,7 @@
                 <v-list-item-group color="primary">
                   <v-list-item
                     :id="'edit-btn' + post.communityPostResourceId"
-                    v-if="canEdit(post)"
+                    v-if="checkPermissions('community-posts/{resourceId}', 'GET') && canEdit(post)"
                     @click="editIncident(post, post.communityPostResourceId, post.communityName)"
                   >
                     <v-list-item-icon>
@@ -170,6 +172,7 @@
                   </v-list-item>
                   <v-list-item
                     :id="'investigate-btn' + post.communityPostResourceId"
+                    v-if="checkPermissions('community-posts/{resourceId}', 'GET')"
                     @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
@@ -181,7 +184,10 @@
                   </v-list-item>
                   <v-list-item
                     style="cursor: not-allowed; opacity: 0.3;"
-                    v-if="post.communityPrivacyStatusId !== 1"
+                    v-if="
+                      checkPermissions('community-posts/{resourceId}/share', 'POST') &&
+                      post.communityPrivacyStatusId !== 1
+                    "
                     :id="'share-btn' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -216,7 +222,9 @@
                   </v-list-item>
                   <v-list-item
                     :id="'delete-btn' + post.communityPostResourceId"
-                    v-if="canDelete(post)"
+                    v-if="
+                      checkPermissions('community-posts/{resourceId}', 'DELETE') && canDelete(post)
+                    "
                     @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>

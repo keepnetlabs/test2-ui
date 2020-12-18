@@ -24,8 +24,18 @@
         <v-col class="main-column pr-0" cols="12" md="8">
           <v-card id="community-tabs" class="pl-1 pt-2 pr-1">
             <v-tabs v-model="tab" background-color="transparent" color="basil">
-              <v-tab id="incidents-tab" @click="getIncidents">Incidents</v-tab>
-              <v-tab id="members-tab" @click="getMembers">Members</v-tab>
+              <v-tab
+                id="incidents-tab"
+                @click="getIncidents"
+                v-if="checkPermissions('community-posts/search/{communityResourceId}', 'POST')"
+                >Incidents</v-tab
+              >
+              <v-tab
+                id="members-tab"
+                @click="getMembers"
+                v-if="checkPermissions('communities/{resourceId}/member', 'POST')"
+                >Members</v-tab
+              >
               <div class="tablet-info-btn" style="display: none !important;">
                 <v-btn
                   id="info-btn"
@@ -40,7 +50,11 @@
               </div>
             </v-tabs>
             <v-tabs-items v-model="tab">
-              <v-tab-item :transition="false" :reverse-transition="false">
+              <v-tab-item
+                :transition="false"
+                :reverse-transition="false"
+                v-if="checkPermissions('community-posts/search/{communityResourceId}', 'POST')"
+              >
                 <incidents
                   ref="refIncidents"
                   :posts="[]"
@@ -48,7 +62,11 @@
                   :refreshIncidents="refreshIncidentsData"
                 />
               </v-tab-item>
-              <v-tab-item :transition="false" :reverse-transition="false">
+              <v-tab-item
+                :transition="false"
+                :reverse-transition="false"
+                v-if="checkPermissions('communities/{resourceId}/member', 'POST')"
+              >
                 <members ref="refMembers" @selectedMemberPost="selectedMemberPostFunc" />
               </v-tab-item>
             </v-tabs-items>
@@ -73,6 +91,7 @@ import Members from '../components/ThreadSharing/Members'
 import PostIncident from '../components/ThreadSharing/PostIncident'
 import RightColumn from '../components/ThreadSharing/RightColumn'
 import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'ThreatSharing',
   components: {
@@ -161,11 +180,27 @@ export default {
   }),
   computed: {},
   created() {},
-  mounted() {},
+  mounted() {
+    if (!this.checkPermissions('communities/{resourceId}', 'PUT')) {
+      this.$router.push('/threat-sharing')
+    }
+    if (!this.checkPermissions('community-posts/search/{communityResourceId}', 'POST')) {
+      this.tab = 1
+      this.getMembers()
+    }
+
+    if (!this.checkPermissions('communities/{resourceId}/member', 'POST')) {
+      this.tab = 0
+      this.getIncidents()
+    }
+  },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     selectedMemberPostFunc(item) {
       this.tab = 0
       setTimeout(() => {
@@ -188,12 +223,16 @@ export default {
     getIncidents() {
       this.$router.replace({ postId: null })
       setTimeout(() => {
-        this.$refs.refIncidents.getIncidentList()
+        if (this.checkPermissions('community-posts/search/{communityResourceId}', 'POST')) {
+          this.$refs.refIncidents.getIncidentList()
+        }
       }, 50)
     },
     getMembers() {
       setTimeout(() => {
-        this.$refs.refMembers.getCommunityDetails()
+        if (this.checkPermissions('communities/{resourceId}/member', 'POST')) {
+          this.$refs.refMembers.getCommunityDetails()
+        }
       }, 50)
     },
     onAddClose() {

@@ -185,7 +185,8 @@ export default {
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'deleteAction'
+            action: 'deleteAction',
+            disabled: !this.checkPermissions('system-users/{resourceId}', 'DELETE')
           }
         ],
         empty: {

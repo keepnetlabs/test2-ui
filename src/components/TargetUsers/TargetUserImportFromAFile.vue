@@ -1026,9 +1026,18 @@ export default {
           //this.sortCustomFields(this.customFields)
           this.sortCustomFields(this.unActiveCustomFields)
           this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))*/
-          _this.mappingData.columns = _this.columns.map((item) => {
-            return { name: item.label, disabled: false, selectedValue: null, dbName: item.dbName }
-          })
+          _this.mappingData.columns = _this.columns
+            .map((item) => {
+              if (item.label !== 'Status' && item.label !== 'Date Created') {
+                return {
+                  name: item.label,
+                  disabled: false,
+                  selectedValue: null,
+                  dbName: item.dbName
+                }
+              }
+            })
+            .filter((filteredItem) => !!filteredItem)
         })
         .finally(() => (this.loading = false))
     },

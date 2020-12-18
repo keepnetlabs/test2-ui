@@ -14,8 +14,12 @@
       <v-col class="main-column pr-0" cols="12" md="8">
         <v-card id="ts-card" class="pl-1 pt-2 pr-1">
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
-            <v-tab id="ts-tab-incident">Incidents</v-tab>
-            <v-tab id="ts-tab-community">Communities</v-tab>
+            <v-tab v-if="checkPermissions('community-posts/search', 'POST')" id="ts-tab-incident"
+              >Incidents</v-tab
+            >
+            <v-tab v-if="checkPermissions('communities/search/all', 'POST')" id="ts-tab-community"
+              >Communities</v-tab
+            >
             <div class="tablet-info-btn" style="display: none !important;">
               <v-btn id="ts-info-btn" class="create-com-btn" block rounded>
                 <v-icon class="pr-1">mdi-information</v-icon>
@@ -24,10 +28,10 @@
             </div>
           </v-tabs>
           <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
-            <v-tab-item>
+            <v-tab-item v-if="checkPermissions('community-posts/search', 'POST')">
               <incidents ref="tsIncidents" />
             </v-tab-item>
-            <v-tab-item>
+            <v-tab-item v-if="checkPermissions('communities/search/all', 'POST')">
               <communities
                 ref="tsCommunities"
                 :refresh="refreshMemberTable"
@@ -53,6 +57,7 @@ import Incidents from '../components/ThreadSharing/Incidents'
 import Communities from '../components/ThreadSharing/Communities'
 import RightColumn from '../components/ThreadSharing/RightColumn'
 import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import { checkPermission } from '@/utils/functions'
 
 export default {
   name: 'ThreatSharing',
@@ -81,19 +86,30 @@ export default {
     } else if (this.$route.params.isCommunity) {
       this.tab = 1
     }
+    if (
+      !this.checkPermissions('community-posts/search', 'POST') &&
+      !this.checkPermissions('communities/search/all', 'POST')
+    ) {
+      this.$router.push('/')
+    }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     joinRequestSuccess() {
       this.getSelectedTabData()
     },
     getSelectedTabData() {
       setTimeout(() => {
-        if (this.tab === 0) {
+        if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
           this.$refs.tsIncidents.getIncidentList()
         } else {
-          this.$refs.tsCommunities.getAllCommunitiesListData()
-          this.$refs.tsCommunities.getInvitationCount()
-          this.$refs.tsCommunities.setInitialCommunityValues()
+          if (this.checkPermissions('communities/search/all', 'POST')) {
+            this.$refs.tsCommunities.getAllCommunitiesListData()
+            this.$refs.tsCommunities.getInvitationCount()
+            this.$refs.tsCommunities.setInitialCommunityValues()
+          }
         }
       }, 50)
     },

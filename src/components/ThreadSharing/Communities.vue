@@ -205,7 +205,10 @@
               >
                 <template v-if="ind === 2">
                   {{ tab }}
-                  <span v-if="invitationsCount" class="invitations-count">
+                  <span
+                    v-if="checkPermissions('communities/my-invitations', 'GET') && invitationsCount"
+                    class="invitations-count"
+                  >
                     {{ invitationsCount }}
                   </span>
                 </template>
@@ -410,7 +413,12 @@
                     <div class="communities__notification-wrapper">
                       <v-list dense flat class="notification-wrapper__v-list">
                         <v-list-item-group color="primary">
-                          <v-list-item @click="editCommunity(item)" v-if="isOwner(item)">
+                          <v-list-item
+                            @click="editCommunity(item)"
+                            v-if="
+                              checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
+                            "
+                          >
                             <v-list-item-icon>
                               <v-icon>mdi-pencil</v-icon>
                             </v-list-item-icon>
@@ -431,7 +439,10 @@
                           </v-list-item>
                           <v-list-item
                             @click="leaveFromCommunity(item)"
-                            v-if="isOwnerOrMember(item)"
+                            v-if="
+                              checkPermissions('communities/{resourceId}/leave', 'POST') &&
+                              isOwnerOrMember(item)
+                            "
                           >
                             <v-list-item-icon>
                               <v-icon>mdi-exit-to-app</v-icon>
@@ -440,7 +451,13 @@
                               <v-list-item-title>Leave</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item @click="deleteCommunity(item)" v-if="isOwner(item)">
+                          <v-list-item
+                            @click="deleteCommunity(item)"
+                            v-if="
+                              checkPermissions('communities/{resourceId}', 'DELETE') &&
+                              isOwner(item)
+                            "
+                          >
                             <v-list-item-icon>
                               <v-icon>mdi-delete</v-icon>
                             </v-list-item-icon>
@@ -494,7 +511,11 @@
                 </div>
               </div>
             </div>
-            <div v-if="selectedTab === 'tab-2'">
+            <div
+              v-if="
+                selectedTab === 'tab-2' && checkPermissions('communities/my-invitations', 'GET')
+              "
+            >
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <div class="ts-header">
                   <div class="ts-title" @click="community(item)">
@@ -624,7 +645,7 @@ import {
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
-import { isOwner, isOwnerOrMember } from '../../utils/functions'
+import { checkPermission, isOwner, isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -732,6 +753,9 @@ export default {
     this.selectedTab = 'tab-1'
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     setNotificationModal(communityResourceId) {
       this.temporaryResourceId = communityResourceId
       this.getNotifications()
@@ -869,20 +893,22 @@ export default {
       this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
-      getInvitationCount()
-        .then((response) => {
-          this.invitationsCount = response.data.data.count
-        })
+      if (this.checkPermissions('communities/my-invitations', 'GET')) {
+        getInvitationCount()
+          .then((response) => {
+            this.invitationsCount = response.data.data.count
+          })
 
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.code === 'RESOURCE_NOT_FOUND'
-          ) {
-            this.invitationsCount = []
-          }
-        })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
+              this.invitationsCount = []
+            }
+          })
+      }
       /*
         .catch(() => {
           this.$store.dispatch('common/createSnackBar', {
@@ -979,26 +1005,28 @@ export default {
       this.getAllCommunitiesListData()
     },
     getInvitions() {
-      this.listData = []
-      this.communityLoading = true
-      getInvitations()
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data
-          this.communityLoading = false
-        })
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.code === 'RESOURCE_NOT_FOUND'
-          ) {
-            this.listData = []
-          }
-        })
-        .finally(() => {
-          this.communityLoading = false
-        })
+      if (this.checkPermissions('communities/my-invitations', 'GET')) {
+        this.listData = []
+        this.communityLoading = true
+        getInvitations()
+          .then((response) => {
+            const { data } = response
+            this.listData = data.data
+            this.communityLoading = false
+          })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
+              this.listData = []
+            }
+          })
+          .finally(() => {
+            this.communityLoading = false
+          })
+      }
     },
     getAllCommunitiesListData() {
       let _this = this

@@ -18,7 +18,7 @@
         class="white--text btn-util btn-save-changes"
         color="#2196f3"
         rounded
-        :disabled="saveDisable"
+        :disabled="checkPermissions('phishing-reporter', 'POST') && saveDisable"
       >
         {{ labels.Save }} CHANGES
       </v-btn>
@@ -27,7 +27,7 @@
         class="white--text btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
-        :disabled="saveDisable"
+        :disabled="checkPermissions('phishing-reporter', 'POST') && saveDisable"
       >
         <v-icon left>mdi-download</v-icon>
         {{ labels.SaveAndDownload }}
@@ -43,6 +43,7 @@
 import ReporterVersionModal from '@/components/PhishingReporter/Settings/ReporterVersionModal'
 import VersionHistoryModal from './Settings/VersionHistoryModal'
 import labels from '@/model/constants/labels'
+import { checkPermission } from '@/utils/functions'
 
 export default {
   name: 'PhishingSettingsFooter',
@@ -68,6 +69,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     submit(event) {
       this.$emit('submit', event)
     },
