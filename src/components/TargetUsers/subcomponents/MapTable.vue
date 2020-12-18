@@ -18,7 +18,7 @@
               v-model="mapTableData.headers[index].selectedValue"
               hide-details
               return-object
-              :rules="[(v) => !!v || 'Required']"
+              :rules="[(v) => (mapTableData.headers[index].required ? !!v : !v || 'Required')]"
             >
             </v-select>
           </th>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { scrollToComponent } from '@/utils/functions'
+
 export default {
   name: 'MapTable',
   computed: {
@@ -50,6 +52,15 @@ export default {
   },
   props: { mapTableData: { required: true } },
   methods: {
+    showErrorSelect() {
+      setTimeout(() => {
+        let el = this.$refs.refMapTableForm.$el.querySelector('.error--text')
+        scrollToComponent(el)
+      }, 250)
+    },
+    checkItem(item) {
+      return item['required']
+    },
     setSelectDisableItemsToFalse(item) {
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
         let item = { ...i, disabled: false }

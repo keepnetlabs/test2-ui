@@ -344,6 +344,7 @@ import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -368,7 +369,8 @@ export default {
         this.mappingStatus.newUserCount +
         this.mappingStatus.existingUserCount +
         this.mappingStatus.invalidUserCount
-      return (users * 100) / this.mappingStatus.totalRowCount
+      let number = (users * 100) / this.mappingStatus.totalRowCount
+      return Math.round(number)
     },
     canNext() {
       return this.activeStep < this.totalStep
@@ -580,7 +582,7 @@ export default {
       },
       bodyData: {
         pageNumber: 1,
-        pageSize: 10,
+        pageSize: (this.mappingStatus && this.mappingStatus['totalRowCount']) || 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -894,7 +896,20 @@ export default {
           this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
             let aItem = {
               name: item,
-              selectedValue: null
+              selectedValue: null,
+              required:
+                this.mappingData.columns.find((mapItem) => {
+                  let name = mapItem.dbName || mapItem.name
+                  return (
+                    name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                  )
+                }) &&
+                this.mappingData.columns.find((mapItem) => {
+                  let name = mapItem.dbName || mapItem.name
+                  return (
+                    name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                  )
+                }).required
             }
             return aItem
           })
@@ -919,7 +934,10 @@ export default {
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
         let val = {
           excelColumnName: item.name,
-          fieldName: (item.selectedValue && item.selectedValue.dbName) || item.selectedValue.name
+          fieldName:
+            (item.selectedValue && item.selectedValue.dbName) ||
+            (item.selectedValue && item.selectedValue.name) ||
+            item.name
         }
         return val
       })
@@ -951,6 +969,9 @@ export default {
       } else if (this.activeStep === 2) {
         isFormValid =
           this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
+        if (!isFormValid) {
+          this.$refs.refMapTable.showErrorSelect()
+        }
       }
       if (isFormValid) {
         if (this.activeStep === 1) {
@@ -1033,7 +1054,17 @@ export default {
                   name: item.label,
                   disabled: false,
                   selectedValue: null,
-                  dbName: item.dbName
+                  dbName: item.dbName,
+                  required: item.dbName
+                    ? true
+                    : response.data.data.find((responseItem) => {
+                        let name = item.dbName || item.label
+                        return responseItem.name.toLowerCase() === name.toLowerCase()
+                      }) &&
+                      response.data.data.find((responseItem) => {
+                        let name = item.dbName || item.label
+                        return responseItem.name.toLowerCase() === name.toLowerCase()
+                      }).isRequired
                 }
               }
             })
