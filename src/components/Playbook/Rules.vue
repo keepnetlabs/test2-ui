@@ -477,11 +477,6 @@ export default {
         values.map((item) => {
           deletePlaybookRule(item)
             .then(() => {
-              _this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Playbook rule deleted successfully!'
-              })
               this.isWantToDelete = false
               this.loading = true
               _this

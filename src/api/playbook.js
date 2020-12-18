@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function searchPlaybook(payload) {
   return testRequest.post(`/playbooks/search`, payload)
@@ -11,7 +12,9 @@ export function exportPlaybookRules(payload) {
 }
 
 export function createPlaybook(payload) {
-  return testRequest.post('/playbooks', payload)
+  return testRequest.post('/playbooks', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getPlaybook(id) {
@@ -19,11 +22,15 @@ export function getPlaybook(id) {
 }
 
 export function updatePlaybook(payload) {
-  return testRequest.put(`/playbooks/${payload.resourceId}`, payload)
+  return testRequest.put(`/playbooks/${payload.resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function deletePlaybookRule(id) {
-  return testRequest.delete(`playbooks/${id}`)
+  return testRequest.delete(`playbooks/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getAnalysisEngine(payload) {

@@ -31,6 +31,14 @@ testService.interceptors.response.use(
   (response) => {
     response.config.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    const { snackbar } = response.config
+    if (snackbar && snackbar.show) {
+      store.dispatch('common/createSnackBar', {
+        message: response.data.message,
+        icon: snackbar.icon,
+        color: snackbar.color
+      })
+    }
     if (response.data.code === 'FAILED') {
       store.dispatch(
         'common/createSnackBar',

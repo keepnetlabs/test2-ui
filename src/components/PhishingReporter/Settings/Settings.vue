@@ -197,11 +197,6 @@ export default {
 
       createPhishingReporter(formData)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Phishing Reporter has been saved',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
           this.saveDisable = false
           this.$emit('getPhishingReport')
           if (updatedValues.isAddIn) {

@@ -315,12 +315,7 @@ export default {
     },
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
+        .then(() => {
           this.callForPhishingReporterUser()
           this.$emit('callForPhishingReporterSummary')
         })

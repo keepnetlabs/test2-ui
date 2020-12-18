@@ -501,10 +501,6 @@ export default {
     },
     handleDeleteDialog() {
       deleteO365(this.deleteDialogId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'O365 mail configuration has been deleted'
-        })
         this.closeDeleteDialog()
         this.getTableData()
       })
@@ -577,28 +573,12 @@ export default {
         if (this.editData) {
           let editData = this.formValues
           updateO365(editData, this.editData.resourceId).then(() => {
-            this.$store
-              .dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'O365 mail configuration has been updated'
-              })
-              .finally(() => {
-                this.saveButtonDisabled = false
-              })
             this.status = false
             this.editData = null
             this.getTableData()
           })
         } else {
           createO365(this.formValues).then(() => {
-            this.$store
-              .dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'O365 mail configuration has been created'
-              })
-              .finally(() => {
-                this.saveButtonDisabled = false
-              })
             this.status = false
             this.editData = null
             this.getTableData()

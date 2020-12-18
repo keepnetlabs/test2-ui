@@ -97,18 +97,9 @@ const investigations = {
       // get investigaiton list via axious
 
       await deleteInvestigationDetailsItem(obj.data, obj.id)
-        .then((response) => {
-          dispatch(
-            'common/createSnackBar',
-            {
-              errorState: true,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigations Details Item Has Been Deleted Successfully'
-            },
-            { root: true }
-          )
-        })
+        .then((response) => {})
         .catch(() => {
+          /*
           dispatch(
             'common/createSnackBar',
             {
@@ -118,24 +109,17 @@ const investigations = {
             },
             { root: true }
           )
+
+           */
         })
     },
     async sendInvestigationWarningMessage({ commit, dispatch }, obj) {
       // get investigaiton list via axious
 
       await sendInvestigationWarningMessage(obj.data, obj.id)
-        .then((response) => {
-          dispatch(
-            'common/createSnackBar',
-            {
-              errorState: true,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'User Warning Message Has Been Sent Successfully'
-            },
-            { root: true }
-          )
-        })
+        .then((response) => {})
         .catch(() => {
+          /*
           dispatch(
             'common/createSnackBar',
             {
@@ -145,24 +129,17 @@ const investigations = {
             },
             { root: true }
           )
+
+           */
         })
     },
     async cancelInvestigation({ commit, dispatch }, id) {
       // get investigaiton list via axious
 
       await cancelInvestigation(id)
-        .then((response) => {
-          dispatch(
-            'common/createSnackBar',
-            {
-              errorState: true,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigation Stopped Successfully'
-            },
-            { root: true }
-          )
-        })
+        .then(() => {})
         .catch(() => {
+          /*
           dispatch(
             'common/createSnackBar',
             {
@@ -172,6 +149,8 @@ const investigations = {
             },
             { root: true }
           )
+
+           */
         })
     },
     async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
@@ -309,17 +288,10 @@ const investigations = {
       // if you want to manipulate the obj, do it before.
       return await saveNewInvestigation(obj)
         .then((resp) => {
-          dispatch(
-            'common/createSnackBar',
-            {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Investigation Created Successfully'
-            },
-            { root: true }
-          )
           return Promise.resolve(resp)
         })
         .catch((resp) => {
+          /*
           dispatch(
             'common/createSnackBar',
             {
@@ -328,6 +300,8 @@ const investigations = {
             },
             { root: true }
           )
+
+           */
         })
     },
     async getNotifications({ commit, dispatch }, id) {

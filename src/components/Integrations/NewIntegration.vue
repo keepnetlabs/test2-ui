@@ -500,17 +500,12 @@ export default {
       data.apiKeys = data.apiKeys.map((i) => i.value)
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
-          .then((response) => {
+          .then(() => {
             this.saveDisable = false
             this.closeOverlay()
             this.showConfirmModal = false
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: false,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Integration has been updated'
-            })
           })
-          .catch((error) => {
+          .catch(() => {
             this.$store.dispatch('common/createSnackBar', {
               errorState: true,
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -520,22 +515,11 @@ export default {
           })
       } else {
         createIntegration(data)
-          .then((response) => {
-            this.saveDisable = false
+          .then(() => {
             this.closeOverlay()
             this.showConfirmModal = false
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: false,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Integration have been created'
-            })
           })
-          .catch(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Integration can not be created'
-            })
+          .finally(() => {
             this.saveDisable = false
           })
       }

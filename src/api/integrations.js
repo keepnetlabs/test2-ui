@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'analysis-engines'
 export function getIntegrationList(payload) {
   return testRequest.post(`${API_URL}/search`, payload)
@@ -19,19 +20,27 @@ export function getFileTypes() {
 }
 
 export function createIntegration(payload) {
-  return testRequest.post(`${API_URL}`, payload)
+  return testRequest.post(`${API_URL}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function disableIntegration(id) {
-  return testRequest.put(`${API_URL}/${id}/disable`)
+  return testRequest.put(`${API_URL}/${id}/disable`, null, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function enableIntegration(id) {
-  return testRequest.put(`${API_URL}/${id}/enable`)
+  return testRequest.put(`${API_URL}/${id}/enable`, null, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function deleteIntegration(id) {
-  return testRequest.delete(`${API_URL}/${id}`)
+  return testRequest.delete(`${API_URL}/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getIntegrationDetails(id) {
@@ -39,7 +48,9 @@ export function getIntegrationDetails(id) {
 }
 
 export function updateIntegration(id, payload) {
-  return testRequest.put(`${API_URL}/${id}`, payload)
+  return testRequest.put(`${API_URL}/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function testAnalysis(id, apiKey) {
