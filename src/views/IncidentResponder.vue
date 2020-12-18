@@ -48,20 +48,12 @@
         </template>
         <template v-slot:app-dialog-footer>
           <div class="download-modal__footer justify-end">
-            <v-btn
-              class="ml-n4 download-modal__button"
-              @click="isShowRoi = false"
-              color="#f56c6c"
-              text
-              >{{ labels.Cancel }}</v-btn
-            >
-            <v-btn
-              class="mr-n2 download-modal__button"
-              @click="submitRoiModal"
-              color="#2196f3"
-              text
-              >{{ labels.Save }}</v-btn
-            >
+            <app-dialog-footer
+              :actionButtonText="labels.Save"
+              :confirmButtonDisabled="isConfirmButtonDisabled"
+              @handleClose="isShowRoi = false"
+              @handleConfirm="submitRoiModal"
+            />
           </div>
         </template>
       </app-dialog>
@@ -641,9 +633,11 @@ import { required, startsWith } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
   components: {
+    AppDialogFooter,
     Datatable,
     NewInvestigation,
     AppDialog,
@@ -655,6 +649,7 @@ export default {
 
   data: () => ({
     labels,
+    isConfirmButtonDisabled: false,
     topRulesLoading: true,
     investigationsLoading: true,
     investigationsData: [],
@@ -1463,19 +1458,24 @@ export default {
     },
     submitRoiModal() {
       if (this.$refs.form.validate()) {
+        this.isConfirmButtonDisabled = true
         updateRoiSettings({
           baseManHour: this.baseManHour,
           baseManHourCost: this.baseManHourCost
-        }).then((response) => {
-          this.callForGetRoiSettings()
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'ROI settings has been updated',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          this.$store.dispatch('investigations/getIrSummary')
         })
-        this.isShowRoi = false
+          .then(() => {
+            this.callForGetRoiSettings()
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'ROI settings has been updated',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+            this.isShowRoi = false
+            this.$store.dispatch('investigations/getIrSummary')
+          })
+          .finally(() => {
+            this.isConfirmButtonDisabled = false
+          })
       }
     },
     isRoiSummaryEmpty(summary) {

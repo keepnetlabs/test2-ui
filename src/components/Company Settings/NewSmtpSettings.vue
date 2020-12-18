@@ -4,7 +4,7 @@
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="'New SMTP Setting'"
+    :title="labels.NewSMTPSetting"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
     :saveDisable="saveDisable"
@@ -23,7 +23,7 @@
             v-model.trim="formValues.name"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
         <form-group title="Service Provider" has-hint>
@@ -69,7 +69,7 @@
             v-model.trim="formValues.userName"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
         <form-group title="Password" has-hint>
@@ -84,7 +84,7 @@
             :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
         <form-group>
@@ -102,46 +102,7 @@
             label="Has SMTP Relay"
           />
         </form-group>
-        <form-group
-          title="Make Available For"
-          sub-title="Companies that will see this setting in their libraries"
-          has-hint
-        >
-          <Treeselect
-            :class="['k-treeselect', { 'k-treeselect--error': !isAvailableForValid }]"
-            v-model="formValues.availableForRequests"
-            :options="treeSelectOptions"
-            placeholder="Enter make an available for"
-            value-format="object"
-            clear-on-select
-            disable-branch-nodes
-            multiple
-            search-nexted
-            show-count
-            @close="validateAvailableFor"
-          />
-          <div
-            v-if="isAvailableForValidated && !isAvailableForValid"
-            class="v-text-field__details checkbox-error"
-          >
-            <transition appear name="bounce">
-              <div class="v-messages theme--light error--text" role="alert">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message" style="padding-left: 10px;">
-                    Required
-                  </div>
-                </div>
-              </div>
-            </transition>
-          </div>
-          <div v-else class="v-messages theme--light" role="alert">
-            <div class="v-messages__wrapper">
-              <div class="v-messages__message" style="padding-left: 10px; font-size: 9px;">
-                *Required
-              </div>
-            </div>
-          </div>
-        </form-group>
+        <make-available-for ref="refMakeAvailableFor" v-model="formValues.availableForRequests" />
         <form-group title="Reply to">
           <InputEmail
             placeholder="Enter Reply to"
@@ -201,27 +162,23 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeId } from '@/api/common'
-import {
-  createSMTPSettings,
-  getSmtpSettings,
-  searchAvailableFor,
-  updateSmtpSettings
-} from '@/api/smtpSettings'
+import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
-import Treeselect from '@riophae/vue-treeselect'
+import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
+import labels from '@/model/constants/labels'
 export default {
   name: 'NewSmtpSettings',
   components: {
+    MakeAvailableFor,
     KSelect,
     AppModal,
     AppModalBodyHeader,
     FormGroup,
     InputUrl,
-    InputEmail,
-    Treeselect
+    InputEmail
   },
   props: {
     status: {
@@ -238,8 +195,7 @@ export default {
   },
   data() {
     return {
-      isAvailableForValidated: false,
-      isAvailableForValid: true,
+      labels,
       saveDisable: false,
       formValues: {
         name: '',
@@ -259,49 +215,15 @@ export default {
         customHeader: ''
       },
       showPassword: false,
-      searchAvailableForPayload: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false
-      },
       serviceProviderItems: [],
-      treeSelectOptions: [
-        {
-          id: 'MyCompanyOnly',
-          label: 'My company only',
-          type: 'MyCompanyOnly',
-          resourceId: null
-        },
-        {
-          id: 'AllCompanies',
-          label: 'All companies',
-          type: 'AllCompanies',
-          resourceId: null
-        },
-        {
-          id: 'Group',
-          label: 'Company Groups',
-          children: []
-        },
-        {
-          id: 'Company',
-          label: 'Companies',
-          children: []
-        }
-      ],
       validations: validations
     }
   },
   methods: {
-    validateAvailableFor(value = {}) {
-      this.isAvailableForValidated = true
-      this.isAvailableForValid = !!value.length
-    },
     submit() {
-      const refForm = this.$refs.refForm
-      this.validateAvailableFor(this.formValues.availableForRequests)
-      if (refForm.validate() && this.isAvailableForValid) {
+      const { refForm, refMakeAvailableFor } = this.$refs
+      refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+      if (refForm.validate() && refMakeAvailableFor.isAvailableForValid) {
         this.saveDisable = true
         const {
           name,
@@ -375,29 +297,7 @@ export default {
           this.saveDisable = false
         })
     },
-    callForSearchAvailableFor() {
-      return searchAvailableFor(this.searchAvailableForPayload).then((response) => {
-        const { data: { data = {} } = {} } = response
-        const { companies = {}, groups = {} } = data
-        this.$set(this.treeSelectOptions, 3, {
-          ...this.treeSelectOptions[3],
-          children: companies.results.map((item) => {
-            return {
-              id: item['companyResourceId'],
-              label: item.companyName,
-              resourceId: item['companyResourceId'],
-              type: 'Company'
-            }
-          })
-        })
-        this.$set(this.treeSelectOptions, 2, {
-          ...this.treeSelectOptions[2],
-          children: groups.results.map((item) => {
-            return { id: item.resourceId, label: item.name, type: 'Group' }
-          })
-        })
-      })
-    },
+
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
         .then(() => {
@@ -438,7 +338,7 @@ export default {
       this.$refs.refTextField.lazyValue = renderedValue
     },
     callForGetSmtpSettings() {
-      getSmtpSettings(this.resourceId).then((response) => {
+      return getSmtpSettings(this.resourceId).then((response) => {
         const {
           data: {
             data: {
@@ -459,24 +359,9 @@ export default {
             } = {}
           } = {}
         } = response
-        this.formValues.availableForRequests = availableForList.map((item) => {
-          let { resourceId: id, typeName } = item
-          let label
-          let resourceId = id
-          if (typeName === 'MyCompanyOnly') {
-            label = 'My company only'
-            resourceId = null
-          } else if (typeName === 'AllCompanies') {
-            label = 'All companies'
-            resourceId = null
-          }
-          return {
-            id,
-            type: typeName,
-            resourceId,
-            label
-          }
-        })
+        this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+          availableForList
+        )
         this.formValues.cC = cc
         this.formValues.bCC = bcc
         this.formValues.customHeader = customHeader
@@ -493,64 +378,30 @@ export default {
         this.formValues.serviceProvider = `${serverAddress}:${serverPort}`
       })
     },
-    setTreeSelectOptions(isDisabled = false) {
-      this.$set(this.treeSelectOptions, 2, {
-        ...this.treeSelectOptions[2],
-        children: this.treeSelectOptions[2].children.map((item) => {
-          return {
-            ...item,
-            isDisabled
-          }
-        })
-      })
-      this.$set(this.treeSelectOptions, 3, {
-        ...this.treeSelectOptions[3],
-        children: this.treeSelectOptions[3].children.map((item) => {
-          return { ...item, isDisabled }
-        })
-      })
-    }
-  },
-  watch: {
-    'formValues.availableForRequests'(newVal, oldVal) {
-      if (newVal) {
-        if (newVal.some((item) => item.type === 'MyCompanyOnly')) {
+    callForServiceProviderItems() {
+      getLookupListByTypeId(12).then((response) => {
+        const { data: { data = [] } = {} } = response
+        this.serviceProviderItems = data
+        if (this.isEdit && this.resourceId) {
           if (
-            oldVal &&
-            oldVal.some((item) => item.type === 'MyCompanyOnly') &&
-            newVal.some((item) => item.type === 'AllCompanies')
+            !this.serviceProviderItems.find((item) => item.code === this.formValues.serviceProvider)
           ) {
-            this.formValues.availableForRequests = [this.treeSelectOptions[1]]
-          } else if (newVal.length > 1) {
-            this.$nextTick(() => {
-              this.formValues.availableForRequests = [this.treeSelectOptions[0]]
-            })
+            this.formValues.serviceProvider = this.serviceProviderItems.find(
+              (item) => item.name === 'Custom'
+            )
           }
-          this.setTreeSelectOptions(true)
-        } else if (newVal.some((item) => item.type === 'AllCompanies')) {
-          if (newVal.length > 1) {
-            this.$nextTick(() => {
-              this.formValues.availableForRequests = [this.treeSelectOptions[1]]
-            })
-          }
-          this.setTreeSelectOptions(true)
-        } else {
-          this.setTreeSelectOptions(false)
         }
-        this.validateAvailableFor(newVal)
-      }
+      })
     }
   },
   created() {
-    this.callForSearchAvailableFor().finally(() => {
-      if (this.isEdit && this.resourceId) {
-        this.callForGetSmtpSettings()
-      }
-    })
-    getLookupListByTypeId(12).then((response) => {
-      const { data: { data = [] } = {} } = response
-      this.serviceProviderItems = data
-    })
+    if (this.isEdit && this.resourceId) {
+      this.callForGetSmtpSettings().finally(() => {
+        this.callForServiceProviderItems()
+      })
+    } else {
+      this.callForServiceProviderItems()
+    }
   }
 }
 </script>
@@ -566,12 +417,6 @@ export default {
       flex-basis: 15%;
       margin-left: 16px;
     }
-  }
-}
-[data-id='AllCompanies'],
-[data-id='MyCompanyOnly'] {
-  .vue-treeselect__checkbox-container {
-    display: none;
   }
 }
 </style>

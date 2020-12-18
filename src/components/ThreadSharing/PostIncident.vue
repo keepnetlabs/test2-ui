@@ -2202,10 +2202,8 @@ export default {
       empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
     },
     scopeRules: {
-      default: (v) => !!v || 'Scope is required',
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 200) ||
-        'Explanation should be between 5 - 200 characters long',
+      default: (v) => Validations.required(v),
+      required: (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage('Scope', 200)),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',

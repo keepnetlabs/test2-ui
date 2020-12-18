@@ -56,14 +56,19 @@
       <div class="new-user-group__footer">
         <v-btn
           class="new-user-group__button"
-          @click="changeNewUserGroupStatus(false)"
           color="#f56c6c"
           text
+          @click="changeNewUserGroupStatus(false)"
           >{{ labels.Cancel }}</v-btn
         >
-        <v-btn class="new-user-group__button mr-n4" @click="handleSave" color="#2196f3" text>{{
-          labels.Save
-        }}</v-btn>
+        <v-btn
+          class="new-user-group__button mr-n4"
+          @click="handleSave"
+          color="#2196f3"
+          text
+          :disabled="isCreateButtonDisabled"
+          >{{ labels.Save }}</v-btn
+        >
       </div>
     </template>
   </app-dialog>
@@ -88,6 +93,10 @@ export default {
     }
   },
   props: {
+    isCreateButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
     status: {
       type: Boolean,
       default: false

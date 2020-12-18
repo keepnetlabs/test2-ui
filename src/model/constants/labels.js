@@ -14,16 +14,20 @@ export const labels = {
   Prev: 'PREV',
   Back: 'BACK',
   Email: 'Email Address',
+  FromName: 'From Name',
   Name: 'Name',
   Description: 'Description',
   Low: 'Low',
   High: 'High',
   VeryHigh: 'Very High',
   VeryLow: 'Very Low',
+  Category: 'Category',
+  EmailSubject: 'Email Subject',
   Industry: 'Industry',
   Result: 'Result',
   Medium: 'Medium',
   Country: 'Country',
+  TemplateName: 'Template Name',
   UserName: 'User Name',
   Department: 'Department',
   CreateTime: 'Date Created',
@@ -156,7 +160,18 @@ export const labels = {
   ImportAll: 'IMPORT ALL',
   StartInvestigation: 'START INVESTIGATION',
   CancelImport: 'CANCEL IMPORT',
-  KeepEditing: 'KEEP EDITING'
+  KeepEditing: 'KEEP EDITING',
+  NotificationTemplate: 'Notification Template',
+  MakeAvailableFor: 'Make Available For',
+  MakeAvailableForSubtitle: 'Use this setting to make the item avaliable for companies and groups.',
+  MakeAvailableForPlaceholder: 'Search companies and groups',
+  DeleteNotificationTemplateBody:
+    'This notification template will be deleted. All data will be lost.',
+  NewNotificationTemplate: 'New Notification Template',
+  NewSMTPSetting: 'New SMTP Setting',
+  CancelUserImport: 'Cancel user import?',
+  CancelUserImportSubtitle: 'Operation will be abondened',
+  CancelUserImportBody: 'You will lose all progress and users will not be imported'
 }
 
 export default labels

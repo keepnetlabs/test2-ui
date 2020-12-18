@@ -146,6 +146,10 @@ export default {
       companyInformation: (state) => state.dashboard.companyInformation
     })
   },
+  beforeRouteLeave(to, from, next) {
+    this.$tours['tourDashboard'].finish()
+    next()
+  },
   methods: {
     getMonths(numbers) {
       const date = new Date()
