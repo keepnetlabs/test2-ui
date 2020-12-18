@@ -49,6 +49,7 @@
               :return-object="true"
               :search-input.sync="search"
               auto-select-first
+              deletable-chips
               autocomplete="off"
               chips
               item-text="companyName"
