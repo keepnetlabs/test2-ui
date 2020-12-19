@@ -18,7 +18,6 @@
               v-model="mapTableData.headers[index].selectedValue"
               hide-details
               return-object
-              :rules="[(v) => (mapTableData.headers[index].required ? !!v : !v || 'Required')]"
             >
             </v-select>
           </th>

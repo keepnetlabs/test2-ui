@@ -98,5 +98,5 @@ export function getNotifiedEmailsTrend(payload) {
 }
 
 export function getAuditLogs(payload) {
-  return testRequest.post('/audit-logs', payload)
+  return testRequest.post('/audit-logs/search', payload)
 }

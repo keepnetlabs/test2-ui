@@ -119,7 +119,8 @@ export const LABEL_STORE = {
   OLDVALUE: 'Old Value',
   NEWVALUE: 'New Value',
   IP: 'IP',
-  BROSWERUSERAGENT: 'Browser User Agent'
+  USERAGENT: 'Browser User Agent',
+  CHANGESET: 'Changed Set'
 }
 
 export const PROPERTY_STORE = {
@@ -201,7 +202,7 @@ export const PROPERTY_STORE = {
   OLDVALUE: 'oldValue',
   NEWVALUE: 'newValue',
   IP: 'ip',
-  BROSWERUSERAGENT: 'browserUserAgent',
+  USERAGENT: 'userAgent',
   USERID: 'userId'
 }
 
